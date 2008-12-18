@@ -1,0 +1,29 @@
+<!ELEMENT poi_list (itinerary* | poi)>
+<!ATTLIST poi_list
+  version   CDATA   #REQUIRED
+  folder    CDATA   #REQUIRED
+>
+
+<!ELEMENT itinerary (step*, description?)>
+<!ATTLIST itinerary
+  name      CDATA   #REQUIRED
+>
+
+<!ELEMENT step EMPTY>
+<!ATTLIST step
+  name      CDATA   #REQUIRED
+  longitude CDATA   #REQUIRED
+  latitude  CDATA   #REQUIRED
+>
+
+<!ELEMENT description EMPTY>
+
+<!ELEMENT poi (description?)>
+<!ATTLIST poi
+  name      CDATA   #REQUIRED
+  longitude CDATA   #REQUIRED
+  latitude  CDATA   #REQUIRED
+  category  CDATA   #REQUIRED
+  address   CDATA   #REQUIRED
+  cp_city   CDATA   #REQUIRED
+>

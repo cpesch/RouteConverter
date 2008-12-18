@@ -1,0 +1,15 @@
+$PMGNWPL,4817.03454,N,01134.85880,E,0,M,01-Unter-Schleisshei,Bayern (Bavaria),a*1B
+$PMGNWPL,4809.92652,N,01154.86286,E,0,M,02-Forstinning,Bayern (Bavaria),a*6E
+$PMGNWPL,4809.27978,N,01159.57268,E,0,M,03-Hohenlinden,Bayern (Bavaria),a*72
+$PMGNWPL,4803.70740,N,01211.29380,E,0,M,04-Wasserburg,Bayern (Bavaria),a*1A
+$PMGNWPL,4757.10005,N,01216.59407,E,0,M,05-Halfing,05-Halfing,a*5A
+$PMGNWPL,4754.66568,N,01218.23634,E,0,M,06-Endorf,06-Endorf,a*57
+$PMGNWPL,4755.28124,N,01225.73880,E,0,M,07-Soell,07-Soell,a*5A
+$PMGNWPL,4755.28124,N,01225.73880,E,0,M,07-Soell,07-Soell,a*5A
+$PMGNWPL,4754.81346,N,01226.26626,E,0,M,08-KBBadeplatChiems,08-KBBadeplatz Chiemsee,a*05
+$PMGNRTE,5,1,c,1,Chiemsee-Gollenshaus,01-Unter-Schleisshei,a,02-Forstinning,a*19
+$PMGNRTE,5,2,c,1,Chiemsee-Gollenshaus,03-Hohenlinden,a,04-Wasserburg,a*01
+$PMGNRTE,5,3,c,1,Chiemsee-Gollenshaus,05-Halfing,a,06-Endorf,a*10
+$PMGNRTE,5,4,c,1,Chiemsee-Gollenshaus,07-Soell,a,07-Soell,a*63
+$PMGNRTE,5,5,c,1,Chiemsee-Gollenshaus,08-KBBadeplatChiems,a*3D
+$PMGNCMD,END*3D

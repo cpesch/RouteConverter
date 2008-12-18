@@ -1,0 +1,1075 @@
+<?xml version="1.0"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" creator="MOTORRAD Tourenplaner 2007/2008 11.5" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+	<metadata>
+		<link href="http://www.mapandguide.com">
+			<text>MAP &amp; GUIDE</text></link>
+		<time>2007-09-10T21:40:21-02:00</time>
+		<bounds maxlat="49.221100" maxlon="12.082660" minlat="47.449920" minlon="10.374020"/>
+	</metadata>
+	<rte>
+		<name>von D 83024 Rosenheim nach D 91166 Georgensgmünd/Rittersbach</name>
+		<desc></desc>
+		<rtept lat="47.880050" lon="12.082660">
+			<name>Grosskarolinenfeld</name>
+			<desc>D 83024 Rosenheim</desc>
+			<sym>8285</sym>
+		</rtept>
+		<rtept lat="47.886490" lon="12.054950">
+			<name>Grosskarolinenfeld</name>
+			<desc>links abbiegen auf Rosenheimer Strasse (RO19)</desc>
+		</rtept>
+		<rtept lat="47.880560" lon="12.018500">
+			<name>Bad Aibling</name>
+			<desc>geradeaus weiter auf RO18</desc>
+		</rtept>
+		<rtept lat="47.870640" lon="12.014790">
+			<name>Bad Aibling</name>
+			<desc>geradeaus weiter auf Ellmosener Strasse (RO19)</desc>
+		</rtept>
+		<rtept lat="47.866430" lon="12.012380">
+			<name>Pullach</name>
+			<desc>in Bad Aibling einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.866380" lon="12.012300">
+			<name>Pullach</name>
+			<desc>1. Möglichkeit aus Kreisverkehr ausfahren auf Kirchzeile (RO19)</desc>
+		</rtept>
+		<rtept lat="47.865610" lon="12.010910">
+			<name>Pullach</name>
+			<desc>halb links halten auf Kirchzeile (RO19)</desc>
+		</rtept>
+		<rtept lat="47.863430" lon="12.010460">
+			<name>Pullach</name>
+			<desc>links abbiegen auf Marienplatz/Rosenheimer Strasse</desc>
+		</rtept>
+		<rtept lat="47.862320" lon="12.011920">
+			<name>Pullach</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.857500" lon="12.015070">
+			<name>Pullach</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf Rosenheimer Strasse</desc>
+		</rtept>
+		<rtept lat="47.853340" lon="12.017550">
+			<name>Pullach</name>
+			<desc>halb rechts halten auf Rosenheimer Strasse</desc>
+		</rtept>
+		<rtept lat="47.852070" lon="12.017470">
+			<name>Pullach</name>
+			<desc>geradeaus weiter auf Aiblinger Au</desc>
+		</rtept>
+		<rtept lat="47.850190" lon="12.015480">
+			<name>Pullach</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.817470" lon="12.014860">
+			<name>Pullach</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf Pullach (ST2089)</desc>
+		</rtept>
+		<rtept lat="47.781370" lon="12.005220">
+			<name>Bad Feilnbach</name>
+			<desc>rechts abbiegen auf RO46</desc>
+		</rtept>
+		<rtept lat="47.779030" lon="12.000880">
+			<name>Bad Feilnbach</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.772330" lon="11.999480">
+			<name>Bad Feilnbach</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf Hundhamerstrasse (RO46)</desc>
+		</rtept>
+		<rtept lat="47.765450" lon="11.978100">
+			<name>Hundham</name>
+			<desc>geradeaus weiter auf MB22</desc>
+		</rtept>
+		<rtept lat="47.757900" lon="11.945940">
+			<name>D 83730 Fischbachau/Hundham</name>
+			<desc>in Hundham halb rechts halten auf Wiesenweg</desc>
+		</rtept>
+		<rtept lat="47.757800" lon="11.942800">
+			<name>D 83730 Fischbachau/Hundham</name>
+			<desc>rechts abbiegen auf Leitzachtalstrasse (ST2077)</desc>
+		</rtept>
+		<rtept lat="47.740090" lon="11.951920">
+			<name>Greisbach</name>
+			<desc>D 83730 Fischbachau/Hundham</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.711770" lon="11.939380">
+			<name>Sandbichl</name>
+			<desc>in Fischbachau halb links halten auf Hauptstrasse (ST2077)</desc>
+		</rtept>
+		<rtept lat="47.710680" lon="11.871120">
+			<name>Neuhaus</name>
+			<desc>in Aurach rechts abbiegen auf B307 Alpenstrasse</desc>
+		</rtept>
+		<rtept lat="47.737810" lon="11.854130">
+			<name>Hausham</name>
+			<desc>D 83727 Schliersee</desc>
+			<sym>8284</sym>
+		</rtept>
+
+		<rtept lat="47.747510" lon="11.842630">
+			<name>D 83734 Hausham</name>
+			<desc>in Hausham links abbiegen auf B307 Schlierseer Strasse</desc>
+		</rtept>
+		<rtept lat="47.747510" lon="11.842630">
+			<name>Freudenreich</name>
+			<desc>D 83734 Hausham</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.750690" lon="11.839270">
+			<name>Freudenreich</name>
+			<desc>rechts abbiegen auf B307 Schlierseer Strasse</desc>
+		</rtept>
+		<rtept lat="47.752090" lon="11.837820">
+			<name>Freudenreich</name>
+			<desc>halb rechts halten auf B307 Miesbacher Strasse</desc>
+		</rtept>
+		<rtept lat="47.752120" lon="11.836570">
+			<name>Freudenreich</name>
+			<desc>links abbiegen auf Tegernseer Strasse (ST2076)</desc>
+		</rtept>
+		<rtept lat="47.750870" lon="11.791830">
+			<name>Freudenreich</name>
+			<desc>halb rechts halten auf Tegernseer Strasse (ST2076)</desc>
+		</rtept>
+		<rtept lat="47.747770" lon="11.738560">
+			<name>D 83703 Gmund</name>
+			<desc>in Gmund am Tegernsee rechts abbiegen auf ST2076</desc>
+		</rtept>
+		<rtept lat="47.727020" lon="11.743780">
+			<name>Am See</name>
+			<desc>D 83703 Gmund</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.706180" lon="11.758820">
+			<name>Rottach-Egern</name>
+			<desc>D 83684 Tegernsee</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.696620" lon="11.772930">
+			<name>Rottach-Egern</name>
+			<desc>in Tegernsee halb rechts halten auf B307 Schwaighofstrasse</desc>
+		</rtept>
+		<rtept lat="47.628590" lon="11.746440">
+			<name>Weissach</name>
+			<desc>D 83700 Rottach-Egern</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.585790" lon="11.631450">
+			<name>Fall</name>
+			<desc>an Grenze A - D geradeaus weiter auf B181 Achenpass</desc>
+		</rtept>
+		<rtept lat="47.582110" lon="11.634180">
+			<name>Fall</name>
+			<desc>rechts abbiegen auf L28</desc>
+		</rtept>
+		<rtept lat="47.584700" lon="11.599950">
+			<name>Fall</name>
+			<desc>geradeaus weiter auf B307</desc>
+		</rtept>
+		<rtept lat="47.580130" lon="11.546840">
+			<name>Fall</name>
+			<desc>links abbiegen auf B307</desc>
+		</rtept>
+		<rtept lat="47.577440" lon="11.537660">
+			<name>Fall</name>
+			<desc>geradeaus weiter auf B307</desc>
+		</rtept>
+		<rtept lat="47.558730" lon="11.491340">
+			<name>Fall</name>
+			<desc>geradeaus weiter auf B307</desc>
+		</rtept>
+		<rtept lat="47.559570" lon="11.436250">
+			<name>D 83661 Lenggries/Vorderriß</name>
+			<desc>in Vorderriss rechts abbiegen auf Vorderriss</desc>
+		</rtept>
+		<rtept lat="47.559570" lon="11.436250">
+			<name>Wallgau</name>
+			<desc>D 83661 Lenggries/Vorderriß</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.559900" lon="11.435910">
+			<name>Wallgau</name>
+			<desc>geradeaus weiter auf Ochsensitz</desc>
+		</rtept>
+		<rtept lat="47.559480" lon="11.434900">
+			<name>Wallgau</name>
+			<desc>geradeaus weiter auf Ochsensitz (mautpflichtig)</desc>
+		</rtept>
+		<rtept lat="47.554650" lon="11.427880">
+			<name>Wallgau</name>
+			<desc>geradeaus weiter auf Ochsensitz</desc>
+		</rtept>
+		<rtept lat="47.539980" lon="11.341170">
+			<name>Wallgau</name>
+			<desc>geradeaus weiter</desc>
+		</rtept>
+		<rtept lat="47.527360" lon="11.296540">
+			<name>Wallgau</name>
+			<desc>geradeaus weiter auf Risser Strasse (mautpflichtig)</desc>
+		</rtept>
+		<rtept lat="47.525440" lon="11.289360">
+			<name>Wallgau</name>
+			<desc>geradeaus weiter auf Risser Strasse</desc>
+		</rtept>
+		<rtept lat="47.526260" lon="11.285780">
+			<name>D 82499 Wallgau</name>
+			<desc>in Wallgau links abbiegen auf B11 Walchenseestrasse</desc>
+		</rtept>
+		<rtept lat="47.524150" lon="11.284450">
+			<name>D 82499 Wallgau</name>
+			<desc>links abbiegen auf B11 Walchenseestrasse</desc>
+		</rtept>
+		<rtept lat="47.509900" lon="11.279270">
+			<name>Krün</name>
+			<desc>D 82499 Wallgau</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.488890" lon="11.274470">
+			<name>AS Mittenwald-Nord</name>
+			<desc>rechts abbiegen auf B2/E533</desc>
+		</rtept>
+		<rtept lat="47.459830" lon="11.276880">
+			<name>Mittenwald</name>
+			<desc>bei AS Mittenwald-Nord halb rechts halten auf ST2542</desc>
+		</rtept>
+		<rtept lat="47.449920" lon="11.266520">
+			<name>Am Schmalensee</name>
+			<desc>in Mittenwald rechts abbiegen auf ST2542</desc>
+		</rtept>
+		<rtept lat="47.464550" lon="11.260860">
+			<name>Am Schmalensee</name>
+			<desc>rechts abbiegen auf ST2542</desc>
+		</rtept>
+		<rtept lat="47.482400" lon="11.240730">
+			<name>Kaltenbrunn</name>
+			<desc>in Klais halb rechts halten auf ST2542</desc>
+		</rtept>
+		<rtept lat="47.485270" lon="11.138280">
+			<name>Kaltenbrunn</name>
+			<desc>links abbiegen auf B2/E533 Hauptstrasse</desc>
+		</rtept>
+		<rtept lat="47.519190" lon="11.109650">
+			<name>Farchant</name>
+			<desc>halb rechts halten auf Hauptstrasse</desc>
+		</rtept>
+		<rtept lat="47.531900" lon="11.112770">
+			<name>Oberau</name>
+			<desc>D 82490 Farchant</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.547400" lon="11.124270">
+			<name>Oberau</name>
+			<desc>geradeaus weiter auf B2/B23/E533</desc>
+		</rtept>
+		<rtept lat="47.561040" lon="11.109920">
+			<name>Ettal</name>
+			<desc>in Oberau links halten auf B23 Ettaler Strasse</desc>
+		</rtept>
+		<rtept lat="47.590260" lon="11.072450">
+			<name>D 82487 Oberammergau</name>
+			<desc>in Oberammergau rechts abbiegen auf Ettaler Strasse</desc>
+		</rtept>
+		<rtept lat="47.595510" lon="11.066120">
+			<name>D 82487 Oberammergau</name>
+			<desc>halb links halten auf Ettaler Strasse</desc>
+		</rtept>
+		<rtept lat="47.596610" lon="11.064890">
+			<name>D 82487 Oberammergau</name>
+			<desc>geradeaus weiter auf Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.598160" lon="11.064380">
+			<name>D 82487 Oberammergau</name>
+			<desc>halb rechts halten auf Sternplatz/Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.598650" lon="11.064150">
+			<name>D 82487 Oberammergau</name>
+			<desc>halb links halten auf Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.598590" lon="11.062930">
+			<name>Unterammergau</name>
+			<desc>D 82487 Oberammergau</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.598810" lon="11.058810">
+			<name>Unterammergau</name>
+			<desc>geradeaus weiter auf Bahnhofstrasse</desc>
+		</rtept>
+		<rtept lat="47.599640" lon="11.052650">
+			<name>Unterammergau</name>
+			<desc>geradeaus weiter auf Rottenbucher Strasse</desc>
+		</rtept>
+		<rtept lat="47.600470" lon="11.049140">
+			<name>Unterammergau</name>
+			<desc>geradeaus weiter auf B23</desc>
+		</rtept>
+		<rtept lat="47.609070" lon="11.030710">
+			<name>Unterammergau</name>
+			<desc>rechts abbiegen auf B23</desc>
+		</rtept>
+		<rtept lat="47.631540" lon="11.029260">
+			<name>Wurmansau</name>
+			<desc>links abbiegen auf Alte Römerstrasse</desc>
+		</rtept>
+		<rtept lat="47.647050" lon="11.021890">
+			<name>Altenau</name>
+			<desc>in Wurmansau geradeaus weiter auf Wurmansauer Strasse</desc>
+		</rtept>
+		<rtept lat="47.649560" lon="11.016550">
+			<name>Mayersäge</name>
+			<desc>in Altenau links abbiegen auf Obere Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.649640" lon="11.015960">
+			<name>Mayersäge</name>
+			<desc>halb links halten auf Obere Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.649360" lon="11.013900">
+			<name>Mayersäge</name>
+			<desc>rechts abbiegen auf Obere Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.649650" lon="11.013620">
+			<name>Mayersäge</name>
+			<desc>geradeaus weiter auf Untere Dorfstrasse</desc>
+		</rtept>
+		<rtept lat="47.650400" lon="11.013490">
+			<name>Mayersäge</name>
+			<desc>geradeaus weiter auf Unternoggstrasse</desc>
+		</rtept>
+		<rtept lat="47.649830" lon="11.003570">
+			<name>Mayersäge</name>
+			<desc>halb links halten auf Unternoggstrasse</desc>
+		</rtept>
+		<rtept lat="47.648700" lon="10.983970">
+			<name>Unternogg</name>
+			<desc>in Mayersäge geradeaus weiter auf Unternogg</desc>
+		</rtept>
+		<rtept lat="47.646730" lon="10.970420">
+			<name>Morgenbach</name>
+			<desc>in Unternogg geradeaus weiter auf Schächen</desc>
+		</rtept>
+		<rtept lat="47.658070" lon="10.973450">
+			<name>Morgenbach</name>
+			<desc>rechts abbiegen auf Schächen</desc>
+		</rtept>
+		<rtept lat="47.669900" lon="10.965560">
+			<name>Morgenbach</name>
+			<desc>links abbiegen auf Schächen</desc>
+		</rtept>
+		<rtept lat="47.674110" lon="10.966460">
+			<name>Morgenbach</name>
+			<desc>rechts abbiegen auf Schächen</desc>
+		</rtept>
+		<rtept lat="47.682500" lon="10.963260">
+			<name>Morgenbach</name>
+			<desc>links abbiegen auf Schächen</desc>
+		</rtept>
+		<rtept lat="47.695670" lon="10.962950">
+			<name>Morgenbach</name>
+			<desc>geradeaus weiter auf Morgenbach  (WM17)</desc>
+		</rtept>
+		<rtept lat="47.703630" lon="10.959700">
+			<name>Schwaig</name>
+			<desc>in Morgenbach links abbiegen auf Morgenbach (WM17)</desc>
+		</rtept>
+		<rtept lat="47.705400" lon="10.941980">
+			<name>Wildsteig</name>
+			<desc>in Schwaig links abbiegen auf ST2059</desc>
+		</rtept>
+		<rtept lat="47.702230" lon="10.888120">
+			<name>Steingaden</name>
+			<desc>halb rechts halten auf Steingadener Strasse (ST2059)</desc>
+		</rtept>
+		<rtept lat="47.704690" lon="10.863550">
+			<name>Riesen</name>
+			<desc>in Steingaden rechts abbiegen auf B17 Schongauer Strasse</desc>
+		</rtept>
+		<rtept lat="47.705850" lon="10.865950">
+			<name>Riesen</name>
+			<desc>links abbiegen auf Grubfeldweg</desc>
+		</rtept>
+		<rtept lat="47.705940" lon="10.865400">
+			<name>Riesen</name>
+			<desc>links abbiegen auf Hochplattstrasse</desc>
+		</rtept>
+		<rtept lat="47.706450" lon="10.864010">
+			<name>Riesen</name>
+			<desc>rechts abbiegen auf Firstbergstrasse</desc>
+		</rtept>
+		<rtept lat="47.707630" lon="10.861680">
+			<name>Riesen</name>
+			<desc>rechts abbiegen auf Riesener Strasse</desc>
+		</rtept>
+		<rtept lat="47.711720" lon="10.858770">
+			<name>Riesen</name>
+			<desc>geradeaus weiter</desc>
+		</rtept>
+		<rtept lat="47.718600" lon="10.860960">
+			<name>Riesen</name>
+			<desc>rechts abbiegen</desc>
+		</rtept>
+		<rtept lat="47.728370" lon="10.861040">
+			<name>Riesen</name>
+			<desc>geradeaus weiter auf Deutenhof</desc>
+		</rtept>
+		<rtept lat="47.738550" lon="10.856720">
+			<name>Riesen</name>
+			<desc>geradeaus weiter</desc>
+		</rtept>
+		<rtept lat="47.746980" lon="10.850480">
+			<name>Riesen</name>
+			<desc>rechts abbiegen auf Riesen</desc>
+		</rtept>
+		<rtept lat="47.753450" lon="10.855570">
+			<name>Riesen</name>
+			<desc>links abbiegen auf Riesen</desc>
+		</rtept>
+		<rtept lat="47.759430" lon="10.858070">
+			<name>Kreut</name>
+			<desc>in Riesen geradeaus weiter auf Stiegl</desc>
+		</rtept>
+		<rtept lat="47.761580" lon="10.860820">
+			<name>Kreut</name>
+			<desc>geradeaus weiter auf Geisenberger</desc>
+		</rtept>
+		<rtept lat="47.761870" lon="10.866510">
+			<name>Kreut</name>
+			<desc>geradeaus weiter auf Oedenhof</desc>
+		</rtept>
+		<rtept lat="47.762180" lon="10.873530">
+			<name>Kreut</name>
+			<desc>rechts abbiegen auf Oedenhof</desc>
+		</rtept>
+		<rtept lat="47.764450" lon="10.880630">
+			<name>Kreut</name>
+			<desc>geradeaus weiter auf Kreut</desc>
+		</rtept>
+		<rtept lat="47.768380" lon="10.875050">
+			<name>Kreut</name>
+			<desc>links abbiegen auf Kreut</desc>
+		</rtept>
+		<rtept lat="47.777190" lon="10.871400">
+			<name>Peiting</name>
+			<desc>in Kreut halb rechts halten auf Kreut</desc>
+		</rtept>
+		<rtept lat="47.780260" lon="10.886740">
+			<name>Peiting</name>
+			<desc>geradeaus weiter</desc>
+		</rtept>
+		<rtept lat="47.785130" lon="10.899930">
+			<name>Peiting</name>
+			<desc>geradeaus weiter auf Kreuter Weg</desc>
+		</rtept>
+		<rtept lat="47.788290" lon="10.913950">
+			<name>Peiting</name>
+			<desc>links abbiegen auf Füssener Strasse</desc>
+		</rtept>
+		<rtept lat="47.796620" lon="10.921220">
+			<name>Schongau</name>
+			<desc>in Peiting geradeaus weiter auf Obere Strasse</desc>
+		</rtept>
+		<rtept lat="47.797780" lon="10.921850">
+			<name>Schongau</name>
+			<desc>geradeaus weiter auf Schongauer Strasse</desc>
+		</rtept>
+		<rtept lat="47.800440" lon="10.920750">
+			<name>Schongau</name>
+			<desc>halb links halten auf Schongauer Strasse</desc>
+		</rtept>
+		<rtept lat="47.810460" lon="10.916410">
+			<name>Schongau</name>
+			<desc>geradeaus weiter auf Peitinger Strasse</desc>
+		</rtept>
+		<rtept lat="47.809990" lon="10.902040">
+			<name>D 86956 Schongau</name>
+			<desc>in Schongau halb rechts halten auf Bahnhofstrasse</desc>
+		</rtept>
+		<rtept lat="47.810510" lon="10.901770">
+			<name>D 86956 Schongau</name>
+			<desc>halb links halten auf Bahnhofstrasse</desc>
+		</rtept>
+		<rtept lat="47.811930" lon="10.901790">
+			<name>D 86956 Schongau</name>
+			<desc>rechts abbiegen auf Bahnhofstrasse</desc>
+		</rtept>
+		<rtept lat="47.813780" lon="10.900410">
+			<name>D 86956 Schongau</name>
+			<desc>halb links halten auf Bahnhofstrasse</desc>
+		</rtept>
+		<rtept lat="47.815560" lon="10.896770">
+			<name>AS Schongau Mitte</name>
+			<desc>D 86956 Schongau</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.817730" lon="10.890680">
+			<name>AS Schongau Mitte</name>
+			<desc>rechts abbiegen auf Altenstädter Strasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.819960" lon="10.887510">
+			<name>AS Schongau Mitte</name>
+			<desc>rechts abbiegen auf Altenstädter Strasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.820950" lon="10.887750">
+			<name>AS Schongau Mitte</name>
+			<desc>links abbiegen auf Altenstädter Strasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.826060" lon="10.883600">
+			<name>AS Schongau Mitte</name>
+			<desc>rechts abbiegen auf Franz-Josef-Strauss-Strasse</desc>
+		</rtept>
+		<rtept lat="47.827990" lon="10.871420">
+			<name>Schwabsoien</name>
+			<desc>in Altenstadt einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.831600" lon="10.854450">
+			<name>Schwabsoien</name>
+			<desc>3. Möglichkeit aus Kreisverkehr ausfahren auf Schwabsoiener Strasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.834330" lon="10.830840">
+			<name>Sachsenried</name>
+			<desc>in Schwabsoien links abbiegen auf Kaufbeurer Strasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.836510" lon="10.811550">
+			<name>Sachsenried</name>
+			<desc>halb links halten auf Kaufbeurer Strasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.834700" lon="10.791670">
+			<name>Stocken</name>
+			<desc>in Sachsenried rechts abbiegen auf Hauptstrasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.870870" lon="10.751980">
+			<name>Stocken</name>
+			<desc>links abbiegen auf Sachsenrieder Forststrasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.890540" lon="10.715150">
+			<name>Thalhofen an der Gennach</name>
+			<desc>in Stöttwang links abbiegen auf Hauptstrasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.892540" lon="10.671520">
+			<name>Thalhofen an der Gennach</name>
+			<desc>halb links halten auf Hauptstrasse (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.883790" lon="10.634490">
+			<name>D 87600 Kaufbeuren</name>
+			<desc>in Kaufbeuren rechts abbiegen auf Am Hang (ST2014)</desc>
+		</rtept>
+		<rtept lat="47.881390" lon="10.626960">
+			<name>D 87600 Kaufbeuren</name>
+			<desc>links abbiegen auf Augsburger Strasse (ST2055)</desc>
+		</rtept>
+		<rtept lat="47.880310" lon="10.624090">
+			<name>Hammerschmiede</name>
+			<desc>D 87600 Kaufbeuren</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="47.882160" lon="10.622180">
+			<name>Hammerschmiede</name>
+			<desc>links abbiegen auf B16 Josef-Landes-Strasse</desc>
+		</rtept>
+		<rtept lat="47.889050" lon="10.613350">
+			<name>Hammerschmiede</name>
+			<desc>rechts abbiegen auf B16 An der Schnelle</desc>
+		</rtept>
+		<rtept lat="47.898890" lon="10.611440">
+			<name>Hammerschmiede</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.904990" lon="10.608120">
+			<name>Hammerschmiede</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf B16 Mindelheimer Strasse</desc>
+		</rtept>
+		<rtept lat="47.914710" lon="10.603780">
+			<name>Hammerschmiede</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="47.963140" lon="10.615360">
+			<name>Hammerschmiede</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf B16 Kemptener Strasse</desc>
+		</rtept>
+		<rtept lat="48.005430" lon="10.610630">
+			<name>Mindelheim</name>
+			<desc>in Bad Wörishofen geradeaus weiter auf ST2015</desc>
+		</rtept>
+		<rtept lat="48.014520" lon="10.608860">
+			<name>Mindelheim</name>
+			<desc>geradeaus weiter auf ST2015</desc>
+		</rtept>
+		<rtept lat="48.019010" lon="10.609120">
+			<name>Mindelheim</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.019990" lon="10.606370">
+			<name>Mindelheim</name>
+			<desc>3. Möglichkeit aus Kreisverkehr ausfahren auf Rudolf-Diesel-Strasse (ST2513)</desc>
+		</rtept>
+		<rtept lat="48.018790" lon="10.596110">
+			<name>Mindelheim</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.030160" lon="10.590900">
+			<name>Mindelheim</name>
+			<desc>1. Möglichkeit aus Kreisverkehr ausfahren auf Kirchdorfer Strasse (ST2513)</desc>
+		</rtept>
+		<rtept lat="48.042600" lon="10.590530">
+			<name>Mindelheim</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.046680" lon="10.523850">
+			<name>Mindelheim</name>
+			<desc>3. Möglichkeit aus Kreisverkehr ausfahren auf B18</desc>
+		</rtept>
+		<rtept lat="48.046880" lon="10.490440">
+			<name>D 87719 Mindelheim</name>
+			<desc>in Mindelheim geradeaus weiter auf Maximilianstrasse</desc>
+		</rtept>
+		<rtept lat="48.046480" lon="10.488960">
+			<name>Westernach</name>
+			<desc>D 87719 Mindelheim</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.046670" lon="10.488700">
+			<name>Westernach</name>
+			<desc>rechts abbiegen auf Lautenstrasse</desc>
+		</rtept>
+		<rtept lat="48.047440" lon="10.487770">
+			<name>Westernach</name>
+			<desc>links abbiegen auf Hungerbachgasse</desc>
+		</rtept>
+		<rtept lat="48.047480" lon="10.487320">
+			<name>Westernach</name>
+			<desc>rechts abbiegen auf Kornstrasse</desc>
+		</rtept>
+		<rtept lat="48.047600" lon="10.486690">
+			<name>Westernach</name>
+			<desc>links abbiegen auf Kirchgasse</desc>
+		</rtept>
+		<rtept lat="48.047720" lon="10.485780">
+			<name>Westernach</name>
+			<desc>rechts abbiegen auf Gerberstrasse</desc>
+		</rtept>
+		<rtept lat="48.047820" lon="10.485530">
+			<name>Westernach</name>
+			<desc>links abbiegen auf Teckstrasse</desc>
+		</rtept>
+		<rtept lat="48.048060" lon="10.485230">
+			<name>Westernach</name>
+			<desc>rechts abbiegen auf Hermelestrasse</desc>
+		</rtept>
+		<rtept lat="48.073640" lon="10.467780">
+			<name>Westernach</name>
+			<desc>links abbiegen auf Westernacher Strasse (MN25)</desc>
+		</rtept>
+		<rtept lat="48.106180" lon="10.437670">
+			<name>Pfaffenhausen</name>
+			<desc>in Oberrieden rechts abbiegen auf Hauptstrasse (ST2037)</desc>
+		</rtept>
+		<rtept lat="48.120120" lon="10.455890">
+			<name>Kirchheim in Schwaben</name>
+			<desc>in Pfaffenhausen geradeaus weiter auf B16 Hauptstrasse</desc>
+		</rtept>
+		<rtept lat="48.150060" lon="10.463960">
+			<name>Kirchheim in Schwaben</name>
+			<desc>links abbiegen auf ST2037</desc>
+		</rtept>
+		<rtept lat="48.173550" lon="10.469910">
+			<name>Kirchheim in Schwaben</name>
+			<desc>rechts abbiegen auf Hasberger Strasse (MN7)</desc>
+		</rtept>
+		<rtept lat="48.172600" lon="10.474440">
+			<name>D 87757 Kirchheim</name>
+			<desc>in Kirchheim in Schwaben rechts abbiegen auf Bahnhofstrasse (ST2025)</desc>
+		</rtept>
+		<rtept lat="48.172570" lon="10.475660">
+			<name>Tiefenried</name>
+			<desc>D 87757 Kirchheim</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.173520" lon="10.470950">
+			<name>Tiefenried</name>
+			<desc>links abbiegen auf Hasberger Strasse (MN7)</desc>
+		</rtept>
+		<rtept lat="48.180120" lon="10.462340">
+			<name>Tiefenried</name>
+			<desc>rechts abbiegen auf ST2037</desc>
+		</rtept>
+		<rtept lat="48.235260" lon="10.494100">
+			<name>Tiefenried</name>
+			<desc>geradeaus weiter auf ST2025</desc>
+		</rtept>
+		<rtept lat="48.282150" lon="10.469290">
+			<name>D 86470 Thannhausen</name>
+			<desc>in Thannhausen links abbiegen auf Christoph-von-Schmid-Strasse</desc>
+		</rtept>
+		<rtept lat="48.282150" lon="10.469290">
+			<name>Münsterhausen</name>
+			<desc>D 86470 Thannhausen</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.286960" lon="10.467180">
+			<name>Münsterhausen</name>
+			<desc>links abbiegen auf Bahnhofstrasse (ST2025)</desc>
+		</rtept>
+		<rtept lat="48.292590" lon="10.463510">
+			<name>Münsterhausen</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.316670" lon="10.449380">
+			<name>Münsterhausen</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf Münsterhauser Strasse (ST2025)</desc>
+		</rtept>
+		<rtept lat="48.341780" lon="10.448870">
+			<name>D 89349 Burtenbach</name>
+			<desc>in Burtenbach halb rechts halten auf Hauptstrasse (ST2025)</desc>
+		</rtept>
+		<rtept lat="48.342010" lon="10.449560">
+			<name>Jettingen</name>
+			<desc>D 89349 Burtenbach</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.359780" lon="10.448620">
+			<name>Jettingen</name>
+			<desc>halb links halten auf Hauptstrasse (ST2025)</desc>
+		</rtept>
+		<rtept lat="48.377870" lon="10.425050">
+			<name>Jettingen</name>
+			<desc>geradeaus weiter auf Wettenhauser Strasse  (GZ17)</desc>
+		</rtept>
+		<rtept lat="48.389450" lon="10.421750">
+			<name>Goldbach</name>
+			<desc>in Jettingen einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.388500" lon="10.384760">
+			<name>Goldbach</name>
+			<desc>3. Möglichkeit aus Kreisverkehr ausfahren auf Wettenhauser Strasse (GZ17)</desc>
+		</rtept>
+		<rtept lat="48.408640" lon="10.374870">
+			<name>Kleinbeuren</name>
+			<desc>rechts abbiegen auf Ettenbeurer Strasse (ST2024)</desc>
+		</rtept>
+		<rtept lat="48.434610" lon="10.380460">
+			<name>Offingen</name>
+			<desc>in Unterknöringen links abbiegen auf B10 Zollberg</desc>
+		</rtept>
+		<rtept lat="48.454080" lon="10.381710">
+			<name>Offingen</name>
+			<desc>rechts abbiegen auf Josef-Zech-Strasse (ST2024)</desc>
+		</rtept>
+		<rtept lat="48.481240" lon="10.374020">
+			<name>bei D 89344 Aislingen/Rieder</name>
+			<desc>in Offingen rechts abbiegen auf Günzburger Strasse (ST2028)</desc>
+		</rtept>
+		<rtept lat="48.503010" lon="10.398750">
+			<name>bei D 89344 Aislingen/Rieder</name>
+			<desc>links abbiegen auf ST2025</desc>
+		</rtept>
+		<rtept lat="48.508880" lon="10.412210">
+			<name>bei D 89344 Aislingen/Rieder</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.509760" lon="10.421700">
+			<name>bei D 89344 Aislingen/Rieder</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf ST2028</desc>
+		</rtept>
+		<rtept lat="48.511260" lon="10.434340">
+			<name>bei D 89344 Aislingen</name>
+			<desc>bei D 89344 Aislingen/Rieder</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.512150" lon="10.504100">
+			<name>Aislingen</name>
+			<desc>bei D 89344 Aislingen</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.520260" lon="10.549500">
+			<name>Eppisburg</name>
+			<desc>bei D 89438 Holzheim</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.520520" lon="10.560060">
+			<name>bei D 86637 Villenbach/Riedsend</name>
+			<desc>in Eppisburg links abbiegen auf Ritter-von-Eppo-Strasse (ST2028)</desc>
+		</rtept>
+		<rtept lat="48.528280" lon="10.573120">
+			<name>bei D 86637 Villenbach/Riedsend</name>
+			<desc>rechts abbiegen auf Ritter-von-Eppo-Strasse (ST2028)</desc>
+		</rtept>
+		<rtept lat="48.545280" lon="10.614290">
+			<name>Binswangen</name>
+			<desc>bei D 86637 Villenbach/Riedsend</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.556900" lon="10.638630">
+			<name>Höchstädt an der Donau</name>
+			<desc>D 86637 Binswangen</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.558530" lon="10.639650">
+			<name>Höchstädt an der Donau</name>
+			<desc>in Binswangen links abbiegen auf Dillinger Strasse</desc>
+		</rtept>
+		<rtept lat="48.563060" lon="10.635990">
+			<name>Höchstädt an der Donau</name>
+			<desc>geradeaus weiter auf ST2033</desc>
+		</rtept>
+		<rtept lat="48.565310" lon="10.632990">
+			<name>Höchstädt an der Donau</name>
+			<desc>links abbiegen auf ST2033</desc>
+		</rtept>
+		<rtept lat="48.590320" lon="10.609040">
+			<name>Höchstädt an der Donau</name>
+			<desc>rechts abbiegen auf ST2212</desc>
+		</rtept>
+		<rtept lat="48.604610" lon="10.588930">
+			<name>Höchstädt an der Donau</name>
+			<desc>geradeaus weiter auf Wertinger Strasse (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.607350" lon="10.582190">
+			<name>Höchstädt an der Donau</name>
+			<desc>geradeaus weiter auf Wertinger Strasse (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.610830" lon="10.571860">
+			<name>D 89420 Höchstädt</name>
+			<desc>in Höchstädt an der Donau links abbiegen auf Wertinger Strasse (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.611490" lon="10.567460">
+			<name>Unterliezheim</name>
+			<desc>D 89420 Höchstädt</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.612810" lon="10.567140">
+			<name>Unterliezheim</name>
+			<desc>rechts abbiegen auf B16 Friedrich-von-Teck-Strasse</desc>
+		</rtept>
+		<rtept lat="48.615840" lon="10.564370">
+			<name>Unterliezheim</name>
+			<desc>links abbiegen auf Lutzinger Strasse (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.616420" lon="10.563310">
+			<name>Unterliezheim</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.617750" lon="10.561750">
+			<name>Unterliezheim</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf Lutzinger Strasse (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.620700" lon="10.561040">
+			<name>Unterliezheim</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.657960" lon="10.546750">
+			<name>Unterliezheim</name>
+			<desc>3. Möglichkeit aus Kreisverkehr ausfahren auf An der Kohlplatte (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.682740" lon="10.550840">
+			<name>D 89440 Lutzingen/Unterliezheim</name>
+			<desc>in Unterliezheim rechts abbiegen auf ST2212</desc>
+		</rtept>
+		<rtept lat="48.685340" lon="10.548650">
+			<name>D 89440 Lutzingen/Unterliezheim</name>
+			<desc>links abbiegen auf Bissinger Strasse (DLG26)</desc>
+		</rtept>
+		<rtept lat="48.685270" lon="10.545730">
+			<name>D 89440 Lutzingen/Unterliezheim</name>
+			<desc>rechts abbiegen auf Nördlinger Strasse</desc>
+		</rtept>
+		<rtept lat="48.685960" lon="10.545990">
+			<name>Diemantstein</name>
+			<desc>D 89440 Lutzingen/Unterliezheim</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.685340" lon="10.548650">
+			<name>Diemantstein</name>
+			<desc>links abbiegen auf Bissinger Strasse (DLG26)</desc>
+		</rtept>
+		<rtept lat="48.697820" lon="10.547810">
+			<name>Diemantstein</name>
+			<desc>links abbiegen auf ST2212</desc>
+		</rtept>
+		<rtept lat="48.713010" lon="10.555030">
+			<name>Diemantstein</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.715710" lon="10.547230">
+			<name>Diemantstein</name>
+			<desc>3. Möglichkeit aus Kreisverkehr ausfahren auf ST2212</desc>
+		</rtept>
+		<rtept lat="48.753980" lon="10.539750">
+			<name>Thalheim</name>
+			<desc>in Diemantstein links abbiegen auf Diemantstein (ST2212)</desc>
+		</rtept>
+		<rtept lat="48.797370" lon="10.526250">
+			<name>Nördlingen</name>
+			<desc>D 86745 Hohenaltheim</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.821860" lon="10.524810">
+			<name>Nördlingen</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.825400" lon="10.519310">
+			<name>Nördlingen</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf ST2212</desc>
+		</rtept>
+		<rtept lat="48.828600" lon="10.513930">
+			<name>Nördlingen</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.836290" lon="10.500350">
+			<name>Nördlingen</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf ST2212</desc>
+		</rtept>
+		<rtept lat="48.848230" lon="10.493160">
+			<name>D 86720 Nördlingen</name>
+			<desc>in Nördlingen links abbiegen auf Augsburger Strasse</desc>
+		</rtept>
+		<rtept lat="48.848630" lon="10.492120">
+			<name>D 86720 Nördlingen</name>
+			<desc>geradeaus weiter auf Reimlinger Strasse</desc>
+		</rtept>
+		<rtept lat="48.848890" lon="10.491850">
+			<name>D 86720 Nördlingen</name>
+			<desc>rechts abbiegen auf An der Reimlinger Mauer</desc>
+		</rtept>
+		<rtept lat="48.849720" lon="10.491490">
+			<name>D 86720 Nördlingen</name>
+			<desc>links abbiegen auf Münzgasse</desc>
+		</rtept>
+		<rtept lat="48.850910" lon="10.491310">
+			<name>D 86720 Nördlingen</name>
+			<desc>rechts abbiegen auf Drehergasse</desc>
+		</rtept>
+		<rtept lat="48.852530" lon="10.490980">
+			<name>D 86720 Nördlingen</name>
+			<desc>geradeaus weiter auf Bei den Kornschrannen</desc>
+		</rtept>
+		<rtept lat="48.852600" lon="10.490440">
+			<name>D 86720 Nördlingen</name>
+			<desc>links abbiegen auf Löpsinger Strasse</desc>
+		</rtept>
+		<rtept lat="48.852670" lon="10.488660">
+			<name>D 86720 Nördlingen</name>
+			<desc>geradeaus weiter auf Hafenmarkt</desc>
+		</rtept>
+		<rtept lat="48.852670" lon="10.488660">
+			<name>Löpsingen</name>
+			<desc>D 86720 Nördlingen</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.853150" lon="10.491350">
+			<name>Löpsingen</name>
+			<desc>geradeaus weiter auf Löpsinger Strasse</desc>
+		</rtept>
+		<rtept lat="48.854910" lon="10.493210">
+			<name>Löpsingen</name>
+			<desc>geradeaus weiter auf Nürnberger Strasse</desc>
+		</rtept>
+		<rtept lat="48.860270" lon="10.501270">
+			<name>Löpsingen</name>
+			<desc>geradeaus weiter auf Nürnberger Strasse</desc>
+		</rtept>
+		<rtept lat="48.865570" lon="10.517710">
+			<name>Löpsingen</name>
+			<desc>einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="48.872960" lon="10.541880">
+			<name>Löpsingen</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf B466</desc>
+		</rtept>
+		<rtept lat="48.897830" lon="10.554270">
+			<name>bei D 86732 Oettingen/Mörsbrunn</name>
+			<desc>bei D 86720 Nördlingen/Pfäfflingen</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.947100" lon="10.598300">
+			<name>Oettingen in Bayern</name>
+			<desc>bei D 86732 Oettingen/Mörsbrunn</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.963930" lon="10.614220">
+			<name>bei D 86732 Oettingen/Siegenhofen</name>
+			<desc>halb links halten auf ST2221</desc>
+		</rtept>
+		<rtept lat="48.977230" lon="10.624240">
+			<name>Wachfeld</name>
+			<desc>bei D 86732 Oettingen/Siegenhofen</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="48.986330" lon="10.637600">
+			<name>Wachfeld</name>
+			<desc>rechts abbiegen auf Wachfeld</desc>
+		</rtept>
+		<rtept lat="48.981970" lon="10.638930">
+			<name>bei D 86736 Auhausen/Wachfeld</name>
+			<desc>in Wachfeld geradeaus weiter auf B466</desc>
+		</rtept>
+		<rtept lat="48.980400" lon="10.640010">
+			<name>bei D 86736 Auhausen/Wachfeld</name>
+			<desc>rechts abbiegen auf B466</desc>
+		</rtept>
+		<rtept lat="48.991110" lon="10.647520">
+			<name>Westheim</name>
+			<desc>bei D 86736 Auhausen/Wachfeld</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="49.006520" lon="10.663780">
+			<name>bei D 91747 Westheim/Ostheim</name>
+			<desc>in Westheim rechts abbiegen auf B466 Hauptstrasse</desc>
+		</rtept>
+		<rtept lat="49.028000" lon="10.693330">
+			<name>Ostheim</name>
+			<desc>bei D 91747 Westheim/Ostheim</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="49.083380" lon="10.716930">
+			<name>Gnotzheim</name>
+			<desc>bei D 91728 Gnotzheim/Spielberg</desc>
+			<sym>8284</sym>
+		</rtept>
+		<rtept lat="49.127860" lon="10.770960">
+			<name>Thannhausen</name>
+			<desc>halb rechts halten auf Nürnberger Strasse  (ST2222)</desc>
+		</rtept>
+		<rtept lat="49.113950" lon="10.859460">
+			<name>Thannhausen</name>
+			<desc>in Gunzenhausen links abbiegen auf ST2222</desc>
+		</rtept>
+		<rtept lat="49.102630" lon="10.958630">
+			<name>Sankt Veit</name>
+			<desc>links abbiegen auf WUG3</desc>
+		</rtept>
+		<rtept lat="49.103570" lon="10.963860">
+			<name>Pleinfeld</name>
+			<desc>links abbiegen auf Nordring (WUG3)</desc>
+		</rtept>
+		<rtept lat="49.107100" lon="10.977800">
+			<name>Pleinfeld</name>
+			<desc>halb rechts halten auf Nordring (WUG3)</desc>
+		</rtept>
+		<rtept lat="49.111670" lon="10.988730">
+			<name>Böschleinsmühle</name>
+			<desc>in Pleinfeld rechts abbiegen auf WUG18</desc>
+		</rtept>
+		<rtept lat="49.154150" lon="11.010490">
+			<name>Böschleinsmühle</name>
+			<desc>links abbiegen auf ST2224</desc>
+		</rtept>
+		<rtept lat="49.196320" lon="11.018760">
+			<name>Rittersbach</name>
+			<desc>in Georgensgmünd einfahren in Kreisverkehr</desc>
+		</rtept>
+		<rtept lat="49.208020" lon="11.017920">
+			<name>Rittersbach</name>
+			<desc>2. Möglichkeit aus Kreisverkehr ausfahren auf ST2224</desc>
+		</rtept>
+		<rtept lat="49.219370" lon="11.026230">
+			<name>D 91166 Georgensgmünd/Rittersbach</name>
+			<desc>in Rittersbach links abbiegen auf Ritterstrasse (ST2224)</desc>
+		</rtept>
+		<rtept lat="49.221100" lon="11.025390">
+			<name>D 91166 Georgensgmünd/Rittersbach</name>
+			<desc>D 91166 Georgensgmünd/Rittersbach</desc>
+			<sym>8286</sym>
+		</rtept>
+	</rte>
+</gpx>

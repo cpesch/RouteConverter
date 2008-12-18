@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+xmlns="http://www.topografix.com/GPX/1/0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd" version="1.0"
+creator="NH-Top50Trans">
+
+<wpt lat="53.569488" lon="10.032004">
+  <name>Hamburg/Uhlenhorst</name>
+  <desc>Finkenau D 22081 Hamburg/Uhlenhorst</desc>
+</wpt>
+
+<wpt lat="53.571977" lon="10.244109">
+  <name>Barsbüttel/Stemwarde</name>
+  <desc> bei D 22885 Barsbüttel/Stemwarde</desc>
+</wpt>
+
+<wpt lat="53.613616" lon="10.328655">
+  <name>Großensee/Schwarzekate</name>
+  <desc> bei D 22946 Großensee/Schwarzekate</desc>
+</wpt>
+
+<wpt lat="53.615558" lon="10.340867">
+  <name>Großensee</name>
+  <desc>@ D 22946 Großensee</desc>
+</wpt>
+
+<wpt lat="53.631852" lon="10.351039">
+  <name>Lütjensee/Schloßberg</name>
+  <desc> bei D 22952 Lütjensee/Schloßberg</desc>
+</wpt>
+
+<wpt lat="53.634855" lon="10.382290">
+  <name>Lütjensee/Bollmoor</name>
+  <desc> bei D 22952 Lütjensee/Bollmoor</desc>
+</wpt>
+
+<wpt lat="53.641743" lon="10.408317">
+  <name>Grönwohld</name>
+  <desc> bei D 22956 Grönwohld</desc>
+</wpt>
+
+<wpt lat="53.643524" lon="10.463481">
+  <name>Linau</name>
+  <desc> bei D 22959 Linau</desc>
+</wpt>
+
+<wpt lat="53.638257" lon="10.478706">
+  <name>Trittau/Vogelfängerkaten</name>
+  <desc> bei D 22946 Trittau/Vogelfängerkaten</desc>
+</wpt>
+
+<wpt lat="53.629197" lon="10.490883">
+  <name>Trittau/Vogelfängerkaten</name>
+  <desc> bei D 22946 Trittau/Vogelfängerkaten</desc>
+</wpt>
+
+<wpt lat="53.618076" lon="10.508078">
+  <name>Köthel; Kr Hzgt Lauenburg</name>
+  <desc> bei D 22929 Köthel; Kr Hzgt Lauenburg</desc>
+</wpt>
+
+<wpt lat="53.611925" lon="10.512395">
+  <name>Köthel; Kr Hzgt Lauenburg</name>
+  <desc> bei D 22929 Köthel; Kr Hzgt Lauenburg</desc>
+</wpt>
+
+<wpt lat="53.613461" lon="10.551776">
+  <name>Borstorf</name>
+  <desc> bei D 23881 Borstorf</desc>
+</wpt>
+
+<wpt lat="53.616379" lon="10.570221">
+  <name>Borstorf</name>
+  <desc> bei D 23881 Borstorf</desc>
+</wpt>
+
+<wpt lat="53.616294" lon="10.585888">
+  <name>Breitenfelde/Neuenlande</name>
+  <desc> bei D 23881 Breitenfelde/Neuenlande</desc>
+</wpt>
+
+<wpt lat="53.617436" lon="10.601671">
+  <name>Bälau/Uhlenbusch</name>
+  <desc> bei D 23881 Bälau/Uhlenbusch</desc>
+</wpt>
+
+<wpt lat="53.618401" lon="10.617373">
+  <name>Bälau</name>
+  <desc> bei D 23881 Bälau</desc>
+</wpt>
+
+<wpt lat="53.617900" lon="10.642302">
+  <name>Alt Mölln</name>
+  <desc> bei D 23881 Alt Mölln</desc>
+</wpt>
+
+<wpt lat="53.621820" lon="10.660819">
+  <name>Alt Mölln</name>
+  <desc> bei D 23881 Alt Mölln</desc>
+</wpt>
+
+<wpt lat="53.636166" lon="10.703663">
+  <name>Nusse/Donnerschleuse</name>
+  <desc> bei D 23896 Nusse/Donnerschleuse</desc>
+</wpt>
+
+<wpt lat="53.662648" lon="10.759097">
+  <name>Schmilau</name>
+  <desc>@ D 23911 Schmilau</desc>
+</wpt>
+
+<wpt lat="53.699375" lon="10.764025">
+  <name>Ratzeburg</name>
+  <desc> bei D 23909 Ratzeburg</desc>
+</wpt>
+
+<wpt lat="53.712938" lon="10.697880">
+  <name>Kulpin</name>
+  <desc> bei D 23911 Kulpin</desc>
+</wpt>
+
+<wpt lat="53.734031" lon="10.637904">
+  <name>Berkenthin</name>
+  <desc> bei D 23919 Berkenthin</desc>
+</wpt>
+
+<wpt lat="53.748674" lon="10.570455">
+  <name>Kastorf</name>
+  <desc> bei D 23847 Kastorf</desc>
+</wpt>
+
+<wpt lat="53.749631" lon="10.526038">
+  <name>Siebenbäumen</name>
+  <desc>@ D 23847 Siebenbäumen</desc>
+</wpt>
+
+<wpt lat="53.735521" lon="10.508303">
+  <name>Steinhorst/Im Busch</name>
+  <desc> bei D 23847 Steinhorst/Im Busch</desc>
+</wpt>
+
+<wpt lat="53.722507" lon="10.475037">
+  <name>Steinhorst</name>
+  <desc> bei D 23847 Steinhorst</desc>
+</wpt>
+
+<wpt lat="53.733451" lon="10.434703">
+  <name>Stubben</name>
+  <desc> bei D 23847 Stubben</desc>
+</wpt>
+
+<wpt lat="53.721549" lon="10.404503">
+  <name>Steinburg</name>
+  <desc> bei D 22964 Steinburg</desc>
+</wpt>
+
+<wpt lat="53.741803" lon="10.374259">
+  <name>Lasbek/Barkhorst</name>
+  <desc> bei D 23847 Lasbek/Barkhorst</desc>
+</wpt>
+
+<wpt lat="53.756996" lon="10.366921">
+  <name>Rümpel/Buddikate</name>
+  <desc> bei D 23843 Rümpel/Buddikate</desc>
+</wpt>
+
+<wpt lat="53.759750" lon="10.342990">
+  <name>Tremsbüttel/Kupfermühle</name>
+  <desc> bei D 22967 Tremsbüttel/Kupfermühle</desc>
+</wpt>
+
+<wpt lat="53.753535" lon="10.313789">
+  <name>Tremsbüttel/Wulfskuhle</name>
+  <desc> bei D 22967 Tremsbüttel/Wulfskuhle</desc>
+</wpt>
+
+<wpt lat="53.742021" lon="10.315111">
+  <name>A21/Tremsbüttel (18)</name>
+  <desc> bei D  A21/Tremsbüttel (18)</desc>
+</wpt>
+
+<wpt lat="53.744340" lon="10.332567">
+  <name>Lasbek/Lasbek; Gut</name>
+  <desc> bei D 23847 Lasbek/Lasbek; Gut</desc>
+</wpt>
+
+<wpt lat="53.729413" lon="10.361309">
+  <name>Lasbek</name>
+  <desc> bei D 23847 Lasbek</desc>
+</wpt>
+
+<wpt lat="53.694396" lon="10.348008">
+  <name>Todendorf</name>
+  <desc> bei D 22965 Todendorf</desc>
+</wpt>
+
+<wpt lat="53.677913" lon="10.337405">
+  <name>Oetjendorf</name>
+  <desc> bei D 22961 Oetjendorf</desc>
+</wpt>
+
+<wpt lat="53.664892" lon="10.319185">
+  <name>Hoisdorf/Anschlag</name>
+  <desc> bei D 22955 Hoisdorf/Anschlag</desc>
+</wpt>
+
+<wpt lat="53.646584" lon="10.316370">
+  <name>Hoisdorf/Kreuz</name>
+  <desc> bei D 22955 Hoisdorf/Kreuz</desc>
+</wpt>
+
+<wpt lat="53.641461" lon="10.315480">
+  <name>Siek/Baumkaten</name>
+  <desc> bei D 22962 Siek/Baumkaten</desc>
+</wpt>
+
+<wpt lat="53.630039" lon="10.292880">
+  <name>Siek</name>
+  <desc> bei D 22962 Siek</desc>
+</wpt>
+
+<wpt lat="53.616753" lon="10.237445">
+  <name>A1/B435/Stapelfeld (29)</name>
+  <desc> bei D  A1/B435/Stapelfeld (29)</desc>
+</wpt>
+
+<wpt lat="53.613803" lon="10.161219">
+  <name>Hamburg</name>
+  <desc> bei D 22143 Hamburg</desc>
+</wpt>
+
+<wpt lat="53.569488" lon="10.032004">
+  <name>Hamburg/Uhlenhorst</name>
+  <desc>Finkenau D 22081 Hamburg/Uhlenhorst</desc>
+</wpt>
+
+
+</gpx>

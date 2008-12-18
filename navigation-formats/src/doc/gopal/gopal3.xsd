@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="tour">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="options">
+          <xs:complexType>
+            <xs:attribute name="Type" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="Mode" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="TollRoad" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="Ferries" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="Tunnels" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="TTIMode" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="MotorWays" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="VehicleSpeedMotorway" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="VehicleSpeedNonMotorway" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="PedestrianSpeed" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="VehicleSpeedInPedestrianArea" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="CyclistSpeed" type="xs:unsignedByte" use="required" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element maxOccurs="unbounded" name="dest">
+          <xs:complexType>
+            <xs:attribute name="Country" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="City" type="xs:string" use="required" />
+            <xs:attribute name="Zip" type="xs:string" use="required" />
+            <xs:attribute name="Latitude" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="Longitude" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="StartPos" type="xs:unsignedByte" use="optional" />
+            <xs:attribute name="Street" type="xs:string" use="optional" />
+            <xs:attribute name="House" type="xs:unsignedByte" use="optional" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

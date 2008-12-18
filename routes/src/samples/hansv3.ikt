@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Root FileFormat="IK3D-Project-File" >
+ <Info>
+  <ProductVersion>
+   <Version>3.0.0</Version>
+   <FileFormatVersion>2.0000000000</FileFormatVersion>
+  </ProductVersion>
+  <Language>German</Language>
+ </Info>
+ <Header>
+  <Projectname>Undefiniert</Projectname>
+  <countOfObjects>1</countOfObjects>
+  <description><![CDATA[keine Beschreibung vorhanden]]></description>
+ </Header>
+ <Content>
+  <MMGeoObjects>
+   <count>1</count>
+   <MMGeoObject>
+    <INDEX>0</INDEX>
+    <GeoObjectType>1</GeoObjectType>
+    <Name>Linie</Name>
+    <Remark></Remark>
+    <Link></Link>
+    <Priority>1</Priority>
+    <ID>490277872795909573</ID>
+    <Locked>False</Locked>
+    <PathWidthFactor>0.6300000000</PathWidthFactor>
+    <PathDrawType>5</PathDrawType>
+    <PathPoints>
+     <count>23</count>
+     <Point>
+      <INDEX>0</INDEX>
+      <GeoPosition X="8.7520326777" Y="50.1846255874" />
+     </Point>
+     <Point>
+      <INDEX>1</INDEX>
+      <GeoPosition X="8.7539915399" Y="50.1821574393" />
+     </Point>
+     <Point>
+      <INDEX>2</INDEX>
+      <GeoPosition X="8.7577580864" Y="50.1820934135" />
+     </Point>
+     <Point>
+      <INDEX>3</INDEX>
+      <GeoPosition X="8.7580629303" Y="50.1827233606" />
+     </Point>
+     <Point>
+      <INDEX>4</INDEX>
+      <GeoPosition X="8.7607229578" Y="50.1827558267" />
+     </Point>
+     <Point>
+      <INDEX>5</INDEX>
+      <GeoPosition X="8.7652969347" Y="50.1836461727" />
+     </Point>
+     <Point>
+      <INDEX>6</INDEX>
+      <GeoPosition X="8.7661368710" Y="50.1836748328" />
+     </Point>
+     <Point>
+      <INDEX>7</INDEX>
+      <GeoPosition X="8.7667580299" Y="50.1826242261" />
+     </Point>
+     <Point>
+      <INDEX>8</INDEX>
+      <GeoPosition X="8.7686169783" Y="50.1832842178" />
+     </Point>
+     <Point>
+      <INDEX>9</INDEX>
+      <GeoPosition X="8.7774937153" Y="50.1832835325" />
+     </Point>
+     <Point>
+      <INDEX>10</INDEX>
+      <GeoPosition X="8.7808933010" Y="50.1838743386" />
+     </Point>
+     <Point>
+      <INDEX>11</INDEX>
+      <GeoPosition X="8.7811733732" Y="50.1807912300" />
+     </Point>
+     <Point>
+      <INDEX>12</INDEX>
+      <GeoPosition X="8.7688298270" Y="50.1797874556" />
+     </Point>
+     <Point>
+      <INDEX>13</INDEX>
+      <GeoPosition X="8.7614700708" Y="50.1789185464" />
+     </Point>
+     <Point>
+      <INDEX>14</INDEX>
+      <GeoPosition X="8.7615678160" Y="50.1761497651" />
+     </Point>
+     <Point>
+      <INDEX>15</INDEX>
+      <GeoPosition X="8.7550002098" Y="50.1765496826" />
+     </Point>
+     <Point>
+      <INDEX>16</INDEX>
+      <GeoPosition X="8.7541936138" Y="50.1782381405" />
+     </Point>
+     <Point>
+      <INDEX>17</INDEX>
+      <GeoPosition X="8.7541814648" Y="50.1806115270" />
+     </Point>
+     <Point>
+      <INDEX>18</INDEX>
+      <GeoPosition X="8.7525007889" Y="50.1807338299" />
+     </Point>
+     <Point>
+      <INDEX>19</INDEX>
+      <GeoPosition X="8.7522687143" Y="50.1822976302" />
+     </Point>
+     <Point>
+      <INDEX>20</INDEX>
+      <GeoPosition X="8.7513807105" Y="50.1834464824" />
+     </Point>
+     <Point>
+      <INDEX>21</INDEX>
+      <GeoPosition X="8.7510821207" Y="50.1843268833" />
+     </Point>
+     <Point>
+      <INDEX>22</INDEX>
+      <GeoPosition X="8.7517258091" Y="50.1844001789" />
+     </Point>
+    </PathPoints>
+    <PathDrawable2D>
+     <PathColor Blue="0.0000" Red="1.0000" Green="0.0000" />
+     <PointColor Blue="0.0000" Red="1.0000" Green="1.0000" />
+     <MarkingColor Blue="1.0000" Red="1.0000" Green="0.0000" />
+     <Alpha>1.0000000000</Alpha>
+     <Antialiasing>False</Antialiasing>
+     <CirclePieces>12</CirclePieces>
+    </PathDrawable2D>
+    <PathDrawable3D>
+     <PathColor Blue="0.0000" Red="1.0000" Green="0.0000" />
+     <PointColor Blue="0.0000" Red="1.0000" Green="1.0000" />
+     <MarkingColor Blue="1.0000" Red="1.0000" Green="0.0000" />
+     <Alpha>1.0000000000</Alpha>
+     <Antialiasing>False</Antialiasing>
+    </PathDrawable3D>
+   </MMGeoObject>
+  </MMGeoObjects>
+ </Content>
+</Root>

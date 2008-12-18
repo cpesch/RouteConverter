@@ -1,0 +1,92 @@
+[4]
+Name = Elbchaussee
+AreaId = 1003
+City = Hamburg
+Longitude = 1102356
+ZipCode = 22763
+Latitude = 7076731
+PositionInList = 4
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Street = Elbchaussee
+Description = In erster Linie: die Hauptverkehrsstraße zwischen City und den westl. Vororten. In zweiter Linie: Hamburgs vornehmste Adresse. Zur Elbe hin liegt die Schokoladenseite. Die anderen müssen sich mit ihren vielen Bäumen trösten.
+Assembly = FalkNavigator
+PoiId = 142124
+[0]
+Name = Chilehaus & Sprinkenhof
+AreaId = 1003
+City = Hamburg
+Longitude = 1112129
+ZipCode = 20095
+Latitude = 7077048
+PositionInList = 0
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Street = Pumpen
+Description = Das expressionistische Backsteingemäuer mit seiner schiffsbugartig zulaufenden Spitze liegt mitten im Kontorhausviertel. Der Name hat übrigens mit den Geschäften des Bauherrn zu tun: Henry B. Sloman war durch den Import von Chile-Salpeter reich geworden.
+Assembly = FalkNavigator
+PoiId = 42507
+[1]
+Name = Speicherstadt
+AreaId = 1003
+City = Hamburg
+Longitude = 1111691
+ZipCode = 20457
+Latitude = 7076429
+PositionInList = 1
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Street = Bei Sankt Annen
+Description = Per Barkasse oder per Alsterdampfer lässt sich die Speicherstadt besichtigen. Die Backsteingebäude im neugotischen Stil gehören zum Gebiet des Freihafens, der als Zollausland deklariert ist.|Insider-Tipp: Einen guten Überblick gibt es im Infocenter im Kesselhaus, eine wirklich sehenswerte Einrichtung.
+Assembly = FalkNavigator
+PoiId = 42513
+[2]
+Name = Sankt Michaeliskirche
+AreaId = 1003
+City = Hamburg
+Longitude = 1109524
+ZipCode = 20459
+Latitude = 7077155
+PositionInList = 2
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Street = Krayenkamp
+Description = Der 132 m hohe "Michel" ist das Wahrzeichen der Stadt. Die mehrfach niedergebrannte Kirche wurde immer wieder aufgebaut. Das Zifferblatt der größten Turmuhr Deutschlands hat einen Durchmesser von 8 m, die Ziffern sind 1,35 m hoch.
+Assembly = FalkNavigator
+PoiId = 42535
+HouseNo = 4c
+[3]
+Name = Fischauktionshalle
+AreaId = 1003
+City = Hamburg
+Longitude = 1106638
+ZipCode = 22767
+Latitude = 7076625
+PositionInList = 3
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Street = Fischmarkt
+Description = Für die stolze Summe von 3,5 Mio. Euro restauriertes Gebäude am Hafen. Dient Veranstaltungzwecken. Sonntags regelmäßig Jazzfrühschoppen.
+Assembly = FalkNavigator
+PoiId = 142044
+[TOUR]
+Name = Hamburg Hansetour 2007
+[5]
+Name = Övelgönne
+AreaId = 1003
+City = Hamburg
+Longitude = 1099698
+ZipCode = 20095
+Latitude = 7076509
+PositionInList = 5
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Description = Der Name Övelgönne kommt angeblich von dem Spruch "übel gegönntes Brot schmeckt am besten". Kleine Fischer- und Kapitänshäuser in schöner Elblage, mit dem Nachteil, dass 1,5 Mio. Hamburger sonntags die Vorgärten abschreiten.
+Assembly = FalkNavigator
+PoiId = 142108
+[6]
+Name = Blankenese
+AreaId = 1003
+City = Hamburg
+Longitude = 1092347
+ZipCode = 20095
+Latitude = 7082052
+PositionInList = 6
+Class = FMI.FalkNavigator.DestinationFCGPOI
+Description = Malerisch schmiegen sich die kleinen Häuschen der alten Fischer- und Kapitänssiedlung an den Elbhang. Über steile Treppen geht's hinunter an die Elbe, wo am Strandweg Cafés und Restaurants auf die im Sommer zahlreiche Kundschaft warten.
+Assembly = FalkNavigator
+PoiId = 142098

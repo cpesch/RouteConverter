@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+version="1.0"
+creator="ITN Converter 1.61 (http://benichougps.blogspot.com)"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://www.topografix.com/GPX/1/0"
+xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/2"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/2 http://www.topografix.com/GPX/Private/TopoGrafix/0/2/topografix.xsd">
+<time>2007-05-13T20:12:00Z</time>
+<bounds minlat="53.569489" minlon="10.032004" maxlat="53.759750" maxlon="10.764026"/>
+<rte>
+  <name>Eis essen in Ratzeburg</name>
+<rtept lat="53.569489" lon="10.032004">
+  <name>D 22081,Hamburg/Uhlenhorst,Finkenau,0,</name>
+</rtept>
+<rtept lat="53.571976" lon="10.244109">
+  <name>bei D 22885,Barsbüttel/Stemwarde,,0,</name>
+</rtept>
+<rtept lat="53.613617" lon="10.328654">
+  <name>bei D 22946,Großensee/Schwarzekate,,0,</name>
+</rtept>
+<rtept lat="53.615559" lon="10.340867">
+  <name>D 22946,Großensee,@,0,</name>
+</rtept>
+<rtept lat="53.631851" lon="10.351039">
+  <name>bei D 22952,Lütjensee/Schloßberg,,0,</name>
+</rtept>
+<rtept lat="53.634853" lon="10.382290">
+  <name>bei D 22952,Lütjensee/Bollmoor,,0,</name>
+</rtept>
+<rtept lat="53.641743" lon="10.408317">
+  <name>bei D 22956,Grönwohld,,0,</name>
+</rtept>
+<rtept lat="53.643524" lon="10.463481">
+  <name>bei D 22959,Linau,,0,</name>
+</rtept>
+<rtept lat="53.638256" lon="10.478706">
+  <name>bei D 22946,Trittau/Vogelfängerkaten,,0,</name>
+</rtept>
+<rtept lat="53.629196" lon="10.490883">
+  <name>bei D 22946,Trittau/Vogelfängerkaten,,0,</name>
+</rtept>
+<rtept lat="53.618076" lon="10.508079">
+  <name>bei D 22929,Köthel; Kr Hzgt Lauenburg,,0,</name>
+</rtept>
+<rtept lat="53.611923" lon="10.512395">
+  <name>bei D 22929,Köthel; Kr Hzgt Lauenburg,,0,</name>
+</rtept>
+<rtept lat="53.613461" lon="10.551776">
+  <name>bei D 23881,Borstorf,,0,</name>
+</rtept>
+<rtept lat="53.616379" lon="10.570222">
+  <name>bei D 23881,Borstorf,,0,</name>
+</rtept>
+<rtept lat="53.616295" lon="10.585888">
+  <name>bei D 23881,Breitenfelde/Neuenlande,,0,</name>
+</rtept>
+<rtept lat="53.617435" lon="10.601670">
+  <name>bei D 23881,Bälau/Uhlenbusch,,0,</name>
+</rtept>
+<rtept lat="53.618401" lon="10.617373">
+  <name>bei D 23881,Bälau,,0,</name>
+</rtept>
+<rtept lat="53.617901" lon="10.642303">
+  <name>bei D 23881,Alt Mölln,,0,</name>
+</rtept>
+<rtept lat="53.621822" lon="10.660819">
+  <name>bei D 23881,Alt Mölln,,0,</name>
+</rtept>
+<rtept lat="53.636166" lon="10.703663">
+  <name>bei D 23896,Nusse/Donnerschleuse,,0,</name>
+</rtept>
+<rtept lat="53.662647" lon="10.759097">
+  <name>D 23911,Schmilau,@,0,</name>
+</rtept>
+<rtept lat="53.699375" lon="10.764026">
+  <name>bei D 23909,Ratzeburg,,0,</name>
+</rtept>
+<rtept lat="53.712940" lon="10.697880">
+  <name>bei D 23911,Kulpin,,0,</name>
+</rtept>
+<rtept lat="53.734032" lon="10.637904">
+  <name>bei D 23919,Berkenthin,,0,</name>
+</rtept>
+<rtept lat="53.748672" lon="10.570456">
+  <name>bei D 23847,Kastorf,,0,</name>
+</rtept>
+<rtept lat="53.749630" lon="10.526038">
+  <name>D 23847,Siebenbäumen,@,0,</name>
+</rtept>
+<rtept lat="53.735519" lon="10.508304">
+  <name>bei D 23847,Steinhorst/Im Busch,,0,</name>
+</rtept>
+<rtept lat="53.722507" lon="10.475038">
+  <name>bei D 23847,Steinhorst,,0,</name>
+</rtept>
+<rtept lat="53.733452" lon="10.434703">
+  <name>bei D 23847,Stubben,,0,</name>
+</rtept>
+<rtept lat="53.721550" lon="10.404504">
+  <name>bei D 22964,Steinburg,,0,</name>
+</rtept>
+<rtept lat="53.741802" lon="10.374259">
+  <name>bei D 23847,Lasbek/Barkhorst,,0,</name>
+</rtept>
+<rtept lat="53.756996" lon="10.366920">
+  <name>bei D 23843,Rümpel/Buddikate,,0,</name>
+</rtept>
+<rtept lat="53.759750" lon="10.342990">
+  <name>bei D 22967,Tremsbüttel/Kupfermühle,,0,</name>
+</rtept>
+<rtept lat="53.753536" lon="10.313789">
+  <name>bei D 22967,Tremsbüttel/Wulfskuhle,,0,</name>
+</rtept>
+<rtept lat="53.742020" lon="10.315111">
+  <name>bei D ,A21/Tremsbüttel (18),,0,</name>
+</rtept>
+<rtept lat="53.744339" lon="10.332566">
+  <name>bei D 23847,Lasbek/Lasbek; Gut,,0,</name>
+</rtept>
+<rtept lat="53.729412" lon="10.361309">
+  <name>bei D 23847,Lasbek,,0,</name>
+</rtept>
+<rtept lat="53.694397" lon="10.348008">
+  <name>bei D 22965,Todendorf,,0,</name>
+</rtept>
+<rtept lat="53.677914" lon="10.337405">
+  <name>bei D 22961,Oetjendorf,,0,</name>
+</rtept>
+<rtept lat="53.664890" lon="10.319185">
+  <name>bei D 22955,Hoisdorf/Anschlag,,0,</name>
+</rtept>
+<rtept lat="53.646584" lon="10.316370">
+  <name>bei D 22955,Hoisdorf/Kreuz,,0,</name>
+</rtept>
+<rtept lat="53.641460" lon="10.315479">
+  <name>bei D 22962,Siek/Baumkaten,,0,</name>
+</rtept>
+<rtept lat="53.630039" lon="10.292880">
+  <name>bei D 22962,Siek,,0,</name>
+</rtept>
+<rtept lat="53.616753" lon="10.237446">
+  <name>bei D ,A1/B435/Stapelfeld (29),,0,</name>
+</rtept>
+<rtept lat="53.613804" lon="10.161219">
+  <name>bei D 22143,Hamburg,,0,</name>
+</rtept>
+<rtept lat="53.569489" lon="10.032004">
+  <name>D 22081,Hamburg/Uhlenhorst,Finkenau,0,</name>
+</rtept>
+</rte>
+</gpx>

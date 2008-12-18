@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" dir="ltr" lang="en"><head>
+
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <script src="Google_Map_Parameters-Dateien/urchin.js" type="text/javascript">
+      </script>
+      <script type="text/javascript">
+        _uacct = "UA-73300-1";
+        urchinTracker();
+      </script>
+				<meta name="keywords" content="Google Map Parameters">
+		<link rel="shortcut icon" href="http://mapki.com/favicon.ico">
+		<link rel="search" type="application/opensearchdescription+xml" href="http://mapki.com/opensearch_desc.php" title="Google Mapki (English)"><title>Google Map Parameters - Google Mapki</title>
+		
+		<style type="text/css" media="screen,projection">/*<![CDATA[*/ @import "/skins/monobook/main.css?63"; /*]]>*/</style>
+		<link rel="stylesheet" type="text/css" media="print" href="Google_Map_Parameters-Dateien/commonPrint.css">
+		<link rel="stylesheet" type="text/css" media="handheld" href="Google_Map_Parameters-Dateien/handheld.css"><!--[if lt IE 5.5000]><style type="text/css">@import "/skins/monobook/IE50Fixes.css?63";</style><![endif]--><!--[if IE 5.5000]><style type="text/css">@import "/skins/monobook/IE55Fixes.css?63";</style><![endif]--><!--[if IE 6]><style type="text/css">@import "/skins/monobook/IE60Fixes.css?63";</style><![endif]--><!--[if IE 7]><style type="text/css">@import "/skins/monobook/IE70Fixes.css?63";</style><![endif]--><!--[if lt IE 7]><script type="text/javascript" src="/skins/common/IEFixes.js?63"></script>
+		<meta http-equiv="imagetoolbar" content="no" /><![endif]-->
+		
+		
+		
+		
+		
+		
+		<script type="text/javascript">/*<![CDATA[*/
+var skin = "monobook";
+var stylepath = "/skins";
+var wgArticlePath = "/wiki/$1";
+var wgScriptPath = "";
+var wgServer = "http://mapki.com";
+var wgCanonicalNamespace = "";
+var wgCanonicalSpecialPageName = false;
+var wgNamespaceNumber = 0;
+var wgPageName = "Google_Map_Parameters";
+var wgTitle = "Google Map Parameters";
+var wgAction = "view";
+var wgArticleId = "1419";
+var wgIsArticle = true;
+var wgUserName = null;
+var wgUserGroups = null;
+var wgUserLanguage = "en";
+var wgContentLanguage = "en";
+var wgBreakFrames = false;
+var wgCurRevisionId = "4319";
+/*]]>*/</script>
+                
+		<script type="text/javascript" src="Google_Map_Parameters-Dateien/wikibits.js"><!-- wikibits js --></script>
+		<script type="text/javascript" src="Google_Map_Parameters-Dateien/index.php"><!-- site js --></script>
+		<style type="text/css">/*<![CDATA[*/
+@import "/index.php?title=MediaWiki:Common.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+@import "/index.php?title=MediaWiki:Monobook.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+@import "/index.php?title=-&action=raw&gen=css&maxage=18000";
+/*]]>*/</style><!-- Head Scripts --><script charset="utf-8" id="injection_graph_func" src="Google_Map_Parameters-Dateien/injection_graph_func.js"></script></head><body class="mediawiki ns-0 ltr page-Google_Map_Parameters">
+	<div id="globalWrapper">
+		<div id="column-content">
+	<div id="content">
+		<a name="top" id="top"></a>
+		<div id="siteNotice"><br><div style="border: 1px solid black; padding: 2px; background: rgb(153, 204, 204) none repeat scroll 0%; width: 650px; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;"><i>Attention!</i> Do you have any ideas for reorganizing and updating the Mapki? Please leave a note <a href="http://mapki.com/wiki/Talk:Yellowbkpk" title="Talk:Yellowbkpk">here</a>. Thank you!</div>
+</div>		<h1 class="firstHeading">Google Map Parameters</h1>
+		<div id="bodyContent">
+			<h3 id="siteSub">From Google Mapki</h3>
+			<div id="contentSub"></div>
+									<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>			<!-- start content -->
+			<p>Here's
+a list of some of the parameters that can be passed to maps.google.com.
+You might want to pass such parameters if you want to get Google Maps
+to display driving directions, which are not available under the API.
+</p>
+<ul><li> <b>q</b>= Query - anything passed in the q parameter is
+treated as if it had been typed into the query box on the
+maps.google.com page. In particular:
+</li></ul>
+<dl><dd>a precise address is looked up and a marker and info box is displayed at the specified point
+</dd><dd>a town name, or the first half of a postcode causes the region to be displayed with to marker or info box
+</dd><dd>an exact location can be specified as latitude,longitude, in
+decimal form (52.123N,2.456W or 52.123,-2.456) or as degrees, minutes
+and seconds (52 7 22.8N,2 27 21.6W or 52 7 22.8,-2 27 21.6) or as
+degrees and minutes (52 7.38N,2 27.36W or 52 7.38,-2 27.36).
+</dd><dd>any text added in parentheses () is displayed in the info
+window and sidebar in bold, there appears to be no way to cause a line
+break, but you can use %A0 as a "no break space" to prevent line breaks
+happening where you don't want them.
+</dd><dd>the words "to" and "from" cause the driving directions function to be activated.
+</dd><dd>the word "near" or "loc:" causes the local search function to be activated
+</dd><dd>space-ampersand-space (use +%26+ or %20%26%20 in URLs, not
++&amp;+ or +&amp;amp;+ otherwise the ampersand gets treated as a
+separator) can be used between the names of two streets to specify an
+intersection.
+</dd></dl>
+<dl><dd>A location can also be specified after an at sign, in decimal
+form (@52.123,-2.456). This gives a lower zoom level than using the
+same values without the at sign. Using this format interferes with
+other options of the query parameter. The @ sign instead of "near" or
+"loc:" tends to cause only a single business result to be displayed,
+compare (Church near Hallows Road Blackpool, Lancashire) which returns
+over 1000 results to (Church @ Hallows Road Blackpool, Lancashire)
+which returns one result.
+</dd></dl>
+<dl><dd>The full URL of a Google Earth .KML/.KMZ file or a RSS feed
+that includes GeoRSS data, can be used, and the contained information
+will be displayed on the map.
+</dd></dl>
+<ul><li><b>ll</b>= Latitude,longitude of map centre - Note the order. Only decimal format is accepted.
+</li></ul>
+<dl><dd>If this is used without a query, then the map is centred at the point but no marker or info window is displayed
+</dd></dl>
+<ul><li><b>sll</b>= Latitude,longitude of the point from which the
+business search should be performed. You could use this to perform an
+off-centre busness search. Google use it so "link to this page" can
+record a map that has had the centre moved after performing a business
+search.
+</li></ul>
+<ul><li><b>spn</b>= Approximate lat/long span. The zoom level will be adjusted to fit if there's no &amp;z parameter. Use <a href="http://mapki.com/getLonLat.php" class="external text" title="http://mapki.com/getLonLat.php" rel="nofollow">this Mapki tool</a> to find a lat and long.
+</li></ul>
+<ul><li><b>sspn</b>=&nbsp;?? lat/long of... what?
+</li></ul>
+<ul><li><b>hl</b>= Host language - only a few languages are supported, e.g. &amp;hl=fr for French.
+</li></ul>
+<ul><li><b>t</b>= Map Type. The available options are "m" map, "k" satellite, "h" hybrid
+</li></ul>
+<ul><li><b>saddr</b>= Source address. Use this when asking for driving directions
+</li></ul>
+<dl><dd>any text added in brackets is displayed in the sidebar in bold
+</dd></dl>
+<ul><li><b>daddr</b>= Destination address(es). Use this when asking for driving directions
+</li></ul>
+<dl><dd>any text added in brackets is displayed in the sidebar in bold
+</dd><dd>"+to:" clauses can be appended to the destination to request
+multiple destination routing, like this
+"&amp;dadr=Blackpool+to:Manchester+to:Leeds"
+</dd><dd>text in brackets can also be added to the "+to:" clauses.
+</dd></dl>
+<ul><li><b>mrad</b>= Additional destination address.
+</li></ul>
+<dl><dd>If you've got three points in your trip you can use &amp;saddr, &amp;daddr and &amp;mrad instead of "+to:" clauses.
+</dd></dl>
+<ul><li><b>start</b>= Skips the first (start-1) matches
+</li></ul>
+<ul><li><b>num</b>= Display, at most, this number of matches. The valid range is 0 to 10 (but 0 is a bit pointless).
+</li></ul>
+<ul><li><b>near</b>= Can be used as the location part of a query instead of putting the whole thing into &amp;q.
+</li></ul>
+<ul><li><b>f</b>= Controls the style of query form to be displayed.
+&amp;f=d displays the "directions" form (two input boxes: from, to),
+&amp;f=l displays the "local" form (two input boxes: what, where).
+Otherwise the default search form is displayed (single input).
+</li></ul>
+<ul><li><b>output=html</b> Uses the old style Google Local page format from before it merged with Google Maps, with the small map and large sidebar.
+</li></ul>
+<ul><li><b>output=js</b> Outputs JavaScript object literals and
+function calls used by Google Maps, including encoded polyline data for
+driving directions, and stage information in HTML format.
+</li></ul>
+<ul><li><b>output=kml</b> Outputs a KML file containing full Placemark information representing the current map.
+</li></ul>
+<ul><li><b>output=nl</b> Outputs a small KML file containing a
+NetworkLink wrapper linking to a URL from which Google Earth and Google
+Maps can obtain the Placemark information.
+</li></ul>
+<ul><li><b>latlng=</b> This is a weird one. It takes three numbers
+separated by commas. The first two numbers (presumably representing
+latitude and longitude multiplied by 1000000) are ignored. The third
+number seems to be a Google internal "Company ID" number for a
+particular business. E.g. <b>&amp;latlng=0,0,14944637421527611642</b>
+represents Blackpool Community Church. Specifying this parameter
+performs a Google Search for pages that reference that business, and
+displays a tiny map. Other parameters, in particular &amp;q, must have
+valid contents (but need not relate to the target business) for this to
+work.
+</li></ul>
+<ul><li><b>cid=</b> Similar to latlng, but generating a different map
+size. It takes three numbers separated by commas. The first two numbers
+(presumably representing latitude and longitude multiplied by 1000000)
+are ignored. The third number seems to be a Google internal "Company
+ID" number for a particular business. E.g. <b>&amp;cid=0,0,14944637421527611642</b>
+represents Blackpool Community Church. Specifying this parameter
+displays a large map of the identified company location. Other
+parameters, in particular &amp;q, must have valid contents (but need
+not relate to the target business) for this to work.
+</li></ul>
+<ul><li><b>vp=</b> The presence of this parameter causes
+maps.google.com to switch into Copyright Service mode. Instead of
+returning the html that draws a map, it returns information about the
+copyright ownership in Javascript format. The <b>&amp;vp</b> parameter specifies the viewpoint (i.e. the centre of the map). Copyright Service only works when the <b>&amp;spn</b> and <b>&amp;z</b> parameters are also supplied, indicating the span and the zoom. Optional parameters are <b>&amp;t</b>, which specifies the map type, and <b>&amp;key</b> which specifies the API key of the site performing the request. E.g. <b><a href="http://maps.google.com/maps?spn=0.030372,0.068665&amp;z=6&amp;t=h&amp;vp=53.859462,-3.038235" class="external free" title="http://maps.google.com/maps?spn=0.030372,0.068665&amp;z=6&amp;t=h&amp;vp=53.859462,-3.038235" rel="nofollow">http://maps.google.com/maps?spn=0.030372,0.068665&amp;z=6&amp;t=h&amp;vp=53.859462,-3.038235</a></b>
+</li></ul>
+<ul><li><b>om=</b> The presence of this parameter with a value other
+than 1 causes the overview map to be closed. If the parameter is
+omitted, or present with the value 1, then the overview map is open.
+</li></ul>
+<ul><li><b>ie=</b> Can be used to specify the character set. e.g. <b>&amp;ie=UTF8</b>.
+</li></ul>
+<ul><li><b>pw=</b> Activates print mode and initiates printing. There seems to be a problem at the moment with <b>&amp;pw=1</b>, but using settings like <b>&amp;pw=2</b> is OK.
+</li></ul>
+<ul><li><b>z=</b> Sets the zoom level.
+</li></ul>
+<ul><li><b>iwloc=</b> Specifies where the infowindow will be displayed. In a business search <b>&amp;iwloc=A</b> to <b>&amp;iwloc=J</b> will open the info window over the corresponding business marker, and <b>&amp;iwloc=near</b> will place it over the big green arrow if that's currently displayed. <b>&amp;iwloc=addr</b>
+can be used on map search to explicitly request the info window to be
+open on the address, but that's the default anyway. Directions search
+supports <b>&amp;iwloc=start</b>, <b>&amp;iwloc=end</b> and <b>&amp;iwloc=pause1</b> etc.
+</li></ul>
+<ul><li><b>layer=t</b> Activates the traffic overlay
+</li></ul>
+<ul><li><b>msa=b</b> Activates the "My Maps" sidebar when used in
+conjunction with "maps.google.com/ms". It does nothing without the
+"/ms" and "/ms" does nothing without the "&amp;msa=b".
+</li></ul>
+<ul><li><b>msa=0</b> Involved in My Maps processing. Possibly specifies the My Maps server number.
+</li></ul>
+<ul><li><b>msid=</b> Specifies a My Maps identifier. When used in
+conjunction with "maps.google.com/ms" and &amp;msa=0, the corresponding
+My Map is displayed.
+</li></ul>
+<ul><li><b>mrt=kmlkmz</b> Skips the normal search and goes directly to
+User-Created Content. Only works if the query contains a location and
+something to search for. E.g. <b>q=hotel&amp;near=london&amp;mrt=kmlkmz</b> or <b>q=hotel+in+london&amp;mrt=kmlkmz</b>.
+</li></ul>
+<ul><li><b>view=</b> Can be used to select text view (<b>view=text</b>) or the normal map view (<b>view=map</b>)
+</li></ul>
+<ul><li><b>dirflg=h</b> Switches on "Avoid Highways" route finding mode.
+</li></ul>
+
+<!-- Saved in parser cache with key mapkistuff-wiki2_:pcache:idhash:1419-0!1!0!!en!2 and timestamp 20070701010831 -->
+<div class="printfooter">
+Retrieved from "<a href="http://mapki.com/wiki/Google_Map_Parameters">http://mapki.com/wiki/Google_Map_Parameters</a>"</div>
+						<!-- end content -->
+			<div class="visualClear"></div>
+		</div>
+	</div>
+		</div>
+		<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+					 <li id="ca-nstab-main" class="selected"><a href="http://mapki.com/wiki/Google_Map_Parameters" title="View the content page [alt-shift-c]" accesskey="c">Article</a></li>
+					 <li id="ca-talk"><a href="http://mapki.com/wiki/Talk:Google_Map_Parameters" title="Discussion about the content page [alt-shift-t]" accesskey="t">Discussion</a></li>
+					 <li id="ca-edit"><a href="http://mapki.com/index.php?title=Google_Map_Parameters&amp;action=edit" title="You can edit this page. Please use the preview button before saving. [alt-shift-e]" accesskey="e">Edit</a></li>
+					 <li id="ca-history"><a href="http://mapki.com/index.php?title=Google_Map_Parameters&amp;action=history" title="Past versions of this page. [alt-shift-h]" accesskey="h">History</a></li>
+				</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="http://mapki.com/index.php?title=Special:Userlogin&amp;returnto=Google_Map_Parameters" title="You are encouraged to log in, it is not mandatory however. [alt-shift-o]" accesskey="o">Log in / create account</a></li>
+			</ul>
+		</div>
+	</div>
+	<div title="Main Page" class="portlet" id="p-logo">
+		<a style="background-image: url(/skins/common/images/wiki.png);" href="http://mapki.com/wiki/Main_Page" title="Visit the Main Page [alt-shift-z]" accesskey="z"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+		<div class="portlet" id="p-navigation">
+		<h5>Navigation</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-mainpage"><a href="http://mapki.com/wiki/Main_Page" title="Visit the Main Page [alt-shift-z]" accesskey="z">Main Page</a></li>
+				<li id="n-Knowledge-Base"><a href="http://mapki.com/wiki/Knowledge_Base">Knowledge Base</a></li>
+				<li id="n-FAQs"><a href="http://mapki.com/wiki/FAQs">FAQs</a></li>
+				<li id="n-Map-Projects"><a href="http://mapki.com/wiki/Category:Map_Projects">Map Projects</a></li>
+			</ul>
+		</div>
+	</div>
+		<div class="portlet" id="p-External_Links">
+		<h5>External Links</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-API-Group"><a href="http://groups-beta.google.com/group/Google-Maps-API?lnk=li">API Group</a></li>
+				<li id="n-Blog"><a href="http://mapki.com/blog/">Blog</a></li>
+			</ul>
+		</div>
+	</div>
+		<div class="portlet" id="p-wiki_links">
+		<h5>wiki links</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-recentchanges"><a href="http://mapki.com/wiki/Special:Recentchanges" title="The list of recent changes in the wiki. [alt-shift-r]" accesskey="r">Recent changes</a></li>
+				<li id="n-randompage"><a href="http://mapki.com/wiki/Special:Random" title="Load a random page [alt-shift-x]" accesskey="x">Random page</a></li>
+				<li title="Support us" id="n-sitesupport"><a href="http://mapki.com/wiki/Google_Mapki:Site_support" title="Support us">Donations</a></li>
+			</ul>
+		</div>
+	</div>
+		<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/wiki/Special:Search" id="searchform"><div>
+				<input id="searchInput" name="search" title="Search Google Mapki [alt-shift-f]" accesskey="f" value="" type="text">
+				<input name="go" class="searchButton" id="searchGoButton" value="Go" type="submit">&nbsp;
+				<input name="fulltext" class="searchButton" id="mw-searchButton" value="Search" type="submit">
+			</div></form>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="http://mapki.com/wiki/Special:Whatlinkshere/Google_Map_Parameters" title="List of all wiki pages that link here [alt-shift-j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="http://mapki.com/wiki/Special:Recentchangeslinked/Google_Map_Parameters" title="Recent changes in pages linked from this page [alt-shift-k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="http://mapki.com/wiki/Special:Specialpages" title="List of all special pages [alt-shift-q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="http://mapki.com/index.php?title=Google_Map_Parameters&amp;printable=yes">Printable version</a></li>				<li id="t-permalink"><a href="http://mapki.com/index.php?title=Google_Map_Parameters&amp;oldid=4319">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+    </div>
+<div class="portlet" id="p-ad">
+  <h5>Advertisement</h5>
+      <div class="pBody">
+        <script type="text/javascript"><!--
+          google_ad_client = "pub-6474301375224191";
+          google_ad_width = 120;
+          google_ad_height = 240;
+          google_ad_format = "120x240_as";
+          google_ad_type = "text";
+          google_ad_channel ="";
+          google_color_border = "336699";
+          google_color_bg = "FFFFFF";
+          google_color_link = "0000FF";
+          google_color_url = "008000";
+          google_color_text = "000000";
+          //--></script>
+        <script type="text/javascript" src="Google_Map_Parameters-Dateien/show_ads.js">
+      </script><iframe name="google_ads_frame" src="Google_Map_Parameters-Dateien/ads.htm" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" frameborder="0" height="240" scrolling="no" width="120"></iframe>
+    </div>
+  </div>
+		</div><!-- end of the left (by default at least) column -->
+			<div class="visualClear"></div>
+			<div id="footer">
+				<div id="f-poweredbyico"><a href="http://www.mediawiki.org/"><img src="Google_Map_Parameters-Dateien/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki"></a></div>
+			<ul id="f-list">
+				<li id="lastmod"> This page was last modified 12:14, 28 June 2007.</li>
+				<li id="viewcount">This page has been accessed 795 times.</li>
+				<li id="privacy"><a href="http://mapki.com/wiki/Google_Mapki:Privacy_policy" title="Google Mapki:Privacy policy">Privacy policy</a></li>
+				<li id="about"><a href="http://mapki.com/wiki/Google_Mapki:About" title="Google Mapki:About">About Google Mapki</a></li>
+				<li id="disclaimer"><a href="http://mapki.com/wiki/Google_Mapki:General_disclaimer" title="Google Mapki:General disclaimer">Disclaimers</a></li>
+			</ul>
+		</div>
+		
+	
+		<script type="text/javascript">if (window.runOnloadHook) runOnloadHook();</script>
+
+<!-- Served by ugh in 0.342 secs. --></body></html>

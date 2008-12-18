@@ -1,0 +1,891 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+	version="1.0"
+	creator="Tripmaster (http://www.webazar.org)"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.topografix.com/GPX/1/0"
+	xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/2"
+	xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/2 http://www.topografix.com/GPX/Private/TopoGrafix/0/2/topografix.xsd">
+<name>2007-06-24T10:42:18Z</name>
+<wpt lon="12.8493" lat="53.5434"><name>Punkt - Gross Plasten</name><time>2007-06-23T10:15:21Z</time><ele>55.7</ele></wpt>
+<wpt lon="12.8493" lat="53.5434"><name>Richtung 335 - Gross Plasten</name><time>2007-06-23T10:24:00Z</time><ele>52.2</ele></wpt>
+<wpt lon="12.8497" lat="53.5436"><name>Richtung 60 - Gross Plasten</name><time>2007-06-23T10:24:08Z</time><ele>52.6</ele></wpt>
+<wpt lon="12.8507" lat="53.5438"><name>Punkt - Gross Plasten</name><time>2007-06-23T10:24:21Z</time><ele>51.2</ele></wpt>
+<wpt lon="12.8511" lat="53.544"><name>Richtung 339 - Gross Plasten</name><time>2007-06-23T10:24:28Z</time><ele>50.5</ele></wpt>
+<wpt lon="12.8444" lat="53.5455"><name>Richtung 336 - Gross Plasten</name><time>2007-06-23T10:25:19Z</time><ele>56.2</ele></wpt>
+<wpt lon="12.8443" lat="53.5456"><name>Punkt - Gross Plasten</name><time>2007-06-23T10:25:21Z</time><ele>56.5</ele></wpt>
+<wpt lon="12.8445" lat="53.5457"><name>Richtung 44 - Gross Plasten</name><time>2007-06-23T10:25:23Z</time><ele>57.1</ele></wpt>
+<wpt lon="12.8575" lat="53.555"><name>Abstand 2 - Gross Plasten</name><time>2007-06-23T10:26:20Z</time><ele>64.7</ele></wpt>
+<wpt lon="12.8576" lat="53.5553"><name>Punkt - Gross Plasten</name><time>2007-06-23T10:26:21Z</time><ele>64.9</ele></wpt>
+<wpt lon="12.8588" lat="53.5584"><name>Richtung 321 - Gross Plasten</name><time>2007-06-23T10:26:40Z</time><ele>58.1</ele></wpt>
+<wpt lon="12.8586" lat="53.5584"><name>Richtung 295 - Gross Plasten</name><time>2007-06-23T10:26:41Z</time><ele>57.3</ele></wpt>
+<wpt lon="12.8547" lat="53.5634"><name>Punkt - Deven (Gross Plasten)</name><time>2007-06-23T10:27:21Z</time><ele>55.2</ele></wpt>
+<wpt lon="12.8549" lat="53.5638"><name>Richtung 358 - Deven (Gross Plasten)</name><time>2007-06-23T10:27:25Z</time><ele>57.8</ele></wpt>
+<wpt lon="12.8449" lat="53.5669"><name>Punkt - Gross Plasten</name><time>2007-06-23T10:28:21Z</time><ele>53.1</ele></wpt>
+<wpt lon="12.8438" lat="53.5677"><name>Abstand 4 - Gross Plasten</name><time>2007-06-23T10:28:26Z</time><ele>54</ele></wpt>
+<wpt lon="12.8312" lat="53.5779"><name>Punkt - Sorgenlos</name><time>2007-06-23T10:29:21Z</time><ele>51.3</ele></wpt>
+<wpt lon="12.8252" lat="53.5818"><name>Abstand 6 - Sorgenlos</name><time>2007-06-23T10:30:00Z</time><ele>46.6</ele></wpt>
+<wpt lon="12.8205" lat="53.5825"><name>Punkt - Gross Gievitz</name><time>2007-06-23T10:30:21Z</time><ele>47.7</ele></wpt>
+<wpt lon="12.7977" lat="53.5803"><name>Punkt - Gross Gievitz</name><time>2007-06-23T10:31:21Z</time><ele>51.3</ele></wpt>
+<wpt lon="12.7958" lat="53.5802"><name>Abstand 8 - Gross Gievitz</name><time>2007-06-23T10:31:26Z</time><ele>49.2</ele></wpt>
+<wpt lon="12.7841" lat="53.5789"><name>Richtung 304 - Gross Gievitz</name><time>2007-06-23T10:32:12Z</time><ele>37.5</ele></wpt>
+<wpt lon="12.784" lat="53.579"><name>Richtung 334 - Gross Gievitz</name><time>2007-06-23T10:32:14Z</time><ele>37.3</ele></wpt>
+<wpt lon="12.7836" lat="53.5797"><name>Punkt - Gross Gievitz</name><time>2007-06-23T10:32:21Z</time><ele>37.3</ele></wpt>
+<wpt lon="12.7817" lat="53.5817"><name>Richtung 286 - Gross Gievitz</name><time>2007-06-23T10:32:43Z</time><ele>35.3</ele></wpt>
+<wpt lon="12.7786" lat="53.5815"><name>Richtung 296 - Gross Gievitz</name><time>2007-06-23T10:33:03Z</time><ele>36.2</ele></wpt>
+<wpt lon="12.7755" lat="53.5831"><name>Punkt - Gross Gievitz</name><time>2007-06-23T10:33:21Z</time><ele>39.4</ele></wpt>
+<wpt lon="12.7713" lat="53.5853"><name>Abstand 10 - Gross Gievitz</name><time>2007-06-23T10:33:36Z</time><ele>40</ele></wpt>
+<wpt lon="12.7604" lat="53.5929"><name>Punkt - Lansen-Schönau</name><time>2007-06-23T10:34:21Z</time><ele>43.3</ele></wpt>
+<wpt lon="12.7541" lat="53.5985"><name>Richtung 264 - Lansen-Schönau</name><time>2007-06-23T10:35:09Z</time><ele>35.8</ele></wpt>
+<wpt lon="12.7538" lat="53.5984"><name>Richtung 232 - Lansen-Schönau</name><time>2007-06-23T10:35:11Z</time><ele>34.9</ele></wpt>
+<wpt lon="12.7527" lat="53.5979"><name>Abstand 12 - Lansen-Schönau</name><time>2007-06-23T10:35:17Z</time><ele>32.7</ele></wpt>
+<wpt lon="12.7522" lat="53.598"><name>Richtung 282 - Lansen-Schönau</name><time>2007-06-23T10:35:19Z</time><ele>32.5</ele></wpt>
+<wpt lon="12.7517" lat="53.5981"><name>Punkt - Lansen-Schönau</name><time>2007-06-23T10:35:21Z</time><ele>32.7</ele></wpt>
+<wpt lon="12.743" lat="53.6003"><name>Richtung 315 - Lansen-Schönau</name><time>2007-06-23T10:35:55Z</time><ele>36.5</ele></wpt>
+<wpt lon="12.7429" lat="53.6005"><name>Richtung 11 - Lansen-Schönau</name><time>2007-06-23T10:35:57Z</time><ele>36.5</ele></wpt>
+<wpt lon="12.7453" lat="53.6048"><name>Punkt - Lansen-Schönau</name><time>2007-06-23T10:36:21Z</time><ele>37.7</ele></wpt>
+<wpt lon="12.7499" lat="53.611"><name>Abstand 14 - Lansen-Schönau</name><time>2007-06-23T10:36:56Z</time><ele>32.6</ele></wpt>
+<wpt lon="12.7551" lat="53.6158"><name>Punkt - Faulenrost</name><time>2007-06-23T10:37:21Z</time><ele>39.7</ele></wpt>
+<wpt lon="12.7637" lat="53.624"><name>Punkt - Rittermannshagen</name><time>2007-06-23T10:38:21Z</time><ele>34.5</ele></wpt>
+<wpt lon="12.7645" lat="53.6245"><name>Punkt - Rittermannshagen</name><time>2007-06-23T10:39:21Z</time><ele>32.2</ele></wpt>
+<wpt lon="12.7666" lat="53.6255"><name>Abstand 16 - Faulenrost</name><time>2007-06-23T10:43:48Z</time><ele>35.6</ele></wpt>
+<wpt lon="12.7715" lat="53.6323"><name>Punkt - Faulenrost</name><time>2007-06-23T10:44:21Z</time><ele>37.6</ele></wpt>
+<wpt lon="12.781" lat="53.641"><name>Abstand 18 - Faulenrost</name><time>2007-06-23T10:45:09Z</time><ele>33.3</ele></wpt>
+<wpt lon="12.781" lat="53.6412"><name>Richtung 11 - Faulenrost</name><time>2007-06-23T10:45:11Z</time><ele>31.8</ele></wpt>
+<wpt lon="12.7809" lat="53.6429"><name>Punkt - Faulenrost</name><time>2007-06-23T10:45:21Z</time><ele>31.6</ele></wpt>
+<wpt lon="12.7835" lat="53.6576"><name>Punkt - Faulenrost</name><time>2007-06-23T10:46:21Z</time><ele>39.2</ele></wpt>
+<wpt lon="12.7843" lat="53.6587"><name>Abstand 20 - Faulenrost</name><time>2007-06-23T10:46:27Z</time><ele>42.4</ele></wpt>
+<wpt lon="12.7875" lat="53.6648"><name>Richtung 314 - Demzin</name><time>2007-06-23T10:47:01Z</time><ele>57.4</ele></wpt>
+<wpt lon="12.7832" lat="53.6666"><name>Punkt - Demzin</name><time>2007-06-23T10:47:21Z</time><ele>61.2</ele></wpt>
+<wpt lon="12.782" lat="53.6744"><name>Abstand 22 - Faulenrost</name><time>2007-06-23T10:48:06Z</time><ele>48.4</ele></wpt>
+<wpt lon="12.778" lat="53.6765"><name>Punkt - Faulenrost</name><time>2007-06-23T10:48:21Z</time><ele>50.5</ele></wpt>
+<wpt lon="12.7644" lat="53.6859"><name>Punkt - Gielow</name><time>2007-06-23T10:49:21Z</time><ele>43.1</ele></wpt>
+<wpt lon="12.7622" lat="53.6879"><name>Abstand 24 - Gielow</name><time>2007-06-23T10:49:32Z</time><ele>42.6</ele></wpt>
+<wpt lon="12.7559" lat="53.6973"><name>Punkt - Gielow</name><time>2007-06-23T10:50:21Z</time><ele>20.4</ele></wpt>
+<wpt lon="12.7607" lat="53.7041"><name>Abstand 26 - Gielow</name><time>2007-06-23T10:50:50Z</time><ele>23.2</ele></wpt>
+<wpt lon="12.765" lat="53.711"><name>Punkt - Gielow</name><time>2007-06-23T10:51:21Z</time><ele>11.8</ele></wpt>
+<wpt lon="12.7576" lat="53.7206"><name>Abstand 28 - Malchin</name><time>2007-06-23T10:52:11Z</time><ele>4.7</ele></wpt>
+<wpt lon="12.7576" lat="53.7225"><name>Punkt - Malchin</name><time>2007-06-23T10:52:21Z</time><ele>5</ele></wpt>
+<wpt lon="12.7609" lat="53.7302"><name>Punkt - Malchin</name><time>2007-06-23T10:53:21Z</time><ele>1.4</ele></wpt>
+<wpt lon="12.7617" lat="53.7343"><name>Richtung 323 - Malchin</name><time>2007-06-23T10:54:02Z</time><ele>3.5</ele></wpt>
+<wpt lon="12.7614" lat="53.7343"><name>Richtung 297 - Malchin</name><time>2007-06-23T10:54:04Z</time><ele>4.5</ele></wpt>
+<wpt lon="12.7593" lat="53.7337"><name>Punkt - Malchin</name><time>2007-06-23T10:54:21Z</time><ele>4.4</ele></wpt>
+<wpt lon="12.758" lat="53.733"><name>Richtung 279 - Malchin</name><time>2007-06-23T10:54:33Z</time><ele>8.2</ele></wpt>
+<wpt lon="12.7577" lat="53.7331"><name>Richtung 310 - Malchin</name><time>2007-06-23T10:54:35Z</time><ele>8.9</ele></wpt>
+<wpt lon="12.7567" lat="53.7336"><name>Abstand 30 - Malchin</name><time>2007-06-23T10:54:43Z</time><ele>11.5</ele></wpt>
+<wpt lon="12.7537" lat="53.7369"><name>Punkt - Malchin</name><time>2007-06-23T10:55:21Z</time><ele>17.5</ele></wpt>
+<wpt lon="12.7584" lat="53.7411"><name>Punkt - Malchin</name><time>2007-06-23T10:56:22Z</time><ele>9.9</ele></wpt>
+<wpt lon="12.7606" lat="53.742"><name>Punkt - Malchin</name><time>2007-06-23T10:57:22Z</time><ele>7.4</ele></wpt>
+<wpt lon="12.7604" lat="53.7422"><name>Richtung 319 - Malchin</name><time>2007-06-23T10:57:24Z</time><ele>6.8</ele></wpt>
+<wpt lon="12.7584" lat="53.7435"><name>Richtung 301 - Malchin</name><time>2007-06-23T10:57:49Z</time><ele>3</ele></wpt>
+<wpt lon="12.7513" lat="53.7455"><name>Abstand 32 - Malchin</name><time>2007-06-23T10:58:13Z</time><ele>1.9</ele></wpt>
+<wpt lon="12.7482" lat="53.7465"><name>Punkt - Malchin</name><time>2007-06-23T10:58:22Z</time><ele>1.4</ele></wpt>
+<wpt lon="12.7298" lat="53.7555"><name>Punkt - Remplin</name><time>2007-06-23T10:59:22Z</time><ele>1.2</ele></wpt>
+<wpt lon="12.7273" lat="53.7565"><name>Abstand 34 - Remplin</name><time>2007-06-23T10:59:32Z</time><ele>2.8</ele></wpt>
+<wpt lon="12.7269" lat="53.7569"><name>Richtung 19 - Remplin</name><time>2007-06-23T10:59:38Z</time><ele>2.9</ele></wpt>
+<wpt lon="12.727" lat="53.7571"><name>Richtung 44 - Remplin</name><time>2007-06-23T10:59:40Z</time><ele>1.9</ele></wpt>
+<wpt lon="12.7417" lat="53.7588"><name>Punkt - Pisede</name><time>2007-06-23T11:00:22Z</time><ele>-0.1</ele></wpt>
+<wpt lon="12.7424" lat="53.7589"><name>Richtung 49 - Pisede</name><time>2007-06-23T11:00:26Z</time><ele>0.1</ele></wpt>
+<wpt lon="12.7424" lat="53.7591"><name>Richtung 350 - Pisede</name><time>2007-06-23T11:00:28Z</time><ele>0.1</ele></wpt>
+<wpt lon="12.7415" lat="53.7667"><name>Abstand 36 - Remplin</name><time>2007-06-23T11:01:09Z</time><ele>20.5</ele></wpt>
+<wpt lon="12.7444" lat="53.7692"><name>Punkt - Malchin</name><time>2007-06-23T11:01:22Z</time><ele>24</ele></wpt>
+<wpt lon="12.7546" lat="53.7809"><name>Punkt - Malchin</name><time>2007-06-23T11:02:22Z</time><ele>65</ele></wpt>
+<wpt lon="12.7557" lat="53.7826"><name>Abstand 38 - Malchin</name><time>2007-06-23T11:02:30Z</time><ele>66</ele></wpt>
+<wpt lon="12.7706" lat="53.7959"><name>Punkt - Neukalen</name><time>2007-06-23T11:03:22Z</time><ele>80.5</ele></wpt>
+<wpt lon="12.773" lat="53.7976"><name>Abstand 40 - Neukalen</name><time>2007-06-23T11:03:29Z</time><ele>77.7</ele></wpt>
+<wpt lon="12.7831" lat="53.8084"><name>Punkt - Neukalen</name><time>2007-06-23T11:04:22Z</time><ele>17.4</ele></wpt>
+<wpt lon="12.7875" lat="53.8126"><name>Abstand 42 - Neukalen</name><time>2007-06-23T11:04:45Z</time><ele>5.4</ele></wpt>
+<wpt lon="12.7895" lat="53.818"><name>Punkt - Neukalen</name><time>2007-06-23T11:05:22Z</time><ele>1.7</ele></wpt>
+<wpt lon="12.791" lat="53.8227"><name>Richtung 11 - Neukalen</name><time>2007-06-23T11:06:12Z</time><ele>4.6</ele></wpt>
+<wpt lon="12.7908" lat="53.8231"><name>Richtung 309 - Neukalen</name><time>2007-06-23T11:06:19Z</time><ele>2.9</ele></wpt>
+<wpt lon="12.7906" lat="53.8232"><name>Punkt - Neukalen</name><time>2007-06-23T11:06:22Z</time><ele>2.2</ele></wpt>
+<wpt lon="12.7906" lat="53.8233"><name>Richtung 341 - Neukalen</name><time>2007-06-23T11:06:23Z</time><ele>1.8</ele></wpt>
+<wpt lon="12.7948" lat="53.8295"><name>Abstand 44 - Neukalen</name><time>2007-06-23T11:07:21Z</time><ele>8.3</ele></wpt>
+<wpt lon="12.7949" lat="53.8297"><name>Punkt - Neukalen</name><time>2007-06-23T11:07:22Z</time><ele>8.9</ele></wpt>
+<wpt lon="12.8072" lat="53.8439"><name>Punkt - Warsow (Neukalen)</name><time>2007-06-23T11:08:22Z</time><ele>20.9</ele></wpt>
+<wpt lon="12.8087" lat="53.8455"><name>Abstand 46 - Warsow (Neukalen)</name><time>2007-06-23T11:08:32Z</time><ele>16.4</ele></wpt>
+<wpt lon="12.8187" lat="53.8548"><name>Punkt - Warsow (Neukalen)</name><time>2007-06-23T11:09:22Z</time><ele>12.3</ele></wpt>
+<wpt lon="12.8253" lat="53.8609"><name>Abstand 48 - Dargun</name><time>2007-06-23T11:09:50Z</time><ele>17.7</ele></wpt>
+<wpt lon="12.8325" lat="53.8676"><name>Punkt - Dargun</name><time>2007-06-23T11:10:22Z</time><ele>17.7</ele></wpt>
+<wpt lon="12.8418" lat="53.8761"><name>Abstand 50 - Dargun</name><time>2007-06-23T11:11:04Z</time><ele>15.8</ele></wpt>
+<wpt lon="12.846" lat="53.88"><name>Punkt - Dargun</name><time>2007-06-23T11:11:22Z</time><ele>17.3</ele></wpt>
+<wpt lon="12.8574" lat="53.8904"><name>Punkt - Dargun</name><time>2007-06-23T11:12:22Z</time><ele>3.8</ele></wpt>
+<wpt lon="12.8576" lat="53.8914"><name>Abstand 52 - Dargun</name><time>2007-06-23T11:12:30Z</time><ele>3.6</ele></wpt>
+<wpt lon="12.856" lat="53.8959"><name>Punkt - Dargun</name><time>2007-06-23T11:13:22Z</time><ele>6</ele></wpt>
+<wpt lon="12.8473" lat="53.9007"><name>Punkt - Dargun</name><time>2007-06-23T11:14:22Z</time><ele>11.4</ele></wpt>
+<wpt lon="12.8402" lat="53.9049"><name>Abstand 54 - Dargun</name><time>2007-06-23T11:15:12Z</time><ele>11</ele></wpt>
+<wpt lon="12.8389" lat="53.906"><name>Punkt - Dargun</name><time>2007-06-23T11:15:22Z</time><ele>12.8</ele></wpt>
+<wpt lon="12.8268" lat="53.912"><name>Punkt - Dargun</name><time>2007-06-23T11:16:22Z</time><ele>12.6</ele></wpt>
+<wpt lon="12.8194" lat="53.9173"><name>Abstand 56 - Dargun</name><time>2007-06-23T11:16:55Z</time><ele>14.8</ele></wpt>
+<wpt lon="12.8133" lat="53.9226"><name>Punkt - Dargun</name><time>2007-06-23T11:17:22Z</time><ele>13</ele></wpt>
+<wpt lon="12.7975" lat="53.9297"><name>Abstand 58 - Dargun</name><time>2007-06-23T11:18:15Z</time><ele>34.3</ele></wpt>
+<wpt lon="12.7955" lat="53.9305"><name>Punkt - Dargun</name><time>2007-06-23T11:18:22Z</time><ele>37.5</ele></wpt>
+<wpt lon="12.7763" lat="53.9384"><name>Punkt - Finkenthal</name><time>2007-06-23T11:19:22Z</time><ele>38.1</ele></wpt>
+<wpt lon="12.7723" lat="53.9401"><name>Abstand 60 - Finkenthal</name><time>2007-06-23T11:19:37Z</time><ele>38.6</ele></wpt>
+<wpt lon="12.7547" lat="53.9474"><name>Punkt - Finkenthal</name><time>2007-06-23T11:20:22Z</time><ele>32.4</ele></wpt>
+<wpt lon="12.7473" lat="53.9504"><name>Abstand 62 - Finkenthal</name><time>2007-06-23T11:20:40Z</time><ele>24.8</ele></wpt>
+<wpt lon="12.7313" lat="53.9567"><name>Punkt - Gnoien</name><time>2007-06-23T11:21:22Z</time><ele>19.1</ele></wpt>
+<wpt lon="12.7221" lat="53.9604"><name>Abstand 64 - Gnoien</name><time>2007-06-23T11:21:47Z</time><ele>13.8</ele></wpt>
+<wpt lon="12.7158" lat="53.964"><name>Punkt - Gnoien</name><time>2007-06-23T11:22:22Z</time><ele>14</ele></wpt>
+<wpt lon="12.7098" lat="53.9694"><name>Punkt - Gnoien</name><time>2007-06-23T11:23:22Z</time><ele>16.9</ele></wpt>
+<wpt lon="12.7032" lat="53.9744"><name>Abstand 66 - Gnoien</name><time>2007-06-23T11:24:17Z</time><ele>17.9</ele></wpt>
+<wpt lon="12.7022" lat="53.9745"><name>Punkt - Gnoien</name><time>2007-06-23T11:24:22Z</time><ele>19.3</ele></wpt>
+<wpt lon="12.6832" lat="53.9756"><name>Punkt - Gnoien</name><time>2007-06-23T11:25:23Z</time><ele>17.1</ele></wpt>
+<wpt lon="12.6728" lat="53.9762"><name>Abstand 68 - Gnoien</name><time>2007-06-23T11:25:48Z</time><ele>19.8</ele></wpt>
+<wpt lon="12.6577" lat="53.977"><name>Punkt - Gross Nieköhr</name><time>2007-06-23T11:26:23Z</time><ele>16.2</ele></wpt>
+<wpt lon="12.6428" lat="53.9792"><name>Abstand 70 - Gross Nieköhr</name><time>2007-06-23T11:26:58Z</time><ele>15.3</ele></wpt>
+<wpt lon="12.632" lat="53.9811"><name>Punkt - Gross Nieköhr</name><time>2007-06-23T11:27:23Z</time><ele>13.7</ele></wpt>
+<wpt lon="12.613" lat="53.9836"><name>Abstand 72 - Lühburg</name><time>2007-06-23T11:28:10Z</time><ele>14.6</ele></wpt>
+<wpt lon="12.6078" lat="53.9843"><name>Punkt - Lühburg</name><time>2007-06-23T11:28:23Z</time><ele>14.3</ele></wpt>
+<wpt lon="12.5932" lat="53.9872"><name>Punkt - Lühburg</name><time>2007-06-23T11:29:23Z</time><ele>26.3</ele></wpt>
+<wpt lon="12.5838" lat="53.9893"><name>Abstand 74 - Lühburg</name><time>2007-06-23T11:29:52Z</time><ele>28.4</ele></wpt>
+<wpt lon="12.5755" lat="53.9923"><name>Punkt - Basse DE (Lühburg)</name><time>2007-06-23T11:30:23Z</time><ele>27.5</ele></wpt>
+<wpt lon="12.559" lat="53.9998"><name>Abstand 76 - Lühburg</name><time>2007-06-23T11:31:12Z</time><ele>35.8</ele></wpt>
+<wpt lon="12.5552" lat="54.0019"><name>Punkt - Thelkow</name><time>2007-06-23T11:31:23Z</time><ele>37.9</ele></wpt>
+<wpt lon="12.5373" lat="54.0111"><name>Punkt - Thelkow</name><time>2007-06-23T11:32:23Z</time><ele>41.3</ele></wpt>
+<wpt lon="12.5359" lat="54.0115"><name>Abstand 78 - Thelkow</name><time>2007-06-23T11:32:28Z</time><ele>40.1</ele></wpt>
+<wpt lon="12.5152" lat="54.0147"><name>Punkt - Vilz</name><time>2007-06-23T11:33:23Z</time><ele>30</ele></wpt>
+<wpt lon="12.5074" lat="54.0174"><name>Abstand 80 - Vilz</name><time>2007-06-23T11:33:54Z</time><ele>26.4</ele></wpt>
+<wpt lon="12.4999" lat="54.0201"><name>Punkt - Vilz</name><time>2007-06-23T11:34:23Z</time><ele>23.5</ele></wpt>
+<wpt lon="12.4817" lat="54.0235"><name>Punkt - Vilz</name><time>2007-06-23T11:35:23Z</time><ele>8.8</ele></wpt>
+<wpt lon="12.4791" lat="54.0236"><name>Abstand 82 - Tessin (Bad Doberan)</name><time>2007-06-23T11:35:31Z</time><ele>7.8</ele></wpt>
+<wpt lon="12.4688" lat="54.0277"><name>Punkt - Tessin (Bad Doberan)</name><time>2007-06-23T11:36:23Z</time><ele>11.5</ele></wpt>
+<wpt lon="12.4626" lat="54.0286"><name>Punkt - Tessin (Bad Doberan)</name><time>2007-06-23T11:37:23Z</time><ele>12.8</ele></wpt>
+<wpt lon="12.4524" lat="54.0305"><name>Abstand 85 - Tessin (Bad Doberan)</name><time>2007-06-23T11:38:09Z</time><ele>23.5</ele></wpt>
+<wpt lon="12.4493" lat="54.0315"><name>Punkt - Tessin (Bad Doberan)</name><time>2007-06-23T11:38:23Z</time><ele>25.7</ele></wpt>
+<wpt lon="12.432" lat="54.0365"><name>Punkt - Tessin (Bad Doberan)</name><time>2007-06-23T11:39:23Z</time><ele>27</ele></wpt>
+<wpt lon="12.4247" lat="54.0381"><name>Abstand 87 - Tessin (Bad Doberan)</name><time>2007-06-23T11:39:39Z</time><ele>24.5</ele></wpt>
+<wpt lon="12.4089" lat="54.0403"><name>Punkt - Tessin (Bad Doberan)</name><time>2007-06-23T11:40:23Z</time><ele>35.6</ele></wpt>
+<wpt lon="12.4082" lat="54.0403"><name>Richtung 305 - Tessin (Bad Doberan)</name><time>2007-06-23T11:40:29Z</time><ele>35.4</ele></wpt>
+<wpt lon="12.4026" lat="54.0471"><name>Abstand 89 - Sanitz</name><time>2007-06-23T11:41:16Z</time><ele>39.2</ele></wpt>
+<wpt lon="12.4018" lat="54.0487"><name>Punkt - Sanitz</name><time>2007-06-23T11:41:23Z</time><ele>41.4</ele></wpt>
+<wpt lon="12.395" lat="54.0622"><name>Punkt - Sanitz</name><time>2007-06-23T11:42:23Z</time><ele>46.7</ele></wpt>
+<wpt lon="12.394" lat="54.0644"><name>Abstand 91 - Sanitz</name><time>2007-06-23T11:42:33Z</time><ele>44.5</ele></wpt>
+<wpt lon="12.3895" lat="54.0729"><name>Punkt - Sanitz</name><time>2007-06-23T11:43:23Z</time><ele>48.5</ele></wpt>
+<wpt lon="12.3861" lat="54.0774"><name>Richtung 267 - Sanitz</name><time>2007-06-23T11:44:09Z</time><ele>49.5</ele></wpt>
+<wpt lon="12.3837" lat="54.0773"><name>Punkt - Sanitz</name><time>2007-06-23T11:44:23Z</time><ele>50</ele></wpt>
+<wpt lon="12.3791" lat="54.0774"><name>Abstand 93 - Sanitz</name><time>2007-06-23T11:44:47Z</time><ele>49.8</ele></wpt>
+<wpt lon="12.3759" lat="54.0775"><name>Punkt - Sanitz</name><time>2007-06-23T11:45:23Z</time><ele>50.3</ele></wpt>
+<wpt lon="12.3617" lat="54.0777"><name>Punkt - Sanitz</name><time>2007-06-23T11:46:23Z</time><ele>50.8</ele></wpt>
+<wpt lon="12.3481" lat="54.0778"><name>Abstand 95 - Sanitz</name><time>2007-06-23T11:46:52Z</time><ele>41</ele></wpt>
+<wpt lon="12.3376" lat="54.0775"><name>Punkt - Sanitz</name><time>2007-06-23T11:47:23Z</time><ele>37.4</ele></wpt>
+<wpt lon="12.3171" lat="54.0769"><name>Abstand 97 - Thulendorf</name><time>2007-06-23T11:48:05Z</time><ele>40.3</ele></wpt>
+<wpt lon="12.3092" lat="54.0767"><name>Punkt - Thulendorf</name><time>2007-06-23T11:48:23Z</time><ele>41.7</ele></wpt>
+<wpt lon="12.2871" lat="54.0787"><name>Punkt - Hohenfelde (Thulendorf)</name><time>2007-06-23T11:49:23Z</time><ele>42.6</ele></wpt>
+<wpt lon="12.2869" lat="54.0787"><name>Abstand 99 - Hohenfelde (Thulendorf)</name><time>2007-06-23T11:49:24Z</time><ele>42.5</ele></wpt>
+<wpt lon="12.2666" lat="54.0792"><name>Punkt - Neu Pastow</name><time>2007-06-23T11:50:23Z</time><ele>41.7</ele></wpt>
+<wpt lon="12.2562" lat="54.0794"><name>Abstand 101 - Neu Pastow</name><time>2007-06-23T11:51:09Z</time><ele>41.4</ele></wpt>
+<wpt lon="12.2514" lat="54.0795"><name>Punkt - Broderstorf</name><time>2007-06-23T11:51:23Z</time><ele>38.9</ele></wpt>
+<wpt lon="12.2324" lat="54.08"><name>Punkt - Neu Pastow</name><time>2007-06-23T11:52:23Z</time><ele>41.3</ele></wpt>
+<wpt lon="12.2255" lat="54.0802"><name>Abstand 103 - Neu Pastow</name><time>2007-06-23T11:52:43Z</time><ele>39.5</ele></wpt>
+<wpt lon="12.2134" lat="54.0805"><name>Punkt - Neu Roggentin</name><time>2007-06-23T11:53:24Z</time><ele>36.2</ele></wpt>
+<wpt lon="12.201" lat="54.0808"><name>Punkt - Neu Roggentin</name><time>2007-06-23T11:54:24Z</time><ele>32.5</ele></wpt>
+<wpt lon="12.1973" lat="54.0808"><name>Punkt - Neu Roggentin</name><time>2007-06-23T11:55:24Z</time><ele>28.7</ele></wpt>
+<wpt lon="12.1948" lat="54.0809"><name>Abstand 105 - Brinckmansdorf</name><time>2007-06-23T11:55:34Z</time><ele>27.7</ele></wpt>
+<wpt lon="12.1901" lat="54.081"><name>Punkt - Brinckmansdorf</name><time>2007-06-23T11:56:24Z</time><ele>27.7</ele></wpt>
+<wpt lon="12.1747" lat="54.0813"><name>Punkt - Brinckmansdorf</name><time>2007-06-23T11:57:24Z</time><ele>24.5</ele></wpt>
+<wpt lon="12.1641" lat="54.0813"><name>Abstand 107 - Brinckmansdorf</name><time>2007-06-23T11:58:05Z</time><ele>7.5</ele></wpt>
+<wpt lon="12.16" lat="54.0813"><name>Punkt - Brinckmansdorf</name><time>2007-06-23T11:58:24Z</time><ele>2.9</ele></wpt>
+<wpt lon="12.1495" lat="54.0854"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T11:59:24Z</time><ele>4.9</ele></wpt>
+<wpt lon="12.1417" lat="54.0859"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:00:24Z</time><ele>15.5</ele></wpt>
+<wpt lon="12.1385" lat="54.0855"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:01:24Z</time><ele>20.1</ele></wpt>
+<wpt lon="12.1368" lat="54.0854"><name>Abstand 109 - Stadtmitte (Rostock)</name><time>2007-06-23T12:01:33Z</time><ele>20.3</ele></wpt>
+<wpt lon="12.1273" lat="54.0859"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:02:24Z</time><ele>16.1</ele></wpt>
+<wpt lon="12.1262" lat="54.0858"><name>Richtung 327 - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T12:03:02Z</time><ele>11.7</ele></wpt>
+<wpt lon="12.1262" lat="54.0859"><name>Richtung 3 - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T12:03:04Z</time><ele>11.1</ele></wpt>
+<wpt lon="12.1264" lat="54.0872"><name>Punkt - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T12:03:24Z</time><ele>12.1</ele></wpt>
+<wpt lon="12.1293" lat="54.0896"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:04:24Z</time><ele>14.9</ele></wpt>
+<wpt lon="12.1344" lat="54.0899"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:05:24Z</time><ele>13.3</ele></wpt>
+<wpt lon="12.135" lat="54.0899"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:06:24Z</time><ele>13.5</ele></wpt>
+<wpt lon="12.1344" lat="54.0901"><name>Richtung 25 - Stadtmitte (Rostock)</name><time>2007-06-23T12:14:10Z</time><ele>3.2</ele></wpt>
+<wpt lon="12.1343" lat="54.0906"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:15:24Z</time><ele>2.8</ele></wpt>
+<wpt lon="12.1341" lat="54.0915"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:16:24Z</time><ele>19</ele></wpt>
+<wpt lon="12.1346" lat="54.092"><name>Abstand 111 - Stadtmitte (Rostock)</name><time>2007-06-23T12:17:17Z</time><ele>-5</ele></wpt>
+<wpt lon="12.1353" lat="54.0921"><name>Richtung 357 - Stadtmitte (Rostock)</name><time>2007-06-23T12:18:09Z</time><ele>-4.6</ele></wpt>
+<wpt lon="12.1351" lat="54.0921"><name>Richtung 39 - Stadtmitte (Rostock)</name><time>2007-06-23T12:19:39Z</time><ele>1.4</ele></wpt>
+<wpt lon="12.1355" lat="54.0917"><name>Richtung 83 - Stadtmitte (Rostock)</name><time>2007-06-23T12:19:40Z</time><ele>1</ele></wpt>
+<wpt lon="12.1354" lat="54.0917"><name>Richtung 349 - Stadtmitte (Rostock)</name><time>2007-06-23T12:19:43Z</time><ele>0.5</ele></wpt>
+<wpt lon="12.1356" lat="54.0912"><name>Richtung 128 - Stadtmitte (Rostock)</name><time>2007-06-23T12:20:31Z</time><ele>-5.4</ele></wpt>
+<wpt lon="12.1357" lat="54.0908"><name>Richtung 152 - Stadtmitte (Rostock)</name><time>2007-06-23T12:21:12Z</time><ele>-18.5</ele></wpt>
+<wpt lon="12.1357" lat="54.0906"><name>Richtung 214 - Stadtmitte (Rostock)</name><time>2007-06-23T12:21:58Z</time><ele>16.3</ele></wpt>
+<wpt lon="12.1356" lat="54.0906"><name>Richtung 262 - Stadtmitte (Rostock)</name><time>2007-06-23T12:22:01Z</time><ele>14.7</ele></wpt>
+<wpt lon="12.1363" lat="54.0902"><name>Richtung 32 - Stadtmitte (Rostock)</name><time>2007-06-23T12:22:50Z</time><ele>9</ele></wpt>
+<wpt lon="12.137" lat="54.09"><name>Richtung 269 - Stadtmitte (Rostock)</name><time>2007-06-23T12:23:36Z</time><ele>31</ele></wpt>
+<wpt lon="12.1368" lat="54.0899"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:24:25Z</time><ele>24.8</ele></wpt>
+<wpt lon="12.1368" lat="54.0899"><name>Richtung 336 - Stadtmitte (Rostock)</name><time>2007-06-23T12:24:26Z</time><ele>25.4</ele></wpt>
+<wpt lon="12.1368" lat="54.0899"><name>Richtung 308 - Stadtmitte (Rostock)</name><time>2007-06-23T12:24:27Z</time><ele>25.8</ele></wpt>
+<wpt lon="12.136" lat="54.09"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:25:25Z</time><ele>29.4</ele></wpt>
+<wpt lon="12.1358" lat="54.09"><name>Richtung 339 - Stadtmitte (Rostock)</name><time>2007-06-23T12:26:18Z</time><ele>52</ele></wpt>
+<wpt lon="12.1354" lat="54.0906"><name>Richtung 311 - Stadtmitte (Rostock)</name><time>2007-06-23T12:26:51Z</time><ele>76.9</ele></wpt>
+<wpt lon="12.1352" lat="54.0904"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:27:25Z</time><ele>66.9</ele></wpt>
+<wpt lon="12.1349" lat="54.09"><name>Richtung 237 - Stadtmitte (Rostock)</name><time>2007-06-23T12:27:27Z</time><ele>66.7</ele></wpt>
+<wpt lon="12.1348" lat="54.09"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:28:25Z</time><ele>27.1</ele></wpt>
+<wpt lon="12.1349" lat="54.09"><name>Richtung 79 - Stadtmitte (Rostock)</name><time>2007-06-23T12:54:00Z</time><ele>27.5</ele></wpt>
+<wpt lon="12.1348" lat="54.09"><name>Richtung 321 - Stadtmitte (Rostock)</name><time>2007-06-23T12:54:02Z</time><ele>25.5</ele></wpt>
+<wpt lon="12.1349" lat="54.09"><name>Richtung 83 - Stadtmitte (Rostock)</name><time>2007-06-23T12:54:08Z</time><ele>21.2</ele></wpt>
+<wpt lon="12.1351" lat="54.0898"><name>Richtung 98 - Stadtmitte (Rostock)</name><time>2007-06-23T12:56:53Z</time><ele>3.2</ele></wpt>
+<wpt lon="12.1359" lat="54.0899"><name>Richtung 69 - Stadtmitte (Rostock)</name><time>2007-06-23T12:57:17Z</time><ele>6.8</ele></wpt>
+<wpt lon="12.1374" lat="54.0903"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:57:26Z</time><ele>7.9</ele></wpt>
+<wpt lon="12.1398" lat="54.0897"><name>Richtung 54 - Stadtmitte (Rostock)</name><time>2007-06-23T12:58:09Z</time><ele>9.9</ele></wpt>
+<wpt lon="12.1397" lat="54.0899"><name>Richtung 304 - Stadtmitte (Rostock)</name><time>2007-06-23T12:58:11Z</time><ele>9.3</ele></wpt>
+<wpt lon="12.1396" lat="54.0899"><name>Richtung 279 - Stadtmitte (Rostock)</name><time>2007-06-23T12:58:13Z</time><ele>8.7</ele></wpt>
+<wpt lon="12.1378" lat="54.0901"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:58:26Z</time><ele>8.6</ele></wpt>
+<wpt lon="12.1291" lat="54.0899"><name>Punkt - Stadtmitte (Rostock)</name><time>2007-06-23T12:59:26Z</time><ele>15.2</ele></wpt>
+<wpt lon="12.1282" lat="54.0899"><name>Abstand 113 - Stadtmitte (Rostock)</name><time>2007-06-23T12:59:32Z</time><ele>14.3</ele></wpt>
+<wpt lon="12.1276" lat="54.0899"><name>Richtung 195 - Stadtmitte (Rostock)</name><time>2007-06-23T12:59:37Z</time><ele>13.9</ele></wpt>
+<wpt lon="12.1258" lat="54.0861"><name>Punkt - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T13:00:26Z</time><ele>10.7</ele></wpt>
+<wpt lon="12.1257" lat="54.0856"><name>Punkt - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T13:01:26Z</time><ele>8.7</ele></wpt>
+<wpt lon="12.1254" lat="54.0856"><name>Richtung 260 - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T13:01:28Z</time><ele>8.3</ele></wpt>
+<wpt lon="12.1169" lat="54.085"><name>Punkt - Kröpeliner-Tor-Vorstadt</name><time>2007-06-23T13:02:26Z</time><ele>11.7</ele></wpt>
+<wpt lon="12.1092" lat="54.0836"><name>Punkt - Hansaviertel (Rostock)</name><time>2007-06-23T13:03:26Z</time><ele>9.3</ele></wpt>
+<wpt lon="12.1086" lat="54.0835"><name>Richtung 302 - Hansaviertel (Rostock)</name><time>2007-06-23T13:03:32Z</time><ele>10</ele></wpt>
+<wpt lon="12.1085" lat="54.0836"><name>Richtung 327 - Hansaviertel (Rostock)</name><time>2007-06-23T13:03:34Z</time><ele>10.4</ele></wpt>
+<wpt lon="12.1071" lat="54.0849"><name>Abstand 115 - Hansaviertel (Rostock)</name><time>2007-06-23T13:03:48Z</time><ele>16.3</ele></wpt>
+<wpt lon="12.1034" lat="54.0883"><name>Punkt - Hansaviertel (Rostock)</name><time>2007-06-23T13:04:26Z</time><ele>19.7</ele></wpt>
+<wpt lon="12.0989" lat="54.0925"><name>Richtung 283 - Hansaviertel (Rostock)</name><time>2007-06-23T13:05:15Z</time><ele>10.8</ele></wpt>
+<wpt lon="12.0968" lat="54.0928"><name>Punkt - Hansaviertel (Rostock)</name><time>2007-06-23T13:05:26Z</time><ele>12.6</ele></wpt>
+<wpt lon="12.0938" lat="54.0949"><name>Punkt - Reutershagen</name><time>2007-06-23T13:06:26Z</time><ele>14.4</ele></wpt>
+<wpt lon="12.0937" lat="54.095"><name>Punkt - Reutershagen</name><time>2007-06-23T13:07:26Z</time><ele>14.3</ele></wpt>
+<wpt lon="12.089" lat="54.0988"><name>Abstand 117 - Reutershagen</name><time>2007-06-23T13:08:02Z</time><ele>16.5</ele></wpt>
+<wpt lon="12.0831" lat="54.1004"><name>Punkt - Reutershagen</name><time>2007-06-23T13:08:26Z</time><ele>19.1</ele></wpt>
+<wpt lon="12.0701" lat="54.1041"><name>Punkt - Reutershagen</name><time>2007-06-23T13:09:26Z</time><ele>16.7</ele></wpt>
+<wpt lon="12.0629" lat="54.1053"><name>Punkt - Evershagen</name><time>2007-06-23T13:10:26Z</time><ele>16.3</ele></wpt>
+<wpt lon="12.0604" lat="54.1054"><name>Abstand 119 - Evershagen</name><time>2007-06-23T13:10:34Z</time><ele>16.7</ele></wpt>
+<wpt lon="12.0442" lat="54.1069"><name>Punkt - Evershagen</name><time>2007-06-23T13:11:26Z</time><ele>17.4</ele></wpt>
+<wpt lon="12.03" lat="54.1082"><name>Abstand 121 - Sievershagen (Lambrechtshagen)</name><time>2007-06-23T13:12:11Z</time><ele>12.3</ele></wpt>
+<wpt lon="12.0256" lat="54.1086"><name>Punkt - Sievershagen (Lambrechtshagen)</name><time>2007-06-23T13:12:26Z</time><ele>13.2</ele></wpt>
+<wpt lon="12.0125" lat="54.1098"><name>Punkt - Lambrechtshagen</name><time>2007-06-23T13:13:26Z</time><ele>9.3</ele></wpt>
+<wpt lon="11.9994" lat="54.1109"><name>Abstand 123 - Admannshagen-Bargeshagen</name><time>2007-06-23T13:14:03Z</time><ele>9</ele></wpt>
+<wpt lon="11.9941" lat="54.1114"><name>Punkt - Admannshagen-Bargeshagen</name><time>2007-06-23T13:14:26Z</time><ele>7.7</ele></wpt>
+<wpt lon="11.9851" lat="54.1117"><name>Punkt - Admannshagen-Bargeshagen</name><time>2007-06-23T13:15:26Z</time><ele>2.5</ele></wpt>
+<wpt lon="11.972" lat="54.1107"><name>Punkt - Admannshagen-Bargeshagen</name><time>2007-06-23T13:16:26Z</time><ele>2.3</ele></wpt>
+<wpt lon="11.9691" lat="54.1103"><name>Abstand 125 - Admannshagen-Bargeshagen</name><time>2007-06-23T13:16:36Z</time><ele>0</ele></wpt>
+<wpt lon="11.9509" lat="54.1067"><name>Punkt - Bartenshagen-Parkentin</name><time>2007-06-23T13:17:26Z</time><ele>-1.3</ele></wpt>
+<wpt lon="11.9397" lat="54.1054"><name>Abstand 127 - Bad Doberan</name><time>2007-06-23T13:17:56Z</time><ele>0.5</ele></wpt>
+<wpt lon="11.9292" lat="54.1066"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:18:27Z</time><ele>4.5</ele></wpt>
+<wpt lon="11.9189" lat="54.1078"><name>Richtung 310 - Bad Doberan</name><time>2007-06-23T13:19:16Z</time><ele>8.5</ele></wpt>
+<wpt lon="11.9187" lat="54.1078"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:19:27Z</time><ele>8.4</ele></wpt>
+<wpt lon="11.9188" lat="54.1083"><name>Richtung 12 - Bad Doberan</name><time>2007-06-23T13:19:31Z</time><ele>8.9</ele></wpt>
+<wpt lon="11.919" lat="54.1088"><name>Richtung 275 - Bad Doberan</name><time>2007-06-23T13:19:41Z</time><ele>8.5</ele></wpt>
+<wpt lon="11.9187" lat="54.1088"><name>Richtung 246 - Bad Doberan</name><time>2007-06-23T13:19:43Z</time><ele>8.2</ele></wpt>
+<wpt lon="11.919" lat="54.1088"><name>Richtung 192 - Bad Doberan</name><time>2007-06-23T13:19:45Z</time><ele>7.7</ele></wpt>
+<wpt lon="11.9188" lat="54.1084"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:20:27Z</time><ele>7.3</ele></wpt>
+<wpt lon="11.9188" lat="54.1082"><name>Richtung 160 - Bad Doberan</name><time>2007-06-23T13:28:18Z</time><ele>-1</ele></wpt>
+<wpt lon="11.9188" lat="54.1082"><name>Richtung 90 - Bad Doberan</name><time>2007-06-23T13:28:20Z</time><ele>-0.5</ele></wpt>
+<wpt lon="11.9188" lat="54.1084"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:28:27Z</time><ele>0.7</ele></wpt>
+<wpt lon="11.9206" lat="54.1113"><name>Abstand 129 - Bad Doberan</name><time>2007-06-23T13:28:49Z</time><ele>-4.9</ele></wpt>
+<wpt lon="11.9146" lat="54.1161"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:29:27Z</time><ele>-5</ele></wpt>
+<wpt lon="11.8981" lat="54.1196"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:30:27Z</time><ele>4</ele></wpt>
+<wpt lon="11.8962" lat="54.1201"><name>Abstand 131 - Bad Doberan</name><time>2007-06-23T13:30:33Z</time><ele>5.3</ele></wpt>
+<wpt lon="11.8819" lat="54.1245"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:31:27Z</time><ele>1.3</ele></wpt>
+<wpt lon="11.8701" lat="54.1281"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:32:27Z</time><ele>8.1</ele></wpt>
+<wpt lon="11.8689" lat="54.1284"><name>Abstand 133 - Bad Doberan</name><time>2007-06-23T13:32:32Z</time><ele>5.1</ele></wpt>
+<wpt lon="11.8607" lat="54.1297"><name>Richtung 285 - Vorder Bollhagen</name><time>2007-06-23T13:33:17Z</time><ele>5.1</ele></wpt>
+<wpt lon="11.8606" lat="54.1296"><name>Richtung 232 - Vorder Bollhagen</name><time>2007-06-23T13:33:19Z</time><ele>5.1</ele></wpt>
+<wpt lon="11.8605" lat="54.1294"><name>Richtung 185 - Bad Doberan</name><time>2007-06-23T13:33:22Z</time><ele>5.1</ele></wpt>
+<wpt lon="11.8603" lat="54.1292"><name>Richtung 210 - Bad Doberan</name><time>2007-06-23T13:33:24Z</time><ele>5.6</ele></wpt>
+<wpt lon="11.86" lat="54.1289"><name>Punkt - Bad Doberan</name><time>2007-06-23T13:33:27Z</time><ele>6.8</ele></wpt>
+<wpt lon="11.8438" lat="54.1255"><name>Punkt - Wittenbeck</name><time>2007-06-23T13:34:27Z</time><ele>19.7</ele></wpt>
+<wpt lon="11.8421" lat="54.1258"><name>Abstand 135 - Wittenbeck</name><time>2007-06-23T13:34:32Z</time><ele>19.3</ele></wpt>
+<wpt lon="11.8314" lat="54.1287"><name>Richtung 336 - Hinter Bollhagen</name><time>2007-06-23T13:35:16Z</time><ele>11.1</ele></wpt>
+<wpt lon="11.8312" lat="54.1287"><name>Richtung 301 - Hinter Bollhagen</name><time>2007-06-23T13:35:17Z</time><ele>11.1</ele></wpt>
+<wpt lon="11.831" lat="54.1287"><name>Richtung 250 - Hinter Bollhagen</name><time>2007-06-23T13:35:19Z</time><ele>10.9</ele></wpt>
+<wpt lon="11.8295" lat="54.1287"><name>Punkt - Steffenshagen (Bad Doberan)</name><time>2007-06-23T13:35:27Z</time><ele>10.1</ele></wpt>
+<wpt lon="11.8163" lat="54.1294"><name>Punkt - Hinter Bollhagen</name><time>2007-06-23T13:36:27Z</time><ele>10.1</ele></wpt>
+<wpt lon="11.8129" lat="54.1298"><name>Abstand 137 - Hinter Bollhagen</name><time>2007-06-23T13:36:44Z</time><ele>10.4</ele></wpt>
+<wpt lon="11.8068" lat="54.1269"><name>Punkt - Wittenbeck</name><time>2007-06-23T13:37:27Z</time><ele>8.6</ele></wpt>
+<wpt lon="11.7953" lat="54.1287"><name>Punkt - Wittenbeck</name><time>2007-06-23T13:38:27Z</time><ele>9.2</ele></wpt>
+<wpt lon="11.7903" lat="54.1328"><name>Abstand 139 - Wittenbeck</name><time>2007-06-23T13:39:06Z</time><ele>8.4</ele></wpt>
+<wpt lon="11.7873" lat="54.1343"><name>Punkt - Wittenbeck</name><time>2007-06-23T13:39:27Z</time><ele>3.7</ele></wpt>
+<wpt lon="11.7755" lat="54.1394"><name>Punkt - Wittenbeck</name><time>2007-06-23T13:40:27Z</time><ele>8.8</ele></wpt>
+<wpt lon="11.7678" lat="54.1447"><name>Abstand 141 - Kühlungsborn</name><time>2007-06-23T13:41:21Z</time><ele>4.9</ele></wpt>
+<wpt lon="11.7671" lat="54.1453"><name>Punkt - Kühlungsborn</name><time>2007-06-23T13:41:27Z</time><ele>3.8</ele></wpt>
+<wpt lon="11.7644" lat="54.1473"><name>Richtung 262 - Kühlungsborn</name><time>2007-06-23T13:41:52Z</time><ele>-0.4</ele></wpt>
+<wpt lon="11.7607" lat="54.1449"><name>Punkt - Kühlungsborn</name><time>2007-06-23T13:42:27Z</time><ele>3.4</ele></wpt>
+<wpt lon="11.7599" lat="54.1447"><name>Richtung 288 - Kühlungsborn</name><time>2007-06-23T13:42:33Z</time><ele>4.3</ele></wpt>
+<wpt lon="11.7596" lat="54.1446"><name>Richtung 233 - Kühlungsborn</name><time>2007-06-23T13:42:37Z</time><ele>4.2</ele></wpt>
+<wpt lon="11.7539" lat="54.142"><name>Punkt - Kühlungsborn</name><time>2007-06-23T13:43:27Z</time><ele>9.3</ele></wpt>
+<wpt lon="11.7522" lat="54.1406"><name>Punkt - Kühlungsborn</name><time>2007-06-23T13:44:27Z</time><ele>12</ele></wpt>
+<wpt lon="11.7504" lat="54.1386"><name>Richtung 254 - Kühlungsborn</name><time>2007-06-23T13:44:48Z</time><ele>14.3</ele></wpt>
+<wpt lon="11.747" lat="54.1388"><name>Abstand 143 - Kühlungsborn</name><time>2007-06-23T13:45:04Z</time><ele>18.9</ele></wpt>
+<wpt lon="11.7397" lat="54.1401"><name>Punkt - Kühlungsborn</name><time>2007-06-23T13:45:27Z</time><ele>14.4</ele></wpt>
+<wpt lon="11.7236" lat="54.1394"><name>Punkt - Kühlungsborn</name><time>2007-06-23T13:46:27Z</time><ele>19.7</ele></wpt>
+<wpt lon="11.7169" lat="54.1401"><name>Abstand 145 - Kühlungsborn</name><time>2007-06-23T13:46:47Z</time><ele>19.4</ele></wpt>
+<wpt lon="11.7125" lat="54.1402"><name>Richtung 235 - Bastorf</name><time>2007-06-23T13:47:09Z</time><ele>15.8</ele></wpt>
+<wpt lon="11.7101" lat="54.1376"><name>Punkt - Bastorf</name><time>2007-06-23T13:47:28Z</time><ele>18.4</ele></wpt>
+<wpt lon="11.7018" lat="54.1269"><name>Punkt - Bastorf</name><time>2007-06-23T13:48:28Z</time><ele>68.6</ele></wpt>
+<wpt lon="11.7016" lat="54.1263"><name>Abstand 147 - Bastorf</name><time>2007-06-23T13:48:32Z</time><ele>66.7</ele></wpt>
+<wpt lon="11.7002" lat="54.1251"><name>Richtung 255 - Bastorf</name><time>2007-06-23T13:48:43Z</time><ele>64</ele></wpt>
+<wpt lon="11.6998" lat="54.1251"><name>Richtung 289 - Bastorf</name><time>2007-06-23T13:48:45Z</time><ele>63</ele></wpt>
+<wpt lon="11.6929" lat="54.1247"><name>Punkt - Bastorf</name><time>2007-06-23T13:49:28Z</time><ele>63.5</ele></wpt>
+<wpt lon="11.6816" lat="54.1186"><name>Abstand 149 - Bastorf</name><time>2007-06-23T13:50:27Z</time><ele>40.4</ele></wpt>
+<wpt lon="11.6816" lat="54.1185"><name>Punkt - Bastorf</name><time>2007-06-23T13:50:28Z</time><ele>40.8</ele></wpt>
+<wpt lon="11.6797" lat="54.1075"><name>Punkt - Bastorf</name><time>2007-06-23T13:51:28Z</time><ele>46.4</ele></wpt>
+<wpt lon="11.6782" lat="54.1009"><name>Abstand 151 - Westhof</name><time>2007-06-23T13:52:04Z</time><ele>41.7</ele></wpt>
+<wpt lon="11.6809" lat="54.0964"><name>Punkt - Westhof</name><time>2007-06-23T13:52:28Z</time><ele>41.6</ele></wpt>
+<wpt lon="11.6794" lat="54.0841"><name>Punkt - Biendorf (Bad Doberan)</name><time>2007-06-23T13:53:28Z</time><ele>34.5</ele></wpt>
+<wpt lon="11.6727" lat="54.072"><name>Punkt - Zweedorf (Bastorf)</name><time>2007-06-23T13:54:28Z</time><ele>33.1</ele></wpt>
+<wpt lon="11.6691" lat="54.0673"><name>Abstand 155 - Malpendorf</name><time>2007-06-23T13:54:51Z</time><ele>33.3</ele></wpt>
+<wpt lon="11.6705" lat="54.059"><name>Punkt - Neubukow</name><time>2007-06-23T13:55:28Z</time><ele>25.1</ele></wpt>
+<wpt lon="11.668" lat="54.0496"><name>Abstand 157 - Malpendorf</name><time>2007-06-23T13:56:11Z</time><ele>34.1</ele></wpt>
+<wpt lon="11.6661" lat="54.0466"><name>Punkt - Malpendorf</name><time>2007-06-23T13:56:28Z</time><ele>41.3</ele></wpt>
+<wpt lon="11.667" lat="54.0386"><name>Punkt - Neubukow</name><time>2007-06-23T13:57:28Z</time><ele>23</ele></wpt>
+<wpt lon="11.6752" lat="54.0342"><name>Abstand 159 - Neubukow</name><time>2007-06-23T13:58:21Z</time><ele>9.5</ele></wpt>
+<wpt lon="11.6755" lat="54.0341"><name>Richtung 156 - Neubukow</name><time>2007-06-23T13:58:25Z</time><ele>10.4</ele></wpt>
+<wpt lon="11.6754" lat="54.034"><name>Richtung 196 - Neubukow</name><time>2007-06-23T13:58:26Z</time><ele>10.6</ele></wpt>
+<wpt lon="11.6752" lat="54.0338"><name>Punkt - Neubukow</name><time>2007-06-23T13:58:28Z</time><ele>11.2</ele></wpt>
+<wpt lon="11.6681" lat="54.0294"><name>Punkt - Neubukow</name><time>2007-06-23T13:59:28Z</time><ele>17.3</ele></wpt>
+<wpt lon="11.6589" lat="54.0219"><name>Punkt - Neubukow</name><time>2007-06-23T14:00:28Z</time><ele>33.7</ele></wpt>
+<wpt lon="11.6569" lat="54.0201"><name>Abstand 161 - Neubukow</name><time>2007-06-23T14:00:37Z</time><ele>35</ele></wpt>
+<wpt lon="11.6454" lat="54.0097"><name>Punkt - Teschow (Alt Bukow)</name><time>2007-06-23T14:01:28Z</time><ele>43.8</ele></wpt>
+<wpt lon="11.6419" lat="54.0044"><name>Abstand 163 - Teschow (Alt Bukow)</name><time>2007-06-23T14:01:51Z</time><ele>45.4</ele></wpt>
+<wpt lon="11.638" lat="53.9959"><name>Punkt - Teschow (Alt Bukow)</name><time>2007-06-23T14:02:28Z</time><ele>46.6</ele></wpt>
+<wpt lon="11.6368" lat="53.9939"><name>Richtung 251 - Teschow (Alt Bukow)</name><time>2007-06-23T14:02:45Z</time><ele>44.3</ele></wpt>
+<wpt lon="11.6299" lat="53.9948"><name>Punkt - Alt Bukow DE</name><time>2007-06-23T14:03:28Z</time><ele>42.4</ele></wpt>
+<wpt lon="11.6252" lat="53.9953"><name>Abstand 165 - Alt Bukow DE</name><time>2007-06-23T14:03:43Z</time><ele>41.6</ele></wpt>
+<wpt lon="11.6125" lat="53.9982"><name>Punkt - Alt Bukow DE</name><time>2007-06-23T14:04:28Z</time><ele>37</ele></wpt>
+<wpt lon="11.6023" lat="53.9962"><name>Punkt - Alt Bukow DE</name><time>2007-06-23T14:05:28Z</time><ele>32.1</ele></wpt>
+<wpt lon="11.5967" lat="53.9956"><name>Abstand 167 - Alt Bukow DE</name><time>2007-06-23T14:06:05Z</time><ele>30.2</ele></wpt>
+<wpt lon="11.5928" lat="53.9954"><name>Punkt - Alt Bukow DE</name><time>2007-06-23T14:06:28Z</time><ele>30.6</ele></wpt>
+<wpt lon="11.5848" lat="53.9981"><name>Punkt - Niendorf (Boiensdorf)</name><time>2007-06-23T14:07:28Z</time><ele>25.8</ele></wpt>
+<wpt lon="11.576" lat="53.9992"><name>Punkt - Niendorf (Boiensdorf)</name><time>2007-06-23T14:08:28Z</time><ele>26.8</ele></wpt>
+<wpt lon="11.5722" lat="54.001"><name>Richtung 275 - Niendorf (Boiensdorf)</name><time>2007-06-23T14:09:01Z</time><ele>22.2</ele></wpt>
+<wpt lon="11.5721" lat="54.001"><name>Richtung 250 - Niendorf (Boiensdorf)</name><time>2007-06-23T14:09:02Z</time><ele>22.6</ele></wpt>
+<wpt lon="11.5714" lat="54.0009"><name>Richtung 274 - Niendorf (Boiensdorf)</name><time>2007-06-23T14:09:06Z</time><ele>23.5</ele></wpt>
+<wpt lon="11.5698" lat="54.0012"><name>Abstand 169 - Niendorf (Boiensdorf)</name><time>2007-06-23T14:09:17Z</time><ele>23.7</ele></wpt>
+<wpt lon="11.5677" lat="54.001"><name>Punkt - Niendorf (Boiensdorf)</name><time>2007-06-23T14:09:28Z</time><ele>24.4</ele></wpt>
+<wpt lon="11.5582" lat="53.9998"><name>Richtung 282 - Niendorf (Boiensdorf)</name><time>2007-06-23T14:10:05Z</time><ele>24.5</ele></wpt>
+<wpt lon="11.5579" lat="53.9999"><name>Richtung 307 - Niendorf (Boiensdorf)</name><time>2007-06-23T14:10:06Z</time><ele>24.6</ele></wpt>
+<wpt lon="11.553" lat="54.0024"><name>Punkt - Niendorf (Boiensdorf)</name><time>2007-06-23T14:10:28Z</time><ele>22.9</ele></wpt>
+<wpt lon="11.5482" lat="54.0052"><name>Richtung 255 - Stove (Boiensdorf)</name><time>2007-06-23T14:11:09Z</time><ele>16.4</ele></wpt>
+<wpt lon="11.5481" lat="54.0051"><name>Richtung 222 - Stove (Boiensdorf)</name><time>2007-06-23T14:11:10Z</time><ele>16.5</ele></wpt>
+<wpt lon="11.5467" lat="54.0037"><name>Punkt - Stove (Boiensdorf)</name><time>2007-06-23T14:11:28Z</time><ele>20.7</ele></wpt>
+<wpt lon="11.5455" lat="54.0025"><name>Abstand 171 - Stove (Boiensdorf)</name><time>2007-06-23T14:11:38Z</time><ele>23.8</ele></wpt>
+<wpt lon="11.5375" lat="53.9945"><name>Punkt - Dreveskirchen</name><time>2007-06-23T14:12:28Z</time><ele>27.6</ele></wpt>
+<wpt lon="11.5354" lat="53.9886"><name>Richtung 217 - Blowatz</name><time>2007-06-23T14:13:18Z</time><ele>14.6</ele></wpt>
+<wpt lon="11.5336" lat="53.9879"><name>Punkt - Blowatz</name><time>2007-06-23T14:13:28Z</time><ele>13.8</ele></wpt>
+<wpt lon="11.5321" lat="53.9872"><name>Abstand 173 - Blowatz</name><time>2007-06-23T14:13:36Z</time><ele>12.8</ele></wpt>
+<wpt lon="11.5208" lat="53.9816"><name>Punkt - Blowatz</name><time>2007-06-23T14:14:28Z</time><ele>2.9</ele></wpt>
+<wpt lon="11.5107" lat="53.9747"><name>Abstand 175 - Blowatz</name><time>2007-06-23T14:15:14Z</time><ele>-1.2</ele></wpt>
+<wpt lon="11.507" lat="53.9723"><name>Punkt - Blowatz</name><time>2007-06-23T14:15:29Z</time><ele>-0.4</ele></wpt>
+<wpt lon="11.4911" lat="53.9646"><name>Punkt - Blowatz</name><time>2007-06-23T14:16:29Z</time><ele>3.9</ele></wpt>
+<wpt lon="11.4893" lat="53.9626"><name>Abstand 177 - Blowatz</name><time>2007-06-23T14:16:47Z</time><ele>1.2</ele></wpt>
+<wpt lon="11.4884" lat="53.9584"><name>Punkt - Krusenhagen</name><time>2007-06-23T14:17:29Z</time><ele>2</ele></wpt>
+<wpt lon="11.4864" lat="53.9449"><name>Abstand 179 - Krusenhagen</name><time>2007-06-23T14:18:23Z</time><ele>1.8</ele></wpt>
+<wpt lon="11.4864" lat="53.9435"><name>Punkt - Krusenhagen</name><time>2007-06-23T14:18:29Z</time><ele>0.9</ele></wpt>
+<wpt lon="11.4864" lat="53.9317"><name>Punkt - Redentin</name><time>2007-06-23T14:19:29Z</time><ele>2.5</ele></wpt>
+<wpt lon="11.4863" lat="53.927"><name>Abstand 181 - Redentin</name><time>2007-06-23T14:20:02Z</time><ele>12.5</ele></wpt>
+<wpt lon="11.486" lat="53.9235"><name>Punkt - Redentin</name><time>2007-06-23T14:20:29Z</time><ele>8.2</ele></wpt>
+<wpt lon="11.4835" lat="53.9155"><name>Punkt - Wismar</name><time>2007-06-23T14:21:29Z</time><ele>1.2</ele></wpt>
+<wpt lon="11.4779" lat="53.9128"><name>Abstand 183 - Müggenburg (Wismar)</name><time>2007-06-23T14:22:12Z</time><ele>0.6</ele></wpt>
+<wpt lon="11.4725" lat="53.9128"><name>Punkt - Müggenburg (Wismar)</name><time>2007-06-23T14:22:29Z</time><ele>2.9</ele></wpt>
+<wpt lon="11.4648" lat="53.9104"><name>Punkt - Wismar</name><time>2007-06-23T14:23:29Z</time><ele>-0.8</ele></wpt>
+<wpt lon="11.4648" lat="53.9102"><name>Richtung 138 - Wismar</name><time>2007-06-23T14:23:53Z</time><ele>-1</ele></wpt>
+<wpt lon="11.4651" lat="53.9102"><name>Richtung 93 - Wismar</name><time>2007-06-23T14:23:55Z</time><ele>-1.2</ele></wpt>
+<wpt lon="11.4692" lat="53.9096"><name>Richtung 161 - Wismar</name><time>2007-06-23T14:24:14Z</time><ele>-1.3</ele></wpt>
+<wpt lon="11.4691" lat="53.9074"><name>Punkt - Wismar</name><time>2007-06-23T14:24:29Z</time><ele>-0.6</ele></wpt>
+<wpt lon="11.4709" lat="53.9036"><name>Abstand 185 - Wismar</name><time>2007-06-23T14:24:57Z</time><ele>-1</ele></wpt>
+<wpt lon="11.4719" lat="53.902"><name>Punkt - Wismar</name><time>2007-06-23T14:25:29Z</time><ele>-0.6</ele></wpt>
+<wpt lon="11.472" lat="53.9017"><name>Richtung 200 - Wismar</name><time>2007-06-23T14:25:43Z</time><ele>-0.8</ele></wpt>
+<wpt lon="11.4671" lat="53.8973"><name>Punkt - Wismar</name><time>2007-06-23T14:26:29Z</time><ele>1</ele></wpt>
+<wpt lon="11.4666" lat="53.8969"><name>Richtung 238 - Wismar</name><time>2007-06-23T14:26:35Z</time><ele>0.8</ele></wpt>
+<wpt lon="11.4665" lat="53.8969"><name>Richtung 267 - Wismar</name><time>2007-06-23T14:26:36Z</time><ele>0.8</ele></wpt>
+<wpt lon="11.4611" lat="53.8963"><name>Punkt - Wismar</name><time>2007-06-23T14:27:29Z</time><ele>2.4</ele></wpt>
+<wpt lon="11.4598" lat="53.8948"><name>Punkt - Wismar</name><time>2007-06-23T14:28:29Z</time><ele>-0.8</ele></wpt>
+<wpt lon="11.4598" lat="53.8948"><name>Richtung 124 - Wismar</name><time>2007-06-23T14:28:32Z</time><ele>-2.7</ele></wpt>
+<wpt lon="11.4596" lat="53.8946"><name>Richtung 216 - Wismar</name><time>2007-06-23T14:28:34Z</time><ele>-2.7</ele></wpt>
+<wpt lon="11.4552" lat="53.8923"><name>Richtung 271 - Wismar</name><time>2007-06-23T14:29:03Z</time><ele>0.4</ele></wpt>
+<wpt lon="11.4535" lat="53.8925"><name>Abstand 187 - Wismar</name><time>2007-06-23T14:29:12Z</time><ele>1.1</ele></wpt>
+<wpt lon="11.45" lat="53.893"><name>Punkt - Wismar</name><time>2007-06-23T14:29:29Z</time><ele>1.9</ele></wpt>
+<wpt lon="11.4464" lat="53.8936"><name>Punkt - Wismar</name><time>2007-06-23T14:30:29Z</time><ele>1.9</ele></wpt>
+<wpt lon="11.4394" lat="53.8942"><name>Punkt - Wismar</name><time>2007-06-23T14:31:29Z</time><ele>2.6</ele></wpt>
+<wpt lon="11.4297" lat="53.895"><name>Punkt - Wismar</name><time>2007-06-23T14:32:29Z</time><ele>21</ele></wpt>
+<wpt lon="11.424" lat="53.8965"><name>Abstand 189 - Wismar</name><time>2007-06-23T14:33:20Z</time><ele>22.1</ele></wpt>
+<wpt lon="11.423" lat="53.8967"><name>Punkt - Wismar</name><time>2007-06-23T14:33:29Z</time><ele>20.3</ele></wpt>
+<wpt lon="11.4131" lat="53.8991"><name>Punkt - Klein Woltersdorf (Barnekow)</name><time>2007-06-23T14:34:29Z</time><ele>35</ele></wpt>
+<wpt lon="11.3978" lat="53.901"><name>Punkt - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:35:29Z</time><ele>23.3</ele></wpt>
+<wpt lon="11.3966" lat="53.9007"><name>Richtung 271 - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:35:36Z</time><ele>20.1</ele></wpt>
+<wpt lon="11.3964" lat="53.9008"><name>Richtung 319 - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:35:38Z</time><ele>19.5</ele></wpt>
+<wpt lon="11.3959" lat="53.9012"><name>Abstand 191 - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:35:42Z</time><ele>19.8</ele></wpt>
+<wpt lon="11.3845" lat="53.9038"><name>Punkt - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:36:29Z</time><ele>23.6</ele></wpt>
+<wpt lon="11.3799" lat="53.9041"><name>Richtung 323 - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:36:52Z</time><ele>27.1</ele></wpt>
+<wpt lon="11.3729" lat="53.9047"><name>Punkt - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:37:29Z</time><ele>25.6</ele></wpt>
+<wpt lon="11.3677" lat="53.9056"><name>Abstand 193 - Proseken</name><time>2007-06-23T14:38:01Z</time><ele>28.3</ele></wpt>
+<wpt lon="11.3619" lat="53.9063"><name>Punkt - Gägelow (Nordwestmecklenburg)</name><time>2007-06-23T14:38:29Z</time><ele>31.6</ele></wpt>
+<wpt lon="11.3437" lat="53.9101"><name>Punkt - Neu Weitendorf</name><time>2007-06-23T14:39:29Z</time><ele>41.5</ele></wpt>
+<wpt lon="11.3384" lat="53.9108"><name>Abstand 195 - Neu Weitendorf</name><time>2007-06-23T14:39:49Z</time><ele>42.7</ele></wpt>
+<wpt lon="11.3251" lat="53.9154"><name>Punkt - Gramkow</name><time>2007-06-23T14:40:29Z</time><ele>23.7</ele></wpt>
+<wpt lon="11.312" lat="53.9198"><name>Abstand 197 - Gramkow</name><time>2007-06-23T14:41:14Z</time><ele>12.4</ele></wpt>
+<wpt lon="11.3049" lat="53.9222"><name>Punkt - Gramkow</name><time>2007-06-23T14:41:29Z</time><ele>16.6</ele></wpt>
+<wpt lon="11.2867" lat="53.9299"><name>Punkt - Hohenkirchen (Nordwestmecklenburg)</name><time>2007-06-23T14:42:29Z</time><ele>-4.9</ele></wpt>
+<wpt lon="11.2726" lat="53.9301"><name>Punkt - Hohenkirchen (Nordwestmecklenburg)</name><time>2007-06-23T14:43:29Z</time><ele>-3.2</ele></wpt>
+<wpt lon="11.2615" lat="53.9329"><name>Punkt - Hohenkirchen (Nordwestmecklenburg)</name><time>2007-06-23T14:44:30Z</time><ele>-0.6</ele></wpt>
+<wpt lon="11.2578" lat="53.9341"><name>Abstand 201 - Hohenkirchen (Nordwestmecklenburg)</name><time>2007-06-23T14:44:49Z</time><ele>-0.4</ele></wpt>
+<wpt lon="11.2495" lat="53.9381"><name>Punkt - Hohenkirchen (Nordwestmecklenburg)</name><time>2007-06-23T14:45:30Z</time><ele>-0.4</ele></wpt>
+<wpt lon="11.2393" lat="53.9421"><name>Punkt - Wohlenberg (Klütz)</name><time>2007-06-23T14:46:30Z</time><ele>24.4</ele></wpt>
+<wpt lon="11.2361" lat="53.9453"><name>Abstand 203 - Wohlenberg (Klütz)</name><time>2007-06-23T14:46:48Z</time><ele>18.9</ele></wpt>
+<wpt lon="11.2269" lat="53.9534"><name>Punkt - Klütz</name><time>2007-06-23T14:47:30Z</time><ele>15.5</ele></wpt>
+<wpt lon="11.2234" lat="53.9554"><name>Richtung 358 - Klütz</name><time>2007-06-23T14:48:19Z</time><ele>3.4</ele></wpt>
+<wpt lon="11.2232" lat="53.9556"><name>Richtung 319 - Klütz</name><time>2007-06-23T14:48:21Z</time><ele>2.8</ele></wpt>
+<wpt lon="11.223" lat="53.9557"><name>Richtung 260 - Klütz</name><time>2007-06-23T14:48:23Z</time><ele>2.3</ele></wpt>
+<wpt lon="11.2228" lat="53.9558"><name>Richtung 311 - Klütz</name><time>2007-06-23T14:48:26Z</time><ele>1.7</ele></wpt>
+<wpt lon="11.2223" lat="53.9561"><name>Punkt - Klütz</name><time>2007-06-23T14:48:30Z</time><ele>0.8</ele></wpt>
+<wpt lon="11.2161" lat="53.9581"><name>Abstand 205 - Klütz</name><time>2007-06-23T14:49:07Z</time><ele>14.2</ele></wpt>
+<wpt lon="11.2089" lat="53.9588"><name>Punkt - Klütz</name><time>2007-06-23T14:49:30Z</time><ele>25.6</ele></wpt>
+<wpt lon="11.1954" lat="53.9609"><name>Punkt - Christinenfeld</name><time>2007-06-23T14:50:30Z</time><ele>23.9</ele></wpt>
+<wpt lon="11.1859" lat="53.9615"><name>Abstand 207 - Klütz</name><time>2007-06-23T14:51:08Z</time><ele>34.6</ele></wpt>
+<wpt lon="11.1806" lat="53.9626"><name>Punkt - Klütz</name><time>2007-06-23T14:51:30Z</time><ele>30.9</ele></wpt>
+<wpt lon="11.1755" lat="53.9638"><name>Punkt - Klütz</name><time>2007-06-23T14:52:30Z</time><ele>22.9</ele></wpt>
+<wpt lon="11.1673" lat="53.9656"><name>Punkt - Klütz</name><time>2007-06-23T14:53:30Z</time><ele>14.6</ele></wpt>
+<wpt lon="11.1646" lat="53.9669"><name>Richtung 351 - Klütz</name><time>2007-06-23T14:54:03Z</time><ele>9.3</ele></wpt>
+<wpt lon="11.1647" lat="53.967"><name>Richtung 20 - Klütz</name><time>2007-06-23T14:54:05Z</time><ele>8.5</ele></wpt>
+<wpt lon="11.1648" lat="53.9672"><name>Richtung 335 - Klütz</name><time>2007-06-23T14:54:11Z</time><ele>5.5</ele></wpt>
+<wpt lon="11.1648" lat="53.9673"><name>Richtung 298 - Klütz</name><time>2007-06-23T14:54:12Z</time><ele>4.9</ele></wpt>
+<wpt lon="11.1638" lat="53.9676"><name>Richtung 329 - Klütz</name><time>2007-06-23T14:54:25Z</time><ele>4</ele></wpt>
+<wpt lon="11.1634" lat="53.9676"><name>Richtung 268 - Klütz</name><time>2007-06-23T14:54:48Z</time><ele>4.7</ele></wpt>
+<wpt lon="11.162" lat="53.9672"><name>Punkt - Klütz</name><time>2007-06-23T14:55:30Z</time><ele>8.8</ele></wpt>
+<wpt lon="11.1616" lat="53.9672"><name>Richtung 333 - Klütz</name><time>2007-06-23T14:55:40Z</time><ele>8.5</ele></wpt>
+<wpt lon="11.1602" lat="53.9684"><name>Abstand 209 - Klütz</name><time>2007-06-23T14:55:58Z</time><ele>13.5</ele></wpt>
+<wpt lon="11.1561" lat="53.9726"><name>Punkt - Klütz</name><time>2007-06-23T14:56:30Z</time><ele>28.4</ele></wpt>
+<wpt lon="11.1483" lat="53.9784"><name>Richtung 277 - Klütz</name><time>2007-06-23T14:57:12Z</time><ele>23.3</ele></wpt>
+<wpt lon="11.148" lat="53.9783"><name>Richtung 248 - Klütz</name><time>2007-06-23T14:57:14Z</time><ele>22.6</ele></wpt>
+<wpt lon="11.1451" lat="53.978"><name>Punkt - Klütz</name><time>2007-06-23T14:57:30Z</time><ele>18</ele></wpt>
+<wpt lon="11.1386" lat="53.9778"><name>Abstand 211 - Klütz</name><time>2007-06-23T14:57:53Z</time><ele>20.3</ele></wpt>
+<wpt lon="11.1244" lat="53.9777"><name>Punkt - Klütz</name><time>2007-06-23T14:58:30Z</time><ele>39.5</ele></wpt>
+<wpt lon="11.108" lat="53.9771"><name>Abstand 213 - Klütz</name><time>2007-06-23T14:59:21Z</time><ele>49.7</ele></wpt>
+<wpt lon="11.1059" lat="53.9772"><name>Punkt - Kalkhorst</name><time>2007-06-23T14:59:30Z</time><ele>51.4</ele></wpt>
+<wpt lon="11.0893" lat="53.9779"><name>Punkt - Hohen Schönberg</name><time>2007-06-23T15:00:30Z</time><ele>75.1</ele></wpt>
+<wpt lon="11.0837" lat="53.9785"><name>Punkt - Hohen Schönberg</name><time>2007-06-23T15:01:30Z</time><ele>71.8</ele></wpt>
+<wpt lon="11.0777" lat="53.9782"><name>Abstand 215 - Hohen Schönberg</name><time>2007-06-23T15:02:20Z</time><ele>63.3</ele></wpt>
+<wpt lon="11.0757" lat="53.9782"><name>Punkt - Hohen Schönberg</name><time>2007-06-23T15:02:30Z</time><ele>61.9</ele></wpt>
+<wpt lon="11.0649" lat="53.977"><name>Punkt - Kalkhorst</name><time>2007-06-23T15:03:30Z</time><ele>54.7</ele></wpt>
+<wpt lon="11.0502" lat="53.9716"><name>Abstand 217 - Kalkhorst</name><time>2007-06-23T15:04:28Z</time><ele>33.8</ele></wpt>
+<wpt lon="11.0498" lat="53.9714"><name>Punkt - Kalkhorst</name><time>2007-06-23T15:04:30Z</time><ele>33.3</ele></wpt>
+<wpt lon="11.041" lat="53.9681"><name>Punkt - Kalkhorst</name><time>2007-06-23T15:05:30Z</time><ele>22.5</ele></wpt>
+<wpt lon="11.0247" lat="53.9622"><name>Abstand 219 - Kalkhorst</name><time>2007-06-23T15:06:21Z</time><ele>14.6</ele></wpt>
+<wpt lon="11.0223" lat="53.9611"><name>Punkt - Kalkhorst</name><time>2007-06-23T15:06:30Z</time><ele>13.9</ele></wpt>
+<wpt lon="11.022" lat="53.9607"><name>Richtung 199 - Neuenhagen (Kalkhorst)</name><time>2007-06-23T15:06:33Z</time><ele>14</ele></wpt>
+<wpt lon="11.0136" lat="53.9539"><name>Punkt - Neuenhagen (Kalkhorst)</name><time>2007-06-23T15:07:30Z</time><ele>25</ele></wpt>
+<wpt lon="11.0102" lat="53.9481"><name>Abstand 221 - Neuenhagen (Kalkhorst)</name><time>2007-06-23T15:08:04Z</time><ele>30.5</ele></wpt>
+<wpt lon="11.0058" lat="53.944"><name>Punkt - Kalkhorst</name><time>2007-06-23T15:08:30Z</time><ele>33.1</ele></wpt>
+<wpt lon="10.9914" lat="53.9354"><name>Punkt - Wilmstorf</name><time>2007-06-23T15:09:30Z</time><ele>31.8</ele></wpt>
+<wpt lon="10.9909" lat="53.9348"><name>Abstand 223 - Wilmstorf</name><time>2007-06-23T15:09:33Z</time><ele>30.8</ele></wpt>
+<wpt lon="10.9773" lat="53.9253"><name>Punkt - Wilmstorf</name><time>2007-06-23T15:10:30Z</time><ele>25</ele></wpt>
+<wpt lon="10.9748" lat="53.9203"><name>Abstand 225 - Dassow</name><time>2007-06-23T15:11:06Z</time><ele>16.1</ele></wpt>
+<wpt lon="10.9764" lat="53.9174"><name>Punkt - Dassow</name><time>2007-06-23T15:11:30Z</time><ele>16.7</ele></wpt>
+<wpt lon="10.9784" lat="53.9137"><name>Richtung 233 - Dassow</name><time>2007-06-23T15:12:06Z</time><ele>5.4</ele></wpt>
+<wpt lon="10.9722" lat="53.9116"><name>Punkt - Dassow</name><time>2007-06-23T15:12:31Z</time><ele>6</ele></wpt>
+<wpt lon="10.967" lat="53.9066"><name>Abstand 227 - Schwanbeck (Dassow)</name><time>2007-06-23T15:13:05Z</time><ele>1.6</ele></wpt>
+<wpt lon="10.9591" lat="53.9058"><name>Punkt - Schwanbeck (Dassow)</name><time>2007-06-23T15:13:31Z</time><ele>2.3</ele></wpt>
+<wpt lon="10.9416" lat="53.8996"><name>Punkt - Schwanbeck (Dassow)</name><time>2007-06-23T15:14:31Z</time><ele>-2.8</ele></wpt>
+<wpt lon="10.9408" lat="53.8993"><name>Abstand 229 - Schwanbeck (Dassow)</name><time>2007-06-23T15:14:34Z</time><ele>-2.9</ele></wpt>
+<wpt lon="10.9224" lat="53.8948"><name>Punkt - Selmsdorf</name><time>2007-06-23T15:15:31Z</time><ele>6.2</ele></wpt>
+<wpt lon="10.9123" lat="53.8937"><name>Abstand 231 - Zarnewenz</name><time>2007-06-23T15:16:06Z</time><ele>10.9</ele></wpt>
+<wpt lon="10.9037" lat="53.8929"><name>Punkt - Zarnewenz</name><time>2007-06-23T15:16:31Z</time><ele>12.2</ele></wpt>
+<wpt lon="10.886" lat="53.8891"><name>Punkt - Selmsdorf</name><time>2007-06-23T15:17:31Z</time><ele>24</ele></wpt>
+<wpt lon="10.8837" lat="53.8885"><name>Abstand 233 - Selmsdorf</name><time>2007-06-23T15:17:41Z</time><ele>24.3</ele></wpt>
+<wpt lon="10.8673" lat="53.8843"><name>Punkt - Selmsdorf</name><time>2007-06-23T15:18:31Z</time><ele>28.6</ele></wpt>
+<wpt lon="10.8646" lat="53.8836"><name>Richtung 308 - Selmsdorf</name><time>2007-06-23T15:19:03Z</time><ele>28.3</ele></wpt>
+<wpt lon="10.8646" lat="53.8836"><name>Richtung 246 - Selmsdorf</name><time>2007-06-23T15:19:04Z</time><ele>28.3</ele></wpt>
+<wpt lon="10.8642" lat="53.8835"><name>Richtung 287 - Selmsdorf</name><time>2007-06-23T15:19:08Z</time><ele>28.4</ele></wpt>
+<wpt lon="10.864" lat="53.8837"><name>Richtung 321 - Selmsdorf</name><time>2007-06-23T15:19:10Z</time><ele>28.4</ele></wpt>
+<wpt lon="10.8603" lat="53.885"><name>Punkt - Selmsdorf</name><time>2007-06-23T15:19:31Z</time><ele>22.7</ele></wpt>
+<wpt lon="10.8558" lat="53.8845"><name>Abstand 235 - Selmsdorf</name><time>2007-06-23T15:19:49Z</time><ele>17.5</ele></wpt>
+<wpt lon="10.8486" lat="53.8839"><name>Punkt - Selmsdorf</name><time>2007-06-23T15:20:31Z</time><ele>17</ele></wpt>
+<wpt lon="10.8375" lat="53.8838"><name>Punkt - Schlutup</name><time>2007-06-23T15:21:31Z</time><ele>28.5</ele></wpt>
+<wpt lon="10.8254" lat="53.8839"><name>Abstand 237 - Selmsdorf</name><time>2007-06-23T15:22:14Z</time><ele>12.7</ele></wpt>
+<wpt lon="10.8209" lat="53.8837"><name>Punkt - Selmsdorf</name><time>2007-06-23T15:22:31Z</time><ele>14.5</ele></wpt>
+<wpt lon="10.8031" lat="53.8759"><name>Punkt - Schlutup</name><time>2007-06-23T15:23:31Z</time><ele>22.9</ele></wpt>
+<wpt lon="10.7995" lat="53.875"><name>Abstand 239 - Schlutup</name><time>2007-06-23T15:23:38Z</time><ele>19.5</ele></wpt>
+<wpt lon="10.7765" lat="53.8747"><name>Punkt - Schlutup</name><time>2007-06-23T15:24:31Z</time><ele>6.8</ele></wpt>
+<wpt lon="10.7735" lat="53.8773"><name>Abstand 241 - Schlutup</name><time>2007-06-23T15:24:52Z</time><ele>11.3</ele></wpt>
+<wpt lon="10.7727" lat="53.8779"><name>Richtung 273 - Schlutup</name><time>2007-06-23T15:25:01Z</time><ele>10</ele></wpt>
+<wpt lon="10.7725" lat="53.8778"><name>Richtung 239 - Schlutup</name><time>2007-06-23T15:25:03Z</time><ele>10.1</ele></wpt>
+<wpt lon="10.7661" lat="53.8756"><name>Punkt - Schlutup</name><time>2007-06-23T15:25:31Z</time><ele>7.9</ele></wpt>
+<wpt lon="10.7534" lat="53.8732"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:26:31Z</time><ele>13.4</ele></wpt>
+<wpt lon="10.746" lat="53.8724"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:27:31Z</time><ele>24.9</ele></wpt>
+<wpt lon="10.7453" lat="53.8723"><name>Abstand 243 - Sankt Gertrud</name><time>2007-06-23T15:27:34Z</time><ele>23.4</ele></wpt>
+<wpt lon="10.7381" lat="53.8712"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:28:31Z</time><ele>14.6</ele></wpt>
+<wpt lon="10.7316" lat="53.8661"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:29:31Z</time><ele>10.2</ele></wpt>
+<wpt lon="10.7218" lat="53.8645"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:30:31Z</time><ele>13.2</ele></wpt>
+<wpt lon="10.7202" lat="53.8644"><name>Abstand 245 - Sankt Gertrud</name><time>2007-06-23T15:30:48Z</time><ele>13</ele></wpt>
+<wpt lon="10.7129" lat="53.8637"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:31:31Z</time><ele>17.5</ele></wpt>
+<wpt lon="10.7114" lat="53.8634"><name>Richtung 202 - Sankt Gertrud</name><time>2007-06-23T15:32:12Z</time><ele>16.4</ele></wpt>
+<wpt lon="10.7107" lat="53.8609"><name>Punkt - Sankt Gertrud</name><time>2007-06-23T15:32:31Z</time><ele>12.2</ele></wpt>
+<wpt lon="10.7027" lat="53.8531"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:33:31Z</time><ele>11.6</ele></wpt>
+<wpt lon="10.7015" lat="53.8524"><name>Abstand 247 - Sankt Jürgen</name><time>2007-06-23T15:33:37Z</time><ele>12.4</ele></wpt>
+<wpt lon="10.6882" lat="53.8515"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:34:31Z</time><ele>8.5</ele></wpt>
+<wpt lon="10.6875" lat="53.8512"><name>Richtung 218 - Sankt Jürgen</name><time>2007-06-23T15:35:19Z</time><ele>8.2</ele></wpt>
+<wpt lon="10.6867" lat="53.8499"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:35:31Z</time><ele>11</ele></wpt>
+<wpt lon="10.6842" lat="53.8469"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:36:31Z</time><ele>10.8</ele></wpt>
+<wpt lon="10.684" lat="53.8468"><name>Richtung 280 - Sankt Jürgen</name><time>2007-06-23T15:36:44Z</time><ele>10.5</ele></wpt>
+<wpt lon="10.684" lat="53.847"><name>Richtung 346 - Sankt Jürgen</name><time>2007-06-23T15:36:46Z</time><ele>10.3</ele></wpt>
+<wpt lon="10.6828" lat="53.8511"><name>Abstand 249 - Sankt Jürgen</name><time>2007-06-23T15:37:25Z</time><ele>7.7</ele></wpt>
+<wpt lon="10.6829" lat="53.8513"><name>Richtung 0 - Sankt Jürgen</name><time>2007-06-23T15:37:28Z</time><ele>8</ele></wpt>
+<wpt lon="10.6827" lat="53.8515"><name>Richtung 316 - Sankt Jürgen</name><time>2007-06-23T15:37:30Z</time><ele>7.8</ele></wpt>
+<wpt lon="10.6826" lat="53.8515"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:37:31Z</time><ele>7.6</ele></wpt>
+<wpt lon="10.6823" lat="53.8515"><name>Richtung 239 - Sankt Jürgen</name><time>2007-06-23T15:37:34Z</time><ele>7.1</ele></wpt>
+<wpt lon="10.6821" lat="53.8513"><name>Richtung 208 - Sankt Jürgen</name><time>2007-06-23T15:37:36Z</time><ele>6.8</ele></wpt>
+<wpt lon="10.678" lat="53.8487"><name>Richtung 179 - Sankt Jürgen</name><time>2007-06-23T15:38:30Z</time><ele>4.4</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:38:31Z</time><ele>4.4</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 241 - Sankt Jürgen</name><time>2007-06-23T15:38:39Z</time><ele>4.7</ele></wpt>
+<wpt lon="10.6781" lat="53.8481"><name>Richtung 285 - Sankt Jürgen</name><time>2007-06-23T15:38:41Z</time><ele>5</ele></wpt>
+<wpt lon="10.6775" lat="53.8482"><name>Richtung 314 - Sankt Jürgen</name><time>2007-06-23T15:38:49Z</time><ele>4.3</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 359 - Sankt Jürgen</name><time>2007-06-23T15:38:52Z</time><ele>4</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:39:31Z</time><ele>3.8</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 299 - Sankt Jürgen</name><time>2007-06-23T15:39:56Z</time><ele>3.5</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 355 - Sankt Jürgen</name><time>2007-06-23T15:39:58Z</time><ele>3.3</ele></wpt>
+<wpt lon="10.678" lat="53.8484"><name>Richtung 94 - Sankt Jürgen</name><time>2007-06-23T15:40:22Z</time><ele>-0.9</ele></wpt>
+<wpt lon="10.678" lat="53.8484"><name>Richtung 174 - Sankt Jürgen</name><time>2007-06-23T15:40:24Z</time><ele>-1.5</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:40:32Z</time><ele>-4</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:40:34Z</time><ele>-3</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 317 - Sankt Jürgen</name><time>2007-06-23T15:40:37Z</time><ele>-0.1</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 260 - Sankt Jürgen</name><time>2007-06-23T15:40:38Z</time><ele>-0.4</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Richtung 178 - Sankt Jürgen</name><time>2007-06-23T15:40:48Z</time><ele>7.9</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 124 - Sankt Jürgen</name><time>2007-06-23T15:40:50Z</time><ele>11.1</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 80 - Sankt Jürgen</name><time>2007-06-23T15:40:51Z</time><ele>13.5</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 116 - Sankt Jürgen</name><time>2007-06-23T15:40:57Z</time><ele>12.7</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 342 - Sankt Jürgen</name><time>2007-06-23T15:41:30Z</time><ele>36.4</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:41:32Z</time><ele>43.2</ele></wpt>
+<wpt lon="10.6778" lat="53.8487"><name>Richtung 49 - Sankt Jürgen</name><time>2007-06-23T15:41:35Z</time><ele>46.9</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 137 - Sankt Jürgen</name><time>2007-06-23T15:41:44Z</time><ele>55.7</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 64 - Sankt Jürgen</name><time>2007-06-23T15:41:48Z</time><ele>60.7</ele></wpt>
+<wpt lon="10.6779" lat="53.8488"><name>Richtung 254 - Sankt Jürgen</name><time>2007-06-23T15:41:51Z</time><ele>60.2</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 334 - Sankt Jürgen</name><time>2007-06-23T15:42:03Z</time><ele>46.7</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 257 - Sankt Jürgen</name><time>2007-06-23T15:42:05Z</time><ele>43.9</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 35 - Sankt Jürgen</name><time>2007-06-23T15:42:19Z</time><ele>25.3</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 81 - Sankt Jürgen</name><time>2007-06-23T15:42:21Z</time><ele>21</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:42:32Z</time><ele>12.6</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 153 - Sankt Jürgen</name><time>2007-06-23T15:42:36Z</time><ele>-1.6</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 208 - Sankt Jürgen</name><time>2007-06-23T15:42:38Z</time><ele>-2.2</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 173 - Sankt Jürgen</name><time>2007-06-23T15:42:40Z</time><ele>-1.4</ele></wpt>
+<wpt lon="10.6779" lat="53.8484"><name>Richtung 221 - Sankt Jürgen</name><time>2007-06-23T15:43:43Z</time><ele>2.6</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 33 - Sankt Jürgen</name><time>2007-06-23T15:43:45Z</time><ele>2.6</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 20 - Sankt Jürgen</name><time>2007-06-23T15:43:48Z</time><ele>2.6</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:43:50Z</time><ele>112.5</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 50 - Sankt Jürgen</name><time>2007-06-23T15:43:57Z</time><ele>102.8</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 337 - Sankt Jürgen</name><time>2007-06-23T15:43:59Z</time><ele>94.5</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 258 - Sankt Jürgen</name><time>2007-06-23T15:44:17Z</time><ele>60.2</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:44:26Z</time><ele>57.9</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 287 - Sankt Jürgen</name><time>2007-06-23T15:44:31Z</time><ele>54.6</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 316 - Sankt Jürgen</name><time>2007-06-23T15:44:32Z</time><ele>53.9</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 258 - Sankt Jürgen</name><time>2007-06-23T15:44:36Z</time><ele>52.3</ele></wpt>
+<wpt lon="10.6771" lat="53.8486"><name>Richtung 38 - Sankt Jürgen</name><time>2007-06-23T15:45:05Z</time><ele>54.5</ele></wpt>
+<wpt lon="10.6771" lat="53.8487"><name>Richtung 82 - Sankt Jürgen</name><time>2007-06-23T15:45:06Z</time><ele>54.6</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 132 - Sankt Jürgen</name><time>2007-06-23T15:45:10Z</time><ele>54.5</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 80 - Sankt Jürgen</name><time>2007-06-23T15:45:12Z</time><ele>54.5</ele></wpt>
+<wpt lon="10.677" lat="53.8489"><name>Richtung 6 - Sankt Jürgen</name><time>2007-06-23T15:45:19Z</time><ele>54.8</ele></wpt>
+<wpt lon="10.6772" lat="53.8487"><name>Richtung 309 - Sankt Jürgen</name><time>2007-06-23T15:45:20Z</time><ele>54.7</ele></wpt>
+<wpt lon="10.6771" lat="53.8487"><name>Richtung 279 - Sankt Jürgen</name><time>2007-06-23T15:45:22Z</time><ele>54.4</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 15 - Sankt Jürgen</name><time>2007-06-23T15:45:37Z</time><ele>44.2</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 90 - Sankt Jürgen</name><time>2007-06-23T15:45:39Z</time><ele>43.1</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 158 - Sankt Jürgen</name><time>2007-06-23T15:45:43Z</time><ele>45.2</ele></wpt>
+<wpt lon="10.6745" lat="53.8497"><name>Richtung 52 - Sankt Jürgen</name><time>2007-06-23T15:46:33Z</time><ele>60.2</ele></wpt>
+<wpt lon="10.6756" lat="53.8494"><name>Richtung 63 - Sankt Jürgen</name><time>2007-06-23T15:46:39Z</time><ele>60.2</ele></wpt>
+<wpt lon="10.6759" lat="53.8494"><name>Richtung 31 - Sankt Jürgen</name><time>2007-06-23T15:47:01Z</time><ele>60.2</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 58 - Sankt Jürgen</name><time>2007-06-23T15:47:09Z</time><ele>16.2</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 330 - Sankt Jürgen</name><time>2007-06-23T15:47:19Z</time><ele>13.3</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 261 - Sankt Jürgen</name><time>2007-06-23T15:47:21Z</time><ele>8.2</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:47:28Z</time><ele>1</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 38 - Sankt Jürgen</name><time>2007-06-23T15:47:47Z</time><ele>26.9</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 80 - Sankt Jürgen</name><time>2007-06-23T15:47:49Z</time><ele>33.4</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 36 - Sankt Jürgen</name><time>2007-06-23T15:48:04Z</time><ele>31.6</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 80 - Sankt Jürgen</name><time>2007-06-23T15:48:07Z</time><ele>35.9</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Abstand 251 - Sankt Jürgen</name><time>2007-06-23T15:48:14Z</time><ele>35.3</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 327 - Sankt Jürgen</name><time>2007-06-23T15:48:16Z</time><ele>32.4</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 260 - Sankt Jürgen</name><time>2007-06-23T15:48:17Z</time><ele>31.9</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:49:28Z</time><ele>1</ele></wpt>
+<wpt lon="10.6779" lat="53.8484"><name>Richtung 151 - Sankt Jürgen</name><time>2007-06-23T15:49:55Z</time><ele>-32.6</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:49:58Z</time><ele>-34.2</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 171 - Sankt Jürgen</name><time>2007-06-23T15:50:05Z</time><ele>-36.1</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 127 - Sankt Jürgen</name><time>2007-06-23T15:50:08Z</time><ele>-35.4</ele></wpt>
+<wpt lon="10.6777" lat="53.8483"><name>Richtung 224 - Sankt Jürgen</name><time>2007-06-23T15:50:43Z</time><ele>-26.3</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 104 - Sankt Jürgen</name><time>2007-06-23T15:50:49Z</time><ele>-47</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:50:56Z</time><ele>-31.5</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 110 - Sankt Jürgen</name><time>2007-06-23T15:50:58Z</time><ele>-22.5</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 77 - Sankt Jürgen</name><time>2007-06-23T15:51:03Z</time><ele>-9.2</ele></wpt>
+<wpt lon="10.6778" lat="53.8487"><name>Richtung 138 - Sankt Jürgen</name><time>2007-06-23T15:51:14Z</time><ele>-10.1</ele></wpt>
+<wpt lon="10.6778" lat="53.8487"><name>Richtung 112 - Sankt Jürgen</name><time>2007-06-23T15:51:17Z</time><ele>-8.2</ele></wpt>
+<wpt lon="10.6779" lat="53.8487"><name>Richtung 75 - Sankt Jürgen</name><time>2007-06-23T15:51:19Z</time><ele>-10.2</ele></wpt>
+<wpt lon="10.6779" lat="53.8488"><name>Richtung 104 - Sankt Jürgen</name><time>2007-06-23T15:51:44Z</time><ele>-16.8</ele></wpt>
+<wpt lon="10.6779" lat="53.8487"><name>Richtung 73 - Sankt Jürgen</name><time>2007-06-23T15:51:45Z</time><ele>-17.6</ele></wpt>
+<wpt lon="10.6779" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:51:56Z</time><ele>-12.7</ele></wpt>
+<wpt lon="10.6778" lat="53.8487"><name>Richtung 38 - Sankt Jürgen</name><time>2007-06-23T15:51:58Z</time><ele>-14.3</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 352 - Sankt Jürgen</name><time>2007-06-23T15:52:00Z</time><ele>-9.2</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 149 - Sankt Jürgen</name><time>2007-06-23T15:52:23Z</time><ele>4.6</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 65 - Sankt Jürgen</name><time>2007-06-23T15:52:25Z</time><ele>6.9</ele></wpt>
+<wpt lon="10.678" lat="53.8487"><name>Richtung 33 - Sankt Jürgen</name><time>2007-06-23T15:52:26Z</time><ele>8.8</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 347 - Sankt Jürgen</name><time>2007-06-23T15:52:27Z</time><ele>9.4</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 281 - Sankt Jürgen</name><time>2007-06-23T15:52:29Z</time><ele>10.9</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 101 - Sankt Jürgen</name><time>2007-06-23T15:53:11Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.678" lat="53.8487"><name>Richtung 185 - Sankt Jürgen</name><time>2007-06-23T15:53:16Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.6778" lat="53.8486"><name>Richtung 303 - Sankt Jürgen</name><time>2007-06-23T15:53:18Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 255 - Sankt Jürgen</name><time>2007-06-23T15:53:20Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 6 - Sankt Jürgen</name><time>2007-06-23T15:53:21Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 142 - Sankt Jürgen</name><time>2007-06-23T15:53:22Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 104 - Sankt Jürgen</name><time>2007-06-23T15:53:27Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.6777" lat="53.8491"><name>Richtung 314 - Sankt Jürgen</name><time>2007-06-23T15:53:28Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 278 - Sankt Jürgen</name><time>2007-06-23T15:53:32Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.6769" lat="53.8487"><name>Richtung 313 - Sankt Jürgen</name><time>2007-06-23T15:53:34Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Richtung 135 - Sankt Jürgen</name><time>2007-06-23T15:53:41Z</time><ele>164.7</ele></wpt>
+<wpt lon="10.6767" lat="53.8486"><name>Richtung 323 - Sankt Jürgen</name><time>2007-06-23T15:53:44Z</time><ele>148.3</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 66 - Sankt Jürgen</name><time>2007-06-23T15:55:21Z</time><ele>-17.9</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 15 - Sankt Jürgen</name><time>2007-06-23T15:55:26Z</time><ele>-14.4</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 45 - Sankt Jürgen</name><time>2007-06-23T15:55:28Z</time><ele>-32.5</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:55:29Z</time><ele>-44.6</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Richtung 77 - Sankt Jürgen</name><time>2007-06-23T15:55:38Z</time><ele>-12.8</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Richtung 35 - Sankt Jürgen</name><time>2007-06-23T15:56:03Z</time><ele>-11</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 353 - Sankt Jürgen</name><time>2007-06-23T15:56:05Z</time><ele>-8.4</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:56:23Z</time><ele>12.9</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 294 - Sankt Jürgen</name><time>2007-06-23T15:56:30Z</time><ele>13.7</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:56:31Z</time><ele>10.4</ele></wpt>
+<wpt lon="10.678" lat="53.8487"><name>Richtung 352 - Sankt Jürgen</name><time>2007-06-23T15:56:33Z</time><ele>5.8</ele></wpt>
+<wpt lon="10.678" lat="53.8487"><name>Richtung 304 - Sankt Jürgen</name><time>2007-06-23T15:56:39Z</time><ele>5.5</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:56:42Z</time><ele>4.9</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 246 - Sankt Jürgen</name><time>2007-06-23T15:56:44Z</time><ele>9.9</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Richtung 174 - Sankt Jürgen</name><time>2007-06-23T15:56:46Z</time><ele>9.8</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 174 - Sankt Jürgen</name><time>2007-06-23T15:56:55Z</time><ele>1</ele></wpt>
+<wpt lon="10.6778" lat="53.8487"><name>Richtung 73 - Sankt Jürgen</name><time>2007-06-23T15:57:00Z</time><ele>10.8</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Richtung 39 - Sankt Jürgen</name><time>2007-06-23T15:57:01Z</time><ele>11.3</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:57:03Z</time><ele>15.2</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 270 - Sankt Jürgen</name><time>2007-06-23T15:57:12Z</time><ele>29.6</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:57:14Z</time><ele>32.3</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 276 - Sankt Jürgen</name><time>2007-06-23T15:57:19Z</time><ele>33.9</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 354 - Sankt Jürgen</name><time>2007-06-23T15:57:21Z</time><ele>34.6</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Richtung 92 - Sankt Jürgen</name><time>2007-06-23T15:57:29Z</time><ele>42.2</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:57:31Z</time><ele>38.7</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 302 - Sankt Jürgen</name><time>2007-06-23T15:57:38Z</time><ele>23.4</ele></wpt>
+<wpt lon="10.6777" lat="53.8491"><name>Richtung 228 - Sankt Jürgen</name><time>2007-06-23T15:57:52Z</time><ele>-0.3</ele></wpt>
+<wpt lon="10.6777" lat="53.8491"><name>Richtung 329 - Sankt Jürgen</name><time>2007-06-23T15:57:54Z</time><ele>-1.8</ele></wpt>
+<wpt lon="10.6776" lat="53.8487"><name>Abstand 253 - Sankt Jürgen</name><time>2007-06-23T15:58:01Z</time><ele>-1.3</ele></wpt>
+<wpt lon="10.6777" lat="53.8487"><name>Richtung 77 - Sankt Jürgen</name><time>2007-06-23T15:58:03Z</time><ele>-2</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 30 - Sankt Jürgen</name><time>2007-06-23T15:58:17Z</time><ele>-1.9</ele></wpt>
+<wpt lon="10.678" lat="53.8488"><name>Richtung 9 - Sankt Jürgen</name><time>2007-06-23T15:58:19Z</time><ele>-5.4</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 333 - Sankt Jürgen</name><time>2007-06-23T15:58:20Z</time><ele>-6.6</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 283 - Sankt Jürgen</name><time>2007-06-23T15:58:21Z</time><ele>-5.5</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 260 - Sankt Jürgen</name><time>2007-06-23T15:58:23Z</time><ele>-4.3</ele></wpt>
+<wpt lon="10.6778" lat="53.8488"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:58:31Z</time><ele>-1.4</ele></wpt>
+<wpt lon="10.6772" lat="53.8487"><name>Richtung 42 - Sankt Jürgen</name><time>2007-06-23T15:59:17Z</time><ele>12.9</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 80 - Sankt Jürgen</name><time>2007-06-23T15:59:19Z</time><ele>15.1</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T15:59:31Z</time><ele>24.4</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 344 - Sankt Jürgen</name><time>2007-06-23T15:59:34Z</time><ele>25</ele></wpt>
+<wpt lon="10.6771" lat="53.8487"><name>Richtung 268 - Sankt Jürgen</name><time>2007-06-23T15:59:36Z</time><ele>25.5</ele></wpt>
+<wpt lon="10.6772" lat="53.8486"><name>Richtung 81 - Sankt Jürgen</name><time>2007-06-23T16:00:07Z</time><ele>28.1</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 107 - Sankt Jürgen</name><time>2007-06-23T16:00:09Z</time><ele>30.2</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 81 - Sankt Jürgen</name><time>2007-06-23T16:00:10Z</time><ele>31.7</ele></wpt>
+<wpt lon="10.6771" lat="53.8486"><name>Richtung 349 - Sankt Jürgen</name><time>2007-06-23T16:00:20Z</time><ele>36.3</ele></wpt>
+<wpt lon="10.677" lat="53.8487"><name>Richtung 321 - Sankt Jürgen</name><time>2007-06-23T16:00:21Z</time><ele>37.8</ele></wpt>
+<wpt lon="10.677" lat="53.8487"><name>Richtung 285 - Sankt Jürgen</name><time>2007-06-23T16:00:23Z</time><ele>39.5</ele></wpt>
+<wpt lon="10.6768" lat="53.8486"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:00:31Z</time><ele>42.4</ele></wpt>
+<wpt lon="10.6768" lat="53.8486"><name>Richtung 264 - Sankt Jürgen</name><time>2007-06-23T16:00:39Z</time><ele>44.9</ele></wpt>
+<wpt lon="10.6769" lat="53.8486"><name>Richtung 32 - Sankt Jürgen</name><time>2007-06-23T16:00:41Z</time><ele>43.9</ele></wpt>
+<wpt lon="10.6772" lat="53.8486"><name>Richtung 86 - Sankt Jürgen</name><time>2007-06-23T16:00:43Z</time><ele>42.2</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 343 - Sankt Jürgen</name><time>2007-06-23T16:00:53Z</time><ele>33.5</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 292 - Sankt Jürgen</name><time>2007-06-23T16:00:55Z</time><ele>33.9</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 80 - Sankt Jürgen</name><time>2007-06-23T16:00:56Z</time><ele>34</ele></wpt>
+<wpt lon="10.6772" lat="53.8487"><name>Richtung 308 - Sankt Jürgen</name><time>2007-06-23T16:00:57Z</time><ele>36</ele></wpt>
+<wpt lon="10.6772" lat="53.8487"><name>Richtung 81 - Sankt Jürgen</name><time>2007-06-23T16:00:59Z</time><ele>37.2</ele></wpt>
+<wpt lon="10.6772" lat="53.8487"><name>Richtung 253 - Sankt Jürgen</name><time>2007-06-23T16:01:04Z</time><ele>39.7</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 123 - Sankt Jürgen</name><time>2007-06-23T16:01:12Z</time><ele>44.8</ele></wpt>
+<wpt lon="10.6771" lat="53.8486"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:01:31Z</time><ele>55.5</ele></wpt>
+<wpt lon="10.677" lat="53.8486"><name>Richtung 153 - Sankt Jürgen</name><time>2007-06-23T16:01:53Z</time><ele>68.3</ele></wpt>
+<wpt lon="10.6769" lat="53.8486"><name>Richtung 104 - Sankt Jürgen</name><time>2007-06-23T16:01:59Z</time><ele>72.1</ele></wpt>
+<wpt lon="10.6769" lat="53.8486"><name>Richtung 55 - Sankt Jürgen</name><time>2007-06-23T16:02:07Z</time><ele>73.3</ele></wpt>
+<wpt lon="10.6768" lat="53.8486"><name>Richtung 0 - Sankt Jürgen</name><time>2007-06-23T16:02:08Z</time><ele>73.1</ele></wpt>
+<wpt lon="10.6769" lat="53.8486"><name>Richtung 84 - Sankt Jürgen</name><time>2007-06-23T16:02:10Z</time><ele>73.2</ele></wpt>
+<wpt lon="10.6767" lat="53.8489"><name>Richtung 339 - Sankt Jürgen</name><time>2007-06-23T16:02:14Z</time><ele>72.1</ele></wpt>
+<wpt lon="10.6767" lat="53.8486"><name>Richtung 264 - Sankt Jürgen</name><time>2007-06-23T16:02:16Z</time><ele>73</ele></wpt>
+<wpt lon="10.6764" lat="53.8486"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:02:31Z</time><ele>73.2</ele></wpt>
+<wpt lon="10.6763" lat="53.8486"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:03:31Z</time><ele>61.8</ele></wpt>
+<wpt lon="10.6765" lat="53.849"><name>Richtung 268 - Sankt Jürgen</name><time>2007-06-23T16:03:41Z</time><ele>60.2</ele></wpt>
+<wpt lon="10.6766" lat="53.849"><name>Richtung 31 - Sankt Jürgen</name><time>2007-06-23T16:03:56Z</time><ele>57.3</ele></wpt>
+<wpt lon="10.6767" lat="53.8486"><name>Richtung 84 - Sankt Jürgen</name><time>2007-06-23T16:03:58Z</time><ele>55.3</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 341 - Sankt Jürgen</name><time>2007-06-23T16:04:15Z</time><ele>48.2</ele></wpt>
+<wpt lon="10.6773" lat="53.8487"><name>Richtung 262 - Sankt Jürgen</name><time>2007-06-23T16:04:16Z</time><ele>47.1</ele></wpt>
+<wpt lon="10.6772" lat="53.8487"><name>Richtung 329 - Sankt Jürgen</name><time>2007-06-23T16:04:18Z</time><ele>46.3</ele></wpt>
+<wpt lon="10.6768" lat="53.8486"><name>Richtung 289 - Sankt Jürgen</name><time>2007-06-23T16:04:24Z</time><ele>44.8</ele></wpt>
+<wpt lon="10.6776" lat="53.8486"><name>Richtung 245 - Sankt Jürgen</name><time>2007-06-23T16:05:02Z</time><ele>7</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 25 - Sankt Jürgen</name><time>2007-06-23T16:05:04Z</time><ele>7</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 121 - Sankt Jürgen</name><time>2007-06-23T16:05:06Z</time><ele>7</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:05:08Z</time><ele>-11.5</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 167 - Sankt Jürgen</name><time>2007-06-23T16:05:11Z</time><ele>-23.1</ele></wpt>
+<wpt lon="10.678" lat="53.8486"><name>Richtung 117 - Sankt Jürgen</name><time>2007-06-23T16:05:31Z</time><ele>-20.7</ele></wpt>
+<wpt lon="10.678" lat="53.8484"><name>Richtung 199 - Sankt Jürgen</name><time>2007-06-23T16:05:58Z</time><ele>-4.3</ele></wpt>
+<wpt lon="10.678" lat="53.8485"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:06:08Z</time><ele>-7</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 259 - Sankt Jürgen</name><time>2007-06-23T16:06:42Z</time><ele>12.7</ele></wpt>
+<wpt lon="10.6775" lat="53.8487"><name>Richtung 46 - Sankt Jürgen</name><time>2007-06-23T16:06:45Z</time><ele>12.3</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 178 - Sankt Jürgen</name><time>2007-06-23T16:06:57Z</time><ele>8.1</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:07:08Z</time><ele>-2.9</ele></wpt>
+<wpt lon="10.6781" lat="53.8484"><name>Richtung 54 - Sankt Jürgen</name><time>2007-06-23T16:07:36Z</time><ele>16.7</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 49 - Sankt Jürgen</name><time>2007-06-23T16:08:00Z</time><ele>-7.3</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 98 - Sankt Jürgen</name><time>2007-06-23T16:08:01Z</time><ele>-8.6</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 122 - Sankt Jürgen</name><time>2007-06-23T16:08:03Z</time><ele>-14.3</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:08:08Z</time><ele>-15.2</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 178 - Sankt Jürgen</name><time>2007-06-23T16:08:15Z</time><ele>-27.4</ele></wpt>
+<wpt lon="10.6781" lat="53.8481"><name>Richtung 0 - Sankt Jürgen</name><time>2007-06-23T16:08:24Z</time><ele>-28.6</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 182 - Sankt Jürgen</name><time>2007-06-23T16:08:25Z</time><ele>-12.5</ele></wpt>
+<wpt lon="10.6786" lat="53.8482"><name>Richtung 50 - Sankt Jürgen</name><time>2007-06-23T16:08:28Z</time><ele>-53.8</ele></wpt>
+<wpt lon="10.678" lat="53.8484"><name>Richtung 156 - Sankt Jürgen</name><time>2007-06-23T16:08:32Z</time><ele>4.6</ele></wpt>
+<wpt lon="10.6774" lat="53.8487"><name>Richtung 101 - Sankt Jürgen</name><time>2007-06-23T16:11:17Z</time><ele>2.6</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 156 - Sankt Jürgen</name><time>2007-06-23T16:11:24Z</time><ele>2.5</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 179 - Sankt Jürgen</name><time>2007-06-23T16:11:26Z</time><ele>2.5</ele></wpt>
+<wpt lon="10.6781" lat="53.8481"><name>Richtung 118 - Sankt Jürgen</name><time>2007-06-23T16:11:28Z</time><ele>2.4</ele></wpt>
+<wpt lon="10.6781" lat="53.8481"><name>Richtung 66 - Sankt Jürgen</name><time>2007-06-23T16:11:31Z</time><ele>2.2</ele></wpt>
+<wpt lon="10.6781" lat="53.8482"><name>Richtung 65 - Sankt Jürgen</name><time>2007-06-23T16:11:34Z</time><ele>1.9</ele></wpt>
+<wpt lon="10.6781" lat="53.8483"><name>Richtung 358 - Sankt Jürgen</name><time>2007-06-23T16:11:36Z</time><ele>1.7</ele></wpt>
+<wpt lon="10.6779" lat="53.8488"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:12:12Z</time><ele>2.1</ele></wpt>
+<wpt lon="10.6778" lat="53.8488"><name>Richtung 265 - Sankt Jürgen</name><time>2007-06-23T16:12:13Z</time><ele>2</ele></wpt>
+<wpt lon="10.6745" lat="53.8484"><name>Abstand 255 - Sankt Jürgen</name><time>2007-06-23T16:12:30Z</time><ele>3.7</ele></wpt>
+<wpt lon="10.6654" lat="53.846"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:13:12Z</time><ele>4.1</ele></wpt>
+<wpt lon="10.6577" lat="53.8428"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:14:12Z</time><ele>11</ele></wpt>
+<wpt lon="10.6576" lat="53.8424"><name>Richtung 141 - Sankt Jürgen</name><time>2007-06-23T16:14:49Z</time><ele>10.4</ele></wpt>
+<wpt lon="10.6609" lat="53.8408"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:15:12Z</time><ele>5.6</ele></wpt>
+<wpt lon="10.6655" lat="53.8387"><name>Abstand 257 - Sankt Jürgen</name><time>2007-06-23T16:15:38Z</time><ele>5.3</ele></wpt>
+<wpt lon="10.669" lat="53.837"><name>Punkt - Sankt Jürgen</name><time>2007-06-23T16:16:12Z</time><ele>9.6</ele></wpt>
+<wpt lon="10.6689" lat="53.8368"><name>Richtung 205 - Schiereichenkoppel</name><time>2007-06-23T16:16:15Z</time><ele>9.7</ele></wpt>
+<wpt lon="10.659" lat="53.8302"><name>Punkt - Schiereichenkoppel</name><time>2007-06-23T16:17:12Z</time><ele>12.8</ele></wpt>
+<wpt lon="10.6537" lat="53.8248"><name>Abstand 259 - Schiereichenkoppel</name><time>2007-06-23T16:17:47Z</time><ele>14.3</ele></wpt>
+<wpt lon="10.6458" lat="53.822"><name>Punkt - Niederbüssau</name><time>2007-06-23T16:18:12Z</time><ele>10</ele></wpt>
+<wpt lon="10.6361" lat="53.811"><name>Punkt - Baumsberg</name><time>2007-06-23T16:19:12Z</time><ele>12.6</ele></wpt>
+<wpt lon="10.6354" lat="53.8079"><name>Richtung 237 - Baumsberg</name><time>2007-06-23T16:19:29Z</time><ele>12.8</ele></wpt>
+<wpt lon="10.6257" lat="53.8052"><name>Punkt - Kronsforde</name><time>2007-06-23T16:20:12Z</time><ele>4.8</ele></wpt>
+<wpt lon="10.6215" lat="53.799"><name>Punkt - Kronsforde</name><time>2007-06-23T16:21:12Z</time><ele>13.2</ele></wpt>
+<wpt lon="10.6211" lat="53.7974"><name>Abstand 263 - Kronsforde</name><time>2007-06-23T16:21:18Z</time><ele>14</ele></wpt>
+<wpt lon="10.6181" lat="53.7828"><name>Punkt - Kronsforde</name><time>2007-06-23T16:22:12Z</time><ele>10.9</ele></wpt>
+<wpt lon="10.6175" lat="53.7792"><name>Abstand 265 - Kronsforde</name><time>2007-06-23T16:22:25Z</time><ele>11.6</ele></wpt>
+<wpt lon="10.6034" lat="53.7727"><name>Punkt - Bliestorf</name><time>2007-06-23T16:23:12Z</time><ele>13.6</ele></wpt>
+<wpt lon="10.6029" lat="53.7667"><name>Abstand 267 - Bliestorf</name><time>2007-06-23T16:24:00Z</time><ele>12.9</ele></wpt>
+<wpt lon="10.602" lat="53.7648"><name>Punkt - Bliestorf</name><time>2007-06-23T16:24:12Z</time><ele>14.3</ele></wpt>
+<wpt lon="10.5883" lat="53.7557"><name>Punkt - Bliestorf</name><time>2007-06-23T16:25:12Z</time><ele>17.5</ele></wpt>
+<wpt lon="10.5836" lat="53.7542"><name>Abstand 269 - Kastorf (Herzogtum Lauenburg)</name><time>2007-06-23T16:25:26Z</time><ele>19.1</ele></wpt>
+<wpt lon="10.5713" lat="53.7497"><name>Punkt - Kastorf (Herzogtum Lauenburg)</name><time>2007-06-23T16:26:12Z</time><ele>25.9</ele></wpt>
+<wpt lon="10.5619" lat="53.7436"><name>Punkt - Kastorf (Herzogtum Lauenburg)</name><time>2007-06-23T16:27:12Z</time><ele>36.8</ele></wpt>
+<wpt lon="10.561" lat="53.7426"><name>Abstand 271 - Kastorf (Herzogtum Lauenburg)</name><time>2007-06-23T16:27:19Z</time><ele>41</ele></wpt>
+<wpt lon="10.5541" lat="53.7345"><name>Punkt - Kastorf (Herzogtum Lauenburg)</name><time>2007-06-23T16:28:12Z</time><ele>71.7</ele></wpt>
+<wpt lon="10.5463" lat="53.7269"><name>Abstand 273 - Klein Klinkrade</name><time>2007-06-23T16:28:53Z</time><ele>57.1</ele></wpt>
+<wpt lon="10.5423" lat="53.7233"><name>Punkt - Klein Klinkrade</name><time>2007-06-23T16:29:12Z</time><ele>52.4</ele></wpt>
+<wpt lon="10.5303" lat="53.7133"><name>Punkt - Labenz</name><time>2007-06-23T16:30:12Z</time><ele>56.6</ele></wpt>
+<wpt lon="10.5291" lat="53.7124"><name>Abstand 275 - Labenz</name><time>2007-06-23T16:30:19Z</time><ele>54.5</ele></wpt>
+<wpt lon="10.5262" lat="53.7104"><name>Richtung 200 - Labenz</name><time>2007-06-23T16:30:43Z</time><ele>53.8</ele></wpt>
+<wpt lon="10.5229" lat="53.7081"><name>Punkt - Labenz</name><time>2007-06-23T16:31:12Z</time><ele>50.9</ele></wpt>
+<wpt lon="10.5181" lat="53.7076"><name>Richtung 224 - Labenz</name><time>2007-06-23T16:31:39Z</time><ele>63.8</ele></wpt>
+<wpt lon="10.5144" lat="53.7035"><name>Punkt - Labenz</name><time>2007-06-23T16:32:12Z</time><ele>61.7</ele></wpt>
+<wpt lon="10.5109" lat="53.6997"><name>Abstand 278 - Sandesneben</name><time>2007-06-23T16:32:30Z</time><ele>69.4</ele></wpt>
+<wpt lon="10.5012" lat="53.6921"><name>Punkt - Sandesneben</name><time>2007-06-23T16:33:12Z</time><ele>71.3</ele></wpt>
+<wpt lon="10.4938" lat="53.6881"><name>Punkt - Sandesneben</name><time>2007-06-23T16:34:12Z</time><ele>53.9</ele></wpt>
+<wpt lon="10.4914" lat="53.688"><name>Abstand 280 - Sandesneben</name><time>2007-06-23T16:34:24Z</time><ele>54.5</ele></wpt>
+<wpt lon="10.4838" lat="53.6869"><name>Punkt - Sandesneben</name><time>2007-06-23T16:35:12Z</time><ele>55.7</ele></wpt>
+<wpt lon="10.4675" lat="53.6833"><name>Punkt - Bullenhorst (Sandesneben)</name><time>2007-06-23T16:36:13Z</time><ele>55.7</ele></wpt>
+<wpt lon="10.4655" lat="53.6826"><name>Abstand 282 - Wentorf (Amt Sandesneben)</name><time>2007-06-23T16:36:21Z</time><ele>54.3</ele></wpt>
+<wpt lon="10.4489" lat="53.6802"><name>Punkt - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:37:13Z</time><ele>64.6</ele></wpt>
+<wpt lon="10.4371" lat="53.6767"><name>Abstand 284 - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:37:52Z</time><ele>62.3</ele></wpt>
+<wpt lon="10.4335" lat="53.6759"><name>Punkt - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:38:13Z</time><ele>63.5</ele></wpt>
+<wpt lon="10.4249" lat="53.6701"><name>Punkt - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:39:13Z</time><ele>57.4</ele></wpt>
+<wpt lon="10.4126" lat="53.6679"><name>Abstand 286 - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:40:11Z</time><ele>48.9</ele></wpt>
+<wpt lon="10.4121" lat="53.6678"><name>Punkt - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:40:13Z</time><ele>48.7</ele></wpt>
+<wpt lon="10.409" lat="53.6676"><name>Punkt - Schönberg DE (Herzogtum Lauenburg)</name><time>2007-06-23T16:41:13Z</time><ele>47.4</ele></wpt>
+<wpt lon="10.4036" lat="53.6678"><name>Punkt - Dwerkaten (Lütjensee)</name><time>2007-06-23T16:42:13Z</time><ele>54.3</ele></wpt>
+<wpt lon="10.4031" lat="53.6678"><name>Richtung 341 - Lütjensee</name><time>2007-06-23T16:42:21Z</time><ele>54.7</ele></wpt>
+<wpt lon="10.4012" lat="53.675"><name>Punkt - Hohehorst</name><time>2007-06-23T16:43:13Z</time><ele>59.4</ele></wpt>
+<wpt lon="10.403" lat="53.6792"><name>Abstand 288 - Steinburg (Stormarn)</name><time>2007-06-23T16:43:26Z</time><ele>68.2</ele></wpt>
+<wpt lon="10.4016" lat="53.6898"><name>Punkt - Steinburg (Stormarn)</name><time>2007-06-23T16:44:13Z</time><ele>71.5</ele></wpt>
+<wpt lon="10.4013" lat="53.6898"><name>Richtung 273 - Sprenge (Steinburg)</name><time>2007-06-23T16:44:21Z</time><ele>71.6</ele></wpt>
+<wpt lon="10.3913" lat="53.6916"><name>Richtung 286 - Sprenge (Steinburg)</name><time>2007-06-23T16:44:57Z</time><ele>50.6</ele></wpt>
+<wpt lon="10.3903" lat="53.6915"><name>Abstand 290 - Sprenge (Steinburg)</name><time>2007-06-23T16:45:02Z</time><ele>50.3</ele></wpt>
+<wpt lon="10.3878" lat="53.6912"><name>Punkt - Sprenge (Steinburg)</name><time>2007-06-23T16:45:13Z</time><ele>49.6</ele></wpt>
+<wpt lon="10.3725" lat="53.6915"><name>Punkt - Sprenge (Steinburg)</name><time>2007-06-23T16:46:13Z</time><ele>56</ele></wpt>
+<wpt lon="10.3665" lat="53.69"><name>Richtung 225 - Sprenge (Steinburg)</name><time>2007-06-23T16:46:42Z</time><ele>54</ele></wpt>
+<wpt lon="10.366" lat="53.6899"><name>Richtung 250 - Sprenge (Steinburg)</name><time>2007-06-23T16:46:44Z</time><ele>54.2</ele></wpt>
+<wpt lon="10.3614" lat="53.6899"><name>Abstand 292 - Todendorf (Stormarn)</name><time>2007-06-23T16:47:03Z</time><ele>55.7</ele></wpt>
+<wpt lon="10.359" lat="53.6903"><name>Punkt - Todendorf (Stormarn)</name><time>2007-06-23T16:47:13Z</time><ele>54.8</ele></wpt>
+<wpt lon="10.3493" lat="53.6947"><name>Punkt - Todendorf (Stormarn)</name><time>2007-06-23T16:48:13Z</time><ele>47.6</ele></wpt>
+<wpt lon="10.349" lat="53.6949"><name>Richtung 357 - Todendorf (Stormarn)</name><time>2007-06-23T16:48:17Z</time><ele>46.8</ele></wpt>
+<wpt lon="10.343" lat="53.7007"><name>Punkt - Todendorf (Stormarn)</name><time>2007-06-23T16:49:13Z</time><ele>41.5</ele></wpt>
+<wpt lon="10.3426" lat="53.7016"><name>Abstand 294 - Todendorf (Stormarn)</name><time>2007-06-23T16:49:18Z</time><ele>41.7</ele></wpt>
+<wpt lon="10.343" lat="53.7119"><name>Punkt - Hammoor</name><time>2007-06-23T16:50:13Z</time><ele>47.8</ele></wpt>
+<wpt lon="10.3416" lat="53.7171"><name>Richtung 314 - Hammoor</name><time>2007-06-23T16:50:54Z</time><ele>45.1</ele></wpt>
+<wpt lon="10.3387" lat="53.7179"><name>Abstand 296 - Hammoor</name><time>2007-06-23T16:51:06Z</time><ele>49.1</ele></wpt>
+<wpt lon="10.3369" lat="53.718"><name>Punkt - Hammoor</name><time>2007-06-23T16:51:13Z</time><ele>49.4</ele></wpt>
+<wpt lon="10.327" lat="53.7143"><name>Richtung 184 - Hammoor</name><time>2007-06-23T16:51:58Z</time><ele>41.1</ele></wpt>
+<wpt lon="10.3271" lat="53.7141"><name>Richtung 156 - Hammoor</name><time>2007-06-23T16:52:00Z</time><ele>40.9</ele></wpt>
+<wpt lon="10.3281" lat="53.7126"><name>Punkt - Hammoor</name><time>2007-06-23T16:52:13Z</time><ele>40.3</ele></wpt>
+<wpt lon="10.3228" lat="53.7059"><name>Abstand 298 - Hammoor</name><time>2007-06-23T16:52:46Z</time><ele>44</ele></wpt>
+<wpt lon="10.3117" lat="53.7053"><name>Punkt - Hammoor</name><time>2007-06-23T16:53:13Z</time><ele>47.3</ele></wpt>
+<wpt lon="10.2953" lat="53.6994"><name>Abstand 300 - Ahrensburg</name><time>2007-06-23T16:54:03Z</time><ele>46.5</ele></wpt>
+<wpt lon="10.2926" lat="53.6972"><name>Punkt - Ahrensburg</name><time>2007-06-23T16:54:13Z</time><ele>47.4</ele></wpt>
+<wpt lon="10.275" lat="53.6864"><name>Abstand 302 - Ahrensburg</name><time>2007-06-23T16:55:12Z</time><ele>44.1</ele></wpt>
+<wpt lon="10.2748" lat="53.6862"><name>Punkt - Ahrensburg</name><time>2007-06-23T16:55:13Z</time><ele>44</ele></wpt>
+<wpt lon="10.2597" lat="53.681"><name>Punkt - Ahrensburg</name><time>2007-06-23T16:56:13Z</time><ele>45.5</ele></wpt>
+<wpt lon="10.2579" lat="53.6808"><name>Richtung 226 - Ahrensburg</name><time>2007-06-23T16:56:29Z</time><ele>46</ele></wpt>
+<wpt lon="10.258" lat="53.6806"><name>Richtung 185 - Ahrensburg</name><time>2007-06-23T16:56:31Z</time><ele>45.4</ele></wpt>
+<wpt lon="10.2577" lat="53.675"><name>Abstand 304 - Ahrensburg</name><time>2007-06-23T16:57:09Z</time><ele>37.9</ele></wpt>
+<wpt lon="10.2571" lat="53.6746"><name>Punkt - Ahrensburg</name><time>2007-06-23T16:57:13Z</time><ele>37</ele></wpt>
+<wpt lon="10.2564" lat="53.6741"><name>Richtung 264 - Ahrensburg</name><time>2007-06-23T16:57:20Z</time><ele>35.7</ele></wpt>
+<wpt lon="10.2562" lat="53.6741"><name>Richtung 296 - Ahrensburg</name><time>2007-06-23T16:57:21Z</time><ele>35.7</ele></wpt>
+<wpt lon="10.256" lat="53.6743"><name>Richtung 320 - Ahrensburg</name><time>2007-06-23T16:57:23Z</time><ele>35.8</ele></wpt>
+<wpt lon="10.2495" lat="53.6772"><name>Punkt - Ahrensburg</name><time>2007-06-23T16:58:13Z</time><ele>37.7</ele></wpt>
+<wpt lon="10.249" lat="53.6773"><name>Richtung 243 - Ahrensburg</name><time>2007-06-23T16:58:45Z</time><ele>38.1</ele></wpt>
+<wpt lon="10.2454" lat="53.6752"><name>Punkt - Ahrensburg</name><time>2007-06-23T16:59:13Z</time><ele>41.5</ele></wpt>
+<wpt lon="10.2413" lat="53.6716"><name>Punkt - Ahrensburg</name><time>2007-06-23T17:00:13Z</time><ele>46.9</ele></wpt>
+<wpt lon="10.239" lat="53.6709"><name>Richtung 269 - Ahrensburg</name><time>2007-06-23T17:00:27Z</time><ele>39.6</ele></wpt>
+<wpt lon="10.2361" lat="53.6713"><name>Abstand 306 - Ahrensburg</name><time>2007-06-23T17:00:58Z</time><ele>45.7</ele></wpt>
+<wpt lon="10.2356" lat="53.6713"><name>Richtung 248 - Ahrensburg</name><time>2007-06-23T17:01:05Z</time><ele>46</ele></wpt>
+<wpt lon="10.2349" lat="53.671"><name>Punkt - Ahrensburg</name><time>2007-06-23T17:01:13Z</time><ele>46.9</ele></wpt>
+<wpt lon="10.2313" lat="53.6691"><name>Punkt - Ahrensburg</name><time>2007-06-23T17:02:13Z</time><ele>45.5</ele></wpt>
+<wpt lon="10.2311" lat="53.669"><name>Richtung 230 - Ahrensburg</name><time>2007-06-23T17:02:15Z</time><ele>45.7</ele></wpt>
+<wpt lon="10.2233" lat="53.6651"><name>Punkt - Ahrensburg</name><time>2007-06-23T17:03:13Z</time><ele>45.3</ele></wpt>
+<wpt lon="10.2199" lat="53.6634"><name>Punkt - Ahrensburg</name><time>2007-06-23T17:04:14Z</time><ele>42.9</ele></wpt>
+<wpt lon="10.2134" lat="53.6596"><name>Abstand 308 - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:04:55Z</time><ele>42.4</ele></wpt>
+<wpt lon="10.2113" lat="53.6571"><name>Punkt - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:05:14Z</time><ele>43.1</ele></wpt>
+<wpt lon="10.2046" lat="53.6485"><name>Punkt - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:06:14Z</time><ele>42</ele></wpt>
+<wpt lon="10.1991" lat="53.6437"><name>Abstand 310 - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:07:07Z</time><ele>44.9</ele></wpt>
+<wpt lon="10.1984" lat="53.6431"><name>Punkt - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:07:14Z</time><ele>45.2</ele></wpt>
+<wpt lon="10.1976" lat="53.6424"><name>Richtung 264 - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:07:48Z</time><ele>45.9</ele></wpt>
+<wpt lon="10.1976" lat="53.6423"><name>Richtung 213 - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:07:50Z</time><ele>45.9</ele></wpt>
+<wpt lon="10.1944" lat="53.6395"><name>Punkt - Wulfsdorf (Ahrensburg)</name><time>2007-06-23T17:08:14Z</time><ele>48.4</ele></wpt>
+<wpt lon="10.1843" lat="53.6322"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:09:14Z</time><ele>51.1</ele></wpt>
+<wpt lon="10.1802" lat="53.6297"><name>Abstand 312 - Rahlstedt</name><time>2007-06-23T17:09:41Z</time><ele>49.1</ele></wpt>
+<wpt lon="10.173" lat="53.627"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:10:14Z</time><ele>45.3</ele></wpt>
+<wpt lon="10.1655" lat="53.6222"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:11:14Z</time><ele>41</ele></wpt>
+<wpt lon="10.1588" lat="53.6172"><name>Abstand 314 - Rahlstedt</name><time>2007-06-23T17:12:04Z</time><ele>36.1</ele></wpt>
+<wpt lon="10.1575" lat="53.616"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:12:14Z</time><ele>34.6</ele></wpt>
+<wpt lon="10.1516" lat="53.6094"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:13:14Z</time><ele>30.6</ele></wpt>
+<wpt lon="10.1482" lat="53.6056"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:14:14Z</time><ele>27.9</ele></wpt>
+<wpt lon="10.1482" lat="53.6056"><name>Richtung 157 - Rahlstedt</name><time>2007-06-23T17:14:26Z</time><ele>27</ele></wpt>
+<wpt lon="10.1481" lat="53.6054"><name>Richtung 208 - Rahlstedt</name><time>2007-06-23T17:14:28Z</time><ele>27.1</ele></wpt>
+<wpt lon="10.1445" lat="53.6014"><name>Abstand 316 - Rahlstedt</name><time>2007-06-23T17:15:05Z</time><ele>28.5</ele></wpt>
+<wpt lon="10.144" lat="53.6008"><name>Punkt - Rahlstedt</name><time>2007-06-23T17:15:14Z</time><ele>29.9</ele></wpt>
+<wpt lon="10.1355" lat="53.5946"><name>Punkt - Tonndorf (Hamburg)</name><time>2007-06-23T17:16:14Z</time><ele>19.9</ele></wpt>
+<wpt lon="10.1244" lat="53.5882"><name>Abstand 318 - Tonndorf (Hamburg)</name><time>2007-06-23T17:17:09Z</time><ele>22</ele></wpt>
+<wpt lon="10.1233" lat="53.5875"><name>Punkt - Tonndorf (Hamburg)</name><time>2007-06-23T17:17:14Z</time><ele>22.1</ele></wpt>
+<wpt lon="10.112" lat="53.5825"><name>Punkt - Tonndorf (Hamburg)</name><time>2007-06-23T17:18:14Z</time><ele>17.1</ele></wpt>
+<wpt lon="10.1046" lat="53.5806"><name>Punkt - Tonndorf (Hamburg)</name><time>2007-06-23T17:19:14Z</time><ele>17.3</ele></wpt>
+<wpt lon="10.0984" lat="53.5794"><name>Abstand 320 - Tonndorf (Hamburg)</name><time>2007-06-23T17:20:10Z</time><ele>18.8</ele></wpt>
+<wpt lon="10.0974" lat="53.5792"><name>Punkt - Tonndorf (Hamburg)</name><time>2007-06-23T17:20:14Z</time><ele>18.7</ele></wpt>
+<wpt lon="10.0848" lat="53.5772"><name>Punkt - Wandsbek</name><time>2007-06-23T17:21:14Z</time><ele>16.4</ele></wpt>
+<wpt lon="10.0756" lat="53.575"><name>Punkt - Wandsbek</name><time>2007-06-23T17:22:14Z</time><ele>12.7</ele></wpt>
+<wpt lon="10.0755" lat="53.5749"><name>Richtung 203 - Wandsbek</name><time>2007-06-23T17:22:26Z</time><ele>11.5</ele></wpt>
+<wpt lon="10.0753" lat="53.5749"><name>Richtung 237 - Wandsbek</name><time>2007-06-23T17:22:28Z</time><ele>11.7</ele></wpt>
+<wpt lon="10.0703" lat="53.5731"><name>Abstand 322 - Wandsbek</name><time>2007-06-23T17:22:57Z</time><ele>18.8</ele></wpt>
+<wpt lon="10.0663" lat="53.5718"><name>Punkt - Wandsbek</name><time>2007-06-23T17:23:14Z</time><ele>18.6</ele></wpt>
+<wpt lon="10.0598" lat="53.5703"><name>Punkt - Wandsbek</name><time>2007-06-23T17:24:14Z</time><ele>19.9</ele></wpt>
+<wpt lon="10.0521" lat="53.5685"><name>Punkt - Eilbek</name><time>2007-06-23T17:25:14Z</time><ele>17.9</ele></wpt>
+<wpt lon="10.0438" lat="53.5671"><name>Punkt - Eilbek</name><time>2007-06-23T17:26:14Z</time><ele>13.4</ele></wpt>
+<wpt lon="10.0421" lat="53.5669"><name>Abstand 324 - Eilbek</name><time>2007-06-23T17:26:25Z</time><ele>12.5</ele></wpt>
+<wpt lon="10.0412" lat="53.5668"><name>Punkt - Eilbek</name><time>2007-06-23T17:27:14Z</time><ele>12.1</ele></wpt>
+<wpt lon="10.0343" lat="53.5644"><name>Richtung 289 - Hohenfelde (Hamburg)</name><time>2007-06-23T17:28:03Z</time><ele>12.9</ele></wpt>
+<wpt lon="10.0342" lat="53.5644"><name>Richtung 323 - Hohenfelde (Hamburg)</name><time>2007-06-23T17:28:05Z</time><ele>11.7</ele></wpt>
+<wpt lon="10.0329" lat="53.5655"><name>Punkt - Hohenfelde (Hamburg)</name><time>2007-06-23T17:28:14Z</time><ele>7.4</ele></wpt>
+<wpt lon="10.0277" lat="53.5701"><name>Richtung 354 - Hohenfelde (Hamburg)</name><time>2007-06-23T17:29:05Z</time><ele>14.2</ele></wpt>
+<wpt lon="10.0278" lat="53.5702"><name>Richtung 19 - Hohenfelde (Hamburg)</name><time>2007-06-23T17:29:06Z</time><ele>15.1</ele></wpt>
+<wpt lon="10.029" lat="53.5709"><name>Punkt - Barmbek-Süd</name><time>2007-06-23T17:29:14Z</time><ele>21.9</ele></wpt>
+<wpt lon="10.0299" lat="53.5713"><name>Richtung 77 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:29:23Z</time><ele>18.6</ele></wpt>
+<wpt lon="10.03" lat="53.5712"><name>Richtung 113 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:29:25Z</time><ele>18</ele></wpt>
+<wpt lon="10.0301" lat="53.5712"><name>Richtung 143 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:29:26Z</time><ele>17.9</ele></wpt>
+<wpt lon="10.0308" lat="53.5707"><name>Richtung 298 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:29:41Z</time><ele>23.8</ele></wpt>
+<wpt lon="10.0308" lat="53.5707"><name>Richtung 237 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:29:43Z</time><ele>24.4</ele></wpt>
+<wpt lon="10.0302" lat="53.5704"><name>Punkt - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:30:14Z</time><ele>28.6</ele></wpt>
+<wpt lon="10.0307" lat="53.5707"><name>Richtung 144 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:31:10Z</time><ele>9.7</ele></wpt>
+<wpt lon="10.0308" lat="53.5706"><name>Richtung 180 - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:31:13Z</time><ele>9.2</ele></wpt>
+<wpt lon="10.0308" lat="53.5706"><name>Punkt - Uhlenhorst (Hamburg)</name><time>2007-06-23T17:31:14Z</time><ele>9.2</ele></wpt>
+</gpx>

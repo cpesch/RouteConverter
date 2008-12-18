@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tour>
+	<options Type="0" Mode="1" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="1" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
+	<dest Country="49" City="Bremen" Zip="2xxxx" Latitude="6989083" Longitude="979034" StartPos="0" />
+	<dest Country="49" City="Frankfurt am Main/Dornbusch" Zip="60431" Street="Rudolf-Presber-Strasse" House="11" Latitude="6464077" Longitude="963363" />
+</tour>

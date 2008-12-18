@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+	version="1.0"
+	creator="Tripmaster (http://www.webazar.org)"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.topografix.com/GPX/1/0"
+	xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/2"
+	xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/2 http://www.topografix.com/GPX/Private/TopoGrafix/0/2/topografix.xsd">
+<time>2007-06-07T11:42:18Z</time>
+<rte>
+	<name>2007-06-07T11:42:18Z</name>
+	<rtept lon="7.65150" lat="50.77391"><name>Start : 07/06/2007 13:42:18 : Geilhausen (Windeck)</name><desc>0.0 km</desc><cmt>0 km/h</cmt><time>2007-06-07T11:42:18Z</time><ele>143.7</ele></rtept>
+	<rtept lon="7.63787" lat="50.88273"><name>Ende : 07/06/2007 16:06:28 : Escherhof (Waldbröl)</name><desc>92.3 km</desc><cmt>0 km/h</cmt><time>2007-06-07T14:06:28Z</time><ele>308.9</ele></rtept>
+</rte>
+<wpt lon="7.65150" lat="50.77391"><name>Start : 07/06/2007 13:42:18 : Geilhausen (Windeck)</name><desc>0.0 km</desc><cmt>0 km/h</cmt><time>2007-06-07T11:42:18Z</time><ele>143.7</ele><sat>8</sat></wpt>
+<wpt lon="7.63787" lat="50.88273"><name>Ende : 07/06/2007 16:06:28 : Escherhof (Waldbröl)</name><desc>92.3 km</desc><cmt>0 km/h</cmt><time>2007-06-07T14:06:28Z</time><ele>308.9</ele><sat>10</sat></wpt>
+<trk>
+	<name>2007-06-07T11:42:18Z</name>
+		<trkseg>
+		<trkpt lon="7.65150" lat="50.77391"><name>Start : 07/06/2007 13:42:18 : Geilhausen (Windeck)</name><desc>0.0 km</desc><cmt>0 km/h</cmt><time>2007-06-07T11:42:18Z</time><ele>143.7</ele></trkpt>
+		<trkpt lon="7.66582" lat="50.76632"><name>Kurs 162 : Opsen (Fürthen)</name><desc>1.6 km</desc><cmt>26 km/h</cmt><time>2007-06-07T11:44:21Z</time><ele>193</ele></trkpt>
+		<trkpt lon="7.66896" lat="50.76579"><name>Kurs 158 : Opsen (Fürthen)</name><desc>1.8 km</desc><cmt>24 km/h</cmt><time>2007-06-07T11:44:43Z</time><ele>188.2</ele></trkpt>
+		<trkpt lon="7.67791" lat="50.76609"><name>Kurs 62 : Hamm (Sieg)</name><desc>2.5 km</desc><cmt>19 km/h</cmt><time>2007-06-07T11:45:35Z</time><ele>214.2</ele></trkpt>
+		<trkpt lon="7.67817" lat="50.76629"><name>Kurs 15 : Opsen (Fürthen)</name><desc>2.6 km</desc><cmt>37 km/h</cmt><time>2007-06-07T11:45:38Z</time><ele>215.6</ele></trkpt>
+		<trkpt lon="7.67644" lat="50.78065"><name>Distanz 5 : Oppertsau (Fürthen)</name><desc>5.0 km</desc><cmt>56 km/h</cmt><time>2007-06-07T11:47:56Z</time><ele>139.7</ele></trkpt>
+		<trkpt lon="7.71367" lat="50.76978"><name>Kurs 333 : Oettershagen (Roth DE (Altenkirchen (Westerwald)))</name><desc>9.7 km</desc><cmt>26 km/h</cmt><time>2007-06-07T11:52:36Z</time><ele>174.2</ele></trkpt>
+		<trkpt lon="7.71402" lat="50.76980"><name>Kurs 40 : Oettershagen (Roth DE (Altenkirchen (Westerwald)))</name><desc>9.8 km</desc><cmt>40 km/h</cmt><time>2007-06-07T11:52:38Z</time><ele>171.8</ele></trkpt>
+		<trkpt lon="7.71493" lat="50.77171"><name>Distanz 10 : Nisterbrück (Roth DE (Altenkirchen (Westerwald)))</name><desc>10.0 km</desc><cmt>72 km/h</cmt><time>2007-06-07T11:52:49Z</time><ele>167</ele></trkpt>
+		<trkpt lon="7.73425" lat="50.78343"><name>Kurs 336 : Wissen</name><desc>12.2 km</desc><cmt>28 km/h</cmt><time>2007-06-07T11:54:40Z</time><ele>153.8</ele></trkpt>
+		<trkpt lon="7.73215" lat="50.78727"><name>Kurs 330 : Brückhöfe (Wissen)</name><desc>12.8 km</desc><cmt>62 km/h</cmt><time>2007-06-07T11:55:14Z</time><ele>155.6</ele></trkpt>
+		<trkpt lon="7.74127" lat="50.79907"><name>Kurs 81 : Brückhöfe (Wissen)</name><desc>14.5 km</desc><cmt>59 km/h</cmt><time>2007-06-07T11:56:38Z</time><ele>173.7</ele></trkpt>
+		<trkpt lon="7.74447" lat="50.80059"><name>Kurs 105 : Brückhöfe (Wissen)</name><desc>14.9 km</desc><cmt>56 km/h</cmt><time>2007-06-07T11:56:57Z</time><ele>166.7</ele></trkpt>
+		<trkpt lon="7.74694" lat="50.80023"><name>Distanz 15 : Siegenthal (Hövels)</name><desc>15.0 km</desc><cmt>77 km/h</cmt><time>2007-06-07T11:57:06Z</time><ele>168.2</ele></trkpt>
+		<trkpt lon="7.79862" lat="50.81565"><name>Distanz 20 : Bornhahn (Katzwinkel (Sieg))</name><desc>20.0 km</desc><cmt>95 km/h</cmt><time>2007-06-07T12:00:43Z</time><ele>217.1</ele></trkpt>
+		<trkpt lon="7.80231" lat="50.81561"><name>Kurs 182 : Elkhausen (Katzwinkel (Sieg))</name><desc>20.4 km</desc><cmt>30 km/h</cmt><time>2007-06-07T12:00:57Z</time><ele>224.1</ele></trkpt>
+		<trkpt lon="7.80233" lat="50.81540"><name>Kurs 113 : Elkhausen (Katzwinkel (Sieg))</name><desc>20.4 km</desc><cmt>36 km/h</cmt><time>2007-06-07T12:01:00Z</time><ele>224.2</ele></trkpt>
+		<trkpt lon="7.81405" lat="50.80858"><name>Kurs 127 : Katzwinkel (Sieg)</name><desc>21.6 km</desc><cmt>13 km/h</cmt><time>2007-06-07T12:02:12Z</time><ele>268.5</ele></trkpt>
+		<trkpt lon="7.81700" lat="50.80883"><name>Kurs 24 : Katzwinkel (Sieg)</name><desc>21.9 km</desc><cmt>53 km/h</cmt><time>2007-06-07T12:02:27Z</time><ele>267.8</ele></trkpt>
+		<trkpt lon="7.83273" lat="50.82478"><name>Kurs 7 : Wingendorf (Kirchen (Sieg))</name><desc>24.4 km</desc><cmt>29 km/h</cmt><time>2007-06-07T12:04:56Z</time><ele>329.7</ele></trkpt>
+		<trkpt lon="7.83063" lat="50.83076"><name>Distanz 25 : Hassel DE (Katzwinkel (Sieg))</name><desc>25.1 km</desc><cmt>94 km/h</cmt><time>2007-06-07T12:05:27Z</time><ele>323.4</ele></trkpt>
+		<trkpt lon="7.84699" lat="50.85111"><name>Distanz 30 : Winnersbach (Kirchen (Sieg))</name><desc>30.1 km</desc><cmt>62 km/h</cmt><time>2007-06-07T12:09:28Z</time><ele>289</ele></trkpt>
+		<trkpt lon="7.85312" lat="50.84849"><name>Kurs 68 : Winnersbach (Kirchen (Sieg))</name><desc>30.6 km</desc><cmt>19 km/h</cmt><time>2007-06-07T12:10:04Z</time><ele>235.7</ele></trkpt>
+		<trkpt lon="7.85267" lat="50.84888"><name>Kurs 340 : Winnersbach (Kirchen (Sieg))</name><desc>30.7 km</desc><cmt>26 km/h</cmt><time>2007-06-07T12:10:07Z</time><ele>233.6</ele></trkpt>
+		<trkpt lon="7.85316" lat="50.84903"><name>Kurs 134 : Eicherhof (Niederfischbach)</name><desc>30.8 km</desc><cmt>15 km/h</cmt><time>2007-06-07T12:10:15Z</time><ele>229.7</ele></trkpt>
+		<trkpt lon="7.85325" lat="50.84894"><name>Kurs 100 : Eicherhof (Niederfischbach)</name><desc>30.8 km</desc><cmt>20 km/h</cmt><time>2007-06-07T12:10:20Z</time><ele>227.2</ele></trkpt>
+		<trkpt lon="7.85445" lat="50.84854"><name>Kurs 26 : Eicherhof (Niederfischbach)</name><desc>30.9 km</desc><cmt>12 km/h</cmt><time>2007-06-07T12:10:35Z</time><ele>229.6</ele></trkpt>
+		<trkpt lon="7.85457" lat="50.84886"><name>Kurs 171 : Eicherhof (Niederfischbach)</name><desc>31.0 km</desc><cmt>16 km/h</cmt><time>2007-06-07T12:31:19Z</time><ele>227.1</ele></trkpt>
+		<trkpt lon="7.85445" lat="50.84853"><name>Kurs 280 : Eicherhof (Niederfischbach)</name><desc>31.1 km</desc><cmt>4 km/h</cmt><time>2007-06-07T12:31:29Z</time><ele>226.6</ele></trkpt>
+		<trkpt lon="7.82409" lat="50.87315"><name>Distanz 35 : Erlenbruch (Friesenhagen)</name><desc>35.1 km</desc><cmt>77 km/h</cmt><time>2007-06-07T12:36:27Z</time><ele>370.3</ele></trkpt>
+		<trkpt lon="7.81195" lat="50.90282"><name>Kurs 45 : Friesenhagen</name><desc>39.1 km</desc><cmt>18 km/h</cmt><time>2007-06-07T12:39:41Z</time><ele>277.8</ele></trkpt>
+		<trkpt lon="7.81209" lat="50.90278"><name>Kurs 109 : Friesenhagen</name><desc>39.2 km</desc><cmt>32 km/h</cmt><time>2007-06-07T12:39:42Z</time><ele>277.4</ele></trkpt>
+		<trkpt lon="7.82159" lat="50.89898"><name>Distanz 40 : Gerndorf (Friesenhagen)</name><desc>40.1 km</desc><cmt>96 km/h</cmt><time>2007-06-07T12:40:28Z</time><ele>310.5</ele></trkpt>
+		<trkpt lon="7.82759" lat="50.90748"><name>Kurs 148 : Gerndorf (Friesenhagen)</name><desc>41.3 km</desc><cmt>71 km/h</cmt><time>2007-06-07T12:41:23Z</time><ele>352.4</ele></trkpt>
+		<trkpt lon="7.82873" lat="50.90664"><name>Kurs 166 : Gerndorf (Friesenhagen)</name><desc>41.5 km</desc><cmt>46 km/h</cmt><time>2007-06-07T12:41:35Z</time><ele>353.2</ele></trkpt>
+		<trkpt lon="7.84306" lat="50.90610"><name>Kurs 100 : Mausbach (Freudenberg DE (Siegen-Wittgenstein))</name><desc>43.6 km</desc><cmt>32 km/h</cmt><time>2007-06-07T12:43:24Z</time><ele>362.5</ele></trkpt>
+		<trkpt lon="7.84458" lat="50.90544"><name>Kurs 175 : Mausbach (Freudenberg DE (Siegen-Wittgenstein))</name><desc>43.8 km</desc><cmt>44 km/h</cmt><time>2007-06-07T12:43:33Z</time><ele>360.7</ele></trkpt>
+		<trkpt lon="7.84834" lat="50.89958"><name>Kurs 35 : Mausbach (Freudenberg DE (Siegen-Wittgenstein))</name><desc>44.6 km</desc><cmt>47 km/h</cmt><time>2007-06-07T12:44:20Z</time><ele>363.7</ele></trkpt>
+		<trkpt lon="7.85241" lat="50.90284"><name>Distanz 45 : Hohenhain (Freudenberg DE (Siegen-Wittgenstein))</name><desc>45.1 km</desc><cmt>53 km/h</cmt><time>2007-06-07T12:44:45Z</time><ele>367.1</ele></trkpt>
+		<trkpt lon="7.88724" lat="50.91418"><name>Distanz 50 : Büschergrund (Freudenberg DE (Siegen-Wittgenstein))</name><desc>50.1 km</desc><cmt>55 km/h</cmt><time>2007-06-07T12:50:40Z</time><ele>306.4</ele></trkpt>
+		<trkpt lon="7.85132" lat="50.94363"><name>Distanz 55 : Wilhelmstal (Wenden)</name><desc>55.1 km</desc><cmt>73 km/h</cmt><time>2007-06-07T12:54:27Z</time><ele>373.5</ele></trkpt>
+		<trkpt lon="7.82178" lat="50.95398"><name>Kurs 231 : Rothemühle (Wenden)</name><desc>57.7 km</desc><cmt>30 km/h</cmt><time>2007-06-07T12:56:33Z</time><ele>348.6</ele></trkpt>
+		<trkpt lon="7.79120" lat="50.95236"><name>Distanz 60 : Bebbingen (Wenden)</name><desc>60.2 km</desc><cmt>157 km/h</cmt><time>2007-06-07T12:57:58Z</time><ele>391.8</ele></trkpt>
+		<trkpt lon="7.73683" lat="50.94104"><name>Distanz 65 : Nespen (Reichshof)</name><desc>65.2 km</desc><cmt>102 km/h</cmt><time>2007-06-07T13:01:37Z</time><ele>301.5</ele></trkpt>
+		<trkpt lon="7.70721" lat="50.90810"><name>Distanz 70 : Springe (Morsbach DE (Oberbergischer Kreis))</name><desc>70.2 km</desc><cmt>93 km/h</cmt><time>2007-06-07T13:04:47Z</time><ele>414.3</ele></trkpt>
+		<trkpt lon="7.65878" lat="50.88281"><name>Distanz 75 : Neuenhof DE (Waldbröl)</name><desc>75.2 km</desc><cmt>76 km/h</cmt><time>2007-06-07T13:08:18Z</time><ele>377</ele></trkpt>
+		<trkpt lon="7.65491" lat="50.84611"><name>Distanz 80 : Erblingen (Morsbach DE (Oberbergischer Kreis))</name><desc>80.2 km</desc><cmt>88 km/h</cmt><time>2007-06-07T13:11:23Z</time><ele>310.2</ele></trkpt>
+		<trkpt lon="7.65751" lat="50.82365"><name>Kurs 100 : Kohlberg DE (Windeck)</name><desc>83.1 km</desc><cmt>18 km/h</cmt><time>2007-06-07T13:13:18Z</time><ele>313.4</ele></trkpt>
+		<trkpt lon="7.65765" lat="50.82373"><name>Kurs 42 : Überholz (Morsbach DE (Oberbergischer Kreis))</name><desc>83.2 km</desc><cmt>24 km/h</cmt><time>2007-06-07T13:13:19Z</time><ele>313.2</ele></trkpt>
+		<trkpt lon="7.65844" lat="50.82443"><name>Kurs 331 : Überholz (Morsbach DE (Oberbergischer Kreis))</name><desc>83.2 km</desc><cmt>15 km/h</cmt><time>2007-06-07T13:13:28Z</time><ele>313.1</ele></trkpt>
+		<trkpt lon="7.65861" lat="50.82564"><name>Kurs 55 : Überholz (Morsbach DE (Oberbergischer Kreis))</name><desc>83.4 km</desc><cmt>0 km/h</cmt><time>2007-06-07T13:14:00Z</time><ele>322.8</ele></trkpt>
+		<trkpt lon="7.65870" lat="50.82553"><name>Kurs 136 : Überholz (Morsbach DE (Oberbergischer Kreis))</name><desc>83.4 km</desc><cmt>13 km/h</cmt><time>2007-06-07T13:54:33Z</time><ele>325.9</ele></trkpt>
+		<trkpt lon="7.65731" lat="50.82380"><name>Kurs 325 : Kohlberg DE (Windeck)</name><desc>83.8 km</desc><cmt>25 km/h</cmt><time>2007-06-07T13:55:24Z</time><ele>313.7</ele></trkpt>
+		<trkpt lon="7.64737" lat="50.83477"><name>Distanz 85 : Reinshagen (Morsbach DE (Oberbergischer Kreis))</name><desc>85.2 km</desc><cmt>107 km/h</cmt><time>2007-06-07T13:56:14Z</time><ele>310.4</ele></trkpt>
+		<trkpt lon="7.65803" lat="50.84847"><name>Kurs 298 : Erblingen (Morsbach DE (Oberbergischer Kreis))</name><desc>87.1 km</desc><cmt>21 km/h</cmt><time>2007-06-07T13:58:50Z</time><ele>322.5</ele></trkpt>
+		<trkpt lon="7.64412" lat="50.87428"><name>Distanz 90 : Escherhof (Waldbröl)</name><desc>90.2 km</desc><cmt>80 km/h</cmt><time>2007-06-07T14:00:54Z</time><ele>377.6</ele></trkpt>
+		<trkpt lon="7.64880" lat="50.87861"><name>Kurs 281 : Biebelshof (Waldbröl)</name><desc>90.9 km</desc><cmt>21 km/h</cmt><time>2007-06-07T14:02:02Z</time><ele>365.6</ele></trkpt>
+		<trkpt lon="7.63787" lat="50.88273"><name>Kurs 297 : Escherhof (Waldbröl)</name><desc>92.3 km</desc><cmt>5 km/h</cmt><time>2007-06-07T14:03:57Z</time><ele>309</ele></trkpt>
+		<trkpt lon="7.63787" lat="50.88273"><name>Kurs 358 : Escherhof (Waldbröl)</name><desc>92.3 km</desc><cmt>0 km/h</cmt><time>2007-06-07T14:03:59Z</time><ele>309</ele></trkpt>
+		<trkpt lon="7.63787" lat="50.88273"><name>Ende : 07/06/2007 16:06:28 : Escherhof (Waldbröl)</name><desc>92.3 km</desc><cmt>0 km/h</cmt><time>2007-06-07T14:06:28Z</time><ele>308.9</ele></trkpt>
+	</trkseg>
+</trk>
+</gpx>

@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document xmlns:fo="http://www.w3.org/1999/XSL/Format"  xmlns:xlink="http://www.w3/org/1999/xlink">
+	<name>www.gps-tour.info</name>
+	<open>1</open>
+	<Style id="styleInfoIcon">
+		<IconStyle>
+			<scale>0.2</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon35.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="trackStyle0">
+		<LineStyle>
+			<color>ff0096e9</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="trackStyle1">
+		<LineStyle>
+			<width>4</width>
+		</LineStyle>
+	</Style>
+	<Folder>
+		<name>Fahrrad Touring</name>
+		<Folder>
+			<name>USA</name>
+			<Folder>
+				<name>Florida</name>
+				<Folder>
+					<name>Florida, Georgia, South Carolina, North Carolina, Virginia, Washington DC, Maryland, Pensylvania, New Jersey, New York</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-78.1594095,33.6126925,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>von Ft. Myers entlang der Ostküste nach New York City</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=7821&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+		</Folder>
+	</Folder>
+	<Folder>
+		<name>Motorrad</name>
+		<open>1</open>
+		<Folder>
+			<name>USA</name>
+			<open>1</open>
+			<Folder>
+				<name>Hawaii</name>
+				<open>1</open>
+				<Folder>
+					<name>Big Island</name>
+					<open>1</open>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-155.2730134,19.74793615,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Mit 4WD Auto zum Mauna Kea</name>
+						<open>1</open>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8628&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+<!--
+			<Folder>
+				<name>mehrere</name>
+				<Folder>
+					<name>roadtrip</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-95.59693350000001,36.371515,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>roadtrip_USA</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=6431&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+		</Folder>
+	</Folder>
+	<Folder>
+		<name>Mountainbike</name>
+		<Folder>
+			<name>USA</name>
+			<Folder>
+				<name>California</name>
+				<Folder>
+					<name>Elfin Forest</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-117.1437083335,33.0799525,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Elfin Forest</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1097&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Lake Calavera</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-117.2762525,33.1670275,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Lake Calavera</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1099&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Modjeska Canyon</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-117.5897808335,33.70658,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Harding Truck Trail to Joplin Trail</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1098&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>NE of San Juan Capistrano</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-117.4794675,33.62625333335,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>San Juan Trail</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1100&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>San Diego</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-117.166777,32.924322,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>first trip</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=7482&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Sycamore Canyon</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-116.9789891665,32.928955,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Sycamore Canyon</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1101&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Colorado</name>
+				<Folder>
+					<name>Denver</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-105.18220901489,39.686485290527,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>RedRocks bei Denver</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8556&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Frisco</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-106.00316238403,39.555389404297,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Westridge Trail und South Fork</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8563&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Glenwood Springs</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-107.28540802002,39.528490066528,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>ScoutTrail in Glenwood Springs</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8564&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Connecticut</name>
+				<Folder>
+					<name>West Hartford</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-72.790260322,41.766543392,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>West Hartford Reservoir</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=6369&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Florida</name>
+				<Folder>
+					<name>Ocala</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-82.126268333333,29.07574666666701,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Santos Trail - Ocala, Florida</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=772&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Maryland</name>
+				<Folder>
+					<name>Avalon Area</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-76.74124000000001,39.24301416665,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Avalon</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1092&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-76.740275,39.2344525,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Avalon 2</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1093&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Gambrills State Park</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-77.49472583335,39.4765375,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Gambrills State Park</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1094&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Loch Raven Resevoir</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-76.5945658333,39.47762166665,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Loch Raven Resevoir - Warren and Dam Loops</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1095&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Sugarloaf Mountain</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-77.38997000000001,39.2724325,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Sugarloaf Mountain</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1096&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>New Mexico</name>
+				<Folder>
+					<name>Albuquerque</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-106.348691667,35.0256416665,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Otero - Cedro</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8701&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+				<Folder>
+					<name>Santa Fe</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-105.8629083335,35.736266667,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Piece of Winsor Trail</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8882&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Oregon</name>
+				<Folder>
+					<name>Terrebonne</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-121.08623405,44.41247175,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Gray Butte Loop</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=7361&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Utah</name>
+				<Folder>
+					<name>Moab</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>0,0,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Porcupine Rim</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8559&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-108.8551826477,39.182077407837,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Marys Loop</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8557&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-109.67846298218,38.715929031372,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Sovereign Trail</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=8561&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+			<Folder>
+				<name>Virginia</name>
+				<Folder>
+					<name>Wakefield</name>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-77.23077583335,38.8110491667,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Wakefield/Lake Accontink 1</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1090&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+					<Placemark>
+						<styleUrl>#styleInfoIcon</styleUrl>
+						<Point>
+							<coordinates>-77.22514333335001,38.8123266667,0</coordinates>
+						</Point>
+					</Placemark>
+					<NetworkLink>
+						<name>Wakefield/Lake Accontink 2</name>
+						<Url>
+							<href>http://www.gps-tour.info/tours/download/kml.php?key=1091&amp;pcolor=rand&amp;kmz=true</href>
+						</Url>
+						<refreshInterval>0</refreshInterval>
+					</NetworkLink>
+				</Folder>
+			</Folder>
+-->			
+		</Folder>
+	</Folder>
+</Document>
+</kml>

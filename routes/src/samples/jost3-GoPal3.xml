@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tour>
+	<options Type="0" Mode="1" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="1" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
+	<dest Country="49" City="Bremen/Östliche Vorstadt" Zip="28203" Street="Vor dem Steintor" Latitude="6988261" Longitude="982173" StartPos="0" />
+	<dest Country="49" City="Bremen/Neustadt" Zip="28201" Street="Meyerstrasse" House="23" Latitude="6987603" Longitude="978611" />
+</tour>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+ version="1.0"
+ creator="Adventure Cycling Association Gozilla.xls"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="http://www.topografix.com/GPX/1/0"
+ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+<url>http://www.adv-cycling.org/</url>
+ <wpt lat="52.88389" lon="-118.08045"><name>N01010</name><cmt>Bear Hill Lodge</cmt><desc>N01010</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.88051" lon="-118.08556"><name>N01020</name><cmt>Jasper-Yellowhead Museum</cmt><desc>N01020</desc><sym>Museum</sym><type>Museum</type></wpt>
+ <wpt lat="52.8792" lon="-118.07919"><name>N0102K</name><cmt>Jasper Municipal Library</cmt><desc>N0102K</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.87739" lon="-118.07965"><name>N01030</name><cmt>Astoria Hotel</cmt><desc>N01030</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.87638" lon="-118.0814"><name>N01040</name><cmt>Athabasca Hotel</cmt><desc>N01040</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.87909" lon="-118.07921"><name>N01050</name><cmt>Jasper Information Centre (Jasper AS)</cmt><desc>N01050</desc><sym>Information</sym><type>Information</type></wpt>
+ <wpt lat="52.87352" lon="-118.0823"><name>N01060</name><cmt>Vicious Cycle BS</cmt><desc>N01060</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.87436" lon="-118.08269"><name>N01070</name><cmt>Freewheel Cycle BS</cmt><desc>N01070</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.86941" lon="-118.09472"><name>N01090</name><cmt>PR 93 Connaught Dr bend</cmt><desc>N01090</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.86651" lon="-118.09333"><name>N010A0</name><cmt>PR 93 (Cross TC 16)</cmt><desc>N010A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.8545" lon="-118.07784"><name>N010B0</name><cmt>PR 93 (Pass Whistler's Mtn Rd)</cmt><desc>N010B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.85038" lon="-118.1231"><name>N010C0</name><cmt># Jasper International Hostel</cmt><desc>N010C0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.8534" lon="-118.07964"><name>N010D0</name><cmt>Whistlers CG</cmt><desc>N010D0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.84679" lon="-118.07286"><name>N010E0</name><cmt>Jasper House Bungalows M/R</cmt><desc>N010E0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.83784" lon="-118.06767"><name>N010F0</name><cmt>Wapiti CG</cmt><desc>N010F0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.83017" lon="-118.06311"><name>N010H0</name><cmt>Becker's Chalet M/R</cmt><desc>N010H0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.8142" lon="-118.05037"><name>N010J0</name><cmt>PR 93/PR 93A</cmt><desc>N010J0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.81381" lon="-118.05114"><name>N010JK</name><cmt>PR 93 bend</cmt><desc>N010JK</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.76415" lon="-117.99506"><name>N010K0</name><cmt>Wabasso CG</cmt><desc>N010K0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.74506" lon="-117.97377"><name>N010L0</name><cmt>Warden Station</cmt><desc>N010L0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.66304" lon="-117.88644"><name>N010M0</name><cmt>PR 93A bend</cmt><desc>N010M0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.66893" lon="-117.88145"><name>N010N0</name><cmt>PR 93A/PR 93 (Athabasca Falls)</cmt><desc>N010N0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.65751" lon="-117.87701"><name>N010P0</name><cmt>Athabasca Falls Hostel</cmt><desc>N010P0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.63082" lon="-117.86292"><name>N010R0</name><cmt>Mt. Kerkeslin CG</cmt><desc>N010R0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.59306" lon="-117.7984"><name>N010S0</name><cmt>Mount Christie Picnic Area</cmt><desc>N010S0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.54977" lon="-117.67004"><name>N010T0</name><cmt>Honeymoon Lake CG</cmt><desc>N010T0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.54444" lon="-117.65372"><name>N010U0</name><cmt>Buck Lake Trailhead</cmt><desc>N010U0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.53259" lon="-117.62612"><name>N010V0</name><cmt>Sunwapta Falls Resort M/R/SS</cmt><desc>N010V0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.43437" lon="-117.41156"><name>N010W0</name><cmt>Warden Station</cmt><desc>N010W0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.39659" lon="-117.38076"><name>N010X0</name><cmt>Jonas Creek CG</cmt><desc>N010X0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.31891" lon="-117.32857"><name>N010Z0</name><cmt>Beauty Creek Hostel</cmt><desc>N010Z0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.21982" lon="-117.23375"><name>N01100</name><cmt>PR 93 bend</cmt><desc>N01100</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.22066" lon="-117.21962"><name>N01120</name><cmt>Icefields Visitor Center M/R</cmt><desc>N01120</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.21831" lon="-117.19609"><name>N01130</name><cmt>Columbia Icefield CG</cmt><desc>N01130</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.21734" lon="-117.17327"><name>N01140</name><cmt>Wilcox Creek CG</cmt><desc>N01140</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="52.21035" lon="-117.15063"><name>N01150</name><cmt>Sunwapta Pass</cmt><desc>N01150</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.19192" lon="-117.11607"><name>N01160</name><cmt>Hilda Creek Hostel</cmt><desc>N01160</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="52.19652" lon="-117.10337"><name>N01170</name><cmt>PR 93 bend</cmt><desc>N01170</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.18544" lon="-117.06795"><name>N01190</name><cmt>Nigel Creek Trailhead</cmt><desc>N01190</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.1764" lon="-117.05563"><name>N011A0</name><cmt>PR 93 bend</cmt><desc>N011A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.17037" lon="-117.07291"><name>N011B0</name><cmt>PR 93 bend</cmt><desc>N011B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.17524" lon="-117.0523"><name>N011C0</name><cmt>PR 93 bend</cmt><desc>N011C0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.12699" lon="-116.98678"><name>N011D0</name><cmt>Alexandra Trail Trailhead</cmt><desc>N011D0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.06838" lon="-116.91006"><name>N011E0</name><cmt>Sunset Pass</cmt><desc>N011E0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="52.04214" lon="-116.8643"><name>N011F0</name><cmt>Rampart Creek CG/Hostel</cmt><desc>N011F0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.98876" lon="-116.80601"><name>N011H0</name><cmt>PR 93 bend</cmt><desc>N011H0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.97413" lon="-116.75887"><name>N011J0</name><cmt>Glacier Lake Trailhead</cmt><desc>N011J0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.97323" lon="-116.74278"><name>N011K0</name><cmt>Pass PR 11 David Thompson Hwy</cmt><desc>N011K0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.97315" lon="-116.74579"><name>N011L0</name><cmt>The Crossing Resort G/M/R/SS</cmt><desc>N011L0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.97032" lon="-116.72"><name>N011M0</name><cmt>Warden Station</cmt><desc>N011M0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.94559" lon="-116.71463"><name>N011N0</name><cmt>Mistaya Canyon Trailhead</cmt><desc>N011N0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.91393" lon="-116.72002"><name>N011P0</name><cmt>PR 93 bend</cmt><desc>N011P0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.83781" lon="-116.6131"><name>N011R0</name><cmt>Waterfowl Lake CG</cmt><desc>N011R0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.7212" lon="-116.49592"><name>N011S0</name><cmt>Bow Pass</cmt><desc>N011S0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.67909" lon="-116.46409"><name>N011T0</name><cmt># Simpson's Num Ti Jah Lodge R/M</cmt><desc>N011T0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.67134" lon="-116.448"><name>N011U0</name><cmt>Bow Lake</cmt><desc>N011U0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.66321" lon="-116.43852"><name>N011V0</name><cmt>Helen Lake Trailhead</cmt><desc>N011V0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.63043" lon="-116.32911"><name>N011W0</name><cmt>Mosquito Creek CG/Hostel</cmt><desc>N011W0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.58669" lon="-116.30957"><name>N011X0</name><cmt>Hector Lake Trailhead</cmt><desc>N011X0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.4406" lon="-116.19935"><name>N012H0</name><cmt>PR 93/TC 1</cmt><desc>N012H0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.42584" lon="-116.17496"><name>N012J0</name><cmt>TC 1/Bow Valley Pkwy</cmt><desc>N012J0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.44326" lon="-116.16516"><name>N012K0</name><cmt>Sightseeing Gondola</cmt><desc>N012K0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.42587" lon="-116.17818"><name>N012L0</name><cmt>Lake Louise Alpine Center Hostel</cmt><desc>N012L0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.42507" lon="-116.17686"><name>N012M0</name><cmt>Lake Louise Inn</cmt><desc>N012M0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.42563" lon="-116.17746"><name>N012N0</name><cmt>Mountaineer Lodge</cmt><desc>N012N0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.42579" lon="-116.17582"><name>N012P0</name><cmt>Wilson Mountain Sports BS</cmt><desc>N012P0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.42574" lon="-116.17622"><name>N012R0</name><cmt>Lake Louise Vistor Centre</cmt><desc>N012R0</desc><sym>Information</sym><type>Information</type></wpt>
+ <wpt lat="51.41718" lon="-116.17316"><name>N012S0</name><cmt>Lake Louise CG</cmt><desc>N012S0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.41588" lon="-116.19645"><name>N012T0</name><cmt>Paradise Lodge and Bungalows</cmt><desc>N012T0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.41692" lon="-116.2121"><name>N012U0</name><cmt>Chateau Lake Louise</cmt><desc>N012U0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.4249" lon="-116.16126"><name>N012V0</name><cmt>Bow Valley Pkwy (Pass Whitehorn Rd)</cmt><desc>N012V0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.3495" lon="-116.06833"><name>N012W0</name><cmt>Baker Creek Lodge M/R</cmt><desc>N012W0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.32714" lon="-116.03854"><name>N012X0</name><cmt>Protection Mountain CG</cmt><desc>N012X0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.26912" lon="-115.91829"><name>N012Z0</name><cmt>Bow Valley Pkwy/PR 93</cmt><desc>N012Z0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.26874" lon="-115.91883"><name>N012ZK</name><cmt>Castle Junction G/M/SS</cmt><desc>N012ZK</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.26843" lon="-115.91831"><name>N01300</name><cmt>Castle Mountain Chalets</cmt><desc>N01300</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.26778" lon="-115.91306"><name>N01320</name><cmt># Castle Mountain CG</cmt><desc>N01320</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.26306" lon="-115.9031"><name>N0132K</name><cmt>Castle Mountain Hostel</cmt><desc>N0132K</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.26473" lon="-115.96676"><name>N01330</name><cmt>PR 93 bend</cmt><desc>N01330</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.24961" lon="-116.02049"><name>N01340</name><cmt>PR 93 bend</cmt><desc>N01340</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.23132" lon="-116.04931"><name>N01350</name><cmt>Vermilion Pass</cmt><desc>N01350</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.18676" lon="-116.11663"><name>N01360</name><cmt>Marble Canyon CG</cmt><desc>N01360</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.1693" lon="-116.14694"><name>N01370</name><cmt>Paint Pots Trailhead</cmt><desc>N01370</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.14933" lon="-116.15316"><name>N01390</name><cmt>PR 93 bend</cmt><desc>N01390</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.08107" lon="-116.05348"><name>N013A0</name><cmt>Floe Lake Trailhead</cmt><desc>N013A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.02511" lon="-115.9798"><name>N013B0</name><cmt>Vermilion Crossing R/SS</cmt><desc>N013B0</desc><sym>Restaurant</sym><type>Restaurant</type></wpt>
+ <wpt lat="51.02482" lon="-115.9799"><name>N013C0</name><cmt>Kootenay Park Lodge</cmt><desc>N013C0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.98084" lon="-115.94972"><name>N013D0</name><cmt>Simpson River Trailhead</cmt><desc>N013D0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.883" lon="-116.04903"><name>N013E0</name><cmt>Kootenay Crossing Warden Station</cmt><desc>N013E0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.81408" lon="-116.00976"><name>N013F0</name><cmt>Crooks Meadow CG</cmt><desc>N013F0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.76476" lon="-115.96664"><name>N013H0</name><cmt># Crooks Meadow Group CG</cmt><desc>N013H0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.76397" lon="-115.94274"><name>N013J0</name><cmt>McLeod Meadows CG</cmt><desc>N013J0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.73396" lon="-115.91116"><name>N013R0</name><cmt>Kootenay River Picnic Area</cmt><desc>N013R0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.67419" lon="-115.88842"><name>N013S0</name><cmt>PR 93 bend</cmt><desc>N013S0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.67516" lon="-115.92667"><name>N013T0</name><cmt>Sinclair Pass</cmt><desc>N013T0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.63593" lon="-116.03025"><name>N013U0</name><cmt>Tunnel</cmt><desc>N013U0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.63518" lon="-116.04115"><name>N013V0</name><cmt>Radium Hot Springs pool</cmt><desc>N013V0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.63483" lon="-116.04029"><name>N013W0</name><cmt>Addison's Bungalows</cmt><desc>N013W0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.63437" lon="-116.04024"><name>N013X0</name><cmt>Blakely's Bungalows</cmt><desc>N013X0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.63385" lon="-116.04029"><name>N013Z0</name><cmt>Mount Farnham Bungalows</cmt><desc>N013Z0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.62332" lon="-116.07025"><name>N01400</name><cmt>La Siesta Motel</cmt><desc>N01400</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.62209" lon="-116.07168"><name>N01410</name><cmt><![CDATA[PR 93/PR 93 & PR 95]]></cmt><desc>N01410</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.62526" lon="-116.07275"><name>N01420</name><cmt># Canyon Camp RV CG</cmt><desc>N01420</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.62082" lon="-116.07446"><name>N01430</name><cmt>Crystal Springs Motel</cmt><desc>N01430</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.62" lon="-116.0734"><name>N01440</name><cmt>Radium Hot Springs AS</cmt><desc>N01440</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.61993" lon="-116.07114"><name>N01450</name><cmt>Big Horn Motel</cmt><desc>N01450</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.62465" lon="-116.05694"><name>N01460</name><cmt># Redstreak CG</cmt><desc>N01460</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.58642" lon="-116.04137"><name>N01470</name><cmt>Dry Gulch CG</cmt><desc>N01470</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.57916" lon="-116.03656"><name>N01480</name><cmt>Mountain Shadows Resort CG</cmt><desc>N01480</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.57496" lon="-116.03395"><name>N0148K</name><cmt>G/SS</cmt><desc>N0148K</desc><sym>Convenience Store</sym><type>Convenience Store</type></wpt>
+ <wpt lat="50.51557" lon="-115.99915"><name>N01490</name><cmt><![CDATA[PR 93 & PR 95/Athalmer Rd]]></cmt><desc>N01490</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.51214" lon="-116.01501"><name>N014A0</name><cmt>Athalmer Rd bend</cmt><desc>N014A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.51548" lon="-116.02022"><name>N014B0</name><cmt>Athalmer Rd/Laurier St</cmt><desc>N014B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.5144" lon="-116.0258"><name>N014C0</name><cmt>Columbia Cycle BS</cmt><desc>N014C0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.51033" lon="-116.03039"><name>N014D0</name><cmt>Laurier St/7th Av (Invermere AS)</cmt><desc>N014D0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.511" lon="-116.03"><name>N014DK</name><cmt>Invermere Public Library</cmt><desc>N014DK</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.50808" lon="-116.03082"><name>N014E0</name><cmt>Rob's Bicycle Works BS</cmt><desc>N014E0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.50329" lon="-116.02773"><name>N014F0</name><cmt>7th Av/13th St</cmt><desc>N014F0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.50372" lon="-116.028"><name>N014J0</name><cmt>Best Western Invermere Inn</cmt><desc>N014J0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.50401" lon="-116.02927"><name>N014K0</name><cmt>Mountain View Lodge</cmt><desc>N014K0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.5042" lon="-116.0324"><name>N014L0</name><cmt>The Wandering Rogue Hostel</cmt><desc>N014L0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.50343" lon="-116.03226"><name>N014M0</name><cmt>Lee Jay Motel</cmt><desc>N014M0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.50364" lon="-116.03798"><name>N014N0</name><cmt>13th St/13th Av</cmt><desc>N014N0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.507" lon="-116.038"><name>N014NK</name><cmt>D R Sports BS</cmt><desc>N014NK</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.48673" lon="-116.03644"><name>N014P0</name><cmt>13th Av/West Side Rd</cmt><desc>N014P0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.45465" lon="-116.02092"><name>N014R0</name><cmt>West Side Rd bend</cmt><desc>N014R0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.34983" lon="-115.89861"><name>N014S0</name><cmt>West Side Rd bend</cmt><desc>N014S0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.31279" lon="-115.88254"><name>N014T0</name><cmt><![CDATA[West Side Rd/PR 93 & PR 95]]></cmt><desc>N014T0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.3378" lon="-115.8263"><name>N014U0</name><cmt>Fairmont Hot Springs Resort</cmt><desc>N014U0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.33731" lon="-115.8256"><name>N014V0</name><cmt>Fairmont Hot Springs Pool</cmt><desc>N014V0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.3369" lon="-115.852"><name>N014W0</name><cmt><![CDATA[McMillan Chalet B&B]]></cmt><desc>N014W0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.3384" lon="-115.8569"><name>N014X0</name><cmt># Fairmont Hot Springs AS</cmt><desc>N014X0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.32229" lon="-115.86632"><name>N014Z0</name><cmt># Spruce Grove Resort CG/G/R/M</cmt><desc>N014Z0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.3082" lon="-115.90164"><name>N01500</name><cmt>Hoodoos Mountain Resort CG/Cabins/SS</cmt><desc>N01500</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.30651" lon="-115.89557"><name>N01510</name><cmt>Dutch Creek RV CG</cmt><desc>N01510</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="50.2945" lon="-115.8902"><name>N01520</name><cmt><![CDATA[PR 93 & PR 95/Columbia Lake Rd]]></cmt><desc>N01520</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.28969" lon="-115.88664"><name>N01530</name><cmt>Timbers Resort M</cmt><desc>N01530</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="50.24396" lon="-115.87512"><name>N01540</name><cmt>Columbia Lake Rd/Columbia Falls Rd</cmt><desc>N01540</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.2437" lon="-115.87598"><name>N01550</name><cmt><![CDATA[Columbia Falls Rd/PR 93 & PR 95]]></cmt><desc>N01550</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.1514" lon="-115.8271"><name>N01560</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N01560</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.14997" lon="-115.80337"><name>N01570</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N01570</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.15127" lon="-115.80308"><name>N01590</name><cmt>Canal Flats G/R/SS</cmt><desc>N01590</desc><sym>Convenience Store</sym><type>Convenience Store</type></wpt>
+ <wpt lat="50.11302" lon="-115.76731"><name>N015A0</name><cmt>Pass White Swan Forest Rd</cmt><desc>N015A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="50.1" lon="-115.75757"><name>N015B0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.98902" lon="-115.76381"><name>N015C0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015C0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.92851" lon="-115.74283"><name>N015D0</name><cmt>Skookumchuck AS</cmt><desc>N015D0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.9125" lon="-115.7336"><name>N015F0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015F0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.9113" lon="-115.7347"><name>N015H0</name><cmt>Springbrook Resort CG</cmt><desc>N015H0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.9086" lon="-115.7414"><name>N015J0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015J0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.89752" lon="-115.73406"><name>N015JK</name><cmt><![CDATA[Skookumchuck Motel & RV CG]]></cmt><desc>N015JK</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.86266" lon="-115.72532"><name>N015K0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015K0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.81051" lon="-115.76873"><name>N015L0</name><cmt><![CDATA[PR 93 & PR 95 turn (Pass PR 95A)]]></cmt><desc>N015L0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.76845" lon="-115.73758"><name>N015M0</name><cmt>Wasa AS</cmt><desc>N015M0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.79829" lon="-115.73606"><name>N015N0</name><cmt># Main Beach CG</cmt><desc>N015N0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.7977" lon="-115.73643"><name>N015P0</name><cmt><![CDATA[# Wasa Lakeside B&B]]></cmt><desc>N015P0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.7811" lon="-115.7292"><name>N015R0</name><cmt># Wasa Lake Provincial Park CG</cmt><desc>N015R0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.77455" lon="-115.72597"><name>N015S0</name><cmt># Hitchin' Post CG</cmt><desc>N015S0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.77147" lon="-115.72987"><name>N015T0</name><cmt># Wasa Lake Motel</cmt><desc>N015T0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.62121" lon="-115.62608"><name>N015U0</name><cmt><![CDATA[PR 93 & PR 95/Wardner-Fort Steele Rd]]></cmt><desc>N015U0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.62096" lon="-115.6258"><name>N015V0</name><cmt>Fort Steele Resort CG/G/SS</cmt><desc>N015V0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.6225" lon="-115.6239"><name>N015W0</name><cmt>Forte Steele Heritage Town</cmt><desc>N015W0</desc><sym>Museum</sym><type>Museum</type></wpt>
+ <wpt lat="49.62111" lon="-115.62453"><name>N015X0</name><cmt>Fort Steele R/SS</cmt><desc>N015X0</desc><sym>Restaurant</sym><type>Restaurant</type></wpt>
+ <wpt lat="49.60125" lon="-115.64165"><name>N015Z0</name><cmt># Fort Steele Original CG</cmt><desc>N015Z0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.61296" lon="-115.61502"><name>N01600</name><cmt><![CDATA[Emery's Mountain View B&B]]></cmt><desc>N01600</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.56975" lon="-115.55347"><name>N01670</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N01670</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.55579" lon="-115.49467"><name>N01690</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N01690</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.53873" lon="-115.48558"><name>N016A0</name><cmt>Norbury Lake Prov. Park CG</cmt><desc>N016A0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.49031" lon="-115.45159"><name>N016B0</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N016B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.47474" lon="-115.46167"><name>N016C0</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N016C0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.47145" lon="-115.44848"><name>N016D0</name><cmt>Cross Bull River</cmt><desc>N016D0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.46686" lon="-115.44432"><name>N016E0</name><cmt>R</cmt><desc>N016E0</desc><sym>Restaurant</sym><type>Restaurant</type></wpt>
+ <wpt lat="49.43455" lon="-115.41565"><name>N016F0</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N016F0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.43111" lon="-115.41676"><name>N016H0</name><cmt><![CDATA[Wardner-Fort Steele Rd/PR 3 & PR 93]]></cmt><desc>N016H0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.39835" lon="-115.36314"><name>N016J0</name><cmt><![CDATA[PR 3 & PR 93 bend]]></cmt><desc>N016J0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.39376" lon="-115.337"><name>N016K0</name><cmt><![CDATA[PR 3 & PR 93 bend]]></cmt><desc>N016K0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.37737" lon="-115.30716"><name>N016L0</name><cmt><![CDATA[PR 3 & PR 93 bend]]></cmt><desc>N016L0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.37612" lon="-115.3028"><name>N016M0</name><cmt><![CDATA[PR 3 & PR 93/Jaffray-Baynes Lake Rd]]></cmt><desc>N016M0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.37877" lon="-115.27621"><name>N016N0</name><cmt># Evergreen Chalet CG/M/R</cmt><desc>N016N0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.37042" lon="-115.25366"><name>N016P0</name><cmt># Will-O-Bend Golf RV CG</cmt><desc>N016P0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.37256" lon="-115.30426"><name>N016PK</name><cmt>Jaffray R/G</cmt><desc>N016PK</desc><sym>Restaurant</sym><type>Restaurant</type></wpt>
+ <wpt lat="49.35093" lon="-115.29689"><name>N016R0</name><cmt>Jaffray-Baynes Lake Rd bend</cmt><desc>N016R0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.35862" lon="-115.29871"><name>N016S0</name><cmt><![CDATA[Three Bears B&B]]></cmt><desc>N016S0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.35041" lon="-115.28952"><name>N016T0</name><cmt>Jaffray-Baynes Lake Rd bend</cmt><desc>N016T0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.3422" lon="-115.2662"><name>N016U0</name><cmt># North Star Lake Rec Site CG</cmt><desc>N016U0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.32118" lon="-115.29547"><name>N016V0</name><cmt>Jaffray-Baynes Lake Rd bend</cmt><desc>N016V0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.25531" lon="-115.23041"><name>N016W0</name><cmt>Jaffray-Baynes Lake Rd/Kikomun Rd</cmt><desc>N016W0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.25454" lon="-115.23581"><name>N016X0</name><cmt># Kikomun Creek Park CG</cmt><desc>N016X0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.26089" lon="-115.27789"><name>N016Z0</name><cmt>G/R</cmt><desc>N016Z0</desc><sym>Restaurant</sym><type>Restaurant</type></wpt>
+ <wpt lat="49.23348" lon="-115.21535"><name>N01700</name><cmt># Baynes Lake</cmt><desc>N01700</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.23079" lon="-115.20944"><name>N01710</name><cmt><![CDATA[# PR CG & RV]]></cmt><desc>N01710</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.29287" lon="-115.15157"><name>N01720</name><cmt><![CDATA[Kikomun Rd/PR 3 & PR 93 (R)]]></cmt><desc>N01720</desc><sym>Restaurant</sym><type>Restaurant</type></wpt>
+ <wpt lat="49.29376" lon="-115.12565"><name>N01730</name><cmt><![CDATA[PR 3 & PR 93/PR 3]]></cmt><desc>N01730</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.29547" lon="-115.1156"><name>N01740</name><cmt>PR 3 bend</cmt><desc>N01740</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.2993" lon="-115.11573"><name>N01750</name><cmt>Elko G/M/SS</cmt><desc>N01750</desc><sym>Gas Station</sym><type>Gas Station</type></wpt>
+ <wpt lat="49.2995" lon="-115.11615"><name>N01760</name><cmt><![CDATA[West Crow Motel & RV CG]]></cmt><desc>N01760</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.29802" lon="-115.11067"><name>N0176K</name><cmt>Elk Ridge Motel</cmt><desc>N0176K</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.30186" lon="-115.11475"><name>N01770</name><cmt>PR 3 bend</cmt><desc>N01770</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.31626" lon="-115.03849"><name>N01790</name><cmt>PR 3 bend</cmt><desc>N01790</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.34681" lon="-115.0117"><name>N017A0</name><cmt>Tunnel</cmt><desc>N017A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.48682" lon="-115.09043"><name>N017B0</name><cmt># Mt. Fernie Park CG</cmt><desc>N017B0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.49626" lon="-115.08078"><name>N017C0</name><cmt>PR 3 bend</cmt><desc>N017C0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.50491" lon="-115.06835"><name>N017E0</name><cmt>PR 3 (Pass 4th St Fernie AS)</cmt><desc>N017E0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.5024" lon="-115.062"><name>N017F0</name><cmt>Ski Base BS</cmt><desc>N017F0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.50376" lon="-115.06356"><name>N017G0</name><cmt>Fernie Public Library</cmt><desc>N017G0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.50519" lon="-115.06839"><name>N017H0</name><cmt>Travelodge Three Sisters</cmt><desc>N017H0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.50715" lon="-115.06577"><name>N017J0</name><cmt><![CDATA[Barbara Lynn's Country Inn B&B]]></cmt><desc>N017J0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.5081" lon="-115.06243"><name>N017K0</name><cmt>Raging Elk Hostel</cmt><desc>N017K0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.50851" lon="-115.06361"><name>N017KK</name><cmt>Samesum Backpacker Lodge Hostel</cmt><desc>N017KK</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.5098" lon="-115.0627"><name>N017L0</name><cmt><![CDATA[Snow Valley Motel & RV CG]]></cmt><desc>N017L0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="49.51048" lon="-115.06202"><name>N017M0</name><cmt>Cedar Lodge</cmt><desc>N017M0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.51114" lon="-115.06161"><name>N017N0</name><cmt>Fernie Sports BS</cmt><desc>N017N0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.51205" lon="-115.06011"><name>N017P0</name><cmt>East Kootenay Motel</cmt><desc>N017P0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.50426" lon="-115.06036"><name>N017Q0</name><cmt>Guides Hut BS</cmt><desc>N017Q0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.26912" lon="-115.91829"><name>N11010</name><cmt>Castle Junction G/M/SS</cmt><desc>N11010</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.26778" lon="-115.91306"><name>N11020</name><cmt>Castle Mountain CG</cmt><desc>N11020</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.24257" lon="-115.83632"><name>N11030</name><cmt>Johnston Canyon CG</cmt><desc>N11030</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.22586" lon="-115.78783"><name>N11040</name><cmt>Bow Valley Pkwy bend</cmt><desc>N11040</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.16999" lon="-115.69858"><name>N11050</name><cmt>Bow Valley Pkwy bend</cmt><desc>N11050</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.17049" lon="-115.65987"><name>N11060</name><cmt>Bow Valley Pkwy/TC 1</cmt><desc>N11060</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.18792" lon="-115.58328"><name>N11070</name><cmt>TC 1 (Pass Mt. Norquay exit)</cmt><desc>N11070</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.20659" lon="-115.53733"><name>N11090</name><cmt>TC 1/Banff Av</cmt><desc>N11090</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.19636" lon="-115.53928"><name>N110A0</name><cmt>Banff Av bend</cmt><desc>N110A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.17839" lon="-115.57072"><name>N110B0</name><cmt>Banff Av/Wolf St</cmt><desc>N110B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.18972" lon="-115.51867"><name>N110C0</name><cmt># Tunnel Mountain Village I CG</cmt><desc>N110C0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.18872" lon="-115.53782"><name>N110D0</name><cmt># Tunnel Mountain Village II CG</cmt><desc>N110D0</desc><sym>Campground</sym><type>Campground</type></wpt>
+ <wpt lat="51.18814" lon="-115.5381"><name>N110E0</name><cmt># Banff Alpine Center Hostel</cmt><desc>N110E0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.18518" lon="-115.55686"><name>N110F0</name><cmt>Banff Voyager Inn</cmt><desc>N110F0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.18483" lon="-115.55785"><name>N110H0</name><cmt>Spruce Grove Motel</cmt><desc>N110H0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.17505" lon="-115.57089"><name>N110J0</name><cmt>Mount Royal Hotel</cmt><desc>N110J0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="51.17706" lon="-115.57239"><name>N110K0</name><cmt>Bactrax BS</cmt><desc>N110K0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.17706" lon="-115.57231"><name>N110L0</name><cmt>Mountain Magic BS</cmt><desc>N110L0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.17518" lon="-115.57261"><name>N110M0</name><cmt>Whyte Museum</cmt><desc>N110M0</desc><sym>Museum</sym><type>Museum</type></wpt>
+ <wpt lat="51.17449" lon="-115.57265"><name>N110MK</name><cmt>Banff Public Library</cmt><desc>N110MK</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.17419" lon="-115.57107"><name>N110N0</name><cmt>Banff Park Museum</cmt><desc>N110N0</desc><sym>Museum</sym><type>Museum</type></wpt>
+ <wpt lat="51.17178" lon="-115.56996"><name>N110P0</name><cmt>Cascade Gardens</cmt><desc>N110P0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="51.17058" lon="-115.58793"><name>N110R0</name><cmt><![CDATA[Cave & Basin Historic Site]]></cmt><desc>N110R0</desc><sym>Museum</sym><type>Museum</type></wpt>
+ <wpt lat="51.17075" lon="-115.56926"><name>N110S0</name><cmt>Banff Y Mountain Lodge Hostel</cmt><desc>N110S0</desc><sym>Hotel</sym><type>Hotel</type></wpt>
+ <wpt lat="49.2993" lon="-115.11573"><name>N21010</name><cmt><![CDATA[PR 3 & PR 93/Bate Av (Elko G/M/SS)]]></cmt><desc>N21010</desc><sym>Gas Station</sym><type>Gas Station</type></wpt>
+ <wpt lat="49.29347" lon="-115.10633"><name>N21020</name><cmt>Pavement/Lodgepole-River Rd</cmt><desc>N21020</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.2997" lon="-115.10397"><name>N21030</name><cmt>Lodgepole-River Rd bend</cmt><desc>N21030</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.31427" lon="-115.03329"><name>N21040</name><cmt>Lodgepole-River Rd bend</cmt><desc>N21040</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.35842" lon="-114.99863"><name>N21050</name><cmt>Lodgepole-River Rd/Road</cmt><desc>N21050</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.36711" lon="-114.98317"><name>N21060</name><cmt>4-way intersection</cmt><desc>N21060</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.37071" lon="-114.99016"><name>N21070</name><cmt>Road fork</cmt><desc>N21070</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.39256" lon="-115.01385"><name>N21090</name><cmt>Thompson Rd turn (Pass Morrisey Rd)</cmt><desc>N21090</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.4347" lon="-115.04441"><name>N210A0</name><cmt>Thompson Rd bend</cmt><desc>N210A0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.46998" lon="-115.05956"><name>N210B0</name><cmt>Gravel/pavement (Cokato)</cmt><desc>N210B0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.48343" lon="-115.06326"><name>N210C0</name><cmt>Cokato Rd bend</cmt><desc>N210C0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.49123" lon="-115.06567"><name>N210D0</name><cmt>Cokato Rd/Pine Av</cmt><desc>N210D0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.50152" lon="-115.06067"><name>N210E0</name><cmt>Pine Av/4th St</cmt><desc>N210E0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+ <wpt lat="49.50491" lon="-115.06835"><name>N210F0</name><cmt>4th St/PR 3 (Fernie AS)</cmt><desc>N210F0</desc><sym>Waypoint</sym><type>Waypoint</type></wpt>
+<rte><name>N01010</name><number>1</number>
+ <rtept lat="52.87909" lon="-118.07921"><name>N01050</name><cmt>Jasper Information Centre (Jasper AS)</cmt><desc>N01050</desc><sym>Information</sym><type>Information</type></rtept>
+ <rtept lat="52.86941" lon="-118.09472"><name>N01090</name><cmt>PR 93 Connaught Dr bend</cmt><desc>N01090</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.86651" lon="-118.09333"><name>N010A0</name><cmt>PR 93 (Cross TC 16)</cmt><desc>N010A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.8545" lon="-118.07784"><name>N010B0</name><cmt>PR 93 (Pass Whistler's Mtn Rd)</cmt><desc>N010B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.84679" lon="-118.07286"><name>N010E0</name><cmt>Jasper House Bungalows M/R</cmt><desc>N010E0</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="52.8142" lon="-118.05037"><name>N010J0</name><cmt>PR 93/PR 93A</cmt><desc>N010J0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.81381" lon="-118.05114"><name>N010JK</name><cmt>PR 93 bend</cmt><desc>N010JK</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.74506" lon="-117.97377"><name>N010L0</name><cmt>Warden Station</cmt><desc>N010L0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.66304" lon="-117.88644"><name>N010M0</name><cmt>PR 93A bend</cmt><desc>N010M0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.66893" lon="-117.88145"><name>N010N0</name><cmt>PR 93A/PR 93 (Athabasca Falls)</cmt><desc>N010N0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.63082" lon="-117.86292"><name>N010R0</name><cmt>Mt. Kerkeslin CG</cmt><desc>N010R0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="52.59306" lon="-117.7984"><name>N010S0</name><cmt>Mount Christie Picnic Area</cmt><desc>N010S0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.54977" lon="-117.67004"><name>N010T0</name><cmt>Honeymoon Lake CG</cmt><desc>N010T0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="52.54444" lon="-117.65372"><name>N010U0</name><cmt>Buck Lake Trailhead</cmt><desc>N010U0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.53259" lon="-117.62612"><name>N010V0</name><cmt>Sunwapta Falls Resort M/R/SS</cmt><desc>N010V0</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="52.43437" lon="-117.41156"><name>N010W0</name><cmt>Warden Station</cmt><desc>N010W0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.39659" lon="-117.38076"><name>N010X0</name><cmt>Jonas Creek CG</cmt><desc>N010X0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="52.31891" lon="-117.32857"><name>N010Z0</name><cmt>Beauty Creek Hostel</cmt><desc>N010Z0</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="52.21982" lon="-117.23375"><name>N01100</name><cmt>PR 93 bend</cmt><desc>N01100</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.22066" lon="-117.21962"><name>N01120</name><cmt>Icefields Visitor Center M/R</cmt><desc>N01120</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="52.21831" lon="-117.19609"><name>N01130</name><cmt>Columbia Icefield CG</cmt><desc>N01130</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="52.21734" lon="-117.17327"><name>N01140</name><cmt>Wilcox Creek CG</cmt><desc>N01140</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="52.21035" lon="-117.15063"><name>N01150</name><cmt>Sunwapta Pass</cmt><desc>N01150</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.19192" lon="-117.11607"><name>N01160</name><cmt>Hilda Creek Hostel</cmt><desc>N01160</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="52.19652" lon="-117.10337"><name>N01170</name><cmt>PR 93 bend</cmt><desc>N01170</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.18544" lon="-117.06795"><name>N01190</name><cmt>Nigel Creek Trailhead</cmt><desc>N01190</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+</rte>
+<rte><name>N01030</name><number>2</number>
+ <rtept lat="52.18544" lon="-117.06795"><name>N01190</name><cmt>Nigel Creek Trailhead</cmt><desc>N01190</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.1764" lon="-117.05563"><name>N011A0</name><cmt>PR 93 bend</cmt><desc>N011A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.17037" lon="-117.07291"><name>N011B0</name><cmt>PR 93 bend</cmt><desc>N011B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.17524" lon="-117.0523"><name>N011C0</name><cmt>PR 93 bend</cmt><desc>N011C0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.12699" lon="-116.98678"><name>N011D0</name><cmt>Alexandra Trail Trailhead</cmt><desc>N011D0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.06838" lon="-116.91006"><name>N011E0</name><cmt>Sunset Pass</cmt><desc>N011E0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="52.04214" lon="-116.8643"><name>N011F0</name><cmt>Rampart Creek CG/Hostel</cmt><desc>N011F0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.98876" lon="-116.80601"><name>N011H0</name><cmt>PR 93 bend</cmt><desc>N011H0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.97413" lon="-116.75887"><name>N011J0</name><cmt>Glacier Lake Trailhead</cmt><desc>N011J0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.97323" lon="-116.74278"><name>N011K0</name><cmt>Pass PR 11 David Thompson Hwy</cmt><desc>N011K0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.97032" lon="-116.72"><name>N011M0</name><cmt>Warden Station</cmt><desc>N011M0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.94559" lon="-116.71463"><name>N011N0</name><cmt>Mistaya Canyon Trailhead</cmt><desc>N011N0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.91393" lon="-116.72002"><name>N011P0</name><cmt>PR 93 bend</cmt><desc>N011P0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.83781" lon="-116.6131"><name>N011R0</name><cmt>Waterfowl Lake CG</cmt><desc>N011R0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.7212" lon="-116.49592"><name>N011S0</name><cmt>Bow Pass</cmt><desc>N011S0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.67134" lon="-116.448"><name>N011U0</name><cmt>Bow Lake</cmt><desc>N011U0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.66321" lon="-116.43852"><name>N011V0</name><cmt>Helen Lake Trailhead</cmt><desc>N011V0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.63043" lon="-116.32911"><name>N011W0</name><cmt>Mosquito Creek CG/Hostel</cmt><desc>N011W0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.58669" lon="-116.30957"><name>N011X0</name><cmt>Hector Lake Trailhead</cmt><desc>N011X0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.4406" lon="-116.19935"><name>N012H0</name><cmt>PR 93/TC 1</cmt><desc>N012H0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.42584" lon="-116.17496"><name>N012J0</name><cmt>TC 1/Bow Valley Pkwy</cmt><desc>N012J0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.4249" lon="-116.16126"><name>N012V0</name><cmt>Bow Valley Pkwy (Pass Whitehorn Rd)</cmt><desc>N012V0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.3495" lon="-116.06833"><name>N012W0</name><cmt>Baker Creek Lodge M/R</cmt><desc>N012W0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.32714" lon="-116.03854"><name>N012X0</name><cmt>Protection Mountain CG</cmt><desc>N012X0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.26912" lon="-115.91829"><name>N012Z0</name><cmt>Bow Valley Pkwy/PR 93</cmt><desc>N012Z0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.26874" lon="-115.91883"><name>N012ZK</name><cmt>Castle Junction G/M/SS</cmt><desc>N012ZK</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+</rte>
+<rte><name>N01070</name><number>3</number>
+ <rtept lat="51.26874" lon="-115.91883"><name>N012ZK</name><cmt>Castle Junction G/M/SS</cmt><desc>N012ZK</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.26473" lon="-115.96676"><name>N01330</name><cmt>PR 93 bend</cmt><desc>N01330</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.24961" lon="-116.02049"><name>N01340</name><cmt>PR 93 bend</cmt><desc>N01340</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.23132" lon="-116.04931"><name>N01350</name><cmt>Vermilion Pass</cmt><desc>N01350</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.18676" lon="-116.11663"><name>N01360</name><cmt>Marble Canyon CG</cmt><desc>N01360</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.1693" lon="-116.14694"><name>N01370</name><cmt>Paint Pots Trailhead</cmt><desc>N01370</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.14933" lon="-116.15316"><name>N01390</name><cmt>PR 93 bend</cmt><desc>N01390</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.08107" lon="-116.05348"><name>N013A0</name><cmt>Floe Lake Trailhead</cmt><desc>N013A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.02511" lon="-115.9798"><name>N013B0</name><cmt>Vermilion Crossing R/SS</cmt><desc>N013B0</desc><sym>Restaurant</sym><type>Restaurant</type></rtept>
+ <rtept lat="50.98084" lon="-115.94972"><name>N013D0</name><cmt>Simpson River Trailhead</cmt><desc>N013D0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.883" lon="-116.04903"><name>N013E0</name><cmt>Kootenay Crossing Warden Station</cmt><desc>N013E0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.81408" lon="-116.00976"><name>N013F0</name><cmt>Crooks Meadow CG</cmt><desc>N013F0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="50.76397" lon="-115.94274"><name>N013J0</name><cmt>McLeod Meadows CG</cmt><desc>N013J0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="50.73396" lon="-115.91116"><name>N013R0</name><cmt>Kootenay River Picnic Area</cmt><desc>N013R0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.67419" lon="-115.88842"><name>N013S0</name><cmt>PR 93 bend</cmt><desc>N013S0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.67516" lon="-115.92667"><name>N013T0</name><cmt>Sinclair Pass</cmt><desc>N013T0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.63593" lon="-116.03025"><name>N013U0</name><cmt>Tunnel</cmt><desc>N013U0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.63518" lon="-116.04115"><name>N013V0</name><cmt>Radium Hot Springs pool</cmt><desc>N013V0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.62209" lon="-116.07168"><name>N01410</name><cmt><![CDATA[PR 93/PR 93 & PR 95]]></cmt><desc>N01410</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.57496" lon="-116.03395"><name>N0148K</name><cmt>G/SS</cmt><desc>N0148K</desc><sym>Convenience Store</sym><type>Convenience Store</type></rtept>
+ <rtept lat="50.51557" lon="-115.99915"><name>N01490</name><cmt><![CDATA[PR 93 & PR 95/Athalmer Rd]]></cmt><desc>N01490</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.51214" lon="-116.01501"><name>N014A0</name><cmt>Athalmer Rd bend</cmt><desc>N014A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.51548" lon="-116.02022"><name>N014B0</name><cmt>Athalmer Rd/Laurier St</cmt><desc>N014B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.51033" lon="-116.03039"><name>N014D0</name><cmt>Laurier St/7th Av (Invermere AS)</cmt><desc>N014D0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.50329" lon="-116.02773"><name>N014F0</name><cmt>7th Av/13th St</cmt><desc>N014F0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.50364" lon="-116.03798"><name>N014N0</name><cmt>13th St/13th Av</cmt><desc>N014N0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.48673" lon="-116.03644"><name>N014P0</name><cmt>13th Av/West Side Rd</cmt><desc>N014P0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+</rte>
+<rte><name>N01090</name><number>4</number>
+ <rtept lat="50.48673" lon="-116.03644"><name>N014P0</name><cmt>13th Av/West Side Rd</cmt><desc>N014P0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.45465" lon="-116.02092"><name>N014R0</name><cmt>West Side Rd bend</cmt><desc>N014R0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.34983" lon="-115.89861"><name>N014S0</name><cmt>West Side Rd bend</cmt><desc>N014S0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.31279" lon="-115.88254"><name>N014T0</name><cmt><![CDATA[West Side Rd/PR 93 & PR 95]]></cmt><desc>N014T0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.3082" lon="-115.90164"><name>N01500</name><cmt>Hoodoos Mountain Resort CG/Cabins/SS</cmt><desc>N01500</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="50.2945" lon="-115.8902"><name>N01520</name><cmt><![CDATA[PR 93 & PR 95/Columbia Lake Rd]]></cmt><desc>N01520</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.28969" lon="-115.88664"><name>N01530</name><cmt>Timbers Resort M</cmt><desc>N01530</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="50.24396" lon="-115.87512"><name>N01540</name><cmt>Columbia Lake Rd/Columbia Falls Rd</cmt><desc>N01540</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.2437" lon="-115.87598"><name>N01550</name><cmt><![CDATA[Columbia Falls Rd/PR 93 & PR 95]]></cmt><desc>N01550</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.1514" lon="-115.8271"><name>N01560</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N01560</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.14997" lon="-115.80337"><name>N01570</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N01570</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.11302" lon="-115.76731"><name>N015A0</name><cmt>Pass White Swan Forest Rd</cmt><desc>N015A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="50.1" lon="-115.75757"><name>N015B0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.98902" lon="-115.76381"><name>N015C0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015C0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.92851" lon="-115.74283"><name>N015D0</name><cmt>Skookumchuck AS</cmt><desc>N015D0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.9125" lon="-115.7336"><name>N015F0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015F0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.9086" lon="-115.7414"><name>N015J0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015J0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.86266" lon="-115.72532"><name>N015K0</name><cmt><![CDATA[PR 93 & PR 95 bend]]></cmt><desc>N015K0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.81051" lon="-115.76873"><name>N015L0</name><cmt><![CDATA[PR 93 & PR 95 turn (Pass PR 95A)]]></cmt><desc>N015L0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.76845" lon="-115.73758"><name>N015M0</name><cmt>Wasa AS</cmt><desc>N015M0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.62121" lon="-115.62608"><name>N015U0</name><cmt><![CDATA[PR 93 & PR 95/Wardner-Fort Steele Rd]]></cmt><desc>N015U0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.62111" lon="-115.62453"><name>N015X0</name><cmt>Fort Steele R/SS</cmt><desc>N015X0</desc><sym>Restaurant</sym><type>Restaurant</type></rtept>
+</rte>
+<rte><name>N01120</name><number>5</number>
+ <rtept lat="49.62111" lon="-115.62453"><name>N015X0</name><cmt>Fort Steele R/SS</cmt><desc>N015X0</desc><sym>Restaurant</sym><type>Restaurant</type></rtept>
+ <rtept lat="49.61296" lon="-115.61502"><name>N01600</name><cmt><![CDATA[Emery's Mountain View B&B]]></cmt><desc>N01600</desc><sym>Hotel</sym><type>Hotel</type></rtept>
+ <rtept lat="49.56975" lon="-115.55347"><name>N01670</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N01670</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.55579" lon="-115.49467"><name>N01690</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N01690</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.53873" lon="-115.48558"><name>N016A0</name><cmt>Norbury Lake Prov. Park CG</cmt><desc>N016A0</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="49.49031" lon="-115.45159"><name>N016B0</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N016B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.47474" lon="-115.46167"><name>N016C0</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N016C0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.47145" lon="-115.44848"><name>N016D0</name><cmt>Cross Bull River</cmt><desc>N016D0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.46686" lon="-115.44432"><name>N016E0</name><cmt>R</cmt><desc>N016E0</desc><sym>Restaurant</sym><type>Restaurant</type></rtept>
+ <rtept lat="49.43455" lon="-115.41565"><name>N016F0</name><cmt>Wardner-Fort Steele Rd bend</cmt><desc>N016F0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.43111" lon="-115.41676"><name>N016H0</name><cmt><![CDATA[Wardner-Fort Steele Rd/PR 3 & PR 93]]></cmt><desc>N016H0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.39835" lon="-115.36314"><name>N016J0</name><cmt><![CDATA[PR 3 & PR 93 bend]]></cmt><desc>N016J0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.39376" lon="-115.337"><name>N016K0</name><cmt><![CDATA[PR 3 & PR 93 bend]]></cmt><desc>N016K0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.37737" lon="-115.30716"><name>N016L0</name><cmt><![CDATA[PR 3 & PR 93 bend]]></cmt><desc>N016L0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.37612" lon="-115.3028"><name>N016M0</name><cmt><![CDATA[PR 3 & PR 93/Jaffray-Baynes Lake Rd]]></cmt><desc>N016M0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.35093" lon="-115.29689"><name>N016R0</name><cmt>Jaffray-Baynes Lake Rd bend</cmt><desc>N016R0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.35041" lon="-115.28952"><name>N016T0</name><cmt>Jaffray-Baynes Lake Rd bend</cmt><desc>N016T0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.32118" lon="-115.29547"><name>N016V0</name><cmt>Jaffray-Baynes Lake Rd bend</cmt><desc>N016V0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.25531" lon="-115.23041"><name>N016W0</name><cmt>Jaffray-Baynes Lake Rd/Kikomun Rd</cmt><desc>N016W0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.29287" lon="-115.15157"><name>N01720</name><cmt><![CDATA[Kikomun Rd/PR 3 & PR 93 (R)]]></cmt><desc>N01720</desc><sym>Restaurant</sym><type>Restaurant</type></rtept>
+ <rtept lat="49.29376" lon="-115.12565"><name>N01730</name><cmt><![CDATA[PR 3 & PR 93/PR 3]]></cmt><desc>N01730</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.29547" lon="-115.1156"><name>N01740</name><cmt>PR 3 bend</cmt><desc>N01740</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.2993" lon="-115.11573"><name>N01750</name><cmt>Elko G/M/SS</cmt><desc>N01750</desc><sym>Gas Station</sym><type>Gas Station</type></rtept>
+ <rtept lat="49.30186" lon="-115.11475"><name>N01770</name><cmt>PR 3 bend</cmt><desc>N01770</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.31626" lon="-115.03849"><name>N01790</name><cmt>PR 3 bend</cmt><desc>N01790</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.34681" lon="-115.0117"><name>N017A0</name><cmt>Tunnel</cmt><desc>N017A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.49626" lon="-115.08078"><name>N017C0</name><cmt>PR 3 bend</cmt><desc>N017C0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.50491" lon="-115.06835"><name>N017E0</name><cmt>PR 3 (Pass 4th St Fernie AS)</cmt><desc>N017E0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+</rte>
+<rte><name>N11061</name><number>6</number>
+ <rtept lat="51.26912" lon="-115.91829"><name>N11010</name><cmt>Castle Junction G/M/SS</cmt><desc>N11010</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.26778" lon="-115.91306"><name>N11020</name><cmt>Castle Mountain CG</cmt><desc>N11020</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.24257" lon="-115.83632"><name>N11030</name><cmt>Johnston Canyon CG</cmt><desc>N11030</desc><sym>Campground</sym><type>Campground</type></rtept>
+ <rtept lat="51.22586" lon="-115.78783"><name>N11040</name><cmt>Bow Valley Pkwy bend</cmt><desc>N11040</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.16999" lon="-115.69858"><name>N11050</name><cmt>Bow Valley Pkwy bend</cmt><desc>N11050</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.17049" lon="-115.65987"><name>N11060</name><cmt>Bow Valley Pkwy/TC 1</cmt><desc>N11060</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.18792" lon="-115.58328"><name>N11070</name><cmt>TC 1 (Pass Mt. Norquay exit)</cmt><desc>N11070</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.20659" lon="-115.53733"><name>N11090</name><cmt>TC 1/Banff Av</cmt><desc>N11090</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.19636" lon="-115.53928"><name>N110A0</name><cmt>Banff Av bend</cmt><desc>N110A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="51.17839" lon="-115.57072"><name>N110B0</name><cmt>Banff Av/Wolf St</cmt><desc>N110B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+</rte>
+<rte><name>N21061</name><number>7</number>
+ <rtept lat="49.2993" lon="-115.11573"><name>N21010</name><cmt><![CDATA[PR 3 & PR 93/Bate Av (Elko G/M/SS)]]></cmt><desc>N21010</desc><sym>Gas Station</sym><type>Gas Station</type></rtept>
+ <rtept lat="49.29347" lon="-115.10633"><name>N21020</name><cmt>Pavement/Lodgepole-River Rd</cmt><desc>N21020</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.2997" lon="-115.10397"><name>N21030</name><cmt>Lodgepole-River Rd bend</cmt><desc>N21030</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.31427" lon="-115.03329"><name>N21040</name><cmt>Lodgepole-River Rd bend</cmt><desc>N21040</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.35842" lon="-114.99863"><name>N21050</name><cmt>Lodgepole-River Rd/Road</cmt><desc>N21050</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.36711" lon="-114.98317"><name>N21060</name><cmt>4-way intersection</cmt><desc>N21060</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.37071" lon="-114.99016"><name>N21070</name><cmt>Road fork</cmt><desc>N21070</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.39256" lon="-115.01385"><name>N21090</name><cmt>Thompson Rd turn (Pass Morrisey Rd)</cmt><desc>N21090</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.4347" lon="-115.04441"><name>N210A0</name><cmt>Thompson Rd bend</cmt><desc>N210A0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.46998" lon="-115.05956"><name>N210B0</name><cmt>Gravel/pavement (Cokato)</cmt><desc>N210B0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.48343" lon="-115.06326"><name>N210C0</name><cmt>Cokato Rd bend</cmt><desc>N210C0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.49123" lon="-115.06567"><name>N210D0</name><cmt>Cokato Rd/Pine Av</cmt><desc>N210D0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.50152" lon="-115.06067"><name>N210E0</name><cmt>Pine Av/4th St</cmt><desc>N210E0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+ <rtept lat="49.50491" lon="-115.06835"><name>N210F0</name><cmt>4th St/PR 3 (Fernie AS)</cmt><desc>N210F0</desc><sym>Waypoint</sym><type>Waypoint</type></rtept>
+</rte>
+</gpx>

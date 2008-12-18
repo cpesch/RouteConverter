@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Folder>
+	<Style id="WptIcon">
+		<IconStyle>
+			<scale>0.75</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/yellow-pushpin.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="TrkptIcon">
+		<IconStyle>
+			<scale>0.5</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<name>tm20070729_094037.kml : 29/07/2007 11:40:37</name>
+	<Folder>
+		<name>Waypoints</name>
+		<Placemark>
+			<name>Start : 29/07/2007 11:40:37 : Glaubenberg-Langis (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:40:37 - 44.7 km - 0 km/h - 1448.3 m - 8</description>
+			<Point><coordinates>8.12639,46.89292,1448.3</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Oberwilen (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:50:23 - 52.3 km - 58 km/h - 841.4 m - 9</description>
+			<Point><coordinates>8.19243,46.88209,841.4</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Sarnen</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:57:07 - 57.9 km - 46 km/h - 477.7 m - 10</description>
+			<Point><coordinates>8.25383,46.89686,477.7</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Sand CH (Kerns)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>12:01:34 - 61.6 km - 38 km/h - 575.6 m - 10</description>
+			<Point><coordinates>8.29539,46.91000,575.6</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Wisserlen (Kerns)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>12:06:22 - 65.0 km - 32 km/h - 955.2 m - 9</description>
+			<Point><coordinates>8.31170,46.90886,955.2</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Wisserlen (Kerns)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>12:12:14 - 68.0 km - 22 km/h - 1257.8 m - 9</description>
+			<Point><coordinates>8.31893,46.90225,1257.8</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Dürrenboden (Dallenwil)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>12:18:29 - 70.5 km - 0 km/h - 1432.4 m - 10</description>
+			<Point><coordinates>8.33687,46.90742,1432.4</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Ende : 29/07/2007 12:18:40 : Dürrenboden (Dallenwil)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>12:18:40 - 70.5 km - 0 km/h - 1432.4 m - 10</description>
+			<Point><coordinates>8.33687,46.90742,1432.4</coordinates></Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>Trackpoints</name>
+		<Folder>
+			<name>2007-07-29T09:40:37Z</name>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:40:37Z</timePosition></TimeInstant>
+				<description>Start : 29/07/2007 11:40:37 : Glaubenberg-Langis (Sarnen) : 11:40:37 - 44.7 km - 0 km/h - 1448.3 m - 8</description>
+				<Point><coordinates>8.12639,46.89292,1448.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:42:00Z</timePosition></TimeInstant>
+				<description>Distanz 45 : Glaubenberg-Langis (Sarnen) : 11:42:00 - 45.4 km - 52 km/h - 1402.9 m - 8</description>
+				<Point><coordinates>8.13484,46.89045,1402.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:43:08Z</timePosition></TimeInstant>
+				<description>Distanz 46 : Glaubenberg-Langis (Sarnen) : 11:43:08 - 46.4 km - 50 km/h - 1329.6 m - 10</description>
+				<Point><coordinates>8.14264,46.88433,1329.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:43:28Z</timePosition></TimeInstant>
+				<description>Kurs 117 : Glaubenberg-Langis (Sarnen) : 11:43:28 - 46.7 km - 42 km/h - 1309.7 m - 10</description>
+				<Point><coordinates>8.14528,46.88265,1309.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:43:29Z</timePosition></TimeInstant>
+				<description>Kurs 92 : Glaubenberg-Langis (Sarnen) : 11:43:29 - 46.7 km - 43 km/h - 1308.8 m - 9</description>
+				<Point><coordinates>8.14543,46.88266,1308.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:43:36Z</timePosition></TimeInstant>
+				<description>Kurs 113 : Glaubenberg-Langis (Sarnen) : 11:43:36 - 46.8 km - 43 km/h - 1301.2 m - 10</description>
+				<Point><coordinates>8.14649,46.88278,1301.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:02Z</timePosition></TimeInstant>
+				<description>Kurs 19 : Glaubenberg-Langis (Sarnen) : 11:44:02 - 47.1 km - 31 km/h - 1277.0 m - 7</description>
+				<Point><coordinates>8.15010,46.88286,1277</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:04Z</timePosition></TimeInstant>
+				<description>Kurs 51 : Glaubenberg-Langis (Sarnen) : 11:44:04 - 47.1 km - 23 km/h - 1275.9 m - 8</description>
+				<Point><coordinates>8.15020,46.88292,1275.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:05Z</timePosition></TimeInstant>
+				<description>Kurs 73 : Glaubenberg-Langis (Sarnen) : 11:44:05 - 47.1 km - 15 km/h - 1275.3 m - 8</description>
+				<Point><coordinates>8.15029,46.88293,1275.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:06Z</timePosition></TimeInstant>
+				<description>Kurs 140 : Glaubenberg-Langis (Sarnen) : 11:44:06 - 47.2 km - 18 km/h - 1274.7 m - 9</description>
+				<Point><coordinates>8.15041,46.88286,1274.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:08Z</timePosition></TimeInstant>
+				<description>Kurs 195 : Glaubenberg-Langis (Sarnen) : 11:44:08 - 47.2 km - 27 km/h - 1273.2 m - 9</description>
+				<Point><coordinates>8.15033,46.88273,1273.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:28Z</timePosition></TimeInstant>
+				<description>Distanz 47 : Glaubenberg-Langis (Sarnen) : 11:44:28 - 47.4 km - 52 km/h - 1246.4 m - 10</description>
+				<Point><coordinates>8.14785,46.88117,1246.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:46Z</timePosition></TimeInstant>
+				<description>Kurs 170 : Glaubenberg-Langis (Sarnen) : 11:44:46 - 47.7 km - 26 km/h - 1215.8 m - 9</description>
+				<Point><coordinates>8.14592,46.87968,1215.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:47Z</timePosition></TimeInstant>
+				<description>Kurs 131 : Glaubenberg-Langis (Sarnen) : 11:44:47 - 47.7 km - 31 km/h - 1214.6 m - 9</description>
+				<Point><coordinates>8.14601,46.87958,1214.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:50Z</timePosition></TimeInstant>
+				<description>Kurs 92 : Glaubenberg-Langis (Sarnen) : 11:44:50 - 47.7 km - 40 km/h - 1213.0 m - 8</description>
+				<Point><coordinates>8.14639,46.87956,1213</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:51Z</timePosition></TimeInstant>
+				<description>Kurs 50 : Glaubenberg-Langis (Sarnen) : 11:44:51 - 47.7 km - 42 km/h - 1212.2 m - 8</description>
+				<Point><coordinates>8.14654,46.87967,1212.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:44:58Z</timePosition></TimeInstant>
+				<description>Kurs 84 : Glaubenberg-Langis (Sarnen) : 11:44:58 - 47.8 km - 41 km/h - 1202.2 m - 8</description>
+				<Point><coordinates>8.14731,46.88015,1202.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:45:12Z</timePosition></TimeInstant>
+				<description>Kurs 97 : Glaubenberg-Langis (Sarnen) : 11:45:12 - 48.0 km - 40 km/h - 1178.5 m - 8</description>
+				<Point><coordinates>8.14971,46.88025,1178.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:45:13Z</timePosition></TimeInstant>
+				<description>Kurs 128 : Glaubenberg-Langis (Sarnen) : 11:45:13 - 48.0 km - 43 km/h - 1176.9 m - 8</description>
+				<Point><coordinates>8.14983,46.88016,1176.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:45:39Z</timePosition></TimeInstant>
+				<description>Dauer 1:22:50 : Glaubenberg-Langis (Sarnen) : 11:45:39 - 48.3 km - 27 km/h - 1131.8 m - 8</description>
+				<Point><coordinates>8.15359,46.87985,1131.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:45:47Z</timePosition></TimeInstant>
+				<description>Distanz 48 : Glaubenberg-Langis (Sarnen) : 11:45:47 - 48.4 km - 45 km/h - 1122.6 m - 8</description>
+				<Point><coordinates>8.15493,46.87977,1122.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:46:50Z</timePosition></TimeInstant>
+				<description>Kurs 87 : Oberwilen (Sarnen) : 11:46:50 - 49.3 km - 30 km/h - 1036.9 m - 10</description>
+				<Point><coordinates>8.16582,46.87885,1036.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:46:53Z</timePosition></TimeInstant>
+				<description>Kurs 115 : Oberwilen (Sarnen) : 11:46:53 - 49.4 km - 28 km/h - 1033.7 m - 10</description>
+				<Point><coordinates>8.16583,46.87861,1033.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:46:55Z</timePosition></TimeInstant>
+				<description>Kurs 238 : Oberwilen (Sarnen) : 11:46:55 - 49.4 km - 34 km/h - 1032.7 m - 9</description>
+				<Point><coordinates>8.16564,46.87855,1032.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:47:01Z</timePosition></TimeInstant>
+				<description>Distanz 49 : Oberwilen (Sarnen) : 11:47:01 - 49.4 km - 47 km/h - 1025.1 m - 10</description>
+				<Point><coordinates>8.16487,46.87810,1025.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:47:09Z</timePosition></TimeInstant>
+				<description>Kurs 182 : Oberwilen (Sarnen) : 11:47:09 - 49.5 km - 30 km/h - 1017.5 m - 10</description>
+				<Point><coordinates>8.16430,46.87750,1017.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:47:10Z</timePosition></TimeInstant>
+				<description>Kurs 151 : Oberwilen (Sarnen) : 11:47:10 - 49.5 km - 29 km/h - 1016.8 m - 10</description>
+				<Point><coordinates>8.16441,46.87739,1016.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:47:12Z</timePosition></TimeInstant>
+				<description>Kurs 118 : Oberwilen (Sarnen) : 11:47:12 - 49.6 km - 32 km/h - 1015.4 m - 10</description>
+				<Point><coordinates>8.16466,46.87738,1015.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:47:14Z</timePosition></TimeInstant>
+				<description>Kurs 95 : Oberwilen (Sarnen) : 11:47:14 - 49.6 km - 33 km/h - 1014.0 m - 10</description>
+				<Point><coordinates>8.16485,46.87737,1014</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:48:17Z</timePosition></TimeInstant>
+				<description>Distanz 50 : Oberwilen (Sarnen) : 11:48:17 - 50.4 km - 41 km/h - 962.3 m - 9</description>
+				<Point><coordinates>8.17481,46.88037,962.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:48:30Z</timePosition></TimeInstant>
+				<description>Kurs 33 : Oberwilen (Sarnen) : 11:48:30 - 50.6 km - 58 km/h - 946.8 m - 8</description>
+				<Point><coordinates>8.17645,46.88146,946.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:49:30Z</timePosition></TimeInstant>
+				<description>Distanz 51 : Oberwilen (Sarnen) : 11:49:30 - 51.5 km - 45 km/h - 883.8 m - 8</description>
+				<Point><coordinates>8.18274,46.87853,883.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:49:30Z</timePosition></TimeInstant>
+				<description>Kurs 73 : Oberwilen (Sarnen) : 11:49:30 - 51.5 km - 45 km/h - 883.8 m - 8</description>
+				<Point><coordinates>8.18274,46.87853,883.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:50:23Z</timePosition></TimeInstant>
+				<description>Oberwilen (Sarnen) : 11:50:23 - 52.3 km - 58 km/h - 841.4 m - 9</description>
+				<Point><coordinates>8.19243,46.88209,841.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:50:32Z</timePosition></TimeInstant>
+				<description>Distanz 52 : Oberwilen (Sarnen) : 11:50:32 - 52.5 km - 60 km/h - 828.6 m - 9</description>
+				<Point><coordinates>8.19432,46.88224,828.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:50:50Z</timePosition></TimeInstant>
+				<description>Dauer 1:28:01 : Stalden (Sarnen) : 11:50:50 - 52.8 km - 70 km/h - 818.5 m - 9</description>
+				<Point><coordinates>8.19815,46.88341,818.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:51:31Z</timePosition></TimeInstant>
+				<description>Distanz 53 : Stalden (Sarnen) : 11:51:31 - 53.5 km - 53 km/h - 799.2 m - 9</description>
+				<Point><coordinates>8.20661,46.88521,799.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:52:42Z</timePosition></TimeInstant>
+				<description>Distanz 54 : Stalden (Sarnen) : 11:52:42 - 54.5 km - 53 km/h - 747.6 m - 9</description>
+				<Point><coordinates>8.21874,46.88770,747.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:53:46Z</timePosition></TimeInstant>
+				<description>Distanz 55 : Ramersberg CH (Sarnen) : 11:53:46 - 55.5 km - 63 km/h - 646.2 m - 9</description>
+				<Point><coordinates>8.22907,46.89277,646.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:54:08Z</timePosition></TimeInstant>
+				<description>Kurs 8 : Ramersberg CH (Sarnen) : 11:54:08 - 55.8 km - 32 km/h - 607.8 m - 9</description>
+				<Point><coordinates>8.23226,46.89455,607.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:54:09Z</timePosition></TimeInstant>
+				<description>Kurs 344 : Ramersberg CH (Sarnen) : 11:54:09 - 55.8 km - 33 km/h - 605.8 m - 9</description>
+				<Point><coordinates>8.23223,46.89457,605.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:54:15Z</timePosition></TimeInstant>
+				<description>Kurs 15 : Ramersberg CH (Sarnen) : 11:54:15 - 55.9 km - 41 km/h - 595.4 m - 8</description>
+				<Point><coordinates>8.23201,46.89506,595.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:54:20Z</timePosition></TimeInstant>
+				<description>Kurs 87 : Ramersberg CH (Sarnen) : 11:54:20 - 55.9 km - 35 km/h - 587.8 m - 7</description>
+				<Point><coordinates>8.23261,46.89511,587.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:55:01Z</timePosition></TimeInstant>
+				<description>Distanz 57 : Kirchhofen CH (Sarnen) : 11:55:01 - 56.5 km - 52 km/h - 532.7 m - 8</description>
+				<Point><coordinates>8.23880,46.89560,532.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:55:53Z</timePosition></TimeInstant>
+				<description>Dauer 1:33:04 : Sarnen : 11:55:53 - 57.2 km - 22 km/h - 472.5 m - 9</description>
+				<Point><coordinates>8.24599,46.89870,472.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:56:33Z</timePosition></TimeInstant>
+				<description>Distanz 58 : Sarnen : 11:56:33 - 57.5 km - 51 km/h - 469.8 m - 9</description>
+				<Point><coordinates>8.24962,46.89843,469.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:56:53Z</timePosition></TimeInstant>
+				<description>Kurs 166 : Sarnen : 11:56:53 - 57.7 km - 29 km/h - 473.8 m - 9</description>
+				<Point><coordinates>8.25223,46.89749,473.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:56:54Z</timePosition></TimeInstant>
+				<description>Kurs 140 : Sarnen : 11:56:54 - 57.8 km - 29 km/h - 474.2 m - 9</description>
+				<Point><coordinates>8.25221,46.89751,474.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:56:56Z</timePosition></TimeInstant>
+				<description>Kurs 82 : Sarnen : 11:56:56 - 57.8 km - 34 km/h - 474.8 m - 9</description>
+				<Point><coordinates>8.25241,46.89745,474.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:56:57Z</timePosition></TimeInstant>
+				<description>Kurs 103 : Sarnen : 11:56:57 - 57.8 km - 37 km/h - 475.1 m - 9</description>
+				<Point><coordinates>8.25262,46.89741,475.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:57:07Z</timePosition></TimeInstant>
+				<description>Sarnen : 11:57:07 - 57.9 km - 46 km/h - 477.7 m - 10</description>
+				<Point><coordinates>8.25383,46.89686,477.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:57:48Z</timePosition></TimeInstant>
+				<description>Distanz 59 : Kerns : 11:57:48 - 58.5 km - 49 km/h - 512.5 m - 9</description>
+				<Point><coordinates>8.26151,46.89791,512.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:57:49Z</timePosition></TimeInstant>
+				<description>Kurs 95 : Kerns : 11:57:49 - 58.5 km - 48 km/h - 513.6 m - 9</description>
+				<Point><coordinates>8.26172,46.89788,513.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:57:58Z</timePosition></TimeInstant>
+				<description>Kurs 75 : Kerns : 11:57:58 - 58.7 km - 56 km/h - 522.5 m - 10</description>
+				<Point><coordinates>8.26326,46.89767,522.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:58:58Z</timePosition></TimeInstant>
+				<description>Distanz 60 : Kerns : 11:58:58 - 59.5 km - 48 km/h - 562.8 m - 10</description>
+				<Point><coordinates>8.27312,46.90134,562.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:59:19Z</timePosition></TimeInstant>
+				<description>Kurs 67 : Kerns : 11:59:19 - 59.7 km - 19 km/h - 570.7 m - 10</description>
+				<Point><coordinates>8.27541,46.90068,570.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:59:20Z</timePosition></TimeInstant>
+				<description>Kurs 28 : Kerns : 11:59:20 - 59.7 km - 13 km/h - 570.7 m - 10</description>
+				<Point><coordinates>8.27544,46.90079,570.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:59:21Z</timePosition></TimeInstant>
+				<description>Kurs 348 : Kerns : 11:59:21 - 59.7 km - 14 km/h - 571.9 m - 10</description>
+				<Point><coordinates>8.27538,46.90084,571.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:59:24Z</timePosition></TimeInstant>
+				<description>Kurs 28 : Kerns : 11:59:24 - 59.8 km - 35 km/h - 573.0 m - 8</description>
+				<Point><coordinates>8.27552,46.90121,573</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:00:18Z</timePosition></TimeInstant>
+				<description>Distanz 61 : Kerns : 12:00:18 - 60.5 km - 59 km/h - 574.3 m - 10</description>
+				<Point><coordinates>8.28390,46.90447,574.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:01:06Z</timePosition></TimeInstant>
+				<description>Dauer 1:38:17 : Sand CH (Kerns) : 12:01:06 - 61.3 km - 49 km/h - 579.8 m - 10</description>
+				<Point><coordinates>8.29192,46.90828,579.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:01:25Z</timePosition></TimeInstant>
+				<description>Distanz 62 : Sand CH (Kerns) : 12:01:25 - 61.5 km - 42 km/h - 577.3 m - 9</description>
+				<Point><coordinates>8.29475,46.90941,577.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:01:34Z</timePosition></TimeInstant>
+				<description>Sand CH (Kerns) : 12:01:34 - 61.6 km - 38 km/h - 575.6 m - 10</description>
+				<Point><coordinates>8.29539,46.91000,575.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:02:40Z</timePosition></TimeInstant>
+				<description>Distanz 63 : Wisserlen (Kerns) : 12:02:40 - 62.6 km - 59 km/h - 654.1 m - 9</description>
+				<Point><coordinates>8.30379,46.91600,654.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:03:50Z</timePosition></TimeInstant>
+				<description>Distanz 64 : Wisserlen (Kerns) : 12:03:50 - 63.6 km - 44 km/h - 753.8 m - 8</description>
+				<Point><coordinates>8.31485,46.91934,753.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:04:17Z</timePosition></TimeInstant>
+				<description>Kurs 247 : Wisserlen (Kerns) : 12:04:17 - 63.9 km - 34 km/h - 797.1 m - 9</description>
+				<Point><coordinates>8.31535,46.91706,797.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:04:34Z</timePosition></TimeInstant>
+				<description>Kurs 231 : Wisserlen (Kerns) : 12:04:34 - 64.0 km - 26 km/h - 818.8 m - 10</description>
+				<Point><coordinates>8.31427,46.91632,818.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:04:43Z</timePosition></TimeInstant>
+				<description>Kurs 232 : Wisserlen (Kerns) : 12:04:43 - 64.1 km - 27 km/h - 814.7 m - 8</description>
+				<Point><coordinates>8.31321,46.91611,814.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:04:50Z</timePosition></TimeInstant>
+				<description>Kurs 131 : Wisserlen (Kerns) : 12:04:50 - 64.1 km - 26 km/h - 816.1 m - 10</description>
+				<Point><coordinates>8.31320,46.91578,816.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:05:31Z</timePosition></TimeInstant>
+				<description>Distanz 65 : Wisserlen (Kerns) : 12:05:31 - 64.6 km - 38 km/h - 855.8 m - 9</description>
+				<Point><coordinates>8.31209,46.91245,855.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:13Z</timePosition></TimeInstant>
+				<description>Dauer 1:43:24 : Wisserlen (Kerns) : 12:06:13 - 64.9 km - 30 km/h - 947.6 m - 9</description>
+				<Point><coordinates>8.31133,46.90948,947.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:19Z</timePosition></TimeInstant>
+				<description>Kurs 192 : Wisserlen (Kerns) : 12:06:19 - 65.0 km - 28 km/h - 947.9 m - 9</description>
+				<Point><coordinates>8.31161,46.90891,947.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:21Z</timePosition></TimeInstant>
+				<description>Kurs 212 : Wisserlen (Kerns) : 12:06:21 - 65.0 km - 32 km/h - 952.9 m - 9</description>
+				<Point><coordinates>8.31170,46.90886,952.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:22Z</timePosition></TimeInstant>
+				<description>Wisserlen (Kerns) : 12:06:22 - 65.0 km - 32 km/h - 955.2 m - 9</description>
+				<Point><coordinates>8.31170,46.90886,955.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:27Z</timePosition></TimeInstant>
+				<description>Kurs 153 : Wisserlen (Kerns) : 12:06:27 - 65.1 km - 25 km/h - 958.8 m - 9</description>
+				<Point><coordinates>8.31169,46.90825,958.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:32Z</timePosition></TimeInstant>
+				<description>Kurs 120 : Wisserlen (Kerns) : 12:06:32 - 65.1 km - 32 km/h - 946.3 m - 9</description>
+				<Point><coordinates>8.31187,46.90779,946.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:44Z</timePosition></TimeInstant>
+				<description>Kurs 126 : Wisserlen (Kerns) : 12:06:44 - 65.2 km - 13 km/h - 939.8 m - 9</description>
+				<Point><coordinates>8.31304,46.90783,939.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:45Z</timePosition></TimeInstant>
+				<description>Kurs 159 : Wisserlen (Kerns) : 12:06:45 - 65.2 km - 17 km/h - 939.4 m - 9</description>
+				<Point><coordinates>8.31304,46.90773,939.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:06:47Z</timePosition></TimeInstant>
+				<description>Kurs 179 : Wisserlen (Kerns) : 12:06:47 - 65.2 km - 24 km/h - 939.6 m - 9</description>
+				<Point><coordinates>8.31301,46.90765,939.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:07:22Z</timePosition></TimeInstant>
+				<description>Distanz 66 : Wisserlen (Kerns) : 12:07:22 - 65.6 km - 29 km/h - 981.9 m - 9</description>
+				<Point><coordinates>8.31202,46.90488,981.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:07:29Z</timePosition></TimeInstant>
+				<description>Kurs 143 : Wisserlen (Kerns) : 12:07:29 - 65.6 km - 20 km/h - 995.8 m - 9</description>
+				<Point><coordinates>8.31198,46.90453,995.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:07:34Z</timePosition></TimeInstant>
+				<description>Kurs 205 : Wisserlen (Kerns) : 12:07:34 - 65.6 km - 26 km/h - 1002.7 m - 9</description>
+				<Point><coordinates>8.31205,46.90422,1002.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:07:35Z</timePosition></TimeInstant>
+				<description>Kurs 236 : Wisserlen (Kerns) : 12:07:35 - 65.7 km - 25 km/h - 1004.3 m - 9</description>
+				<Point><coordinates>8.31208,46.90415,1004.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:07:37Z</timePosition></TimeInstant>
+				<description>Kurs 196 : Wisserlen (Kerns) : 12:07:37 - 65.7 km - 32 km/h - 1007.8 m - 9</description>
+				<Point><coordinates>8.31208,46.90397,1007.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:40Z</timePosition></TimeInstant>
+				<description>Kurs 121 : Wisserlen (Kerns) : 12:08:40 - 66.2 km - 25 km/h - 1062.9 m - 9</description>
+				<Point><coordinates>8.31084,46.89953,1062.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:41Z</timePosition></TimeInstant>
+				<description>Kurs 67 : Wisserlen (Kerns) : 12:08:41 - 66.2 km - 28 km/h - 1063.4 m - 9</description>
+				<Point><coordinates>8.31119,46.89924,1063.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:44Z</timePosition></TimeInstant>
+				<description>Kurs 44 : Wisserlen (Kerns) : 12:08:44 - 66.3 km - 15 km/h - 1065.5 m - 9</description>
+				<Point><coordinates>8.31133,46.89935,1065.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:45Z</timePosition></TimeInstant>
+				<description>Kurs 20 : Wisserlen (Kerns) : 12:08:45 - 66.3 km - 11 km/h - 1065.1 m - 9</description>
+				<Point><coordinates>8.31137,46.89959,1065.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:46Z</timePosition></TimeInstant>
+				<description>Kurs 0 : Wisserlen (Kerns) : 12:08:46 - 66.3 km - 8 km/h - 1064.8 m - 9</description>
+				<Point><coordinates>8.31138,46.89963,1064.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:53Z</timePosition></TimeInstant>
+				<description>Kurs 56 : Wisserlen (Kerns) : 12:08:53 - 66.3 km - 20 km/h - 1054.4 m - 9</description>
+				<Point><coordinates>8.31137,46.89999,1054.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:08:55Z</timePosition></TimeInstant>
+				<description>Kurs 26 : Wisserlen (Kerns) : 12:08:55 - 66.4 km - 23 km/h - 1050.7 m - 9</description>
+				<Point><coordinates>8.31146,46.90013,1050.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:09:09Z</timePosition></TimeInstant>
+				<description>Kurs 56 : Wisserlen (Kerns) : 12:09:09 - 66.5 km - 36 km/h - 1031.4 m - 9</description>
+				<Point><coordinates>8.31229,46.90134,1031.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:09:14Z</timePosition></TimeInstant>
+				<description>Distanz 67 : Wisserlen (Kerns) : 12:09:14 - 66.6 km - 27 km/h - 1040.3 m - 8</description>
+				<Point><coordinates>8.31294,46.90173,1040.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:10:28Z</timePosition></TimeInstant>
+				<description>Kurs 93 : Wisserlen (Kerns) : 12:10:28 - 67.3 km - 15 km/h - 1153.8 m - 9</description>
+				<Point><coordinates>8.31906,46.90616,1153.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:10:30Z</timePosition></TimeInstant>
+				<description>Kurs 118 : Wisserlen (Kerns) : 12:10:30 - 67.3 km - 11 km/h - 1156.8 m - 8</description>
+				<Point><coordinates>8.31912,46.90608,1156.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:10:31Z</timePosition></TimeInstant>
+				<description>Kurs 158 : Wisserlen (Kerns) : 12:10:31 - 67.3 km - 6 km/h - 1157.5 m - 8</description>
+				<Point><coordinates>8.31911,46.90611,1157.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:10:33Z</timePosition></TimeInstant>
+				<description>Kurs 192 : Wisserlen (Kerns) : 12:10:33 - 67.3 km - 20 km/h - 1160.7 m - 9</description>
+				<Point><coordinates>8.31907,46.90598,1160.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:10:34Z</timePosition></TimeInstant>
+				<description>Kurs 222 : Wisserlen (Kerns) : 12:10:34 - 67.3 km - 21 km/h - 1162.9 m - 9</description>
+				<Point><coordinates>8.31890,46.90594,1162.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:11:21Z</timePosition></TimeInstant>
+				<description>Dauer 1:48:32 : Wisserlen (Kerns) : 12:11:21 - 67.6 km - 19 km/h - 1213.3 m - 8</description>
+				<Point><coordinates>8.31805,46.90391,1213.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:11:23Z</timePosition></TimeInstant>
+				<description>Distanz 68 : Wisserlen (Kerns) : 12:11:23 - 67.6 km - 20 km/h - 1216.0 m - 8</description>
+				<Point><coordinates>8.31800,46.90380,1216</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:11:54Z</timePosition></TimeInstant>
+				<description>Kurs 98 : Wisserlen (Kerns) : 12:11:54 - 67.8 km - 30 km/h - 1242.3 m - 9</description>
+				<Point><coordinates>8.31796,46.90175,1242.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:11:59Z</timePosition></TimeInstant>
+				<description>Kurs 135 : Wisserlen (Kerns) : 12:11:59 - 67.9 km - 23 km/h - 1248.1 m - 8</description>
+				<Point><coordinates>8.31836,46.90174,1248.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:01Z</timePosition></TimeInstant>
+				<description>Kurs 101 : Wisserlen (Kerns) : 12:12:01 - 67.9 km - 27 km/h - 1251.1 m - 8</description>
+				<Point><coordinates>8.31855,46.90179,1251.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:02Z</timePosition></TimeInstant>
+				<description>Kurs 73 : Wisserlen (Kerns) : 12:12:02 - 67.9 km - 26 km/h - 1252.4 m - 8</description>
+				<Point><coordinates>8.31858,46.90180,1252.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:05Z</timePosition></TimeInstant>
+				<description>Kurs 43 : Wisserlen (Kerns) : 12:12:05 - 67.9 km - 22 km/h - 1254.7 m - 8</description>
+				<Point><coordinates>8.31874,46.90189,1254.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:14Z</timePosition></TimeInstant>
+				<description>Wisserlen (Kerns) : 12:12:14 - 68.0 km - 22 km/h - 1257.8 m - 9</description>
+				<Point><coordinates>8.31893,46.90225,1257.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:30Z</timePosition></TimeInstant>
+				<description>Kurs 354 : Wisserlen (Kerns) : 12:12:30 - 68.1 km - 27 km/h - 1274.5 m - 9</description>
+				<Point><coordinates>8.31967,46.90329,1274.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:33Z</timePosition></TimeInstant>
+				<description>Kurs 89 : Wisserlen (Kerns) : 12:12:33 - 68.1 km - 25 km/h - 1275.6 m - 9</description>
+				<Point><coordinates>8.31991,46.90341,1275.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:37Z</timePosition></TimeInstant>
+				<description>Kurs 121 : Wisserlen (Kerns) : 12:12:37 - 68.1 km - 16 km/h - 1276.3 m - 9</description>
+				<Point><coordinates>8.32011,46.90329,1276.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:12:45Z</timePosition></TimeInstant>
+				<description>Kurs 163 : Wisserlen (Kerns) : 12:12:45 - 68.2 km - 29 km/h - 1279.6 m - 9</description>
+				<Point><coordinates>8.32065,46.90292,1279.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:13:07Z</timePosition></TimeInstant>
+				<description>Kurs 146 : Wisserlen (Kerns) : 12:13:07 - 68.4 km - 19 km/h - 1309.3 m - 7</description>
+				<Point><coordinates>8.32008,46.90131,1309.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:13:09Z</timePosition></TimeInstant>
+				<description>Kurs 84 : Wisserlen (Kerns) : 12:13:09 - 68.4 km - 26 km/h - 1314.8 m - 7</description>
+				<Point><coordinates>8.32030,46.90133,1314.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:13:30Z</timePosition></TimeInstant>
+				<description>Distanz 69 : Dürrenboden (Dallenwil) : 12:13:30 - 68.6 km - 32 km/h - 1324.9 m - 9</description>
+				<Point><coordinates>8.32186,46.90232,1324.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:13:34Z</timePosition></TimeInstant>
+				<description>Kurs 33 : Dürrenboden (Dallenwil) : 12:13:34 - 68.6 km - 31 km/h - 1327.6 m - 8</description>
+				<Point><coordinates>8.32224,46.90252,1327.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:13:58Z</timePosition></TimeInstant>
+				<description>Kurs 353 : Wisserlen (Kerns) : 12:13:58 - 68.8 km - 23 km/h - 1346.7 m - 9</description>
+				<Point><coordinates>8.32161,46.90426,1346.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:13:59Z</timePosition></TimeInstant>
+				<description>Kurs 51 : Wisserlen (Kerns) : 12:13:59 - 68.8 km - 23 km/h - 1346.4 m - 9</description>
+				<Point><coordinates>8.32166,46.90429,1346.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:14:03Z</timePosition></TimeInstant>
+				<description>Kurs 127 : Wisserlen (Kerns) : 12:14:03 - 68.9 km - 28 km/h - 1348.2 m - 9</description>
+				<Point><coordinates>8.32197,46.90422,1348.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:15:23Z</timePosition></TimeInstant>
+				<description>Distanz 70 : Dürrenboden (Dallenwil) : 12:15:23 - 69.6 km - 20 km/h - 1430.8 m - 10</description>
+				<Point><coordinates>8.33021,46.90391,1430.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:16:25Z</timePosition></TimeInstant>
+				<description>Dauer 1:53:36 : Dürrenboden (Dallenwil) : 12:16:25 - 70.1 km - 38 km/h - 1458.5 m - 9</description>
+				<Point><coordinates>8.33501,46.90437,1458.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:18:29Z</timePosition></TimeInstant>
+				<description>Dürrenboden (Dallenwil) : 12:18:29 - 70.5 km - 0 km/h - 1432.4 m - 10</description>
+				<Point><coordinates>8.33687,46.90742,1432.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T10:18:40Z</timePosition></TimeInstant>
+				<description>Ende : 29/07/2007 12:18:40 : Dürrenboden (Dallenwil) : 12:18:40 - 70.5 km - 0 km/h - 1432.4 m - 10</description>
+				<Point><coordinates>8.33687,46.90742,1432.4</coordinates></Point>
+			</Placemark>
+		</Folder>
+	</Folder>
+</Folder>
+</kml>

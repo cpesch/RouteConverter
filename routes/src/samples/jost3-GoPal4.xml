@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tour>
+	<options Type="0" Mode="1" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="1" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
+	<dest Country="49" City="Bremen" Zip="28327" Street="Otto-Suhr-Strasse" PoiName="Berliner Freiheit" Latitude="6990201" Longitude="988795" StartPos="1" />
+	<dest Country="49" City="Delmenhorst" Zip="27755" Street="Riedeweg" House="314" Latitude="6979534" Longitude="960261" />
+	<dest Country="49" City="Oldenburg (Oldb.)" Zip="261xx" Latitude="7000849" Longitude="913069" />
+	<dest Country="49" City="Wildeshausen" Zip="27793" Street="Am Dulshorn" House="22" Latitude="6954602" Longitude="938782" />
+	<dest Country="49" City="Weyhe/Melchiorshausen" Zip="28844" Street="Syker Strasse" House="40" Latitude="6969186" Longitude="978105" />
+	<dest Country="49" City="Weyhe/Melchiorshausen" Zip="28844" Street="Flatterdamm" Latitude="6970833" Longitude="977502" />
+</tour>

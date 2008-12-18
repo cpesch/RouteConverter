@@ -1,0 +1,186 @@
+<?xml version="1.0"?><loc version="1.0" src="NH-Top50Trans">
+<waypoint>
+<name id="Hamburg/Uhlenhorst"><![CDATA[  Hamburg/Uhlenhorst]]></name>
+<coord lat="53.569483" lon="10.032004"/>
+</waypoint>
+<waypoint>
+<name id="Barsbuettel/Stemwarde"><![CDATA[  Barsbuettel/Stemwarde]]></name>
+<coord lat="53.571977" lon="10.244109"/>
+</waypoint>
+<waypoint>
+<name id="Grossensee/Schwarzekate"><![CDATA[  Grossensee/Schwarzekate]]></name>
+<coord lat="53.613611" lon="10.328655"/>
+</waypoint>
+<waypoint>
+<name id="Grossensee"><![CDATA[  Grossensee]]></name>
+<coord lat="53.615552" lon="10.340867"/>
+</waypoint>
+<waypoint>
+<name id="Luetjensee/Schlossberg"><![CDATA[  Luetjensee/Schlossberg]]></name>
+<coord lat="53.631852" lon="10.351039"/>
+</waypoint>
+<waypoint>
+<name id="Luetjensee/Bollmoor"><![CDATA[  Luetjensee/Bollmoor]]></name>
+<coord lat="53.634855" lon="10.382290"/>
+</waypoint>
+<waypoint>
+<name id="Groenwohld"><![CDATA[  Groenwohld]]></name>
+<coord lat="53.641743" lon="10.408317"/>
+</waypoint>
+<waypoint>
+<name id="Linau"><![CDATA[  Linau]]></name>
+<coord lat="53.643524" lon="10.463481"/>
+</waypoint>
+<waypoint>
+<name id="Trittau/Vogelfaengerkaten"><![CDATA[  Trittau/Vogelfaengerkaten]]></name>
+<coord lat="53.638257" lon="10.478706"/>
+</waypoint>
+<waypoint>
+<name id="Trittau/Vogelfaengerkaten"><![CDATA[  Trittau/Vogelfaengerkaten]]></name>
+<coord lat="53.629191" lon="10.490883"/>
+</waypoint>
+<waypoint>
+<name id="Koethel; Kr Hzgt Lauenburg"><![CDATA[  Koethel; Kr Hzgt Lauenburg]]></name>
+<coord lat="53.618070" lon="10.508078"/>
+</waypoint>
+<waypoint>
+<name id="Koethel; Kr Hzgt Lauenburg"><![CDATA[  Koethel; Kr Hzgt Lauenburg]]></name>
+<coord lat="53.611919" lon="10.512395"/>
+</waypoint>
+<waypoint>
+<name id="Borstorf"><![CDATA[  Borstorf]]></name>
+<coord lat="53.613456" lon="10.551776"/>
+</waypoint>
+<waypoint>
+<name id="Borstorf"><![CDATA[  Borstorf]]></name>
+<coord lat="53.616379" lon="10.570221"/>
+</waypoint>
+<waypoint>
+<name id="Breitenfelde/Neuenlande"><![CDATA[  Breitenfelde/Neuenlande]]></name>
+<coord lat="53.616289" lon="10.585888"/>
+</waypoint>
+<waypoint>
+<name id="Baelau/Uhlenbusch"><![CDATA[  Baelau/Uhlenbusch]]></name>
+<coord lat="53.617436" lon="10.601671"/>
+</waypoint>
+<waypoint>
+<name id="Baelau"><![CDATA[  Baelau]]></name>
+<coord lat="53.618396" lon="10.617373"/>
+</waypoint>
+<waypoint>
+<name id="Alt Moelln"><![CDATA[  Alt Moelln]]></name>
+<coord lat="53.617894" lon="10.642302"/>
+</waypoint>
+<waypoint>
+<name id="Alt Moelln"><![CDATA[  Alt Moelln]]></name>
+<coord lat="53.621815" lon="10.660819"/>
+</waypoint>
+<waypoint>
+<name id="Nusse/Donnerschleuse"><![CDATA[  Nusse/Donnerschleuse]]></name>
+<coord lat="53.636161" lon="10.703654"/>
+</waypoint>
+<waypoint>
+<name id="Schmilau"><![CDATA[  Schmilau]]></name>
+<coord lat="53.662648" lon="10.759097"/>
+</waypoint>
+<waypoint>
+<name id="Ratzeburg"><![CDATA[  Ratzeburg]]></name>
+<coord lat="53.699375" lon="10.764025"/>
+</waypoint>
+<waypoint>
+<name id="Kulpin"><![CDATA[  Kulpin]]></name>
+<coord lat="53.712938" lon="10.697880"/>
+</waypoint>
+<waypoint>
+<name id="Berkenthin"><![CDATA[  Berkenthin]]></name>
+<coord lat="53.734026" lon="10.637904"/>
+</waypoint>
+<waypoint>
+<name id="Kastorf"><![CDATA[  Kastorf]]></name>
+<coord lat="53.748669" lon="10.570455"/>
+</waypoint>
+<waypoint>
+<name id="Siebenbaeumen"><![CDATA[  Siebenbaeumen]]></name>
+<coord lat="53.749631" lon="10.526038"/>
+</waypoint>
+<waypoint>
+<name id="Steinhorst/Im Busch"><![CDATA[  Steinhorst/Im Busch]]></name>
+<coord lat="53.735521" lon="10.508303"/>
+</waypoint>
+<waypoint>
+<name id="Steinhorst"><![CDATA[  Steinhorst]]></name>
+<coord lat="53.722502" lon="10.475037"/>
+</waypoint>
+<waypoint>
+<name id="Stubben"><![CDATA[  Stubben]]></name>
+<coord lat="53.733446" lon="10.434703"/>
+</waypoint>
+<waypoint>
+<name id="Steinburg"><![CDATA[  Steinburg]]></name>
+<coord lat="53.721549" lon="10.404503"/>
+</waypoint>
+<waypoint>
+<name id="Lasbek/Barkhorst"><![CDATA[  Lasbek/Barkhorst]]></name>
+<coord lat="53.741798" lon="10.374259"/>
+</waypoint>
+<waypoint>
+<name id="Ruempel/Buddikate"><![CDATA[  Ruempel/Buddikate]]></name>
+<coord lat="53.756991" lon="10.366921"/>
+</waypoint>
+<waypoint>
+<name id="Tremsbuettel/Kupfermuehle"><![CDATA[  Tremsbuettel/Kupfermuehle]]></name>
+<coord lat="53.759745" lon="10.342990"/>
+</waypoint>
+<waypoint>
+<name id="Tremsbuettel/Wulfskuhle"><![CDATA[  Tremsbuettel/Wulfskuhle]]></name>
+<coord lat="53.753529" lon="10.313789"/>
+</waypoint>
+<waypoint>
+<name id="A21/Tremsbuettel (18)"><![CDATA[  A21/Tremsbuettel (18)]]></name>
+<coord lat="53.742021" lon="10.315111"/>
+</waypoint>
+<waypoint>
+<name id="Lasbek/Lasbek; Gut"><![CDATA[  Lasbek/Lasbek; Gut]]></name>
+<coord lat="53.744340" lon="10.332567"/>
+</waypoint>
+<waypoint>
+<name id="Lasbek"><![CDATA[  Lasbek]]></name>
+<coord lat="53.729413" lon="10.361309"/>
+</waypoint>
+<waypoint>
+<name id="Todendorf"><![CDATA[  Todendorf]]></name>
+<coord lat="53.694391" lon="10.348008"/>
+</waypoint>
+<waypoint>
+<name id="Oetjendorf"><![CDATA[  Oetjendorf]]></name>
+<coord lat="53.677907" lon="10.337405"/>
+</waypoint>
+<waypoint>
+<name id="Hoisdorf/Anschlag"><![CDATA[  Hoisdorf/Anschlag]]></name>
+<coord lat="53.664892" lon="10.319185"/>
+</waypoint>
+<waypoint>
+<name id="Hoisdorf/Kreuz"><![CDATA[  Hoisdorf/Kreuz]]></name>
+<coord lat="53.646584" lon="10.316370"/>
+</waypoint>
+<waypoint>
+<name id="Siek/Baumkaten"><![CDATA[  Siek/Baumkaten]]></name>
+<coord lat="53.641461" lon="10.315480"/>
+</waypoint>
+<waypoint>
+<name id="Siek"><![CDATA[  Siek]]></name>
+<coord lat="53.630034" lon="10.292880"/>
+</waypoint>
+<waypoint>
+<name id="A1/B435/Stapelfeld (29)"><![CDATA[  A1/B435/Stapelfeld (29)]]></name>
+<coord lat="53.616747" lon="10.237445"/>
+</waypoint>
+<waypoint>
+<name id="Hamburg"><![CDATA[  Hamburg]]></name>
+<coord lat="53.613803" lon="10.161219"/>
+</waypoint>
+<waypoint>
+<name id="Hamburg/Uhlenhorst"><![CDATA[  Hamburg/Uhlenhorst]]></name>
+<coord lat="53.569483" lon="10.032004"/>
+</waypoint>
+</loc>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tour>
+	<options Type="0" Mode="2" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="1" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
+	<dest Country="49" City="Wiesbaden" Zip="65187" Street="Biebricher Allee" House="42" PoiName="VHS VILLA SCHNITZLER" Latitude="6450284" Longitude="916416" StartPos="0" />
+	<dest Country="49" City="Frankfurt am Main" Zip="60311" Street="Römerberg" House="23" PoiName="Römer" Latitude="6458215" Longitude="965370" />
+	<dest Country="49" City="Bensheim/Wilmshausen" Zip="64625" Street="Buschernweg" House="7" PoiName="SONJA BENSHEIM/WILMSHAUSEN" Latitude="6386433" Longitude="963797" />
+</tour>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Root FileFormat="IK3D-Project-File" >
+ <Info>
+  <ProductVersion>
+   <Version>Brandenburg/Berlin 3D V1.5</Version>
+   <FileFormatVersion>1.1000000000</FileFormatVersion>
+  </ProductVersion>
+  <Language>German</Language>
+ </Info>
+ <Header>
+  <countOfObjects>1</countOfObjects>
+  <Projectname>Undefiniert</Projectname>
+  <description><![CDATA[keine Beschreibung vorhanden]]></description>
+ </Header>
+ <Content>
+  <MMGeoObjects>
+   <count>1</count>
+   <MMGeoObject_0>
+    <GeoObjectType>1</GeoObjectType>
+    <Name>Pfad</Name>
+    <ID>44544635099658724</ID>
+    <PathDrawType>5</PathDrawType>
+    <PathPoints>
+     <count>98</count>
+     <Point_0>
+      <GeoPosition X="13.5664299010" Y="52.4023951279" />
+     </Point_0>
+     <Point_1>
+      <GeoPosition X="13.5685417547" Y="52.4030508706" />
+     </Point_1>
+     <Point_2>
+      <GeoPosition X="13.5705743405" Y="52.4039345000" />
+     </Point_2>
+     <Point_3>
+      <GeoPosition X="13.5725997862" Y="52.4048903251" />
+     </Point_3>
+     <Point_4>
+      <GeoPosition X="13.5733219335" Y="52.4060405571" />
+     </Point_4>
+     <Point_5>
+      <GeoPosition X="13.5734816408" Y="52.4075813502" />
+     </Point_5>
+     <Point_6>
+      <GeoPosition X="13.5733468418" Y="52.4086928502" />
+     </Point_6>
+     <Point_7>
+      <GeoPosition X="13.5724455739" Y="52.4103557182" />
+     </Point_7>
+     <Point_8>
+      <GeoPosition X="13.5720689330" Y="52.4114046367" />
+     </Point_8>
+     <Point_9>
+      <GeoPosition X="13.5727605402" Y="52.4122592517" />
+     </Point_9>
+     <Point_10>
+      <GeoPosition X="13.5737404386" Y="52.4136243438" />
+     </Point_10>
+     <Point_11>
+      <GeoPosition X="13.5711164533" Y="52.4151291232" />
+     </Point_11>
+     <Point_12>
+      <GeoPosition X="13.5693464018" Y="52.4177789947" />
+     </Point_12>
+     <Point_13>
+      <GeoPosition X="13.5658942930" Y="52.4193876740" />
+     </Point_13>
+     <Point_14>
+      <GeoPosition X="13.5626541237" Y="52.4207721945" />
+     </Point_14>
+     <Point_15>
+      <GeoPosition X="13.5580028639" Y="52.4241628517" />
+     </Point_15>
+     <Point_16>
+      <GeoPosition X="13.5513222686" Y="52.4287108917" />
+     </Point_16>
+     <Point_17>
+      <GeoPosition X="13.5414146775" Y="52.4355143459" />
+     </Point_17>
+     <Point_18>
+      <GeoPosition X="13.5522922547" Y="52.4395292476" />
+     </Point_18>
+     <Point_19>
+      <GeoPosition X="13.5589640358" Y="52.4418529624" />
+     </Point_19>
+     <Point_20>
+      <GeoPosition X="13.5602996565" Y="52.4423859671" />
+     </Point_20>
+     <Point_21>
+      <GeoPosition X="13.5608464186" Y="52.4436869597" />
+     </Point_21>
+     <Point_22>
+      <GeoPosition X="13.5624817689" Y="52.4456923730" />
+     </Point_22>
+     <Point_23>
+      <GeoPosition X="13.5629594390" Y="52.4458987553" />
+     </Point_23>
+     <Point_24>
+      <GeoPosition X="13.5694791516" Y="52.4446121637" />
+     </Point_24>
+     <Point_25>
+      <GeoPosition X="13.5777829516" Y="52.4442093813" />
+     </Point_25>
+     <Point_26>
+      <GeoPosition X="13.5867622264" Y="52.4409645971" />
+     </Point_26>
+     <Point_27>
+      <GeoPosition X="13.5876690694" Y="52.4403447258" />
+     </Point_27>
+     <Point_28>
+      <GeoPosition X="13.5978733639" Y="52.4365837376" />
+     </Point_28>
+     <Point_29>
+      <GeoPosition X="13.6161624744" Y="52.4293848089" />
+     </Point_29>
+     <Point_30>
+      <GeoPosition X="13.6227663626" Y="52.4254296094" />
+     </Point_30>
+     <Point_31>
+      <GeoPosition X="13.6241557216" Y="52.4250693577" />
+     </Point_31>
+     <Point_32>
+      <GeoPosition X="13.6408254467" Y="52.4217165153" />
+     </Point_32>
+     <Point_33>
+      <GeoPosition X="13.6463517990" Y="52.4206895007" />
+     </Point_33>
+     <Point_34>
+      <GeoPosition X="13.6479275139" Y="52.4200068211" />
+     </Point_34>
+     <Point_35>
+      <GeoPosition X="13.6538215865" Y="52.4167523497" />
+     </Point_35>
+     <Point_36>
+      <GeoPosition X="13.6598423392" Y="52.4133126766" />
+     </Point_36>
+     <Point_37>
+      <GeoPosition X="13.6606450420" Y="52.4126963301" />
+     </Point_37>
+     <Point_38>
+      <GeoPosition X="13.6620562332" Y="52.4117141440" />
+     </Point_38>
+     <Point_39>
+      <GeoPosition X="13.6644544513" Y="52.4110257065" />
+     </Point_39>
+     <Point_40>
+      <GeoPosition X="13.6657639995" Y="52.4103353135" />
+     </Point_40>
+     <Point_41>
+      <GeoPosition X="13.6691092129" Y="52.4077564685" />
+     </Point_41>
+     <Point_42>
+      <GeoPosition X="13.6710597281" Y="52.4071485729" />
+     </Point_42>
+     <Point_43>
+      <GeoPosition X="13.6799330277" Y="52.4077502604" />
+     </Point_43>
+     <Point_44>
+      <GeoPosition X="13.6828252100" Y="52.4082560921" />
+     </Point_44>
+     <Point_45>
+      <GeoPosition X="13.6885231498" Y="52.4066535885" />
+     </Point_45>
+     <Point_46>
+      <GeoPosition X="13.6969861878" Y="52.4050576510" />
+     </Point_46>
+     <Point_47>
+      <GeoPosition X="13.7041580422" Y="52.4026671132" />
+     </Point_47>
+     <Point_48>
+      <GeoPosition X="13.7079247955" Y="52.4014464685" />
+     </Point_48>
+     <Point_49>
+      <GeoPosition X="13.7125513513" Y="52.3979517028" />
+     </Point_49>
+     <Point_50>
+      <GeoPosition X="13.7127476116" Y="52.3934555743" />
+     </Point_50>
+     <Point_51>
+      <GeoPosition X="13.7204429164" Y="52.3933726767" />
+     </Point_51>
+     <Point_52>
+      <GeoPosition X="13.7287000092" Y="52.3929069660" />
+     </Point_52>
+     <Point_53>
+      <GeoPosition X="13.7416722693" Y="52.3887072862" />
+     </Point_53>
+     <Point_54>
+      <GeoPosition X="13.7412210453" Y="52.3883386581" />
+     </Point_54>
+     <Point_55>
+      <GeoPosition X="13.7395691045" Y="52.3882881324" />
+     </Point_55>
+     <Point_56>
+      <GeoPosition X="13.7326995164" Y="52.3866031973" />
+     </Point_56>
+     <Point_57>
+      <GeoPosition X="13.7235297733" Y="52.3823746074" />
+     </Point_57>
+     <Point_58>
+      <GeoPosition X="13.7153467198" Y="52.3778720190" />
+     </Point_58>
+     <Point_59>
+      <GeoPosition X="13.7078292309" Y="52.3727037023" />
+     </Point_59>
+     <Point_60>
+      <GeoPosition X="13.7053327073" Y="52.3707885742" />
+     </Point_60>
+     <Point_61>
+      <GeoPosition X="13.7008736628" Y="52.3697611642" />
+     </Point_61>
+     <Point_62>
+      <GeoPosition X="13.6992014689" Y="52.3695130114" />
+     </Point_62>
+     <Point_63>
+      <GeoPosition X="13.6980544176" Y="52.3695047534" />
+     </Point_63>
+     <Point_64>
+      <GeoPosition X="13.6975014976" Y="52.3698325967" />
+     </Point_64>
+     <Point_65>
+      <GeoPosition X="13.6977932897" Y="52.3709183035" />
+     </Point_65>
+     <Point_66>
+      <GeoPosition X="13.6966966719" Y="52.3713847319" />
+     </Point_66>
+     <Point_67>
+      <GeoPosition X="13.6929275982" Y="52.3717326809" />
+     </Point_67>
+     <Point_68>
+      <GeoPosition X="13.6844765289" Y="52.3706116226" />
+     </Point_68>
+     <Point_69>
+      <GeoPosition X="13.6650575393" Y="52.3720740688" />
+     </Point_69>
+     <Point_70>
+      <GeoPosition X="13.6589419524" Y="52.3735840665" />
+     </Point_70>
+     <Point_71>
+      <GeoPosition X="13.6566768859" Y="52.3746809083" />
+     </Point_71>
+     <Point_72>
+      <GeoPosition X="13.6540166004" Y="52.3746780005" />
+     </Point_72>
+     <Point_73>
+      <GeoPosition X="13.6516782014" Y="52.3754988119" />
+     </Point_73>
+     <Point_74>
+      <GeoPosition X="13.6500795748" Y="52.3759486200" />
+     </Point_74>
+     <Point_75>
+      <GeoPosition X="13.6487364155" Y="52.3758936454" />
+     </Point_75>
+     <Point_76>
+      <GeoPosition X="13.6454678459" Y="52.3783519899" />
+     </Point_76>
+     <Point_77>
+      <GeoPosition X="13.6335016868" Y="52.3861711143" />
+     </Point_77>
+     <Point_78>
+      <GeoPosition X="13.6254548239" Y="52.3897609046" />
+     </Point_78>
+     <Point_79>
+      <GeoPosition X="13.6025128154" Y="52.3996885916" />
+     </Point_79>
+     <Point_80>
+      <GeoPosition X="13.5890848249" Y="52.4054553697" />
+     </Point_80>
+     <Point_81>
+      <GeoPosition X="13.5793087656" Y="52.4097387302" />
+     </Point_81>
+     <Point_82>
+      <GeoPosition X="13.5769781777" Y="52.4112322579" />
+     </Point_82>
+     <Point_83>
+      <GeoPosition X="13.5752975793" Y="52.4127544945" />
+     </Point_83>
+     <Point_84>
+      <GeoPosition X="13.5739197382" Y="52.4135094631" />
+     </Point_84>
+     <Point_85>
+      <GeoPosition X="13.5726937938" Y="52.4123247975" />
+     </Point_85>
+     <Point_86>
+      <GeoPosition X="13.5722058279" Y="52.4130092735" />
+     </Point_86>
+     <Point_87>
+      <GeoPosition X="13.5709081117" Y="52.4128347096" />
+     </Point_87>
+     <Point_88>
+      <GeoPosition X="13.5700630120" Y="52.4122018885" />
+     </Point_88>
+     <Point_89>
+      <GeoPosition X="13.5718944836" Y="52.4117082026" />
+     </Point_89>
+     <Point_90>
+      <GeoPosition X="13.5725783401" Y="52.4103595662" />
+     </Point_90>
+     <Point_91>
+      <GeoPosition X="13.5733947099" Y="52.4088708764" />
+     </Point_91>
+     <Point_92>
+      <GeoPosition X="13.5736253320" Y="52.4075487970" />
+     </Point_92>
+     <Point_93>
+      <GeoPosition X="13.5734098167" Y="52.4060371499" />
+     </Point_93>
+     <Point_94>
+      <GeoPosition X="13.5725677077" Y="52.4048645863" />
+     </Point_94>
+     <Point_95>
+      <GeoPosition X="13.5706796500" Y="52.4039574019" />
+     </Point_95>
+     <Point_96>
+      <GeoPosition X="13.5683871371" Y="52.4031198173" />
+     </Point_96>
+     <Point_97>
+      <GeoPosition X="13.5663438781" Y="52.4024164461" />
+     </Point_97>
+    </PathPoints>
+    <PathDrawable2D>
+     <PathColor Blue="0.0000" Red="1.0000" Green="0.0000" />
+     <PointColor Blue="0.0000" Red="1.0000" Green="1.0000" />
+     <Alpha>1.0000000000</Alpha>
+    </PathDrawable2D>
+    <PathDrawable3D>
+     <PathColor Blue="0.0000" Red="1.0000" Green="0.0000" />
+     <PointColor Blue="0.0000" Red="1.0000" Green="1.0000" />
+     <Alpha>1.0000000000</Alpha>
+    </PathDrawable3D>
+   </MMGeoObject_0>
+  </MMGeoObjects>
+ </Content>
+</Root>

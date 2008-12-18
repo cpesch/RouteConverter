@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tour>
+	<options Type="3" Mode="1" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="0" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
+	<dest Country="49" PoiName="B287; bei D 97720 Nüdlingen" Latitude="6476497" Longitude="1124674" StartPos="1" />
+	<dest Country="49" Street="Kissingen/Garitz" PoiName="B287 Euerdorfer Strasse; bei D 97688 Bad" Latitude="6470674" Longitude="1119894" />
+	<dest Country="49" PoiName="KG37; bei D 97725 Elfershausen" Latitude="6465586" Longitude="1107395" />
+	<dest Country="49" PoiName="ST2290; bei D 97723 Oberthulba" Latitude="6472279" Longitude="1108703" />
+	<dest Country="49" PoiName="B27; bei D 97762 Hammelburg/Kessenmühle" Latitude="6463337" Longitude="1098064" />
+	<dest Country="49" PoiName="MSP1; bei D 97450 Arnstein/Sachserhof" Latitude="6443743" Longitude="1106431" />
+	<dest Country="49" PoiName="bei D 97440 Werneck" Latitude="6435673" Longitude="1121895" />
+</tour>

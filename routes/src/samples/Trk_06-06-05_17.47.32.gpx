@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+version="1.0" creator="Event_Logger 6.3 - http://web.tiscali.it/macri/Event_Logger"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/0"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+<name>LAST Montag 5 Juni 2006 17:47:32</name>
+<desc>FIRST Montag 5 Juni 2006 15:29:30</desc>
+ <author>amacri</author><email>amacri@tiscali.it</email>
+ <url>http://web.tiscali.it/macri/Event_Logger</url><urlname>Event_Logger 6.3, 2006-5-20</urlname>
+<wpt lat="53.69928" lon="10.76617"><ele>-18.0</ele><time>2006-06-05T13:29:25Z</time><name>15:29:65</name><desc> {6'} Schlosswiese 1-3, Ratzeburg</desc><sym>Waypoint</sym><type>RESUME</type></wpt>
+<wpt lat="53.39817" lon="10.18372"><ele>-25.0</ele><time>2006-06-05T14:38:26Z</time><name>16:38:06</name><desc> [1:09]</desc><sym>Waypoint</sym><type>SUSPEND</type></wpt>
+<wpt lat="53.39817" lon="10.18372"><ele>-25.0</ele><time>2006-06-05T14:40:17Z</time><name>16:40:17</name><desc>-2 [1:11,1:09] Straße ohne Namen, Hoopte (Winsen (Luhe))</desc><sym>Waypoint</sym><type>RESUME</type></wpt>
+<wpt lat="53.40451" lon="10.18587"><ele>-29.0</ele><time>2006-06-05T14:50:42Z</time><name>16:50:42</name><desc> [1:21,1:19]</desc><sym>Waypoint</sym><type>SUSPEND</type></wpt>
+<wpt lat="53.40451" lon="10.18587"><ele>-29.0</ele><time>2006-06-05T14:52:39Z</time><name>16:52:59</name><desc>-2 [1:23,1:19] Kirchenheerweg 160-167, Neuengamme (Hamburg)</desc><sym>Waypoint</sym><type>RESUME</type></wpt>
+<wpt lat="53.40443" lon="10.18596"><ele>-43.0</ele><time>2006-06-05T14:52:54Z</time><name>16:52:74</name><desc>-2 [1:24,1:20]</desc><sym>Waypoint</sym><type>SUSPEND</type></wpt>
+<wpt lat="53.40443" lon="10.18596"><ele>-43.0</ele><time>2006-06-05T14:55:36Z</time><name>16:55:36</name><desc>-5 [1:26,1:20] Kirchenheerweg 160-169, Neuengamme (Hamburg)</desc><sym>Waypoint</sym><type>RESUME</type></wpt>
+<wpt lat="53.49249" lon="10.06767"><ele>-26.0</ele><time>2006-06-05T15:18:39Z</time><name>17:18:19</name><desc> [1:49,1:43]</desc><sym>Waypoint</sym><type>SUSPEND</type></wpt>
+<wpt lat="53.49249" lon="10.06767"><ele>-26.0</ele><time>2006-06-05T15:19:01Z</time><name>17:19:41</name><desc>-1' [1:50,1:43] Hofschläger Weg, Spadenland (Hamburg)</desc><sym>Waypoint</sym><type>RESUME</type></wpt>
+<wpt lat="53.49253" lon="10.06771"><ele>-22.0</ele><time>2006-06-05T15:19:17Z</time><name>17:19:57</name><desc>-1 [1:50,1:43]</desc><sym>Waypoint</sym><type>SUSPEND</type></wpt>
+<wpt lat="53.49253" lon="10.06771"><ele>-22.0</ele><time>2006-06-05T15:21:09Z</time><name>17:21:69</name><desc>-3 [1:52,1:43] Tatenberger Damm 72-75, Spadenland (Hamburg)</desc><sym>Waypoint</sym><type>RESUME</type></wpt>
+<trk><name>Montag 5 Juni 2006 15:29:30</name><trkseg>
+<trkpt lat="53.69928" lon="10.76617"><ele>-18.0</ele><time>2006-06-05T13:29:25Z</time><fix>3d</fix></trkpt>
+</trkseg></trk><trk><name>Montag 5 Juni 2006 15:32:00 - Schlosswiese 1-3, Ratzeburg</name><trkseg><trkpt lat="53.69931" lon="10.76641"><time>2006-06-05T13:30:30Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.69968" lon="10.76401"><time>2006-06-05T13:30:30Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.69916" lon="10.77125"><time>2006-06-05T13:32:00Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.69758" lon="10.78319"><time>2006-06-05T13:33:30Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.69004" lon="10.78835"><time>2006-06-05T13:35:00Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.67423" lon="10.79116"><time>2006-06-05T13:36:30Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.65862" lon="10.80544"><time>2006-06-05T13:38:00Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.64224" lon="10.82769"><time>2006-06-05T13:39:31Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.62365" lon="10.82118"><time>2006-06-05T13:41:01Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.61890" lon="10.81423"><time>2006-06-05T13:42:31Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.60442" lon="10.82070"><time>2006-06-05T13:44:01Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.59198" lon="10.81969"><time>2006-06-05T13:45:31Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.57594" lon="10.80247"><time>2006-06-05T13:47:01Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.56546" lon="10.78161"><time>2006-06-05T13:48:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.55537" lon="10.77161"><time>2006-06-05T13:50:02Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.54940" lon="10.75286"><time>2006-06-05T13:51:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.53340" lon="10.72309"><time>2006-06-05T13:53:02Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.51367" lon="10.69605"><time>2006-06-05T13:54:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.49409" lon="10.67074"><time>2006-06-05T13:56:02Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.48063" lon="10.63895"><time>2006-06-05T13:57:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.47924" lon="10.61598"><time>2006-06-05T13:59:03Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.47584" lon="10.59429"><time>2006-06-05T14:00:33Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.47044" lon="10.56706"><time>2006-06-05T14:02:03Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.45470" lon="10.55124"><time>2006-06-05T14:03:33Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.45460" lon="10.55117"><time>2006-06-05T14:05:03Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43797" lon="10.55365"><time>2006-06-05T14:06:33Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43851" lon="10.54006"><time>2006-06-05T14:08:04Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.44552" lon="10.50129"><time>2006-06-05T14:09:34Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.44200" lon="10.48882"><time>2006-06-05T14:11:04Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43450" lon="10.47135"><time>2006-06-05T14:12:34Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.42155" lon="10.44483"><time>2006-06-05T14:14:04Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.41314" lon="10.43884"><time>2006-06-05T14:15:34Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40403" lon="10.43095"><time>2006-06-05T14:17:04Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40834" lon="10.41112"><time>2006-06-05T14:18:35Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.41602" lon="10.39836"><time>2006-06-05T14:20:05Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.42213" lon="10.38593"><time>2006-06-05T14:21:35Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.42993" lon="10.36902"><time>2006-06-05T14:23:05Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43293" lon="10.35481"><time>2006-06-05T14:24:35Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43410" lon="10.33280"><time>2006-06-05T14:26:05Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43887" lon="10.30796"><time>2006-06-05T14:27:36Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43193" lon="10.29749"><time>2006-06-05T14:29:06Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.42694" lon="10.27330"><time>2006-06-05T14:30:36Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.41806" lon="10.25346"><time>2006-06-05T14:32:06Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40221" lon="10.24117"><time>2006-06-05T14:33:36Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.39901" lon="10.21534"><time>2006-06-05T14:35:07Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40277" lon="10.19221"><time>2006-06-05T14:36:37Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.39817" lon="10.18372"><ele>-25.0</ele><time>2006-06-05T14:38:26Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.39817" lon="10.18372"><ele>-25.0</ele><time>2006-06-05T14:40:17Z</time><fix>3d</fix></trkpt>
+</trkseg></trk><trk><name>Montag 5 Juni 2006 16:42:48 - Zollenspieker-Hauptdeich 82, Neuengamme (Hamburg)</name><trkseg><trkpt lat="53.40277" lon="10.19221"><time>2006-06-05T14:41:18Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.39808" lon="10.18375"><time>2006-06-05T14:41:18Z</time><fix>2d</fix></trkpt>
+</trkseg></trk><trk><name>Montag 5 Juni 2006 16:50:18 - Elbfähre Hoopte-Zollenspieker, Hoopte (Winsen (Luhe))</name><trkseg><trkpt lat="53.39808" lon="10.18375"><time>2006-06-05T14:48:48Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.39842" lon="10.18362"><time>2006-06-05T14:48:48Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40451" lon="10.18587"><ele>-29.0</ele><time>2006-06-05T14:50:42Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.40451" lon="10.18587"><ele>-29.0</ele><time>2006-06-05T14:52:39Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.40443" lon="10.18596"><ele>-43.0</ele><time>2006-06-05T14:52:54Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.40443" lon="10.18596"><ele>-43.0</ele><time>2006-06-05T14:55:36Z</time><fix>3d</fix></trkpt>
+</trkseg></trk><trk><name>Montag 5 Juni 2006 16:57:36 - Straße ohne Namen, Hoopte (Winsen (Luhe))</name><trkseg><trkpt lat="53.39842" lon="10.18362"><time>2006-06-05T14:56:06Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40445" lon="10.18620"><time>2006-06-05T14:56:06Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.40317" lon="10.18862"><time>2006-06-05T14:57:36Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.41362" lon="10.19272"><time>2006-06-05T14:59:06Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.42399" lon="10.20126"><time>2006-06-05T15:00:36Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.43537" lon="10.19035"><time>2006-06-05T15:02:07Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.44357" lon="10.17878"><time>2006-06-05T15:03:37Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.44500" lon="10.16169"><time>2006-06-05T15:05:07Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.45517" lon="10.15030"><time>2006-06-05T15:06:37Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.46038" lon="10.13291"><time>2006-06-05T15:08:07Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.46595" lon="10.11263"><time>2006-06-05T15:09:37Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.47616" lon="10.10098"><time>2006-06-05T15:11:07Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.48051" lon="10.08754"><time>2006-06-05T15:12:38Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.49001" lon="10.08773"><time>2006-06-05T15:14:08Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.49753" lon="10.07893"><time>2006-06-05T15:15:38Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.49802" lon="10.07679"><time>2006-06-05T15:17:08Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.49249" lon="10.06767"><ele>-26.0</ele><time>2006-06-05T15:18:39Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.49249" lon="10.06767"><ele>-26.0</ele><time>2006-06-05T15:19:01Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.49253" lon="10.06771"><ele>-22.0</ele><time>2006-06-05T15:19:17Z</time><fix>3d</fix></trkpt>
+<trkpt lat="53.49253" lon="10.06771"><ele>-22.0</ele><time>2006-06-05T15:21:09Z</time><fix>3d</fix></trkpt>
+</trkseg></trk><trk><name>Montag 5 Juni 2006 17:23:30 - Ruschorter Hauptdeich, Tatenberg (Hamburg)</name><trkseg><trkpt lat="53.49802" lon="10.07679"><time>2006-06-05T15:22:00Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.49468" lon="10.07286"><time>2006-06-05T15:22:00Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.50128" lon="10.07960"><time>2006-06-05T15:23:31Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.51112" lon="10.08675"><time>2006-06-05T15:25:01Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.51586" lon="10.08182"><time>2006-06-05T15:26:31Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.52625" lon="10.06976"><time>2006-06-05T15:28:01Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.53158" lon="10.05598"><time>2006-06-05T15:29:31Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.53506" lon="10.03767"><time>2006-06-05T15:31:02Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.53891" lon="10.03248"><time>2006-06-05T15:32:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.55061" lon="10.02680"><time>2006-06-05T15:34:02Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.55775" lon="10.02447"><time>2006-06-05T15:35:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.55897" lon="10.02240"><time>2006-06-05T15:37:02Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.56310" lon="10.01614"><time>2006-06-05T15:38:32Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.57054" lon="10.01475"><time>2006-06-05T15:40:03Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.58145" lon="10.00687"><time>2006-06-05T15:41:33Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.59264" lon="9.99841"><time>2006-06-05T15:43:03Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.59370" lon="9.99530"><time>2006-06-05T15:44:33Z</time><fix>2d</fix></trkpt>
+<trkpt lat="53.59554" lon="9.98432"><time>2006-06-05T15:46:03Z</time><fix>2d</fix></trkpt>
+</trkseg></trk></gpx>

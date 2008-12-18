@@ -1,0 +1,239 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.converter.gui.models;
+
+import slash.navigation.*;
+import slash.navigation.util.Conversion;
+import slash.navigation.util.Range;
+import slash.navigation.util.ContinousRange;
+
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Calendar;
+import java.util.ArrayList;
+import java.text.DateFormat;
+
+/**
+ * Acts as a {@link TableModel} for the positions of a {@link BaseRoute}.
+ *
+ * @author Christian Pesch
+ */
+
+public class PositionsModel extends AbstractTableModel {
+    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance();
+    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
+
+    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
+        return route;
+    }
+
+    public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+        this.route = route;
+        fireTableDataChanged();
+    }
+
+    public int getRowCount() {
+        return getRoute() != null ? getRoute().getPositionCount() : 0;
+    }
+
+    public int getColumnCount() {
+        return 4;
+    }
+
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        BaseNavigationPosition position = getPosition(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                String comment = position.getComment();
+                String time = "";
+                Calendar calendar = position.getTime();
+                if(calendar != null)
+                    time = " (" + TIME_FORMAT.format(calendar.getTime()) + ")";
+                return comment != null ? " " + comment + time + " " : "";
+            case 1:
+                return formatLongitudeOrLatitude(position.getLongitude());
+            case 2:
+                return formatLongitudeOrLatitude(position.getLatitude());
+            case 3:
+                return formatElevation(position.getElevation());
+            default:
+                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+        }
+    }
+
+    public BaseNavigationPosition getPosition(int rowIndex) {
+        List<BaseNavigationPosition> positions = getRoute().getPositions();
+        return positions.get(rowIndex);
+    }
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return true;
+    }
+
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        BaseNavigationPosition position = getPosition(rowIndex);
+        String value = Conversion.trim(aValue.toString());
+        switch(columnIndex) {
+            case 0:
+                position.setComment(value);
+                break;
+            case 1:
+                try {
+                    position.setLongitude(Conversion.parseDouble(value));
+                }
+                catch(NumberFormatException e) {
+                    // intentionally left empty
+                }
+                break;
+            case 2:
+                try {
+                    position.setLatitude(Conversion.parseDouble(value));
+                } catch (NumberFormatException e) {
+                    // intentionally left empty
+                }
+                break;
+            case 3:
+                try {
+                    value = value.replaceAll("m", "");
+                    position.setElevation(Conversion.parseDouble(value));
+                } catch (NumberFormatException e) {
+                    // intentionally left empty
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+        }
+        fireTableRowsUpdated(rowIndex, rowIndex);
+    }
+
+
+    private String formatElevation(Double elevation) {
+        return elevation != null ? Math.round(elevation) + "m " : "";
+    }
+
+    private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
+        if (longitudeOrLatitude == null)
+            return "";
+        String result = Double.toString(longitudeOrLatitude) + " ";
+        if (Math.abs(longitudeOrLatitude) < 10.0)
+            result = " " + result;
+        if (Math.abs(longitudeOrLatitude) < 100.0)
+            result = " " + result;
+        if (result.length() > 12)
+            result = result.substring(0, 12 - 1);
+        return result;
+    }
+
+
+    public void top(int[] rows) {
+        for (int i = 0; i < rows.length; i++) {
+            getRoute().top(rows[i], i);
+            fireTableRowsUpdated(i, rows[i]);
+        }
+    }
+
+    public void up(int[] rows) {
+        Arrays.sort(rows);
+
+        for (int row : rows) {
+            getRoute().up(row);
+            fireTableRowsUpdated(row - 1, row);
+        }
+    }
+
+    public void add(int row, Double longitude, Double latitude, Calendar time, String comment) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, time, comment);
+        getRoute().add(row, position);
+        fireTableRowsInserted(row, row);
+    }
+
+    public List<BaseNavigationPosition> remove(int from, int to) {
+        List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
+        for (int i = to; i > from; i--)
+            removed.add(0, getRoute().remove(i));
+        fireTableRowsDeleted(from, to);
+        return removed;
+    }
+
+    public void remove(int[] rows) {
+        new ContinousRange(rows, new ContinousRange.RangeOperation() {
+            public void performOnIndex(int index) {
+                getRoute().remove(index);
+            }
+            public void performOnRange(int firstIndex, int lastIndex) {
+                fireTableRowsDeleted(firstIndex, lastIndex);
+            }
+        }).performMonotonicallyDecreasing();
+    }
+
+    public int[] getDuplicatesWithinDistance(double distance) {
+        return getRoute().getDuplicatesWithinDistance(distance);
+    }
+
+    public int[] getPositionsThatRemainingHaveDistance(double distance) {
+        return getRoute().getPositionsThatRemainingHaveDistance(distance);
+    }
+
+    public int[] getInsignificantPositions(double threshold) {
+        return getRoute().getInsignificantPositions(threshold);
+    }
+
+    public void renumberPositions() {
+        RouteComments.commentPositions(getRoute().getPositions());
+        fireTableRowsUpdated(0, getRowCount() - 1);
+    }
+
+    public void revert() {
+        getRoute().revert();
+        fireTableDataChanged();
+    }
+
+    public void down(int[] rows) {
+        int[] reverted = Range.revert(rows);
+
+        for (int row : reverted) {
+            getRoute().down(row);
+            fireTableRowsUpdated(row, row + 1);
+        }
+    }
+
+    public void bottom(int[] rows) {
+        int[] reverted = Range.revert(rows);
+
+        for (int i = 0; i < reverted.length; i++) {
+            getRoute().bottom(reverted[i], i);
+            fireTableRowsUpdated(reverted[i], getRowCount() - 1 - i);
+        }
+    }
+
+    public void append(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = getRoute();
+        for (BaseNavigationPosition sourcePosition : route.getPositions()) {
+            BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetRoute.getFormat());
+            int index = targetRoute.getPositionCount();
+            targetRoute.add(index, targetPosition);
+            fireTableRowsInserted(index, index);
+        }
+    }
+}

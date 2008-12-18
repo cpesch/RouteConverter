@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- gpx_overlay.xsd version 0.3: Public GPX extensions for labels and polygon overlays -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2" xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3" targetNamespace="http://www.topografix.com/GPX/gpx_overlay/0/3" elementFormDefault="qualified">
+<xsd:import namespace="http://www.topografix.com/GPX/gpx_style/0/2" schemaLocation="http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd"/>
+
+<xsd:element name="label" type="labelType">
+  <xsd:annotation>
+   <xsd:documentation>
+	Text overlay (waypoint or route map label, e.g.)
+   </xsd:documentation>
+  </xsd:annotation>
+</xsd:element>
+
+<xsd:element name="polyline" type="polylineType">
+  <xsd:annotation>
+   <xsd:documentation>
+	Set of points describing a filled shape or line (map drawing, etc)
+   </xsd:documentation>
+  </xsd:annotation>
+</xsd:element>
+
+<xsd:element name="points" type="pointsType">
+  <xsd:annotation>
+   <xsd:documentation>
+	List of points
+   </xsd:documentation>
+  </xsd:annotation>
+</xsd:element>
+
+<xsd:element name="pt" type="ptType">
+  <xsd:annotation>
+   <xsd:documentation>
+	lat/lon/ele/timestamp point
+   </xsd:documentation>
+  </xsd:annotation>
+</xsd:element>
+
+<xsd:element name="max_scale" type="xsd:decimal">
+  <xsd:annotation>
+   <xsd:documentation>
+	 Maximum scale at which the parent object is displayed on a map.  "24000" for a 1:24000 scale USGS topo, e.g.
+   </xsd:documentation>
+  </xsd:annotation>
+</xsd:element>
+
+<!-- label definition -->
+    <xsd:complexType name="labelType">
+     <xsd:annotation>
+      <xsd:documentation>
+		Text overlay (waypoint or route map label, e.g.)
+	  </xsd:documentation>
+	 </xsd:annotation>
+	  <xsd:sequence>	<!-- elements must appear in this order -->
+	  <!-- spatial elements -->
+	    <xsd:choice minOccurs="0">
+			<xsd:element name="point" type="ptType" minOccurs="0">
+			 <xsd:annotation>
+			  <xsd:documentation>
+	  		   User-specified lat/lon position for the text label.
+			  </xsd:documentation>
+			 </xsd:annotation>
+			</xsd:element>
+
+			<xsd:element name="translate" type="xyOffsetType" minOccurs="0">
+			 <xsd:annotation>
+			  <xsd:documentation>
+	  		   User-specified x/y offset for the text label.
+			  </xsd:documentation>
+			 </xsd:annotation>
+			</xsd:element>
+	    </xsd:choice>
+
+	    <xsd:element name="rotate" type="degreesType" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   Rotation of text label.  Clockwise from 0 (default English text direction to the right)
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element name="margin" type="xyOffsetType" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   Spacing from edge of parent object (waypoint symbol, track line) to label origin.  Explicit 0 centers label origin.
+		   Sign of x,y margin implies horizontal and vertical alignment of text.
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element name="label_text" type="xsd:string" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   The text string to display
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element name="derived_from" type="xsd:string" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   Specifies that the text string in the overlay was derived from a GPX field or a calculated attribute of the parent.
+		   "desc" means the text string came from the parent's desc field.  "area" signifies the text string is the calculated area
+		   of the parent.
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+		<xsd:element name="type" type="xsd:string" minOccurs="0">
+		 <xsd:annotation>
+		  <xsd:documentation>
+			Type (classification) of the text overlay.
+		  </xsd:documentation>
+		 </xsd:annotation>
+		</xsd:element>
+
+		<xsd:element ref="max_scale" minOccurs="0">
+		  <xsd:annotation>
+		   <xsd:documentation>
+			 Maximum scale at which the parent object is displayed on a map.  "24000" for a 1:24000 scale USGS topo, e.g.
+		   </xsd:documentation>
+		  </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element ref="gpx_style:text" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   Text styling hints for the text overlay
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element ref="gpx_style:line" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   styling hints for bounding box of the the text overlay
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element ref="gpx_style:fill" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   styling hints for the background of the bounding box of the text overlay
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element name="extensions" type="extensionsType" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   You can add extend GPX by adding your own elements from another schema here.
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+	  </xsd:sequence>
+    </xsd:complexType>
+
+  <xsd:complexType name="polylineType">
+    <xsd:annotation>
+      <xsd:documentation>
+		polyline represents an ordered list of points describing a closed or open shape.
+	  </xsd:documentation>
+	</xsd:annotation>
+    <xsd:sequence>
+
+      <xsd:element name="desc" type="xsd:string" minOccurs="0">
+		<xsd:annotation>
+		  <xsd:documentation>
+			Description of polyline.
+		  </xsd:documentation>
+		</xsd:annotation>
+	  </xsd:element>
+
+	  <xsd:element name="type" type="xsd:string" minOccurs="0">
+		<xsd:annotation>
+		  <xsd:documentation>
+			Type (classification) of polyline.
+		  </xsd:documentation>
+		</xsd:annotation>
+	  </xsd:element>
+
+		<xsd:element ref="max_scale" minOccurs="0">
+		  <xsd:annotation>
+		   <xsd:documentation>
+			 Maximum scale at which the parent object is displayed on a map.  "24000" for a 1:24000 scale USGS topo, e.g.
+		   </xsd:documentation>
+		  </xsd:annotation>
+		</xsd:element>
+
+		<xsd:element ref="label" minOccurs="0">
+		  <xsd:annotation>
+		   <xsd:documentation>
+			Map label for polyline
+		   </xsd:documentation>
+		  </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element ref="gpx_style:line" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   polyline line style
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	    <xsd:element ref="gpx_style:fill" minOccurs="0">
+	     <xsd:annotation>
+	      <xsd:documentation>
+	  	   polyline fill style
+	      </xsd:documentation>
+	     </xsd:annotation>
+		</xsd:element>
+
+	 <xsd:element name="extensions" type="extensionsType" minOccurs="0">
+      <xsd:annotation>
+       <xsd:documentation>
+		You can add extend GPX by adding your own elements from another schema here.
+	   </xsd:documentation>
+	  </xsd:annotation>
+	 </xsd:element>
+
+     <xsd:element name="points" type="pointsType" minOccurs="0" maxOccurs="unbounded">
+      <xsd:annotation>
+       <xsd:documentation>
+		A segment of connected pt elements.  Analogous to trkseg.
+	   </xsd:documentation>
+	  </xsd:annotation>
+	 </xsd:element>
+  
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ptType">
+   <xsd:annotation>
+    <xsd:documentation>
+	 A geographic point with optional elevation and time.  Available for use by other schemas.
+    </xsd:documentation>
+   </xsd:annotation>
+   <xsd:sequence>	<!-- elements must appear in this order -->
+    <xsd:element name="ele" type="xsd:decimal" minOccurs="0">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		The elevation (in meters) of the point.
+	  </xsd:documentation>
+	 </xsd:annotation>
+	</xsd:element>
+    <xsd:element name="time" type="xsd:dateTime" minOccurs="0">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		The time that the point was recorded.
+	  </xsd:documentation>
+	 </xsd:annotation>
+	</xsd:element>
+   </xsd:sequence>
+    <xsd:attribute name="lat" type="latitudeType" use="required">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		The latitude of the point.  Decimal degrees, WGS84 datum.
+	  </xsd:documentation>
+	 </xsd:annotation>
+	</xsd:attribute>
+    <xsd:attribute name="lon" type="longitudeType" use="required">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		The latitude of the point.  Decimal degrees, WGS84 datum.
+	  </xsd:documentation>
+	 </xsd:annotation>
+	</xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="pointsType">
+   <xsd:annotation>
+    <xsd:documentation>
+	 An ordered sequence of points.
+    </xsd:documentation>
+   </xsd:annotation>
+   <xsd:sequence>	<!-- elements must appear in this order -->
+	 <xsd:element name="pt" type="ptType" minOccurs="0" maxOccurs="unbounded">
+	   <xsd:annotation>
+		<xsd:documentation>
+		 Ordered list of geographic points.
+		</xsd:documentation>
+	   </xsd:annotation>
+	 </xsd:element>
+   </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="xyOffsetType">
+   <xsd:annotation>
+    <xsd:documentation>
+	 Offset in x,y dimensions (screen or printed page).  Units in millimeters.
+    </xsd:documentation>
+   </xsd:annotation>
+    <xsd:attribute name="dx" type="xsd:decimal" use="required">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		Horizontal offset.
+	  </xsd:documentation>
+	 </xsd:annotation>
+	</xsd:attribute>
+    <xsd:attribute name="dy" type="xsd:decimal" use="required">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		Vertical offset.
+	  </xsd:documentation>
+	 </xsd:annotation>
+	</xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:simpleType name="latitudeType">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		The latitude of the point.  Decimal degrees, WGS84 datum.
+	  </xsd:documentation>
+	 </xsd:annotation>
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="-90.0"/>
+      <xsd:maxInclusive value="90.0"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="longitudeType">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		The longitude of the point.  Decimal degrees, WGS84 datum.
+	  </xsd:documentation>
+	 </xsd:annotation>
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="-180.0"/>
+      <xsd:maxExclusive value="180.0"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="degreesType">
+	 <xsd:annotation>
+	  <xsd:documentation>
+		Used for bearing, heading, course.  Units are decimal degrees, true (not magnetic).
+	  </xsd:documentation>
+	 </xsd:annotation>
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="0.0"/>
+      <xsd:maxExclusive value="360.0"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="extensionsType">
+   <xsd:annotation>
+    <xsd:documentation>
+	 You can add extend GPX by adding your own elements from another schema here.
+    </xsd:documentation>
+   </xsd:annotation>
+    <xsd:sequence>
+	 <xsd:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded">
+	   <xsd:annotation>
+		<xsd:documentation>
+		 You can add extend GPX by adding your own elements from another schema here.
+		</xsd:documentation>
+	   </xsd:annotation>
+	 </xsd:any>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

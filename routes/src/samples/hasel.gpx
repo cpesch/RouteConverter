@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<gpx xmlns="http://www.topografix.com/GPX/1/0" creator="gpsroute" version="1.0" xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/2 http://www.topografix.com/GPX/Private/TopoGrafix/0/2/topografix.xsd">
+  <rte>
+    <name>Route 1</name>
+    <number>0</number>
+    <rtept lat="53.632010" lon="9.837730">
+      <name>D 25469 Halstenbek</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.644270" lon="9.770490">
+      <name>3. Moeglichkeit: Wedeler Weg (L105)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.630400" lon="9.739180">
+      <name>abbiegen auf Lehmweg (K15)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.630320" lon="9.725580">
+      <name>D 25488 Holm/Katarinenhof</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.622620" lon="9.683940">
+      <name>D 25488 Holm</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.621400" lon="9.671570">
+      <name>D 25488 Holm</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.614800" lon="9.629690">
+      <name>D 25491 Hetlingen/Ekhorst</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.634260" lon="9.596110">
+      <name>abbiegen auf Hauptstrasse (L261)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.650680" lon="9.563670">
+      <name>in Hohenhorst abbiegen auf Achtern Schranken</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.649880" lon="9.560840">
+      <name>abbiegen auf Op de Lichten</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.650260" lon="9.558140">
+      <name>abbiegen auf Op de Lichten</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.652090" lon="9.557730">
+      <name>D 25489 Haselau/Hohenhorst</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.664530" lon="9.569120">
+      <name>D 25489 Haselau/Audeich</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.668720" lon="9.587450">
+      <name>D 25489 Haseldorf/Altenfeldsdeich</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.668180" lon="9.591910">
+      <name>D 25436 Moorrege/Klevendeich</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.677930" lon="9.580260">
+      <name>D 25436 Neuendeich/Schadendorf</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.691330" lon="9.563710">
+      <name>D 25371 Seestermuehe/Esch</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.711940" lon="9.574240">
+      <name>D 25335 Neuendorf/Kronsnest</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.717410" lon="9.603020">
+      <name>D 25370 Seester</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.737580" lon="9.633970">
+      <name>D 25336 Elmshorn/Klostersande</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.757020" lon="9.666650">
+      <name>D 25335 Elmshorn</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.775400" lon="9.685160">
+      <name>D 25335 Bokholt-Hanredder/Offenau</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.811400" lon="9.696770">
+      <name>D 25365 Klein Offenseth-Sparrieshoop</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.828910" lon="9.762930">
+      <name>D 25355 Lutzhorn</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.858050" lon="9.742380">
+      <name>D 25364 Bokel</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.864250" lon="9.733750">
+      <name>Lindenstrasse (L114)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.930780" lon="9.750620">
+      <name>in Wrist abbiegen auf B206 Hauptstrasse</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.930840" lon="9.755890">
+      <name>abbiegen auf Quarnstedter Strasse (L295)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.942250" lon="9.769140">
+      <name>D 25563 Quarnstedt</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.955320" lon="9.789590">
+      <name>in Quarnstedt abbiegen auf Borsteler Strasse (L295)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.985470" lon="9.815190">
+      <name>in Brokstedt auffahren</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.984760" lon="9.818080">
+      <name>D 24616 Brokstedt</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.983560" lon="9.881180">
+      <name>abbiegen auf Schulstrasse</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.987990" lon="9.917780">
+      <name>Dorotheen Tal</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.980450" lon="9.950850">
+      <name>D 24623 Groszenaspe</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.941300" lon="9.951250">
+      <name>abbiegen auf Hauptstrasse (K88)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.919320" lon="9.959130">
+      <name>D 24576 Bad Bramstedt/Klashorn</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.896960" lon="9.978980">
+      <name>D 24640 Schmalfeld/Dammberg</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.869570" lon="9.977360">
+      <name>in Schmalfeld auf Kaltenkirchener Strasse (L234)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.845160" lon="9.959750">
+      <name>D 24568 Kaltenkirchen</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.837090" lon="9.969990">
+      <name>D 24568 Kaltenkirchen</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.845380" lon="10.000360">
+      <name>D 24568 Oersdorf</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.842380" lon="10.073850">
+      <name>in Huettblek abbiegen auf Kaltenkirchener Strasse (L80)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.835030" lon="10.112700">
+      <name>D 23845 Oering/Brunshorst</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.832090" lon="10.115450">
+      <name>abbiegen auf Brunshorst (L233)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.811940" lon="10.027340">
+      <name>D 24629 Kisdorf</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.787160" lon="10.042860">
+      <name>D 24558 Henstedt-Ulzburg/Goetzberg</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.782880" lon="10.019840">
+      <name>in Maschloh Wohldweg</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+  </rte>
+  <rte>
+    <name>Route 2</name>
+    <number>1</number>
+    <rtept lat="53.787160" lon="10.042860">
+      <name>D 24558 Henstedt-Ulzburg/Goetzberg</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.782880" lon="10.019840">
+      <name>in Maschloh Wohldweg</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.789920" lon="9.989560">
+      <name>D 24558 Henstedt-Ulzburg</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.779170" lon="9.957680">
+      <name>D 24558 Henstedt-Ulzburg/Beckershof</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.783900" lon="9.894880">
+      <name>D 25486 Alveslohe/Kleinroesch</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.785280" lon="9.784580">
+      <name>in Barmstedt auf Muehlenweg (L75)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.781650" lon="9.756940">
+      <name>abbiegen auf Pinneberger Landstrasse (L75)</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.784370" lon="9.756980">
+      <name>abbiegen auf Rantzau</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.783160" lon="9.758730">
+      <name>auffahren</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+    <rtept lat="53.783050" lon="9.759340">
+      <name>D 25355 Barmstedt</name>
+      <cmt>nc</cmt>
+      <sym>Small Town</sym>
+      <type>Default</type>
+    </rtept>
+  </rte>
+</gpx>

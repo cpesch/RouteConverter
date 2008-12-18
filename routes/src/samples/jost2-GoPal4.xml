@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tour>
+	<options Type="0" Mode="1" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="1" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
+	<dest Country="49" City="Bremen/Huchting" Zip="28259" Street="Robinsbalje" House="19" Latitude="6985362" Longitude="971094" StartPos="1" />
+	<dest Country="49" City="Schöfweg" Zip="94572" Street="Am Kirchanger" House="4" Latitude="6240633" Longitude="1470924" />
+</tour>

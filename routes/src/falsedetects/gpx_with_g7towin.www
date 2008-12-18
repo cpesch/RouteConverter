@@ -1,0 +1,8 @@
+Datum:,WGS-84
+M DDD
+WptName,Latitude,Longitude,Date,Day,Month,Year,Time,Hour,Minute,Second,GarminSeconds,GS_code,Colour,GD_code,Column1,Column2,Column3,Column4,Column5,Column6,Abundance,Organism_Object,Sequential_Distance_(Statute_mi),Sum_Sequential_Distance_(Statute_mi),Like_Sequential_Distance_(Statute_mi),Monitor_Observer
+bei d 22885 barsbüttel/stemwarde,53.5719700,10.2441000,31-Aug-07,31,8,2007,12:34,12,34,52,557498092,18,Black,S+N,bei d ,22885, barsbüttel/stemwarde,MISSING,MISSING,MISSING,1,MISSING,0.000000,0.000000,0.000000,MISSING
+bei d 22946 großensee/schwarzekate,53.6136100,10.3286500,31-Aug-07,31,8,2007,12:34,12,34,52,557498092,18,Black,S+N,bei d ,22946, großensee/schwarzekate,MISSING,MISSING,MISSING,1,MISSING,4.505467,4.505467,4.505467,MISSING
+bei d 22952 lütjensee/bollmoor,-53.6348500,-10.3822900,31-Aug-07,31,8,2007,12:34,12,34,52,557498092,18,Black,S+N,bei d ,22952, lütjensee/bollmoor,MISSING,MISSING,MISSING,1,MISSING,7504.739064,7509.244531,7504.739064,MISSING
+bei d 22956 grönwohld,53.6417400,10.4083100,31-Aug-07,31,8,2007,12:34,12,34,52,557498092,18,Black,S+N,bei d ,22956, grönwohld,MISSING,MISSING,MISSING,1,MISSING,7507.357932,15016.602462,7507.357932,MISSING
+bei d 22959 linau,53.6435200,10.4634800,31-Aug-07,31,8,2007,12:34,12,34,52,557498092,18,Black,S+N,bei d ,22959, linau,MISSING,MISSING,MISSING,1,MISSING,2.263103,15018.865565,2.263103,MISSING

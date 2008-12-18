@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<gpx
+        xmlns="http://www.topografix.com/GPX/1/0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd" version="1.0"
+        creator="by Hand">
+    <name>Name</name>
+    <desc>Description</desc>
+    <author>Author</author>
+    <email>EMail@EMail.Email</email>
+    <url>URL</url>
+    <urlname>URLName</urlname>
+
+    <wpt lat="-53.69928" lon="-10.76617">
+        <ele>-18.0</ele>
+        <time>2006-06-05T13:29:25Z</time>
+        <name>15:29:65</name>
+        <desc>{6'} Schlosswiese 1-3, Ratzeburg</desc>
+        <sym>Waypoint</sym>
+        <type>RESUME</type>
+    </wpt>
+    <wpt lat="53.40451" lon="10.18587">
+        <ele>29.0</ele>
+        <time>2006-06-05T14:52:39Z</time>
+        <name>16:52:59</name>
+        <desc>-2 [1:23,1:19] Kirchenheerweg 160-167, Neuengamme (Hamburg)</desc>
+        <sym>Waypoint</sym>
+        <type>RESUME</type>
+    </wpt>
+    <wpt lat="53.49249" lon="10.06767">
+        <ele>26.0</ele>
+        <time>2006-06-05T15:19:01Z</time>
+        <name>17:19:41</name>
+        <desc>-1' [1:50,1:43] Hofschläger Weg, Spadenland (Hamburg)</desc>
+        <sym>Waypoint</sym>
+        <type>RESUME</type>
+    </wpt>
+
+    <trk>
+        <name>Track1 Name</name>
+        <trkseg>
+            <trkpt lat="53.69928" lon="10.76617">
+                <ele>18.0</ele>
+                <time>2006-06-05T13:29:25Z</time>
+                <fix>3d</fix>
+            </trkpt>
+        </trkseg>
+    </trk>
+    <trk>
+        <name>Track2 Name</name>
+        <trkseg>
+            <trkpt lat="53.69916" lon="10.77125">
+                <time>2006-06-05T13:32:00Z</time>
+                <fix>2d</fix>
+            </trkpt>
+            <trkpt lat="53.69968" lon="10.76401">
+                <time>2006-06-05T13:30:30Z</time>
+                <fix>2d</fix>
+            </trkpt>
+        </trkseg>
+    </trk>
+    <trk>
+        <name>Track3 Name</name>
+        <trkseg>
+            <trkpt lat="53.40277" lon="10.19221">
+                <time>2006-06-05T14:41:18Z</time>
+                <fix>2d</fix>
+            </trkpt>
+            <trkpt lat="53.39808" lon="10.18375">
+                <time>2006-06-05T14:41:18Z</time>
+                <fix>2d</fix>
+            </trkpt>
+            <trkpt lat="53.69968" lon="10.76401">
+                <time>2006-06-05T13:30:30Z</time>
+                <fix>2d</fix>
+            </trkpt>
+        </trkseg>
+    </trk>
+    <trk>
+        <name>Track4 Name</name>
+        <trkseg>
+            <trkpt lat="53.40277" lon="10.19221">
+                <time>2006-06-05T14:41:18Z</time>
+                <fix>2d</fix>
+            </trkpt>
+            <trkpt lat="53.39808" lon="10.18375">
+                <time>2006-06-05T14:41:18Z</time>
+                <fix>2d</fix>
+            </trkpt>
+        </trkseg>
+        <trkseg>
+            <trkpt lat="53.39808" lon="10.18375">
+                <time>2006-06-05T14:41:18Z</time>
+                <fix>2d</fix>
+            </trkpt>
+            <trkpt lat="53.69968" lon="10.76401">
+                <time>2006-06-05T13:30:30Z</time>
+                <fix>2d</fix>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>

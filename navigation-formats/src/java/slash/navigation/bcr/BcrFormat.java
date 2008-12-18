@@ -1,0 +1,260 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.bcr;
+
+import slash.navigation.IniFileFormat;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.RouteCharacteristics;
+import slash.navigation.util.Conversion;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Reads and writes Map&Guide Tourenplaner Route (.bcr) files.
+ *
+ * @author Christian Pesch
+ */
+
+public class BcrFormat extends IniFileFormat<BcrRoute> {
+    private static final Logger log = Logger.getLogger(BcrFormat.class.getName());
+    private static final int MAXIMUM_POSITION_COUNT = 1 + 99 + 1;
+    static final String CLIENT_TITLE = "CLIENT";
+    static final String COORDINATES_TITLE = "COORDINATES";
+    static final String DESCRIPTION_TITLE = "DESCRIPTION";
+    static final String ROUTE_TITLE = "ROUTE";
+
+    private static final Pattern SECTION_TITLE_PATTERN = Pattern.
+            compile("\\" + SECTION_PREFIX + "(" + CLIENT_TITLE + "|" + COORDINATES_TITLE + "|" +
+                    DESCRIPTION_TITLE + "|" + ROUTE_TITLE + ")\\" + SECTION_POSTFIX);
+
+    private static final char VALUE_SEPARATOR = ',';
+    static final Pattern MAP_AND_GUIDE_TOURENPLANER_PATTERN = Pattern.
+            compile("(.*?)" + VALUE_SEPARATOR + "(.*)" + VALUE_SEPARATOR +
+                    "(.*)" + VALUE_SEPARATOR +
+                    "(0)" + VALUE_SEPARATOR + "$");
+    private static final Pattern COORDINATES_VALUE_PATTERN = Pattern.compile("(-?\\d+)" + VALUE_SEPARATOR + "(-?\\d+)");
+    private static final Pattern CLIENT_VALUE_PATTERN = Pattern.compile("(Town|TOWN|Standort|STANDORT|)" + VALUE_SEPARATOR + "([^,]+),?.*");
+
+    static final String ROUTE_NAME = "ROUTENAME";
+    static final String DESCRIPTION_LINE_COUNT = "DESCRIPTIONLINES";
+    static final String DESCRIPTION = "DESCRIPTION";
+    static final String CREATOR = "CREATOR";
+
+
+    public String getName() {
+        return "Map&Guide Tourenplaner (*" + getExtension() + ")";
+    }
+
+    public String getExtension() {
+        return ".bcr";
+    }
+
+    public int getMaximumPositionCount() {
+        return MAXIMUM_POSITION_COUNT;
+    }
+
+    public boolean isSupportsMultipleRoutes() {
+        return false;
+    }
+
+    public <P extends BaseNavigationPosition> BcrRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new BcrRoute(name, null, (List<BcrPosition>) positions);
+    }
+
+    public List<BcrRoute> read(BufferedReader reader, String encoding) throws IOException {
+        List<BcrSection> sections = new ArrayList<BcrSection>();
+        List<BcrPosition> positions = new ArrayList<BcrPosition>();
+        BcrSection current = null;
+
+        while (true) {
+            String line = reader.readLine();
+            if (line == null)
+                break;
+            if (line.length() == 0)
+                continue;
+
+            if (isSectionTitle(line)) {
+                BcrSection section = new BcrSection(parseSectionTitle(line));
+                sections.add(section);
+                current = section;
+            }
+
+            if (isNameValue(line)) {
+                if (current == null) {
+                    // name value without section means this isn't the file format we expect
+                    return null;
+                } else
+                    current.put(parseName(line), parseValue(line));
+            }
+        }
+
+        if (hasValidSections(sections)) {
+            extractPositions(sections, positions);
+            if (positions.size() >= 2)
+                return Arrays.asList(new BcrRoute(this, sections, positions));
+        }
+
+        return null;
+    }
+
+    boolean isSectionTitle(String line) {
+        Matcher matcher = SECTION_TITLE_PATTERN.matcher(line);
+        return matcher.matches();
+    }
+
+    String parseSectionTitle(String line) {
+        Matcher matcher = SECTION_TITLE_PATTERN.matcher(line);
+        if (!matcher.matches())
+            throw new IllegalArgumentException("'" + line + "' does not match");
+        return matcher.group(1);
+    }
+
+
+    private BcrSection findSection(List<BcrSection> sections, String title) {
+        for (BcrSection section : sections) {
+            if (title.equals(section.getTitle()))
+                return section;
+        }
+        return null;
+    }
+
+    private boolean existsSection(List<BcrSection> sections, String title) {
+        return findSection(sections, title) != null;
+    }
+
+    private boolean hasValidSections(List<BcrSection> sections) {
+        if (existsSection(sections, CLIENT_TITLE) && existsSection(sections, DESCRIPTION_TITLE) &&
+                existsSection(sections, COORDINATES_TITLE)) {
+            BcrSection client = findSection(sections, CLIENT_TITLE);
+            BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
+            BcrSection description = findSection(sections, DESCRIPTION_TITLE);
+            return client.getStationCount() == coordinates.getStationCount() &&
+                    coordinates.getStationCount() == description.getStationCount();
+        }
+        return false;
+    }
+
+    private void extractPositions(List<BcrSection> sections, List<BcrPosition> positions) {
+        BcrSection client = findSection(sections, CLIENT_TITLE);
+        BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
+        BcrSection description = findSection(sections, DESCRIPTION_TITLE);
+        for (int i = 1; i < client.getStationCount(); i++) {
+            String clientStr = client.getStation(i);
+            String coordinatesStr = coordinates.getStation(i);
+            String descriptionStr = description.getStation(i);
+            positions.add(parsePosition(clientStr, coordinatesStr, descriptionStr));
+        }
+        client.removeStations();
+        coordinates.removeStations();
+        description.removeStations();
+
+        if (!existsSection(sections, ROUTE_TITLE))
+            sections.add(new BcrSection(ROUTE_TITLE));
+    }
+
+    BcrPosition parsePosition(String client, String coordinate, String description) {
+        Matcher coordinateMatcher = COORDINATES_VALUE_PATTERN.matcher(coordinate);
+        if (!coordinateMatcher.matches())
+            throw new IllegalArgumentException("'" + coordinate + "' does not match");
+        String x = coordinateMatcher.group(1);
+        String y = coordinateMatcher.group(2);
+
+        long altitude = BcrPosition.NO_ALTITUDE_DEFINED;
+        Matcher clientMatcher = CLIENT_VALUE_PATTERN.matcher(client);
+        if (!clientMatcher.matches())
+            log.info("'" + client + "' does not match client station pattern; ignoring it");
+        else {
+            String altitudeString = Conversion.trim(clientMatcher.group(2));
+            if (altitudeString != null)
+                altitude = Conversion.parseLong(altitudeString);
+        }
+
+        return new BcrPosition(Conversion.parseInt(x), Conversion.parseInt(y), altitude, Conversion.trim(description));
+    }
+
+    public void write(BcrRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+        List<BcrPosition> positions = route.getPositions();
+        for (BcrSection section : route.getSections()) {
+            writer.println(SECTION_PREFIX + section.getTitle() + SECTION_POSTFIX);
+
+            for (String name : section.keySet()) {
+                if (!name.equals(CREATOR)) {
+                    String value = section.get(name);
+                    if (value == null)
+                        value = "";
+                    writer.println(name + NAME_VALUE_SEPARATOR + value);
+                }
+            }
+
+            if (CLIENT_TITLE.equals(section.getTitle())) {
+                writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
+
+                int index = 1;
+                int maxIndex = positions.size();
+                for (int i = startIndex; i < endIndex; i++) {
+                    BcrPosition position = positions.get(i);
+                    long altitude = position.getAltitude();
+                    boolean center = position.getStreet() != null && position.getStreet().equals(BcrPosition.STREET_DEFINES_CENTER_NAME);
+                    boolean first = index == 1;
+                    boolean last = index == maxIndex;
+                    String altitutdeDescription = center || first || last ? "TOWN" : "Standort";
+                    writer.println(BcrSection.STATION_PREFIX + (index++) + NAME_VALUE_SEPARATOR +
+                            altitutdeDescription + VALUE_SEPARATOR + altitude);
+
+                }
+            }
+
+            if (COORDINATES_TITLE.equals(section.getTitle())) {
+                int index = 1;
+                for (int i = startIndex; i < endIndex; i++) {
+                    BcrPosition position = positions.get(i);
+                    writer.println(BcrSection.STATION_PREFIX + (index++) + NAME_VALUE_SEPARATOR +
+                            position.getX() + VALUE_SEPARATOR + position.getY());
+
+                }
+            }
+
+            if (DESCRIPTION_TITLE.equals(section.getTitle())) {
+                int index = 1;
+                for (int i = startIndex; i < endIndex; i++) {
+                    BcrPosition position = positions.get(i);
+                    String zipCode = Conversion.trim(position.getZipCode()) != null ? position.getZipCode() : BcrPosition.ZIPCODE_DEFINES_NOTHING;
+                    String city = position.getCity() != null ? position.getCity() : "";
+                    String street = Conversion.trim(position.getStreet()) != null ? position.getStreet() : "";
+                    if(BcrPosition.STREET_DEFINES_CENTER_NAME.equals(street))
+                        street = BcrPosition.STREET_DEFINES_CENTER_SYMBOL;
+                    String type = Conversion.trim(position.getType()) != null ? position.getType() : "0";
+                    String comment = zipCode + VALUE_SEPARATOR + city + VALUE_SEPARATOR + street + VALUE_SEPARATOR + type + VALUE_SEPARATOR;
+                    writer.println(BcrSection.STATION_PREFIX + (index++) + NAME_VALUE_SEPARATOR + comment);
+
+                }
+            }
+        }
+    }
+}

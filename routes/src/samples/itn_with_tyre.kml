@@ -1,0 +1,962 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document xmlns:xlink="http://www.w3/org/1999/xlink">
+<name>itn_with_tyre</name>
+<visibility>1</visibility>
+<open>1</open>
+<description>Diese Route wurde erstellt von: [Unbekannt]&lt;br&gt;&lt;br&gt;&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=de&amp;saddr=53.56948,10.03200&amp;daddr=53.57197,10.24410+to:53.61361,10.32865+to:53.61555,10.34086+to:53.63185,10.35103+to:53.63485,10.38229+to:53.64174,10.40831+to:53.64352,10.46348+to:53.63825,10.47870+to:53.62919,10.49088+to:53.61807,10.50807+to:53.61192,10.51239+to:53.61346,10.55177+to:53.61637,10.57022+to:53.61629,10.58588+to:53.61743,10.60167+to:53.61840,10.61737+to:53.61789,10.64230+to:53.62182,10.66081+to:53.63616,10.70366+to:53.66264,10.75909+to:53.69937,10.76402+to:53.71293,10.69788+to:53.73403,10.63790+to:53.74867,10.57045+to:53.74963,10.52603+to:53.73552,10.50830+to:53.72250,10.47503+to:53.73345,10.43470+to:53.72154,10.40450+to:53.74180,10.37425+to:53.75699,10.36692+to:53.75975,10.34298+to:53.75353,10.31378+to:53.74202,10.31511+to:53.74433,10.33256+to:53.72941,10.36130+to:53.69439,10.34800+to:53.67791,10.33740+to:53.66489,10.31918+to:53.64658,10.31636+to:53.64146,10.31547+to:53.63003,10.29287+to:53.61675,10.23744+to:53.61380,10.16121+to:53.56948,10.03200&amp;f=q&amp;om=1&quot;&gt;Zeige Route in Google Earth (Google Maps)&lt;/a&gt;</description>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal3/icon55.png">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon55.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="khStyle694">
+		<IconStyle id="khIconStyle695">
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon28.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_ltblu-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ltblu-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_ylw-square">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-square</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-square</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="khStyle709">
+		<IconStyle id="khIconStyle710">
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon57.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_ltblu-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ltblu-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ltblu-pushpin</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_ylw-square">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/ylw-square.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="khStyle688">
+		<IconStyle id="khIconStyle689">
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon32.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_ylw-stars">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="lineStyle">
+		<LineStyle>
+			<color>64eeee17</color>
+			<width>6</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="msn_ylw-stars">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-stars</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-stars</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_ylw-stars">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<StyleMap id="default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal3/icon63.png+hicon=http://maps.google.com/mapfiles/kml/pal3/icon55.png">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal3/icon63.png</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal3/icon55.png</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="khStyle702">
+		<IconStyle id="khIconStyle703">
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon32.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_ltblu-pushpin">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ltblu-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sh_ylw-pushpin">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal3/icon63.png">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon63.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_ylw-square">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/ylw-square.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="khStyle695">
+		<LineStyle id="khLineStyle699">
+			<color>64eeee17</color>
+			<width>6</width>
+		</LineStyle>
+	</Style>
+
+  <Folder>
+    <name>Wegepunkte</name>
+    <visibility>1</visibility>
+    <Placemark>
+      <name>Hamburg/Uhlenhorst</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.56948,10.03200+to+53.57197,10.24410&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.03200</longitude>
+        <latitude>53.56948</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.03200,53.56948,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Barsbüttel/Stemwarde</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.57197,10.24410+to+53.61361,10.32865&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.24410</longitude>
+        <latitude>53.57197</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.24410,53.57197,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Großensee/Schwarzekate</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61361,10.32865+to+53.61555,10.34086&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.32865</longitude>
+        <latitude>53.61361</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.32865,53.61361,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Großensee</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61555,10.34086+to+53.63185,10.35103&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.34086</longitude>
+        <latitude>53.61555</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.34086,53.61555,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lütjensee/Schloßberg</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.63185,10.35103+to+53.63485,10.38229&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.35103</longitude>
+        <latitude>53.63185</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.35103,53.63185,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lütjensee/Bollmoor</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.63485,10.38229+to+53.64174,10.40831&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.38229</longitude>
+        <latitude>53.63485</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.38229,53.63485,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Grönwohld</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.64174,10.40831+to+53.64352,10.46348&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.40831</longitude>
+        <latitude>53.64174</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.40831,53.64174,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Linau</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.64352,10.46348+to+53.63825,10.47870&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.46348</longitude>
+        <latitude>53.64352</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.46348,53.64352,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Trittau/Vogelfängerkaten</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.63825,10.47870+to+53.62919,10.49088&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.47870</longitude>
+        <latitude>53.63825</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.47870,53.63825,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Trittau/Vogelfängerkaten</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.62919,10.49088+to+53.61807,10.50807&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.49088</longitude>
+        <latitude>53.62919</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.49088,53.62919,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Köthel; Kr Hzgt Lauenburg</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61807,10.50807+to+53.61192,10.51239&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.50807</longitude>
+        <latitude>53.61807</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.50807,53.61807,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Köthel; Kr Hzgt Lauenburg</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61192,10.51239+to+53.61346,10.55177&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.51239</longitude>
+        <latitude>53.61192</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.51239,53.61192,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Borstorf</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61346,10.55177+to+53.61637,10.57022&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.55177</longitude>
+        <latitude>53.61346</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.55177,53.61346,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Borstorf</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61637,10.57022+to+53.61629,10.58588&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.57022</longitude>
+        <latitude>53.61637</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.57022,53.61637,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Breitenfelde/Neuenlande</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61629,10.58588+to+53.61743,10.60167&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.58588</longitude>
+        <latitude>53.61629</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.58588,53.61629,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Bälau/Uhlenbusch</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61743,10.60167+to+53.61840,10.61737&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.60167</longitude>
+        <latitude>53.61743</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.60167,53.61743,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Bälau</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61840,10.61737+to+53.61789,10.64230&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.61737</longitude>
+        <latitude>53.61840</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.61737,53.61840,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Alt Mölln</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61789,10.64230+to+53.62182,10.66081&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.64230</longitude>
+        <latitude>53.61789</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.64230,53.61789,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Alt Mölln</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.62182,10.66081+to+53.63616,10.70366&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.66081</longitude>
+        <latitude>53.62182</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.66081,53.62182,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Nusse/Donnerschleuse</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.63616,10.70366+to+53.66264,10.75909&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.70366</longitude>
+        <latitude>53.63616</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.70366,53.63616,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Schmilau</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.66264,10.75909+to+53.69937,10.76402&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.75909</longitude>
+        <latitude>53.66264</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.75909,53.66264,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Ratzeburg</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.69937,10.76402+to+53.71293,10.69788&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.76402</longitude>
+        <latitude>53.69937</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.76402,53.69937,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Kulpin</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.71293,10.69788+to+53.73403,10.63790&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.69788</longitude>
+        <latitude>53.71293</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.69788,53.71293,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Berkenthin</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.73403,10.63790+to+53.74867,10.57045&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.63790</longitude>
+        <latitude>53.73403</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.63790,53.73403,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Kastorf</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.74867,10.57045+to+53.74963,10.52603&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.57045</longitude>
+        <latitude>53.74867</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.57045,53.74867,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Siebenbäumen</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.74963,10.52603+to+53.73552,10.50830&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.52603</longitude>
+        <latitude>53.74963</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.52603,53.74963,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Steinhorst/Im Busch</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.73552,10.50830+to+53.72250,10.47503&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.50830</longitude>
+        <latitude>53.73552</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.50830,53.73552,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Steinhorst</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.72250,10.47503+to+53.73345,10.43470&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.47503</longitude>
+        <latitude>53.72250</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.47503,53.72250,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Stubben</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.73345,10.43470+to+53.72154,10.40450&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.43470</longitude>
+        <latitude>53.73345</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.43470,53.73345,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Steinburg</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.72154,10.40450+to+53.74180,10.37425&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.40450</longitude>
+        <latitude>53.72154</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.40450,53.72154,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lasbek/Barkhorst</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.74180,10.37425+to+53.75699,10.36692&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.37425</longitude>
+        <latitude>53.74180</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.37425,53.74180,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Rümpel/Buddikate</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.75699,10.36692+to+53.75975,10.34298&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.36692</longitude>
+        <latitude>53.75699</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.36692,53.75699,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Tremsbüttel/Kupfermühle</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.75975,10.34298+to+53.75353,10.31378&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.34298</longitude>
+        <latitude>53.75975</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.34298,53.75975,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Tremsbüttel/Wulfskuhle</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.75353,10.31378+to+53.74202,10.31511&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.31378</longitude>
+        <latitude>53.75353</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.31378,53.75353,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>A21/Tremsbüttel (18)</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.74202,10.31511+to+53.74433,10.33256&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.31511</longitude>
+        <latitude>53.74202</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.31511,53.74202,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lasbek/Lasbek; Gut</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.74433,10.33256+to+53.72941,10.36130&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.33256</longitude>
+        <latitude>53.74433</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.33256,53.74433,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lasbek</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.72941,10.36130+to+53.69439,10.34800&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.36130</longitude>
+        <latitude>53.72941</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.36130,53.72941,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Todendorf</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.69439,10.34800+to+53.67791,10.33740&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.34800</longitude>
+        <latitude>53.69439</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.34800,53.69439,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Oetjendorf</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.67791,10.33740+to+53.66489,10.31918&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.33740</longitude>
+        <latitude>53.67791</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.33740,53.67791,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hoisdorf/Anschlag</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.66489,10.31918+to+53.64658,10.31636&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.31918</longitude>
+        <latitude>53.66489</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.31918,53.66489,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hoisdorf/Kreuz</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.64658,10.31636+to+53.64146,10.31547&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.31636</longitude>
+        <latitude>53.64658</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.31636,53.64658,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Siek/Baumkaten</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.64146,10.31547+to+53.63003,10.29287&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.31547</longitude>
+        <latitude>53.64146</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.31547,53.64146,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Siek</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.63003,10.29287+to+53.61675,10.23744&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.29287</longitude>
+        <latitude>53.63003</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.29287,53.63003,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>A1/B435/Stapelfeld (29)</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61675,10.23744+to+53.61380,10.16121&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.23744</longitude>
+        <latitude>53.61675</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.23744,53.61675,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hamburg</name>
+      <description>&lt;a href=&quot;http://maps.google.com/?ie=UTF8&amp;hl=en&amp;q=53.61380,10.16121+to+53.56948,10.03200&amp;f=q&amp;om=1&amp;output=kml&quot;&gt;Zeige Route in Google Earth&lt;/a&gt; (Google Earth)</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.16121</longitude>
+        <latitude>53.61380</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.16121,53.61380,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hamburg/Uhlenhorst</name>
+      <description>Hamburg/Uhlenhorst</description>
+      <visibility>1</visibility>
+      <LookAt>
+        <longitude>10.03200</longitude>
+        <latitude>53.56948</latitude>
+        <range>600</range>
+        <tilt>0</tilt>
+        <heading>0</heading>
+      </LookAt>
+      <styleUrl>#msn_ylw-pushpin</styleUrl>
+      <Point>
+        <coordinates>10.03200,53.56948,0</coordinates>
+      </Point>
+    </Placemark>
+  </Folder>
+  <Folder>
+    <name>Route</name>
+    <visibility>1</visibility>
+    <Folder>
+      <name>itn_with_tyre</name>
+      <visibility>1</visibility>
+      <Placemark>
+        <name>Path</name>
+        <visibility>1</visibility>
+        <styleUrl>#lineStyle</styleUrl>
+        <MultiGeometry>
+          <LineString>
+            <coordinates>
+10.03200,53.56948,0 10.24410,53.57197,0 10.32865,53.61361,0 10.34086,53.61555,0 10.35103,53.63185,0 10.38229,53.63485,0 10.40831,53.64174,0 10.46348,53.64352,0 10.47870,53.63825,0 10.49088,53.62919,0 10.50807,53.61807,0 10.51239,53.61192,0 10.55177,53.61346,0 10.57022,53.61637,0 10.58588,53.61629,0 10.60167,53.61743,0 10.61737,53.61840,0 10.64230,53.61789,0 10.66081,53.62182,0 10.70366,53.63616,0 10.75909,53.66264,0 10.76402,53.69937,0 10.69788,53.71293,0 10.63790,53.73403,0 10.57045,53.74867,0 10.52603,53.74963,0 10.50830,53.73552,0 10.47503,53.72250,0 10.43470,53.73345,0 10.40450,53.72154,0 10.37425,53.74180,0 10.36692,53.75699,0 10.34298,53.75975,0 10.31378,53.75353,0 10.31511,53.74202,0 10.33256,53.74433,0 10.36130,53.72941,0 10.34800,53.69439,0 10.33740,53.67791,0 10.31918,53.66489,0 10.31636,53.64658,0 10.31547,53.64146,0 10.29287,53.63003,0 10.23744,53.61675,0 10.16121,53.61380,0 10.03200,53.56948,0 
+            </coordinates>
+          </LineString>
+        </MultiGeometry>
+      </Placemark>
+    </Folder>
+  </Folder>
+</Document>
+</kml>

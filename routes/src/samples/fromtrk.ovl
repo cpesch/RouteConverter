@@ -1,0 +1,45 @@
+[Symbol 1]
+Typ=6
+Group=1
+Width=40
+Height=40
+Dir=100
+Col=1
+Zoom=2
+Size=102
+Area=2
+XKoord=-10.76617
+YKoord=-53.69928
+[Symbol 2]
+Typ=6
+Group=1
+Width=40
+Height=40
+Dir=100
+Col=1
+Zoom=2
+Size=102
+Area=2
+XKoord=10.18587
+YKoord=53.40451
+[Symbol 3]
+Typ=6
+Group=1
+Width=40
+Height=40
+Dir=100
+Col=1
+Zoom=2
+Size=102
+Area=2
+XKoord=10.06767
+YKoord=53.49249
+[Overlay]
+Symbols=3
+[MapLage]
+MapName=Länderübersicht
+DimmFc=100
+ZoomFc=100
+CenterLat=9.000000
+CenterLong=50.000000
+RefOn=0

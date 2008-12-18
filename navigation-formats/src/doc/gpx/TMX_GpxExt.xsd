@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+ <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://gps.wintec.tw/xsd" targetNamespace="http://gps.wintec.tw/xsd" elementFormDefault="qualified">
+  <xsd:annotation>
+  <xsd:documentation>This schema defines the Garmin extensions to be used with the GPX 1.1 schema. The root elements defined by this schema are intended to be used as child elements of the "extensions" elements in the GPX 1.1 schema. The GPX 1.1 schema is available at http://www.topografix.com/GPX/1/1/gpx.xsd.</xsd:documentation> 
+  </xsd:annotation>
+  <xsd:element name="WaypointExtension" type="WaypointExtension_t" /> 
+  <xsd:element name="TrackPointExtension" type="TrackPointExtension_t" /> 
+ 
+  
+ <xsd:complexType name="WaypointExtension_t">
+ <xsd:annotation>
+  <xsd:documentation>This type contains data fields available in Garmin GDB waypoints that cannot be represented in waypoints in GPX 1.1 instances.</xsd:documentation> 
+  </xsd:annotation>
+ <xsd:sequence>
+  <xsd:element name="Temperature" type="DegreesCelsius_t" minOccurs="0" /> 
+  <xsd:element name="Pressure" type="HPa_t" minOccurs="0" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+  
+ <xsd:complexType name="TrackPointExtension_t">
+ <xsd:annotation>
+  <xsd:documentation>This type contains data fields available in Garmin GDB track points that cannot be represented in track points in GPX 1.1 instances.</xsd:documentation> 
+  </xsd:annotation>
+ <xsd:sequence>
+  <xsd:element name="Temperature" type="DegreesCelsius_t" minOccurs="0" /> 
+  <xsd:element name="Pressure" type="HPa_t" minOccurs="0" /> 
+  </xsd:sequence>
+  </xsd:complexType>  
+  
+ <xsd:simpleType name="DegreesCelsius_t">
+ <xsd:annotation>
+  <xsd:documentation>This type contains a temperature value measured in degrees Celsius.</xsd:documentation> 
+  </xsd:annotation>
+  <xsd:restriction base="xsd:integer" /> 
+  </xsd:simpleType>
+  
+ <xsd:simpleType name="HPa_t">
+ <xsd:annotation>
+  <xsd:documentation>This type contains a air pressure value measured in hPa.</xsd:documentation> 
+  </xsd:annotation>
+  <xsd:restriction base="xsd:integer" /> 
+  </xsd:simpleType>  
+
+ </xsd:schema>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="common/src/java"/>
+	<classpathentry kind="src" path="common/src/resources"/>
+	<classpathentry kind="src" path="common/src/test"/>
+	<classpathentry kind="src" path="rest/src/java"/>
+	<classpathentry kind="src" path="jaxb6/src/java"/>
+	<classpathentry kind="src" path="navigation-formats/src/java"/>
+	<classpathentry kind="src" path="navigation-formats/src/test"/>
+	<classpathentry kind="src" path="catalog/src/java"/>
+	<classpathentry kind="src" path="catalog/src/testresources"/>
+	<classpathentry kind="src" path="catalog/src/test"/>
+	<classpathentry kind="src" path="geonames/src/java"/>
+	<classpathentry kind="src" path="geonames/src/test"/>
+	<classpathentry kind="src" path="common-gui/src/java"/>
+	<classpathentry kind="src" path="jdic-0.9.3/src/java"/>
+	<classpathentry kind="src" path="jdic-0.9.3/output/classes"/>
+	<classpathentry kind="src" path="route-converter/src/java"/>
+	<classpathentry kind="src" path="route-converter/src/resources"/>
+	<classpathentry kind="src" path="route-converter6/src/java"/>
+	<classpathentry kind="src" path="route-converter-cmdline/src/java"/>
+	<classpathentry kind="src" path="route-converter-cmdline/src/resources"/>
+	<classpathentry kind="lib" path="thirdparty/apache/commons-codec/lib/commons-codec-1.3-stripped.jar"/>
+	<classpathentry kind="lib" path="thirdparty/apache/commons-httpclient/lib/commons-httpclient-3.1-stripped.jar"/>
+	<classpathentry kind="lib" path="thirdparty/apache/commons-logging/lib/commons-logging-1.1-stripped.jar"/>
+	<classpathentry kind="lib" path="thirdparty/intellij/forms-rt/lib/forms-rt-6.0.5-stripped.jar"/>
+	<classpathentry kind="lib" path="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
+	<classpathentry kind="lib" path="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
+	<classpathentry kind="lib" path="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
+	<classpathentry kind="lib" path="thirdparty/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="build/output/tmp"/>
+</classpath>

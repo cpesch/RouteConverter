@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Document>
+  <name>GPS Tuner Tracklog</name>
+  <extrude>1</extrude>
+  <altitudeMode>clampedToGround</altitudeMode>
+  <Style id="khStyle1">
+    <IconStyle id="khIconStyle2">
+      <Icon>
+         <href>root://icons/palette-4.png</href>
+         <x>160</x>
+         <y>128</y>
+         <w>32</w>
+         <h>32</h>
+      </Icon>
+      </IconStyle>
+      <LineStyle id="khStyle3">
+         <color>ff18ff97</color>
+         <width>2</width>
+      </LineStyle>
+      <PolyStyle id="khStyle4">
+         <color>b2642c21</color>
+      </PolyStyle>
+  </Style>
+  <Placemark>
+    <name>Start</name>
+    <description><![CDATA[Time: 2007-07-30T15:26:05Z<br/>Speed: 0 km/h<br/>Alt: 213,6 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32847333333333,50.4115416666667,213.600006103516 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(2)</name>
+    <description><![CDATA[Time: 2007-07-30T15:27:04Z<br/>Speed: 3,72 km/h<br/>Alt: 220,3 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.328245,50.4117033333333,220.300003051758 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(4)</name>
+    <description><![CDATA[Time: 2007-07-30T15:27:58Z<br/>Speed: 4,52 km/h<br/>Alt: 215,8 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32757333333333,50.4117633333333,215.800003051758 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(6)</name>
+    <description><![CDATA[Time: 2007-07-30T15:30:51Z<br/>Speed: 1,37 km/h<br/>Alt: 215,1 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32767833333333,50.4112316666667,215.100006103516 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(8)</name>
+    <description><![CDATA[Time: 2007-07-30T15:31:51Z<br/>Speed: 1,17 km/h<br/>Alt: 210,9 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32798833333333,50.4110633333333,210.899993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(10)</name>
+    <description><![CDATA[Time: 2007-07-30T15:33:22Z<br/>Speed: 1,65 km/h<br/>Alt: 214,4 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.328475,50.4108533333333,214.399993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(12)</name>
+    <description><![CDATA[Time: 2007-07-30T15:34:22Z<br/>Speed: 1,65 km/h<br/>Alt: 210,8 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32864666666667,50.410735,210.800003051758 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(14)</name>
+    <description><![CDATA[Time: 2007-07-30T15:35:24Z<br/>Speed: 0 km/h<br/>Alt: 217,5 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32879,50.4106833333333,217.5 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(16)</name>
+    <description><![CDATA[Time: 2007-07-30T15:36:35Z<br/>Speed: 1,11 km/h<br/>Alt: 205,7 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32880666666667,50.4105583333333,205.699996948242 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(18)</name>
+    <description><![CDATA[Time: 2007-07-30T15:37:53Z<br/>Speed: 1,39 km/h<br/>Alt: 217,9 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32919666666667,50.410495,217.899993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(20)</name>
+    <description><![CDATA[Time: 2007-07-30T15:38:53Z<br/>Speed: 2,83 km/h<br/>Alt: 205,4 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32969333333333,50.4103433333333,205.399993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(22)</name>
+    <description><![CDATA[Time: 2007-07-30T15:39:55Z<br/>Speed: 3 km/h<br/>Alt: 213,6 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32982833333333,50.4104066666667,213.600006103516 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(24)</name>
+    <description><![CDATA[Time: 2007-07-30T15:40:46Z<br/>Speed: 5,19 km/h<br/>Alt: 217,9 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33034666666667,50.4108466666667,217.899993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(25) - Max Speed</name>
+    <description><![CDATA[Time: 2007-07-30T15:41:09Z<br/>Speed: 14,56 km/h<br/>Alt: 211 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.330635,50.4108333333333,211 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(26) - Min Altitude</name>
+    <description><![CDATA[Time: 2007-07-30T15:41:31Z<br/>Speed: 1,09 km/h<br/>Alt: 199,1 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.330485,50.4107116666667,199.100006103516 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(28)</name>
+    <description><![CDATA[Time: 2007-07-30T15:42:31Z<br/>Speed: 3,98 km/h<br/>Alt: 210,9 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.330825,50.411075,210.899993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(30)</name>
+    <description><![CDATA[Time: 2007-07-30T15:43:31Z<br/>Speed: 2,48 km/h<br/>Alt: 207,1 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33124,50.4113083333333,207.100006103516 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(32)</name>
+    <description><![CDATA[Time: 2007-07-30T15:44:28Z<br/>Speed: 3,28 km/h<br/>Alt: 219,1 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33097166666667,50.4116633333333,219.100006103516 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(34)</name>
+    <description><![CDATA[Time: 2007-07-30T15:45:28Z<br/>Speed: 7,87 km/h<br/>Alt: 223,3 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33064833333333,50.4120483333333,223.300003051758 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(36)</name>
+    <description><![CDATA[Time: 2007-07-30T15:46:24Z<br/>Speed: 3,28 km/h<br/>Alt: 208,4 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33105666666667,50.4124,208.399993896484 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Point(38) - Max Altitude</name>
+    <description><![CDATA[Time: 2007-07-30T15:47:32Z<br/>Speed: 1,3 km/h<br/>Alt: 232,2 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33138333333333,50.412605,232.199996948242 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>End</name>
+    <description><![CDATA[Time: 2007-07-30T15:47:40Z<br/>Speed: 0 km/h<br/>Alt: 225,3 m]]></description>
+    <styleUrl>#khStyle1</styleUrl>
+    <Point>
+      <extrude>1</extrude>
+      <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.33133833333333,50.4125483333333,225.300003051758 
+      </coordinates>
+    </Point>
+  </Placemark>
+  <Placemark>
+    <name>Track from GPS Tuner - 2007-07-30T15:26:05Z</name>
+    <styleUrl>#khStyle1</styleUrl>
+    <LineString>
+    <extrude>1</extrude>
+    <altitudeMode>clampedToGround</altitudeMode>
+      <coordinates>
+7.32847333333333,50.4115416666667,213.600006103516 7.328245,50.4117033333333,220.300003051758 7.32782,50.4120116666667,226.5 7.32757333333333,50.4117633333333,215.800003051758 7.32754666666667,50.41141,219.899993896484 7.32767833333333,50.4112316666667,215.100006103516 7.32788333333333,50.41111,212.300003051758 7.32798833333333,50.4110633333333,210.899993896484 7.32836,50.41091,214 7.328475,50.4108533333333,214.399993896484 7.32851,50.4108,210.699996948242 7.32864666666667,50.410735,210.800003051758 7.32872,50.4107366666667,216.100006103516 7.32879,50.4106833333333,217.5 7.32883833333333,50.4107216666667,228.899993896484 7.32880666666667,50.4105583333333,205.699996948242 7.32906166666667,50.4105333333333,210.5 7.32919666666667,50.410495,217.899993896484 7.32937,50.4103216666667,212.399993896484 7.32969333333333,50.4103433333333,205.399993896484 7.32974333333333,50.4103383333333,210.899993896484 7.32982833333333,50.4104066666667,213.600006103516 7.330105,50.4106383333333,210.100006103516 7.33034666666667,50.4108466666667,217.899993896484 7.330635,50.4108333333333,211 7.330485,50.4107116666667,199.100006103516 7.330655,50.4109033333333,201.899993896484 7.330825,50.411075,210.899993896484 7.33103666666667,50.4111566666667,205.5 7.33124,50.4113083333333,207.100006103516 7.33112666666667,50.4114466666667,214.800003051758 7.33097166666667,50.4116633333333,219.100006103516 7.33081333333333,50.411835,219.699996948242 7.33064833333333,50.4120483333333,223.300003051758 7.33075,50.412255,214.600006103516 7.33105666666667,50.4124,208.399993896484 7.33133833333333,50.4125116666667,218.199996948242 7.33138333333333,50.412605,232.199996948242 7.33134666666667,50.4125616666667,227.300003051758 7.33133833333333,50.4125483333333,225.300003051758 
+      </coordinates>
+    </LineString>
+  </Placemark>
+</Document>
+</kml>

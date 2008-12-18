@@ -1,0 +1,1300 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="Die Datensätze der NMEA Schnittstellen">
+   <meta name="keywords" content="NMEA 0183 nmea183 nmea0183 nmea0180 nmea180 nmea_183 nmea-183 nmea AAM ALM APA APB ASD BEC BOD BWC BWR BWW DBK DBS DBT DCN DPT FSI GGA GLC GLL GSA GSV GTD GXA HDG HDM HDT HSC LCD MTW MWV OLN OSD ROO RMA RMB RMC ROT RPM RSA RSD RTE SFI STN RTF TTM VBW VDR VHW VLW VPW VTG VWR WCV WNC WPL XDR XTE XTR ZDA ZFO ZTG">
+   <meta name="robots" content="INDEX, FOLLOW">
+   <meta name="author" content="Matthias Busse">
+   <meta name="publisher" content="NMEA">
+   <meta name="copyright" content="NMEA">
+   <meta name="page-topic" content="Sport">
+   <meta name="page-type" content="Produktinfo">
+   <meta name="audience" content="Alle">
+   <meta name="GENERATOR" content="Mozilla/4.78 [de] (Windows NT 5.0; U) [Netscape]"><title>NMEA.DE : Erklärungen und Hilfen zu NMEA Schnittstellen</title></head><body bgcolor="#ffffff">
+&gt;
+<font color="#0000ff"><a href="http://www.nmea.de/index.html" target="_top">Start</a></font>
+<br>&nbsp;
+<table border="0" width="530">
+<tbody><tr bgcolor="#000099">
+<td align="center"><b><font color="#ff9900"><font size="+2">NMEA 0183 Datensätze</font></font></b></td>
+</tr>
+
+<tr>
+<td>
+<br><b>Die Datensätze alphabetisch:</b>
+<br><b><a href="#aam">AAM</a> | <a href="#alm">ALM</a> | <a href="#apa">APA</a>
+| <a href="#apb">APB</a> | <a href="#asd">ASD</a> | <a href="#bec">BEC</a>
+| <a href="#bod">BOD</a> | <a href="#bwc">BWC</a> | <a href="#bwr">BWR</a>
+| <a href="#bww">BWW</a> | <a href="#dbk">DBK</a> | <a href="#dbs">DBS</a>
+| <a href="#dbt">DBT</a> | <a href="#dcn">DCN</a> | <a href="#dpt">DPT</a>
+| <a href="#dtm">DTM</a> | <a href="#fsi">FSI</a> | <a href="#gbs">GBS</a>
+| <a href="#gga">GGA</a> | <a href="#glc">GLC</a> | <a href="#gll">GLL</a>
+| <a href="#gns">GNS</a> | <a href="#grs">GRS</a> | <a href="#gsa">GSA</a>
+| <a href="#gst">GST</a> | <a href="#gsv">GSV</a> | <a href="#gtd">GTD</a>
+| <a href="#gxa">GXA</a> | <a href="#hdg">HDG</a> | <a href="#hdm">HDM</a>
+| <a href="#hdt">HDT</a> | <a href="#hsc">HSC</a> | <a href="#lcd">LCD</a>
+| <a href="#msk">MSK</a> | <a href="#mtw">MTW</a> | <a href="#mwv">MWV</a>
+| <a href="#oln">OLN</a> | <a href="#osd">OSD</a> | <a href="#roo">ROO</a>
+| <a href="#rma">RMA</a> | <a href="#rmb">RMB</a> | <a href="#rmc">RMC</a>
+| <a href="#rot">ROT</a> | <a href="#rpm">RPM</a> | <a href="#rsa">RSA</a>
+| <a href="#rsd">RSD</a> | <a href="#rte">RTE</a> | <a href="#sfi">SFI</a>
+| <a href="#stn">STN</a> | <a href="#tll">TLL</a> | <a href="#trf">TRF</a>
+| <a href="#ttm">TTM</a> | <a href="#vbw">VBW</a> | <a href="#vdr">VDR</a>
+| <a href="#vhw">VHW</a> | <a href="#vlw">VLW</a> | <a href="#vpw">VPW</a>
+| <a href="#vtg">VTG</a> | <a href="#vwr">VWR</a> | <a href="#wcv">WCV</a>
+| <a href="#wnc">WNC</a> | <a href="#wpl">WPL</a> | <a href="#xdr">XDR</a>
+| <a href="#xte">XTE</a> | <a href="#xtr">XTR</a> | <a href="#zda">ZDA</a>
+| <a href="#zfo">ZFO</a> | <a href="#ztg">ZTG</a></b>
+<p><b>Allgemein: <a href="#osd">OSD</a> |</b>
+<br><b>Autopilot: <a href="#apa">APA</a> | <a href="#apb">APB</a> | <a href="#asd">ASD</a>
+|</b>
+<br><b>Decca: <a href="#dcn">DCN</a> |</b>
+<br><b>D-GPS: <a href="#msk">MSK</a></b>
+<br><b>Echolot: <a href="#dbk">DBK</a> | <a href="#dbs">DBS</a> | <a href="#dbt">DBT</a>
+|</b>
+<br><b>Funk: <a href="#fsi">FSI</a> | <a href="#sfi">SFI</a> | <a href="#tll">TLL</a></b>
+<br><b>Geschwindigkeit: <a href="#vbw">VBW</a> | <a href="#vhw">VHW</a>
+| <a href="#vlw">VLW</a> |</b>
+<br><b>GPS: <a href="#alm">ALM</a> | <a href="#gbs">GBS</a> | <a href="#gga">GGA</a>
+| <a href="#gns">GNS</a> | <a href="#gsa">GSA</a> | <a href="#gsv">GSV</a>
+|</b>
+<br><b>Kurs: <a href="#dpt">DPT</a> | <a href="#hdg">HDG</a> | <a href="#hdm">HDM</a>
+| <a href="#hdt">HDT</a> | <a href="#hsc">HSC</a> | <a href="#rot">ROT</a>
+| <a href="#vdr">VDR</a> |</b>
+<br><b>Loran-C: <a href="#glc">GLC</a> | <a href="#lcd">LCD</a> |</b>
+<br><b>Maschine: <a href="#rpm">RPM</a> |</b>
+<br><b>Navigation: <a href="#rma">RMA</a> | <a href="#rmb">RMB</a> | <a href="#rmc">RMC</a>
+|</b>
+<br><b>Omega: <a href="#oln">OLN</a> |</b>
+<br><b>Position: <a href="#gll">GLL</a> | <a href="#dtm">DTM</a></b>
+<br><b>Radar: <a href="#rsd">RSD</a> | <a href="#tll">TLL</a> | <a href="#ttm">TTM</a>
+|</b>
+<br><b>Ruder: <a href="#rsa">RSA</a> |</b>
+<br><b>Temperatur: <a href="#mtw">MTW</a> |</b>
+<br><b>Transit: <a href="#gxa">GXA</a> | <a href="#rtf">RTF</a> |</b>
+<br><b>Wegpunkte und Routen: <a href="#aam">AAM</a> | <a href="#bec">BEC</a>
+| <a href="#bod">BOD</a> | <a href="#bwc">BWC</a> | <a href="#bwr">BWR</a>
+| <a href="#bww">BWW</a> | <a href="#roo">ROO</a> | <a href="#rte">RTE</a>
+| <a href="#vtg">VTG</a> | <a href="#wcv">WCV</a> | <a href="#wnc">WNC</a>
+| <a href="#wpl">WPL</a> | <a href="#xdr">XDR</a> | <a href="#xte">XTE</a>
+| <a href="#xtr">XTR</a> |</b>
+<br><b>Wind: <a href="#mwv">MWV</a> | <a href="#vpw">VPW</a> | <a href="#vwr">VWR</a>
+|</b>
+<br><b>Zeit: <a href="#gdt">GDT</a> | <a href="#zda">ZDA</a> | <a href="#zfo">ZFO</a>
+| <a href="#ztg">ZTG</a> |</b>
+</p><p>
+</p><hr size="4" width="100%">
+<p><a name="aam"></a><b>AAM - Waypoint Arrival Alarm</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp;&nbsp; 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--AAM,A,A,x.x,N,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp;1) Status, BOOLEAN, A = Arrival circle entered
+<br>&nbsp;2) Status, BOOLEAN, A = perpendicular passed at waypoint
+<br>&nbsp;3) Arrival circle radius
+<br>&nbsp;4) Units of radius, nautical miles
+<br>&nbsp;5) Waypoint ID
+<br>&nbsp;6) Checksum
+</p><p><a name="aivdm"></a><b>AIVDM - AIS VHF Datalink Message (AIS NMEA sentence
+that contains data about another ship)</b>
+<br><b>no more information yet.</b>
+</p><p><a name="aivdo"></a><b>AIVDO - AIS VHF Datalink Own-vessel Message (AIS
+NMEA sentence that contains data about own ship)</b>
+<br><b>no more information yet.</b>
+</p><p><a name="alm"></a><b>ALM - GPS Almanac Data</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3&nbsp; 4&nbsp;&nbsp; 5&nbsp; 6&nbsp;&nbsp;&nbsp; 7&nbsp; 8&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;
+12&nbsp;&nbsp;&nbsp;&nbsp; 13&nbsp;&nbsp;&nbsp;&nbsp; 14&nbsp; 15&nbsp;&nbsp;
+16</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp; |&nbsp;&nbsp; |&nbsp; |&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--ALM,x.x,x.x,xx,x.x,hh,hhhh,hh,hhhh,hhhh,hhhhhh,hhhhhh,hhhhhh,hhhhhh,hhh,hhh,*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Total number of messages
+<br>&nbsp; 2) Message Number
+<br>&nbsp; 3) Satellite PRN number (01 to 32)
+<br>&nbsp; 4) GPS Week Number :
+<br>&nbsp;Date and time in GPS is computed as number of weeks from 6 January
+1980 plus
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of seconds into the week.
+<br>&nbsp; 5) SV health, bits 17-24 of each almanac page
+<br>&nbsp; 6) Eccentricity
+<br>&nbsp; 7) Almanac Reference Time
+<br>&nbsp; 8) Inclination Angle
+<br>&nbsp; 9) Rate of Right Ascension
+<br>&nbsp;10) Root of semi-major axis
+<br>&nbsp;11) Argument of perigee
+<br>&nbsp;12) Longitude of ascension node
+<br>&nbsp;13) Mean anomaly
+<br>&nbsp;14) F0 Clock Parameter
+<br>&nbsp;15) F1 Clock Parameter
+<br>&nbsp;16) Checksum
+</p><p><a name="apa"></a><b>APA - Autopilot Sentence "A"</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2&nbsp; 3&nbsp;&nbsp;
+4 5 6 7&nbsp; 8&nbsp; 9 10&nbsp;&nbsp;&nbsp; 11</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp; |&nbsp;&nbsp;
+| | | |&nbsp; |&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--APA,A,A,x.xx,L,N,A,A,xxx,M,c---c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = LORAN-C Blink or SNR warning
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = general warning flag or other navigation
+systems when a reliable
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fix is not available
+<br>&nbsp; 2) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = Loran-C Cycle Lock warning flag
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = OK or not used
+</p><p>&nbsp; 3) Cross Track Error Magnitude
+<br>&nbsp; 4) Direction to steer, L or R
+<br>&nbsp; 5) Cross Track Units (Nautic miles or kilometers)
+<br>&nbsp; 6) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = Arrival Circle Entered
+<br>&nbsp; 7) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = Perpendicular passed at waypoint
+<br>&nbsp; 8) Bearing origin to destination
+<br>&nbsp; 9) M = Magnetic, T = True
+<br>&nbsp;10) Destination Waypoint ID
+<br>&nbsp;11) checksum
+</p><p><a name="apb"></a><b>APB - Autopilot Sentence "B"</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13&nbsp;&nbsp;&nbsp; 15</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2 3&nbsp;&nbsp;
+4 5 6 7 8&nbsp;&nbsp; 9 10&nbsp;&nbsp; 11&nbsp; 12|&nbsp;&nbsp; 14|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |&nbsp;&nbsp;
+| | | | |&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>&nbsp;$--APB,A,A,x.x,a,N,A,A,x.x,a,c--c,x.x,a,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = LORAN-C Blink or SNR warning
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = general warning flag or other navigation
+systems when a reliable
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fix is not available
+<br>&nbsp; 2) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = Loran-C Cycle Lock warning flag
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = OK or not used
+<br>&nbsp; 3) Cross Track Error Magnitude
+<br>&nbsp; 4) Direction to steer, L or R
+<br>&nbsp; 5) Cross Track Units, N = Nautical Miles
+<br>&nbsp; 6) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = Arrival Circle Entered
+<br>&nbsp; 7) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = Perpendicular passed at waypoint
+<br>&nbsp; 8) Bearing origin to destination
+<br>&nbsp; 9) M = Magnetic, T = True
+<br>&nbsp;10) Destination Waypoint ID
+<br>&nbsp;11) Bearing, present position to Destination
+<br>&nbsp;12) M = Magnetic, T = True
+<br>&nbsp;13) Heading to steer to destination waypoint
+<br>&nbsp;14) M = Magnetic, T = True
+<br>&nbsp;15) Checksum
+</p><p><a name="asd"></a><b>ASD - Autopilot System Data</b>
+<br><b>&nbsp;</b>FORMAT UNKOWN
+</p><p><a name="bec"></a><b>BEC - Bearing &amp; Distance to Waypoint - Dead
+Reckoning</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 6&nbsp;&nbsp; 7 8&nbsp;&nbsp; 9 10&nbsp; 11|&nbsp;&nbsp;&nbsp; 13</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--BEC,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) UTCTime
+<br>&nbsp; 2) Waypoint Latitude
+<br>&nbsp; 3) N = North, S = South
+<br>&nbsp; 4) Waypoint Longitude
+<br>&nbsp; 5) E = East, W = West
+<br>&nbsp; 6) Bearing, True
+<br>&nbsp; 7) T = True
+<br>&nbsp; 8) Bearing, Magnetic
+<br>&nbsp; 9) M = Magnetic
+<br>&nbsp;10) Nautical Miles
+<br>&nbsp;11) N = Nautical Miles
+<br>&nbsp;12) Waypoint ID
+<br>&nbsp;13) Checksum
+<br>&nbsp;
+</p><p><a name="bod"></a><b>BOD - Bearing - Waypoint to Waypoint</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--BOD,x.x,T,x.x,M,c--c,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Bearing Degrees, TRUE
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Bearing Degrees, Magnetic
+<br>&nbsp; 4) M = Magnetic
+<br>&nbsp; 5) TO Waypoint
+<br>&nbsp; 6) FROM Waypoint
+<br>&nbsp; 7) Checksum
+</p><p><a name="bwc"></a><b>BWC - Bearing and Distance to Waypoint, Latitude,
+N/S, Longitude, E/W, UTC, Status</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 6&nbsp;&nbsp; 7 8&nbsp;&nbsp; 9 10&nbsp; | 12&nbsp;&nbsp; 13</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--BWC,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) UTCTime
+<br>&nbsp; 2) Waypoint Latitude
+<br>&nbsp; 3) N = North, S = South
+<br>&nbsp; 4) Waypoint Longitude
+<br>&nbsp; 5) E = East, W = West
+<br>&nbsp; 6) Bearing, True
+<br>&nbsp; 7) T = True
+<br>&nbsp; 8) Bearing, Magnetic
+<br>&nbsp; 9) M = Magnetic
+<br>&nbsp;10) Nautical Miles
+<br>&nbsp;11) N = Nautical Miles
+<br>&nbsp;12) Waypoint ID
+<br>&nbsp;13) Checksum
+</p><p><a name="bwr"></a><b>BWR - Bearing and Distance to Waypoint - Rhumb
+Line, Latitude, N/S, Longitude, E/W, UTC, Status</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 6&nbsp;&nbsp; 7 8&nbsp;&nbsp; 9 10&nbsp; | 12&nbsp;&nbsp; 13</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--BWR,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) UTCTime
+<br>&nbsp; 2) Waypoint Latitude
+<br>&nbsp; 3) N = North, S = South
+<br>&nbsp; 4) Waypoint Longitude
+<br>&nbsp; 5) E = East, W = West
+<br>&nbsp; 6) Bearing, True
+<br>&nbsp; 7) T = True
+<br>&nbsp; 8) Bearing, Magnetic
+<br>&nbsp; 9) M = Magnetic
+<br>&nbsp;10) Nautical Miles
+<br>&nbsp;11) N = Nautical Miles
+<br>&nbsp;12) Waypoint ID
+<br>&nbsp;13) Checksum
+</p><p><a name="bww"></a><b>BWW - Bearing - Waypoint to Waypoint</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--BWW,x.x,T,x.x,M,c--c,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Bearing Degrees, TRUE
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Bearing Degrees, Magnetic
+<br>&nbsp; 4) M = Magnetic
+<br>&nbsp; 5) TO Waypoint
+<br>&nbsp; 6) FROM Waypoint
+<br>&nbsp; 7) Checksum
+</p><p><a name="dbk"></a><b>DBK - Depth Below Keel</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp; 6 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--DBK,x.x,f,x.x,M,x.x,F*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Depth, feet
+<br>&nbsp; 2) f = feet
+<br>&nbsp; 3) Depth, meters
+<br>&nbsp; 4) M = meters
+<br>&nbsp; 5) Depth, Fathoms
+<br>&nbsp; 6) F = Fathoms
+<br>&nbsp; 7) Checksum
+</p><p><a name="dbs"></a><b>DBS - Depth Below Surface</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp; 6 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--DBS,x.x,f,x.x,M,x.x,F*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Depth, feet
+<br>&nbsp; 2) f = feet
+<br>&nbsp; 3) Depth, meters
+<br>&nbsp; 4) M = meters
+<br>&nbsp; 5) Depth, Fathoms
+<br>&nbsp; 6) F = Fathoms
+<br>&nbsp; 7) Checksum
+</p><p><a name="dbt"></a><b>DBT - Depth below transducer</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp; 6 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--DBT,x.x,f,x.x,M,x.x,F*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Depth, feet
+<br>&nbsp; 2) f = feet
+<br>&nbsp; 3) Depth, meters
+<br>&nbsp; 4) M = meters
+<br>&nbsp; 5) Depth, Fathoms
+<br>&nbsp; 6) F = Fathoms
+<br>&nbsp; 7) Checksum
+</p><p><a name="dcn"></a><b>DCN - Decca Position (obsolete)</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11&nbsp; 13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2&nbsp; 3&nbsp;&nbsp;
+4 5&nbsp; 6&nbsp;&nbsp; 7 8&nbsp; 9&nbsp;&nbsp; 10| 12| 14&nbsp; 15| 17</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp; |&nbsp;&nbsp;
+| |&nbsp; |&nbsp;&nbsp; | |&nbsp; |&nbsp;&nbsp; | | | | |&nbsp;&nbsp; |
+| |</tt></b>
+<br><b><tt>&nbsp;$--DCN,xx,cc,x.x,A,cc,x.x,A,cc,x.x,A,A,A,A,x.x,N,x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Decca chain identifier
+<br>&nbsp; 2) Red Zone Identifier
+<br>&nbsp; 3) Red Line Of Position
+<br>&nbsp; 4) Red Master Line Status
+<br>&nbsp; 5) Green Zone Identifier
+<br>&nbsp; 6) Green Line Of Position
+<br>&nbsp; 7) Green Master Line Status
+<br>&nbsp; 8) Purple Zone Identifier
+<br>&nbsp; 9) Purple Line Of Position
+<br>&nbsp;10) Purple Master Line Status
+<br>&nbsp;11) Red Line Navigation Use
+<br>&nbsp;12) Green Line Navigation Use
+<br>&nbsp;13) Purple Line Navigation Use
+<br>&nbsp;14) Position Uncertainity
+<br>&nbsp;15) N = Nautical Miles
+<br>&nbsp;16) Fix Data Basis
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 1 = Normal Pattern
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 2 = Lane Identification Pattern
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 3 = Lane Identification Transmissions
+<br>&nbsp;17) Checksum
+</p><p><a name="dpt"></a><b>DPT - Heading - Deviation &amp; Variation</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|</tt></b>
+<br><b><tt>&nbsp;$--DPT,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Depth, meters
+<br>&nbsp; 2) Offset from transducer,
+<br>&nbsp;&nbsp;&nbsp;&nbsp; positive means distance from tansducer to
+water line
+<br>&nbsp;&nbsp;&nbsp;&nbsp; negative means distance from transducer to
+keel
+<br>&nbsp; 3) Checksum
+</p><p><a name="dtm"></a><b>DTM - Datum Reference</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 7 8&nbsp; 9</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |&nbsp; |</tt></b>
+<br><b><tt>$--DTM,xxx,x,xx.xxxx,x,xx.xxxx,x,,xxx*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>Field Number:&nbsp;
+<br>1) Local datum code
+<br>&nbsp;&nbsp;&nbsp; W84 - WGS84
+<br>&nbsp;&nbsp;&nbsp; W72 - WGS72
+<br>&nbsp;&nbsp;&nbsp; S85 - SGS85
+<br>&nbsp;&nbsp;&nbsp; P90 - PE90
+<br>&nbsp;&nbsp;&nbsp; 999 - User defined
+<br>&nbsp;&nbsp;&nbsp; IHO datum code
+<br>2) Local datum sub code
+<br>3) Latitude offset (minute)
+<br>4) Latitude offset mark (N: +, S: -)
+<br>5) Longitude offset (minute)
+<br>6) Longitude offset mark (E: +, W: -)
+<br>7) Altitude offset (m) Always null
+<br>8) Datum&nbsp;
+<br>&nbsp;&nbsp;&nbsp; W84 - WGS84
+<br>&nbsp;&nbsp;&nbsp; W72 - WGS72
+<br>&nbsp;&nbsp;&nbsp; S85 - SGS85
+<br>&nbsp;&nbsp;&nbsp; P90 - PE90
+<br>&nbsp;&nbsp;&nbsp; ...
+<br>9) Checksum
+</p><p><a name="fsi"></a><b>FSI - Frequency Set Information</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 4 5</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |</tt></b>
+<br><b><tt>&nbsp;$--FSI,xxxxxx,xxxxxx,c,x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Transmitting Frequency
+<br>&nbsp; 2) Receiving Frequency
+<br>&nbsp; 3) Communications Mode (NMEA Syntax 2)
+<br>&nbsp; 4) Power Level
+<br>&nbsp; 5) Checksum
+</p><p><a name="gbs"></a><b>GBS - GPS Satellite Fault Detection</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp; 3&nbsp;&nbsp; 4&nbsp;&nbsp; 5&nbsp;&nbsp; 6&nbsp;&nbsp; 7&nbsp;&nbsp;
+8&nbsp;&nbsp; 9</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |</tt></b>
+<br><b><tt>$--GBS,hhmmss.ss,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>Field Number:&nbsp;
+<br>1) UTC time of the GGA fix addociated with this sentence
+<br>2) Expected error in latitude
+<br>3) Expected error in longitude
+<br>4) Expected error in altitude
+<br>5) Most likely failed satellite
+<br>6) Probability of missed detection for most likely failed satellite
+<br>7) Estimate of bias on most likely failed satellite
+<br>8) Standard deviation on bias estimate
+<br>9) Checksum
+</p><p><a name="gga"></a><b>GGA - Global Positioning System Fix Data, Time,
+Position and fix related data fora GPS receiver.</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 6 7&nbsp; 8&nbsp;&nbsp; 9&nbsp; 10 |&nbsp; 12 13&nbsp; 14&nbsp;&nbsp;
+15</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| | |&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--GGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Universal Time Coordinated (UTC)
+<br>&nbsp; 2) Latitude
+<br>&nbsp; 3) N or S (North or South)
+<br>&nbsp; 4) Longitude
+<br>&nbsp; 5) E or W (East or West)
+<br>&nbsp; 6) GPS Quality Indicator,
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 0 - fix not available,
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 1 - GPS fix,
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 2 - Differential GPS fix
+<br>&nbsp; 7) Number of satellites in view, 00 - 12
+<br>&nbsp; 8) Horizontal Dilution of precision
+<br>&nbsp; 9) Antenna Altitude above/below mean-sea-level (geoid)&nbsp;
+<br>&nbsp;10) Units of antenna altitude, meters
+<br>&nbsp;11) Geoidal separation, the difference between the WGS-84 earth
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ellipsoid and mean-sea-level (geoid), "-"
+means mean-sea-level
+<br>&nbsp;&nbsp;&nbsp;&nbsp; below ellipsoid
+<br>&nbsp;12) Units of geoidal separation, meters
+<br>&nbsp;13) Age of differential GPS data, time in seconds since last
+SC104
+<br>&nbsp;&nbsp;&nbsp;&nbsp; type 1 or 9 update, null field when DGPS is
+not used
+<br>&nbsp;14) Differential reference station ID, 0000-1023
+<br>&nbsp;15) Checksum
+</p><p><a name="glc"></a><b>GLC - Geographic Position, Loran-C</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12&nbsp;&nbsp;&nbsp; 14</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp; 3 4&nbsp;&nbsp; 5 6&nbsp;&nbsp; 7 8&nbsp;&nbsp; 9 10&nbsp;
+11|&nbsp;&nbsp; 13|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--GLC,xxxx,x.x,a,x.x,a,x.x,a.x,x,a,x.x,a,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) GRI Microseconds/10
+<br>&nbsp; 2) Master TOA Microseconds
+<br>&nbsp; 3) Master TOA Signal Status
+<br>&nbsp; 4) Time Difference 1 Microseconds
+<br>&nbsp; 5) Time Difference 1 Signal Status
+<br>&nbsp; 6) Time Difference 2 Microseconds
+<br>&nbsp; 7) Time Difference 2 Signal Status
+<br>&nbsp; 8) Time Difference 3 Microseconds
+<br>&nbsp; 9) Time Difference 3 Signal Status
+<br>&nbsp;10) Time Difference 4 Microseconds
+<br>&nbsp;11) Time Difference 4 Signal Status
+<br>&nbsp;12) Time Difference 5 Microseconds
+<br>&nbsp;13) Time Difference 5 Signal Status
+<br>&nbsp;14) Checksum
+</p><p><a name="gll"></a><b>GLL - Geographic Position - Latitude/Longitude</b>
+</p><p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<tt>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>$--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Latitude
+<br>&nbsp; 2) N or S (North or South)
+<br>&nbsp; 3) Longitude
+<br>&nbsp; 4) E or W (East or West)
+<br>&nbsp; 5) Universal Time Coordinated (UTC)
+<br>&nbsp; 6) Status A - Data Valid, V - Data Invalid
+<br>&nbsp; 7) Checksum
+</p><p><a name="gns"></a><b>GNS - GNSS fixed data</b>
+</p><p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<tt>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;
+5&nbsp; 6&nbsp;&nbsp; 7&nbsp;&nbsp; 8&nbsp;&nbsp; 9&nbsp;&nbsp; 10&nbsp;
+11</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |</tt></b>
+<br><b><tt>$--GNS,hhmmss.ss,llll.lll,a,yyyyy.yyy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>Field Number:&nbsp;
+<br>1) UTC of position
+<br>2) Latitude, N/S
+<br>3) Longitude, E/W
+<br>4) Mode indicator
+<br>5) Total number of satllite in use,00-99
+<br>6) HDOP
+<br>7) Antenna altitude, metres, re:mean-sea-level(geoid)
+<br>8) Geoidal separation
+<br>9) Age of differential data
+<br>10) Differential reference station ID
+<br>11) Checksum
+</p><p><a name="grs"></a><b>GRS - GNSS Range Residual</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 3</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>$GPGRS,hhmmss,x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>Field Number:&nbsp;
+<br>1) UTC time of GGA or GNS fix associated with this sentence
+<br>2) Mode&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 0 = residuals were used to calculate the position
+given in the matching GGA or GNS.
+<br>&nbsp;&nbsp;&nbsp;&nbsp; 1 = residuals were computed after the GGA
+or GNS position was computed.
+<br>3) Range residuals in meters for sat. used in navigation solution.
+Order must match the order of the satellite ID numbers in GSA. When GRS
+is used GSA and GSV are generally required.
+</p><p><a name="gsa"></a><b>GSA - GPS DOP and active satellites</b>
+</p><p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<tt>1 2 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14 15&nbsp; 16&nbsp; 17&nbsp; 18</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--GSA,a,a,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x.x,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Selection mode
+<br>&nbsp; 2) Mode
+<br>&nbsp; 3) ID of 1st satellite used for fix
+<br>&nbsp; 4) ID of 2nd satellite used for fix
+<br>&nbsp; ...
+<br>&nbsp; 14) ID of 12th satellite used for fix
+<br>&nbsp; 15) PDOP in meters
+<br>&nbsp; 16) HDOP in meters
+<br>&nbsp; 17) VDOP in meters
+<br>&nbsp; 18) checksum
+</p><p><a name="gst"></a><b>GST - GNSS Pseudorange Error Statistics</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp; 3&nbsp;&nbsp; 4&nbsp;&nbsp; 5&nbsp;&nbsp; 6&nbsp;&nbsp; 7&nbsp;&nbsp;
+8</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|</tt></b>
+<br><b><tt>$--GST,hhmmss.ss,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>1) UTC time of the GGA or GNS fix associated with this sentence.
+<br>2) RMS value of the standard deviation of the range inputs to the navigation
+process. Range inputs include preudoranges &amp; DGNSS corrections.
+<br>3) Standard deviation of semi-major axis of error ellipse (meters)
+<br>4) Standard deviation of semi-minor axis of error ellipse (meters)
+<br>5) Orientation of semi-major axis of error ellipse (degrees from true
+north)
+<br>6) Standard deviation of latitude error (meters)
+<br>7) Standard deviation of longitude error (meters)
+<br>8) Standard deviation of altitude error (meters)
+<br>This message is used to support Receiver Autonomous Integrity Monitoring
+(RAIM). Pseudorange measurement error statistics can be translated in the
+position domain in order to give statistical measures of the quality of
+the position solution.
+<br>If only GPS, GLONASS, etc. is used for the reported position solution,
+the talker ID is GP, GL, etc., and the error data pertains to the individual
+system. If satellites from multiple systems are used to obtain the reported
+position solution, the talker ID is GN and the errors pertain to the combined
+solution.
+</p><p><a name="gsv"></a><b>GSV - Satellites in view</b>
+</p><p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<tt>1 2 3 4 5 6 7&nbsp;&nbsp;&nbsp;&nbsp; n</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | | | | | |&nbsp;&nbsp;&nbsp;&nbsp;
+|</tt></b>
+<br><b><tt>&nbsp;$--GSV,x,x,x,x,x,x,x,...*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) total number of messages
+<br>&nbsp; 2) message number
+<br>&nbsp; 3) satellites in view
+<br>&nbsp; 4) satellite number
+<br>&nbsp; 5) elevation in degrees
+<br>&nbsp; 6) azimuth in degrees to true
+<br>&nbsp; 7) SNR in dB
+<br>&nbsp; more satellite infos like 4)-7)
+<br>&nbsp; n) checksum
+</p><p><a name="gtd"></a><b>GTD - Geographic Location in Time Differences</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3&nbsp;&nbsp; 4&nbsp;&nbsp; 5&nbsp; 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--GTD,x.x,x.x,x.x,x.x,x.x*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) time difference
+<br>&nbsp; 2) time difference
+<br>&nbsp; 3) time difference
+<br>&nbsp; 4) time difference
+<br>&nbsp; 5) time difference
+<br>&nbsp; n) checksum
+</p><p><a name="gxa"></a><b>GXA - TRANSIT Position - Latitude/Longitude - Location
+and time of TRANSIT fix at waypoint (obsolete)</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 6&nbsp;&nbsp;&nbsp; 7 8</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--GXA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,X*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp;1) UTC of position fix
+<br>&nbsp;2) Latitude
+<br>&nbsp;3) East or West
+<br>&nbsp;4) Longitude
+<br>&nbsp;5) North or South
+<br>&nbsp;6) Waypoint ID
+<br>&nbsp;7) Satelite number
+<br>&nbsp;8) Checksum
+</p><p><a name="hdg"></a><b>HDG - Heading - Deviation &amp; Variation</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3 4&nbsp;&nbsp; 5 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--HDG,x.x,x.x,a,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Magnetic Sensor heading in degrees
+<br>&nbsp; 2) Magnetic Deviation, degrees
+<br>&nbsp; 3) Magnetic Deviation direction, E = Easterly, W = Westerly
+<br>&nbsp; 4) Magnetic Variation degrees
+<br>&nbsp; 5) Magnetic Variation direction, E = Easterly, W = Westerly
+<br>&nbsp; 6) Checksum
+</p><p><a name="hdm"></a><b>HDM - Heading - Magnetic</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--HDM,x.x,M*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Heading Degrees, magnetic
+<br>&nbsp; 2) M = magnetic
+<br>&nbsp; 3) Checksum
+</p><p><a name="hdt"></a><b>HDT - Heading - True</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--HDT,x.x,T*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:
+<br>&nbsp; 1) Heading Degrees, true
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Checksum
+</p><p><a name="hsc"></a><b>HSC - Heading Steering Command</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4&nbsp; 5</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+|&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--HSC,x.x,T,x.x,M,*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Heading Degrees, True
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Heading Degrees, Magnetic
+<br>&nbsp; 4) M = Magnetic
+<br>&nbsp; 5) Checksum
+</p><p><a name="lcd"></a><b>LCD - Loran-C Signal Data</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp; 3&nbsp;&nbsp; 4&nbsp;&nbsp; 5&nbsp;&nbsp; 6&nbsp;&nbsp; 7&nbsp;&nbsp;
+8&nbsp;&nbsp; 9&nbsp;&nbsp; 10&nbsp; 11&nbsp; 12&nbsp; 13&nbsp; 14</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|</tt></b>
+<br><b><tt>&nbsp;$--LCD,xxxx,xxx,xxx,xxx,xxx,xxx,xxx,xxx,xxx,xxx,xxx,xxx,xxx*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) GRI Microseconds/10
+<br>&nbsp; 2) Master Relative SNR
+<br>&nbsp; 3) Master Relative ECD
+<br>&nbsp; 4) Time Difference 1 Microseconds
+<br>&nbsp; 5) Time Difference 1 Signal Status
+<br>&nbsp; 6) Time Difference 2 Microseconds
+<br>&nbsp; 7) Time Difference 2 Signal Status
+<br>&nbsp; 8) Time Difference 3 Microseconds
+<br>&nbsp; 9) Time Difference 3 Signal Status
+<br>&nbsp;10) Time Difference 4 Microseconds
+<br>&nbsp;11) Time Difference 4 Signal Status
+<br>&nbsp;12) Time Difference 5 Microseconds
+<br>&nbsp;13) Time Difference 5 Signal Status
+<br>&nbsp;14) Checksum
+</p><p><a name="msk"></a><b>MSK - MSK Receiver Interface (for DGPS Beacon Receivers)</b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp; 3&nbsp;&nbsp; 4&nbsp; 5 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; |&nbsp;&nbsp; |&nbsp; | |</tt></b>
+<br><b><tt>$--MSK,xxx.x,xx,xxx,xx,N*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>Field Number:&nbsp;
+<br>1) Frequency in kHz (283.5 to 325.0)
+<br>2) Frequency Selection
+<br>&nbsp;&nbsp;&nbsp; M1 = Manual
+<br>&nbsp;&nbsp;&nbsp; A1 = Automatic (field 1 empty)
+<br>3) MSK bit rate (100 or 200)
+<br>4) Bit Rate Selection
+<br>&nbsp;&nbsp;&nbsp; M2 = Manual
+<br>&nbsp;&nbsp;&nbsp; A2 = Automatic (field 3 empty)
+<br>5) Period of output of performance status message, 0 to 100 seconds
+($CRMSS)
+<br>6) Checksum
+</p><p><a name="mtw"></a><b>MTW - Water Temperature</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;</tt></b>
+<br><b><tt>&nbsp;$--MTW,x.x,C*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Degrees
+<br>&nbsp; 2) Unit of Measurement, Celcius
+<br>&nbsp; 3) Checksum
+</p><p><a name="mwv"></a><b>MWV - Wind Speed and Angle</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>&nbsp;$--MWV,x.x,a,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Wind Angle, 0 to 360 degrees
+<br>&nbsp; 2) Reference, R = Relative, T = True
+<br>&nbsp; 3) Wind Speed
+<br>&nbsp; 4) Wind Speed Units, K/M/N
+<br>&nbsp; 5) Status, A = Data Valid
+<br>&nbsp; 6) Checksum
+</p><p><a name="oln"></a><b>OLN - Omega Lane Numbers (obsolete)</b>
+</p><p><b>&nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |--------+ |--------+
+|--------+ |</tt></b>
+<br><b><tt>&nbsp;$--OLN,aa,xxx,xxx,aa,xxx,xxx,aa,xxx,xxx*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Omega Pair 1
+<br>&nbsp; 2) Omega Pair 1
+<br>&nbsp; 3) Omega Pair 1
+<br>&nbsp; 4) Checksum
+</p><p><a name="osd"></a><b>OSD - Own Ship Data</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp; 6 7&nbsp;&nbsp; 8&nbsp;&nbsp; 9 10</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--OSD,x.x,A,x.x,a,x.x,a,x.x,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Heading, degrees true
+<br>&nbsp; 2) Status, A = Data Valid
+<br>&nbsp; 3) Vessel Course, degrees True
+<br>&nbsp; 4) Course Reference
+<br>&nbsp; 5) Vessel Speed
+<br>&nbsp; 6) Speed Reference
+<br>&nbsp; 7) Vessel Set, degrees True
+<br>&nbsp; 8) Vessel drift (speed)
+<br>&nbsp; 9) Speed Units
+<br>&nbsp;10) Checksum
+</p><p><a name="roo"></a><b>R00 - Waypoints in active route</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+n</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;</tt></b>
+<br><b><tt>&nbsp;$--R00,c---c,c---c,....*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) waypoint ID
+<br>&nbsp; ...
+<br>&nbsp; n) checksum
+</p><p><a name="rma"></a><b>RMA - Recommended Minimum Navigation Information</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 6&nbsp;&nbsp; 7&nbsp;&nbsp;
+8&nbsp;&nbsp; 9&nbsp;&nbsp; 10&nbsp; 11|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--RMA,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,x.x,x.x,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Blink Warning
+<br>&nbsp; 2) Latitude
+<br>&nbsp; 3) N or S
+<br>&nbsp; 4) Longitude
+<br>&nbsp; 5) E or W
+<br>&nbsp; 6) Time Difference A, uS
+<br>&nbsp; 7) Time Difference B, uS
+<br>&nbsp; 8) Speed Over Ground, Knots
+<br>&nbsp; 9) Track Made Good, degrees true
+<br>&nbsp;10) Magnetic Variation, degrees
+<br>&nbsp;11) E or W
+<br>&nbsp;12) Checksum
+</p><p><a name="rmb"></a><b>RMB - Recommended Minimum Navigation Information</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2&nbsp;&nbsp; 3
+4&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 10&nbsp; 11&nbsp; 12&nbsp;
+13|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp; |
+|&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--RMB,A,x.x,a,c--c,c--c,llll.ll,a,yyyyy.yy,a,x.x,x.x,x.x,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Status, V = Navigation receiver warning
+<br>&nbsp; 2) Cross Track error - nautical miles
+<br>&nbsp; 3) Direction to Steer, Left or Right
+<br>&nbsp; 4) TO Waypoint ID
+<br>&nbsp; 5) FROM Waypoint ID
+<br>&nbsp; 6) Destination Waypoint Latitude
+<br>&nbsp; 7) N or S
+<br>&nbsp; 8) Destination Waypoint Longitude
+<br>&nbsp; 9) E or W
+<br>&nbsp;10) Range to destination in nautical miles
+<br>&nbsp;11) Bearing to destination in degrees True
+<br>&nbsp;12) Destination closing velocity in knots
+<br>&nbsp;13) Arrival Status, A = Arrival Circle Entered
+<br>&nbsp;14) Checksum
+</p><p><a name="rmc"></a><b>RMC - Recommended Minimum Navigation Information</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 7&nbsp;&nbsp; 8&nbsp;&nbsp; 9&nbsp;&nbsp;&nbsp; 10&nbsp; 11|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--RMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,xxxx,x.x,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) UTC Time
+<br>&nbsp; 2) Status, V = Navigation receiver warning
+<br>&nbsp; 3) Latitude
+<br>&nbsp; 4) N or S
+<br>&nbsp; 5) Longitude
+<br>&nbsp; 6) E or W
+<br>&nbsp; 7) Speed over ground, knots
+<br>&nbsp; 8) Track made good, degrees true
+<br>&nbsp; 9) Date, ddmmyy
+<br>&nbsp;10) Magnetic Variation, degrees
+<br>&nbsp;11) E or W
+<br>&nbsp;12) Checksum
+</p><p><a name="rot"></a><b>ROT - Rate Of Turn</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--ROT,x.x,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Rate Of Turn, degrees per minute, "-" means bow turns to
+port
+<br>&nbsp; 2) Status, A means data is valid
+<br>&nbsp; 3) Checksum
+</p><p><a name="rpm"></a><b>RPM - Revolutions</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2 3&nbsp;&nbsp;
+4&nbsp;&nbsp; 5 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |&nbsp;&nbsp;
+|&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--RPM,a,x,x.x,x.x,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Sourse, S = Shaft, E = Engine
+<br>&nbsp; 2) Engine or shaft number
+<br>&nbsp; 3) Speed, Revolutions per minute
+<br>&nbsp; 4) Propeller pitch, % of maximum, "-" means astern
+<br>&nbsp; 5) Status, A means data is valid
+<br>&nbsp; 6) Checksum
+</p><p><a name="rsa"></a><b>RSA - Rudder Sensor Angle</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>&nbsp;$--RSA,x.x,A,x.x,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 1) Starboard (or single) rudder sensor, "-" means Turn To Port
+<br>&nbsp; 2) Status, A means data is valid
+<br>&nbsp; 3) Port rudder sensor
+<br>&nbsp; 4) Status, A means data is valid
+<br>&nbsp; 5) Checksum
+</p><p><a name="rsd"></a><b>RSD - RADAR System Data</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3&nbsp;&nbsp; 4&nbsp;&nbsp; 5&nbsp;&nbsp; 6&nbsp;&nbsp; 7&nbsp;&nbsp; 8&nbsp;&nbsp;
+9&nbsp;&nbsp; 10&nbsp; 11 12 13|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; | | |</tt></b>
+<br><b><tt>&nbsp;$--RSD,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,a,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p><b>&nbsp;</b>Field Number:&nbsp;
+<br>&nbsp; 9) Cursor Range From Own Ship
+<br>&nbsp;10) Cursor Bearing Degrees Clockwise From Zero
+<br>&nbsp;11) Range Scale
+<br>&nbsp;12) Range Units
+<br>&nbsp;14) Checksum
+</p><p><a name="rte"></a><b>RTE - Routes</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3 4&nbsp; 5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;
+n</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--RTE,x.x,x.x,a,c--c,c--c, ..... c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Total number of messages being transmitted
+<br>&nbsp; 2) Message Number
+<br>&nbsp; 3) Message mode
+<br>&nbsp;&nbsp;&nbsp;&nbsp; c = complete route, all waypoints
+<br>&nbsp;&nbsp;&nbsp;&nbsp; w = working route, the waypoint you just left,
+the waypoint you're heading to then all the rest
+<br>&nbsp; 4) Waypoint ID
+<br>&nbsp; x) More Waypoints
+<br>&nbsp; n) Checksum
+</p><p><a name="sfi"></a><b>SFI - Scanning Frequency Information</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;
+2&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+x</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|</tt></b>
+<br><b><tt>&nbsp;$--SFI,x.x,x.x,xxxxxx,c .......... xxxxxx,c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Total Number Of Messages
+<br>&nbsp; 2) Message Number
+<br>&nbsp; 3) Frequency 1
+<br>&nbsp; 4) Mode 1
+<br>&nbsp; x) Checksum
+</p><p><a name="stn"></a><b>STN - Multiple Data ID</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--STN,x.x,*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Talker ID Number
+<br>&nbsp; 2) Checksum
+</p><p><a name="tll"></a><b>TLL - Target latitude and longitude</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 7 8</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |</tt></b>
+<br><b><tt>&nbsp;$--TLL,xx,llll.lll,a,yyyyy.yyy,a,c--c,hhmmss.ss,a,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>1) Target number 00 - 99
+<br>2) Latitude, N/S
+<br>3) Longitude, E/W
+<br>4) Target name
+<br>5) UTC of data
+<br>6) Target status(see note)
+<br>&nbsp;&nbsp;&nbsp; L = lost,tracked target has beenlost
+<br>&nbsp;&nbsp;&nbsp; Q = query,target in the process of acquisition
+<br>&nbsp;&nbsp;&nbsp; T = tracking
+<br>7) Reference target=R,null otherwise
+<br>8) Checksum
+</p><p><a name="trf"></a><b>TRF - TRANSIT Fix Data (obsolete)</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 7&nbsp;&nbsp; 8&nbsp;&nbsp;
+9&nbsp;&nbsp; 10&nbsp; 11&nbsp; 12|</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--TRF,hhmmss.ss,xxxxxx,llll.ll,a,yyyyy.yy,a,x.x,x.x,x.x,x.x,xxx,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) UTC Time
+<br>&nbsp; 2) Date, ddmmyy
+<br>&nbsp; 3) Latitude
+<br>&nbsp; 4) N or S
+<br>&nbsp; 5) Longitude
+<br>&nbsp; 6) E or W
+<br>&nbsp; 7) Elevation Angle
+<br>&nbsp; 8) Number of iterations
+<br>&nbsp; 9) Number of Doppler intervals
+<br>&nbsp;10) Update distance, nautical miles
+<br>&nbsp;11) Satellite ID
+<br>&nbsp;12) Data Validity
+<br>&nbsp;13) Checksum
+</p><p><a name="ttm"></a><b>TTM - Tracked Target Message</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11&nbsp;&nbsp;&nbsp;&nbsp; 13</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2&nbsp;&nbsp;
+3&nbsp;&nbsp; 4 5&nbsp;&nbsp; 6&nbsp;&nbsp; 7 8&nbsp;&nbsp; 9&nbsp;&nbsp;
+10|&nbsp;&nbsp;&nbsp; 12| 14</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp;&nbsp;
+|&nbsp;&nbsp; | |&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp; |&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; | | |</tt></b>
+<br><b><tt>&nbsp;$--TTM,xx,x.x,x.x,a,x.x,x.x,a,x.x,x.x,a,c--c,a,a*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Target Number
+<br>&nbsp; 2) Target Distance
+<br>&nbsp; 3) Bearing from own ship
+<br>&nbsp; 4) Bearing Units
+<br>&nbsp; 5) Target speed
+<br>&nbsp; 6) Target Course
+<br>&nbsp; 7) Course Units
+<br>&nbsp; 8) Distance of closest-point-of-approach
+<br>&nbsp; 9) Time until closest-point-of-approach "-" means increasing
+<br>&nbsp;10) "-" means increasing
+<br>&nbsp;11) Target name
+<br>&nbsp;12) Target Status
+<br>&nbsp;13) Reference Target
+<br>&nbsp;14) Checksum
+</p><p><a name="vbw"></a><b>VBW - Dual Ground/Water Speed</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp;
+3 4&nbsp;&nbsp; 5&nbsp;&nbsp; 6 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; |&nbsp;&nbsp;
+| |&nbsp;&nbsp; |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--VBW,x.x,x.x,A,x.x,x.x,A*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Longitudinal water speed, "-" means astern
+<br>&nbsp; 2) Transverse water speed, "-" means port
+<br>&nbsp; 3) Status, A = Data Valid
+<br>&nbsp; 4) Longitudinal ground speed, "-" means astern
+<br>&nbsp; 5) Transverse ground speed, "-" means port
+<br>&nbsp; 6) Status, A = Data Valid
+<br>&nbsp; 7) Checksum
+</p><p><a name="vdm"></a><b>VDM - AIS VHF Datalink Message (AIS NMEA sentence
+that contains data about another ship)</b>
+<br><b>no more information yet.</b>
+</p><p><a name="vdo"></a><b>VDO - AIS VHF Datalink Own-vessel Message (AIS
+NMEA sentence that contains data about own ship)</b>
+<br><b>no more information yet.</b>
+<br>&nbsp;
+</p><p><a name="vdr"></a><b>VDR - Set and Drift</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp; 6 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--VDR,x.x,T,x.x,M,x.x,N*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Degress True
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Degrees Magnetic
+<br>&nbsp; 4) M = Magnetic
+<br>&nbsp; 5) Knots (speed of current)
+<br>&nbsp; 6) N = Knots
+<br>&nbsp; 7) Checksum
+</p><p><a name="vhw"></a><b>VHW - Water speed and heading</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp; 6 7&nbsp;&nbsp; 8 9</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp; | |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Degress True
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Degrees Magnetic
+<br>&nbsp; 4) M = Magnetic
+<br>&nbsp; 5) Knots (speed of vessel relative to the water)
+<br>&nbsp; 6) N = Knots
+<br>&nbsp; 7) Kilometers (speed of vessel relative to the water)
+<br>&nbsp; 8) K = Kilometers
+<br>&nbsp; 9) Checksum
+</p><p><a name="vlw"></a><b>VLW - Distance Traveled through Water</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>&nbsp;$--VLW,x.x,N,x.x,N*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Total cumulative distance
+<br>&nbsp; 2) N = Nautical Miles
+<br>&nbsp; 3) Distance since Reset
+<br>&nbsp; 4) N = Nautical Miles
+<br>&nbsp; 5) Checksum
+</p><p><a name="vpw"></a><b>VPW - Speed - Measured Parallel to Wind</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |</tt></b>
+<br><b><tt>&nbsp;$--VPW,x.x,N,x.x,M*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Speed, "-" means downwind
+<br>&nbsp; 2) N = Knots
+<br>&nbsp; 3) Speed, "-" means downwind
+<br>&nbsp; 4) M = Meters per second
+<br>&nbsp; 5) Checksum
+</p><p><a name="vtg"></a><b>VTG - Track made good and Ground speed</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp; 6 7&nbsp;&nbsp; 8 9</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp; | |&nbsp;&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--VTG,x.x,T,x.x,M,x.x,N,x.x,K*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Track Degrees
+<br>&nbsp; 2) T = True
+<br>&nbsp; 3) Track Degrees
+<br>&nbsp; 4) M = Magnetic
+<br>&nbsp; 5) Speed Knots
+<br>&nbsp; 6) N = Knots
+<br>&nbsp; 7) Speed Kilometers Per Hour
+<br>&nbsp; 8) K = Kilometers Per Hour
+<br>&nbsp; 9) Checksum
+</p><p><a name="vwr"></a><b>VWR - Relative Wind Speed and Angle</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2&nbsp;
+3&nbsp; 4&nbsp; 5&nbsp; 6&nbsp; 7&nbsp; 8 9</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp;
+|&nbsp; |&nbsp; |&nbsp; |&nbsp; |&nbsp; | |</tt></b>
+<br><b><tt>&nbsp;$--VWR,x.x,a,x.x,N,x.x,M,x.x,K*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Wind direction magnitude in degrees
+<br>&nbsp; 2) Wind direction Left/Right of bow
+<br>&nbsp; 3) Speed
+<br>&nbsp; 4) N = Knots
+<br>&nbsp; 5) Speed
+<br>&nbsp; 6) M = Meters Per Second
+<br>&nbsp; 7) Speed
+<br>&nbsp; 8) K = Kilometers Per Hour
+<br>&nbsp; 9) Checksum
+</p><p><a name="wcv"></a><b>WCV - Waypoint Closure Velocity</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;&nbsp;
+4</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp;
+|</tt></b>
+<br><b><tt>&nbsp;$--WCV,x.x,N,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Velocity
+<br>&nbsp; 2) N = knots
+<br>&nbsp; 3) Waypoint ID
+<br>&nbsp; 4) Checksum
+</p><p><a name="wnc"></a><b>WNC - Distance - Waypoint to Waypoint</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3&nbsp;&nbsp;
+4 5&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--WNC,x.x,N,x.x,K,c--c,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Distance, Nautical Miles
+<br>&nbsp; 2) N = Nautical Miles
+<br>&nbsp; 3) Distance, Kilometers
+<br>&nbsp; 4) K = Kilometers
+<br>&nbsp; 5) TO Waypoint
+<br>&nbsp; 6) FROM Waypoint
+<br>&nbsp; 7) Checksum
+</p><p><a name="wpl"></a><b>WPL - Waypoint Location</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 5&nbsp;&nbsp;&nbsp; 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Latitude
+<br>&nbsp; 2) N or S (North or South)
+<br>&nbsp; 3) Longitude
+<br>&nbsp; 4) E or W (East or West)
+<br>&nbsp; 5) Waypoint name
+<br>&nbsp; 6) Checksum&nbsp;
+</p><p><a name="xdr"></a><b>XDR - Cross Track Error - Dead Reckoning</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2&nbsp;&nbsp; 3
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | |&nbsp;&nbsp; |
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--XDR,a,x.x,a,c--c, ..... *hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Transducer Type
+<br>&nbsp; 2) Measurement Data
+<br>&nbsp; 3) Units of measurement
+<br>&nbsp; 4) Name of transducer
+<br>&nbsp; x) More of the same
+<br>&nbsp; n) Checksum
+</p><p><a name="xte"></a><b>XTE - Cross-Track Error, Measured</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 2 3&nbsp;&nbsp;
+4 5&nbsp; 6</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | | |&nbsp;&nbsp;
+| |&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--XTE,A,A,x.x,a,N,*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = LORAN-C Blink or SNR warning
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = general warning flag or other navigation
+systems when a reliable
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fix is not available
+<br>&nbsp; 2) Status
+<br>&nbsp;&nbsp;&nbsp;&nbsp; V = Loran-C Cycle Lock warning flag
+<br>&nbsp;&nbsp;&nbsp;&nbsp; A = OK or not used
+<br>&nbsp; 3) Cross Track Error Magnitude
+<br>&nbsp; 4) Direction to steer, L or R
+<br>&nbsp; 5) Cross Track Units, N = Nautical Miles
+<br>&nbsp; 6) Checksum
+</p><p><a name="xtr"></a><b>XTR - Cross Track Error - Dead Reckoning</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 3
+4</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; | |
+|</tt></b>
+<br><b><tt>&nbsp;$--XTR,x.x,a,N*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Magnitude of cross track error
+<br>&nbsp; 2) Direction to steer, L or R
+<br>&nbsp; 3) Units, N = Nautical Miles
+<br>&nbsp; 4) Checksum
+</p><p><a name="zda"></a><b>ZDA - Time &amp; Date - UTC, day, month, year and
+local time zone</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp; 3&nbsp; 4&nbsp;&nbsp;&nbsp; 5&nbsp; 6&nbsp; 7</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; |&nbsp; |&nbsp;&nbsp;&nbsp; |&nbsp; |&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Local zone minutes description, same sign as local hours
+<br>&nbsp; 2) Local zone description, 00 to +- 13 hours
+<br>&nbsp; 3) Year
+<br>&nbsp; 4) Month, 01 to 12
+<br>&nbsp; 5) Day, 01 to 31
+<br>&nbsp; 6) Universal Time Coordinated (UTC)
+<br>&nbsp; 7) Checksum
+</p><p><a name="zfo"></a><b>ZFO - UTC &amp; Time from origin Waypoint</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 4</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--ZFO,hhmmss.ss,hhmmss.ss,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Universal Time Coordinated (UTC)
+<br>&nbsp; 2) Elapsed Time
+<br>&nbsp; 3) Origin Waypoint ID
+<br>&nbsp; 4) Checksum
+</p><p><a name="ztg"></a><b>ZTG - UTC &amp; Time to Destination Waypoint</b>
+</p><p><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 4</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; |</tt></b>
+<br><b><tt>&nbsp;$--ZTG,hhmmss.ss,hhmmss.ss,c--c*hh&lt;CR&gt;&lt;LF&gt;</tt></b>
+</p><p>&nbsp;Field Number:&nbsp;
+<br>&nbsp; 1) Universal Time Coordinated (UTC)
+<br>&nbsp; 2) Time Remaining
+<br>&nbsp; 3) Destination Waypoint ID
+<br>&nbsp; 4) Checksum
+</p><p><b>****************************************************************</b>
+</p><p><b>New found : (data fields unknown)</b>
+</p><p><b>ABM - Addressed Binary Message</b>
+<br><b>ASM - Addressed Safety Message</b>
+<br><b>BBM - Broadcast Binary Message</b>
+<br><b>BSM - Broadcast Safety Message</b>
+<br><b>DSC - Digital Selective Calling Information</b>
+<br><b>DSE - Extended DSC</b>
+<br><b>DSI - DSC Transponder Initiate</b>
+<br><b>DSR - DSC Transponder Response</b>
+<br><b>MSK - MSK Receiver Interface</b>
+<br><b>MSS - MSK Receiver Signal Status&nbsp;</b>
+<br><b>MWD - Wind Direction &amp; Speed</b>
+<br><b>SNU - Loran - C SNR Status</b>
+<br><b>SSD - Station static data</b>
+<br><b>VDM - AIS VHF Datalink Message other vessel receiving</b>
+<br><b>VDO - AIS VHF Datalink Message own vessel sending</b>
+<br><b>VSD - voyage static data</b>
+<br><b>WDC - Distance to Waypoint - Great Circle</b>
+<br><b>WDR - Distance to Waypoint - Rhumb Line</b>
+<br><b>ZDL - Time and Distance to Variable Point</b>
+<br><b></b>&nbsp;
+<br>&nbsp;
+<table bgcolor="#000099" cols="1" width="100%">
+<tbody><tr>
+<td>
+<center><b><font color="#ff9900"><font size="+2">NMEA 0183 Datensätze</font></font></b></center>
+</td>
+</tr>
+</tbody></table>
+</p></td>
+</tr>
+</tbody></table>
+
+</body></html>

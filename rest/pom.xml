@@ -1,0 +1,26 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>slash.navigation</groupId>
+  <artifactId>rest</artifactId>
+  <packaging>jar</packaging>
+  <name>REST webservice client</name>
+  <parent>
+    <groupId>slash.navigation</groupId>
+    <artifactId>RouteConverter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <dependencies>
+    <dependency>
+      <groupId>Acommons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>Acommons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

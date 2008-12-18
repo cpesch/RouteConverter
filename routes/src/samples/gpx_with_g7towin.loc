@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<loc version="1.0" src="G7ToWin">
+<waypoint>
+  <name id="bei D 22885 Barsbüttel/Stemwarde"><![CDATA[]]></name>
+  <coord lat="53.571970" lon="10.244100"/>
+  <type>Waypoint</type>
+</waypoint>
+<waypoint>
+  <name id="bei D 22946 Großensee/Schwarzekate"><![CDATA[]]></name>
+  <coord lat="53.613610" lon="10.328650"/>
+  <type>Waypoint</type>
+</waypoint>
+<waypoint>
+  <name id="bei D 22952 Lütjensee/Bollmoor"><![CDATA[]]></name>
+  <coord lat="-53.634850" lon="-10.382290"/>
+  <type>Waypoint</type>
+</waypoint>
+<waypoint>
+  <name id="bei D 22956 Grönwohld"><![CDATA[Geocache]]></name>
+  <coord lat="53.641740" lon="10.408310"/>
+  <type>Waypoint</type>
+</waypoint>
+<waypoint>
+  <name id="bei D 22959 Linau"><![CDATA[Geocache]]></name>
+  <coord lat="53.643520" lon="10.463480"/>
+  <type>Waypoint</type>
+</waypoint>
+</loc>

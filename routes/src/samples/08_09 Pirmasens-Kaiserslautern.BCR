@@ -1,0 +1,43 @@
+[CLIENT]
+REQUEST=TRUE
+DESCRIPTIONLINES=0
+STATION1=TOWN,21392099349124135,1
+STATION2=TOWN,281476096742472,1
+RouteName=Pirmasens -> Kaiserslautern
+Licence=
+EXP_DISTANCE=40
+[COORDINATES]
+STATION1=845503,6302392
+STATION2=862918,6343103
+[DESCRIPTION]
+STATION1=D 66953,Pirmasens,@,0,
+STATION2=D 67655,Kaiserslautern,@,0,
+[ROUTE]
+PROFILE=Motorrad Anfahrt
+OPTIMIZATION=0
+ROUTERECT=845503,6343103,862918,6302392
+Traffic=False
+AltRoute=False
+PreferNice=False
+PreferMaut=False
+HeightUsed=False
+PrePostCorridorObject=False
+Ferry=False
+Urban=False
+BlockingRoads=False
+RouteCost= 1.50000005960464E-0001
+TimeCost= 0.00000000000000E+0000
+FixCost= 0.00000000000000E+0000
+FuelCost= 1.60000002384186E+0000
+MultiDayTrip.Active=False
+MultiDayTrip.LimitedTo=0
+MultiDayTrip.TimeStart= 3.75000000000000E-0001
+MultiDayTrip.TimeEnd= 7.50000000000000E-0001
+MultiDayTrip.Distance= 3.00000000000000E+0002
+MultiDayTrip.FixedTime=0
+MultiDayTrip.DistTime= 3.75000000000000E-0001
+MultiDayTrip.TimeException=False
+MultiDayTrip.TimeFirstDayTripBegin= 5.00000000000000E-0001
+Pause.Stop=True
+Pause.Drivingtime=90
+Pause.Pausetime=30

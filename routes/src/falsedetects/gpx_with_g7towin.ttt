@@ -1,0 +1,4 @@
+Datum:,WGS-84
+M DDD
+TrackPointName,Latitude,Longitude,Day,Month,Year,Time,Hour,Minute,Second,GarminSeconds,Sequential_Distance_(Statute_mi),Sum_Sequential_Distance_(Statute_mi),Monitor_Observer
+T0000_00001,0.0000000,0.0000000,29,3,2008,07:43:03,7,43,3,575710983,0.000000,0.000000,MISSING

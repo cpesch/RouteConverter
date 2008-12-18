@@ -1,0 +1,111 @@
+[8]
+City = Berlin/Charlottenburg
+Longitude = 1479207
+ZipCode = 10585
+CountryCode = 49
+Latitude = 6886524
+PositionInList = 8
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Gierkeplatz
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[4]
+City = Berlin/Friedrichshain
+Longitude = 1495090
+ZipCode = 10243
+CountryCode = 49
+Latitude = 6883652
+PositionInList = 4
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Oberbaumbrücke
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[0]
+City = Berlin/Mitte
+Longitude = 1488572
+ZipCode = 10117
+CountryCode = 49
+Latitude = 6888282
+PositionInList = 0
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Oranienburger Tor (Friedrichstrasse)
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[1]
+City = Berlin/Mitte
+Longitude = 1490240
+ZipCode = 10178
+CountryCode = 49
+Latitude = 6887648
+PositionInList = 1
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Hackescher Markt
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[2]
+City = Berlin/Prenzlauer Berg
+Longitude = 1491992
+ZipCode = 10435
+CountryCode = 49
+Latitude = 6890032
+PositionInList = 2
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Kollwitzplatz
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[3]
+City = Berlin/Friedrichshain
+Longitude = 1497875
+ZipCode = 10245
+CountryCode = 49
+Latitude = 6884390
+PositionInList = 3
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Boxhagener Strasse
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[TOUR]
+Name = Berlin Kieztour 2007
+[5]
+City = Berlin/Kreuzberg
+Longitude = 1491870
+ZipCode = 10999
+CountryCode = 49
+Latitude = 6883826
+PositionInList = 5
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Oranienplatz
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+HouseNo = 
+[6]
+City = Berlin/Schöneberg
+Longitude = 1484747
+ZipCode = 10829
+CountryCode = 49
+Latitude = 6879650
+PositionInList = 6
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Dominicusstrasse
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0
+[7]
+City = Berlin/Schöneberg
+Longitude = 1484418
+ZipCode = 10781
+CountryCode = 49
+Latitude = 6882598
+PositionInList = 7
+Class = FMI.FalkNavigator.PersistentAddress
+Street = Eisenacher Strasse
+Assembly = FalkNavigator
+Visited = 0
+SelectInZip = 0

@@ -1,0 +1,1459 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Folder>
+	<Style id="WptIcon">
+		<IconStyle>
+			<scale>0.75</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/yellow-pushpin.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="TrkptIcon">
+		<IconStyle>
+			<scale>0.5</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<name>tm20070729_081545.kml : 29/07/2007 10:15:45</name>
+	<Folder>
+		<name>Routes</name>
+		<Placemark>
+			<name>29/07/2007 10:15:45</name>
+			<Style>
+				<LineStyle>
+					<color>800000ff</color>
+					<width>2</width>
+				</LineStyle>
+			</Style>
+			<MultiGeometry>
+			<LineString>
+				<coordinates>
+				8.24306,47.12730,589.7
+				8.24309,47.12724,592.3
+				8.24600,47.11854,586.4
+				8.25430,47.11176,555.4
+				8.26066,47.10392,529.5
+				8.26362,47.10138,514.8
+				8.26352,47.10120,513.4
+				8.26145,47.09716,509.7
+				8.26137,47.09632,510.2
+				8.26108,47.09631,510.4
+				8.26108,47.09631,510.4
+				8.25196,47.09076,522.1
+				8.25137,47.09027,521.4
+				8.24936,47.08520,526
+				8.24647,47.08326,526.3
+				8.24566,47.08292,526.5
+				8.23343,47.07958,535.8
+				8.22102,47.07656,552.7
+				8.20809,47.07503,567.3
+				8.20163,47.07236,593
+				8.20021,47.06920,598.3
+				8.20041,47.06913,596.8
+				8.20083,47.06912,594.9
+				8.20198,47.06095,618
+				8.20130,47.05387,598.7
+				8.20088,47.05373,598.9
+				8.19665,47.05003,576.7
+				8.19666,47.04997,573.1
+				8.19714,47.04981,568.6
+				8.20160,47.05057,540.6
+				8.20175,47.05048,538.8
+				8.20173,47.05019,535.7
+				8.20173,47.05019,535.7
+				8.19939,47.04914,517.6
+				8.19950,47.04907,517.5
+				8.19977,47.04906,516.5
+				8.20144,47.04932,509.1
+				8.20145,47.04931,508.3
+				8.20143,47.04917,507.6
+				8.19598,47.04773,489.8
+				8.19393,47.04735,485.8
+				8.18400,47.04250,491.2
+				8.18314,47.04038,491
+				8.18300,47.04038,491
+				8.17573,47.04003,494.3
+				8.17580,47.03834,495
+				8.17605,47.03643,498.6
+				8.17605,47.03640,498.8
+				8.17294,47.03621,500.5
+				8.16556,47.03579,503.5
+				8.15206,47.03600,513.2
+				8.14678,47.03602,516.2
+				8.14483,47.03596,516.9
+				8.14474,47.03588,516.9
+				8.14436,47.03546,516.4
+				8.14493,47.03348,539.9
+				8.14493,47.03346,540.9
+				8.14472,47.03346,541.8
+				8.14480,47.03338,542.3
+				8.14331,47.03399,550.6
+				8.14308,47.03394,553.2
+				8.14305,47.03388,554
+				8.14310,47.03382,554.9
+				8.14401,47.03322,566.7
+				8.13648,47.02915,627.2
+				8.13622,47.02868,631.9
+				8.13318,47.02620,643.5
+				8.13130,47.02360,666.8
+				8.13120,47.02361,667.6
+				8.13096,47.02391,669.4
+				8.13027,47.02547,680.7
+				8.13013,47.02548,681.3
+				8.12973,47.02524,684.6
+				8.12960,47.02508,685.9
+				8.12375,47.02163,739.6
+				8.11975,47.02010,773.3
+				8.11790,47.02044,788.7
+				8.11774,47.02051,789.9
+				8.11760,47.02050,790.9
+				8.11267,47.01893,824.2
+				8.10811,47.01691,859.5
+				8.09688,47.01227,928.8
+				8.09364,47.00868,939.3
+				8.09107,47.00416,957.4
+				8.09387,46.99554,971.2
+				8.08792,46.98787,1017.7
+				8.08815,46.98605,1026
+				8.08868,46.98456,1021.8
+				8.08104,46.98402,967.2
+				8.07914,46.98288,951
+				8.07919,46.98281,950.8
+				8.08065,46.98192,948.7
+				8.08497,46.97759,949
+				8.08497,46.97759,949
+				8.08487,46.97746,948.5
+				8.08459,46.97707,949.7
+				8.09546,46.97404,1011
+				8.09580,46.97401,1012.6
+				8.10436,46.97280,1059
+				8.10440,46.97193,1059.2
+				8.10390,46.97100,1065.5
+				8.10469,46.96981,1063.6
+				8.10954,46.96596,1020.3
+				8.11362,46.96537,1013.3
+				8.12423,46.96027,1002.5
+				8.12697,46.95837,1003.3
+				8.12713,46.95606,1014.6
+				8.12803,46.95237,1001.1
+				8.12808,46.95222,1001.1
+				8.13061,46.94865,1022.9
+				8.13007,46.94837,1024.2
+				8.13014,46.94823,1024.4
+				8.13035,46.94808,1024.4
+				8.13261,46.94448,1038.4
+				8.13509,46.94286,1054
+				8.13381,46.94012,1074.4
+				8.13386,46.94004,1075.1
+				8.13411,46.93993,1077.2
+				8.13506,46.94011,1079.9
+				8.13510,46.94000,1076.7
+				8.13505,46.93992,1075.5
+				8.13496,46.93982,1075.2
+				8.13327,46.93823,1098.1
+				8.13109,46.93554,1119.7
+				8.12535,46.93140,1133.1
+				8.12327,46.93051,1146.7
+				8.12324,46.93037,1147.6
+				8.12321,46.92989,1153.1
+				8.12209,46.92919,1165.1
+				8.12180,46.92894,1168.3
+				8.12148,46.92871,1173.2
+				8.12148,46.92866,1173.9
+				8.12156,46.92859,1174.8
+				8.12166,46.92857,1175.5
+				8.12275,46.92890,1183
+				8.12286,46.92890,1183.9
+				8.12297,46.92886,1184.9
+				8.12302,46.92876,1186.1
+				8.12298,46.92867,1187
+				8.12266,46.92847,1190.6
+				8.12232,46.92800,1197.3
+				8.12239,46.92742,1204.8
+				8.12269,46.92690,1212.1
+				8.12234,46.92545,1231.5
+				8.12155,46.92336,1260.5
+				8.11889,46.91719,1290.1
+				8.11181,46.90984,1369.6
+				8.11031,46.90397,1383.8
+				8.11004,46.90165,1399.2
+				8.11015,46.90164,1400.6
+				8.11053,46.90193,1402.4
+				8.11292,46.90305,1422
+				8.11311,46.90303,1423
+				8.11311,46.90290,1423.7
+				8.11307,46.90282,1424.3
+				8.11102,46.89646,1500.8
+				8.10773,46.89193,1546
+				8.11166,46.88960,1506
+				8.12329,46.89178,1449
+				8.12641,46.89292,1442.5
+				8.12644,46.89291,1442
+				8.12644,46.89291,1442
+				8.12644,46.89291,1442
+				8.12644,46.89291,1442
+				8.12644,46.89291,1442
+				</coordinates>
+			</LineString>
+			</MultiGeometry>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>Waypoints</name>
+		<Placemark>
+			<name>Bertiswil (Rothenburg CH)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:26:50 - 3.9 km - 46 km/h - 509.7 m - 9</description>
+			<Point><coordinates>8.26145,47.09716,509.7</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Gerliswil (Emmen CH)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:29:11 - 6.0 km - 0 km/h - 526.3 m - 9</description>
+			<Point><coordinates>8.24647,47.08326,526.3</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Malters</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:35:37 - 12.1 km - 59 km/h - 598.7 m - 9</description>
+			<Point><coordinates>8.20130,47.05387,598.7</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Ettisbühl (Malters)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:41:09 - 16.6 km - 62 km/h - 500.5 m - 8</description>
+			<Point><coordinates>8.17294,47.03621,500.5</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Schachen CH (Werthenstein)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:44:20 - 19.3 km - 44 km/h - 566.7 m - 8</description>
+			<Point><coordinates>8.14401,47.03322,566.7</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Schachen CH (Werthenstein)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:45:46 - 20.6 km - 59 km/h - 643.5 m - 8</description>
+			<Point><coordinates>8.13318,47.02620,643.5</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Rengg (Entlebuch)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:50:27 - 24.7 km - 58 km/h - 939.3 m - 8</description>
+			<Point><coordinates>8.09364,47.00868,939.3</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Entlebuch</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:55:03 - 28.6 km - 46 km/h - 948.7 m - 8</description>
+			<Point><coordinates>8.08065,46.98192,948.7</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Finsterwald CH (Entlebuch)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>10:56:56 - 30.3 km - 62 km/h - 1011.0 m - 8</description>
+			<Point><coordinates>8.09546,46.97404,1011</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Finsterwald CH (Entlebuch)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:01:00 - 34.3 km - 57 km/h - 1001.1 m - 6</description>
+			<Point><coordinates>8.12803,46.95237,1001.1</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Glaubenberg-Langis (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:06:11 - 38.6 km - 44 km/h - 1260.5 m - 7</description>
+			<Point><coordinates>8.12155,46.92336,1260.5</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Glaubenberg-Langis (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:11:20 - 43.0 km - 24 km/h - 1546.0 m - 8</description>
+			<Point><coordinates>8.10773,46.89193,1546</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Glaubenberg-Langis (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:13:41 - 44.7 km - 0 km/h - 1442.0 m - 9</description>
+			<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Glaubenberg-Langis (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:13:42 - 44.7 km - 0 km/h - 1442.0 m - 9</description>
+			<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+		</Placemark>
+		<Placemark>
+			<name>Ende : 29/07/2007 11:22:06 : Glaubenberg-Langis (Sarnen)</name>
+			<styleUrl>#WptIcon</styleUrl>
+			<description>11:22:06 - 44.7 km - 0 km/h - 1442.0 m - 10</description>
+			<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>Trackpoints</name>
+		<Folder>
+			<name>2007-07-29T08:15:45Z</name>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:22:50Z</timePosition></TimeInstant>
+				<description>Kurs 337 : Rain CH : 10:22:50 - 0.0 km - 0 km/h - 589.7 m - 9</description>
+				<Point><coordinates>8.24306,47.12730,589.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:22:57Z</timePosition></TimeInstant>
+				<description>Kurs 160 : Rain CH : 10:22:57 - 0.0 km - 22 km/h - 592.3 m - 9</description>
+				<Point><coordinates>8.24309,47.12724,592.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:24:00Z</timePosition></TimeInstant>
+				<description>Distanz 1 : Bertiswil (Rothenburg CH) : 10:24:00 - 1.0 km - 69 km/h - 586.4 m - 9</description>
+				<Point><coordinates>8.24600,47.11854,586.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:24:48Z</timePosition></TimeInstant>
+				<description>Distanz 2 : Bertiswil (Rothenburg CH) : 10:24:48 - 2.0 km - 80 km/h - 555.4 m - 9</description>
+				<Point><coordinates>8.25430,47.11176,555.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:25:45Z</timePosition></TimeInstant>
+				<description>Distanz 3 : Bertiswil (Rothenburg CH) : 10:25:45 - 3.0 km - 60 km/h - 529.5 m - 9</description>
+				<Point><coordinates>8.26066,47.10392,529.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:26:13Z</timePosition></TimeInstant>
+				<description>Kurs 171 : Bertiswil (Rothenburg CH) : 10:26:13 - 3.4 km - 33 km/h - 514.8 m - 9</description>
+				<Point><coordinates>8.26362,47.10138,514.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:26:15Z</timePosition></TimeInstant>
+				<description>Kurs 217 : Bertiswil (Rothenburg CH) : 10:26:15 - 3.4 km - 41 km/h - 513.4 m - 8</description>
+				<Point><coordinates>8.26352,47.10120,513.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:26:50Z</timePosition></TimeInstant>
+				<description>Bertiswil (Rothenburg CH) : 10:26:50 - 3.9 km - 46 km/h - 509.7 m - 9</description>
+				<Point><coordinates>8.26145,47.09716,509.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:26:58Z</timePosition></TimeInstant>
+				<description>Kurs 229 : Bertiswil (Rothenburg CH) : 10:26:58 - 4.0 km - 35 km/h - 510.2 m - 8</description>
+				<Point><coordinates>8.26137,47.09632,510.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:26:59Z</timePosition></TimeInstant>
+				<description>Distanz 4 : Bertiswil (Rothenburg CH) : 10:26:59 - 4.1 km - 37 km/h - 510.4 m - 8</description>
+				<Point><coordinates>8.26108,47.09631,510.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:26:59Z</timePosition></TimeInstant>
+				<description>Kurs 249 : Bertiswil (Rothenburg CH) : 10:26:59 - 4.1 km - 37 km/h - 510.4 m - 8</description>
+				<Point><coordinates>8.26108,47.09631,510.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:27:57Z</timePosition></TimeInstant>
+				<description>Dauer 0:05:08 : Bertiswil (Rothenburg CH) : 10:27:57 - 5.0 km - 53 km/h - 522.1 m - 9</description>
+				<Point><coordinates>8.25196,47.09076,522.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:28:02Z</timePosition></TimeInstant>
+				<description>Distanz 5 : Bertiswil (Rothenburg CH) : 10:28:02 - 5.1 km - 56 km/h - 521.4 m - 8</description>
+				<Point><coordinates>8.25137,47.09027,521.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:28:39Z</timePosition></TimeInstant>
+				<description>Kurs 213 : Gerliswil (Emmen CH) : 10:28:39 - 5.7 km - 56 km/h - 526.0 m - 9</description>
+				<Point><coordinates>8.24936,47.08520,526</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:29:11Z</timePosition></TimeInstant>
+				<description>Gerliswil (Emmen CH) : 10:29:11 - 6.0 km - 0 km/h - 526.3 m - 9</description>
+				<Point><coordinates>8.24647,47.08326,526.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:29:38Z</timePosition></TimeInstant>
+				<description>Distanz 6 : Emmenweid (Emmen CH) : 10:29:38 - 6.1 km - 49 km/h - 526.5 m - 9</description>
+				<Point><coordinates>8.24566,47.08292,526.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:30:36Z</timePosition></TimeInstant>
+				<description>Distanz 7 : Emmenweid (Emmen CH) : 10:30:36 - 7.1 km - 79 km/h - 535.8 m - 9</description>
+				<Point><coordinates>8.23343,47.07958,535.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:31:31Z</timePosition></TimeInstant>
+				<description>Distanz 8 : Hellbühl CH (Neuenkirch) : 10:31:31 - 8.1 km - 68 km/h - 552.7 m - 9</description>
+				<Point><coordinates>8.22102,47.07656,552.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:32:24Z</timePosition></TimeInstant>
+				<description>Distanz 9 : Hellbühl CH (Neuenkirch) : 10:32:24 - 9.1 km - 58 km/h - 567.3 m - 8</description>
+				<Point><coordinates>8.20809,47.07503,567.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:32:58Z</timePosition></TimeInstant>
+				<description>Dauer 0:10:09 : Hellbühl CH (Neuenkirch) : 10:32:58 - 9.7 km - 65 km/h - 593.0 m - 8</description>
+				<Point><coordinates>8.20163,47.07236,593</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:33:31Z</timePosition></TimeInstant>
+				<description>Kurs 151 : Hellbühl CH (Neuenkirch) : 10:33:31 - 10.0 km - 25 km/h - 598.3 m - 9</description>
+				<Point><coordinates>8.20021,47.06920,598.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:33:33Z</timePosition></TimeInstant>
+				<description>Kurs 102 : Hellbühl CH (Neuenkirch) : 10:33:33 - 10.1 km - 36 km/h - 596.8 m - 9</description>
+				<Point><coordinates>8.20041,47.06913,596.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:33:36Z</timePosition></TimeInstant>
+				<description>Distanz 10 : Hellbühl CH (Neuenkirch) : 10:33:36 - 10.1 km - 44 km/h - 594.9 m - 8</description>
+				<Point><coordinates>8.20083,47.06912,594.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:34:41Z</timePosition></TimeInstant>
+				<description>Distanz 11 : Hellbühl CH (Neuenkirch) : 10:34:41 - 11.1 km - 56 km/h - 618.0 m - 9</description>
+				<Point><coordinates>8.20198,47.06095,618</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:35:37Z</timePosition></TimeInstant>
+				<description>Malters : 10:35:37 - 12.1 km - 59 km/h - 598.7 m - 9</description>
+				<Point><coordinates>8.20130,47.05387,598.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:35:39Z</timePosition></TimeInstant>
+				<description>Distanz 12 : Malters : 10:35:39 - 12.1 km - 60 km/h - 598.9 m - 9</description>
+				<Point><coordinates>8.20088,47.05373,598.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:19Z</timePosition></TimeInstant>
+				<description>Kurs 182 : Malters : 10:36:19 - 12.7 km - 33 km/h - 576.7 m - 8</description>
+				<Point><coordinates>8.19665,47.05003,576.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:20Z</timePosition></TimeInstant>
+				<description>Kurs 162 : Malters : 10:36:20 - 12.7 km - 34 km/h - 573.1 m - 8</description>
+				<Point><coordinates>8.19666,47.04997,573.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:24Z</timePosition></TimeInstant>
+				<description>Kurs 88 : Malters : 10:36:24 - 12.7 km - 48 km/h - 568.6 m - 8</description>
+				<Point><coordinates>8.19714,47.04981,568.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:49Z</timePosition></TimeInstant>
+				<description>Kurs 102 : Malters : 10:36:49 - 13.1 km - 26 km/h - 540.6 m - 8</description>
+				<Point><coordinates>8.20160,47.05057,540.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:51Z</timePosition></TimeInstant>
+				<description>Kurs 145 : Malters : 10:36:51 - 13.1 km - 28 km/h - 538.8 m - 8</description>
+				<Point><coordinates>8.20175,47.05048,538.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:54Z</timePosition></TimeInstant>
+				<description>Distanz 13 : Malters : 10:36:54 - 13.1 km - 41 km/h - 535.7 m - 8</description>
+				<Point><coordinates>8.20173,47.05019,535.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:36:54Z</timePosition></TimeInstant>
+				<description>Kurs 197 : Malters : 10:36:54 - 13.1 km - 41 km/h - 535.7 m - 8</description>
+				<Point><coordinates>8.20173,47.05019,535.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:11Z</timePosition></TimeInstant>
+				<description>Kurs 160 : Malters : 10:37:11 - 13.3 km - 28 km/h - 517.6 m - 8</description>
+				<Point><coordinates>8.19939,47.04914,517.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:12Z</timePosition></TimeInstant>
+				<description>Kurs 140 : Malters : 10:37:12 - 13.3 km - 30 km/h - 517.5 m - 8</description>
+				<Point><coordinates>8.19950,47.04907,517.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:14Z</timePosition></TimeInstant>
+				<description>Kurs 96 : Malters : 10:37:14 - 13.4 km - 37 km/h - 516.5 m - 8</description>
+				<Point><coordinates>8.19977,47.04906,516.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:27Z</timePosition></TimeInstant>
+				<description>Kurs 106 : Malters : 10:37:27 - 13.5 km - 29 km/h - 509.1 m - 8</description>
+				<Point><coordinates>8.20144,47.04932,509.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:28Z</timePosition></TimeInstant>
+				<description>Kurs 179 : Malters : 10:37:28 - 13.5 km - 29 km/h - 508.3 m - 8</description>
+				<Point><coordinates>8.20145,47.04931,508.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:29Z</timePosition></TimeInstant>
+				<description>Kurs 206 : Malters : 10:37:29 - 13.5 km - 32 km/h - 507.6 m - 8</description>
+				<Point><coordinates>8.20143,47.04917,507.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:37:58Z</timePosition></TimeInstant>
+				<description>Dauer 0:15:09 : Malters : 10:37:58 - 14.0 km - 58 km/h - 489.8 m - 7</description>
+				<Point><coordinates>8.19598,47.04773,489.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:38:06Z</timePosition></TimeInstant>
+				<description>Distanz 14 : Malters : 10:38:06 - 14.1 km - 66 km/h - 485.8 m - 8</description>
+				<Point><coordinates>8.19393,47.04735,485.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:39:12Z</timePosition></TimeInstant>
+				<description>Distanz 15 : Malters : 10:39:12 - 15.1 km - 51 km/h - 491.2 m - 8</description>
+				<Point><coordinates>8.18400,47.04250,491.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:39:33Z</timePosition></TimeInstant>
+				<description>Kurs 230 : Malters : 10:39:33 - 15.4 km - 24 km/h - 491.0 m - 8</description>
+				<Point><coordinates>8.18314,47.04038,491</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:39:34Z</timePosition></TimeInstant>
+				<description>Kurs 269 : Malters : 10:39:34 - 15.4 km - 31 km/h - 491.0 m - 8</description>
+				<Point><coordinates>8.18300,47.04038,491</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:40:17Z</timePosition></TimeInstant>
+				<description>Kurs 205 : Malters : 10:40:17 - 16.0 km - 39 km/h - 494.3 m - 8</description>
+				<Point><coordinates>8.17573,47.04003,494.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:40:31Z</timePosition></TimeInstant>
+				<description>Distanz 16 : Malters : 10:40:31 - 16.1 km - 52 km/h - 495.0 m - 8</description>
+				<Point><coordinates>8.17580,47.03834,495</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:40:53Z</timePosition></TimeInstant>
+				<description>Kurs 209 : Malters : 10:40:53 - 16.4 km - 21 km/h - 498.6 m - 8</description>
+				<Point><coordinates>8.17605,47.03643,498.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:40:54Z</timePosition></TimeInstant>
+				<description>Kurs 249 : Malters : 10:40:54 - 16.4 km - 24 km/h - 498.8 m - 8</description>
+				<Point><coordinates>8.17605,47.03640,498.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:41:09Z</timePosition></TimeInstant>
+				<description>Ettisbühl (Malters) : 10:41:09 - 16.6 km - 62 km/h - 500.5 m - 8</description>
+				<Point><coordinates>8.17294,47.03621,500.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:41:41Z</timePosition></TimeInstant>
+				<description>Distanz 17 : Ettisbühl (Malters) : 10:41:41 - 17.2 km - 60 km/h - 503.5 m - 8</description>
+				<Point><coordinates>8.16556,47.03579,503.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:42:41Z</timePosition></TimeInstant>
+				<description>Distanz 18 : Enningen (Malters) : 10:42:41 - 18.2 km - 57 km/h - 513.2 m - 8</description>
+				<Point><coordinates>8.15206,47.03600,513.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:10Z</timePosition></TimeInstant>
+				<description>Dauer 0:20:21 : Schachen CH (Werthenstein) : 10:43:10 - 18.6 km - 51 km/h - 516.2 m - 8</description>
+				<Point><coordinates>8.14678,47.03602,516.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:26Z</timePosition></TimeInstant>
+				<description>Kurs 260 : Schachen CH (Werthenstein) : 10:43:26 - 18.7 km - 24 km/h - 516.9 m - 7</description>
+				<Point><coordinates>8.14483,47.03596,516.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:27Z</timePosition></TimeInstant>
+				<description>Kurs 225 : Schachen CH (Werthenstein) : 10:43:27 - 18.7 km - 30 km/h - 516.9 m - 8</description>
+				<Point><coordinates>8.14474,47.03588,516.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:32Z</timePosition></TimeInstant>
+				<description>Kurs 176 : Schachen CH (Werthenstein) : 10:43:32 - 18.8 km - 35 km/h - 516.4 m - 8</description>
+				<Point><coordinates>8.14436,47.03546,516.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:53Z</timePosition></TimeInstant>
+				<description>Kurs 203 : Schachen CH (Werthenstein) : 10:43:53 - 19.0 km - 21 km/h - 539.9 m - 7</description>
+				<Point><coordinates>8.14493,47.03348,539.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:54Z</timePosition></TimeInstant>
+				<description>Kurs 254 : Schachen CH (Werthenstein) : 10:43:54 - 19.0 km - 20 km/h - 540.9 m - 7</description>
+				<Point><coordinates>8.14493,47.03346,540.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:55Z</timePosition></TimeInstant>
+				<description>Kurs 284 : Schachen CH (Werthenstein) : 10:43:55 - 19.0 km - 20 km/h - 541.8 m - 7</description>
+				<Point><coordinates>8.14472,47.03346,541.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:43:56Z</timePosition></TimeInstant>
+				<description>Kurs 317 : Schachen CH (Werthenstein) : 10:43:56 - 19.1 km - 26 km/h - 542.3 m - 7</description>
+				<Point><coordinates>8.14480,47.03338,542.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:44:05Z</timePosition></TimeInstant>
+				<description>Distanz 19 : Schachen CH (Werthenstein) : 10:44:05 - 19.2 km - 39 km/h - 550.6 m - 8</description>
+				<Point><coordinates>8.14331,47.03399,550.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:44:08Z</timePosition></TimeInstant>
+				<description>Kurs 221 : Schachen CH (Werthenstein) : 10:44:08 - 19.2 km - 24 km/h - 553.2 m - 8</description>
+				<Point><coordinates>8.14308,47.03394,553.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:44:09Z</timePosition></TimeInstant>
+				<description>Kurs 193 : Schachen CH (Werthenstein) : 10:44:09 - 19.2 km - 25 km/h - 554.0 m - 8</description>
+				<Point><coordinates>8.14305,47.03388,554</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:44:10Z</timePosition></TimeInstant>
+				<description>Kurs 164 : Schachen CH (Werthenstein) : 10:44:10 - 19.2 km - 28 km/h - 554.9 m - 8</description>
+				<Point><coordinates>8.14310,47.03382,554.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:44:20Z</timePosition></TimeInstant>
+				<description>Schachen CH (Werthenstein) : 10:44:20 - 19.3 km - 44 km/h - 566.7 m - 8</description>
+				<Point><coordinates>8.14401,47.03322,566.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:45:18Z</timePosition></TimeInstant>
+				<description>Kurs 210 : Schachen CH (Werthenstein) : 10:45:18 - 20.1 km - 48 km/h - 627.2 m - 8</description>
+				<Point><coordinates>8.13648,47.02915,627.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:45:22Z</timePosition></TimeInstant>
+				<description>Distanz 20 : Schachen CH (Werthenstein) : 10:45:22 - 20.2 km - 55 km/h - 631.9 m - 8</description>
+				<Point><coordinates>8.13622,47.02868,631.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:45:46Z</timePosition></TimeInstant>
+				<description>Schachen CH (Werthenstein) : 10:45:46 - 20.6 km - 59 km/h - 643.5 m - 8</description>
+				<Point><coordinates>8.13318,47.02620,643.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:11Z</timePosition></TimeInstant>
+				<description>Kurs 255 : Schachen CH (Werthenstein) : 10:46:11 - 20.9 km - 24 km/h - 666.8 m - 8</description>
+				<Point><coordinates>8.13130,47.02360,666.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:12Z</timePosition></TimeInstant>
+				<description>Kurs 277 : Schachen CH (Werthenstein) : 10:46:12 - 20.9 km - 23 km/h - 667.6 m - 8</description>
+				<Point><coordinates>8.13120,47.02361,667.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:14Z</timePosition></TimeInstant>
+				<description>Kurs 332 : Schachen CH (Werthenstein) : 10:46:14 - 20.9 km - 48 km/h - 669.4 m - 8</description>
+				<Point><coordinates>8.13096,47.02391,669.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:29Z</timePosition></TimeInstant>
+				<description>Kurs 313 : Schachen CH (Werthenstein) : 10:46:29 - 21.1 km - 37 km/h - 680.7 m - 8</description>
+				<Point><coordinates>8.13027,47.02547,680.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:30Z</timePosition></TimeInstant>
+				<description>Kurs 284 : Schachen CH (Werthenstein) : 10:46:30 - 21.1 km - 38 km/h - 681.3 m - 8</description>
+				<Point><coordinates>8.13013,47.02548,681.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:34Z</timePosition></TimeInstant>
+				<description>Kurs 188 : Schachen CH (Werthenstein) : 10:46:34 - 21.2 km - 48 km/h - 684.6 m - 8</description>
+				<Point><coordinates>8.12973,47.02524,684.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:46:35Z</timePosition></TimeInstant>
+				<description>Distanz 21 : Schachen CH (Werthenstein) : 10:46:35 - 21.2 km - 52 km/h - 685.9 m - 8</description>
+				<Point><coordinates>8.12960,47.02508,685.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:47:15Z</timePosition></TimeInstant>
+				<description>Kurs 269 : Schachen CH (Werthenstein) : 10:47:15 - 21.8 km - 54 km/h - 739.6 m - 8</description>
+				<Point><coordinates>8.12375,47.02163,739.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:47:41Z</timePosition></TimeInstant>
+				<description>Distanz 22 : Schachen CH (Werthenstein) : 10:47:41 - 22.2 km - 35 km/h - 773.3 m - 8</description>
+				<Point><coordinates>8.11975,47.02010,773.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:47:53Z</timePosition></TimeInstant>
+				<description>Kurs 319 : Schachen CH (Werthenstein) : 10:47:53 - 22.4 km - 38 km/h - 788.7 m - 8</description>
+				<Point><coordinates>8.11790,47.02044,788.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:47:54Z</timePosition></TimeInstant>
+				<description>Kurs 297 : Schachen CH (Werthenstein) : 10:47:54 - 22.4 km - 38 km/h - 789.9 m - 8</description>
+				<Point><coordinates>8.11774,47.02051,789.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:47:55Z</timePosition></TimeInstant>
+				<description>Kurs 276 : Schachen CH (Werthenstein) : 10:47:55 - 22.4 km - 39 km/h - 790.9 m - 8</description>
+				<Point><coordinates>8.11760,47.02050,790.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:48:24Z</timePosition></TimeInstant>
+				<description>Dauer 0:25:35 : Rengg (Entlebuch) : 10:48:24 - 22.8 km - 48 km/h - 824.2 m - 8</description>
+				<Point><coordinates>8.11267,47.01893,824.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:48:50Z</timePosition></TimeInstant>
+				<description>Distanz 23 : Rengg (Entlebuch) : 10:48:50 - 23.2 km - 51 km/h - 859.5 m - 8</description>
+				<Point><coordinates>8.10811,47.01691,859.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:49:57Z</timePosition></TimeInstant>
+				<description>Distanz 24 : Rengg (Entlebuch) : 10:49:57 - 24.2 km - 71 km/h - 928.8 m - 8</description>
+				<Point><coordinates>8.09688,47.01227,928.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:50:27Z</timePosition></TimeInstant>
+				<description>Rengg (Entlebuch) : 10:50:27 - 24.7 km - 58 km/h - 939.3 m - 8</description>
+				<Point><coordinates>8.09364,47.00868,939.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:51:00Z</timePosition></TimeInstant>
+				<description>Distanz 25 : Rengg (Entlebuch) : 10:51:00 - 25.3 km - 42 km/h - 957.4 m - 8</description>
+				<Point><coordinates>8.09107,47.00416,957.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:52:11Z</timePosition></TimeInstant>
+				<description>Distanz 26 : Rengg (Entlebuch) : 10:52:11 - 26.3 km - 47 km/h - 971.2 m - 8</description>
+				<Point><coordinates>8.09387,46.99554,971.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:53:14Z</timePosition></TimeInstant>
+				<description>Distanz 27 : Rengg (Entlebuch) : 10:53:14 - 27.3 km - 62 km/h - 1017.7 m - 8</description>
+				<Point><coordinates>8.08792,46.98787,1017.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:53:28Z</timePosition></TimeInstant>
+				<description>Dauer 0:30:39 : Finsterwald CH (Entlebuch) : 10:53:28 - 27.5 km - 53 km/h - 1026.0 m - 8</description>
+				<Point><coordinates>8.08815,46.98605,1026</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:53:45Z</timePosition></TimeInstant>
+				<description>Kurs 275 : Finsterwald CH (Entlebuch) : 10:53:45 - 27.6 km - 18 km/h - 1021.8 m - 8</description>
+				<Point><coordinates>8.08868,46.98456,1021.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:54:27Z</timePosition></TimeInstant>
+				<description>Distanz 28 : Entlebuch : 10:54:27 - 28.3 km - 44 km/h - 967.2 m - 8</description>
+				<Point><coordinates>8.08104,46.98402,967.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:54:49Z</timePosition></TimeInstant>
+				<description>Kurs 206 : Entlebuch : 10:54:49 - 28.5 km - 14 km/h - 951.0 m - 8</description>
+				<Point><coordinates>8.07914,46.98288,951</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:54:50Z</timePosition></TimeInstant>
+				<description>Kurs 141 : Entlebuch : 10:54:50 - 28.5 km - 18 km/h - 950.8 m - 8</description>
+				<Point><coordinates>8.07919,46.98281,950.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:55:03Z</timePosition></TimeInstant>
+				<description>Entlebuch : 10:55:03 - 28.6 km - 46 km/h - 948.7 m - 8</description>
+				<Point><coordinates>8.08065,46.98192,948.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:55:49Z</timePosition></TimeInstant>
+				<description>Distanz 29 : Finsterwald CH (Entlebuch) : 10:55:49 - 29.3 km - 34 km/h - 949.0 m - 8</description>
+				<Point><coordinates>8.08497,46.97759,949</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:55:49Z</timePosition></TimeInstant>
+				<description>Kurs 185 : Finsterwald CH (Entlebuch) : 10:55:49 - 29.3 km - 34 km/h - 949.0 m - 8</description>
+				<Point><coordinates>8.08497,46.97759,949</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:55:50Z</timePosition></TimeInstant>
+				<description>Kurs 207 : Finsterwald CH (Entlebuch) : 10:55:50 - 29.3 km - 35 km/h - 948.5 m - 8</description>
+				<Point><coordinates>8.08487,46.97746,948.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:56:03Z</timePosition></TimeInstant>
+				<description>Kurs 127 : Finsterwald CH (Entlebuch) : 10:56:03 - 29.3 km - 23 km/h - 949.7 m - 8</description>
+				<Point><coordinates>8.08459,46.97707,949.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:56:56Z</timePosition></TimeInstant>
+				<description>Finsterwald CH (Entlebuch) : 10:56:56 - 30.3 km - 62 km/h - 1011.0 m - 8</description>
+				<Point><coordinates>8.09546,46.97404,1011</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:56:57Z</timePosition></TimeInstant>
+				<description>Distanz 30 : Finsterwald CH (Entlebuch) : 10:56:57 - 30.3 km - 60 km/h - 1012.6 m - 8</description>
+				<Point><coordinates>8.09580,46.97401,1012.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:57:38Z</timePosition></TimeInstant>
+				<description>Kurs 138 : Finsterwald CH (Entlebuch) : 10:57:38 - 30.9 km - 54 km/h - 1059.0 m - 8</description>
+				<Point><coordinates>8.10436,46.97280,1059</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:57:41Z</timePosition></TimeInstant>
+				<description>Kurs 205 : Finsterwald CH (Entlebuch) : 10:57:41 - 31.0 km - 69 km/h - 1059.2 m - 8</description>
+				<Point><coordinates>8.10440,46.97193,1059.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:57:50Z</timePosition></TimeInstant>
+				<description>Kurs 178 : Finsterwald CH (Entlebuch) : 10:57:50 - 31.2 km - 52 km/h - 1065.5 m - 8</description>
+				<Point><coordinates>8.10390,46.97100,1065.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:58:02Z</timePosition></TimeInstant>
+				<description>Distanz 31 : Finsterwald CH (Entlebuch) : 10:58:02 - 31.3 km - 55 km/h - 1063.6 m - 8</description>
+				<Point><coordinates>8.10469,46.96981,1063.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:58:44Z</timePosition></TimeInstant>
+				<description>Dauer 0:35:55 : Finsterwald CH (Entlebuch) : 10:58:44 - 32.0 km - 63 km/h - 1020.3 m - 8</description>
+				<Point><coordinates>8.10954,46.96596,1020.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:59:02Z</timePosition></TimeInstant>
+				<description>Distanz 32 : Finsterwald CH (Entlebuch) : 10:59:02 - 32.3 km - 70 km/h - 1013.3 m - 7</description>
+				<Point><coordinates>8.11362,46.96537,1013.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T08:59:57Z</timePosition></TimeInstant>
+				<description>Distanz 33 : Finsterwald CH (Entlebuch) : 10:59:57 - 33.3 km - 69 km/h - 1002.5 m - 7</description>
+				<Point><coordinates>8.12423,46.96027,1002.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:00:16Z</timePosition></TimeInstant>
+				<description>Kurs 175 : Finsterwald CH (Entlebuch) : 11:00:16 - 33.6 km - 58 km/h - 1003.3 m - 7</description>
+				<Point><coordinates>8.12697,46.95837,1003.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:00:34Z</timePosition></TimeInstant>
+				<description>Kurs 176 : Finsterwald CH (Entlebuch) : 11:00:34 - 33.9 km - 55 km/h - 1014.6 m - 7</description>
+				<Point><coordinates>8.12713,46.95606,1014.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:01:00Z</timePosition></TimeInstant>
+				<description>Finsterwald CH (Entlebuch) : 11:01:00 - 34.3 km - 57 km/h - 1001.1 m - 6</description>
+				<Point><coordinates>8.12803,46.95237,1001.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:01:00Z</timePosition></TimeInstant>
+				<description>Distanz 34 : Finsterwald CH (Entlebuch) : 11:01:00 - 34.3 km - 57 km/h - 1001.1 m - 6</description>
+				<Point><coordinates>8.12808,46.95222,1001.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:01:31Z</timePosition></TimeInstant>
+				<description>Kurs 176 : Finsterwald CH (Entlebuch) : 11:01:31 - 34.8 km - 27 km/h - 1022.9 m - 6</description>
+				<Point><coordinates>8.13061,46.94865,1022.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:01:36Z</timePosition></TimeInstant>
+				<description>Kurs 193 : Finsterwald CH (Entlebuch) : 11:01:36 - 34.9 km - 36 km/h - 1024.2 m - 6</description>
+				<Point><coordinates>8.13007,46.94837,1024.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:01:38Z</timePosition></TimeInstant>
+				<description>Kurs 165 : Finsterwald CH (Entlebuch) : 11:01:38 - 34.9 km - 28 km/h - 1024.4 m - 6</description>
+				<Point><coordinates>8.13014,46.94823,1024.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:01:39Z</timePosition></TimeInstant>
+				<description>Kurs 144 : Finsterwald CH (Entlebuch) : 11:01:39 - 34.9 km - 29 km/h - 1024.4 m - 6</description>
+				<Point><coordinates>8.13035,46.94808,1024.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:02:09Z</timePosition></TimeInstant>
+				<description>Distanz 35 : Finsterwald CH (Entlebuch) : 11:02:09 - 35.3 km - 54 km/h - 1038.4 m - 5</description>
+				<Point><coordinates>8.13261,46.94448,1038.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:02:29Z</timePosition></TimeInstant>
+				<description>Kurs 182 : Finsterwald CH (Entlebuch) : 11:02:29 - 35.6 km - 51 km/h - 1054.0 m - 5</description>
+				<Point><coordinates>8.13509,46.94286,1054</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:02:53Z</timePosition></TimeInstant>
+				<description>Kurs 176 : Finsterwald CH (Entlebuch) : 11:02:53 - 36.0 km - 39 km/h - 1074.4 m - 7</description>
+				<Point><coordinates>8.13381,46.94012,1074.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:02:54Z</timePosition></TimeInstant>
+				<description>Kurs 154 : Finsterwald CH (Entlebuch) : 11:02:54 - 36.0 km - 38 km/h - 1075.1 m - 7</description>
+				<Point><coordinates>8.13386,46.94004,1075.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:02:56Z</timePosition></TimeInstant>
+				<description>Kurs 108 : Finsterwald CH (Entlebuch) : 11:02:56 - 36.0 km - 41 km/h - 1077.2 m - 7</description>
+				<Point><coordinates>8.13411,46.93993,1077.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:03:05Z</timePosition></TimeInstant>
+				<description>Kurs 110 : Finsterwald CH (Entlebuch) : 11:03:05 - 36.1 km - 25 km/h - 1079.9 m - 7</description>
+				<Point><coordinates>8.13506,46.94011,1079.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:03:06Z</timePosition></TimeInstant>
+				<description>Kurs 159 : Finsterwald CH (Entlebuch) : 11:03:06 - 36.1 km - 24 km/h - 1076.7 m - 7</description>
+				<Point><coordinates>8.13510,46.94000,1076.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:03:07Z</timePosition></TimeInstant>
+				<description>Kurs 189 : Finsterwald CH (Entlebuch) : 11:03:07 - 36.1 km - 34 km/h - 1075.5 m - 7</description>
+				<Point><coordinates>8.13505,46.93992,1075.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:03:08Z</timePosition></TimeInstant>
+				<description>Kurs 211 : Finsterwald CH (Entlebuch) : 11:03:08 - 36.1 km - 33 km/h - 1075.2 m - 7</description>
+				<Point><coordinates>8.13496,46.93982,1075.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:03:28Z</timePosition></TimeInstant>
+				<description>Distanz 36 : Finsterwald CH (Entlebuch) : 11:03:28 - 36.3 km - 62 km/h - 1098.1 m - 7</description>
+				<Point><coordinates>8.13327,46.93823,1098.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:03:50Z</timePosition></TimeInstant>
+				<description>Dauer 0:41:01 : Finsterwald CH (Entlebuch) : 11:03:50 - 36.7 km - 57 km/h - 1119.7 m - 7</description>
+				<Point><coordinates>8.13109,46.93554,1119.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:04:30Z</timePosition></TimeInstant>
+				<description>Distanz 37 : Glaubenberg-Langis (Sarnen) : 11:04:30 - 37.3 km - 53 km/h - 1133.1 m - 7</description>
+				<Point><coordinates>8.12535,46.93140,1133.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:04:44Z</timePosition></TimeInstant>
+				<description>Kurs 213 : Glaubenberg-Langis (Sarnen) : 11:04:44 - 37.5 km - 39 km/h - 1146.7 m - 7</description>
+				<Point><coordinates>8.12327,46.93051,1146.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:04:45Z</timePosition></TimeInstant>
+				<description>Kurs 192 : Glaubenberg-Langis (Sarnen) : 11:04:45 - 37.5 km - 41 km/h - 1147.6 m - 7</description>
+				<Point><coordinates>8.12324,46.93037,1147.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:04:49Z</timePosition></TimeInstant>
+				<description>Kurs 199 : Glaubenberg-Langis (Sarnen) : 11:04:49 - 37.6 km - 57 km/h - 1153.1 m - 7</description>
+				<Point><coordinates>8.12321,46.92989,1153.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:04:58Z</timePosition></TimeInstant>
+				<description>Kurs 208 : Glaubenberg-Langis (Sarnen) : 11:04:58 - 37.7 km - 50 km/h - 1165.1 m - 7</description>
+				<Point><coordinates>8.12209,46.92919,1165.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:01Z</timePosition></TimeInstant>
+				<description>Kurs 221 : Glaubenberg-Langis (Sarnen) : 11:05:01 - 37.8 km - 38 km/h - 1168.3 m - 7</description>
+				<Point><coordinates>8.12180,46.92894,1168.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:06Z</timePosition></TimeInstant>
+				<description>Kurs 196 : Glaubenberg-Langis (Sarnen) : 11:05:06 - 37.8 km - 24 km/h - 1173.2 m - 7</description>
+				<Point><coordinates>8.12148,46.92871,1173.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:07Z</timePosition></TimeInstant>
+				<description>Kurs 166 : Glaubenberg-Langis (Sarnen) : 11:05:07 - 37.8 km - 26 km/h - 1173.9 m - 7</description>
+				<Point><coordinates>8.12148,46.92866,1173.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:08Z</timePosition></TimeInstant>
+				<description>Kurs 139 : Glaubenberg-Langis (Sarnen) : 11:05:08 - 37.8 km - 27 km/h - 1174.8 m - 7</description>
+				<Point><coordinates>8.12156,46.92859,1174.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:09Z</timePosition></TimeInstant>
+				<description>Kurs 118 : Glaubenberg-Langis (Sarnen) : 11:05:09 - 37.8 km - 30 km/h - 1175.5 m - 7</description>
+				<Point><coordinates>8.12166,46.92857,1175.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:17Z</timePosition></TimeInstant>
+				<description>Kurs 74 : Glaubenberg-Langis (Sarnen) : 11:05:17 - 37.9 km - 31 km/h - 1183.0 m - 7</description>
+				<Point><coordinates>8.12275,46.92890,1183</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:18Z</timePosition></TimeInstant>
+				<description>Kurs 102 : Glaubenberg-Langis (Sarnen) : 11:05:18 - 37.9 km - 28 km/h - 1183.9 m - 7</description>
+				<Point><coordinates>8.12286,46.92890,1183.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:19Z</timePosition></TimeInstant>
+				<description>Kurs 134 : Glaubenberg-Langis (Sarnen) : 11:05:19 - 37.9 km - 29 km/h - 1184.9 m - 7</description>
+				<Point><coordinates>8.12297,46.92886,1184.9</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:20Z</timePosition></TimeInstant>
+				<description>Kurs 165 : Glaubenberg-Langis (Sarnen) : 11:05:20 - 37.9 km - 30 km/h - 1186.1 m - 7</description>
+				<Point><coordinates>8.12302,46.92876,1186.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:21Z</timePosition></TimeInstant>
+				<description>Kurs 189 : Glaubenberg-Langis (Sarnen) : 11:05:21 - 38.0 km - 32 km/h - 1187.0 m - 7</description>
+				<Point><coordinates>8.12298,46.92867,1187</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:24Z</timePosition></TimeInstant>
+				<description>Kurs 225 : Glaubenberg-Langis (Sarnen) : 11:05:24 - 38.0 km - 48 km/h - 1190.6 m - 7</description>
+				<Point><coordinates>8.12266,46.92847,1190.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:29Z</timePosition></TimeInstant>
+				<description>Kurs 183 : Glaubenberg-Langis (Sarnen) : 11:05:29 - 38.1 km - 39 km/h - 1197.3 m - 7</description>
+				<Point><coordinates>8.12232,46.92800,1197.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:35Z</timePosition></TimeInstant>
+				<description>Kurs 165 : Glaubenberg-Langis (Sarnen) : 11:05:35 - 38.1 km - 33 km/h - 1204.8 m - 7</description>
+				<Point><coordinates>8.12239,46.92742,1204.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:40Z</timePosition></TimeInstant>
+				<description>Kurs 172 : Glaubenberg-Langis (Sarnen) : 11:05:40 - 38.2 km - 51 km/h - 1212.1 m - 7</description>
+				<Point><coordinates>8.12269,46.92690,1212.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:05:53Z</timePosition></TimeInstant>
+				<description>Distanz 38 : Glaubenberg-Langis (Sarnen) : 11:05:53 - 38.4 km - 47 km/h - 1231.5 m - 7</description>
+				<Point><coordinates>8.12234,46.92545,1231.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:06:11Z</timePosition></TimeInstant>
+				<description>Glaubenberg-Langis (Sarnen) : 11:06:11 - 38.6 km - 44 km/h - 1260.5 m - 7</description>
+				<Point><coordinates>8.12155,46.92336,1260.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:07:00Z</timePosition></TimeInstant>
+				<description>Distanz 39 : Glaubenberg-Langis (Sarnen) : 11:07:00 - 39.4 km - 56 km/h - 1290.1 m - 7</description>
+				<Point><coordinates>8.11889,46.91719,1290.1</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:08:07Z</timePosition></TimeInstant>
+				<description>Distanz 40 : Glaubenberg-Langis (Sarnen) : 11:08:07 - 40.4 km - 55 km/h - 1369.6 m - 6</description>
+				<Point><coordinates>8.11181,46.90984,1369.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:08:51Z</timePosition></TimeInstant>
+				<description>Dauer 0:46:02 : Glaubenberg-Langis (Sarnen) : 11:08:51 - 41.0 km - 61 km/h - 1383.8 m - 7</description>
+				<Point><coordinates>8.11031,46.90397,1383.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:09Z</timePosition></TimeInstant>
+				<description>Kurs 112 : Glaubenberg-Langis (Sarnen) : 11:09:09 - 41.3 km - 48 km/h - 1399.2 m - 7</description>
+				<Point><coordinates>8.11004,46.90165,1399.2</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:10Z</timePosition></TimeInstant>
+				<description>Kurs 78 : Glaubenberg-Langis (Sarnen) : 11:09:10 - 41.3 km - 47 km/h - 1400.6 m - 7</description>
+				<Point><coordinates>8.11015,46.90164,1400.6</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:12Z</timePosition></TimeInstant>
+				<description>Distanz 41 : Glaubenberg-Langis (Sarnen) : 11:09:12 - 41.4 km - 48 km/h - 1402.4 m - 7</description>
+				<Point><coordinates>8.11053,46.90193,1402.4</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:32Z</timePosition></TimeInstant>
+				<description>Kurs 64 : Glaubenberg-Langis (Sarnen) : 11:09:32 - 41.6 km - 24 km/h - 1422.0 m - 7</description>
+				<Point><coordinates>8.11292,46.90305,1422</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:34Z</timePosition></TimeInstant>
+				<description>Kurs 122 : Glaubenberg-Langis (Sarnen) : 11:09:34 - 41.6 km - 11 km/h - 1423.0 m - 7</description>
+				<Point><coordinates>8.11311,46.90303,1423</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:35Z</timePosition></TimeInstant>
+				<description>Kurs 148 : Glaubenberg-Langis (Sarnen) : 11:09:35 - 41.6 km - 23 km/h - 1423.7 m - 7</description>
+				<Point><coordinates>8.11311,46.90290,1423.7</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:09:36Z</timePosition></TimeInstant>
+				<description>Kurs 187 : Glaubenberg-Langis (Sarnen) : 11:09:36 - 41.7 km - 34 km/h - 1424.3 m - 7</description>
+				<Point><coordinates>8.11307,46.90282,1424.3</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:10:22Z</timePosition></TimeInstant>
+				<description>Distanz 42 : Glaubenberg-Langis (Sarnen) : 11:10:22 - 42.4 km - 58 km/h - 1500.8 m - 9</description>
+				<Point><coordinates>8.11102,46.89646,1500.8</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:11:20Z</timePosition></TimeInstant>
+				<description>Glaubenberg-Langis (Sarnen) : 11:11:20 - 43.0 km - 24 km/h - 1546.0 m - 8</description>
+				<Point><coordinates>8.10773,46.89193,1546</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:11:48Z</timePosition></TimeInstant>
+				<description>Distanz 43 : Glaubenberg-Langis (Sarnen) : 11:11:48 - 43.4 km - 50 km/h - 1506.0 m - 8</description>
+				<Point><coordinates>8.11166,46.88960,1506</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:12:52Z</timePosition></TimeInstant>
+				<description>Distanz 44 : Glaubenberg-Langis (Sarnen) : 11:12:52 - 44.4 km - 46 km/h - 1449.0 m - 7</description>
+				<Point><coordinates>8.12329,46.89178,1449</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:13:28Z</timePosition></TimeInstant>
+				<description>Kurs 103 : Glaubenberg-Langis (Sarnen) : 11:13:28 - 44.7 km - 8 km/h - 1442.5 m - 9</description>
+				<Point><coordinates>8.12641,46.89292,1442.5</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:13:41Z</timePosition></TimeInstant>
+				<description>Glaubenberg-Langis (Sarnen) : 11:13:41 - 44.7 km - 0 km/h - 1442.0 m - 9</description>
+				<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:13:42Z</timePosition></TimeInstant>
+				<description>Glaubenberg-Langis (Sarnen) : 11:13:42 - 44.7 km - 0 km/h - 1442.0 m - 9</description>
+				<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:13:51Z</timePosition></TimeInstant>
+				<description>Dauer 0:51:02 : Glaubenberg-Langis (Sarnen) : 11:13:51 - 44.7 km - 0 km/h - 1442.0 m - 9</description>
+				<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:18:51Z</timePosition></TimeInstant>
+				<description>Dauer 0:56:02 : Glaubenberg-Langis (Sarnen) : 11:18:51 - 44.7 km - 0 km/h - 1442.0 m - 10</description>
+				<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+			</Placemark>
+			<Placemark><visibility>1</visibility>
+				<name></name>
+				<styleUrl>#TrkptIcon</styleUrl>
+				<TimeInstant><timePosition>2007-07-29T09:22:06Z</timePosition></TimeInstant>
+				<description>Ende : 29/07/2007 11:22:06 : Glaubenberg-Langis (Sarnen) : 11:22:06 - 44.7 km - 0 km/h - 1442.0 m - 10</description>
+				<Point><coordinates>8.12644,46.89291,1442</coordinates></Point>
+			</Placemark>
+		</Folder>
+	</Folder>
+</Folder>
+</kml>

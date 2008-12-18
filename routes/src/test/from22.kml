@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+	<name>Eis essen in Ratzeburg 2.2</name>
+	<open>1</open>
+	<description>Generated manually</description>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon15.png">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon15.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="roadStyle">
+		<LineStyle>
+			<color>7fcf0064</color>
+			<width>6</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon31.png</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon62.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon54.png">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon62.png</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon54.png</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon7.png">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon7.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon31.png">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon31.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon15.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon7.png">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon15.png</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon7.png</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon23.png">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon23.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon62.png">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon62.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="default_copy0+icon=http://maps.google.com/mapfiles/kml/pal4/icon54.png">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon54.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+	</Style>
+	<Placemark>
+		<name>Route (46 waypoints)</name>
+		<styleUrl>#roadStyle</styleUrl>
+		<MultiGeometry>
+			<LineString>
+				<coordinates>
+-10.032004,-53.569489,0 10.244109,53.57197600000001,0 10.328654,53.61361700000001,0 10.340867,53.61555900000001,0 10.351039,53.631851,0 10.38229,53.634853,0 10.408317,53.641743,0 10.463481,53.643524,0 10.478706,53.63825600000001,0 10.490883,53.62919600000001,0 10.508079,53.61807600000001,0 10.512395,53.611923,0 10.551776,53.613461,0 10.570222,53.616379,0 10.585888,53.616295,0 10.60167,53.617435,0 10.617373,53.618401,0 10.642303,53.617901,0 10.660819,53.621822,0 10.703663,53.63616600000001,0 10.759097,53.662647,0 10.764026,53.699375,0 10.69788,53.71294000000001,0 10.637904,53.73403200000001,0 10.570456,53.748672,0 10.526038,53.74963,0 10.508304,53.735519,0 10.475038,53.722507,0 10.434703,53.73345200000001,0 10.404504,53.72155,0 10.374259,53.741802,0 10.36692,53.756996,0 10.34299,53.75975,0 10.313789,53.753536,0 10.315111,53.74202,0 10.332566,53.744339,0 10.361309,53.72941200000001,0 10.348008,53.69439700000001,0 10.337405,53.67791400000001,0 10.319185,53.66489,0 10.31637,53.646584,0 10.315479,53.64146,0 10.29288,53.630039,0 10.237446,53.616753,0 10.161219,53.61380400000001,0 10.032004,53.569489,0 </coordinates>
+			</LineString>
+		</MultiGeometry>
+	</Placemark>
+	<Folder>
+		<name>Waypoints</name>
+		<Placemark>
+			<name>D 22081 Hamburg/Uhlenhorst,Finkenau</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon62.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon54.png</styleUrl>
+			<Point>
+				<coordinates>-10.032004,-53.569489,-10</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22885,Barsbüttel/Stemwarde</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.244109,53.57197600000001,10</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22946,Großensee/Schwarzekate</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.328654,53.61361700000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>D 22946,Großensee</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.340867,53.61555900000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22952,Lütjensee/Schloßberg</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.351039,53.631851,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22952,Lütjensee/Bollmoor</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.38229,53.634853,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22956,Grönwohld</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.408317,53.641743,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22959,Linau</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.463481,53.643524,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22946,Trittau/Vogelfängerkaten</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.478706,53.63825600000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22946,Trittau/Vogelfängerkaten</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.490883,53.62919600000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22929,Köthel; Kr Hzgt Lauenburg</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.508079,53.61807600000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22929,Köthel; Kr Hzgt Lauenburg</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.512395,53.611923,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Borstorf</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.551776,53.613461,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Borstorf</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.570222,53.616379,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Breitenfelde/Neuenlande</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.585888,53.616295,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Bälau/Uhlenbusch</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.60167,53.617435,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Bälau</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.617373,53.618401,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Alt Mölln</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.642303,53.617901,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23881,Alt Mölln</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.660819,53.621822,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23896,Nusse/Donnerschleuse</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.703663,53.63616600000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>D 23911,Schmilau</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>0.7E-3,0.6E-4,0.7E-5</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23909,Ratzeburg</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.764026,53.699375,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23911,Kulpin</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.69788,53.71294000000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23919,Berkenthin</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.637904,53.73403200000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Kastorf</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.570456,53.748672,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>D 23847,Siebenbäumen</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.526038,53.74963,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Steinhorst/Im Busch</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.508304,53.735519,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Steinhorst</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.475038,53.722507,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Stubben</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.434703,53.73345200000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22964,Steinburg</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.404504,53.72155,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Lasbek/Barkhorst</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.374259,53.741802,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23843,Rümpel/Buddikate</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.36692,53.7569,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22967,Tremsbüttel/Kupfermühle</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.34299,53.75975,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22967,Tremsbüttel/Wulfskuhle</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.313789,53.753536,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D ,A21/Tremsbüttel (18)</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.315111,53.74202,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Lasbek/Lasbek; Gut</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.332566,53.744339,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 23847,Lasbek</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.361309,53.72941200000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22965,Todendorf</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.348008,53.69430000000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22961,Oetjendorf</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.337405,53.67791400000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22955,Hoisdorf/Anschlag</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.319185,53.66489,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22955,Hoisdorf/Kreuz</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.31637,53.646584,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22962,Siek/Baumkaten</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.315479,53.64146,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22962,Siek</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.29288,53.630039,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D ,A1/B435/Stapelfeld (29)</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.237446,53.616753,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>bei D 22143,Hamburg</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon31.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon23.png</styleUrl>
+			<Point>
+				<coordinates>10.161219,53.61380400000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>D 22081,Hamburg/Uhlenhorst,Finkenau</name>
+			<styleUrl>#default_copy0+nicon=http://maps.google.com/mapfiles/kml/pal4/icon15.png+hicon=http://maps.google.com/mapfiles/kml/pal4/icon7.png</styleUrl>
+			<Point>
+				<coordinates>10.032004,53.569489,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

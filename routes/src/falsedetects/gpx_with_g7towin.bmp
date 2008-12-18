@@ -1,0 +1,18 @@
+#Sat Mar 29 07:49:12 2008 GMT
+D WGS-84
+M DMM
+W  bei D  N53 34.3182 E010 14.6460 Fri Aug 31 12:34:52 2007                     
+W  bei D  N53 36.8166 E010 19.7190 Fri Aug 31 12:34:52 2007                     
+W  bei D  S53 38.0910 W010 22.9374 Fri Aug 31 12:34:52 2007                     
+W  bei D  N53 38.5044 E010 24.4986 Fri Aug 31 12:34:52 2007 Geocache            
+W  bei D  N53 38.6112 E010 27.8088 Fri Aug 31 12:34:52 2007 Geocache            
+N  New Track Segment Start
+T  N00 00.0000 E000 00.0000 Sat Mar 29 07:43:03 2008 ;      1e25;      1e25; SM;    0.0000;    0.0000;    0.0000;       INF;         -;|1e25
+R  01 DRTE001
+W  DUMMY  N00 00.0000 E000 00.0000  Sun Dec 31 00:00:00 1989                     
+W  DUMMY2 N00 00.0000 E000 00.0000  Sun Dec 31 00:00:00 1989                     
+E  01
+R  02 Route3 Name
+W  bei D 22956 Grönwohld N53 38.5044 E010 24.4986  Fri Aug 31 12:34:52 2007 Geocache            
+W  bei D 22959 Linau N53 38.6112 E010 27.8088  Fri Aug 31 12:34:52 2007 Geocache            
+E  02

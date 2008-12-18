@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<gpx
+xmlns="http://www.topografix.com/GPX/1/0"
+version="1.0"
+creator="www.alpin-koordinaten.de">
+<wpt lat="47.42233" lon="11.06336">
+<ele>2282</ele>
+<name>HOHRGF Hoher Gaif</name>
+<cmt></cmt>
+<desc></desc>
+</wpt>
+<wpt lat="47.42233" lon="11.06358">
+<ele>2288</ele>
+<name>HHRGF  Hoher Gaif</name>
+<cmt></cmt>
+<desc></desc>
+</wpt>
+<wpt lat="47.42238" lon="11.06338">
+<ele>2288</ele>
+<name>HOGAIF Hoher Gaif</name>
+<cmt></cmt>
+<desc></desc>
+</wpt>
+<wpt lat="47.42425" lon="11.08542">
+<ele>1868</ele>
+<name>HHRGFK Hoher Gaifkopf</name>
+<cmt></cmt>
+<desc></desc>
+</wpt>
+<wpt lat="47.42428" lon="11.06561">
+<ele>2054</ele>
+<name>WPGF1  Wegpunkt Hoher Gaif</name>
+<cmt>Steilstück; in der Nähe Drahtseilversicherung</cmt>
+<desc>Steilstück; in der Nähe Drahtseilversicherung</desc>
+</wpt>
+<wpt lat="47.4239" lon="11.0668">
+<ele>2111</ele>
+<name>WPGF2  Wegpunkt Hoher Gaif</name>
+<cmt>Steinmänner</cmt>
+<desc>Steinmänner</desc>
+</wpt>
+<wpt lat="47.42247" lon="11.06667">
+<ele>2192</ele>
+<name>WPGF3  Wegpunkt Hoher Gaif</name>
+<cmt>hier wird der Grat erreicht</cmt>
+<desc>hier wird der Grat erreicht</desc>
+</wpt>
+</gpx>

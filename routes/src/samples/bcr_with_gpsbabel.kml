@@ -1,0 +1,1430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://earth.google.com/kml/2.1 
+	http://code.google.com/apis/kml/schema/kml21.xsd">
+  <Document>
+    <name>GPS device</name>
+    <Snippet>Created 05/13/07 18:03:45</Snippet>
+<!-- Normal route style -->
+    <Style id="route_n">
+      <IconStyle>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+<!-- Highlighted route style -->
+    <Style id="route_h">
+      <IconStyle>
+        <scale>1.2</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <StyleMap id="route">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#route_n</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#route_h</styleUrl>
+      </Pair>
+    </StyleMap>
+<!-- Normal track style -->
+    <Style id="track_n">
+      <IconStyle>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon60.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+<!-- Highlighted track style -->
+    <Style id="track_h">
+      <IconStyle>
+        <scale>1.2</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon60.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <StyleMap id="track">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#track_n</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#track_h</styleUrl>
+      </Pair>
+    </StyleMap>
+<!-- Normal waypoint style -->
+    <Style id="waypoint_n">
+      <IconStyle>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+<!-- Highlighted waypoint style -->
+    <Style id="waypoint_h">
+      <IconStyle>
+        <scale>1.2</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <StyleMap id="waypoint">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#waypoint_n</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#waypoint_h</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="lineStyle">
+      <LineStyle>
+        <color>64eeee17</color>
+        <width>6</width>
+      </LineStyle>
+    </Style>
+    <Folder>
+      <name>Waypoints</name>
+      <Placemark>
+        <name>STATION1</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.032004,53.569488,64296162722.124001</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION2</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.244109,53.571977,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION3</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.328655,53.613616,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION4</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.340867,53.615558,64296162826.060806</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION5</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.351039,53.631852,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION6</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.382290,53.634855,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION7</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.408317,53.641743,64296162845.872803</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION8</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.463481,53.643524,64296162848.616005</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION9</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.478706,53.638257,64296162828.499207</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION10</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.490883,53.629197,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION11</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.508078,53.618076,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION12</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.512395,53.611925,64296162815.697601</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION13</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.551776,53.613461,64296163282.041603</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION14</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.570221,53.616379,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION15</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.585888,53.616294,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION16</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.601671,53.617436,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION17</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.617373,53.618401,64296163282.956001</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION18</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.642302,53.617900,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION19</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.660819,53.621820,64296163281.736801</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION20</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.703663,53.636166,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION21</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.759097,53.662648,64296163317.398407</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION22</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.764025,53.699375,64296163308.254402</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION23</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.697880,53.712938,64296163315.874405</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION24</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.637904,53.734031,64296163319.532005</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION25</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.570455,53.748674,64296163233.883202</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION26</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.526038,53.749631,64296163244.856003</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION27</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.508303,53.735521,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION28</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.475037,53.722507,64296163246.075203</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION29</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.434703,53.733451,64296163246.989601</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION30</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.404503,53.721549,64296162853.188004</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION31</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.374259,53.741803,64296163236.016800</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION32</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.366921,53.756996,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION33</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.342990,53.759750,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION34</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.313789,53.753535,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION35</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.315111,53.742021,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION36</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.332567,53.744340,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION37</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.361309,53.729413,64296163235.712006</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION38</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.348008,53.694396,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION39</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.337405,53.677913,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION40</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.319185,53.664892,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION41</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.316370,53.646584,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION42</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.315480,53.641461,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION43</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.292880,53.630039,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION44</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.237445,53.616753,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION45</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.161219,53.613803,0.000000</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>STATION46</name>
+        <styleUrl>#waypoint</styleUrl>
+        <Point>
+          <coordinates>10.032004,53.569488,64296162722.124001</coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Tracks</name>
+    </Folder>
+    <Folder>
+      <name>Routes</name>
+      <Folder>
+        <name>Eis essen in Ratzeburg</name>
+        <Folder>
+          <name>Points</name>
+          <Placemark>
+            <name>STATION1</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.032004 </td></tr>
+                <tr><td>Latitude: 53.569488 </td></tr>
+                <tr><td>Altitude: 39951783.3 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.032004</longitude>
+              <latitude>53.569488</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.032004,53.569488,64296162722.124001</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION2</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.244109 </td></tr>
+                <tr><td>Latitude: 53.571977 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.244109</longitude>
+              <latitude>53.571977</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.244109,53.571977,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION3</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.328655 </td></tr>
+                <tr><td>Latitude: 53.613616 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.328655</longitude>
+              <latitude>53.613616</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.328655,53.613616,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION4</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.340867 </td></tr>
+                <tr><td>Latitude: 53.615558 </td></tr>
+                <tr><td>Altitude: 39951783.4 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.340867</longitude>
+              <latitude>53.615558</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.340867,53.615558,64296162826.060806</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION5</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.351039 </td></tr>
+                <tr><td>Latitude: 53.631852 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.351039</longitude>
+              <latitude>53.631852</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.351039,53.631852,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION6</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.382290 </td></tr>
+                <tr><td>Latitude: 53.634855 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.382290</longitude>
+              <latitude>53.634855</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.382290,53.634855,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION7</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.408317 </td></tr>
+                <tr><td>Latitude: 53.641743 </td></tr>
+                <tr><td>Altitude: 39951783.4 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.408317</longitude>
+              <latitude>53.641743</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.408317,53.641743,64296162845.872803</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION8</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.463481 </td></tr>
+                <tr><td>Latitude: 53.643524 </td></tr>
+                <tr><td>Altitude: 39951783.4 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.463481</longitude>
+              <latitude>53.643524</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.463481,53.643524,64296162848.616005</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION9</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.478706 </td></tr>
+                <tr><td>Latitude: 53.638257 </td></tr>
+                <tr><td>Altitude: 39951783.4 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.478706</longitude>
+              <latitude>53.638257</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.478706,53.638257,64296162828.499207</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION10</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.490883 </td></tr>
+                <tr><td>Latitude: 53.629197 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.490883</longitude>
+              <latitude>53.629197</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.490883,53.629197,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION11</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.508078 </td></tr>
+                <tr><td>Latitude: 53.618076 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.508078</longitude>
+              <latitude>53.618076</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.508078,53.618076,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION12</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.512395 </td></tr>
+                <tr><td>Latitude: 53.611925 </td></tr>
+                <tr><td>Altitude: 39951783.3 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.512395</longitude>
+              <latitude>53.611925</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.512395,53.611925,64296162815.697601</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION13</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.551776 </td></tr>
+                <tr><td>Latitude: 53.613461 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.551776</longitude>
+              <latitude>53.613461</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.551776,53.613461,64296163282.041603</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION14</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.570221 </td></tr>
+                <tr><td>Latitude: 53.616379 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.570221</longitude>
+              <latitude>53.616379</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.570221,53.616379,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION15</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.585888 </td></tr>
+                <tr><td>Latitude: 53.616294 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.585888</longitude>
+              <latitude>53.616294</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.585888,53.616294,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION16</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.601671 </td></tr>
+                <tr><td>Latitude: 53.617436 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.601671</longitude>
+              <latitude>53.617436</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.601671,53.617436,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION17</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.617373 </td></tr>
+                <tr><td>Latitude: 53.618401 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.617373</longitude>
+              <latitude>53.618401</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.617373,53.618401,64296163282.956001</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION18</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.642302 </td></tr>
+                <tr><td>Latitude: 53.617900 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.642302</longitude>
+              <latitude>53.617900</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.642302,53.617900,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION19</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.660819 </td></tr>
+                <tr><td>Latitude: 53.621820 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.660819</longitude>
+              <latitude>53.621820</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.660819,53.621820,64296163281.736801</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION20</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.703663 </td></tr>
+                <tr><td>Latitude: 53.636166 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.703663</longitude>
+              <latitude>53.636166</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.703663,53.636166,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION21</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.759097 </td></tr>
+                <tr><td>Latitude: 53.662648 </td></tr>
+                <tr><td>Altitude: 39951783.7 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.759097</longitude>
+              <latitude>53.662648</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.759097,53.662648,64296163317.398407</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION22</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.764025 </td></tr>
+                <tr><td>Latitude: 53.699375 </td></tr>
+                <tr><td>Altitude: 39951783.7 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.764025</longitude>
+              <latitude>53.699375</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.764025,53.699375,64296163308.254402</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION23</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.697880 </td></tr>
+                <tr><td>Latitude: 53.712938 </td></tr>
+                <tr><td>Altitude: 39951783.7 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.697880</longitude>
+              <latitude>53.712938</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.697880,53.712938,64296163315.874405</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION24</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.637904 </td></tr>
+                <tr><td>Latitude: 53.734031 </td></tr>
+                <tr><td>Altitude: 39951783.7 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.637904</longitude>
+              <latitude>53.734031</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.637904,53.734031,64296163319.532005</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION25</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.570455 </td></tr>
+                <tr><td>Latitude: 53.748674 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.570455</longitude>
+              <latitude>53.748674</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.570455,53.748674,64296163233.883202</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION26</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.526038 </td></tr>
+                <tr><td>Latitude: 53.749631 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.526038</longitude>
+              <latitude>53.749631</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.526038,53.749631,64296163244.856003</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION27</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.508303 </td></tr>
+                <tr><td>Latitude: 53.735521 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.508303</longitude>
+              <latitude>53.735521</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.508303,53.735521,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION28</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.475037 </td></tr>
+                <tr><td>Latitude: 53.722507 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.475037</longitude>
+              <latitude>53.722507</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.475037,53.722507,64296163246.075203</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION29</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.434703 </td></tr>
+                <tr><td>Latitude: 53.733451 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.434703</longitude>
+              <latitude>53.733451</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.434703,53.733451,64296163246.989601</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION30</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.404503 </td></tr>
+                <tr><td>Latitude: 53.721549 </td></tr>
+                <tr><td>Altitude: 39951783.4 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.404503</longitude>
+              <latitude>53.721549</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.404503,53.721549,64296162853.188004</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION31</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.374259 </td></tr>
+                <tr><td>Latitude: 53.741803 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.374259</longitude>
+              <latitude>53.741803</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.374259,53.741803,64296163236.016800</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION32</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.366921 </td></tr>
+                <tr><td>Latitude: 53.756996 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.366921</longitude>
+              <latitude>53.756996</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.366921,53.756996,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION33</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.342990 </td></tr>
+                <tr><td>Latitude: 53.759750 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.342990</longitude>
+              <latitude>53.759750</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.342990,53.759750,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION34</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.313789 </td></tr>
+                <tr><td>Latitude: 53.753535 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.313789</longitude>
+              <latitude>53.753535</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.313789,53.753535,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION35</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.315111 </td></tr>
+                <tr><td>Latitude: 53.742021 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.315111</longitude>
+              <latitude>53.742021</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.315111,53.742021,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION36</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.332567 </td></tr>
+                <tr><td>Latitude: 53.744340 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.332567</longitude>
+              <latitude>53.744340</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.332567,53.744340,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION37</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.361309 </td></tr>
+                <tr><td>Latitude: 53.729413 </td></tr>
+                <tr><td>Altitude: 39951783.6 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.361309</longitude>
+              <latitude>53.729413</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.361309,53.729413,64296163235.712006</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION38</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.348008 </td></tr>
+                <tr><td>Latitude: 53.694396 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.348008</longitude>
+              <latitude>53.694396</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.348008,53.694396,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION39</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.337405 </td></tr>
+                <tr><td>Latitude: 53.677913 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.337405</longitude>
+              <latitude>53.677913</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.337405,53.677913,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION40</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.319185 </td></tr>
+                <tr><td>Latitude: 53.664892 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.319185</longitude>
+              <latitude>53.664892</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.319185,53.664892,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION41</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.316370 </td></tr>
+                <tr><td>Latitude: 53.646584 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.316370</longitude>
+              <latitude>53.646584</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.316370,53.646584,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION42</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.315480 </td></tr>
+                <tr><td>Latitude: 53.641461 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.315480</longitude>
+              <latitude>53.641461</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.315480,53.641461,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION43</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.292880 </td></tr>
+                <tr><td>Latitude: 53.630039 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.292880</longitude>
+              <latitude>53.630039</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.292880,53.630039,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION44</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.237445 </td></tr>
+                <tr><td>Latitude: 53.616753 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.237445</longitude>
+              <latitude>53.616753</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.237445,53.616753,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION45</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.161219 </td></tr>
+                <tr><td>Latitude: 53.613803 </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.161219</longitude>
+              <latitude>53.613803</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.161219,53.613803,0.000000</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>STATION46</name>
+            <Snippet/>
+            <description><![CDATA[
+              <table>
+                <tr><td>Longitude: 10.032004 </td></tr>
+                <tr><td>Latitude: 53.569488 </td></tr>
+                <tr><td>Altitude: 39951783.3 mi </td></tr>
+                <tr><td>Heading: -999.0 </td></tr>
+              </table>
+            ]]></description>
+            <LookAt>
+              <longitude>10.032004</longitude>
+              <latitude>53.569488</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <styleUrl>#route</styleUrl>
+            <Point>
+              <coordinates>10.032004,53.569488,64296162722.124001</coordinates>
+            </Point>
+          </Placemark>
+        </Folder>
+        <Placemark>
+          <name>Path</name>
+          <styleUrl>#lineStyle</styleUrl>
+          <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+              10.032004,53.569488,64296162722.124001
+              10.244109,53.571977,0.000000
+              10.328655,53.613616,0.000000
+              10.340867,53.615558,64296162826.060806
+              10.351039,53.631852,0.000000
+              10.382290,53.634855,0.000000
+              10.408317,53.641743,64296162845.872803
+              10.463481,53.643524,64296162848.616005
+              10.478706,53.638257,64296162828.499207
+              10.490883,53.629197,0.000000
+              10.508078,53.618076,0.000000
+              10.512395,53.611925,64296162815.697601
+              10.551776,53.613461,64296163282.041603
+              10.570221,53.616379,0.000000
+              10.585888,53.616294,0.000000
+              10.601671,53.617436,0.000000
+              10.617373,53.618401,64296163282.956001
+              10.642302,53.617900,0.000000
+              10.660819,53.621820,64296163281.736801
+              10.703663,53.636166,0.000000
+              10.759097,53.662648,64296163317.398407
+              10.764025,53.699375,64296163308.254402
+              10.697880,53.712938,64296163315.874405
+              10.637904,53.734031,64296163319.532005
+              10.570455,53.748674,64296163233.883202
+              10.526038,53.749631,64296163244.856003
+              10.508303,53.735521,0.000000
+              10.475037,53.722507,64296163246.075203
+              10.434703,53.733451,64296163246.989601
+              10.404503,53.721549,64296162853.188004
+              10.374259,53.741803,64296163236.016800
+              10.366921,53.756996,0.000000
+              10.342990,53.759750,0.000000
+              10.313789,53.753535,0.000000
+              10.315111,53.742021,0.000000
+              10.332567,53.744340,0.000000
+              10.361309,53.729413,64296163235.712006
+              10.348008,53.694396,0.000000
+              10.337405,53.677913,0.000000
+              10.319185,53.664892,0.000000
+              10.316370,53.646584,0.000000
+              10.315480,53.641461,0.000000
+              10.292880,53.630039,0.000000
+              10.237445,53.616753,0.000000
+              10.161219,53.613803,0.000000
+              10.032004,53.569488,64296162722.124001
+            </coordinates>
+          </LineString>
+        </Placemark>
+      </Folder>
+    </Folder>
+  </Document>
+</kml>

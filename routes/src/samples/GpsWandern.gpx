@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<gpx
+  version="1.1"
+  creator="GORP (V0.92) - GPS Online Routen Planer auf GpsWandern.de - http://www.gpswandern.de"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/1"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata>
+  <time>2007-06-11T18:38:43Z</time>
+  <bounds minlat="53.56641415275043" minlon="10.012149810791016" maxlat="53.57642936539238" maxlon="10.044894218444824"/>
+</metadata>
+<rte>
+  <name>Route1</name>
+  <rtept  lat="53.56980379051011" lon="10.027695894241333">
+    <name>R101</name>
+  </rtept>
+  <rtept  lat="53.570460023572274" lon="10.028157234191895">
+    <name>R102</name>
+  </rtept>
+  <rtept  lat="53.57091874354902" lon="10.028983354568481">
+    <name>R103</name>
+  </rtept>
+  <rtept  lat="53.571759717249186" lon="10.030581951141357">
+    <name>R104</name>
+  </rtept>
+  <rtept  lat="53.57256244927025" lon="10.031965970993042">
+    <name>R105</name>
+  </rtept>
+  <rtept  lat="53.574798550975544" lon="10.035367012023926">
+    <name>R106</name>
+  </rtept>
+  <rtept  lat="53.57642936539238" lon="10.040044784545898">
+    <name>R107</name>
+  </rtept>
+  <rtept  lat="53.574645658898916" lon="10.044336318969727">
+    <name>R108</name>
+  </rtept>
+  <rtept  lat="53.569880245371536" lon="10.044894218444824">
+    <name>R109</name>
+  </rtept>
+  <rtept  lat="53.568300150144545" lon="10.042877197265625">
+    <name>R110</name>
+  </rtept>
+  <rtept  lat="53.56641415275043" lon="10.039401054382324">
+    <name>R111</name>
+  </rtept>
+  <rtept  lat="53.56730618902727" lon="10.030603408813477">
+    <name>R112</name>
+  </rtept>
+  <rtept  lat="53.569778305525574" lon="10.027642250061035">
+    <name>R113</name>
+  </rtept>
+</rte>
+<rte>
+  <name>Route2</name>
+  <rtept  lat="53.5730912247365" lon="10.023694038391113">
+    <name>R201</name>
+  </rtept>
+  <rtept  lat="53.57515529700432" lon="10.021204948425293">
+    <name>R202</name>
+  </rtept>
+  <rtept  lat="53.574441801936715" lon="10.012149810791016">
+    <name>R203</name>
+  </rtept>
+  <rtept  lat="53.56934505843871" lon="10.015497207641602">
+    <name>R204</name>
+  </rtept>
+  <rtept  lat="53.56855500820661" lon="10.016098022460938">
+    <name>R205</name>
+  </rtept>
+  <rtept  lat="53.56880986473284" lon="10.02202033996582">
+    <name>R206</name>
+  </rtept>
+  <rtept  lat="53.57079769292734" lon="10.021805763244629">
+    <name>R207</name>
+  </rtept>
+  <rtept  lat="53.57110350435611" lon="10.026140213012695">
+    <name>R208</name>
+  </rtept>
+  <rtept  lat="53.57304025871447" lon="10.023651123046875">
+    <name>R209</name>
+  </rtept>
+</rte>
+</gpx>

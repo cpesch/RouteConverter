@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="overlays">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="overlay">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="center">
+                <xs:complexType>
+                  <xs:attribute name="x" type="xs:unsignedInt" use="required" />
+                  <xs:attribute name="y" type="xs:unsignedInt" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="shapes">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="shape">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element minOccurs="0" name="waypoints">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="shape">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="points">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="point">
+                                              <xs:complexType>
+                                                <xs:attribute name="x" type="xs:unsignedInt" use="required" />
+                                                <xs:attribute name="y" type="xs:unsignedInt" use="required" />
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="type" type="xs:string" use="required" />
+                                    <xs:attribute name="timestamp" type="xs:dateTime" use="required" />
+                                    <xs:attribute name="alt" type="xs:unsignedShort" use="required" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element minOccurs="0" name="points">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="point">
+                                  <xs:complexType>
+                                    <xs:attribute name="x" type="xs:unsignedInt" use="required" />
+                                    <xs:attribute name="y" type="xs:unsignedInt" use="required" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="timestamp" type="xs:dateTime" use="optional" />
+                        <xs:attribute name="alt" type="xs:unsignedShort" use="optional" />
+                        <xs:attribute name="lineSize" type="xs:unsignedByte" use="optional" />
+                        <xs:attribute name="lineColor" type="xs:string" use="optional" />
+                        <xs:attribute name="lineStyle" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:decimal" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
