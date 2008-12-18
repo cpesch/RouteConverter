@@ -98,11 +98,6 @@
         <property name="route-converter-cmdline.java" location="${route-converter-cmdline.src}/java"/>
         <property name="route-converter-cmdline.resources" location="${route-converter-cmdline.src}/resources"/>
         <property name="route-converter-cmdline.output" location="route-converter-cmdline/output"/>
-        <property name="route-synchronizer.src" location="route-synchronizer/src"/>
-        <property name="route-synchronizer.java" location="${route-synchronizer.src}/java"/>
-        <property name="route-synchronizer.resources" location="${route-synchronizer.src}/resources"/>
-        <property name="route-synchronizer.output" location="route-synchronizer/output"/>
-        <property name="route-synchronizer.output.classes" location="${route-synchronizer.output}/classes"/>
 
         <property name="apache.commons-codec.lib" location="thirdparty/apache/commons-codec/lib/commons-codec-1.3-stripped.jar"/>
         <property name="apache.commons-httpclient.lib" location="thirdparty/apache/commons-httpclient/lib/commons-httpclient-3.1-stripped.jar"/>
@@ -198,14 +193,6 @@
             <path refid="navigation-formats.classpath"/>
             <path refid="jdic-0.9.3.classpath"/>
             <path location="${route-converter.output.classes}"/>
-        </path>
-        <path id="route-synchronizer.classpath">
-            <path location="${intellij.forms.lib}"/>
-            <path refid="common.classpath"/>
-            <path refid="common-gui.classpath"/>
-            <path refid="navigation-formats.classpath"/>
-            <path refid="route-converter.classpath"/>
-            <path location="${route-synchronizer.output.classes}"/>
         </path>
     </target>
 
@@ -417,13 +404,6 @@
                 <include name="**/*.properties"/>
             </fileset>
         </copy>
-        <mkdir dir="${route-synchronizer.output.classes}"/>
-        <copy todir="${route-synchronizer.output.classes}">
-            <fileset dir="${route-synchronizer.resources}">
-                <include name="**/*.png"/>
-                <include name="**/*.properties"/>
-            </fileset>
-        </copy>
     </target>
 
     <target name="copy-resources5" depends="init5,copy-native">
@@ -528,10 +508,6 @@
         <javac destdir="${route-converter6.output.classes}" debug="${javac.debug}">
             <src location="${route-converter6.java}"/>
             <classpath refid="route-converter.classpath"/>
-        </javac>
-        <javac destdir="${route-synchronizer.output.classes}" debug="${javac.debug}">
-            <src location="${route-synchronizer.java}"/>
-            <classpath refid="route-synchronizer.classpath"/>
         </javac>
     </target>
 
@@ -773,19 +749,6 @@
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter6"/>
             </manifest>
         </jar>
-
-        <jar destfile="${build.output}/RouteSynchronizer.jar">
-            <fileset dir="${build.output.tmp}"/> <!-- TODO not needed completely -->
-            <fileset dir="${common.output.classes}"/>
-            <fileset dir="${common-gui.output.classes}"/>
-            <fileset dir="${navigation-formats.output.classes}"/>
-            <fileset dir="${route-converter.output.classes}"/> <!-- TODO not needed completely -->
-            <fileset dir="${route-synchronizer.output.classes}"/>
-            <manifest>
-                <attribute name="Created-By" value="Christian Pesch"/>
-                <attribute name="Main-Class" value="slash.navigation.synchronizer.gui.RouteSynchronizer"/>
-            </manifest>
-        </jar>
     </target>
 
     <target name="jar5" depends="init5,compile5">
@@ -968,7 +931,6 @@
         <delete dir="${route-converter.output}"/>
         <delete dir="${route-converter5.output}"/>
         <delete dir="${route-converter6.output}"/>
-        <delete dir="${route-synchronizer.output}"/>
         <delete dir="${build.output}"/>
     </target>
 </project>

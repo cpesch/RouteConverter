@@ -278,7 +278,6 @@
       <module fileurl="file://$PROJECT_DIR$/../rest/rest.iml" filepath="$PROJECT_DIR$/../rest/rest.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter/route-converter.iml" filepath="$PROJECT_DIR$/../route-converter/route-converter.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter6/route-converter6.iml" filepath="$PROJECT_DIR$/../route-converter6/route-converter6.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../route-synchronizer/route-synchronizer.iml" filepath="$PROJECT_DIR$/../route-synchronizer/route-synchronizer.iml" />
       <module fileurl="file://$PROJECT_DIR$/../routes/routes.iml" filepath="$PROJECT_DIR$/../routes/routes.iml" />
     </modules>
   </component>
