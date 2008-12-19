@@ -80,36 +80,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return new GpxRoute(new Gpx11Format(), characteristics, name, null, (List<GpxPosition>) positions);
     }
 
-    private void readErrorStream(final InputStream errorStream) {
-        new Thread(new Runnable() {
-            public void run() {
-                int aByte;
-                int count = 0;
-                byte buffer[] = new byte[2048];
-                try {
-                    while ((aByte = errorStream.read()) != -1 && count < buffer.length) {
-                        buffer[count++] = (byte) aByte;
-                    }
-                } catch (IOException e) {
-                    // ignore these errors like "Bad file number" as they arouse from the
-                    // concurrency of reading the output and the error stream
-                }
-                String errorOutput = new String(buffer).trim();
-                if (errorOutput.length() > 0)
-                    log.warning("Read " + count + " bytes of error output: '" + errorOutput + "'");
-            }
-        }, "ErrorStreamReader").start();
-    }
-
-    private void readInputStream(InputStream inputStream) throws IOException {
+    private void readStream(InputStream inputStream, String streamName) throws IOException {
         byte buffer[] = new byte[2048];
-        int aByte;
         int count = 0;
-        while ((aByte = inputStream.read()) != -1 && count < buffer.length) {
-            buffer[count++] = (byte) aByte;
+        while (inputStream.available() > 0 && count < buffer.length) {
+            buffer[count++] = (byte) inputStream.read();
         }
-        String cmdOutput = new String(buffer).trim();
-        log.info("Read " + count + " bytes of command output: '" + cmdOutput + "'");
+        String output = new String(buffer).trim();
+        log.info("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
     }
 
     private boolean startBabel(File source, String sourceFormat,
@@ -123,20 +101,20 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             // that's ok, we assume that the file does not exist because we can't access it
         }
         if (babel == null || !babelExists) {
-            if(Platform.isWindows()) {
+            if (Platform.isWindows()) {
                 Externalization.extractFile(getClass(), "libexpat.dll");
                 babel = Externalization.extractFile(getClass(), "gpsbabel.exe");
             }
-            if(Platform.isLinux()) {
+            if (Platform.isLinux()) {
                 babel = Externalization.extractFile(getClass(), "gpsbabel-linux-glibc2.3");
             }
-            if(Platform.isMac()) {
+            if (Platform.isMac()) {
                 babel = Externalization.extractFile(getClass(), "gpsbabel-mac");
             }
         }
 
-        if(babel == null || !babel.exists())
-           return false;
+        if (babel == null || !babel.exists())
+            return false;
 
         String command = babel.getAbsolutePath() + " -D9 " + commandLineFlags +
                 " -i " + sourceFormat + " -f \"" + source.getAbsolutePath() + "\"" +
@@ -169,6 +147,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return temp;
     }
 
+    private static final int COMMAND_EXECUTION_TIMEOUT = 5000;
+    private static final int COMMAND_EXECUTION_RECHECK_INTERVAL = 250;
+
     private int execute(String babelPath, String command) throws IOException {
         Process process;
         try {
@@ -177,24 +158,59 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             throw new BabelException("Cannot execute '" + command + "'", babelPath, e);
         }
 
-        InputStream inputStream = process.getInputStream();
-        InputStream errorStream = process.getErrorStream();
-        OutputStream outputStream = process.getOutputStream();
+        InputStream inputStream = new BufferedInputStream(process.getInputStream());
+        InputStream errorStream = new BufferedInputStream(process.getErrorStream());
 
-        readErrorStream(errorStream);
-        readInputStream(inputStream);
+        boolean hasExitValue = false;
+        int currentTimeout = COMMAND_EXECUTION_TIMEOUT;
+        int exitValue = -1;
 
-        int exitCode;
-        try {
-            exitCode = process.waitFor();
-        } catch (InterruptedException e) {
-            throw new IOException("Interrupted during " + command + " execution: " + e.getMessage());
+        while (!hasExitValue) {
+            try {
+                while (inputStream.available() > 0 || errorStream.available() > 0) {
+                    readStream(inputStream, "input");
+                    readStream(errorStream, "error");
+                }
+            }
+            catch (IOException e) {
+                log.severe("Couldn't read response: " + e.getMessage());
+            }
+
+            try {
+                exitValue = process.exitValue();
+                hasExitValue = true;
+            }
+            catch (IllegalThreadStateException e) {
+                try {
+                    Thread.sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
+                    currentTimeout = currentTimeout - COMMAND_EXECUTION_RECHECK_INTERVAL;
+                    if (currentTimeout < 0 && currentTimeout >= -COMMAND_EXECUTION_RECHECK_INTERVAL) {
+                        log.severe("Command doesn't terminate. Shutting down command...");
+                        process.destroy();
+                    } else if (currentTimeout < 0) {
+                        log.severe("Command still doesn't terminate");
+                        Thread.sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
+                    }
+                } catch (InterruptedException e1) {
+                    // doesn't matter
+                }
+            }
         }
 
-        inputStream.close();
-        errorStream.close();
-        outputStream.close();
-        return exitCode;
+        if (!hasExitValue) {
+            log.severe("Command doesn't return exit value. Shutting down command...");
+            process.destroy();
+        }
+
+        try {
+            readStream(inputStream, "input");
+            readStream(errorStream, "error");
+        }
+        catch (IOException e) {
+            log.severe("Couldn't read final response: " + e.getMessage());
+        }
+
+        return exitValue;
     }
 
     public List<GpxRoute> read(File source) throws IOException {
