@@ -20,6 +20,14 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Reads and writes Garmin POI Database (.xcsv) files.
  *
@@ -41,5 +49,26 @@ public class GarminPoiDbFormat extends BabelFormat {
 
     public boolean isSupportsMultipleRoutes() {
         return false;
+    }
+
+    private boolean isNonsenseRoute(List<GpxPosition> positions) {
+        for (GpxPosition position : positions) {
+            if (position.getLongitude() != 0.0 || position.getLatitude() != 0.0 || position.getElevation() != 0.0)
+                return false;
+        }
+        return true;
+    }
+
+    public List<GpxRoute> read(File source) throws IOException {
+        List<GpxRoute> routes = super.read(source);
+        if (routes == null)
+            return null;
+
+        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        for (GpxRoute route : routes) {
+            if (!isNonsenseRoute(route.getPositions()))
+                result.add(route);
+        }
+        return result.size() > 0 ? result : null;
     }
 }
