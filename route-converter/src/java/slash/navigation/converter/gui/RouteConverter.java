@@ -36,6 +36,7 @@ import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -521,7 +522,12 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         textFieldBabelPath.setText(BabelFormat.getBabelPathPreference());
 
         checkBoxAutomaticUpdateCheck.setSelected(createUpdater().isAutomaticUpdateCheck());
-        checkBoxStartWithLastFile.setSelected(getStartWithLastFilePreference());
+        checkBoxAutomaticUpdateCheck.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createUpdater().setAutomaticUpdateCheck(checkBoxAutomaticUpdateCheck.isSelected());
+            }
+        });
+        new CheckBoxPreferencesSynchronizer(checkBoxStartWithLastFile, preferences, START_WITH_LAST_FILE_PREFERENCE, true);
 
         buttonCheckForUpdate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1723,8 +1729,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         preferences.putBoolean(NUMBER_POSITION_NAMES_PREFERENCE, checkboxNumberPositionNames.isSelected());
         preferences.putBoolean(SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE, checkBoxSaveAsRouteTrackWaypoints.isSelected());
         preferences.putInt(DIVIDER_LOCATION_PREFERENCE, splitPane.getDividerLocation());
-        createUpdater().setAutomaticUpdateCheck(checkBoxAutomaticUpdateCheck.isSelected());
-        setStartWithLastFilePreference(checkBoxStartWithLastFile.isSelected());
 
         if (mapView != null)
             mapView.dispose();
@@ -1818,10 +1822,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     boolean getStartWithLastFilePreference() {
         return preferences.getBoolean(START_WITH_LAST_FILE_PREFERENCE, true);
-    }
-
-    void setStartWithLastFilePreference(boolean startWithLastFilePreference) {
-        preferences.putBoolean(START_WITH_LAST_FILE_PREFERENCE, startWithLastFilePreference);
     }
 
     int getSelectDuplicatePreference() {
