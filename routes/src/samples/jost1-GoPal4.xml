@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<tour>
-	<options Type="0" Mode="2" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="1" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
-	<dest Country="49" City="Bremen/Östliche Vorstadt" Zip="28203" Street="Dobbenweg" House="2" PoiName="DR-STILLE" Latitude="6989672" Longitude="981194" StartPos="1" />
-	<dest Country="49" City="Koblenz" Zip="56072" Latitude="6501711" Longitude="844280" />
-</tour>

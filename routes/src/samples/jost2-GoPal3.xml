@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<tour>
-	<options Type="3" Mode="0" TollRoad="1" Ferries="1" Tunnels="1" TTIMode="0" MotorWays="0" VehicleSpeedMotorway="33" VehicleSpeedNonMotorway="27" PedestrianSpeed="1" VehicleSpeedInPedestrianArea="2" CyclistSpeed="4" />
-	<dest Country="49" City="Bremen/Östliche Vorstadt" Zip="28203" Street="Dobbenweg" House="6" Latitude="6989727" Longitude="981263" StartPos="0" />
-	<dest Country="49" City="Oldenburg (Oldb.)" Zip="26135" Street="Scheibenweg" House="41" Latitude="6996823" Longitude="918030" />
-	<dest Country="49" City="Bremen/Neustadt" Zip="28201" Street="Meyerstrasse" Latitude="6987608" Longitude="978616" />
-</tour>
