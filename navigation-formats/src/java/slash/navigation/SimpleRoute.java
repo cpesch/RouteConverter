@@ -20,8 +20,7 @@
 
 package slash.navigation;
 
-import slash.navigation.bcr.BcrPosition;
-import slash.navigation.bcr.BcrRoute;
+import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.GoPalPosition;
@@ -82,12 +81,20 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
     }
 
 
-    public BcrRoute asBcrFormat() {
+    private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (P position : positions) {
-            bcrPositions.add(position.asBcrPosition());
+            bcrPositions.add(position.asMTPPosition());
         }
-        return new BcrRoute(getName(), getDescription(), bcrPositions);
+        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    public BcrRoute asMTP0607Format() {
+        return asBcrFormat(new MTP0607Format());
+    }
+
+    public BcrRoute asMTP0809Format() {
+        return asBcrFormat(new MTP0809Format());
     }
 
     public ItnRoute asItnFormat() {

@@ -20,12 +20,11 @@
 
 package slash.navigation.copilot;
 
-import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CoPilotFormatTest extends NavigationTestCase {
     CoPilot6Format format = new CoPilot6Format();

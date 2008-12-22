@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BcrRouteTest extends NavigationTestCase {
-    BcrRoute route = new BcrRoute("?", null, new ArrayList<BcrPosition>());
+    BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
     BcrPosition a = new BcrPosition(1, 1, 0, "a");
     BcrPosition b = new BcrPosition(3, 3, 0, "b");
     BcrPosition c = new BcrPosition(5, 5, 0, "c");

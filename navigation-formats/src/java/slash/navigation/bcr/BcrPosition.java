@@ -99,7 +99,7 @@ public class BcrPosition extends MercatorPosition {
         if (comment == null)
             return;
 
-        Matcher matcher = BcrFormat.MAP_AND_GUIDE_TOURENPLANER_PATTERN.matcher(comment);
+        Matcher matcher = MTP0809Format.DESCRIPTION_PATTERN.matcher(comment);
         if (matcher.matches()) {
             zipCode = Conversion.trim(matcher.group(1));
             if (ZIPCODE_DEFINES_NOTHING.equals(zipCode)) {
@@ -138,7 +138,7 @@ public class BcrPosition extends MercatorPosition {
     }
 
 
-    public BcrPosition asBcrPosition() {
+    public BcrPosition asMTPPosition() {
         return this;
     }
 

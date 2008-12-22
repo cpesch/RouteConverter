@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -22,8 +22,13 @@ package slash.navigation.bcr;
 
 import slash.navigation.NavigationTestCase;
 
-public class BcrFormatTest extends NavigationTestCase {
-    BcrFormat format = new BcrFormat();
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+
+public class MTP0607FormatTest extends NavigationTestCase {
+    MTP0607Format format = new MTP0607Format();
+    BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
 
     public void testIsSectionTitle() {
         assertTrue(format.isSectionTitle("[CLIENT]"));
@@ -60,18 +65,18 @@ public class BcrFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionFromMTP20082009() {
-         BcrPosition position = format.parsePosition("TOWN,210945415755,1", "1115508,7081108", "D 22081,Hamburg/Uhlenhorst,Finkenau,0,");
-         assertEquals(210945415755L, position.getAltitude());
-         assertEquals(1115508, position.getX());
-         assertEquals(7081108, position.getY());
-         assertEquals("D 22081", position.getZipCode());
-         assertEquals("Hamburg/Uhlenhorst", position.getCity());
-         assertEquals("Finkenau", position.getStreet());
-         assertEquals("0", position.getType());
-         assertFalse(position.isUnstructured());
-     }
+        BcrPosition position = format.parsePosition("TOWN,210945415755,1", "1115508,7081108", "D 22081,Hamburg/Uhlenhorst,Finkenau,0,");
+        assertEquals(210945415755L, position.getAltitude());
+        assertEquals(1115508, position.getX());
+        assertEquals(7081108, position.getY());
+        assertEquals("D 22081", position.getZipCode());
+        assertEquals("Hamburg/Uhlenhorst", position.getCity());
+        assertEquals("Finkenau", position.getStreet());
+        assertEquals("0", position.getType());
+        assertFalse(position.isUnstructured());
+    }
 
-     public void testParsePosition() {
+    public void testParsePosition() {
         BcrPosition position = format.parsePosition("Standort,999999999", "1139093,7081574", "bei D 22885,Barsbüttel/Stemwarde,,0,");
         assertEquals(999999999, position.getAltitude());
         assertEquals(1139093, position.getX());
@@ -155,11 +160,32 @@ public class BcrFormatTest extends NavigationTestCase {
     }
 
     public void testSetCommentForMTPFirstAndLastPosition() {
-        BcrPosition position = new BcrPosition(1,2,3, ",Hamburg/Uhlenhorst,,0,");
+        BcrPosition position = new BcrPosition(1, 2, 3, ",Hamburg/Uhlenhorst,,0,");
         assertNull(position.getZipCode());
         assertEquals("Hamburg/Uhlenhorst", position.getCity());
         assertNull(position.getStreet());
         assertEquals("0", position.getType());
         assertFalse(position.isUnstructured());
+    }
+
+    public void testReadComment() throws IOException {
+        StringWriter writer = new StringWriter();
+        format.write(route, new PrintWriter(writer), 0, 2, false);
+        List<BcrRoute> routes = format.read(new BufferedReader(new StringReader(writer.toString())), BcrFormat.DEFAULT_ENCODING);
+        assertEquals(1, routes.size());
+        BcrRoute route = routes.get(0);
+        List<BcrPosition> positions = route.getPositions();
+        assertEquals(2, positions.size());
+        BcrPosition position1 = positions.get(0);
+        assertEquals("Start", position1.getComment());
+        BcrPosition position2 = positions.get(1);
+        assertEquals("End", position2.getComment());
+    }
+    
+    public void testWriteComment() {
+        StringWriter writer = new StringWriter();
+        format.write(route, new PrintWriter(writer), 0, 2, false);
+        assertTrue(writer.toString().contains("STATION1=Start"));
+        assertTrue(writer.toString().contains("STATION2=End"));
     }
 }

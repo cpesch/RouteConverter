@@ -100,8 +100,8 @@ public class AppendTest extends NavigationTestCase {
         }
     }
 
-    public void testAppendItnToBcr() throws IOException {
-        append(TEST_PATH + "from.bcr", TEST_PATH + "large.itn");
+    public void testAppendItnToMTP0607() throws IOException {
+        append(TEST_PATH + "from-mtp0607.bcr", TEST_PATH + "large.itn");
     }
 
     public void testAppendBcrToKml() throws IOException {

@@ -20,11 +20,11 @@
 
 package slash.navigation;
 
-import slash.navigation.bcr.BcrFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.bcr.BcrFormat;
 
 import java.io.File;
 import java.io.IOException;

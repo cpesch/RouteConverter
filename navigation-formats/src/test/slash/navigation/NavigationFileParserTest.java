@@ -72,7 +72,8 @@ public class NavigationFileParserTest extends NavigationTestCase {
     }
 
     public void testIsValidBcr() throws IOException {
-        read(TEST_PATH + "from.bcr");
+        read(TEST_PATH + "from-mtp0607.bcr");
+        read(TEST_PATH + "from-mtp0809.bcr");
         read(TEST_PATH + "large.bcr");
     }
 

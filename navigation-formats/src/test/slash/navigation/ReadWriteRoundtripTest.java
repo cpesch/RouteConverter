@@ -32,7 +32,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.wpr");
     }
 
-    public void testBcrReadWriteRoundtrip() throws IOException {
+    public void testMTP0607ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "large.bcr");
     }
 

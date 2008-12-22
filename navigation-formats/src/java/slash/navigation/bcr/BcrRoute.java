@@ -23,7 +23,6 @@ package slash.navigation.bcr;
 import slash.navigation.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -31,13 +30,14 @@ import slash.navigation.gpx.*;
 import slash.navigation.itn.ItnPosition;
 import slash.navigation.itn.ItnRoute;
 import slash.navigation.kml.*;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.mm.MagicMapsIktRoute;
+import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
+import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.*;
 
@@ -58,8 +58,8 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         this.positions = positions;
     }
 
-    public BcrRoute(String name, List<String> description, List<BcrPosition> positions) {
-        this(new BcrFormat(), new ArrayList<BcrSection>(), positions);
+    public BcrRoute(BcrFormat format, String name, List<String> description, List<BcrPosition> positions) {
+        this(format, new ArrayList<BcrSection>(), positions);
         sections.add(new BcrSection(BcrFormat.CLIENT_TITLE));
         sections.add(new BcrSection(BcrFormat.COORDINATES_TITLE));
         sections.add(new BcrSection(BcrFormat.DESCRIPTION_TITLE));
@@ -148,8 +148,21 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return new BcrPosition(longitude, latitude, null, comment);
     }
 
-    public BcrRoute asBcrFormat() {
-        return this;
+    private BcrRoute asBcrFormat(BcrFormat format) {
+        List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>(getPositions());
+        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    public BcrRoute asMTP0607Format() {
+        if (getFormat() instanceof MTP0607Format)
+            return this;
+        return asBcrFormat(new MTP0607Format());
+    }
+
+    public BcrRoute asMTP0809Format() {
+        if (getFormat() instanceof MTP0809Format)
+            return this;
+        return asBcrFormat(new MTP0809Format());
     }
 
     public ItnRoute asItnFormat() {

@@ -21,7 +21,8 @@
 package slash.navigation;
 
 import slash.navigation.babel.*;
-import slash.navigation.bcr.BcrFormat;
+import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -36,7 +37,6 @@ import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.HaicomLoggerFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tour.TourFormat;
@@ -172,26 +172,36 @@ public class ConvertTest extends NavigationTestCase {
             assertTrue(target.delete());
     }
 
-    public void testConvertBcrToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.bcr", new BcrFormat(), new BcrFormat());
+    public void testConvertMTP0607ToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new MTP0607Format());
     }
 
-    public void testConvertBcrToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.bcr", new BcrFormat(), new ItnFormat());
+    public void testConvertMTP0809ToMTP0809() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new MTP0809Format());
+    }
+
+    public void testConvertMTP0607ToItn() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new ItnFormat());
     }
 
     public void testConvertGpxToItn() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ItnFormat());
     }
 
-    public void testConvertBcrToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.bcr", new BcrFormat(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from.bcr", new BcrFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.bcr", new BcrFormat(), new Kml22Format());
+    public void testConvertMTP0607ToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml22Format());
     }
 
-    public void testConvertBcrToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.bcr", new BcrFormat(), new CoPilot6Format());
+    public void testConvertMTP0607ToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new CoPilot6Format());
+    }
+
+    public void testConvertMTP0809ToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kml22Format());
     }
 
 
@@ -218,8 +228,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new ItnFormat());
     }
 
-    public void testConvertItnToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new BcrFormat());
+    public void testConvertItnToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new MTP0607Format());
     }
 
     public void testConvertItnToKml() throws IOException {
@@ -320,9 +330,9 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new ItnFormat());
     }
 
-    public void testConvertGpx10ToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new BcrFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new BcrFormat());
+    public void testConvertGpx10ToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MTP0607Format());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new MTP0607Format());
     }
 
     public void testConvertGpx11ToGpx11() throws IOException {
@@ -335,9 +345,9 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new ItnFormat());
     }
 
-    public void testConvertGpx11ToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new BcrFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new BcrFormat());
+    public void testConvertGpx11ToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new MTP0607Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new MTP0607Format());
     }
 
 
@@ -349,8 +359,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new ItnFormat());
     }
 
-    public void testConvertKml20ToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new BcrFormat());
+    public void testConvertKml20ToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new MTP0607Format());
     }
 
     public void testConvertKml21ToKml21() throws IOException {
@@ -361,8 +371,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new ItnFormat());
     }
 
-    public void testConvertKml21ToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new BcrFormat());
+    public void testConvertKml21ToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new MTP0607Format());
     }
 
     public void testConvertKml22ToKml22() throws IOException {
@@ -373,8 +383,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new ItnFormat());
     }
 
-    public void testConvertKml22ToBcr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new BcrFormat());
+    public void testConvertKml22ToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new MTP0607Format());
     }
 
 
@@ -751,15 +761,15 @@ public class ConvertTest extends NavigationTestCase {
         largeConvertRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new ItnFormat());
     }
 
-    public void testConvertLargeItnToSeveralBcrs() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new BcrFormat());
+    public void testConvertLargeItnToSeveralMTP0607s() throws IOException {
+        largeConvertRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new MTP0607Format());
     }
 
-    public void testConvertLargeBcrToSeveralItns() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.bcr", new BcrFormat(), new ItnFormat());
+    public void testConvertLargeMTP0607ToSeveralItns() throws IOException {
+        largeConvertRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new ItnFormat());
     }
 
-    public void testConvertLargeBcrToSeveralBcrs() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.bcr", new BcrFormat(), new BcrFormat());
+    public void testConvertLargeMTP0607ToSeveralMTP0607s() throws IOException {
+        largeConvertRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new MTP0607Format());
     }
 }

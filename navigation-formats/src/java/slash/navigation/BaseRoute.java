@@ -199,7 +199,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract P createPosition(Double longitude, Double latitude, Calendar time, String comment);
 
-    public abstract BcrRoute asBcrFormat();
     public abstract SimpleRoute asCoPilot6Format();
     public abstract SimpleRoute asCoPilot7Format();
     public abstract SimpleRoute asGlopusFormat();
@@ -216,6 +215,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
     public abstract NmeaRoute asMagellanExploristFormat();
+    public abstract BcrRoute asMTP0607Format();
+    public abstract BcrRoute asMTP0809Format();
     public abstract SimpleRoute asNavigatingPoiWarnerFormat();
     public abstract NmeaRoute asNmeaFormat();
     public abstract NmnRoute asNmn4Format();

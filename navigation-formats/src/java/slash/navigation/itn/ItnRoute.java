@@ -23,8 +23,7 @@ import slash.navigation.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.viamichelin.ViaMichelinRoute;
-import slash.navigation.bcr.BcrPosition;
-import slash.navigation.bcr.BcrRoute;
+import slash.navigation.bcr.*;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -91,17 +90,25 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
         return new ItnPosition(longitude, latitude, null, time, comment);
     }
 
-    public BcrRoute asBcrFormat() {
+    private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (ItnPosition itnPosition : positions) {
-            BcrPosition bcrPosition = itnPosition.asBcrPosition();
+            BcrPosition bcrPosition = itnPosition.asMTPPosition();
             // shortens comment to better fit to Map&Guide Tourenplaner station list
             String location = itnPosition.getCity();
             if (location != null)
                 bcrPosition.setComment(location);
             bcrPositions.add(bcrPosition);
         }
-        return new BcrRoute(getName(), getDescription(), bcrPositions);
+        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    public BcrRoute asMTP0607Format() {
+        return asBcrFormat(new MTP0607Format());
+    }
+
+    public BcrRoute asMTP0809Format() {
+        return asBcrFormat(new MTP0809Format());
     }
 
     public ItnRoute asItnFormat() {

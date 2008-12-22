@@ -86,7 +86,7 @@ public class GoPalPosition extends MercatorPosition {
     }
 
 
-    public BcrPosition asBcrPosition() {
+    public BcrPosition asMTPPosition() {
         return new BcrPosition(getX(), getY(), getElevation(), getComment());
     }
 

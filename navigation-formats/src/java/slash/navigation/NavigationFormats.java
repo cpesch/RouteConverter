@@ -21,7 +21,8 @@
 package slash.navigation;
 
 import slash.navigation.babel.*;
-import slash.navigation.bcr.BcrFormat;
+import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -37,7 +38,6 @@ import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.BrokenNmeaFormat;
-import slash.navigation.HaicomLoggerFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tour.TourFormat;
@@ -64,7 +64,8 @@ public final class NavigationFormats {
     static {
         // self-implemented formats
         addFormat(NmeaFormat.class);
-        addFormat(BcrFormat.class);
+        addFormat(MTP0809Format.class);
+        addFormat(MTP0607Format.class);
         addFormat(ItnFormat.class);
         addFormat(Kml20Format.class);
         addFormat(Kml21Format.class);
@@ -77,7 +78,7 @@ public final class NavigationFormats {
         addFormat(Nmn4Format.class);
         addFormat(GoogleMapsFormat.class);
         addFormat(GpsTunerFormat.class);
-        addFormat(HaicomLoggerFormat.class);
+        // TODO later... addFormat(HaicomLoggerFormat.class);
         addFormat(CoPilot6Format.class);
         addFormat(CoPilot7Format.class);
         addFormat(Route66Format.class);
@@ -108,7 +109,7 @@ public final class NavigationFormats {
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
         addFormat(BrokenNmeaFormat.class);
-        addFormat(BrokenHaicomLoggerFormat.class);
+        // TODO later... addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
     }

@@ -21,8 +21,7 @@
 package slash.navigation.tcx;
 
 import slash.navigation.*;
-import slash.navigation.bcr.BcrPosition;
-import slash.navigation.bcr.BcrRoute;
+import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.GoPalRoute;
@@ -36,9 +35,9 @@ import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.tcx.binding2.ActivityT;
 import slash.navigation.tcx.binding2.PositionT;
 import slash.navigation.tcx.binding2.TrackpointT;
-import slash.navigation.tcx.binding2.ActivityT;
 import slash.navigation.tcx.binding2.TrainingCenterDatabaseT;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
@@ -103,14 +102,21 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
         return new TcxTrackPointPosition(trackpointT);
     }
 
-    public BcrRoute asBcrFormat() {
+    private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
         for (TcxTrackPointPosition position : positions) {
-            bcrPositions.add(position.asBcrPosition());
+            bcrPositions.add(position.asMTPPosition());
         }
-        return new BcrRoute(getName(), getDescription(), bcrPositions);
+        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
+    public BcrRoute asMTP0607Format() {
+        return asBcrFormat(new MTP0607Format());
+    }
+
+    public BcrRoute asMTP0809Format() {
+        return asBcrFormat(new MTP0809Format());
+    }
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();

@@ -122,9 +122,6 @@ public abstract class BaseNavigationPosition {
             return 0.0;
     }
 
-    public BcrPosition asBcrPosition() {
-        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getComment());
-    }
 
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
@@ -146,8 +143,20 @@ public abstract class BaseNavigationPosition {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
+    public Wgs84Position asGlopusPosition() {
+        return asWgs84Position();
+    }
+
+    public Wgs84Position asGoogleMapsPosition() {
+        return asWgs84Position();
+    }
+
     public Wgs84Position asGpsTunerPosition() {
         return asWgs84Position();
+    }
+
+    public GpxPosition asGpxPosition() {
+        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
     public Wgs84Position asHaicomLoggerPosition() {
@@ -162,8 +171,8 @@ public abstract class BaseNavigationPosition {
         return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
-    public Wgs84Position asNavigatingPoiWarnerPosition() {
-        return asWgs84Position();
+    public BcrPosition asMTPPosition() {
+        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getComment());
     }
 
     public NmeaPosition asMagellanExploristPosition() {
@@ -182,16 +191,8 @@ public abstract class BaseNavigationPosition {
         return asGpxPosition();
     }
 
-    public Wgs84Position asGoogleMapsPosition() {
+    public Wgs84Position asNavigatingPoiWarnerPosition() {
         return asWgs84Position();
-    }
-
-    public Wgs84Position asGlopusPosition() {
-        return asWgs84Position();
-    }
-
-    public GpxPosition asGpxPosition() {
-        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
     public NmeaPosition asNmeaPosition() {

@@ -20,8 +20,8 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.IniFileFormat;
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.Conversion;
 
@@ -36,12 +36,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Map&Guide Tourenplaner Route (.bcr) files.
+ * The base of all Map&Guide Tourenplaner Route formats.
  *
  * @author Christian Pesch
  */
 
-public class BcrFormat extends IniFileFormat<BcrRoute> {
+public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     private static final Logger log = Logger.getLogger(BcrFormat.class.getName());
     private static final int MAXIMUM_POSITION_COUNT = 1 + 99 + 1;
     static final String CLIENT_TITLE = "CLIENT";
@@ -53,11 +53,7 @@ public class BcrFormat extends IniFileFormat<BcrRoute> {
             compile("\\" + SECTION_PREFIX + "(" + CLIENT_TITLE + "|" + COORDINATES_TITLE + "|" +
                     DESCRIPTION_TITLE + "|" + ROUTE_TITLE + ")\\" + SECTION_POSTFIX);
 
-    private static final char VALUE_SEPARATOR = ',';
-    static final Pattern MAP_AND_GUIDE_TOURENPLANER_PATTERN = Pattern.
-            compile("(.*?)" + VALUE_SEPARATOR + "(.*)" + VALUE_SEPARATOR +
-                    "(.*)" + VALUE_SEPARATOR +
-                    "(0)" + VALUE_SEPARATOR + "$");
+    static final char VALUE_SEPARATOR = ',';
     private static final Pattern COORDINATES_VALUE_PATTERN = Pattern.compile("(-?\\d+)" + VALUE_SEPARATOR + "(-?\\d+)");
     private static final Pattern CLIENT_VALUE_PATTERN = Pattern.compile("(Town|TOWN|Standort|STANDORT|)" + VALUE_SEPARATOR + "([^,]+),?.*");
 
@@ -66,10 +62,6 @@ public class BcrFormat extends IniFileFormat<BcrRoute> {
     static final String DESCRIPTION = "DESCRIPTION";
     static final String CREATOR = "CREATOR";
 
-
-    public String getName() {
-        return "Map&Guide Tourenplaner (*" + getExtension() + ")";
-    }
 
     public String getExtension() {
         return ".bcr";
@@ -84,7 +76,7 @@ public class BcrFormat extends IniFileFormat<BcrRoute> {
     }
 
     public <P extends BaseNavigationPosition> BcrRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new BcrRoute(name, null, (List<BcrPosition>) positions);
+        return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 
     public List<BcrRoute> read(BufferedReader reader, String encoding) throws IOException {
@@ -148,12 +140,16 @@ public class BcrFormat extends IniFileFormat<BcrRoute> {
         return findSection(sections, title) != null;
     }
 
+    protected abstract boolean isValidDescription(BcrSection description);
+
     private boolean hasValidSections(List<BcrSection> sections) {
         if (existsSection(sections, CLIENT_TITLE) && existsSection(sections, DESCRIPTION_TITLE) &&
                 existsSection(sections, COORDINATES_TITLE)) {
             BcrSection client = findSection(sections, CLIENT_TITLE);
             BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
             BcrSection description = findSection(sections, DESCRIPTION_TITLE);
+            if (!isValidDescription(description))
+                return false;
             return client.getStationCount() == coordinates.getStationCount() &&
                     coordinates.getStationCount() == description.getStationCount();
         }
@@ -197,6 +193,9 @@ public class BcrFormat extends IniFileFormat<BcrRoute> {
 
         return new BcrPosition(Conversion.parseInt(x), Conversion.parseInt(y), altitude, Conversion.trim(description));
     }
+
+
+    protected abstract void writePosition(BcrPosition position, PrintWriter writer, int index);
 
     public void write(BcrRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
         List<BcrPosition> positions = route.getPositions();
@@ -244,15 +243,7 @@ public class BcrFormat extends IniFileFormat<BcrRoute> {
                 int index = 1;
                 for (int i = startIndex; i < endIndex; i++) {
                     BcrPosition position = positions.get(i);
-                    String zipCode = Conversion.trim(position.getZipCode()) != null ? position.getZipCode() : BcrPosition.ZIPCODE_DEFINES_NOTHING;
-                    String city = position.getCity() != null ? position.getCity() : "";
-                    String street = Conversion.trim(position.getStreet()) != null ? position.getStreet() : "";
-                    if(BcrPosition.STREET_DEFINES_CENTER_NAME.equals(street))
-                        street = BcrPosition.STREET_DEFINES_CENTER_SYMBOL;
-                    String type = Conversion.trim(position.getType()) != null ? position.getType() : "0";
-                    String comment = zipCode + VALUE_SEPARATOR + city + VALUE_SEPARATOR + street + VALUE_SEPARATOR + type + VALUE_SEPARATOR;
-                    writer.println(BcrSection.STATION_PREFIX + (index++) + NAME_VALUE_SEPARATOR + comment);
-
+                    writePosition(position, writer, index++);
                 }
             }
         }
