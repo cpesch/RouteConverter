@@ -456,7 +456,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-gopal.xml", new GoPalRouteFormat(), new Gpx11Format());
     }
 
-    public void testConvertGoPalRouteToGoPal() throws IOException {
+    public void testConvertGoPalRouteToGoPalRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gopal.xml", new GoPalRouteFormat(), new GoPalRouteFormat());
     }
 
