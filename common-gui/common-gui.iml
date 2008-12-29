@@ -11,6 +11,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common" />
+    <orderEntry type="module" module-name="navigation-formats" />
     <orderEntry type="library" name="junit/junit" level="project" />
     <orderEntryProperties />
   </component>
