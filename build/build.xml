@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -112,6 +112,7 @@
         <property name="sun.jaxb.impl.lib" location="thirdparty/sun/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar"/>
         <property name="sun.jaxb.jdk6.impl.lib" location="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
         <property name="sun.jdic.lib" location="thirdparty/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar"/>
+
         <property name="gpsbabel.bin" location="thirdparty/gpsbabel/gpsbabel/bin/"/>
         <property name="sun.jdic.bin" location="thirdparty/sun/jdic/bin"/>
 
@@ -137,6 +138,7 @@
 
         <path id="common-gui.classpath">
             <path refid="common.classpath"/>
+            <path refid="navigation-formats.classpath"/>
             <path location="${common-gui.output.classes}"/>
         </path>
 
@@ -240,6 +242,7 @@
 
         <path id="common-gui.classpath5">
             <path refid="common.classpath5"/>
+            <path refid="navigation-formats.classpath5"/>
             <path location="${common-gui.output.classes5}"/>
         </path>
 
@@ -442,12 +445,6 @@
             <classpath refid="common.testclasspath"/>
         </javac>
 
-        <mkdir dir="${common-gui.output.classes}"/>
-        <javac destdir="${common-gui.output.classes}" debug="${javac.debug}">
-            <src location="${common-gui.java}"/>
-            <classpath refid="common-gui.classpath"/>
-        </javac>
-
         <mkdir dir="${jaxb6.output.classes}"/>
         <javac destdir="${jaxb6.output.classes}" debug="${javac.debug}">
             <src location="${jaxb6.src.java}"/>
@@ -500,6 +497,12 @@
             <classpath refid="geonames.testclasspath"/>
         </javac>
 
+        <mkdir dir="${common-gui.output.classes}"/>
+        <javac destdir="${common-gui.output.classes}" debug="${javac.debug}">
+            <src location="${common-gui.java}"/>
+            <classpath refid="common-gui.classpath"/>
+        </javac>
+
         <javac destdir="${route-converter.output.classes}" debug="${javac.debug}">
             <src location="${route-converter.java}"/>
             <classpath refid="route-converter.classpath"/>
@@ -521,12 +524,6 @@
         <javac destdir="${common.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${common.src.test}"/>
             <classpath refid="common.testclasspath5"/>
-        </javac>
-
-        <mkdir dir="${common-gui.output.classes5}"/>
-        <javac destdir="${common-gui.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${common-gui.java}"/>
-            <classpath refid="common-gui.classpath5"/>
         </javac>
 
         <mkdir dir="${jaxb5.output.classes5}"/>
@@ -579,6 +576,12 @@
         <javac destdir="${geonames.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${geonames.src.test}"/>
             <classpath refid="geonames.testclasspath5"/>
+        </javac>
+
+        <mkdir dir="${common-gui.output.classes5}"/>
+        <javac destdir="${common-gui.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${common-gui.java}"/>
+            <classpath refid="common-gui.classpath5"/>
         </javac>
 
         <javac destdir="${route-converter.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">

@@ -42,6 +42,7 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.BaseNavigationGUI;
 import slash.navigation.gui.Constants;
+import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.nmn.NmnFormat;
