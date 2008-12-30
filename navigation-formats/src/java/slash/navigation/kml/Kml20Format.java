@@ -32,10 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -109,7 +106,7 @@ public class Kml20Format extends KmlFormat {
         if (elements == null)
             return null;
 
-        List<KmlRoute> routes = extractTracks(extractName(elements), elements);
+        List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements);
         RouteComments.commentRoutePositions(routes);
         return routes;
     }
@@ -170,11 +167,11 @@ public class Kml20Format extends KmlFormat {
         return networkLinks;
     }
 
-    private List<KmlRoute> extractTracks(String name, List<Object> elements) {
+    private List<KmlRoute> extractTracks(String name, List<String> description, List<Object> elements) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<Placemark> placemarks = findPlacemarks(elements);
-        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, placemarks));
+        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks));
 
         List<NetworkLink> networkLinks = findNetworkLinks(elements);
         result.addAll(extractWayPointsAndTracksFromNetworkLinks(networkLinks));
@@ -183,19 +180,20 @@ public class Kml20Format extends KmlFormat {
         for (Folder folder : folders) {
             List<Object> overlays = folder.getDocumentOrFolderOrGroundOverlay();
             String folderName = (name != null ? name + "/" : "") + extractName(overlays);
-            result.addAll(extractTracks(folderName, overlays));
+            result.addAll(extractTracks(folderName, description, overlays));
         }
 
         return result;
     }
 
-    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, List<Placemark> placemarks) {
+    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
         for (Placemark placemark : placemarks) {
             String placemarkName = asComment(extractName(placemark.getDescriptionOrNameOrSnippet()),
                     extractDescription(placemark.getDescriptionOrNameOrSnippet()));
+            // cannot extract time in KML 2.0
             List<KmlPosition> positions = extractPositions(placemark.getDescriptionOrNameOrSnippet());
 
             if (positions.size() == 1) {
@@ -208,13 +206,15 @@ public class Kml20Format extends KmlFormat {
                 // each placemark with more than one position is one track
                 String routeName = (name != null ? name + "/" : "") + placemarkName;
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
+                if(routeDescription == null)
+                    routeDescription = description;
                 RouteCharacteristics characteristics = parseCharacteristics(routeName);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (wayPoints.size() != 0) {
             RouteCharacteristics characteristics = parseCharacteristics(name);
-            result.add(0, new KmlRoute(this, characteristics, name, null, wayPoints));
+            result.add(0, new KmlRoute(this, characteristics, name, description, wayPoints));
         }
         return result;
     }

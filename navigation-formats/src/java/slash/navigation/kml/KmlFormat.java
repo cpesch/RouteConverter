@@ -126,16 +126,6 @@ public abstract class KmlFormat extends XmlNavigationFormat<KmlRoute> implements
         return name;
     }
 
-    protected void addDescriptionToRoute(KmlRoute route, String descriptionString) {
-        List<String> descriptionLineList = asDescription(descriptionString);
-        int count = 0;
-        if (descriptionLineList != null) {
-            for (String descriptionLine : descriptionLineList) {
-                route.getDescription().add(count++, descriptionLine);
-            }
-        }
-    }
-
     protected RouteCharacteristics parseCharacteristics(String name) {
         RouteCharacteristics characteristics = RouteCharacteristics.Track;
         if (name != null) {
@@ -156,7 +146,7 @@ public abstract class KmlFormat extends XmlNavigationFormat<KmlRoute> implements
         return aDouble != null ? aDouble.toString() : "0.0";
     }
 
-    protected List<KmlRoute> parseRouteFromUrl(String url) {
+    protected List<KmlRoute> parseRouteFromUrl(String url) { // TODO should be generalized by parsing always from input stream
         List<KmlRoute> result = new ArrayList<KmlRoute>();
         File tempFile = null;
         try {

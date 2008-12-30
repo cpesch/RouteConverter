@@ -129,12 +129,7 @@ public class Kml22Format extends KmlFormat {
                 features = ((FolderType) containerType).getAbstractFeatureGroup();
             else if (containerType instanceof DocumentType)
                 features = ((DocumentType) containerType).getAbstractFeatureGroup();
-            routes = extractTracks(Conversion.trim(containerType.getNameElement()), features);
-            if (containerType.getDescription() != null) {
-                for (KmlRoute route : routes) {
-                    addDescriptionToRoute(route, containerType.getDescription());
-                }
-            }
+            routes = extractTracks(Conversion.trim(containerType.getNameElement()), Conversion.trim(containerType.getDescription()), features);
         }
 
         if(feature instanceof PlacemarkType) {
@@ -149,13 +144,7 @@ public class Kml22Format extends KmlFormat {
                 if (position.getComment() == null)
                     position.setComment(placemarkName);
             }
-            List<String> description = new ArrayList<String>();
-            if (placemarkType.getDescription() != null) {
-        	description.add(placemarkType.getDescription());
-            }
-            KmlRoute route = new KmlRoute(this, RouteCharacteristics.Waypoints, placemarkName,
-        	    description, positions);
-            routes = Arrays.asList(route);
+            routes = Arrays.asList(new KmlRoute(this, RouteCharacteristics.Waypoints, placemarkName, null, positions));
         }
 
         if(routes != null)
@@ -163,11 +152,11 @@ public class Kml22Format extends KmlFormat {
         return routes;
     }
 
-    private List<KmlRoute> extractTracks(String name, List<JAXBElement<? extends AbstractFeatureType>> features) {
+    private List<KmlRoute> extractTracks(String name, String description, List<JAXBElement<? extends AbstractFeatureType>> features) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<JAXBElement<PlacemarkType>> placemarks = find(features, "Placemark", PlacemarkType.class);
-        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, placemarks));
+        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks));
 
         List<JAXBElement<NetworkLinkType>> networkLinks = find(features, "NetworkLink", NetworkLinkType.class);
         result.addAll(extractWayPointsAndTracksFromNetworkLinks(networkLinks));
@@ -176,19 +165,13 @@ public class Kml22Format extends KmlFormat {
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
             String folderName = (name != null ? name + "/" : "") + Conversion.trim(folderTypeValue.getNameElement());
-            List<KmlRoute> tracks = extractTracks(folderName, folderTypeValue.getAbstractFeatureGroup());
-            if (folderTypeValue.getDescription() != null) {
-                for (KmlRoute route : tracks) {
-                    addDescriptionToRoute(route, folderTypeValue.getDescription());
-                }
-	    }
-            result.addAll(tracks);
+            result.addAll(extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup()));
         }
 
         return result;
     }
 
-    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, List<JAXBElement<PlacemarkType>> placemarkTypes) {
+    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
@@ -210,18 +193,14 @@ public class Kml22Format extends KmlFormat {
             } else {
                 // each placemark with more than one position is one track
                 String routeName = (name != null ? name + "/" : "") + placemarkName;
-                List<String> routeDescription = asDescription(placemarkTypeValue.getDescription());
-                if (routeDescription == null) {
-                    // allow outer contexts to add description; therefore avoid null list
-                    routeDescription = new ArrayList<String>();
-                }
+                List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (wayPoints.size() > 0) {
             RouteCharacteristics characteristics = parseCharacteristics(name);
-            result.add(0, new KmlRoute(this, characteristics, name, new ArrayList<String>(), wayPoints));
+            result.add(0, new KmlRoute(this, characteristics, name, asDescription(description), wayPoints));
         }
         return result;
     }
