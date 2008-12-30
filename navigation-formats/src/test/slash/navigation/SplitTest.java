@@ -71,7 +71,7 @@ public class SplitTest extends ReadWriteBase {
     }
 
     public void testSplitPcx5ReadWriteRoundtrip() throws IOException {
-        splitReadWriteRoundtrip(TEST_PATH + "large.wpt");
+        splitReadWriteRoundtrip(TEST_PATH + "large-pcx5.wpt");
     }
 
     public void testSplitGpsTunerTrkReadWriteRoundtrip() throws IOException {

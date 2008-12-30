@@ -145,7 +145,7 @@ public class AppendTest extends NavigationTestCase {
     }
 
     public void testAppendPcxToNmea() throws IOException {
-        append(TEST_PATH + "from.nmea", TEST_PATH + "from.wpt");
+        append(TEST_PATH + "from.nmea", TEST_PATH + "from-pcx5.wpt");
     }
 
     public void testAppendNmeaToNmn4() throws IOException {

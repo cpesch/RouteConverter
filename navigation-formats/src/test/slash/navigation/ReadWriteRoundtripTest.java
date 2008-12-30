@@ -155,7 +155,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
     }
 
     public void testPcx5ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.wpt");
+        readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
     }
 
     public void testViaMichelinReadWriteRoundtrip() throws IOException {

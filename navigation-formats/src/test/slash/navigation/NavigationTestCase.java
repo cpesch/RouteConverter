@@ -40,6 +40,7 @@ import slash.navigation.nmn.*;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
+import slash.navigation.ovl.OvlFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -188,6 +189,8 @@ public abstract class NavigationTestCase extends TestCase {
             } else
                 assertEquals(sourcePosition.getElevation(), targetPosition.getElevation());
 
+        } else if (sourceFormat instanceof OziExplorerReadFormat) {
+            assertNull(targetPosition.getElevation());
         } else if (sourceFormat instanceof CoPilotFormat || sourceFormat instanceof TourFormat)
             assertNull(sourcePosition.getElevation());
         else if (targetFormat instanceof CoPilotFormat || targetFormat instanceof GoPalRouteFormat ||
@@ -216,8 +219,8 @@ public abstract class NavigationTestCase extends TestCase {
                 if (targetFormat instanceof AlanTrlFormat ||
                         (targetFormat instanceof GdbFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
-                        targetFormat instanceof HaicomLoggerFormat ||
-                        targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
+                        targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||
+                        targetFormat instanceof MagicMapsPthFormat || targetFormat instanceof OvlFormat ||
                         (targetFormat instanceof MpsFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         (targetFormat instanceof KmlFormat && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
                     assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
@@ -275,7 +278,8 @@ public abstract class NavigationTestCase extends TestCase {
         } else if (targetFormat instanceof GoPalTrackFormat) {
             assertNull(sourcePosition.getTime());
             assertNotNull(targetPosition.getTime());
-        } else if (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof KmlFormat) {
+        } else if (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof KmlFormat ||
+                sourceFormat instanceof OziExplorerReadFormat) {
             assertNotNull(sourcePosition.getTime());
             assertNull(targetPosition.getTime());
         } else

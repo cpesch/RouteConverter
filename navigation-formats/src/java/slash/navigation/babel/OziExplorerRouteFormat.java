@@ -20,29 +20,32 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.gpx.GpxRoute;
+import slash.navigation.RouteCharacteristics;
 
 /**
- * Reads and writes OziExplorer (.plt) files.
+ * Writes OziExplorer Route (.rte) files.
  *
  * @author Christian Pesch
  */
 
-public class OziExplorerFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
+public class OziExplorerRouteFormat extends OziExplorerWriteFormat {
     public String getExtension() {
-        return ".plt";
+        return ".rte";
     }
 
     public String getName() {
-        return "OziExplorer (*" + getExtension() + ")";
+        return "OziExplorer Route (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
-        return "ozi";
+    protected String getBabelOptions() {
+        return "-r";
     }
 
     public boolean isSupportsMultipleRoutes() {
         return true;
+    }
+
+    protected RouteCharacteristics getRouteCharacteristics() {
+        return RouteCharacteristics.Route;
     }
 }

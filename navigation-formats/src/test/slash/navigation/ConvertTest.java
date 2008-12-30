@@ -69,8 +69,8 @@ public class ConvertTest extends NavigationTestCase {
         convertSingleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getTheRoute());
 
         if (targetFormat.isSupportsMultipleRoutes()) {
-          convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, new ArrayList<BaseRoute>(Arrays.asList(parser.getTheRoute())));
-          convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getAllRoutes());
+            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, new ArrayList<BaseRoute>(Arrays.asList(parser.getTheRoute())));
+            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getAllRoutes());
         }
     }
 
@@ -83,6 +83,9 @@ public class ConvertTest extends NavigationTestCase {
         assertTrue(sourceParser.read(source));
         NavigationFileParser targetParser = new NavigationFileParser();
         assertTrue(targetParser.read(target));
+
+        if (targetFormat instanceof OziExplorerWriteFormat)
+            targetFormat = new OziExplorerReadFormat();
 
         assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
         assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
@@ -111,6 +114,9 @@ public class ConvertTest extends NavigationTestCase {
         assertTrue(sourceParser.read(source));
         NavigationFileParser targetParser = new NavigationFileParser();
         assertTrue(targetParser.read(target));
+
+        if (targetFormat instanceof OziExplorerWriteFormat)
+            targetFormat = new OziExplorerReadFormat();
 
         assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
         assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
@@ -430,26 +436,44 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    /* TODO use once OziExplorer is supported
     public void testConvertOziExplorerToOziExplorer() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerFormat(), new OziExplorerFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OziExplorerTrackFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OziExplorerRouteFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OziExplorerWaypointFormat());
+    }
+
+    public void testConvertOziExplorerRouteToTop50() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OvlFormat());
+    }
+
+    public void testConvertOziExplorerTrackToTop50() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OvlFormat());
+    }
+
+    public void testConvertOziExplorerWaypointToTop50() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OvlFormat());
     }
 
     public void testConvertOziExplorerToMagicMaps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerFormat(), new MagicMapsPthFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
     }
 
     public void testConvertGpx10ToOziExplorer() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new OziExplorerFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new OziExplorerWaypointFormat());
     }
 
     public void testConvertGpx11ToOziExplorer() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new OziExplorerFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new OziExplorerFormat());
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new OziExplorerRouteFormat());
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new OziExplorerTrackFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new OziExplorerWaypointFormat());
     }
-    */
 
 
     public void testConvertGoPalRouteToGpx() throws IOException {
@@ -635,8 +659,8 @@ public class ConvertTest extends NavigationTestCase {
 
 
     public void testConvertPcx5ToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.wpt", new PcxFormat(), new PcxFormat());
-        convertRoundtrip(TEST_PATH + "large.wpt", new PcxFormat(), new PcxFormat());
+        convertRoundtrip(TEST_PATH + "from-pcx5.wpt", new PcxFormat(), new PcxFormat());
+        convertRoundtrip(TEST_PATH + "large-pcx5.wpt", new PcxFormat(), new PcxFormat());
     }
 
     public void testConvertGpx10ToPcx5() throws IOException {
@@ -668,7 +692,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertPcx5ToMapSend() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.wpt", new PcxFormat(), new MapSendFormat());
+        convertRoundtrip(TEST_PATH + "from-pcx5.wpt", new PcxFormat(), new MapSendFormat());
     }
 
 
@@ -756,7 +780,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-itinerary.xvm", new ViaMichelinFormat(), new GoPalTrackFormat());
     }
 
-    
+
     public void testConvertLargeItnToSeveralItns() throws IOException {
         largeConvertRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new ItnFormat());
     }

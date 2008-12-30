@@ -145,7 +145,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".ovl");
     }
 
-    public void testOziExplorerPltFilesAreValid() throws IOException {
+    public void testOziExplorerTrackFilesAreValid() throws IOException {
         readFiles(".plt");
     }
 
@@ -155,7 +155,7 @@ public class ReadTest extends NavigationTestCase {
 
     public void testRteFilesAreValid() throws IOException {
         // Navigon Mobile Navigator
-        // OziExplorer
+        // OziExplorerRoute
         readFiles(".rte");
     }
 
@@ -203,8 +203,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".wpr");
     }
 
-    public void testWptFilesAreValid() throws IOException {
-        // OziExplorer
+    public void testOziExplorerWaypointFilesAreValid() throws IOException {
         readFiles(".wpt");
     }
 

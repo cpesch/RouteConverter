@@ -162,8 +162,8 @@ public class NavigationFileParserTest extends NavigationTestCase {
     }
 
     public void testIsValidPcx5() throws IOException { 
-        read(TEST_PATH + "from.wpt");
-        read(TEST_PATH + "large.wpt");
+        read(TEST_PATH + "from-pcx5.wpt");
+        read(TEST_PATH + "large-pcx5.wpt");
     }
 
     public void testIsValidTef() throws IOException {
