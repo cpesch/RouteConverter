@@ -20,6 +20,13 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.gpx.GpxRoute;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Reads and writes Garmin PCX5 (.wpt) files.
  *
@@ -45,5 +52,19 @@ public class PcxFormat extends BabelFormat {
 
     public boolean isSupportsMultipleRoutes() {
         return false;
+    }
+
+    public List<GpxRoute> read(File source) throws IOException {
+        List<GpxRoute> routes = super.read(source);
+        if (routes == null)
+            return null;
+
+        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        for (GpxRoute route : routes) {
+            // clashes with some TomTom POI .ov2 files
+            if (route.getPositionCount() > 0)
+                result.add(route);
+        }
+        return result.size() > 0 ? result : null;
     }
 }

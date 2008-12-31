@@ -52,11 +52,13 @@ public class GarminPoiDbFormat extends BabelFormat {
     }
 
     private boolean isNonsenseRoute(List<GpxPosition> positions) {
+        int count = 0;
         for (GpxPosition position : positions) {
-            if (position.getLongitude() != 0.0 || position.getLatitude() != 0.0 || position.getElevation() != 0.0)
-                return false;
+            if ((position.getLongitude() == 0.0 && position.getLatitude() == 0.0) ||
+                    (position.getLatitude() == 0.0 && position.getElevation() == 0.0))
+                count++;
         }
-        return true;
+        return count == positions.size();
     }
 
     public List<GpxRoute> read(File source) throws IOException {
@@ -66,6 +68,7 @@ public class GarminPoiDbFormat extends BabelFormat {
 
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (GpxRoute route : routes) {
+            // is really greedy in parsing the data of various text files
             if (!isNonsenseRoute(route.getPositions()))
                 result.add(route);
         }

@@ -463,16 +463,16 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
     }
 
-    public void testConvertGpx10ToOziExplorer() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
+    public void testConvertGpx10ToOziExplorerTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new OziExplorerWaypointFormat());
     }
 
-    public void testConvertGpx11ToOziExplorer() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new OziExplorerRouteFormat());
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new OziExplorerTrackFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new OziExplorerWaypointFormat());
+    public void testConvertGpx10ToOziExplorerRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
+    }
+
+    public void testConvertGpx10ToOziExplorerWaypoints() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new OziExplorerWaypointFormat());
     }
 
 
@@ -731,6 +731,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
+    /*
     public void testConvertHaicomLoggerToHaicomLogger() throws IOException {
         convertRoundtrip(TEST_PATH + "from-haicomlogger.csv", new HaicomLoggerFormat(), new HaicomLoggerFormat());
     }
@@ -742,6 +743,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertNationalGeographicToHaicomLogger() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tpo", new NationalGeographicTopo3Format(), new HaicomLoggerFormat());
     }
+    */
 
 
     public void testConvertTourToTour() throws IOException {

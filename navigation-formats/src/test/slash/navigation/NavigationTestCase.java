@@ -186,6 +186,8 @@ public abstract class NavigationTestCase extends TestCase {
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof PcxFormat) {
                 assertEquals(new Double(Math.round(sourcePosition.getElevation())), targetPosition.getElevation());
+            } else if (targetFormat instanceof OziExplorerReadFormat) {
+                assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else
                 assertEquals(sourcePosition.getElevation(), targetPosition.getElevation());
 
@@ -221,6 +223,7 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                         targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||
                         targetFormat instanceof MagicMapsPthFormat || targetFormat instanceof OvlFormat ||
+                        (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         (targetFormat instanceof MpsFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         (targetFormat instanceof KmlFormat && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
                     assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
@@ -231,7 +234,8 @@ public abstract class NavigationTestCase extends TestCase {
                     assertEquals("Comment " + index + " does not match", escapeBcr(bcrPosition.getCity() + (bcrPosition.getStreet() != null ? "," + bcrPosition.getStreet() : "")), targetPosition.getComment());
                 } else if (targetFormat instanceof GarminPoiFormat)
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 45), trim(targetPosition.getComment(), 45));
-                else if (targetFormat instanceof GarminPoiDbFormat)
+                else if (targetFormat instanceof GarminPoiDbFormat ||
+                        (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Waypoints)))
                     assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(targetPosition.getComment(), 50));
                 else if (targetFormat instanceof ItnFormat)
                     assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetPosition.getComment());

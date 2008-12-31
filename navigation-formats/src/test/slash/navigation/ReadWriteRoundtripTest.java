@@ -83,9 +83,11 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.gpi");
     }
 
+    /*
     public void testHaicomLoggerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-haicomlogger.csv");
     }
+    */
 
     public void testMagellanExploristReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.log");
