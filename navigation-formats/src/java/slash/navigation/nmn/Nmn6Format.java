@@ -26,6 +26,7 @@ import slash.navigation.util.Conversion;
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Calendar;
 
 /**
  * Reads and writes Navigon Mobile Navigator 6 (.rte) files.
@@ -64,7 +65,7 @@ public class Nmn6Format extends NmnFormat {
         return matcher.matches();
     }
 
-    protected NmnPosition parsePosition(String line) {
+    protected NmnPosition parsePosition(String line, Calendar startDate) {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

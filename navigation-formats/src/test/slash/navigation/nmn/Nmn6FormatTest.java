@@ -54,47 +54,47 @@ public class Nmn6FormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("[|][0][10]|||8.8128300|49.0006140[0]||");
+        Wgs84Position position = format.parsePosition("[|][0][10]|||8.8128300|49.0006140[0]||", null);
         assertEquals(8.8128300, position.getLongitude());
         assertEquals(49.0006140, position.getLatitude());
         assertNull(position.getComment());
     }
 
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("[|][0][10]|||-8.8128300|-49.0006140[0]||");
+        Wgs84Position position = format.parsePosition("[|][0][10]|||-8.8128300|-49.0006140[0]||", null);
         assertEquals(-8.8128300, position.getLongitude());
         assertEquals(-49.0006140, position.getLatitude());
         assertNull(position.getComment());
     }
 
     public void testParseITNConvPosition() {
-        Wgs84Position position = format.parsePosition("[D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949");
+        Wgs84Position position = format.parsePosition("[D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949", null);
         assertEquals(10.03200, position.getLongitude());
         assertEquals(53.56949, position.getLatitude());
         assertEquals("D 22081,Hamburg/Uhlenhorst,Finkenau,0,", position.getComment());
     }
 
     public void testParseWrittenFormat() {
-        Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub|][0][10]|||7.74957|50.09721");
+        Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub|][0][10]|||7.74957|50.09721", null);
         assertEquals(7.74957, position.getLongitude());
         assertEquals(50.09721, position.getLatitude());
         assertEquals("Rheinuferstr. bei Kaub", position.getComment());
     }
 
     public void testParseNavigonFormat() {
-        Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17");
+        Wgs84Position position = format.parsePosition("[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
         assertEquals(7.74957, position.getLongitude());
         assertEquals(50.09721, position.getLatitude());
         assertEquals("Rheinuferstr. bei Kaub", position.getComment());
 
-        Wgs84Position position2 = format.parsePosition("[||][0][10]|B42|56348|7.65285|50.17757[6]|KESTERT|56348|7.64715|50.18503[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17");
+        Wgs84Position position2 = format.parsePosition("[||][0][10]|B42|56348|7.65285|50.17757[6]|KESTERT|56348|7.64715|50.18503[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
         assertEquals(7.65285, position2.getLongitude());
         assertEquals(50.17757, position2.getLatitude());
         assertNull(position2.getComment());
     }
 
     public void testParsePOIonDeviceFormat() {
-        Wgs84Position position = format.parsePosition("[||][0][10]|B42|56112|7.62424|50.29042[7]|OBERLAHNSTEIN|[6]|LAHNSTEIN|56112|7.60183|50.31752[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17");
+        Wgs84Position position = format.parsePosition("[||][0][10]|B42|56112|7.62424|50.29042[7]|OBERLAHNSTEIN|[6]|LAHNSTEIN|56112|7.60183|50.31752[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17[Rheinuferstr. bei Kaub||][0][10]|7.74957,50.09721||7.74957|50.09721[6]|KAUB|56349|7.76240|50.08817[3]|RHEIN-LAHN-KREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17", null);
         assertEquals(7.62424, position.getLongitude());
         assertEquals(50.29042, position.getLatitude());
         assertNull(position.getComment());

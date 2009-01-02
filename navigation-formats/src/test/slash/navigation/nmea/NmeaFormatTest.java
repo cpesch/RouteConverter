@@ -206,7 +206,7 @@ public class NmeaFormatTest extends NavigationTestCase {
                         "$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160600,,,A*7B\n" +
                         "$GPZDA,032910,07,08,2004,00,00*48"
         );
-        List<NmeaRoute> routes = format.read(new BufferedReader(reader), BaseNavigationFormat.DEFAULT_ENCODING);
+        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -227,7 +227,7 @@ public class NmeaFormatTest extends NavigationTestCase {
                 "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.0,M,00.0,M,,*77\n" +
                         "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.00,0.00,260707,,*06"
         );
-        List<NmeaRoute> routes = format.read(new BufferedReader(reader), BaseNavigationFormat.DEFAULT_ENCODING);
+        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -251,7 +251,7 @@ public class NmeaFormatTest extends NavigationTestCase {
                 "$GPZDA,134012.000,26,07,07,,*57" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
-        List<NmeaRoute> routes2 = format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), BaseNavigationFormat.DEFAULT_ENCODING);
+        List<NmeaRoute> routes2 = format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, BaseNavigationFormat.DEFAULT_ENCODING);
         assertEquals(1, routes2.size());
         NmeaRoute route2 = routes2.get(0);
         assertEquals(1, route2.getPositionCount());

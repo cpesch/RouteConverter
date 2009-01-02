@@ -31,30 +31,27 @@ import java.util.List;
  */
 
 public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
-    protected Calendar startDate; // used by GopalTrackFormat, ItnFormat, KienzleGpsFormat and NmeaFormat
 
     protected boolean isStartDate(Calendar calendar) {
         return calendar != null && calendar.get(Calendar.YEAR) != 1970 && calendar.get(Calendar.DAY_OF_YEAR) != 1;
     }
 
-    public List<R> read(File source) throws IOException {
-        startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(source.lastModified());
-        return read(source, DEFAULT_ENCODING);
+    public List<R> read(File source, Calendar startDate) throws IOException {
+        return read(source, startDate, DEFAULT_ENCODING);
     }
 
-    protected List<R> read(File source, String encoding) throws IOException {
+    protected List<R> read(File source, Calendar startDate, String encoding) throws IOException {
         Reader reader = new InputStreamReader(new FileInputStream(source), encoding);
         BufferedReader bufferedReader = new BufferedReader(reader);
         try {
-            return read(bufferedReader, encoding);
+            return read(bufferedReader, startDate, encoding);
         }
         finally {
             reader.close();
         }
     }
 
-    public abstract List<R> read(BufferedReader reader, String encoding) throws IOException;
+    public abstract List<R> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException;
 
     protected void write(R route, File target, String encoding, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
         PrintWriter writer = new PrintWriter(target, encoding);

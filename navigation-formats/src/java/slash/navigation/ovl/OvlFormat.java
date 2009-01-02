@@ -71,7 +71,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);
     }
 
-    public List<OvlRoute> read(BufferedReader reader, String encoding) throws IOException {
+    public List<OvlRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         List<OvlSection> sections = new ArrayList<OvlSection>();
         OvlSection current = null;
 

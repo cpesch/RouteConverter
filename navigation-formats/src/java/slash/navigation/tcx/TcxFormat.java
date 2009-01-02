@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * Reads and writes Training Center Database (.tcx) files.
@@ -121,7 +122,7 @@ public class TcxFormat extends XmlNavigationFormat<TcxRoute> {
         return result;
     }
 
-    public List<TcxRoute> read(File source) throws IOException {
+    public List<TcxRoute> read(File source, Calendar startDate) throws IOException {
         try {
             TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal(source);
             List<TcxRoute> result = process(trainingCenterDatabase);

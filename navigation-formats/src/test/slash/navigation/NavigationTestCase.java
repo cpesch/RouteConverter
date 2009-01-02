@@ -27,8 +27,10 @@ import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.GpxFormat;
+import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.itn.ItnPosition;
+import slash.navigation.itn.ItnRoute;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.mm.MagicMapsIktFormat;
@@ -37,10 +39,10 @@ import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
+import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
-import slash.navigation.ovl.OvlFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -427,5 +429,19 @@ public abstract class NavigationTestCase extends TestCase {
             if (file.getName().startsWith(prefix))
                 readFile(file, routeCount, expectElevation, expectTime, characteristics);
         }
+    }
+
+    protected List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws IOException {
+        File source = new File(SAMPLE_PATH + fileName);
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTimeInMillis(source.lastModified());
+        return format.read(source, startDate);
+    }
+
+    protected List<ItnRoute> readSampleItnFile(String fileName) throws IOException {
+        File source = new File(SAMPLE_PATH + fileName);
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTimeInMillis(source.lastModified());
+        return new ItnFormat().read(source, startDate);
     }
 }

@@ -47,7 +47,7 @@ public class HaicomLoggerFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h");
+        Wgs84Position position = format.parsePosition("1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h", null);
         assertEquals(47.91561, position.getLatitude());
         assertEquals(106.90109, position.getLongitude());
         assertEquals(1308.4, position.getElevation());
@@ -60,7 +60,7 @@ public class HaicomLoggerFormatTest extends NavigationTestCase {
     }
 
     public void testParseSouthWestPosition() {
-        Wgs84Position position = format.parsePosition("1,T,08/12/02,05:40:15,47.91561,S,106.90109,W,1308.4m,97.78,1km/h");
+        Wgs84Position position = format.parsePosition("1,T,08/12/02,05:40:15,47.91561,S,106.90109,W,1308.4m,97.78,1km/h", null);
         assertEquals(-47.91561, position.getLatitude());
         assertEquals(-106.90109, position.getLongitude());
     }

@@ -89,7 +89,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    private Calendar parseTime(String string) {
+    private Calendar parseTime(String string, Calendar startDate) {
         if (string == null)
             return null;
         try {
@@ -107,7 +107,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         }
     }
 
-    protected Wgs84Position parsePosition(String line) {
+    protected Wgs84Position parsePosition(String line, Calendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -125,7 +125,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 (street != null ? street + " " : "") +
                 (houseNo != null ? houseNo : "");
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, parseTime(time), comment);
+                null, parseTime(time, startDate), comment);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

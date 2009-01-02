@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Calendar;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,7 +80,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 
-    public List<BcrRoute> read(BufferedReader reader, String encoding) throws IOException {
+    public List<BcrRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         List<BcrSection> sections = new ArrayList<BcrSection>();
         List<BcrPosition> positions = new ArrayList<BcrPosition>();
         BcrSection current = null;

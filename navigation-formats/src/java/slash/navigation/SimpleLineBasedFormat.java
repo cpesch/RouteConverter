@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * Represents simple line based text route formats.
@@ -38,7 +39,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
-    public List<R> read(BufferedReader reader, String encoding) throws IOException {
+    public List<R> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
 
         int lineCount = 0;
@@ -51,7 +52,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
 
             if (isValidLine(line)) {
                 if (isPosition(line)) {
-                    Wgs84Position position = parsePosition(line);
+                    Wgs84Position position = parsePosition(line, startDate);
                     positions.add(position);
                 }
             } else {
@@ -86,7 +87,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return isPosition(line);
     }
     protected abstract boolean isPosition(String line);
-    protected abstract Wgs84Position parsePosition(String line);
+    protected abstract Wgs84Position parsePosition(String line, Calendar startDate);
 
 
     public void write(R route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {

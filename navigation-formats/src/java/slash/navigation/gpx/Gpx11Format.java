@@ -34,6 +34,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 import java.util.logging.Logger;
 
 /**
@@ -63,7 +64,7 @@ public class Gpx11Format extends GpxFormat {
         return result;
     }
 
-    public List<GpxRoute> read(File source) throws IOException {
+    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
         try {
             GpxType gpxType = GpxUtil.unmarshal11(source);
             return process(gpxType);

@@ -40,7 +40,7 @@ public class KienzleGpsFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;");
+        Wgs84Position position = format.parsePosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", null);
         assertEquals(7.0475000000, position.getLongitude());
         assertEquals(50.7500000000, position.getLatitude());
         assertNull(position.getElevation());
@@ -54,7 +54,7 @@ public class KienzleGpsFormatTest extends NavigationTestCase {
     }
 
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("113;-7.0475000000;-50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;");
+        Wgs84Position position = format.parsePosition("113;-7.0475000000;-50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;", null);
         assertEquals(-7.0475000000, position.getLongitude());
         assertEquals(-50.7500000000, position.getLatitude());
     }

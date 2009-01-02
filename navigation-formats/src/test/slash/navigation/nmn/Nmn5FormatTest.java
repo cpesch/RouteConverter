@@ -35,21 +35,21 @@ public class Nmn5FormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|9.60476|48.47282|-|-|9.68246|48.48852|");
+        NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|9.60476|48.47282|-|-|9.68246|48.48852|", null);
         assertEquals(9.60476, position.getLongitude());
         assertEquals(48.47282, position.getLatitude());
         assertEquals("Laichingen", position.getComment());
     }
 
     public void testParseNegativePosition() {
-        NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|-9.60476|-48.47282|-|-|9.68246|48.48852|");
+        NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|-9.60476|-48.47282|-|-|9.68246|48.48852|", null);
         assertEquals(-9.60476, position.getLongitude());
         assertEquals(-48.47282, position.getLatitude());
         assertEquals("Laichingen", position.getComment());
     }
 
     public void testParsePositionWithStreet() {
-        NmnPosition position = format.parsePosition("-|-|17|4353|89601|SCHELKLINGEN|89601|Marktstrasse|20|-|-|9.73374|48.37512|-|-|9.73416|48.37679|");
+        NmnPosition position = format.parsePosition("-|-|17|4353|89601|SCHELKLINGEN|89601|Marktstrasse|20|-|-|9.73374|48.37512|-|-|9.73416|48.37679|", null);
         assertEquals(9.73374, position.getLongitude());
         assertEquals(48.37512, position.getLatitude());
         assertEquals("Schelklingen, Marktstrasse 20", position.getComment());
@@ -60,7 +60,7 @@ public class Nmn5FormatTest extends NavigationTestCase {
     }
 
     public void testSetComment() {
-        NmnPosition position = format.parsePosition("-|-|17|4353|89601|-|89601|-|-|-|-|9.73374|48.37512|-|-|9.73416|48.37679|");
+        NmnPosition position = format.parsePosition("-|-|17|4353|89601|-|89601|-|-|-|-|9.73374|48.37512|-|-|9.73416|48.37679|", null);
         assertEquals(9.73374, position.getLongitude());
         assertEquals(48.37512, position.getLatitude());
         assertNull(position.getZip());

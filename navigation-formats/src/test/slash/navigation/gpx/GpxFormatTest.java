@@ -96,8 +96,7 @@ public class GpxFormatTest extends NavigationTestCase {
     }
 
     public void testAkGpxReadWriteRoundtrip() throws IOException {
-        Gpx10Format format = new Gpx10Format();
-        List<GpxRoute> routes = format.read(new File(SAMPLE_PATH + "ak.gpx"));
+        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "ak.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
@@ -105,8 +104,7 @@ public class GpxFormatTest extends NavigationTestCase {
     }
 
     public void testGarminExtensions() throws IOException, JAXBException {
-        Gpx11Format format = new Gpx11Format();
-        List<GpxRoute> routes = format.read(new File(SAMPLE_PATH + "MS.gpx"));
+        List<GpxRoute> routes = readSampleGpxFile(new Gpx11Format(), "MS.gpx");
         assertNotNull(routes);
         assertEquals(2, routes.size());
         GpxRoute route = routes.get(0);

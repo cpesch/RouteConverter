@@ -50,7 +50,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000000, 3");
+        Wgs84Position position = format.parsePosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000000, 3", null);
         assertEquals(8.016903, position.getLongitude());
         assertEquals(52.34555, position.getLatitude());
         assertNull(position.getElevation());
@@ -67,7 +67,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
     }
 
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("6664226, 180820, -8.016903, -52.345550, 12.95, 30.0394, 2, 3.000000, 3");
+        Wgs84Position position = format.parsePosition("6664226, 180820, -8.016903, -52.345550, 12.95, 30.0394, 2, 3.000000, 3", null);
         assertEquals(-8.016903, position.getLongitude());
         assertEquals(-52.34555, position.getLatitude());
         assertNull(position.getElevation());

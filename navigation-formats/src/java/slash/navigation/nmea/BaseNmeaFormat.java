@@ -78,7 +78,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return 0;
     }
 
-    public List<NmeaRoute> read(BufferedReader reader, String encoding) throws IOException {
+    public List<NmeaRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         List<NmeaPosition> positions = new ArrayList<NmeaPosition>();
 
         Calendar originalStartDate = startDate;

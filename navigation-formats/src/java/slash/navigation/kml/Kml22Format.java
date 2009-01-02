@@ -51,7 +51,7 @@ public class Kml22Format extends KmlFormat {
         return "Google Earth 4.2 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(File source) throws IOException {
+    public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
         try {
             ZipFile zipSource = new ZipFile(source);

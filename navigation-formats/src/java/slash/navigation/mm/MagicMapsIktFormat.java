@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Calendar;
 import java.util.logging.Logger;
 
 /**
@@ -189,7 +190,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         }
     }
 
-    public List<MagicMapsIktRoute> read(File source) throws IOException {
+    public List<MagicMapsIktRoute> read(File source, Calendar startDate) throws IOException {
         try {
             List<MagicMapsIktRoute> routes = unmarshal(source);
             if (routes != null && routes.size() > 0)

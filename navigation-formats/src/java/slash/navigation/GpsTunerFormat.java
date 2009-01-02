@@ -87,7 +87,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return calendar;
     }
 
-    protected Wgs84Position parsePosition(String line) {
+    protected Wgs84Position parsePosition(String line, Calendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

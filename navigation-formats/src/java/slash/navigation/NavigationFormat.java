@@ -25,6 +25,7 @@ import com.sun.org.apache.xml.internal.utils.XMLString;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * A navigation format.
@@ -43,6 +44,6 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
-    List<R> read(File source) throws IOException;
+    List<R> read(File source, Calendar startDate) throws IOException;
     void write(R route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException;
 }

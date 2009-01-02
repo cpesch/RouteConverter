@@ -32,6 +32,7 @@ import slash.navigation.util.Platform;
 
 import java.io.*;
 import java.util.List;
+import java.util.Calendar;
 import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 
@@ -213,13 +214,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return exitValue;
     }
 
-    public List<GpxRoute> read(File source) throws IOException {
+    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
         List<GpxRoute> result = null;
         File target = File.createTempFile(source.getName(), "." + BABEL_INTERFACE_FORMAT_NAME);
         boolean successful = startBabel(source, getBabelFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, "-r -w -t");
         if (successful) {
             log.fine("Successfully converted " + source + " to " + target);
-            result = getGpxFormat().read(target);
+            result = getGpxFormat().read(target, startDate);
         }
         if (target.exists())
             target.delete();

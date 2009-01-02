@@ -69,7 +69,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, String encoding) throws IOException {
+    public List<Wgs84Route> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
          List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
          Map<String, String> map = new HashMap<String, String>();
 

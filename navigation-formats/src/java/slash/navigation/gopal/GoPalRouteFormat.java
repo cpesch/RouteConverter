@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * Reads and writes GoPal Route (.xml) files.
@@ -70,7 +71,7 @@ public class GoPalRouteFormat extends XmlNavigationFormat<GoPalRoute> {
         return new GoPalRoute(null, tour.getOptions(), positions);
     }
 
-    public List<GoPalRoute> read(File source) throws IOException {
+    public List<GoPalRoute> read(File source, Calendar startDate) throws IOException {
         try {
             Tour tour = GoPalUtil.unmarshal(source);
             return Arrays.asList(process(tour));

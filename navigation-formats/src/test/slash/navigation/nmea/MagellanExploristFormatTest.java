@@ -90,7 +90,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         StringReader reader = new StringReader(
                 "$PMGNTRK,4914.9672,N,00651.2081,E,00199,M,152224,A,KLLERTAL-RADWEG,210307*7B"
         );
-        List<NmeaRoute> routes = format.read(new BufferedReader(reader), BaseNavigationFormat.DEFAULT_ENCODING);
+        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());

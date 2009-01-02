@@ -36,13 +36,13 @@ public class GlopusFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,");
+        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,", null);
         assertEquals(7.0508300, position.getLongitude());
         assertEquals(51.0450383, position.getLatitude());
     }
 
     public void testParsePositionWithElevation() {
-        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,50,");
+        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,50,", null);
         assertEquals(7.0508300, position.getLongitude());
         assertEquals(51.0450383, position.getLatitude());
         assertEquals(50.0, position.getElevation());
@@ -50,7 +50,7 @@ public class GlopusFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionWithElevationNoTrailingComma() {
-        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,50");
+        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,50", null);
         assertEquals(7.0508300, position.getLongitude());
         assertEquals(51.0450383, position.getLatitude());
         assertEquals(50.0, position.getElevation());
@@ -58,7 +58,7 @@ public class GlopusFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionWithComment() {
-        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,50,Hofgeismar");
+        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,50,Hofgeismar", null);
         assertEquals(7.0508300, position.getLongitude());
         assertEquals(51.0450383, position.getLatitude());
         assertEquals(50.0, position.getElevation());

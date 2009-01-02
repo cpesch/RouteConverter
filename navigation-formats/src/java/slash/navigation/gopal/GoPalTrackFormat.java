@@ -72,7 +72,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean shouldCreateRoute(List<Wgs84Position> positions) {
-        // otherwhise NMN4Format aka gpsbabel -i nmn4 tries to read and complain forever 
+        // otherwhise NMN4Format aka gpsbabel -i nmn4 tries to readSampleGpxFile and complain forever
         return true;
     }
 
@@ -89,7 +89,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return satellites != null && satellites > 0;
     }
 
-    private Calendar parseTime(String time) {
+    private Calendar parseTime(String time, Calendar startDate) {
         time = Conversion.trim(time);
         if (time == null || time.length() != 6)
             return null;
@@ -111,7 +111,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return calendar;
     }
 
-    protected Wgs84Position parsePosition(String line) {
+    protected Wgs84Position parsePosition(String line, Calendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -119,7 +119,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, parseTime(time), null);
+                null, parseTime(time, startDate), null);
     }
 
     private String formatNumber(int number) {

@@ -31,6 +31,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Calendar;
 import java.util.logging.Logger;
 
 /**
@@ -98,13 +99,13 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public List<ViaMichelinRoute> read(File source) throws IOException {
+    public List<ViaMichelinRoute> read(File source, Calendar startDate) throws IOException {
         FileReader reader = new FileReader(source);
         try {
             PoiList poiList = ViaMichelinUtil.unmarshal(reader);
             return Arrays.asList(process(poiList));
         } catch (JAXBException e) {
-            log.fine("Error reading bad " + source + ": " + e.getMessage());
+            log.fine("Error reading " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();

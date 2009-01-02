@@ -24,6 +24,7 @@ import slash.navigation.gpx.GpxRoute;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.io.File;
 import java.io.IOException;
 
@@ -54,8 +55,8 @@ public class PcxFormat extends BabelFormat {
         return false;
     }
 
-    public List<GpxRoute> read(File source) throws IOException {
-        List<GpxRoute> routes = super.read(source);
+    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
+        List<GpxRoute> routes = super.read(source, startDate);
         if (routes == null)
             return null;
 

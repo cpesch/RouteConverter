@@ -32,14 +32,14 @@ public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\"");
+        Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\"", null);
         assertEquals(8.6180901, position.getLongitude());
         assertEquals(50.2175101, position.getLatitude());
         assertEquals("[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]", position.getComment());
     }
 
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("-8.6180901,-50.2175101,\"ABC\"");
+        Wgs84Position position = format.parsePosition("-8.6180901,-50.2175101,\"ABC\"", null);
         assertEquals(-8.6180901, position.getLongitude());
         assertEquals(-50.2175101, position.getLatitude());
         assertEquals("ABC", position.getComment());

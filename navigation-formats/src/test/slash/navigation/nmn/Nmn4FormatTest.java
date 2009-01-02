@@ -36,7 +36,7 @@ public class Nmn4FormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionWithStreet() {
-        NmnPosition position = format.parsePosition("-|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|");
+        NmnPosition position = format.parsePosition("-|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|", null);
         assertEquals(7.00905, position.getLongitude());
         assertEquals(51.44329, position.getLatitude());
         assertEquals("45128 Südviertel, Hohenzollernstrasse/L451", position.getComment());
@@ -47,7 +47,7 @@ public class Nmn4FormatTest extends NavigationTestCase {
     }
 
     public void testParseUppercaseComment() {
-        NmnPosition position = format.parsePosition("-|-|-|45128|SÜDVIERTEL|45128|HOHENZOLLERNSTRASSE|-|-|-|7.00905|51.44329|-|");
+        NmnPosition position = format.parsePosition("-|-|-|45128|SÜDVIERTEL|45128|HOHENZOLLERNSTRASSE|-|-|-|7.00905|51.44329|-|", null);
         assertEquals(7.00905, position.getLongitude());
         assertEquals(51.44329, position.getLatitude());
         assertEquals("45128 Südviertel, Hohenzollernstrasse", position.getComment());
@@ -58,13 +58,13 @@ public class Nmn4FormatTest extends NavigationTestCase {
     }
 
     public void testParseNegativePosition() {
-        NmnPosition position = format.parsePosition("-|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|-7.00905|-51.44329|-|");
+        NmnPosition position = format.parsePosition("-|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|-7.00905|-51.44329|-|", null);
         assertEquals(-7.00905, position.getLongitude());
         assertEquals(-51.44329, position.getLatitude());
     }
 
     public void testParseGPSBabelPosition() {
-        NmnPosition position = format.parsePosition("-|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|");
+        NmnPosition position = format.parsePosition("-|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|", null);
         assertEquals(10.46348, position.getLongitude());
         assertEquals(53.64352, position.getLatitude());
         assertEquals("Linau", position.getComment());
@@ -76,7 +76,7 @@ public class Nmn4FormatTest extends NavigationTestCase {
 
 
     public void testSetComment() {
-        NmnPosition position = format.parsePosition("-|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|");
+        NmnPosition position = format.parsePosition("-|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|", null);
         assertEquals(7.00905, position.getLongitude());
         assertEquals(51.44329, position.getLatitude());
         assertNull(position.getCity());

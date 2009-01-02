@@ -76,11 +76,11 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return new TourRoute(name, (List<TourPosition>) positions);        
     }
 
-    public List<TourRoute> read(File source) throws IOException {
-        return read(source, UTF8_ENCODING);
+    public List<TourRoute> read(File source, Calendar startDate) throws IOException {
+        return read(source, startDate, UTF8_ENCODING);
     }
 
-    public List<TourRoute> read(BufferedReader reader, String encoding) throws IOException {
+    public List<TourRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         List<TourPosition> positions = new ArrayList<TourPosition>();
         Map<String, String> map = new HashMap<String, String>();
         String sectionTitle = null, routeName = null;

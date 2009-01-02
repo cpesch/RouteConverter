@@ -33,7 +33,7 @@ public class MTP0809FormatTest extends NavigationTestCase {
     public void testReadComment() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2, false);
-        List<BcrRoute> routes = format.read(new BufferedReader(new StringReader(writer.toString())), BcrFormat.DEFAULT_ENCODING);
+        List<BcrRoute> routes = format.read(new BufferedReader(new StringReader(writer.toString())), null, BcrFormat.DEFAULT_ENCODING);
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);
         List<BcrPosition> positions = route.getPositions();

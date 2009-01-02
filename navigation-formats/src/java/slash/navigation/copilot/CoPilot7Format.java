@@ -40,8 +40,8 @@ public class CoPilot7Format extends CoPilotFormat {
         return "CoPilot 7 (*" + getExtension() + ")";
     }
 
-    public List<Wgs84Route> read(File source) throws IOException {
-        return read(source, UTF16_ENCODING);
+    public List<Wgs84Route> read(File source, Calendar startDate) throws IOException {
+        return read(source, startDate, UTF16_ENCODING);
     }
 
     public void write(Wgs84Route route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {

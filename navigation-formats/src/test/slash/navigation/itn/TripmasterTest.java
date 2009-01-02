@@ -23,6 +23,7 @@ package slash.navigation.itn;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.gpx.GpxFormatTest;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.itn.ItnPosition;
 import slash.navigation.itn.ItnRoute;
@@ -168,8 +169,7 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmaster1dot4GpxTrack() throws IOException {
-        Gpx10Format format = new Gpx10Format();
-        List<GpxRoute> routes = format.read(new File(SAMPLE_PATH + "tripmaster1.gpx"));
+        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "tripmaster1.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
@@ -208,8 +208,7 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmasterGpxTrack() throws IOException {
-        Gpx10Format format = new Gpx10Format();
-        List<GpxRoute> routes = format.read(new File(SAMPLE_PATH + "tripmaster2.gpx"));
+        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "tripmaster2.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
@@ -248,9 +247,8 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmaster1dot4ItnTrack() throws IOException {
-        ItnFormat format = new ItnFormat();
         File file = new File(SAMPLE_PATH + "tripmaster1.itn");
-        List<ItnRoute> routes = format.read(file);
+        List<ItnRoute> routes = readSampleItnFile("tripmaster1.itn");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         ItnRoute route = routes.get(0);
@@ -289,8 +287,7 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmasterItnTrack() throws IOException {
-        ItnFormat format = new ItnFormat();
-        List<ItnRoute> routes = format.read(new File(SAMPLE_PATH + "tripmaster3.itn"));
+        List<ItnRoute> routes = readSampleItnFile("tripmaster3.itn");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         ItnRoute route = routes.get(0);

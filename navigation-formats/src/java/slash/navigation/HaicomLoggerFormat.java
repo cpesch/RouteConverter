@@ -117,7 +117,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return null;
     }
 
-    protected Wgs84Position parsePosition(String line) {
+    protected Wgs84Position parsePosition(String line, Calendar startDate) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (matcher.matches()) {
             String date = matcher.group(1);

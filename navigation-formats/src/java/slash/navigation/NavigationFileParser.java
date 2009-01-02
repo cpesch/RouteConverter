@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Calendar;
 import java.util.logging.Logger;
 
 /**
@@ -87,8 +88,11 @@ public class NavigationFileParser {
     }
 
     private FormatAndRoutes readFile(File source) throws IOException {
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTimeInMillis(source.lastModified());
+        
         for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
-            List<BaseRoute> routes = format.read(source);
+            List<BaseRoute> routes = format.read(source, startDate);
             if (routes != null && routes.size() > 0) {
                 log.info("Detected '" + format.getName() + "' file with " + routes.size() + " route(s) and " +
                         getPositionCounts(routes) + " positions");

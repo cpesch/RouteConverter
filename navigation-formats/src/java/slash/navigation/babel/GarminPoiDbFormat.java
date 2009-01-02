@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * Reads and writes Garmin POI Database (.xcsv) files.
@@ -61,8 +62,8 @@ public class GarminPoiDbFormat extends BabelFormat {
         return count == positions.size();
     }
 
-    public List<GpxRoute> read(File source) throws IOException {
-        List<GpxRoute> routes = super.read(source);
+    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
+        List<GpxRoute> routes = super.read(source, startDate);
         if (routes == null)
             return null;
 

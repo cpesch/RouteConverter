@@ -131,21 +131,21 @@ public class KmlFormatTest extends NavigationTestCase {
 
     public void testKmlVsKmz20() throws IOException {
         Kml20Format format = new Kml20Format();
-        List<KmlRoute> kmlRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kml"));
-        List<KmlRoute> kmzRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kmz"));
+        List<KmlRoute> kmlRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kml"), null);
+        List<KmlRoute> kmzRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kmz"), null);
         assertEquals(kmlRoute, kmzRoute);
     }
 
     public void testKmlVsKmz21() throws IOException {
         Kml21Format format = new Kml21Format();
-        List<KmlRoute> kmlRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kml"));
-        List<KmlRoute> kmzRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kmz"));
+        List<KmlRoute> kmlRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kml"), null);
+        List<KmlRoute> kmzRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kmz"), null);
         Assert.assertEquals(kmlRoute, kmzRoute);
     }
 
     public void testNetworkLink20() throws IOException {
         Kml20Format format = new Kml20Format();
-        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "www.gps-tour.info20.kml"));
+        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "www.gps-tour.info20.kml"), null);
         assertNotNull(routes);
         assertEquals(6, routes.size());
         for(KmlRoute route : routes) {
@@ -157,7 +157,7 @@ public class KmlFormatTest extends NavigationTestCase {
 
     public void testItnConvKml() throws IOException {
         Kml21Format format = new Kml21Format();
-        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "bcr_with_itnconv.kml"));
+        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "bcr_with_itnconv.kml"), null);
         assertNotNull(routes);
         assertEquals(2, routes.size());
         for(KmlRoute route : routes) {
@@ -169,7 +169,7 @@ public class KmlFormatTest extends NavigationTestCase {
 
     public void testNetworkLink21() throws IOException {
         Kml21Format format = new Kml21Format();
-        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "www.gps-tour.info21.kml"));
+        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "www.gps-tour.info21.kml"), null);
         assertEquals(6, routes.size());
         for(KmlRoute route : routes) {
             assertTrue(route.getPositionCount() > 0);
@@ -180,7 +180,7 @@ public class KmlFormatTest extends NavigationTestCase {
 
     public void testOnlyPlacemark() throws IOException {
         Kml22Format format = new Kml22Format();
-        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "Home to Corfe Castle.kml"));
+        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "Home to Corfe Castle.kml"), null);
         assertNotNull(routes);
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
@@ -189,7 +189,7 @@ public class KmlFormatTest extends NavigationTestCase {
 
     public void testNoKmlRoot20() throws IOException {
         Kml20Format format = new Kml20Format();
-        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "MIK-Tour - Nürburgring 7.10.2007.kml"));
+        List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "MIK-Tour - Nürburgring 7.10.2007.kml"), null);
         assertNotNull(routes);
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
