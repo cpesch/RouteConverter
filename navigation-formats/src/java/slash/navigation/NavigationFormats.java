@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -27,6 +27,8 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.gpx.BrokenGpx10Format;
+import slash.navigation.gpx.BrokenGpx11Format;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.ItnFormat;
@@ -113,6 +115,8 @@ public final class NavigationFormats {
         addFormat(TomTomPoiFormat.class);
         addFormat(BrokenNmeaFormat.class);
         // TODO later... addFormat(BrokenHaicomLoggerFormat.class);
+        addFormat(BrokenGpx10Format.class);
+        addFormat(BrokenGpx11Format.class);
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
     }

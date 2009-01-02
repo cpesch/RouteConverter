@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -30,11 +30,10 @@ import slash.navigation.util.Conversion;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -44,14 +43,14 @@ import java.util.logging.Logger;
  */
 
 public class Gpx11Format extends GpxFormat {
-    private static final Logger log = Logger.getLogger(Gpx10Format.class.getName());
-    private static final String VERSION = "1.1";
+    private static final Logger log = Logger.getLogger(Gpx11Format.class.getName());
+    protected static final String VERSION = "1.1";
 
     public String getName() {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    private List<GpxRoute> process(GpxType gpxType) {
+    protected List<GpxRoute> process(GpxType gpxType) {
         if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
             return null;
 
@@ -70,22 +69,8 @@ public class Gpx11Format extends GpxFormat {
             return process(gpxType);
         } catch (JAXBException e) {
             log.fine("Error reading " + source + ": " + e.getMessage());
-            return readBadXML(source);
+            return null;
         }
-    }
-
-    private List<GpxRoute> readBadXML(File source) throws IOException {
-        FileReader reader = new FileReader(source);
-        try {
-            GpxType gpxType = GpxUtil.unmarshal11(reader);
-            return process(gpxType);
-        } catch (JAXBException e) {
-            log.fine("Error reading bad " + source + ": " + e.getMessage());
-        }
-        finally {
-            reader.close();
-        }
-        return null;
     }
 
     private List<GpxRoute> extractRoutes(GpxType gpxType) {
