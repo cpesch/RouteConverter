@@ -168,7 +168,6 @@ public class ItnPosition extends BaseNavigationPosition {
             elevation = Conversion.parseDouble(matcher.group(3));
             reason = Conversion.trim(matcher.group(4));
         }
-
     }
 
 
