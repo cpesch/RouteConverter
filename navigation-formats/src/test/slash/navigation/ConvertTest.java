@@ -259,7 +259,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "large.gdb", new GdbFormat(), new GdbFormat());
     }
 
-    public void testConvertGdbToKml() throws IOException {
+    public void testConvertGdbToKmlFails() throws IOException {
+        // TODO positions with the same coordinates are not saved separately within GDB files
         convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new Kml22Format());
@@ -275,7 +276,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GdbFormat());
     }
 
-    public void testConvertAxeToGdb() throws IOException {
+    public void testConvertAxeToGdbFails() throws IOException {
         convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new GdbFormat());
     }
 
@@ -317,7 +318,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new MpsFormat());
     }
 
-    public void testConvertAxeToMps() throws IOException {
+    public void testConvertAxeToMpsFails() throws IOException {
         convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new MpsFormat());
     }
 
@@ -446,7 +447,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OvlFormat());
     }
 
-    public void testConvertOziExplorerTrackToTop50() throws IOException {
+    public void testConvertOziExplorerTrackToTop50Fails() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OvlFormat());
     }
 
@@ -454,7 +455,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OvlFormat());
     }
 
-    public void testConvertOziExplorerToMagicMaps() throws IOException {
+    public void testConvertOziExplorerToMagicMapsFails() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsIktFormat());
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsPthFormat());
         convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
@@ -467,7 +468,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
     }
 
-    public void testConvertGpx10ToOziExplorerRoute() throws IOException {
+    public void testConvertGpx10ToOziExplorerRouteFails() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
     }
 
@@ -718,7 +719,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.wpr", new AlanWprFormat(), new AlanWprFormat());
     }
 
-    public void testConvertAlanWprToMps() throws IOException {
+    public void testConvertAlanWprToMpsFails() throws IOException {
         // TODO fails since the Garmin Mapsource seems to capture only tracks correctly
         // TODO in routes positions with the same name have the same coordinates
         // TODO in waypoint lists positions with the same coordinates are eliminated

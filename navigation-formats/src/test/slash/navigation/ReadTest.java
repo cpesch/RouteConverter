@@ -164,9 +164,11 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".tef");
     }
 
+    /*
     public void testTcxFilesAreValid() throws IOException {
         readFiles(".tcx");
     }
+    */
 
     public void testTourFilesAreValid() throws IOException {
         readFiles(".tour");
