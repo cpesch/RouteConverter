@@ -20,8 +20,8 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.IniFileFormat;
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.Conversion;
 

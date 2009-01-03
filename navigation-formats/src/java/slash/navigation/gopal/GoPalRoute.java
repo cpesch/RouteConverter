@@ -21,22 +21,22 @@
 package slash.navigation.gopal;
 
 import slash.navigation.*;
+import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.viamichelin.ViaMichelinRoute;
-import slash.navigation.bcr.*;
 import slash.navigation.gopal.binding3.Tour;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.ItnPosition;
 import slash.navigation.itn.ItnRoute;
 import slash.navigation.kml.*;
-import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.mm.MagicMapsIktRoute;
+import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
+import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
 import java.util.Calendar;

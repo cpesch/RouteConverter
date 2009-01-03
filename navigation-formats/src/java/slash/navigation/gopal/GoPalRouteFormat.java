@@ -20,19 +20,19 @@
 
 package slash.navigation.gopal;
 
-import slash.navigation.gopal.binding3.ObjectFactory;
-import slash.navigation.gopal.binding3.Tour;
-import slash.navigation.XmlNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.XmlNavigationFormat;
+import slash.navigation.gopal.binding3.ObjectFactory;
+import slash.navigation.gopal.binding3.Tour;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Reads and writes GoPal Route (.xml) files.

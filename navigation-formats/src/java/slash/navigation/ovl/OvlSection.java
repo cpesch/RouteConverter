@@ -20,9 +20,9 @@
 
 package slash.navigation.ovl;
 
+import slash.navigation.IniFileSection;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
-import slash.navigation.IniFileSection;
 import slash.navigation.util.Conversion;
 
 import java.util.HashSet;

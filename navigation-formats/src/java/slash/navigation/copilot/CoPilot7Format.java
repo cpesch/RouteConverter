@@ -20,13 +20,15 @@
 
 package slash.navigation.copilot;
 
+import slash.navigation.Wgs84Position;
+import slash.navigation.Wgs84Route;
 import slash.navigation.util.Conversion;
-import slash.navigation.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.File;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Reads and writes CoPilot 7 (.trp) files.

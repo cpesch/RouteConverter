@@ -23,10 +23,10 @@ package slash.navigation;
 import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
+import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.Calendar;
 
 /**
  * Reads and writes Glopus (.tk) files.

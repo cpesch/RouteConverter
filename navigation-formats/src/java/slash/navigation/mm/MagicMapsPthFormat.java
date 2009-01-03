@@ -20,10 +20,10 @@
 
 package slash.navigation.mm;
 
+import slash.navigation.BaseNavigationPosition;
 import slash.navigation.GkPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.SimpleFormat;
-import slash.navigation.BaseNavigationPosition;
 import slash.navigation.util.Conversion;
 
 import java.io.BufferedReader;
@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

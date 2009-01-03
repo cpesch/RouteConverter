@@ -24,9 +24,9 @@ import slash.navigation.Wgs84Position;
 import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Calendar;
 
 /**
  * Reads and writes Navigon Mobile Navigator 5 (.rte) files.

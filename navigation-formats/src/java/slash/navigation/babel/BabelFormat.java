@@ -24,17 +24,17 @@ import slash.navigation.BaseNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
-import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
 import slash.navigation.util.Externalization;
 import slash.navigation.util.Platform;
 
 import java.io.*;
-import java.util.List;
 import java.util.Calendar;
-import java.util.prefs.Preferences;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * The base of all GPSBabel based formats.

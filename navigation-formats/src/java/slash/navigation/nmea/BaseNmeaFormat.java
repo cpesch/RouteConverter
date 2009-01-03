@@ -20,20 +20,20 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.SimpleFormat;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.Conversion;
+import slash.navigation.SimpleFormat;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.hex.HexEncoder;
+import slash.navigation.util.Conversion;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.logging.Logger;
-import java.util.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.*;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The base of all NMEA-like formats.

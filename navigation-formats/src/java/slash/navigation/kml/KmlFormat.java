@@ -20,7 +20,10 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.*;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.BaseRoute;
+import slash.navigation.NavigationFileParser;
+import slash.navigation.RouteCharacteristics;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.InputOutput;

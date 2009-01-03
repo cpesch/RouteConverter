@@ -20,12 +20,10 @@
 
 package slash.navigation;
 
-import com.sun.org.apache.xml.internal.utils.XMLString;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * A navigation format.

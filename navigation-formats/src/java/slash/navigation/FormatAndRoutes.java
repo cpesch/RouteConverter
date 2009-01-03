@@ -20,9 +20,9 @@
 
 package slash.navigation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Encapsulates a {@link BaseNavigationFormat} and a {@link List} of {@link BaseRoute}s.

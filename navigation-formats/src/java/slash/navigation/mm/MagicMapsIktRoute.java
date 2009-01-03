@@ -21,10 +21,9 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
+import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.viamichelin.ViaMichelinRoute;
-import slash.navigation.bcr.*;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -37,6 +36,7 @@ import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
+import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
 import java.util.Calendar;

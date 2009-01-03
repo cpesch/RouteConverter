@@ -24,7 +24,7 @@ import slash.navigation.bcr.BcrRoute;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.ItnRoute;
-import slash.navigation.kml.*;
+import slash.navigation.kml.KmlRoute;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.NmeaRoute;
@@ -36,9 +36,9 @@ import slash.navigation.util.Range;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.List;
-import java.util.BitSet;
 
 /**
  * The base of all routes formats.

@@ -22,11 +22,11 @@ package slash.navigation.babel;
 
 import slash.navigation.gpx.GpxRoute;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Reads and writes Garmin PCX5 (.wpt) files.
