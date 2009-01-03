@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -24,7 +24,7 @@ import slash.navigation.bcr.BcrRoute;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.ItnRoute;
-import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.NmeaRoute;
@@ -212,6 +212,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract KmlRoute asKml20Format();
     public abstract KmlRoute asKml21Format();
     public abstract KmlRoute asKml22Format();
+    public abstract KmlRoute asKmz20Format();
+    public abstract KmlRoute asKmz21Format();
+    public abstract KmlRoute asKmz22Format();
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
     public abstract NmeaRoute asMagellanExploristFormat();

@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -25,8 +25,10 @@ import slash.navigation.hex.HexDecoder;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.InputOutput;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 
-public abstract class KmlFormat extends XmlNavigationFormat<KmlRoute> implements MultipleRoutesFormat<KmlRoute> {
+public abstract class KmlFormat extends BaseKmlFormat {
     private static final Logger log = Logger.getLogger(KmlFormat.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(KmlFormat.class);
 
@@ -86,6 +88,8 @@ public abstract class KmlFormat extends XmlNavigationFormat<KmlRoute> implements
     public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
+
+    abstract List<KmlRoute> read(InputStream in) throws JAXBException;
 
     boolean isPosition(String line) {
         Matcher matcher = PATTERN.matcher(line);
@@ -146,7 +150,8 @@ public abstract class KmlFormat extends XmlNavigationFormat<KmlRoute> implements
         return aDouble != null ? aDouble.toString() : "0.0";
     }
 
-    protected List<KmlRoute> parseRouteFromUrl(String url) { // TODO should be generalized by parsing always from input stream
+    // TODO should be generalized by parsing always from input stream
+    protected List<KmlRoute> parseRouteFromUrl(String url) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
         File tempFile = null;
         try {

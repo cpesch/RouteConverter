@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -30,9 +30,7 @@ import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.ItnFormat;
-import slash.navigation.kml.Kml20Format;
-import slash.navigation.kml.Kml21Format;
-import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
@@ -204,10 +202,10 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new CoPilot6Format());
     }
 
-    public void testConvertMTP0809ToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kml22Format());
+    public void testConvertMTP0809ToKmz() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz20Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz21Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz22Format());
     }
 
 

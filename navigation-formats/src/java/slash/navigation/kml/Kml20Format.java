@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -32,11 +32,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 /**
  * Reads and writes Google Earth 3 (.kml) files.
@@ -52,33 +52,15 @@ public class Kml20Format extends KmlFormat {
     }
 
     public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
         try {
-            ZipFile zipSource = new ZipFile(source);
-            for (Enumeration<? extends ZipEntry> enumeration = zipSource.entries(); enumeration.hasMoreElements();) {
-                ZipEntry entry = enumeration.nextElement();
-                try {
-                    List<KmlRoute> routes = read(zipSource.getInputStream(entry));
-                    if (routes != null)
-                        result.addAll(routes);
-                } catch (JAXBException e) {
-                    log.fine("Error reading " + entry + " from " + source + ": " + e.getMessage());
-                }
-            }
+            return read(new FileInputStream(source));
+        } catch (JAXBException e) {
+            log.fine("Error reading " + source + ": " + e.getMessage());
+            return null;
         }
-        catch (ZipException ze) {
-            try {
-                List<KmlRoute> routes = read(new FileInputStream(source));
-                if (routes != null)
-                    result.addAll(routes);
-            } catch (JAXBException e) {
-                log.fine("Error reading " + source + ": " + e.getMessage());
-            }
-        }
-        return result.size() > 0 ? result : null;
     }
 
-    private List<KmlRoute> read(InputStream in) throws JAXBException {
+    List<KmlRoute> read(InputStream in) throws JAXBException {
         Object o = KmlUtil.unmarshal20(in);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;
@@ -206,7 +188,7 @@ public class Kml20Format extends KmlFormat {
                 // each placemark with more than one position is one track
                 String routeName = (name != null ? name + "/" : "") + placemarkName;
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
-                if(routeDescription == null)
+                if (routeDescription == null)
                     routeDescription = description;
                 RouteCharacteristics characteristics = parseCharacteristics(routeName);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -276,7 +258,7 @@ public class Kml20Format extends KmlFormat {
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));
             Point point = objectFactory.createPoint();
             placemarkList.add(point);
-            point.setCoordinates(Conversion.formatDoubleAsString(position.getLongitude()) + "," + 
+            point.setCoordinates(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
                     Conversion.formatDoubleAsString(position.getLatitude()) + "," +
                     formatElevation(position.getElevation()));
         }

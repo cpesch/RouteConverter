@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -20,23 +20,25 @@
 
 package slash.navigation.kml;
 
-import com.sun.org.apache.xerces.internal.impl.io.MalformedByteSequenceException;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.RouteComments;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.kml.binding22.*;
+import slash.navigation.util.Bearing;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.ISO8601;
-import slash.navigation.util.Bearing;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 /**
  * Reads and writes Google Earth 4.2 (.kml) files.
@@ -52,57 +54,20 @@ public class Kml22Format extends KmlFormat {
     }
 
     public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
         try {
-            ZipFile zipSource = new ZipFile(source);
-            for (Enumeration<? extends ZipEntry> enumeration = zipSource.entries(); enumeration.hasMoreElements();) {
-                ZipEntry entry = enumeration.nextElement();
-                try {
-                    List<KmlRoute> routes = read(zipSource.getInputStream(entry));
-                    if (routes != null)
-                        result.addAll(routes);
-                } catch (JAXBException e) {
-                    log.fine("Error reading " + entry + " from " + source + ": " + e.getMessage());
-                }
-            }
+            return read(new FileInputStream(source));
+        } catch (JAXBException e) {
+            log.fine("Error reading " + source + ": " + e.getMessage());
+            return null;
         }
-        catch (ZipException ze) {
-            try {
-                List<KmlRoute> routes = read(new FileInputStream(source));
-                if (routes != null)
-                    result.addAll(routes);
-            } catch (JAXBException e) {
-                if (e.getCause() instanceof MalformedByteSequenceException) {
-                    List<KmlRoute> routes = readBadITNConv(source);
-                    if (routes != null)
-                        result.addAll(routes);
-                } else
-                    log.fine("Error reading " + source + ": " + e.getMessage());
-            }
-        }
-        return result.size() > 0 ? result : null;
     }
 
-    private List<KmlRoute> read(InputStream in) throws JAXBException {
+    List<KmlRoute> read(InputStream in) throws JAXBException {
         KmlType kmlType = KmlUtil.unmarshal22(in);
         return process(kmlType);
     }
 
-    private List<KmlRoute> readBadITNConv(File source) throws IOException {
-        FileReader reader = new FileReader(source);
-        try {
-            KmlType kmlType = KmlUtil.unmarshal22(reader);
-            return process(kmlType);
-        } catch (JAXBException e) {
-            log.fine("Error reading bad " + source + ": " + e.getMessage());
-        }
-        finally {
-            reader.close();
-        }
-        return null;
-    }
-
-    private List<KmlRoute> process(KmlType kmlType) {
+    protected List<KmlRoute> process(KmlType kmlType) {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
             return null;
         return extractTracks(kmlType);

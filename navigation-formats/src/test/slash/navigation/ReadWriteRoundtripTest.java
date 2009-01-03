@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -45,6 +45,12 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from20.kml");
         readWriteRoundtrip(TEST_PATH + "from21.kml");
         readWriteRoundtrip(TEST_PATH + "from22.kml");
+    }
+
+    public void testKmzReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from20.kmz");
+        readWriteRoundtrip(TEST_PATH + "from21.kmz");
+        readWriteRoundtrip(TEST_PATH + "from22.kmz");
     }
 
     public void testTourReadWriteRoundtrip() throws IOException {

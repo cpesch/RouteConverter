@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -33,6 +33,7 @@ import slash.navigation.itn.ItnPosition;
 import slash.navigation.itn.ItnRoute;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.KmzFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
@@ -203,7 +204,8 @@ public abstract class NavigationTestCase extends TestCase {
                 targetFormat instanceof Route66Format || targetFormat instanceof TourFormat)
             assertNull(targetPosition.getElevation());
         else if (sourcePosition.getElevation() == null &&
-                (targetFormat instanceof GpxFormat || targetFormat instanceof KmlFormat || targetFormat instanceof Nmn5Format))
+                (targetFormat instanceof GpxFormat || targetFormat instanceof KmlFormat ||
+                        targetFormat instanceof KmzFormat || targetFormat instanceof Nmn5Format))
             assertEquals(0.0, targetPosition.getElevation());
         else if (!(targetPosition instanceof ItnPosition))
             assertEquals(sourcePosition.getElevation(), targetPosition.getElevation());
@@ -227,7 +229,7 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof MagicMapsPthFormat || targetFormat instanceof OvlFormat ||
                         (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         (targetFormat instanceof MpsFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
-                        (targetFormat instanceof KmlFormat && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
+                        ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
                     assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
                 else if (targetFormat instanceof AlanWprFormat)
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 12), trim(targetPosition.getComment(), 12));

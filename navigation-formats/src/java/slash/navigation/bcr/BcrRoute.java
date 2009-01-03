@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -179,7 +179,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return new ItnRoute(getCharacteristics(), getName(), itnPositions);
     }
 
-    private KmlRoute asKmlFormat(KmlFormat format) {
+    private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (BcrPosition bcrPosition : positions) {
             kmlPositions.add(bcrPosition.asKmlPosition());
@@ -199,7 +199,19 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asKmz20Format() {
+        return asKmlFormat(new Kmz20Format());
+    }
 
+    public KmlRoute asKmz21Format() {
+        return asKmlFormat(new Kmz21Format());
+    }
+
+    public KmlRoute asKmz22Format() {
+        return asKmlFormat(new Kmz22Format());
+    }
+
+    
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
         for (BcrPosition bcrPosition : positions) {

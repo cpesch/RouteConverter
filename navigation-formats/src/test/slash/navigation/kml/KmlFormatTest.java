@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -130,16 +130,14 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testKmlVsKmz20() throws IOException {
-        Kml20Format format = new Kml20Format();
-        List<KmlRoute> kmlRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kml"), null);
-        List<KmlRoute> kmzRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kmz"), null);
+        List<KmlRoute> kmlRoute = new Kml20Format().read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kml"), null);
+        List<KmlRoute> kmzRoute = new Kmz20Format().read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kmz"), null);
         assertEquals(kmlRoute, kmzRoute);
     }
 
     public void testKmlVsKmz21() throws IOException {
-        Kml21Format format = new Kml21Format();
-        List<KmlRoute> kmlRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kml"), null);
-        List<KmlRoute> kmzRoute = format.read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kmz"), null);
+        List<KmlRoute> kmlRoute = new Kml21Format().read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kml"), null);
+        List<KmlRoute> kmzRoute = new Kmz21Format().read(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kmz"), null);
         Assert.assertEquals(kmlRoute, kmzRoute);
     }
 
@@ -156,7 +154,7 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testItnConvKml() throws IOException {
-        Kml21Format format = new Kml21Format();
+        Kml21Format format = new BrokenKml21Format();
         List<KmlRoute> routes = format.read(new File(SAMPLE_PATH + "bcr_with_itnconv.kml"), null);
         assertNotNull(routes);
         assertEquals(2, routes.size());

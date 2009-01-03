@@ -32,9 +32,7 @@ import slash.navigation.gpx.BrokenGpx11Format;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.ItnFormat;
-import slash.navigation.kml.Kml20Format;
-import slash.navigation.kml.Kml21Format;
-import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.BrokenNmeaFormat;
@@ -70,8 +68,11 @@ public final class NavigationFormats {
         addFormat(MTP0607Format.class);
         addFormat(ItnFormat.class);
         addFormat(Kml20Format.class);
+        addFormat(Kmz20Format.class);
         addFormat(Kml21Format.class);
+        addFormat(Kmz21Format.class);
         addFormat(Kml22Format.class);
+        addFormat(Kmz22Format.class);
         addFormat(Gpx10Format.class);
         addFormat(Gpx11Format.class);
         addFormat(Nmn6FavoritesFormat.class);
@@ -117,6 +118,8 @@ public final class NavigationFormats {
         // TODO later... addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(BrokenGpx10Format.class);
         addFormat(BrokenGpx11Format.class);
+        addFormat(BrokenKml21Format.class);
+        addFormat(BrokenKml22Format.class);
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
     }

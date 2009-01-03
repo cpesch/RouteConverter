@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -49,12 +49,12 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class KmlRoute extends BaseRoute<KmlPosition, KmlFormat> {
+public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     private String name;
     private List<String> description;
     private List<KmlPosition> positions;
 
-    public KmlRoute(KmlFormat format, RouteCharacteristics characteristics,
+    public KmlRoute(BaseKmlFormat format, RouteCharacteristics characteristics,
                     String name, List<String> description, List<KmlPosition> positions) {
         super(format, characteristics);
         this.name = name;
@@ -115,7 +115,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, KmlFormat> {
         return new ItnRoute(getCharacteristics(), getName(), itnPositions);
     }
 
-    private KmlRoute asKmlFormat(KmlFormat format) {
+    private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>(getPositions());
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
@@ -138,6 +138,23 @@ public class KmlRoute extends BaseRoute<KmlPosition, KmlFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asKmz20Format() {
+        if (getFormat() instanceof Kmz20Format)
+            return this;
+        return asKmlFormat(new Kmz20Format());
+    }
+
+    public KmlRoute asKmz21Format() {
+        if (getFormat() instanceof Kmz21Format)
+            return this;
+        return asKmlFormat(new Kmz21Format());
+    }
+
+    public KmlRoute asKmz22Format() {
+        if (getFormat() instanceof Kmz22Format)
+            return this;
+        return asKmlFormat(new Kmz22Format());
+    }
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();

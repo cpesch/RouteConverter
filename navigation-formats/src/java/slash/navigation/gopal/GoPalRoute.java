@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -166,7 +166,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
     }
 
 
-    private KmlRoute asKmlFormat(KmlFormat format) {
+    private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
         for (GoPalPosition position : positions) {
             kmlPositions.add(position.asKmlPosition());
@@ -186,7 +186,19 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asKmz20Format() {
+        return asKmlFormat(new Kmz20Format());
+    }
 
+    public KmlRoute asKmz21Format() {
+        return asKmlFormat(new Kmz21Format());
+    }
+
+    public KmlRoute asKmz22Format() {
+        return asKmlFormat(new Kmz22Format());
+    }
+
+    
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GoPalPosition position : positions) {
