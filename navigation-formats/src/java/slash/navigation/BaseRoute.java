@@ -101,6 +101,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return positions.remove(index);
     }
 
+    /**
+     * Removes duplicate adjacent {@link #getPositions() positions} from this route, leaving
+     * only distinct neighbours
+     */
     public void removeDuplicates() {
         List<P> positions = getPositions();
         P previous = null;
