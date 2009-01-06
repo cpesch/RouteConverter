@@ -892,6 +892,7 @@
             </manifest>
         </jar>
 
+        <!--
         <jar destfile="${build.output}/RouteConverterCmdLine.jar">
             <fileset dir="${build.output.tmp5}"/>
             <fileset dir="${common.output.classes5}">
@@ -918,6 +919,7 @@
                 <attribute name="Main-Class" value="slash.navigation.converter.cmdline.RouteConverterCmdLine"/>
             </manifest>
         </jar>
+        -->
     </target>
 
     <!-- Cleans up any temporary stuff -->
