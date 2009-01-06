@@ -80,6 +80,7 @@ public class KmlPosition extends BaseNavigationPosition {
     }
 
     public void setComment(String comment) {
+        // TODO use same logic as in ItnPosition#setComment
         this.comment = comment;
     }
 

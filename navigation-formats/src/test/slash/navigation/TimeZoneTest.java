@@ -20,7 +20,6 @@
 
 package slash.navigation;
 
-import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxPosition;
 
 import javax.xml.datatype.DatatypeConfigurationException;

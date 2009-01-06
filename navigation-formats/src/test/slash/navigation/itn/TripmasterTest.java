@@ -20,15 +20,11 @@
 
 package slash.navigation.itn;
 
+import slash.navigation.NavigationTestCase;
+import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gpx.GpxFormatTest;
-import slash.navigation.itn.ItnFormat;
-import slash.navigation.itn.ItnPosition;
-import slash.navigation.itn.ItnRoute;
-import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteCharacteristics;
 
 import java.io.File;
 import java.io.IOException;
@@ -164,8 +160,8 @@ public class TripmasterTest extends NavigationTestCase {
     public void testAllTripmasterKmlTracks() throws IOException {
         readFiles(".kml", 1, true, true, RouteCharacteristics.Track);
         readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.kml"), 1, true, false, RouteCharacteristics.Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-2.kml"), 2, true, false/* TODO parse description for true*/, RouteCharacteristics.Waypoints, RouteCharacteristics.Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-3.kml"), 3, true, false/* TODO parse description for true*/, RouteCharacteristics.Track, RouteCharacteristics.Waypoints, RouteCharacteristics.Track);// TODO should be RWT
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-2.kml"), 2, true, false, RouteCharacteristics.Waypoints, RouteCharacteristics.Waypoints);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-3.kml"), 3, true, false, RouteCharacteristics.Track, RouteCharacteristics.Waypoints, RouteCharacteristics.Waypoints);
     }
 
     public void testTripmaster1dot4GpxTrack() throws IOException {
