@@ -190,12 +190,12 @@ public class Kml20Format extends KmlFormat {
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
                 if (routeDescription == null)
                     routeDescription = description;
-                RouteCharacteristics characteristics = parseCharacteristics(routeName);
+                RouteCharacteristics characteristics = parseCharacteristics(routeName, RouteCharacteristics.Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (wayPoints.size() != 0) {
-            RouteCharacteristics characteristics = parseCharacteristics(name);
+            RouteCharacteristics characteristics = parseCharacteristics(name, RouteCharacteristics.Waypoints);
             result.add(0, new KmlRoute(this, characteristics, name, description, wayPoints));
         }
         return result;

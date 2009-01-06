@@ -133,20 +133,20 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return name;
     }
 
-    protected RouteCharacteristics parseCharacteristics(String name) {
-        RouteCharacteristics characteristics = RouteCharacteristics.Track;
-        if (name != null) {
-            int slashIndex = name.lastIndexOf('/');
+    protected RouteCharacteristics parseCharacteristics(String nameToParse, RouteCharacteristics fallback) {
+        RouteCharacteristics result = fallback;
+        if (nameToParse != null) {
+            int slashIndex = nameToParse.lastIndexOf('/');
             if (slashIndex != -1)
-                name = name.substring(slashIndex + 1);
-            if (name.startsWith("Waypoint"))
-                characteristics = RouteCharacteristics.Waypoints;
-            else if (name.startsWith("Route"))
-                characteristics = RouteCharacteristics.Route;
-            else if (name.startsWith("Track"))
-                characteristics = RouteCharacteristics.Track;
+                nameToParse = nameToParse.substring(slashIndex + 1);
+            if (nameToParse.startsWith("Waypoint"))
+                result = RouteCharacteristics.Waypoints;
+            else if (nameToParse.startsWith("Route"))
+                result = RouteCharacteristics.Route;
+            else if (nameToParse.startsWith("Track") || nameToParse.startsWith("Path"))
+                result = RouteCharacteristics.Track;
         }
-        return characteristics;
+        return result;
     }
 
     protected String formatElevation(Double aDouble) {

@@ -159,12 +159,12 @@ public class Kml22Format extends KmlFormat {
                 // each placemark with more than one position is one track
                 String routeName = (name != null ? name + "/" : "") + placemarkName;
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
-                RouteCharacteristics characteristics = parseCharacteristics(routeName);
+                RouteCharacteristics characteristics = parseCharacteristics(routeName, RouteCharacteristics.Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (wayPoints.size() > 0) {
-            RouteCharacteristics characteristics = parseCharacteristics(name);
+            RouteCharacteristics characteristics = parseCharacteristics(name, RouteCharacteristics.Waypoints);
             result.add(0, new KmlRoute(this, characteristics, name, asDescription(description), wayPoints));
         }
         return result;
