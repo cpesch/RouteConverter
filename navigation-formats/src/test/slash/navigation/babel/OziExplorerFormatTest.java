@@ -18,32 +18,23 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation;
+package slash.navigation.babel;
+
+import slash.navigation.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.List;
 
-/**
- * A navigation format.
- *
- * @author Christian Pesch
- */
+public class OziExplorerFormatTest extends NavigationTestCase {
 
-public interface NavigationFormat<R extends BaseRoute> {
-    String getName();
-    String getExtension();
-    int getMaximumFileNameLength();
-    int getMaximumPositionCount();
-    boolean isSupportsReading();
-    boolean isSupportsWriting();
-    boolean isSupportsMultipleRoutes();
-
-    <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
-
-    List<R> read(File source, Calendar startDate) throws IOException;
-    // List<R> read(InputStream source) throws IOException;
-    // List<R> read(InputStream source, Calendar startDate) throws IOException;
-    void write(R route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException;
+    public void testEliminateNonsenseRoutes() throws IOException {
+        File source = new File(SAMPLE_PATH + "Feissneck.rte");
+        NavigationFileParser parser = new NavigationFileParser();
+        assertTrue(parser.read(source));
+        List<BaseRoute> routes = parser.getAllRoutes();
+        assertEquals(1, routes.size());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+        assertEquals(50, route.getPositionCount());
+    }
 }

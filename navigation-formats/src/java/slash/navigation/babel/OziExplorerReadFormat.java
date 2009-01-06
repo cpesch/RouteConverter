@@ -22,6 +22,13 @@ package slash.navigation.babel;
 
 import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.gpx.GpxPosition;
+
+import java.util.List;
+import java.util.Calendar;
+import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Reads OziExplorer Route (.rte), Track (.plt) and Waypoint (.wpt) files.
@@ -52,5 +59,28 @@ public class OziExplorerReadFormat extends BabelFormat implements MultipleRoutes
 
     public boolean isSupportsMultipleRoutes() {
         return true;
+    }
+
+    private boolean isNonsenseRoute(List<GpxPosition> positions) {
+        int count = 0;
+        for (GpxPosition position : positions) {
+            if (position.getLongitude() == 0.0 && position.getLatitude() == 0.0 && position.getElevation() == 0.0)
+                count++;
+        }
+        return count == positions.size();
+    }
+
+    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
+        List<GpxRoute> routes = super.read(source, startDate);
+        if (routes == null)
+            return null;
+
+        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        for (GpxRoute route : routes) {
+            // has lots of zero element routes and routes with only one 0.0/0.0 waypoint
+            if (!isNonsenseRoute(route.getPositions()))
+                result.add(route);
+        }
+        return result.size() > 0 ? result : null;
     }
 }
