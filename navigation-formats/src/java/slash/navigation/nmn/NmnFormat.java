@@ -47,7 +47,7 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
     }
 
     public <P extends BaseNavigationPosition> NmnRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new NmnRoute(this, characteristics, (List<NmnPosition>) positions);
+        return new NmnRoute(this, characteristics, null, (List<NmnPosition>) positions);
     }
 
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
@@ -55,10 +55,6 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
         BaseNavigationPosition first = positions.get(0);
         return new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
                 first.getLatitude() + DUPLICATE_OFFSET, null, null, "Start:" + first.getComment());
-    }
-
-    protected NmnRoute createRoute(RouteCharacteristics characteristics, List<? extends Wgs84Position> positions) {
-        return new NmnRoute(this, characteristics, (List<NmnPosition>) positions);
     }
 
     static String escapeSeparator(String string) {

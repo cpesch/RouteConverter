@@ -202,7 +202,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         for (Wgs84Position wgs84Position : positions) {
             nmnPositions.add(wgs84Position.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {

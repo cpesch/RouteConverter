@@ -49,19 +49,25 @@ import java.util.List;
  */
 
 public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends SimpleFormat> extends BaseRoute<P, F> {
+    protected String name;
     protected List<P> positions;
 
     public SimpleRoute(F format, RouteCharacteristics characteristics, List<P> positions) {
+        this(format, characteristics, null, positions);
+    }
+
+    public SimpleRoute(F format, RouteCharacteristics characteristics, String name, List<P> positions) {
         super(format, characteristics);
+        this.name = name;
         this.positions = positions;
     }
 
     public String getName() {
-        return RouteComments.createRouteName(positions);
+        return name != null ? name : RouteComments.createRouteName(positions);
     }
 
     public void setName(String name) {
-        // intentionally do nothing
+        this.name = name;
     }
 
     public List<String> getDescription() {
@@ -257,7 +263,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         for (P position : positions) {
             nmnPositions.add(position.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {
@@ -308,10 +314,16 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
         SimpleRoute route = (SimpleRoute) o;
 
-        return !(positions != null ? !positions.equals(route.positions) : route.positions != null);
+        return !(name != null ? !name.equals(route.name) : route.name != null) &&
+                characteristics.equals(route.characteristics) &&
+                positions.equals(route.positions);
     }
 
     public int hashCode() {
-        return (positions != null ? positions.hashCode() : 0);
+        int result;
+        result = (name != null ? name.hashCode() : 0);
+        result = 29 * result + characteristics.hashCode();
+        result = 29 * result + positions.hashCode();
+        return result;
     }
 }

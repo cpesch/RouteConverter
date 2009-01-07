@@ -75,6 +75,7 @@ public final class NavigationFormats {
         addFormat(Kmz22Format.class);
         addFormat(Gpx10Format.class);
         addFormat(Gpx11Format.class);
+        // TODO later... addFormat(Nmn7Format.class);
         addFormat(Nmn6FavoritesFormat.class);
         addFormat(Nmn6Format.class);
         addFormat(Nmn5Format.class);

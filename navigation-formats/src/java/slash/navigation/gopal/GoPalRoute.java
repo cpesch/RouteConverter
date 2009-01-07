@@ -236,7 +236,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         for (GoPalPosition Wgs84Position : positions) {
             nmnPositions.add(Wgs84Position.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {

@@ -226,7 +226,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         for (Wgs84Position Wgs84Position : positions) {
             nmnPositions.add(Wgs84Position.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {

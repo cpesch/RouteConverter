@@ -46,6 +46,7 @@ import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.util.*;
 
 import javax.swing.*;
@@ -1017,7 +1018,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         boolean existsMoreThanOneRoute = getFormatAndRoutesModel().getSize() > 1;
 
         checkboxStartGoogleEarth.setVisible(getFormat() instanceof KmlFormat);
-        checkboxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat);
+        checkboxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
         checkboxNumberPositionNames.setVisible(getFormat() instanceof ItnFormat);
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 

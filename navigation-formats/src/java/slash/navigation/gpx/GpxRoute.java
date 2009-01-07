@@ -213,7 +213,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         for (GpxPosition gpxPosition : positions) {
             nmnPositions.add(gpxPosition.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {

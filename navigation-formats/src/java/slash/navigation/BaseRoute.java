@@ -230,6 +230,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract NmnRoute asNmn5Format();
     public abstract NmnRoute asNmn6Format();
     public abstract NmnRoute asNmn6FavoritesFormat();
+    // TODO public abstract NmnRoute asNmn7Format();
     public abstract OvlRoute asOvlFormat();
     public abstract SimpleRoute asRoute66Format();
     public abstract TourRoute asTourFormat();

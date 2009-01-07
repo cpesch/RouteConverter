@@ -202,7 +202,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
         for (ItnPosition itnPosition : positions) {
             nmnPositions.add(itnPosition.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {
@@ -304,11 +304,11 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ItnRoute itnRoute = (ItnRoute) o;
+        ItnRoute route = (ItnRoute) o;
 
-        return !(name != null ? !name.equals(itnRoute.name) : itnRoute.name != null) &&
-                characteristics.equals(itnRoute.characteristics) &&
-                positions.equals(itnRoute.positions);
+        return !(name != null ? !name.equals(route.name) : route.name != null) &&
+                characteristics.equals(route.characteristics) &&
+                positions.equals(route.positions);
     }
 
     public int hashCode() {

@@ -210,7 +210,7 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         for (KmlPosition kmlPosition : positions) {
             nmnPositions.add(kmlPosition.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {

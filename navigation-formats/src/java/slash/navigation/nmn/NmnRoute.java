@@ -34,13 +34,14 @@ import java.util.List;
  */
 
 public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
-    public NmnRoute(NmnFormat format, RouteCharacteristics characteristics, List<NmnPosition> positions) {
-        super(format, characteristics, positions);
+
+    public NmnRoute(NmnFormat format, RouteCharacteristics characteristics, String name, List<NmnPosition> positions) {
+        super(format, characteristics, name, positions);
     }
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>(getPositions());
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {

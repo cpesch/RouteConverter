@@ -1,0 +1,106 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.nmn;
+
+import slash.navigation.RouteCharacteristics;
+import slash.navigation.Wgs84Position;
+import slash.navigation.nmn.binding7.ObjectFactory;
+import slash.navigation.nmn.binding7.Route;
+import slash.navigation.util.Conversion;
+
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+/**
+ * Reads and writes Navigon Mobile Navigator 7 (.freshroute) files.
+ *
+ * @author Christian Pesch
+ */
+
+public class Nmn7Format extends NmnFormat {
+
+    public String getExtension() {
+        return ".freshroute";
+    }
+
+    public String getName() {
+        return "Navigon Mobile Navigator 7 (*" + getExtension() + ")";
+    }
+
+
+    protected boolean isPosition(String line) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected Wgs84Position parsePosition(String line, Calendar startDate) {
+        throw new UnsupportedOperationException();
+    }
+
+    private NmnRoute process(Route route) {
+        List<NmnPosition> positions = new ArrayList<NmnPosition>();
+        for (Route.Point point : route.getPoint()) {
+            positions.add(new NmnPosition(Conversion.formatDouble(point.getY()), Conversion.formatDouble(point.getX()), null, null, point.getName()));
+        }
+        return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
+    }
+
+    public List<NmnRoute> read(File source, Calendar startDate) throws IOException {
+        try {
+            Route route = Nmn7Util.unmarshal(source);
+            return Arrays.asList(process(route));
+        } catch (JAXBException e) {
+            return null;
+        }
+    }
+
+
+    protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
+        throw new UnsupportedOperationException();
+    }
+
+    private Route createNmn(NmnRoute route) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        Route result = objectFactory.createRoute();
+        result.setName(route.getName());
+        for (NmnPosition position : route.getPositions()) {
+            Route.Point point = objectFactory.createRoutePoint();
+            point.setX(Conversion.formatDouble(position.getLatitude()));
+            point.setY(Conversion.formatDouble(position.getLongitude()));
+            point.setName(position.getComment());
+            result.getPoint().add(point);
+        }
+        return result;
+    }
+
+    public void write(NmnRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+        try {
+            Nmn7Util.marshal(createNmn(route), target);
+        } catch (JAXBException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+}

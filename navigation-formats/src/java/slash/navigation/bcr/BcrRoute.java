@@ -267,7 +267,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         for (BcrPosition bcrPosition : positions) {
             nmnPositions.add(bcrPosition.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {
@@ -284,6 +284,10 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
 
     public NmnRoute asNmn6FavoritesFormat() {
         return asNmnFormat(new Nmn6FavoritesFormat());
+    }
+
+    public NmnRoute asNmn7Format() {
+        return asNmnFormat(new Nmn7Format());
     }
 
 
