@@ -251,6 +251,8 @@ public abstract class NavigationTestCase extends TestCase {
                     assertEquals("Comment " + index + " does not match", escapeNmn6(sourcePosition.getComment()), targetPosition.getComment());
                 else if (targetFormat instanceof Nmn6FavoritesFormat)
                     assertEquals("Comment " + index + " does not match", escapeNmn6Favorites(sourcePosition.getComment()), targetPosition.getComment());
+                else if (targetFormat instanceof Nmn7Format)
+                    assertEquals("Comment " + index + " does not match", trimSpaces(sourcePosition.getComment()), trimSpaces(targetPosition.getComment()));
                 else if (targetFormat instanceof MapSendFormat)
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 30), trim(targetPosition.getComment(), 30));
                 else if (targetFormat instanceof PcxFormat)
@@ -319,6 +321,10 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static String escapeNmn6Favorites(String str) {
         return str != null ? Conversion.toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("ß", "ss")) : null;
+    }
+
+    private static String trimSpaces(String str) {
+        return str != null ? str.replaceAll(" ", "") : null;
     }
 
     public static void comparePositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute, NavigationFormat sourceFormat,

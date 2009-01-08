@@ -245,6 +245,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asNmnFormat(new Nmn6FavoritesFormat());
     }
 
+    public NmnRoute asNmn7Format() {
+        return asNmnFormat(new Nmn7Format());
+    }
+
 
     public OvlRoute asOvlFormat() {
         return this;

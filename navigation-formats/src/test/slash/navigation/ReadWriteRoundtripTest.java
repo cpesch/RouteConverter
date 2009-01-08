@@ -95,8 +95,8 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
     }
     */
 
-    public void testMagellanExploristReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.log");
+    public void testNavigatingPOIWarnerReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc");
     }
 
     public void testNmeaReadWriteRoundtrip() throws IOException {
@@ -119,12 +119,24 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-nmn6.rte");
     }
 
-    public void testNavigatingPOIWarnerReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc");
-    }
-
     public void testNmn6FavoritesReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn6favorites.storage");
+    }
+
+    public void testNmn7ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-nmn7.freshroute");
+    }
+
+    public void testMagellanExploristReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.log");
+    }
+
+    public void testMagicMapsIktReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.ikt");
+    }
+
+    public void testMagicMapsPthReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.pth");
     }
 
     public void testMpsReadWriteRoundtrip() throws IOException {
@@ -135,14 +147,6 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
 
     public void testTop50OvlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.ovl");
-    }
-
-    public void testMagicMapsIktReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.ikt");
-    }
-
-    public void testMagicMapsPthReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.pth");
     }
 
     public void testRoute66ReadWriteRoundtrip() throws IOException {

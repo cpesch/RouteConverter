@@ -255,6 +255,10 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return asNmnFormat(new Nmn6FavoritesFormat());
     }
 
+    public NmnRoute asNmn7Format() {
+        return asNmnFormat(new Nmn7Format());
+    }
+
 
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();

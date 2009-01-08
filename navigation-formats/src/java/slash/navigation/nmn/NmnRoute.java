@@ -68,6 +68,12 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
         return asNmnFormat(new Nmn6FavoritesFormat());
     }
 
+    public NmnRoute asNmn7Format() {
+        if (getFormat() instanceof Nmn7Format)
+            return this;
+        return asNmnFormat(new Nmn7Format());
+    }
+    
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (NmnPosition position : positions) {

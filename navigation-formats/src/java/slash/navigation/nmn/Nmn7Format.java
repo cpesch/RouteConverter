@@ -63,7 +63,7 @@ public class Nmn7Format extends NmnFormat {
     private NmnRoute process(Route route) {
         List<NmnPosition> positions = new ArrayList<NmnPosition>();
         for (Route.Point point : route.getPoint()) {
-            positions.add(new NmnPosition(Conversion.formatDouble(point.getY()), Conversion.formatDouble(point.getX()), null, null, point.getName()));
+            positions.add(new NmnPosition(Conversion.formatDouble(point.getX()), Conversion.formatDouble(point.getY()), null, null, point.getName()));
         }
         return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
     }
@@ -88,8 +88,8 @@ public class Nmn7Format extends NmnFormat {
         result.setName(route.getName());
         for (NmnPosition position : route.getPositions()) {
             Route.Point point = objectFactory.createRoutePoint();
-            point.setX(Conversion.formatDouble(position.getLatitude()));
-            point.setY(Conversion.formatDouble(position.getLongitude()));
+            point.setX(Conversion.formatDouble(position.getLongitude()));
+            point.setY(Conversion.formatDouble(position.getLatitude()));
             point.setName(position.getComment());
             result.getPoint().add(point);
         }

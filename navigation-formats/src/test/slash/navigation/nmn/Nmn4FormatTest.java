@@ -73,28 +73,4 @@ public class Nmn4FormatTest extends NavigationTestCase {
         assertNull(position.getStreet());
         assertNull(position.getNumber());
     }
-
-
-    public void testSetComment() {
-        NmnPosition position = format.parsePosition("-|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|", null);
-        assertEquals(7.00905, position.getLongitude());
-        assertEquals(51.44329, position.getLatitude());
-        assertNull(position.getCity());
-        assertNull(position.getStreet());
-        assertNull(position.getNumber());
-        assertNull(position.getComment());
-        assertTrue(position.isUnstructured());
-        position.setComment(null);
-        assertNull(position.getComment());
-        position.setComment("Schelklingen, Marktstrasse 20");
-        assertEquals("Schelklingen, Marktstrasse 20", position.getComment());
-        assertEquals("Schelklingen", position.getCity());
-        assertEquals("Marktstrasse", position.getStreet());
-        assertEquals("20", position.getNumber());
-        position.setComment("Bad Urach, Shell");
-        assertEquals("Bad Urach", position.getCity());
-        assertEquals("Shell", position.getStreet());
-        assertEquals("Bad Urach, Shell", position.getComment());
-        assertNull(position.getNumber());
-    }
 }

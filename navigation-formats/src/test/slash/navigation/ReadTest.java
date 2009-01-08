@@ -134,6 +134,10 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".pgl");
     }
 
+    public void testNmn7FilesAreValid() throws IOException {
+        readFiles(".freshroute");
+    }
+
     public void testMpsFilesAreValid() throws IOException {
         readFiles(".mps");
     }

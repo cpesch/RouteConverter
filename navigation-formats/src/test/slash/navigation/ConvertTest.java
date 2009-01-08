@@ -597,6 +597,30 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
+    public void testConvertNmn7ToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-nmn7.freshroute", new Nmn7Format(), new Nmn7Format());
+    }
+
+    public void testConvertGpx11ToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Nmn7Format());
+    }
+
+    public void testConvertKml22ToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from22.kmz", new Kmz22Format(), new Nmn7Format());
+    }
+
+    public void testConvertCoPilotToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Nmn7Format());
+    }
+
+    public void testConvertNavigatingPoiWarnerToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc", new NavigatingPoiWarnerFormat(), new Nmn7Format());
+    }
+
+
     public void testConvertNavigatingPoiWarnerToNavigatingPoiWarner() throws IOException {
         convertRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc", new NavigatingPoiWarnerFormat(), new NavigatingPoiWarnerFormat());
     }

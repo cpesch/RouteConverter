@@ -71,17 +71,19 @@ public class Nmn5FormatTest extends NavigationTestCase {
         assertTrue(position.isUnstructured());
         position.setComment(null);
         assertNull(position.getComment());
-        position.setComment("Schelklingen, Marktstrasse 20");
-        assertEquals("Schelklingen, Marktstrasse 20", position.getComment());
-        assertNull(position.getZip());
+        
+        position.setComment("87451 Schelklingen, Marktstrasse 20");
+        assertEquals("87451", position.getZip());
         assertEquals("Schelklingen", position.getCity());
         assertEquals("Marktstrasse", position.getStreet());
         assertEquals("20", position.getNumber());
-        position.setComment("Bad Urach, Shell");
-        assertNull(position.getZip());
+        assertEquals("87451 Schelklingen, Marktstrasse 20", position.getComment());
+
+        position.setComment("92845 Bad Urach, Shell");
+        assertEquals("92845", position.getZip());
         assertEquals("Bad Urach", position.getCity());
         assertEquals("Shell", position.getStreet());
-        assertEquals("Bad Urach, Shell", position.getComment());
         assertNull(position.getNumber());
+        assertEquals("92845 Bad Urach, Shell", position.getComment());
     }
 }
