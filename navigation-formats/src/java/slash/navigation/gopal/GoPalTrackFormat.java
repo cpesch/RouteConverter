@@ -94,6 +94,8 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (time == null || time.length() != 6)
             return null;
         Calendar calendar = Calendar.getInstance();
+        calendar.set(1970, 0, 1, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         if (startDate != null) {
             calendar.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
             calendar.set(Calendar.MONTH, startDate.get(Calendar.MONTH));

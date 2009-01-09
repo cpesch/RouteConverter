@@ -32,8 +32,8 @@ import java.util.List;
 
 public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
 
-    protected boolean isStartDate(Calendar calendar) {
-        return calendar != null && calendar.get(Calendar.YEAR) != 1970 && calendar.get(Calendar.DAY_OF_YEAR) != 1;
+    protected boolean isValidStartDate(Calendar calendar) {
+        return calendar != null && (!(calendar.get(Calendar.YEAR) == 1970 && calendar.get(Calendar.DAY_OF_YEAR) == 1));
     }
 
     public List<R> read(File source, Calendar startDate) throws IOException {

@@ -244,7 +244,7 @@ public class TripmasterTest extends NavigationTestCase {
 
     public void testTripmaster1dot4ItnTrack() throws IOException {
         File file = new File(SAMPLE_PATH + "tripmaster1.itn");
-        List<ItnRoute> routes = readSampleItnFile("tripmaster1.itn");
+        List<ItnRoute> routes = readSampleItnFile("tripmaster1.itn", true);
         assertNotNull(routes);
         assertEquals(1, routes.size());
         ItnRoute route = routes.get(0);
@@ -283,7 +283,7 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmasterItnTrack() throws IOException {
-        List<ItnRoute> routes = readSampleItnFile("tripmaster3.itn");
+        List<ItnRoute> routes = readSampleItnFile("tripmaster3.itn", true);
         assertNotNull(routes);
         assertEquals(1, routes.size());
         ItnRoute route = routes.get(0);

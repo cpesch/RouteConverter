@@ -116,7 +116,7 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
 
             if (isPosition(line)) {
                 ItnPosition position = parsePosition(line);
-                if (isStartDate(position.getTime()))
+                if (isValidStartDate(position.getTime()))
                     startDate = position.getTime();
                 else if (startDate != null)
                     position.setStartDate(startDate);

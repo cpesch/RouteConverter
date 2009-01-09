@@ -225,7 +225,6 @@ public class ItnPosition extends BaseNavigationPosition {
             time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
             time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
             time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
-            setTime(time);
         }
     }
 

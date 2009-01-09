@@ -39,6 +39,7 @@ import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tour.TourFormat;
@@ -179,7 +180,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareElevation(NavigationFormat sourceFormat, NavigationFormat targetFormat, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getElevation() != null && targetPosition.getElevation() != null) {
-            if (targetFormat instanceof AlanWprFormat || 
+            if (targetFormat instanceof AlanWprFormat ||
                     targetFormat instanceof TomTomPoiFormat ||
                     (targetFormat instanceof MapSendFormat && targetCharacteristics.equals(RouteCharacteristics.Route)))
                 assertEquals(0.0, targetPosition.getElevation());
@@ -441,15 +442,36 @@ public abstract class NavigationTestCase extends TestCase {
 
     protected List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(source.lastModified());
-        return format.read(source, startDate);
+        return format.read(source, null);
     }
 
-    protected List<ItnRoute> readSampleItnFile(String fileName) throws IOException {
+    protected List<ItnRoute> readSampleItnFile(String fileName, boolean setStartDateFromFile) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(source.lastModified());
+        Calendar startDate = null;
+        if (setStartDateFromFile) {
+            startDate = Calendar.getInstance();
+            startDate.setTimeInMillis(source.lastModified());
+        }
         return new ItnFormat().read(source, startDate);
+    }
+
+    protected List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws IOException {
+        File source = new File(SAMPLE_PATH + fileName);
+        Calendar startDate = null;
+        if (setStartDateFromFile) {
+            startDate = Calendar.getInstance();
+            startDate.setTimeInMillis(source.lastModified());
+        }
+        return new NmeaFormat().read(source, startDate);
+    }
+
+    protected List<SimpleRoute> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws IOException {
+        File source = new File(SAMPLE_PATH + fileName);
+        Calendar startDate = null;
+        if (setStartDateFromFile) {
+            startDate = Calendar.getInstance();
+            startDate.setTimeInMillis(source.lastModified());
+        }
+        return new GoPalTrackFormat().read(source, startDate);
     }
 }
