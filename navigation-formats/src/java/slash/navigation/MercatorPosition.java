@@ -104,14 +104,6 @@ public class MercatorPosition extends BaseNavigationPosition {
         this.comment = comment;
     }
 
-    public void setStartDate(Calendar startDate) {
-        if (time != null) {
-            time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
-            time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
-            time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
-        }
-    }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;
