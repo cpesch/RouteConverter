@@ -1,0 +1,656 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1" xmlns:tc1="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1"
+	elementFormDefault="qualified">
+    <xsd:annotation>
+		<xsd:documentation>
+        This schema defines the Garmin Training Center file format.
+        </xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="TrainingCenterDatabase" type="TrainingCenterDatabase_t"/>
+	<xsd:complexType name="TrainingCenterDatabase_t">
+		<xsd:sequence>
+			<xsd:element name="History" type="History_t" minOccurs="0"/>
+			<xsd:element name="Workouts" type="Workouts_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+                    The workouts stored in a workout file should have unique names.
+                    </xsd:documentation>
+				</xsd:annotation>
+				<xsd:unique name="WorkoutNameMustBeUnique">
+					<xsd:selector xpath="tc1:Workout"/>
+					<xsd:field xpath="tc1:Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Courses" type="Courses_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+                    The courses stored in a course file should have unique names.
+                    </xsd:documentation>
+				</xsd:annotation>
+				<xsd:unique name="CourseNameMustBeUnique">
+					<xsd:selector xpath="tc1:Course"/>
+					<xsd:field xpath="tc1:Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="History_t">
+		<xsd:sequence>
+			<xsd:element name="Running" type="HistoryFolder_t"/>
+			<xsd:element name="Biking" type="HistoryFolder_t"/>
+			<xsd:element name="Other" type="HistoryFolder_t"/>
+			<xsd:element name="MultiSport" type="MultiSportFolder_t"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="HistoryFolder_t">
+		<xsd:sequence>
+			<xsd:element name="Folder" type="HistoryFolder_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Run" type="Run_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Week" type="Week_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Name" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="MultiSportFolder_t">
+		<xsd:sequence>
+			<xsd:element name="Folder" type="MultiSportFolder_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="MultiSportSession" type="MultiSportSession_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Week" type="Week_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Name" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="Week_t">
+		<xsd:sequence>
+			<xsd:annotation>
+				<xsd:documentation>
+        The week is written out only if the notes are present.
+        </xsd:documentation>
+			</xsd:annotation>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="StartDay" type="xsd:date" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="MultiSportSession_t">
+		<xsd:sequence>
+			<xsd:element name="FirstSport" type="FirstSport_t"/>
+			<xsd:element name="NextSport" type="NextSport_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FirstSport_t">
+		<xsd:sequence>
+			<xsd:element name="Run" type="Run_t"/>
+		</xsd:sequence>
+		<xsd:attribute name="Sport" type="Sport_t" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="NextSport_t">
+		<xsd:sequence>
+			<xsd:annotation>
+				<xsd:documentation>
+        Each sport contains an optional transition and a run.
+        </xsd:documentation>
+			</xsd:annotation>
+			<xsd:element name="Transition" type="ActivityLap_t" minOccurs="0"/>
+			<xsd:element name="Run" type="Run_t"/>
+		</xsd:sequence>
+		<xsd:attribute name="Sport" type="Sport_t" use="required"/>
+	</xsd:complexType>
+	<xsd:simpleType name="Sport_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Running"/>
+			<xsd:enumeration value="Biking"/>
+			<xsd:enumeration value="Other"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Run_t">
+		<xsd:sequence>
+			<xsd:element name="Lap" type="ActivityLap_t" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Training" type="Training_t" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Training_t">
+		<xsd:sequence>
+			<xsd:element name="QuickWorkoutResults" type="QuickWorkout_t" minOccurs="0"/>
+			<xsd:element name="Plan" type="Plan_t" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="VirtualPartner" type="xsd:boolean" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="QuickWorkout_t">
+		<xsd:sequence>
+			<xsd:element name="TotalTimeSeconds" type="xsd:double"/>
+			<xsd:element name="DistanceMeters" type="xsd:double"/>
+		</xsd:sequence>
+	</xsd:complexType>
+    <xsd:complexType name="Plan_t">
+		<xsd:sequence>
+			<xsd:element name="Name" type="RestrictedToken_t" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Type" type="TrainingType_t" use="required"/>
+		<xsd:attribute name="IntervalWorkout" type="xsd:boolean" use="required"/>
+	</xsd:complexType>
+	<xsd:simpleType name="TrainingType_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Workout"/>
+			<xsd:enumeration value="Course"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="ActivityLap_t">
+		<xsd:sequence>
+			<xsd:element name="TotalTimeSeconds" type="xsd:double"/>
+			<xsd:element name="DistanceMeters" type="xsd:double"/>
+			<xsd:element name="MaximumSpeed" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="Calories" type="xsd:unsignedShort"/>
+			<xsd:element name="AverageHeartRateBpm" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="MaximumHeartRateBpm" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="Intensity" type="Intensity_t"/>
+			<xsd:element name="Cadence" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="TriggerMethod" type="TriggerMethod_t"/>
+			<xsd:element name="Track" type="Track_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="StartTime" type="xsd:dateTime" use="required"/>
+	</xsd:complexType>
+	<xsd:simpleType name="TriggerMethod_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Manual"/>
+			<xsd:enumeration value="Distance"/>
+			<xsd:enumeration value="Location"/>
+			<xsd:enumeration value="Time"/>
+			<xsd:enumeration value="HeartRate"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Track_t">
+		<xsd:sequence>
+			<xsd:element name="Trackpoint" type="Trackpoint_t" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Trackpoint_t">
+		<xsd:sequence>
+			<xsd:element name="Time" type="xsd:dateTime"/>
+			<xsd:element name="Position" type="Position_t" minOccurs="0"/>
+			<xsd:element name="AltitudeMeters" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="DistanceMeters" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="HeartRateBpm" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="Cadence" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="SensorState" type="SensorState_t" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Position_t">
+		<xsd:sequence>
+			<xsd:element name="LatitudeDegrees" type="DegreesLatitude_t"/>
+			<xsd:element name="LongitudeDegrees" type="DegreesLongitude_t"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="DegreesLongitude_t">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:double">
+			<xsd:maxExclusive value="180.0"/>
+			<xsd:minInclusive value="-180.0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="DegreesLatitude_t">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:double">
+			<xsd:maxInclusive value="90.0"/>
+			<xsd:minInclusive value="-90.0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="SensorState_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Present"/>
+			<xsd:enumeration value="Absent"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Workouts_t">
+		<xsd:sequence>
+			<xsd:element name="Running" type="WorkoutFolder_t">
+				<xsd:unique name="RunningSubFolderNamesMustBeUnique">
+					<xsd:selector xpath="tc1:Folder"/>
+					<xsd:field xpath="@Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Biking" type="WorkoutFolder_t">
+				<xsd:unique name="BikingSubFolderNamesMustBeUnique">
+					<xsd:selector xpath="tc1:Folder"/>
+					<xsd:field xpath="@Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Other" type="WorkoutFolder_t">
+				<xsd:unique name="OtherSubFolderNamesMustBeUnique">
+					<xsd:selector xpath="tc1:Folder"/>
+					<xsd:field xpath="@Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="WorkoutFolder_t">
+		<xsd:sequence>
+			<xsd:element name="Folder" type="WorkoutFolder_t" minOccurs="0" maxOccurs="unbounded">
+				<xsd:unique name="SubFolderNamesMustBeUnique">
+					<xsd:selector xpath="tc1:Folder"/>
+					<xsd:field xpath="@Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Workout" type="Workout_t" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+          The StepId should be unique within a workout and should not
+          exceed 20. This restricts the number of steps in a workout to 20.
+          </xsd:documentation>
+				</xsd:annotation>
+				<xsd:unique name="StepIdMustBeUnique">
+					<xsd:selector xpath=".//*"/>
+					<xsd:field xpath="tc1:StepId"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Name" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="Workout_t">
+		<xsd:sequence>
+			<xsd:element name="Name" type="RestrictedToken_t"/>
+			<xsd:element name="Step" type="AbstractStep_t" maxOccurs="unbounded"/>
+			<xsd:element name="ScheduledOn" type="xsd:date" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="RestrictedToken_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AbstractStep_t" abstract="true">
+		<xsd:sequence>
+			<xsd:element name="StepId" type="StepId_t"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="StepId_t">
+		<xsd:restriction base="xsd:positiveInteger">
+			<xsd:maxInclusive value="20"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Repeat_t">
+		<xsd:complexContent>
+			<xsd:extension base="AbstractStep_t">
+				<xsd:sequence>
+					<xsd:element name="Repetitions" type="Repetitions_t"/>
+					<xsd:element name="Child" type="AbstractStep_t" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="Repetitions_t">
+		<xsd:restriction base="xsd:positiveInteger">
+			<xsd:minInclusive value="2"/>
+			<xsd:maxInclusive value="99"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Step_t">
+		<xsd:complexContent>
+			<xsd:extension base="AbstractStep_t">
+				<xsd:sequence>
+					<xsd:element name="Name" type="RestrictedToken_t" minOccurs="0"/>
+					<xsd:element name="Duration" type="Duration_t"/>
+					<xsd:element name="Intensity" type="Intensity_t"/>
+					<xsd:element name="Target" type="Target_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Duration_t" abstract="true"/>
+	<xsd:simpleType name="Intensity_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Active"/>
+			<xsd:enumeration value="Resting"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Target_t" abstract="true"/>
+	<xsd:complexType name="Time_t">
+		<xsd:complexContent>
+			<xsd:extension base="Duration_t">
+				<xsd:sequence>
+					<xsd:element name="Seconds" type="xsd:unsignedShort"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Distance_t">
+		<xsd:complexContent>
+			<xsd:extension base="Duration_t">
+				<xsd:sequence>
+					<xsd:element name="Meters" type="xsd:unsignedShort"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="HeartRateAbove_t">
+		<xsd:complexContent>
+			<xsd:extension base="Duration_t">
+				<xsd:sequence>
+					<xsd:element name="HeartRate" type="HeartRateValue_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="HeartRateValue_t" abstract="true"/>
+	<xsd:complexType name="HeartRateBelow_t">
+		<xsd:complexContent>
+			<xsd:extension base="Duration_t">
+				<xsd:sequence>
+					<xsd:element name="HeartRate" type="HeartRateValue_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaloriesBurned_t">
+		<xsd:complexContent>
+			<xsd:extension base="Duration_t">
+				<xsd:sequence>
+					<xsd:element name="Calories" type="xsd:unsignedShort"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="UserInitiated_t">
+		<xsd:complexContent>
+			<xsd:extension base="Duration_t"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Speed_t">
+		<xsd:complexContent>
+			<xsd:extension base="Target_t">
+				<xsd:sequence>
+					<xsd:element name="SpeedZone" type="Zone_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="HeartRate_t">
+		<xsd:complexContent>
+			<xsd:extension base="Target_t">
+				<xsd:sequence>
+					<xsd:element name="HeartRateZone" type="Zone_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Cadence_t">
+		<xsd:complexContent>
+			<xsd:extension base="Target_t">
+				<xsd:sequence>
+					<xsd:element name="Low" type="xsd:double"/>
+					<xsd:element name="High" type="xsd:double"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+    <xsd:complexType name="None_t">
+		<xsd:complexContent>
+			<xsd:extension base="Target_t"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Zone_t" abstract="true"/>
+	<xsd:complexType name="PredefinedSpeedZone_t">
+		<xsd:complexContent>
+			<xsd:extension base="Zone_t">
+				<xsd:sequence>
+					<xsd:element name="Number" type="SpeedZoneNumbers_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="SpeedZoneNumbers_t">
+		<xsd:restriction base="xsd:positiveInteger">
+			<xsd:maxInclusive value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="CustomSpeedZone_t">
+		<xsd:complexContent>
+			<xsd:extension base="Zone_t">
+				<xsd:sequence>
+					<xsd:element name="ViewAs" type="SpeedType_t"/>
+					<xsd:element name="LowInMetersPerSecond" type="SpeedInMetersPerSecond_t"/>
+					<xsd:element name="HighInMetersPerSecond" type="SpeedInMetersPerSecond_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="SpeedInMetersPerSecond_t">
+		<xsd:restriction base="xsd:double">
+			<xsd:minExclusive value="0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="SpeedType_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Pace"/>
+			<xsd:enumeration value="Speed"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="PredefinedHeartRateZone_t">
+		<xsd:complexContent>
+			<xsd:extension base="Zone_t">
+				<xsd:sequence>
+					<xsd:element name="Number" type="HeartRateZoneNumbers_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="HeartRateZoneNumbers_t">
+		<xsd:restriction base="xsd:positiveInteger">
+			<xsd:maxInclusive value="5"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="CustomHeartRateZone_t">
+		<xsd:complexContent>
+			<xsd:extension base="Zone_t">
+				<xsd:sequence>
+					<xsd:element name="Low" type="HeartRateValue_t"/>
+					<xsd:element name="High" type="HeartRateValue_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="HeartRateInBeatsPerMinute_t">
+		<xsd:complexContent>
+			<xsd:extension base="HeartRateValue_t">
+				<xsd:sequence>
+					<xsd:element name="Value" type="xsd:unsignedByte"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="HeartRateAsPercentOfMax_t">
+		<xsd:complexContent>
+			<xsd:extension base="HeartRateValue_t">
+				<xsd:sequence>
+					<xsd:element name="Value" type="PercentOfMax_t"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="PercentOfMax_t">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Courses_t">
+		<xsd:sequence>
+			<xsd:element name="CourseFolder" type="CourseFolder_t">
+				<xsd:unique name="CourseSubFolderNamesMustBeUnique">
+					<xsd:selector xpath="tc1:CourseFolder"/>
+					<xsd:field xpath="@Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CourseFolder_t">
+		<xsd:sequence>
+			<xsd:element name="Folder" type="CourseFolder_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Course" type="Course_t" minOccurs="0" maxOccurs="unbounded">
+				<xsd:unique name="CourseNamesMustBeUnique">
+					<xsd:selector xpath="tc1:Course"/>
+					<xsd:field xpath="tc1:Name"/>
+				</xsd:unique>
+			</xsd:element>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Name" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="Course_t">
+		<xsd:sequence>
+			<xsd:element name="Name" type="RestrictedToken_t"/>
+			<xsd:element name="Lap" type="CourseLap_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Track" type="Track_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="CoursePoint" type="CoursePoint_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CourseLap_t">
+		<xsd:sequence>
+			<xsd:element name="TotalTimeSeconds" type="xsd:double"/>
+			<xsd:element name="DistanceMeters" type="xsd:double"/>
+			<xsd:element name="BeginPosition" type="Position_t" minOccurs="0"/>
+			<xsd:element name="BeginAltitudeMeters" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="EndPosition" type="Position_t" minOccurs="0"/>
+			<xsd:element name="EndAltitudeMeters" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="AverageHeartRateBpm" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="MaximumHeartRateBpm" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="Intensity" type="Intensity_t"/>
+			<xsd:element name="Cadence" type="xsd:unsignedByte" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CoursePoint_t">
+		<xsd:sequence>
+			<xsd:element name="Name" type="CoursePointName_t"/>
+			<xsd:element name="Time" type="xsd:dateTime"/>
+			<xsd:element name="Position" type="Position_t"/>
+			<xsd:element name="AltitudeMeters" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="PointType" type="CoursePointType_t"/>
+			<xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  				</xsd:annotation>
+  			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="CoursePointName_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CoursePointType_t">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Generic"/>
+			<xsd:enumeration value="Summit"/>
+			<xsd:enumeration value="Valley"/>
+			<xsd:enumeration value="Water"/>
+			<xsd:enumeration value="Food"/>
+			<xsd:enumeration value="Danger"/>
+			<xsd:enumeration value="Left"/>
+			<xsd:enumeration value="Right"/>
+			<xsd:enumeration value="Straight"/>
+			<xsd:enumeration value="First Aid"/>
+			<xsd:enumeration value="4th Category"/>
+			<xsd:enumeration value="3rd Category"/>
+			<xsd:enumeration value="2nd Category"/>
+			<xsd:enumeration value="1st Category"/>
+			<xsd:enumeration value="Hors Category"/>
+			<xsd:enumeration value="Sprint"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="Extensions_t">
+	<xsd:sequence>
+		<xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
+			<xsd:annotation>
+				<xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+  			</xsd:annotation>
+  		</xsd:any>
+  	</xsd:sequence>
+  	</xsd:complexType>
+</xsd:schema>

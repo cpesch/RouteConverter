@@ -169,7 +169,8 @@ public class ReadTest extends NavigationTestCase {
     }
 
     /*
-    public void testTcxFilesAreValid() throws IOException {
+    public void testTrainingCenterDatabaseFilesAreValid() throws IOException {
+        readFiles(".crs");
         readFiles(".tcx");
     }
     */
