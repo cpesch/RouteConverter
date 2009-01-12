@@ -53,4 +53,8 @@ public class AlanWprFormat extends BabelFormat implements MultipleRoutesFormat<G
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
+
+    protected boolean isStreamingCapable() {
+        return true;
+    }
 }

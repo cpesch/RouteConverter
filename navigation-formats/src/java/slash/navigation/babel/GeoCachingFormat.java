@@ -42,4 +42,8 @@ public class GeoCachingFormat extends BabelFormat {
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
+
+    protected boolean isStreamingCapable() {
+        return true;
+    }
 }

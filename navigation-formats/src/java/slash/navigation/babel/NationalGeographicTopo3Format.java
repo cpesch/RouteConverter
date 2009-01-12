@@ -46,4 +46,8 @@ public class NationalGeographicTopo3Format extends BabelFormat {
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
+
+    protected boolean isStreamingCapable() {
+        return false;
+    }
 }

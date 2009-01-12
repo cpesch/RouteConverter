@@ -55,6 +55,10 @@ public class PcxFormat extends BabelFormat {
         return false;
     }
 
+    protected boolean isStreamingCapable() {
+        return true;
+    }
+
     public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
         List<GpxRoute> routes = super.read(source, startDate);
         if (routes == null)

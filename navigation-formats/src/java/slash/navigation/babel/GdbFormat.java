@@ -45,4 +45,8 @@ public class GdbFormat extends BabelFormat implements MultipleRoutesFormat<GpxRo
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
+
+    protected boolean isStreamingCapable() {
+        return true;
+    }
 }

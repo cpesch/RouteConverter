@@ -46,4 +46,8 @@ public class TefFormat extends BabelFormat {
     public boolean isSupportsMultipleRoutes() {
         return false; // just guesses
     }
+
+    protected boolean isStreamingCapable() {
+        return true;
+    }
 }

@@ -48,6 +48,10 @@ public abstract class OziExplorerWriteFormat extends BabelFormat implements Mult
         return true;
     }
 
+    protected boolean isStreamingCapable() {
+        return true;
+    }
+
     protected abstract RouteCharacteristics getRouteCharacteristics();
 
     public void write(GpxRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {

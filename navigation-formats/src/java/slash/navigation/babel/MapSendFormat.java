@@ -49,6 +49,10 @@ public class MapSendFormat extends BabelFormat {
         return false; // just guesses
     }
 
+    protected boolean isStreamingCapable() {
+        return true;
+    }
+
     protected Gpx10Format createGpxFormat() {
         return new Gpx10Format() {
             protected String asWayPointComment(String name, String description) {

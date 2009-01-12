@@ -52,6 +52,10 @@ public class GarminPoiDbFormat extends BabelFormat {
         return false;
     }
 
+    protected boolean isStreamingCapable() {
+        return true;
+    }
+
     private boolean isNonsenseRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {

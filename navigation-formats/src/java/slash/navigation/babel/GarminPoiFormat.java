@@ -42,4 +42,8 @@ public class GarminPoiFormat extends BabelFormat {
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
+
+    protected boolean isStreamingCapable() {
+        return false;
+    }
 }
