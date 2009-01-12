@@ -24,11 +24,11 @@ import java.io.IOException;
 
 public class ReadWriteRoundtripTest extends ReadWriteBase {
 
-    public void testAlanTrlWriteRoundtrip() throws IOException {
+    public void testAlanTrackLogWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.trl");
     }
 
-    public void testAlanWprWriteRoundtrip() throws IOException {
+    public void testAlanWaypointsAndRoutesWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.wpr");
     }
 
@@ -79,7 +79,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx");
     }
 
-    public void testGdbReadWriteRoundtrip() throws IOException {
+    public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.gdb");
         readWriteRoundtrip(TEST_PATH + "from10.gdb");
         readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
@@ -139,7 +139,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.pth");
     }
 
-    public void testMpsReadWriteRoundtrip() throws IOException {
+    public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.mps");
         readWriteRoundtrip(TEST_PATH + "from10.mps");
         readWriteRoundtrip(TEST_PATH + "from10trk.mps");
@@ -166,7 +166,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-gpstuner.trk");
     }
 
-    public void testPcx5ReadWriteRoundtrip() throws IOException {
+    public void testGarminPcx5ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
     }
 

@@ -20,8 +20,8 @@
 
 package slash.navigation;
 
-import slash.navigation.babel.AlanTrlFormat;
-import slash.navigation.babel.PcxFormat;
+import slash.navigation.babel.AlanTrackLogFormat;
+import slash.navigation.babel.GarminPcx5Format;
 import slash.navigation.util.Files;
 
 import java.io.File;
@@ -62,9 +62,9 @@ public abstract class ReadWriteBase extends NavigationTestCase {
 
         List<BaseRoute> sourceRoutes = sourceParser.getAllRoutes();
         List<BaseRoute> targetRoutes = targetParser.getAllRoutes();
-        // GPSBabel creates a route and a track out of a simple PCX track if called with -r and -t
+        // GPSBabel creates a route and a track out of a simple GarminPcx5 track if called with -r and -t
         // and out of a simple AlanTrk track if called with -t
-        int count = targetFormat instanceof PcxFormat || targetFormat instanceof AlanTrlFormat ?
+        int count = targetFormat instanceof GarminPcx5Format || targetFormat instanceof AlanTrackLogFormat ?
                 targetRoutes.size() : sourceRoutes.size();
         for (int i = 0; i < count; i++) {
             BaseRoute sourceRoute = sourceRoutes.get(i);

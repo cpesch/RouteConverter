@@ -20,45 +20,41 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.MultipleRoutesFormat;
+import slash.navigation.gpx.GpxRoute;
 
 /**
- * Reads and writes Magellan MapSend (.wpt) files.
+ * Reads and writes Alan Map 500 Waypoints and Routes (.wpr) files.
  *
  * @author Christian Pesch
  */
 
-public class MapSendFormat extends BabelFormat {
+public class AlanWaypointsAndRoutesFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
     public String getExtension() {
-        return ".wpt";
+        return ".wpr";
     }
 
     public String getName() {
-        return "Magellan MapSend (*" + getExtension() + ")";
+        return "Alan Map 500 Waypoints and Routes (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "mapsend";
+        return "alanwpr";
     }
 
     protected String getBabelOptions() {
         return "-r -w";
     }
 
+    public int getMaximumPositionCount() {
+        return 150;
+    }
+
     public boolean isSupportsMultipleRoutes() {
-        return false; // just guesses
+        return true;
     }
 
     protected boolean isStreamingCapable() {
         return true;
-    }
-
-    protected Gpx10Format createGpxFormat() {
-        return new Gpx10Format() {
-            protected String asWayPointComment(String name, String description) {
-                // ignore <name> from Waypoints which is crippled to 7 or 8 characters by GPSBabel
-                return asComment(null, description);
-            }
-        };
     }
 }

@@ -120,31 +120,31 @@ public class AppendTest extends NavigationTestCase {
         append(TEST_PATH + "large.itn", TEST_PATH + "large20.kml");
     }
 
-    public void testAppendMpsToGdb() throws IOException {
+    public void testAppendGarminMapSource5ToGarminMapSource6() throws IOException {
         append(TEST_PATH + "from.gdb", TEST_PATH + "from.mps");
     }
 
-    public void testAppendGdbToMps() throws IOException {
+    public void testAppendGarminMapSource6ToGarminMapSource5() throws IOException {
         append(TEST_PATH + "from.mps", TEST_PATH + "from.gdb");
     }
 
-    public void testAppendAxeToMapSend() throws IOException {
+    public void testAppendMicrosoftAutoRouteToMagellanMapSend() throws IOException {
         append(TEST_PATH + "from.axe", TEST_PATH + "from-mapsend.wpt");
     }
 
-    public void testAppendAxeToGdb() throws IOException {
+    public void testAppendMicrosoftAutoRouteToGarminMapSource6() throws IOException {
         append(TEST_PATH + "from.gdb", TEST_PATH + "from.axe");
     }
 
-    public void testAppendMapSendToGdb() throws IOException {
+    public void testAppendMagellanMapSendToGarminMapSource6() throws IOException {
         append(TEST_PATH + "from-mapsend.wpt", TEST_PATH + "from.axe");
     }
 
-    public void testAppendTefToGdb() throws IOException {
+    public void testAppendTourExchangeToGarminMapSource6() throws IOException {
         append(TEST_PATH + "from.gdb", TEST_PATH + "from.tef");
     }
 
-    public void testAppendPcxToNmea() throws IOException {
+    public void testAppendGarminPcx5ToNmea() throws IOException {
         append(TEST_PATH + "from.nmea", TEST_PATH + "from-pcx5.wpt");
     }
 

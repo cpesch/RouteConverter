@@ -20,56 +20,34 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.gpx.GpxRoute;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 /**
- * Reads and writes Garmin PCX5 (.wpt) files.
+ * Reads Map&Guide Tour Exchange Format (.tef) files.
  *
  * @author Christian Pesch
  */
 
-public class PcxFormat extends BabelFormat {
+public class TourExchangeFormat extends BabelFormat {
     public String getExtension() {
-        return ".wpt";
+        return ".tef";
     }
 
     public String getName() {
-        return "Garmin PCX5 (*" + getExtension() + ")";
+        return "Tour Exchange Format (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "pcx";
+        return "tef";
     }
 
-    protected String getBabelOptions() {
-        return "-r -w";
+    public boolean isSupportsWriting() {
+        return false;
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false;
+        return false; // just guesses
     }
 
     protected boolean isStreamingCapable() {
         return true;
-    }
-
-    public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
-        List<GpxRoute> routes = super.read(source, startDate);
-        if (routes == null)
-            return null;
-
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
-        for (GpxRoute route : routes) {
-            // clashes with some TomTom POI .ov2 files
-            if (route.getPositionCount() > 0)
-                result.add(route);
-        }
-        return result.size() > 0 ? result : null;
     }
 }

@@ -66,7 +66,7 @@ public class NavigationFileParserTest extends NavigationTestCase {
     }
 
 
-    public void testIsValidAxe() throws IOException {
+    public void testIsValidMicrosoftAutoRoute() throws IOException {
         read(TEST_PATH + "from.axe");
         read(TEST_PATH + "large.axe");
     }
@@ -101,7 +101,7 @@ public class NavigationFileParserTest extends NavigationTestCase {
         read(TEST_PATH + "large11.gpx");
     }
 
-    public void testIsValidGdb() throws IOException {
+    public void testIsValidGarminMapSource6() throws IOException {
         read(TEST_PATH + "from.gdb");
 
         readWaypoints(TEST_PATH + "from10.gdb", 6);
@@ -130,7 +130,7 @@ public class NavigationFileParserTest extends NavigationTestCase {
         read(TEST_PATH + "large21.kml");
     }
 
-    public void testIsValidMapSend() throws IOException {
+    public void testIsValidMagellanMapSend() throws IOException {
         read(TEST_PATH + "from-mapsend.wpt");
     }
 
@@ -161,12 +161,12 @@ public class NavigationFileParserTest extends NavigationTestCase {
         read(TEST_PATH + "from.ovl");
     }
 
-    public void testIsValidPcx5() throws IOException { 
+    public void testIsValidGarminPcx5() throws IOException {
         read(TEST_PATH + "from-pcx5.wpt");
         read(TEST_PATH + "large-pcx5.wpt");
     }
 
-    public void testIsValidTef() throws IOException {
+    public void testIsValidTourExchange() throws IOException {
         read(TEST_PATH + "from.tef");
         read(TEST_PATH + "large.tef");
     }

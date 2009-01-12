@@ -97,7 +97,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".xcsv");
     }
 
-    public void testGdbFilesAreValid() throws IOException {
+    public void testGarminMapSource6FilesAreValid() throws IOException {
         readFiles(".gdb");
     }
 
@@ -138,7 +138,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".freshroute");
     }
 
-    public void testMpsFilesAreValid() throws IOException {
+    public void testMagellanMapSendFilesAreValid() throws IOException {
         readFiles(".mps");
     }
 
@@ -164,7 +164,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".rte");
     }
 
-    public void testTefFilesAreValid() throws IOException {
+    public void testTourExchangeFilesAreValid() throws IOException {
         readFiles(".tef");
     }
 
@@ -186,7 +186,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".tk");
     }
 
-    public void testTpoFilesAreValid() throws IOException {
+    public void testNationalGeographicTopo3FilesAreValid() throws IOException {
         readFiles(".tpo");
     }
 

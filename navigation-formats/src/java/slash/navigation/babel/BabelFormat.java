@@ -70,6 +70,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     protected abstract String getBabelFormatName();
+    protected abstract boolean isStreamingCapable();
 
     protected String getBabelOptions() {
         return "-r -w -t";
@@ -96,7 +97,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                             if (count > 0) {
                                 output.write(buffer, 0, count);
                                 String output = new String(buffer).trim();
-                                log.fine("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
+                                log.info("Read " + count + " bytes of " + streamName + " output from gpsbabel process: '" + output + "'"); // TODO log level
                             }
                         }
                     } finally {
@@ -116,7 +117,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         String command = babel + " " + commandLineFlags
                 + " -i " + inputFormatName + " -f - -o " + outputFormatName
                 + " -F -";
-        log.fine("Executing '" + command + "'");
+        log.info("Executing '" + command + "'");   // TODO log level
         try {
             Process process = Runtime.getRuntime().exec(command);
             execute(process, COMMAND_EXECUTION_TIMEOUT);
@@ -351,10 +352,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     public List<GpxRoute> read(InputStream in, Calendar startDate) throws IOException {
-        if (false) {
+        if (isStreamingCapable()) {
             DebugOutput.activate(); // TODO remove me later!
             InputStream target = startBabel(in, getBabelFormatName(), BABEL_INTERFACE_FORMAT_NAME, "-r -w -t");
-            return getGpxFormat().read(target, startDate);
+            List<GpxRoute> result = getGpxFormat().read(target, startDate);
+            if (result != null && result.size() > 0)
+                log.info("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME + " stream"); // TODO log level
+            return result;
         } else {
             List<GpxRoute> result = null;
             File source = File.createTempFile("babelsource", "." + getBabelFormatName());

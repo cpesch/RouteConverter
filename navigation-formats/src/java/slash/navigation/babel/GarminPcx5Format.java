@@ -20,33 +20,56 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.gpx.GpxRoute;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 /**
- * Reads and writes Garmin MapSource 5.x (.gdb) files.
+ * Reads and writes Garmin PCX5 (.wpt) files.
  *
  * @author Christian Pesch
  */
 
-public class MpsFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
+public class GarminPcx5Format extends BabelFormat {
     public String getExtension() {
-        return ".mps";
+        return ".wpt";
     }
 
     public String getName() {
-        return "Garmin MapSource 5.x (*" + getExtension() + ")";
+        return "Garmin PCX5 (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "mapsource";
+        return "pcx";
+    }
+
+    protected String getBabelOptions() {
+        return "-r -w";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false;
     }
 
     protected boolean isStreamingCapable() {
-        return false;
+        return true;
+    }
+
+    public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
+        List<GpxRoute> routes = super.read(source, startDate);
+        if (routes == null)
+            return null;
+
+        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        for (GpxRoute route : routes) {
+            // clashes with some TomTom POI .ov2 files
+            if (route.getPositionCount() > 0)
+                result.add(route);
+        }
+        return result.size() > 0 ? result : null;
     }
 }

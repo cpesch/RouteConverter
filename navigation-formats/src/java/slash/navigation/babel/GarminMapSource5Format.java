@@ -20,34 +20,33 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.MultipleRoutesFormat;
+import slash.navigation.gpx.GpxRoute;
+
 /**
- * Reads Map&Guide Tour Exchange Format (.tef) files.
+ * Reads and writes Garmin MapSource 5.x (.gdb) files.
  *
  * @author Christian Pesch
  */
 
-public class TefFormat extends BabelFormat {
+public class GarminMapSource5Format extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
     public String getExtension() {
-        return ".tef";
+        return ".mps";
     }
 
     public String getName() {
-        return "Tour Exchange Format (*" + getExtension() + ")";
+        return "Garmin MapSource 5.x (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "tef";
-    }
-
-    public boolean isSupportsWriting() {
-        return false;
+        return "mapsource";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false; // just guesses
+        return true;
     }
 
     protected boolean isStreamingCapable() {
-        return true;
+        return false;
     }
 }

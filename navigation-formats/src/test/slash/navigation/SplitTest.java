@@ -35,7 +35,7 @@ public class SplitTest extends ReadWriteBase {
         splitReadWriteRoundtrip(TEST_PATH + "large.itn", false, true);
     }
 
-    public void testSplitGdbReadWriteRoundtrip() throws IOException {
+    public void testSplitGarminMapSource6ReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large.gdb");
     }
 
@@ -55,7 +55,7 @@ public class SplitTest extends ReadWriteBase {
         splitReadWriteRoundtrip(TEST_PATH + "large21.kml");
     }
 
-    public void testSplitMpsReadWriteRoundtrip() throws IOException {
+    public void testSplitGarminMapSource5ReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large.mps");
     }
 
@@ -70,7 +70,7 @@ public class SplitTest extends ReadWriteBase {
         splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", true, true);
     }
 
-    public void testSplitPcx5ReadWriteRoundtrip() throws IOException {
+    public void testSplitGarminPcx5ReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large-pcx5.wpt");
     }
 
@@ -78,7 +78,7 @@ public class SplitTest extends ReadWriteBase {
         splitReadWriteRoundtrip(TEST_PATH + "from-gpstuner.trk");
     }
 
-    public void testSplitAlanWprReadWriteRoundtrip() throws IOException {
+    public void testSplitAlanWaypointsAndRoutesReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "from.wpr");
     }
 

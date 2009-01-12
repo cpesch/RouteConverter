@@ -102,19 +102,19 @@ public final class NavigationFormats {
         addFormat(Tcx2Format.class);
 
         // BabelFormats
-        addFormat(GdbFormat.class);
-        addFormat(MpsFormat.class);
-        addFormat(AxeFormat.class);
-        addFormat(TefFormat.class);
+        addFormat(GarminMapSource6Format.class);
+        addFormat(GarminMapSource5Format.class);
+        addFormat(MicrosoftAutoRouteFormat.class);
+        addFormat(TourExchangeFormat.class);
         addFormat(NationalGeographicTopo3Format.class);
-        addFormat(MapSendFormat.class);
-        addFormat(AlanTrlFormat.class);
-        addFormat(AlanWprFormat.class);
+        addFormat(MagellanMapSendFormat.class);
+        addFormat(AlanTrackLogFormat.class);
+        addFormat(AlanWaypointsAndRoutesFormat.class);
         addFormat(OziExplorerReadFormat.class);
         addFormat(OziExplorerRouteFormat.class);
         addFormat(OziExplorerTrackFormat.class);
         addFormat(OziExplorerWaypointFormat.class);
-        addFormat(PcxFormat.class);
+        addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
         addFormat(TomTomPoiFormat.class);

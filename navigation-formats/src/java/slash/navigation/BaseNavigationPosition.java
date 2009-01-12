@@ -127,18 +127,6 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
-    public GpxPosition asGdbPosition() {
-        return asGpxPosition();
-    }
-
-    public GoPalPosition asGoPalRoutePosition() {
-        return new GoPalPosition(getLongitude(), getLatitude(), getComment());
-    }
-
-    public Wgs84Position asGoPalTrackPosition() {
-        return asWgs84Position();
-    }
-
     public GkPosition asGkPosition() {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
@@ -148,6 +136,14 @@ public abstract class BaseNavigationPosition {
     }
 
     public Wgs84Position asGoogleMapsPosition() {
+        return asWgs84Position();
+    }
+
+    public GoPalPosition asGoPalRoutePosition() {
+        return new GoPalPosition(getLongitude(), getLatitude(), getComment());
+    }
+
+    public Wgs84Position asGoPalTrackPosition() {
         return asWgs84Position();
     }
 
@@ -189,10 +185,6 @@ public abstract class BaseNavigationPosition {
 
     public GkPosition asMagicMapsPthPosition() {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
-    }
-
-    public GpxPosition asMpsPosition() {
-        return asGpxPosition();
     }
 
     public Wgs84Position asNavigatingPoiWarnerPosition() {

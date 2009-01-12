@@ -20,41 +20,34 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.gpx.GpxRoute;
-
 /**
- * Reads and writes Alan Map 500 Waypoints and Routes (.wpr) files.
+ * Reads and writes Alan Map 500 Tracklogs (.trl) files.
  *
  * @author Christian Pesch
  */
 
-public class AlanWprFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
+public class AlanTrackLogFormat extends BabelFormat {
     public String getExtension() {
-        return ".wpr";
+        return ".trl";
     }
 
     public String getName() {
-        return "Alan Map 500 Waypoints and Routes (*" + getExtension() + ")";
+        return "Alan Map 500 Tracklog (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "alanwpr";
+        return "alantrl";
     }
 
     protected String getBabelOptions() {
-        return "-r -w";
-    }
-
-    public int getMaximumPositionCount() {
-        return 150;
+        return "-t";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false;
     }
 
     protected boolean isStreamingCapable() {
-        return true;
+        return false;
     }
 }

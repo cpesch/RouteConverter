@@ -80,17 +80,17 @@ public abstract class NavigationTestCase extends TestCase {
 
     static boolean isSlightlyUnprecise(NavigationFormat format) {
         return isReallyUnprecise(format) ||
-                format instanceof GarminPoiFormat || format instanceof GdbFormat ||
-                format instanceof GeoCachingFormat || format instanceof MpsFormat ||
-                format instanceof PcxFormat;
+                format instanceof GarminPoiFormat || format instanceof GarminMapSource6Format ||
+                format instanceof GeoCachingFormat || format instanceof GarminMapSource5Format ||
+                format instanceof GarminPcx5Format;
     }
 
     static boolean mayNotTransformBidirectionally(NavigationFormat first, NavigationFormat second) {
         return (isSlightlyUnprecise(first) || isSlightlyUnprecise(second)) ||
                 ((first instanceof GpxFormat) &&
-                        (second instanceof AlanTrlFormat || second instanceof AlanWprFormat)) ||
-                ((first instanceof AxeFormat) &&
-                        (second instanceof PcxFormat)) ||
+                        (second instanceof AlanTrackLogFormat || second instanceof AlanWaypointsAndRoutesFormat)) ||
+                ((first instanceof MicrosoftAutoRouteFormat) &&
+                        (second instanceof GarminPcx5Format)) ||
                 ((first instanceof KmlFormat) &&
                         (second instanceof BcrFormat)) ||
                 ((first instanceof MagicMapsIktFormat) &&
@@ -128,7 +128,7 @@ public abstract class NavigationTestCase extends TestCase {
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 sourceRoute.getName().contains(" to ") && sourceRoute.getName().contains("/;") &&
                 targetRoute.getName().endsWith("/")) {
-            // if AlanWprFormat is converted to AlanWprFormat "EARTH_RADIUS/; Orte to B/; Orte" becomes "EARTH_RADIUS/"
+            // if AlanWaypointsAndRoutesFormat is converted to AlanWaypointsAndRoutesFormat "EARTH_RADIUS/; Orte to B/; Orte" becomes "EARTH_RADIUS/"
             String sourcePrefix = getRouteNamePrefix(sourceRoute);
             String targetPrefix = getRouteNamePrefix(targetRoute);
             assertEquals(sourcePrefix, targetPrefix);
@@ -181,15 +181,15 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareElevation(NavigationFormat sourceFormat, NavigationFormat targetFormat, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getElevation() != null && targetPosition.getElevation() != null) {
-            if (targetFormat instanceof AlanWprFormat ||
+            if (targetFormat instanceof AlanWaypointsAndRoutesFormat ||
                     targetFormat instanceof TomTomPoiFormat ||
-                    (targetFormat instanceof MapSendFormat && targetCharacteristics.equals(RouteCharacteristics.Route)))
+                    (targetFormat instanceof MagellanMapSendFormat && targetCharacteristics.equals(RouteCharacteristics.Route)))
                 assertEquals(0.0, targetPosition.getElevation());
             else if (targetFormat instanceof BcrFormat) {
                 // skip silly from20.ovl in bcr coordinate
                 if (targetPosition.getElevation() != -0.09)
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
-            } else if (targetFormat instanceof PcxFormat) {
+            } else if (targetFormat instanceof GarminPcx5Format) {
                 assertEquals(new Double(Math.round(sourcePosition.getElevation())), targetPosition.getElevation());
             } else if (targetFormat instanceof OziExplorerReadFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
@@ -224,16 +224,16 @@ public abstract class NavigationTestCase extends TestCase {
         } else {
             // Test only if a position has not been commented by us
             if (!(sourcePosition.getComment() == null && targetPosition.getComment().startsWith("Position"))) {
-                if (targetFormat instanceof AlanTrlFormat ||
-                        (targetFormat instanceof GdbFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
+                if (targetFormat instanceof AlanTrackLogFormat ||
+                        (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                         targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||
                         targetFormat instanceof MagicMapsPthFormat || targetFormat instanceof OvlFormat ||
                         (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
-                        (targetFormat instanceof MpsFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
+                        (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
                     assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
-                else if (targetFormat instanceof AlanWprFormat)
+                else if (targetFormat instanceof AlanWaypointsAndRoutesFormat)
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 12), trim(targetPosition.getComment(), 12));
                 else if (sourceFormat instanceof BcrFormat && targetFormat instanceof ItnFormat) {
                     BcrPosition bcrPosition = (BcrPosition) sourcePosition;
@@ -255,9 +255,9 @@ public abstract class NavigationTestCase extends TestCase {
                     assertEquals("Comment " + index + " does not match", escapeNmn6Favorites(sourcePosition.getComment()), targetPosition.getComment());
                 else if (targetFormat instanceof Nmn7Format)
                     assertEquals("Comment " + index + " does not match", trimSpaces(sourcePosition.getComment()), trimSpaces(targetPosition.getComment()));
-                else if (targetFormat instanceof MapSendFormat)
+                else if (targetFormat instanceof MagellanMapSendFormat)
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 30), trim(targetPosition.getComment(), 30));
-                else if (targetFormat instanceof PcxFormat)
+                else if (targetFormat instanceof GarminPcx5Format)
                     assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment(), 39)), trim(targetPosition.getComment(), 39));
                 else if (targetFormat instanceof Route66Format)
                     assertEquals("Comment " + index + " does not match", Conversion.toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
@@ -282,9 +282,9 @@ public abstract class NavigationTestCase extends TestCase {
                 // too many reasons for an invalid time :-(
                 // assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
             }
-        } else if (targetFormat instanceof AlanTrlFormat || targetFormat instanceof BcrFormat ||
+        } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof BcrFormat ||
                 targetFormat instanceof ItnFormat || targetFormat instanceof NmnFormat ||
-                targetFormat instanceof MpsFormat || targetFormat instanceof PcxFormat ||
+                targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminPcx5Format ||
                 targetFormat instanceof GlopusFormat || targetFormat instanceof TourFormat) {
             assertNull(targetPosition.getTime());
         } else if (targetFormat instanceof GoPalTrackFormat) {

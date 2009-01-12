@@ -20,34 +20,45 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.gpx.Gpx10Format;
+
 /**
- * Reads and writes Alan Map 500 Tracklogs (.trl) files.
+ * Reads and writes Magellan MapSend (.wpt) files.
  *
  * @author Christian Pesch
  */
 
-public class AlanTrlFormat extends BabelFormat {
+public class MagellanMapSendFormat extends BabelFormat {
     public String getExtension() {
-        return ".trl";
+        return ".wpt";
     }
 
     public String getName() {
-        return "Alan Map 500 Tracklog (*" + getExtension() + ")";
+        return "Magellan MapSend (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "alantrl";
+        return "mapsend";
     }
 
     protected String getBabelOptions() {
-        return "-t";
+        return "-r -w";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false;
+        return false; // just guesses
     }
 
     protected boolean isStreamingCapable() {
-        return false;
+        return true;
+    }
+
+    protected Gpx10Format createGpxFormat() {
+        return new Gpx10Format() {
+            protected String asWayPointComment(String name, String description) {
+                // ignore <name> from Waypoints which is crippled to 7 or 8 characters by GPSBabel
+                return asComment(null, description);
+            }
+        };
     }
 }

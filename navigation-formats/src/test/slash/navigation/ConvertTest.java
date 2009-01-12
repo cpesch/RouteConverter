@@ -73,70 +73,78 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
-        File target = File.createTempFile("target", targetFormat.getExtension());
-        parser.write(sourceRoute, targetFormat, false, false, false, target);
-        assertTrue(target.exists());
+        File target = File.createTempFile("singletarget", targetFormat.getExtension());
+        try {
+            parser.write(sourceRoute, targetFormat, false, false, false, target);
+            assertTrue(target.exists());
 
-        NavigationFileParser sourceParser = new NavigationFileParser();
-        assertTrue(sourceParser.read(source));
-        NavigationFileParser targetParser = new NavigationFileParser();
-        assertTrue(targetParser.read(target));
+            NavigationFileParser sourceParser = new NavigationFileParser();
+            assertTrue(sourceParser.read(source));
+            NavigationFileParser targetParser = new NavigationFileParser();
+            assertTrue(targetParser.read(target));
 
-        if (targetFormat instanceof OziExplorerWriteFormat)
-            targetFormat = new OziExplorerReadFormat();
+            if (targetFormat instanceof OziExplorerWriteFormat)
+                targetFormat = new OziExplorerReadFormat();
 
-        assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
-        assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
-        assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
-        assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
+            assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
+            assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
+            assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
+            assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
 
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetParser.getTheRoute();
-        compareRouteMetaData(sourceRoute, targetRoute);
-        comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetParser.getAllRoutes().size() > 0);
+            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetParser.getTheRoute();
+            compareRouteMetaData(sourceRoute, targetRoute);
+            comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetParser.getAllRoutes().size() > 0);
 
-        for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : targetParser.getAllRoutes()) {
-            compareRouteMetaData(sourceRoute, route);
-            comparePositions(sourceRoute, sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 0);
+            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : targetParser.getAllRoutes()) {
+                compareRouteMetaData(sourceRoute, route);
+                comparePositions(sourceRoute, sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 0);
+            }
+
+            assertTrue(target.exists());
+            assertTrue(target.delete());
+        } finally {
+            // avoid to clutter the temp directory
+            target.delete();
         }
-
-        assertTrue(target.exists());
-        assertTrue(target.delete());
     }
 
     private void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
-        File target = File.createTempFile("target", targetFormat.getExtension());
-        parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
-        assertTrue(target.exists());
+        File target = File.createTempFile("multitarget", targetFormat.getExtension());
+        try {
+            parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
+            assertTrue(target.exists());
 
-        NavigationFileParser sourceParser = new NavigationFileParser();
-        assertTrue(sourceParser.read(source));
-        NavigationFileParser targetParser = new NavigationFileParser();
-        assertTrue(targetParser.read(target));
+            NavigationFileParser sourceParser = new NavigationFileParser();
+            assertTrue(sourceParser.read(source));
+            NavigationFileParser targetParser = new NavigationFileParser();
+            assertTrue(targetParser.read(target));
 
-        if (targetFormat instanceof OziExplorerWriteFormat)
-            targetFormat = new OziExplorerReadFormat();
+            if (targetFormat instanceof OziExplorerWriteFormat)
+                targetFormat = new OziExplorerReadFormat();
 
-        assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
-        assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
-        assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
-        assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
+            assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
+            assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
+            assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
+            assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
 
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetParser.getTheRoute();
-        compareRouteMetaData(sourceParser.getTheRoute(), targetRoute);
+            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetParser.getTheRoute();
+            compareRouteMetaData(sourceParser.getTheRoute(), targetRoute);
 
-        for (int i = 0; i < targetParser.getAllRoutes().size(); i++) {
-            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = targetParser.getAllRoutes().get(i);
-            compareRouteMetaData(sourceParser.getTheRoute(), route);
-            comparePositions(sourceRoutes.get(i), sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 1);
+            for (int i = 0; i < targetParser.getAllRoutes().size(); i++) {
+                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = targetParser.getAllRoutes().get(i);
+                compareRouteMetaData(sourceParser.getTheRoute(), route);
+                comparePositions(sourceRoutes.get(i), sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 1);
+            }
+
+            assertTrue(target.exists());
+            assertTrue(target.delete());
+        } finally {
+            // avoid to clutter the temp directory
+            target.delete();
         }
-
-        assertTrue(target.exists());
-        assertTrue(target.delete());
     }
 
-    void largeConvertRoundtrip(String testFileName,
-                               BaseNavigationFormat sourceFormat,
-                               BaseNavigationFormat targetFormat) throws IOException {
+    void convertSplitRoundtrip(String testFileName, BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat) throws IOException {
         File source = new File(testFileName);
         assertTrue(parser.read(source));
         assertNotNull(parser.getFormat());
@@ -152,28 +160,37 @@ public class ConvertTest extends NavigationTestCase {
 
         File[] targets = new File[fileCount];
         for (int i = 0; i < targets.length; i++)
-            targets[i] = File.createTempFile("target", targetFormat.getExtension());
-        parser.write(sourceRoute, targetFormat, false, false, false, targets);
+            targets[i] = File.createTempFile("splittarget", targetFormat.getExtension());
+        try {
+            parser.write(sourceRoute, targetFormat, false, false, false, targets);
 
-        NavigationFileParser sourceParser = new NavigationFileParser();
-        sourceParser.read(source);
+            NavigationFileParser sourceParser = new NavigationFileParser();
+            sourceParser.read(source);
 
-        for (int i = 0; i < targets.length; i++) {
-            NavigationFileParser targetParser = new NavigationFileParser();
-            targetParser.read(targets[i]);
-            assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
-            assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
-            assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
-            assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
-            assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
-                    targetParser.getTheRoute().getPositionCount());
+            for (int i = 0; i < targets.length; i++) {
+                NavigationFileParser targetParser = new NavigationFileParser();
+                targetParser.read(targets[i]);
+                assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
+                assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
+                assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
+                assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
+                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
+                        targetParser.getTheRoute().getPositionCount());
 
-            compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
-                    targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false, false, targetParser.getTheRoute().getCharacteristics());
+                compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
+                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false, false, targetParser.getTheRoute().getCharacteristics());
+            }
+
+            for (File target : targets) {
+                assertTrue(target.exists());
+                assertTrue(target.delete());
+            }
+        } finally {
+            // avoid to clutter the temp directory
+            for (File target : targets) {
+                target.delete();
+            }
         }
-
-        for (File target : targets)
-            assertTrue(target.delete());
     }
 
     public void testConvertMTP0607ToMTP0607() throws IOException {
@@ -252,34 +269,34 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertGdbToGdb() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new GdbFormat());
-        convertRoundtrip(TEST_PATH + "large.gdb", new GdbFormat(), new GdbFormat());
+    public void testConvertGarminMapSource6ToGarminMapSource6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource6Format());
+        convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource6Format());
     }
 
-    public void testConvertGdbToKmlFails() throws IOException {
+    public void testConvertGarminMapSource6ToKmlFails() throws IOException {
         // TODO positions with the same coordinates are not saved separately within GDB files
-        convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.gdb", new GdbFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22Format());
     }
 
-    public void testConvertGpx10ToGdb() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GdbFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new GdbFormat());
+    public void testConvertGpx10ToGarminMapSource6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GarminMapSource6Format());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new GarminMapSource6Format());
     }
 
-    public void testConvertGpx11ToGdb() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GdbFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GdbFormat());
+    public void testConvertGpx11ToGarminMapSource6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminMapSource6Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource6Format());
     }
 
-    public void testConvertAxeToGdbFails() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new GdbFormat());
+    public void testConvertMicrosoftAutoRouteToGarminMapSource6Fails() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource6Format());
     }
 
-    public void testConvertTefToGdb() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new GdbFormat());
+    public void testConvertTourExchangeToGarminMapSource6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminMapSource6Format());
     }
 
 
@@ -301,27 +318,27 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertMpsToMps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.mps", new MpsFormat(), new MpsFormat());
-        convertRoundtrip(TEST_PATH + "large.mps", new MpsFormat(), new MpsFormat());
+    public void testConvertGarminMapSource5ToGarminMapSource5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
+        convertRoundtrip(TEST_PATH + "large.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
     }
 
-    public void testConvertGpx10ToMps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MpsFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new MpsFormat());
+    public void testConvertGpx10ToGarminMapSource5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GarminMapSource5Format());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new GarminMapSource5Format());
     }
 
-    public void testConvertGpx11ToMps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new MpsFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new MpsFormat());
+    public void testConvertGpx11ToGarminMapSource5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminMapSource5Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource5Format());
     }
 
-    public void testConvertAxeToMpsFails() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new MpsFormat());
+    public void testConvertMicrosoftAutoRouteToGarminMapSource5Fails() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource5Format());
     }
 
-    public void testConvertTefToMps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new MpsFormat());
+    public void testConvertTourExchangeToGarminMapSource5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminMapSource5Format());
     }
 
 
@@ -483,8 +500,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-gopal.xml", new GoPalRouteFormat(), new GoPalRouteFormat());
     }
 
-    public void testConvertTefToGoPalRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new GoPalRouteFormat());
+    public void testConvertTourExchangeToGoPalRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPalRouteFormat());
     }
 
 
@@ -496,8 +513,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new GoPalTrackFormat());
     }
 
-    public void testConvertTefToGoPalTrack() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new GoPalTrackFormat());
+    public void testConvertTourExchangeToGoPalTrack() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPalTrackFormat());
     }
 
 
@@ -536,16 +553,16 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-nmn4.rte", new Nmn4Format(), new Gpx10Format());
     }
 
-    public void testConvertAxeToNmn4() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new Nmn4Format());
+    public void testConvertMicrosoftAutoRouteToNmn4() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new Nmn4Format());
     }
 
     public void testConvertNmn4ToKml20() throws IOException {
         convertRoundtrip(TEST_PATH + "from-nmn4.rte", new Nmn4Format(), new Kml20Format());
     }
 
-    public void testConvertTefToNmn4() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new Nmn4Format());
+    public void testConvertTourExchangeToNmn4() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new Nmn4Format());
     }
 
 
@@ -564,12 +581,12 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Nmn5Format());
     }
 
-    public void testConvertAxeToNmn5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new Nmn5Format());
+    public void testConvertMicrosoftAutoRouteToNmn5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new Nmn5Format());
     }
 
-    public void testConvertTefToNmn5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new Nmn5Format());
+    public void testConvertTourExchangeToNmn5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new Nmn5Format());
     }
 
 
@@ -588,12 +605,12 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Nmn6Format());
     }
 
-    public void testConvertAxeToNmn6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new Nmn6Format());
+    public void testConvertMicrosoftAutoRouteToNmn6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new Nmn6Format());
     }
 
-    public void testConvertTefToNmn6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new Nmn6Format());
+    public void testConvertTourExchangeToNmn6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new Nmn6Format());
     }
 
 
@@ -670,8 +687,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml22Format());
     }
 
-    public void testConvertGpsTunerToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new PcxFormat());
+    public void testConvertGpsTunerToGarminPcx5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new GarminPcx5Format());
     }
 
     public void testConvertKmlToGpsTuner() throws IOException {
@@ -681,41 +698,41 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertPcx5ToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-pcx5.wpt", new PcxFormat(), new PcxFormat());
-        convertRoundtrip(TEST_PATH + "large-pcx5.wpt", new PcxFormat(), new PcxFormat());
+    public void testConvertGarminPcx5ToGarminPcx5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-pcx5.wpt", new GarminPcx5Format(), new GarminPcx5Format());
+        convertRoundtrip(TEST_PATH + "large-pcx5.wpt", new GarminPcx5Format(), new GarminPcx5Format());
     }
 
-    public void testConvertGpx10ToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new PcxFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new PcxFormat());
+    public void testConvertGpx10ToGarminPcx5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GarminPcx5Format());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new GarminPcx5Format());
     }
 
-    public void testConvertGpx11ToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new PcxFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new PcxFormat());
-    }
-
-
-    public void testConvertAxeToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new PcxFormat());
-    }
-
-    public void testConvertTefToPcx5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new PcxFormat());
+    public void testConvertGpx11ToGarminPcx5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminPcx5Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminPcx5Format());
     }
 
 
-    public void testConvertMapSendToMapSend() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-mapsend.wpt", new MapSendFormat(), new MapSendFormat());
+    public void testConvertMicrosoftAutoRouteToGarminPcx5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminPcx5Format());
     }
 
-    public void testConvertMapSendToTomTomPoi() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-mapsend.wpt", new MapSendFormat(), new TomTomPoiFormat());
+    public void testConvertTourExchangeToGarminPcx5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminPcx5Format());
     }
 
-    public void testConvertPcx5ToMapSend() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-pcx5.wpt", new PcxFormat(), new MapSendFormat());
+
+    public void testConvertMagellanMapSendToMagellanMapSend() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mapsend.wpt", new MagellanMapSendFormat(), new MagellanMapSendFormat());
+    }
+
+    public void testConvertMagellanMapSendToTomTomPoi() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mapsend.wpt", new MagellanMapSendFormat(), new TomTomPoiFormat());
+    }
+
+    public void testConvertGarminPcx5ToMagellanMapSend() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-pcx5.wpt", new GarminPcx5Format(), new MagellanMapSendFormat());
     }
 
 
@@ -724,35 +741,34 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertAlanTrlToAlanTrl() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.trl", new AlanTrlFormat(), new AlanTrlFormat());
+    public void testConvertAlanTrackLogToAlanTrackLog() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.trl", new AlanTrackLogFormat(), new AlanTrackLogFormat());
     }
 
-    public void testConvertAlanTrlToGdb() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.trl", new AlanTrlFormat(), new GdbFormat());
+    public void testConvertAlanTrackLogToGarminMapSource6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.trl", new AlanTrackLogFormat(), new GarminMapSource6Format());
     }
 
-    public void testConvertGpx10ToAlanTrl() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new AlanTrlFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new AlanTrlFormat());
+    public void testConvertGpx10ToAlanTrackLog() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new AlanTrackLogFormat());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new AlanTrackLogFormat());
     }
 
-    public void testConvertAlanWprToAlanWpr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.wpr", new AlanWprFormat(), new AlanWprFormat());
+    public void testConvertAlanWaypointsAndRoutesToAlanWaypointsAndRoutes() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new AlanWaypointsAndRoutesFormat());
     }
 
-    public void testConvertAlanWprToMpsFails() throws IOException {
+    public void testConvertAlanWaypointsAndRoutesToGarminMapSource5Fails() throws IOException {
         // TODO fails since the Garmin Mapsource seems to capture only tracks correctly
         // TODO in routes positions with the same name have the same coordinates
         // TODO in waypoint lists positions with the same coordinates are eliminated
-        convertRoundtrip(TEST_PATH + "from.wpr", new AlanWprFormat(), new MpsFormat());
+        convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new GarminMapSource5Format());
     }
 
-    public void testConvertGpx11ToAlanWpr() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new AlanWprFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new AlanWprFormat());
+    public void testConvertGpx11ToAlanWaypointsAndRoutes() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new AlanWaypointsAndRoutesFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new AlanWaypointsAndRoutesFormat());
     }
-
 
     /*
     public void testConvertHaicomLoggerToHaicomLogger() throws IOException {
@@ -787,16 +803,16 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.tour", new TourFormat(), new Gpx10Format());
     }
 
-    public void testConvertAxeToTour() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new AxeFormat(), new TourFormat());
+    public void testConvertMicrosoftAutoRouteToTour() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new TourFormat());
     }
 
     public void testConvertTourToKml20() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tour", new TourFormat(), new Kml20Format());
     }
 
-    public void testConvertTefToTour() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TefFormat(), new TourFormat());
+    public void testConvertTourExchangeToTour() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new TourFormat());
     }
 
 
@@ -807,18 +823,18 @@ public class ConvertTest extends NavigationTestCase {
 
 
     public void testConvertLargeItnToSeveralItns() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new ItnFormat());
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new ItnFormat());
     }
 
     public void testConvertLargeItnToSeveralMTP0607s() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new MTP0607Format());
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new MTP0607Format());
     }
 
     public void testConvertLargeMTP0607ToSeveralItns() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new ItnFormat());
+        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new ItnFormat());
     }
 
     public void testConvertLargeMTP0607ToSeveralMTP0607s() throws IOException {
-        largeConvertRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new MTP0607Format());
+        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new MTP0607Format());
     }
 }

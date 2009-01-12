@@ -20,33 +20,35 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.gpx.GpxRoute;
-
 /**
- * Reads and writes Garmin MapSource 6.x (.gdb) files.
+ * Reads Microsoft AutoRoute 2002-2006 (.axe) files.
  *
  * @author Christian Pesch
  */
 
-public class GdbFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
+public class MicrosoftAutoRouteFormat extends BabelFormat {
     public String getExtension() {
-        return ".gdb";
+        return ".axe";
     }
 
     public String getName() {
-        return "Garmin MapSource 6.x (*" + getExtension() + ")";
+        return "Microsoft AutoRoute 2002-2006 (*" + getExtension() + ")";
     }
 
     protected String getBabelFormatName() {
-        return "gdb";
+        return "msroute";
+    }
+
+    public boolean isSupportsWriting() {
+        return false;
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false;
     }
 
     protected boolean isStreamingCapable() {
-        return true;
+        return false;
     }
 }
+

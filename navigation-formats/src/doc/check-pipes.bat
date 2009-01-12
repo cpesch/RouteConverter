@@ -1,0 +1,16 @@
+rem NO  type from.axe | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i msroute -f - -o gpx -F -     
+rem NO  type from.gpi | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i garmin_gpi -f - -o gpx -F -     
+rem NO  type from.mps | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i mapsource -f - -o gpx -F -     
+rem NO  type from.tpo | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i tpo3 -f - -o gpx -F -     
+rem NO  type from.trl | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i alantrl -f - -o gpx -F -     
+rem YES type from.gdb | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i gdb -f - -o gpx -F -     
+rem YES type from.loc | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i geo -f - -o gpx -F -     
+rem YES type from.ov2 | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i tomtom -f - -o gpx -F -     
+rem YES type from-ozi.plt | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i ozi -f - -o gpx -F -     
+rem YES type from.tef | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i tef -f - -o gpx -F -     
+rem YES type from-ozi.trk | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i ozi -f - -o gpx -F -     
+rem YES type from.wpr | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i alanwpr -f - -o gpx -F -     
+rem YES type from-mapsend.wpt | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i mapsend -f - -o gpx -F -     
+rem YES type from-ozi.wpt | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i ozi -f - -o gpx -F -     
+rem YES type from-pcx5.wpt | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i pcx -f - -o gpx -F -     
+rem YES type from.xcsv | c:\p4\RouteConverter\trunk\thirdparty\gpsbabel\gpsbabel\bin\gpsbabel.exe -i garmin_poi -f - -o gpx -F -     
