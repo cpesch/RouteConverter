@@ -29,6 +29,7 @@ import slash.navigation.gopal.binding3.Tour;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -71,7 +72,7 @@ public class GoPalRouteFormat extends XmlNavigationFormat<GoPalRoute> {
         return new GoPalRoute(null, tour.getOptions(), positions);
     }
 
-    public List<GoPalRoute> read(File source, Calendar startDate) throws IOException {
+    public List<GoPalRoute> read(InputStream source, Calendar startDate) throws IOException {
         try {
             Tour tour = GoPalUtil.unmarshal(source);
             return Arrays.asList(process(tour));

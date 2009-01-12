@@ -23,9 +23,9 @@ package slash.navigation.gpx;
 import slash.navigation.gpx.binding10.Gpx;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,8 +47,8 @@ public class BrokenGpx10Format extends Gpx10Format {
         return false;
     }
 
-    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
-        FileReader reader = new FileReader(source);
+    public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
+        InputStreamReader reader = new InputStreamReader(source);
         try {
             Gpx gpx = GpxUtil.unmarshal10(reader);
             return process(gpx);

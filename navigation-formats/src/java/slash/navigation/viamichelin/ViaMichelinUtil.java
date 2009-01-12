@@ -92,26 +92,24 @@ public class ViaMichelinUtil {
     }
 
     public static PoiList unmarshal(InputStream in) throws JAXBException {
+        PoiList result = null;
         try {
-            PoiList result = null;
-            try {
-                result = (PoiList) newUnmarshaller().unmarshal(new SAXSource(createXMLReader(), new InputSource(in)));
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
-            }
-            finally {
-                in.close();
-            }
-            return result;
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            result = (PoiList) newUnmarshaller().unmarshal(new SAXSource(createXMLReader(), new InputSource(in)));
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
+        return result;
     }
 
     public static PoiList unmarshal(File file) throws JAXBException {
         try {
-            return unmarshal(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }

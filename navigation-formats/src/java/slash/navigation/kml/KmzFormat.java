@@ -23,15 +23,12 @@ package slash.navigation.kml;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.InputOutput;
+import slash.navigation.util.NotClosingUnderlyingInputStream;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.*;
@@ -54,10 +51,6 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return ".kmz";
     }
 
-    public boolean isSupportsWriting() {
-        return false; // TODO change this for 1.24
-    }
-
     public int getMaximumPositionCount() {
         return delegate.getMaximumPositionCount();
     }
@@ -70,20 +63,20 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.createRoute(characteristics, name, positions);
     }
 
-    public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
+    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
-        ZipFile zipSource = null;
+        ZipInputStream zip = new ZipInputStream(source);
         try {
-            zipSource = new ZipFile(source);
-            for (Enumeration<? extends ZipEntry> enumeration = zipSource.entries(); enumeration.hasMoreElements();) {
-                ZipEntry entry = enumeration.nextElement();
+            ZipEntry entry;
+            while ((entry = zip.getNextEntry()) != null) {
                 try {
-                    List<KmlRoute> routes = delegate.read(zipSource.getInputStream(entry));
+                    List<KmlRoute> routes = delegate.internalRead(new NotClosingUnderlyingInputStream(zip));
                     if (routes != null)
                         result.addAll(routes);
                 } catch (JAXBException e) {
                     log.fine("Error reading " + entry + " from " + source + ": " + e.getMessage());
                 }
+                zip.closeEntry();
             }
             return result.size() > 0 ? result : null;
         }
@@ -92,8 +85,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
             return null;
         }
         finally {
-            if (zipSource != null)
-                zipSource.close();
+          zip.close();
         }
     }
 

@@ -22,6 +22,7 @@ package slash.navigation;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
@@ -42,8 +43,7 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
-    List<R> read(File source, Calendar startDate) throws IOException;
-    // List<R> read(InputStream source) throws IOException;
-    // List<R> read(InputStream source, Calendar startDate) throws IOException;
+    List<R> read(InputStream source) throws IOException;
+    List<R> read(InputStream source, Calendar startDate) throws IOException;
     void write(R route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException;
 }

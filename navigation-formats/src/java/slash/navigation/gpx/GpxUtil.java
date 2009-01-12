@@ -70,26 +70,25 @@ public class GpxUtil {
     }
 
     public static Gpx unmarshal10(InputStream in) throws JAXBException {
+        Gpx result = null;
         try {
-            Gpx result = null;
-            try {
-                result = (Gpx) newUnmarshaller10().unmarshal(in);
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
-            }
-            finally {
-                in.close();
-            }
-            return result;
-        } catch (Exception e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            result = (Gpx) newUnmarshaller10().unmarshal(in);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
         }
+        return result;
     }
 
     public static Gpx unmarshal10(File file) throws JAXBException {
         try {
-            return unmarshal10(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal10(in);
+            }
+            finally {
+                in.close();
+            }
+        } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }
@@ -129,20 +128,27 @@ public class GpxUtil {
         return result;
     }
 
+    public static GpxType unmarshal11(InputStream in) throws JAXBException {
+        GpxType result = null;
+        try {
+            JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(in);
+            result = (GpxType) element.getValue();
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+        }
+
+        return result;
+    }
+
     public static GpxType unmarshal11(File file) throws JAXBException {
         try {
-            FileInputStream fis = new FileInputStream(file);
-            GpxType result = null;
+            FileInputStream in = new FileInputStream(file);
             try {
-                JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(fis);
-                result = (GpxType) element.getValue();
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
+                return unmarshal11(in);
             }
             finally {
-                fis.close();
+                in.close();
             }
-            return result;
         } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }

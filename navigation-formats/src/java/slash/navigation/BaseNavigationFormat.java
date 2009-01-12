@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * The base of all navigation formats.
@@ -83,4 +85,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
 
     public abstract <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
+    public List<R> read(InputStream source) throws IOException {
+        return read(source, null);
+    }
 }

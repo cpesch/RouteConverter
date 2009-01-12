@@ -168,12 +168,11 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".tef");
     }
 
-    /*
     public void testTrainingCenterDatabaseFilesAreValid() throws IOException {
         readFiles(".crs");
+        readFiles(".hst");
         readFiles(".tcx");
     }
-    */
 
     public void testTourFilesAreValid() throws IOException {
         readFiles(".tour");
@@ -195,11 +194,12 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".trp");
     }
 
-    public void testKienzleGpsFilesAreValid() throws IOException {
+    public void testTextFilesAreValid() throws IOException {
+        // KienzleGps
         readFiles(".txt");
     }
 
-    public void testKTrlFilesAreValid() throws IOException {
+    public void testAlanTracklogFilesAreValid() throws IOException {
         readFiles(".trl");
     }
 

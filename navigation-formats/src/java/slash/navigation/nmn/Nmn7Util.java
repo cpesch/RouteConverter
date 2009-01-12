@@ -49,26 +49,24 @@ public class Nmn7Util {
 
 
     public static Route unmarshal(InputStream in) throws JAXBException {
+        Route result = null;
         try {
-            Route result = null;
-            try {
-                result = (Route) newUnmarshaller().unmarshal(in);
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
-            }
-            finally {
-                in.close();
-            }
-            return result;
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            result = (Route) newUnmarshaller().unmarshal(in);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
+        return result;
     }
 
     public static Route unmarshal(File file) throws JAXBException {
         try {
-            return unmarshal(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }

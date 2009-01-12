@@ -21,65 +21,104 @@
 package slash.navigation.tcx;
 
 import slash.navigation.jaxb.JaxbUtils;
-import slash.navigation.tcx.binding2.ObjectFactory;
-import slash.navigation.tcx.binding2.TrainingCenterDatabaseT;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
 public class TcxUtil {
-    public static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+    public static final JAXBContext CONTEXT_1 = JaxbUtils.newContext(slash.navigation.tcx.binding1.ObjectFactory.class);
+    public static final JAXBContext CONTEXT_2 = JaxbUtils.newContext(slash.navigation.tcx.binding2.ObjectFactory.class);
 
-    public static final String TCX_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
+    public static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
+    public static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 
-    public static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+    public static Unmarshaller newUnmarshaller1() {
+        return JaxbUtils.newUnmarshaller(CONTEXT_1);
     }
 
-    public static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
+    public static Marshaller newMarshaller1() {
+        return JaxbUtils.newMarshaller(CONTEXT_1);
+    }
+
+    public static Unmarshaller newUnmarshaller2() {
+        return JaxbUtils.newUnmarshaller(CONTEXT_2);
+    }
+
+    public static Marshaller newMarshaller2() {
+        return JaxbUtils.newMarshaller(CONTEXT_2);
+    }
+
+
+    public static slash.navigation.tcx.binding1.TrainingCenterDatabaseT unmarshal1(InputStream in) throws JAXBException {
+        slash.navigation.tcx.binding1.TrainingCenterDatabaseT result = null;
         try {
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
-        } catch (PropertyException e) {
-            // intentionally left empty
+            JAXBElement element = (JAXBElement) newUnmarshaller1().unmarshal(in);
+            result = (slash.navigation.tcx.binding1.TrainingCenterDatabaseT) element.getValue();
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
-        return marshaller;
+        return result;
     }
 
-
-    public static TrainingCenterDatabaseT unmarshal(InputStream in) throws JAXBException {
+    public static slash.navigation.tcx.binding1.TrainingCenterDatabaseT unmarshal1(File file) throws JAXBException {
         try {
-            TrainingCenterDatabaseT result = null;
+            FileInputStream in = new FileInputStream(file);
             try {
-                JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
-                result = (TrainingCenterDatabaseT) element.getValue();
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
-            }
-            finally {
+                return unmarshal1(in);
+            } finally {
                 in.close();
             }
-            return result;
         } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
-        }
-    }
-
-    public static TrainingCenterDatabaseT unmarshal(File file) throws JAXBException {
-        try {
-            return unmarshal(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }
 
-
-    public static void marshal(TrainingCenterDatabaseT trainingCenterDatabaseT, File file) throws JAXBException {
+    public static void marshal1(slash.navigation.tcx.binding1.TrainingCenterDatabaseT trainingCenterDatabaseT, File file) throws JAXBException {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             try {
-                newMarshaller().marshal(new JAXBElement<TrainingCenterDatabaseT>(new QName(TCX_NAMESPACE_URI, "TrainingCenterDatabase"), TrainingCenterDatabaseT.class, trainingCenterDatabaseT), fos);
+                newMarshaller1().marshal(new JAXBElement<slash.navigation.tcx.binding1.TrainingCenterDatabaseT>(new QName(TCX_1_NAMESPACE_URI, "TrainingCenterDatabase"), slash.navigation.tcx.binding1.TrainingCenterDatabaseT.class, trainingCenterDatabaseT), fos);
+            }
+            finally {
+                fos.flush();
+                fos.close();
+            }
+        } catch (IOException e) {
+            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+        }
+    }
+
+
+    public static slash.navigation.tcx.binding2.TrainingCenterDatabaseT unmarshal2(InputStream in) throws JAXBException {
+        slash.navigation.tcx.binding2.TrainingCenterDatabaseT result = null;
+        try {
+            JAXBElement element = (JAXBElement) newUnmarshaller2().unmarshal(in);
+            result = (slash.navigation.tcx.binding2.TrainingCenterDatabaseT) element.getValue();
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+        }
+        return result;
+    }
+
+    public static slash.navigation.tcx.binding2.TrainingCenterDatabaseT unmarshal2(File file) throws JAXBException {
+        try {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal2(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
+            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
+        }
+    }
+
+    public static void marshal2(slash.navigation.tcx.binding2.TrainingCenterDatabaseT trainingCenterDatabaseT, File file) throws JAXBException {
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                newMarshaller2().marshal(new JAXBElement<slash.navigation.tcx.binding2.TrainingCenterDatabaseT>(new QName(TCX_2_NAMESPACE_URI, "TrainingCenterDatabase"), slash.navigation.tcx.binding2.TrainingCenterDatabaseT.class, trainingCenterDatabaseT), fos);
             }
             finally {
                 fos.flush();

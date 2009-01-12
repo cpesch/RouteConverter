@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -97,7 +97,7 @@ public class Route {
         return getRte().getLink().get(0).getHref();
     }
 
-    public synchronized File getFile() throws IOException {
+    public synchronized File getFile() throws IOException {   // TODO use InputStream
         if(file == null) {
             this.file = routeService.fetchFile(getFileUrl());
         }

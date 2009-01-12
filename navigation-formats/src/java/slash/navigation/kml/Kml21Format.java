@@ -29,7 +29,6 @@ import slash.navigation.util.ISO8601;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -51,17 +50,17 @@ public class Kml21Format extends KmlFormat {
         return "Google Earth 4 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
+    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
         try {
-            return read(new FileInputStream(source));
+            return internalRead(source);
         } catch (JAXBException e) {
             log.fine("Error reading " + source + ": " + e.getMessage());
             return null;
         }
     }
 
-    List<KmlRoute> read(InputStream in) throws JAXBException {
-        KmlType kmlType = KmlUtil.unmarshal21(in);
+    List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException {
+        KmlType kmlType = KmlUtil.unmarshal21(inputStream);
         return process(kmlType);
     }
 

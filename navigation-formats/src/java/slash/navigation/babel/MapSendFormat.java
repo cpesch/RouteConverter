@@ -46,7 +46,7 @@ public class MapSendFormat extends BabelFormat {
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false; // TODO wild guess
+        return false; // just guesses
     }
 
     protected Gpx10Format createGpxFormat() {

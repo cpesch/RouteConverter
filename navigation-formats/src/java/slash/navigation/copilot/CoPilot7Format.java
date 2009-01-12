@@ -27,6 +27,7 @@ import slash.navigation.util.Conversion;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class CoPilot7Format extends CoPilotFormat {
         return "CoPilot 7 (*" + getExtension() + ")";
     }
 
-    public List<Wgs84Route> read(File source, Calendar startDate) throws IOException {
+    public List<Wgs84Route> read(InputStream source, Calendar startDate) throws IOException {
         return read(source, startDate, UTF16_ENCODING);
     }
 

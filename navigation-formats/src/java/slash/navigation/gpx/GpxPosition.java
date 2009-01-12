@@ -124,8 +124,8 @@ public class GpxPosition extends BaseNavigationPosition {
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(reason != null ? !reason.equals(that.reason) : that.reason != null) && !(time != null ?
-                !time.equals(that.time) : that.time != null);
+                !(reason != null ? !reason.equals(that.reason) : that.reason != null) &&
+                !(time != null ? !time.equals(that.time) : that.time != null);
     }
 
     public int hashCode() {

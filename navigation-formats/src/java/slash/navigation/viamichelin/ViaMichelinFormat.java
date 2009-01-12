@@ -28,9 +28,7 @@ import slash.navigation.util.Conversion;
 import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -102,8 +100,8 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public List<ViaMichelinRoute> read(File source, Calendar startDate) throws IOException {
-        FileReader reader = new FileReader(source);
+    public List<ViaMichelinRoute> read(InputStream source, Calendar startDate) throws IOException {
+        InputStreamReader reader = new InputStreamReader(source);
         try {
             PoiList poiList = ViaMichelinUtil.unmarshal(reader);
             return Arrays.asList(process(poiList));

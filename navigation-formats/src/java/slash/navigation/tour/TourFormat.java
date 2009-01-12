@@ -25,10 +25,7 @@ import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.Conversion;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,7 +73,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return new TourRoute(name, (List<TourPosition>) positions);        
     }
 
-    public List<TourRoute> read(File source, Calendar startDate) throws IOException {
+    public List<TourRoute> read(InputStream source, Calendar startDate) throws IOException {
         return read(source, startDate, UTF8_ENCODING);
     }
 

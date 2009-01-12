@@ -53,31 +53,28 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
-    private TrainingCenterDatabaseT trainingCenterDatabaseT; // TODO for writing?
-    private ActivityT activity;
-    private List<TcxTrackPointPosition> positions;
+public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
+    private List<TcxPosition> positions;
 
 
-    public TcxRoute(ActivityT activity, List<TcxTrackPointPosition> positions) {
-        super(new TcxFormat(), RouteCharacteristics.Route);
-        this.activity = activity;
+    public TcxRoute(TcxFormat format, List<TcxPosition> positions) {
+        super(format, RouteCharacteristics.Route);
         this.positions = positions;
     }
 
     public String getName() {
-        return activity.getNotes() != null ? activity.getNotes() : RouteComments.createRouteName(positions);
+        return RouteComments.createRouteName(positions); // TODO
     }
 
     public void setName(String name) {
-        activity.setNotes(name);
+        // TODO
     }
 
     public List<String> getDescription() {
-        return null;
+        return null; // TODO
     }
 
-    public List<TcxTrackPointPosition> getPositions() {
+    public List<TcxPosition> getPositions() {
         return positions;
     }
 
@@ -85,12 +82,12 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
         return positions.size();
     }
 
-    public void add(int index, TcxTrackPointPosition position) {
+    public void add(int index, TcxPosition position) {
         positions.add(index, position);
     }
 
 
-    public TcxTrackPointPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
+    public TcxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
         // TODO COMMENT?
         PositionT positionT = new PositionT();
         positionT.setLatitudeDegrees(latitude); // TODO degrees?
@@ -99,12 +96,12 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
         trackpointT.setTime(TcxFormat.formatTime(time));
         trackpointT.setPosition(positionT);
         // TODO muﬂ noch in Struktur...
-        return new TcxTrackPointPosition(trackpointT);
+        return null; // TODO new TcxPosition(null, null, null, null, null);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
@@ -120,7 +117,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, RouteCharacteristics.Route, getName(), getDescription(), gpxPositions);
@@ -137,7 +134,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     public ItnRoute asItnFormat() {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             itnPositions.add(position.asItnPosition());
         }
         return new ItnRoute(getCharacteristics(), getName(), itnPositions);
@@ -146,7 +143,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -179,7 +176,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
     
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
@@ -187,7 +184,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     public MagicMapsPthRoute asMagicMapsPthFormat() {
         List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
@@ -195,7 +192,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -211,7 +208,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (TcxTrackPointPosition Wgs84Position : positions) {
+        for (TcxPosition Wgs84Position : positions) {
             nmnPositions.add(Wgs84Position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
@@ -240,7 +237,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             wgs84Positions.add(position.asOvlPosition());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
@@ -249,7 +246,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> tcxPositions = new ArrayList<Wgs84Position>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             tcxPositions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), tcxPositions);
@@ -297,7 +294,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             tourPositions.add(position.asTourPosition());
         }
         return new TourRoute(getName(), tourPositions);
@@ -305,7 +302,7 @@ public class TcxRoute extends BaseRoute<TcxTrackPointPosition, TcxFormat> {
 
     public ViaMichelinRoute asViaMichelinFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxTrackPointPosition position : positions) {
+        for (TcxPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new ViaMichelinRoute(getName(), wgs84Positions);

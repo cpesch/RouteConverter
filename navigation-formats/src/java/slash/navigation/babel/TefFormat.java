@@ -44,6 +44,6 @@ public class TefFormat extends BabelFormat {
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false; // TODO wild guess
+        return false; // just guesses
     }
 }

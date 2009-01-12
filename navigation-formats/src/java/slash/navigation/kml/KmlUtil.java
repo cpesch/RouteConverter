@@ -77,26 +77,24 @@ public class KmlUtil {
     }
 
     public static Object unmarshal20(InputStream in) throws JAXBException {
+        Object result = null;
         try {
-            Object result = null;
-            try {
-                result = newUnmarshaller20().unmarshal(in);
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
-            }
-            finally {
-                in.close();
-            }
-            return result;
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            result = newUnmarshaller20().unmarshal(in);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
+        return result;
     }
 
     public static Object unmarshal20(File file) throws JAXBException {
         try {
-            return unmarshal20(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal20(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }
@@ -113,27 +111,25 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding21.KmlType unmarshal21(InputStream in) throws JAXBException {
+        slash.navigation.kml.binding21.KmlType result = null;
         try {
-            slash.navigation.kml.binding21.KmlType result = null;
-            try {
-                JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
-                result = (slash.navigation.kml.binding21.KmlType) element.getValue();
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
-            }
-            finally {
-                in.close();
-            }
-            return result;
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
+            result = (slash.navigation.kml.binding21.KmlType) element.getValue();
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
         }
+        return result;
     }
 
     public static slash.navigation.kml.binding21.KmlType unmarshal21(File file) throws JAXBException {
         try {
-            return unmarshal21(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal21(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }
@@ -150,27 +146,25 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding22.KmlType unmarshal22(InputStream in) throws JAXBException {
+        slash.navigation.kml.binding22.KmlType result = null;
         try {
-            slash.navigation.kml.binding22.KmlType result = null;
-            try {
-                JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
-                result = (slash.navigation.kml.binding22.KmlType) element.getValue();
-            } catch (ClassCastException e) {
-                throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
-            }
-            finally {
-                in.close();
-            }
-            return result;
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
+            result = (slash.navigation.kml.binding22.KmlType) element.getValue();
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
         }
+        return result;
     }
 
     public static slash.navigation.kml.binding22.KmlType unmarshal22(File file) throws JAXBException {
         try {
-            return unmarshal22(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal22(in);
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }

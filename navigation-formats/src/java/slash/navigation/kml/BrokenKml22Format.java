@@ -23,9 +23,9 @@ package slash.navigation.kml;
 import slash.navigation.kml.binding22.KmlType;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,8 +47,8 @@ public class BrokenKml22Format extends Kml22Format {
         return false;
     }
 
-    public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
-        FileReader reader = new FileReader(source);
+    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
+        InputStreamReader reader = new InputStreamReader(source);
         try {
             KmlType kmlType = KmlUtil.unmarshal22(reader);
             return process(kmlType);

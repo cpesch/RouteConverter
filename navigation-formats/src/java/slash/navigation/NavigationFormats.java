@@ -40,6 +40,8 @@ import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.viamichelin.ViaMichelinFormat;
@@ -96,7 +98,8 @@ public final class NavigationFormats {
         addFormat(MagicMapsIktFormat.class);
         addFormat(MagellanExploristFormat.class);
         addFormat(KienzleGpsFormat.class);
-        // TODO later... addFormat(TcxFormat.class);
+        addFormat(Tcx1Format.class);
+        addFormat(Tcx2Format.class);
 
         // BabelFormats
         addFormat(GdbFormat.class);

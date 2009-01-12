@@ -20,13 +20,14 @@
 
 package slash.navigation;
 
+import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.itn.ItnRoute;
-import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.nmea.NmeaRoute;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -73,7 +74,7 @@ public class StartDateTest extends NavigationTestCase {
     }
 
     public void testCurrentStartDateForItnWithDate() throws IOException {
-        File source = new File(SAMPLE_PATH + "startdate-with-date.itn");
+        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.itn"));
         Calendar startDate = Calendar.getInstance();
         List<ItnRoute> routes = new ItnFormat().read(source, startDate);
         checkPositions(routes);
@@ -89,12 +90,12 @@ public class StartDateTest extends NavigationTestCase {
         File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<ItnRoute> routes = new ItnFormat().read(source, startDate);
+        List<ItnRoute> routes = new ItnFormat().read(new FileInputStream(source), startDate);
         checkPositionsWithDate(routes, startDate);
     }
 
     public void testCurrentStartDateForItnWithoutDate() throws IOException {
-        File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
+        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.itn"));
         Calendar startDate = Calendar.getInstance();
         List<ItnRoute> routes = new ItnFormat().read(source, startDate);
         checkPositionsWithDate(routes, startDate);
@@ -114,7 +115,7 @@ public class StartDateTest extends NavigationTestCase {
     }
 
     public void testCurrentStartDateForNmeaWithDate() throws IOException {
-        File source = new File(SAMPLE_PATH + "startdate-with-date.nmea");
+        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.nmea"));
         Calendar startDate = Calendar.getInstance();
         List<NmeaRoute> routes = new NmeaFormat().read(source, startDate);
         checkPositions(routes);
@@ -130,12 +131,12 @@ public class StartDateTest extends NavigationTestCase {
         File source = new File(SAMPLE_PATH + "startdate-without-date.nmea");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<NmeaRoute> routes = new NmeaFormat().read(source, startDate);
+        List<NmeaRoute> routes = new NmeaFormat().read(new FileInputStream(source), startDate);
         checkPositionsWithDate(routes, startDate);
     }
 
     public void testCurrentStartDateForNmeaWithoutDate() throws IOException {
-        File source = new File(SAMPLE_PATH + "startdate-without-date.nmea");
+        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.nmea"));
         Calendar startDate = Calendar.getInstance();
         List<NmeaRoute> routes = new NmeaFormat().read(source, startDate);
         checkPositionsWithDate(routes, startDate);
@@ -153,12 +154,12 @@ public class StartDateTest extends NavigationTestCase {
         File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<SimpleRoute> routes = new GoPalTrackFormat().read(source, startDate);
+        List<SimpleRoute> routes = new GoPalTrackFormat().read(new FileInputStream(source), startDate);
         checkPositionsWithDate(routes, startDate);
     }
 
     public void testCurrentStartDateForGopalTrackWithoutDate() throws IOException {
-        File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
+        FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.trk"));
         Calendar startDate = Calendar.getInstance();
         List<SimpleRoute> routes = new GoPalTrackFormat().read(source, startDate);
         checkPositionsWithDate(routes, startDate);

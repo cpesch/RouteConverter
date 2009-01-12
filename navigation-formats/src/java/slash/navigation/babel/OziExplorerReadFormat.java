@@ -27,8 +27,8 @@ import slash.navigation.gpx.GpxPosition;
 import java.util.List;
 import java.util.Calendar;
 import java.util.ArrayList;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Reads OziExplorer Route (.rte), Track (.plt) and Waypoint (.wpt) files.
@@ -70,7 +70,7 @@ public class OziExplorerReadFormat extends BabelFormat implements MultipleRoutes
         return count == positions.size();
     }
 
-    public List<GpxRoute> read(File source, Calendar startDate) throws IOException {
+    public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
         List<GpxRoute> routes = super.read(source, startDate);
         if (routes == null)
             return null;

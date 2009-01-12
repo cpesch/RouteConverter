@@ -36,12 +36,12 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         return calendar != null && (!(calendar.get(Calendar.YEAR) == 1970 && calendar.get(Calendar.DAY_OF_YEAR) == 1));
     }
 
-    public List<R> read(File source, Calendar startDate) throws IOException {
+    public List<R> read(InputStream source, Calendar startDate) throws IOException {
         return read(source, startDate, DEFAULT_ENCODING);
     }
 
-    protected List<R> read(File source, Calendar startDate, String encoding) throws IOException {
-        Reader reader = new InputStreamReader(new FileInputStream(source), encoding);
+    protected List<R> read(InputStream source, Calendar startDate, String encoding) throws IOException {
+        Reader reader = new InputStreamReader(source, encoding);
         BufferedReader bufferedReader = new BufferedReader(reader);
         try {
             return read(bufferedReader, startDate, encoding);

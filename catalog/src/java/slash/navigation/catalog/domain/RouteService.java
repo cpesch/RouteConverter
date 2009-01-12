@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -102,7 +102,7 @@ public class RouteService {
         return file;
     }
 
-    File fetchFile(String url) throws IOException {
+    File fetchFile(String url) throws IOException {    // TODO use InputStream
         log.fine(System.currentTimeMillis() + " fetching " + url);
         Get get = new Get(url);
         InputStream in = get.executeAsStream();

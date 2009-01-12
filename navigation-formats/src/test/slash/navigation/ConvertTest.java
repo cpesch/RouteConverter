@@ -53,7 +53,7 @@ public class ConvertTest extends NavigationTestCase {
                           BaseNavigationFormat sourceFormat,
                           BaseNavigationFormat targetFormat) throws IOException {
         File source = new File(testFileName);
-        assertTrue(parser.read(source));
+        assertTrue("Cannot read route from " + source, parser.read(source));
         assertNotNull(parser.getFormat());
         assertNotNull(parser.getTheRoute());
         assertNotNull(parser.getAllRoutes());

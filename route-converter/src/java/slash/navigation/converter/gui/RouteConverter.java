@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -765,7 +765,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                 Route route = getRoutesListModel().getRoute(selectedRows[0]);
                 File file;
                 try {
-                    file = route.getFile();
+                    file = route.getFile(); // TODO use InputStream
                     if (file == null)
                         return;
                 } catch (Throwable t) {
@@ -1076,7 +1076,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         if (tabbedPane.getSelectedComponent().equals(convertPanel)) {
             String url = DnDHelper.extractUrl(string);
             try {
-                File file = File.createTempFile("routeconverter", ".url");
+                File file = File.createTempFile("routeconverter", ".url"); // TODO avoid creating temp file
                 FileWriter writer = new FileWriter(file);
                 writer.write(url);
                 writer.flush();

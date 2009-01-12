@@ -166,31 +166,28 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
     private List<MagicMapsIktRoute> unmarshal(InputStream in) throws JAXBException {
         try {
-            try {
-                XMLInputFactory factory = XMLInputFactory.newInstance();
-                XMLEventReader eventReader = factory.createXMLEventReader(in, UTF8_ENCODING);
-                return process(eventReader);
-            } catch (XMLStreamException e) {
-                throw new JAXBException("Parse error from " + in + ": " + e.getMessage());
-            }
-            finally {
-                in.close();
-            }
-        }
-        catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + in + ": " + e.getMessage());
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            XMLEventReader eventReader = factory.createXMLEventReader(in, UTF8_ENCODING);
+            return process(eventReader);
+        } catch (XMLStreamException e) {
+            throw new JAXBException("Parse error from " + in + ": " + e.getMessage());
         }
     }
 
     private List<MagicMapsIktRoute> unmarshal(File file) throws JAXBException {
         try {
-            return unmarshal(new FileInputStream(file));
+            FileInputStream in = new FileInputStream(file);
+            try {
+                return unmarshal(in);
+            } finally {
+                in.close();
+            }
         } catch (IOException e) {
             throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
         }
     }
 
-    public List<MagicMapsIktRoute> read(File source, Calendar startDate) throws IOException {
+    public List<MagicMapsIktRoute> read(InputStream source, Calendar startDate) throws IOException {
         try {
             List<MagicMapsIktRoute> routes = unmarshal(source);
             if (routes != null && routes.size() > 0)

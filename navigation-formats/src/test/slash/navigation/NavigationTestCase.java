@@ -48,6 +48,7 @@ import slash.navigation.util.Files;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -442,7 +443,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     protected List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        return format.read(source, null);
+        return format.read(new FileInputStream(source));
     }
 
     protected List<ItnRoute> readSampleItnFile(String fileName, boolean setStartDateFromFile) throws IOException {
@@ -452,7 +453,7 @@ public abstract class NavigationTestCase extends TestCase {
             startDate = Calendar.getInstance();
             startDate.setTimeInMillis(source.lastModified());
         }
-        return new ItnFormat().read(source, startDate);
+        return new ItnFormat().read(new FileInputStream(source), startDate);
     }
 
     protected List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws IOException {
@@ -462,7 +463,7 @@ public abstract class NavigationTestCase extends TestCase {
             startDate = Calendar.getInstance();
             startDate.setTimeInMillis(source.lastModified());
         }
-        return new NmeaFormat().read(source, startDate);
+        return new NmeaFormat().read(new FileInputStream(source), startDate);
     }
 
     protected List<SimpleRoute> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws IOException {
@@ -472,6 +473,6 @@ public abstract class NavigationTestCase extends TestCase {
             startDate = Calendar.getInstance();
             startDate.setTimeInMillis(source.lastModified());
         }
-        return new GoPalTrackFormat().read(source, startDate);
+        return new GoPalTrackFormat().read(new FileInputStream(source), startDate);
     }
 }

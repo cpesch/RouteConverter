@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -33,7 +33,6 @@ import java.net.URL;
  * buffer.
  *
  * @author Christian Pesch
- * @version $Id: InputOutput.java 159 2003-12-01 09:43:25Z cpesch $
  */
 
 public class InputOutput {

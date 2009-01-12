@@ -31,7 +31,6 @@ import slash.navigation.util.ISO8601;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -53,17 +52,17 @@ public class Kml22Format extends KmlFormat {
         return "Google Earth 4.2 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(File source, Calendar startDate) throws IOException {
+    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
         try {
-            return read(new FileInputStream(source));
+            return internalRead(source);
         } catch (JAXBException e) {
             log.fine("Error reading " + source + ": " + e.getMessage());
             return null;
         }
     }
 
-    List<KmlRoute> read(InputStream in) throws JAXBException {
-        KmlType kmlType = KmlUtil.unmarshal22(in);
+    List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException {
+        KmlType kmlType = KmlUtil.unmarshal22(inputStream);
         return process(kmlType);
     }
 
@@ -97,7 +96,7 @@ public class Kml22Format extends KmlFormat {
             routes = extractTracks(Conversion.trim(containerType.getNameElement()), Conversion.trim(containerType.getDescription()), features);
         }
 
-        if(feature instanceof PlacemarkType) {
+        if (feature instanceof PlacemarkType) {
             PlacemarkType placemarkType = (PlacemarkType) feature;
             String placemarkName = asComment(Conversion.trim(placemarkType.getNameElement()),
                     Conversion.trim(placemarkType.getDescription()));
@@ -112,7 +111,7 @@ public class Kml22Format extends KmlFormat {
             routes = Arrays.asList(new KmlRoute(this, RouteCharacteristics.Waypoints, placemarkName, null, positions));
         }
 
-        if(routes != null)
+        if (routes != null)
             RouteComments.commentRoutePositions(routes);
         return routes;
     }
@@ -243,7 +242,7 @@ public class Kml22Format extends KmlFormat {
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
             placemarkType.setNameElement(position.getComment());
             placemarkType.setVisibility(Boolean.FALSE);
-            if(position.getTime() != null) {
+            if (position.getTime() != null) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));
                 placemarkType.setAbstractTimePrimitiveGroup(objectFactory.createTimeStamp(timeStampType));
@@ -292,9 +291,8 @@ public class Kml22Format extends KmlFormat {
     }
 
 
-
-    private float getSpeedLineWidth(){
-    	return preferences.getFloat("speedLineWidth", 5.0f);
+    private float getSpeedLineWidth() {
+        return preferences.getFloat("speedLineWidth", 5.0f);
     }
 
     private String getSpeedColorCode(double speed) {

@@ -25,9 +25,9 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.NotClosingUnderlyingInputStream;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 public class NavigationFileParser {
     private static final Logger log = Logger.getLogger(NavigationFileParser.class.getName());
+    private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
     private FormatAndRoutes formatAndRoutes;
 
@@ -50,7 +51,7 @@ public class NavigationFileParser {
         return formatAndRoutes.getFormat();
     }
 
-    public BaseRoute<BaseNavigationPosition,BaseNavigationFormat> getTheRoute() {
+    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getTheRoute() {
         return formatAndRoutes.getRoute();
     }
 
@@ -87,35 +88,71 @@ public class NavigationFileParser {
         return positionCounts;
     }
 
-    private FormatAndRoutes readFile(File source) throws IOException {
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(source.lastModified());
-        
-        for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
-            List<BaseRoute> routes = format.read(source, startDate);
-            if (routes != null && routes.size() > 0) {
-                log.info("Detected '" + format.getName() + "' file with " + routes.size() + " route(s) and " +
-                        getPositionCounts(routes) + " positions");
-                for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-                    RouteComments.commentPositions(route.getPositions());
-                    RouteComments.commentRouteName(route);
+    private FormatAndRoutes read(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize));
+        try {
+            buffer.mark(readBufferSize);
+
+            for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
+                List<BaseRoute> routes = format.read(buffer, startDate);
+                if (routes != null && routes.size() > 0) {
+                    log.info("Detected '" + format.getName() + "' file with " + routes.size() + " route(s) and " +
+                            getPositionCounts(routes) + " positions");
+                    for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+                        RouteComments.commentPositions(route.getPositions());
+                        RouteComments.commentRouteName(route);
+                    }
+                    return new FormatAndRoutes(format, routes);
                 }
-                return new FormatAndRoutes(format, routes);
+
+                try {
+                    buffer.reset();
+                } catch (IOException e) {
+                    // Resetting to invalid mark - if the read buffer is not large enough
+                    log.severe("No known format found within " + readBufferSize + " bytes; increase the read buffer");
+                    return null;
+                }
             }
+        }
+        finally {
+            buffer.close();
         }
         return null;
     }
 
     public boolean read(File source) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "'");
-        this.formatAndRoutes = readFile(source);
-        return formatAndRoutes != null;
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTimeInMillis(source.lastModified());
+        FileInputStream fis = new FileInputStream(source);
+        try {
+            this.formatAndRoutes = read(fis, (int) source.length() + 1, startDate);
+            return formatAndRoutes != null;
+        }
+        finally {
+            fis.close();
+        }
     }
+
+    public boolean read(InputStream source, int readBufferSize) throws IOException {
+        log.info("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes");
+        try {
+            this.formatAndRoutes = read(source, readBufferSize, null);
+            return formatAndRoutes != null;
+        }
+        finally {
+            source.close();
+        }
+    }
+
+    public boolean read(InputStream source) throws IOException {
+        return read(source, READ_BUFFER_SIZE);
+    }
+
 
     public int getNumberOfFilesToWriteFor(BaseRoute route, NavigationFormat format, boolean duplicateFirstPosition) {
         return Conversion.ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
     }
-
 
     public void write(BaseRoute route, NavigationFormat format,
                       boolean duplicateFirstPosition,
@@ -162,7 +199,9 @@ public class NavigationFileParser {
             routeToWrite.add(0, ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite));
     }
 
-    /** Gives splitted ITNRoute and SimpleRoutes a more useful name for the fragment */
+    /**
+     * Gives splitted ITNRoute and SimpleRoutes a more useful name for the fragment
+     */
     private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int j, File... targets) {
         if (route.getFormat() instanceof ItnFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
@@ -181,7 +220,7 @@ public class NavigationFileParser {
 
     public void write(List<BaseRoute> routes, MultipleRoutesFormat format, File target) throws IOException {
         log.info("Writing '" + format.getName() + "' file with with " + routes.size() + " routes and " +
-                        getPositionCounts(routes) + " positions");
+                getPositionCounts(routes) + " positions");
 
         List<BaseRoute> routesToWrite = new ArrayList<BaseRoute>(routes.size());
         for (BaseRoute route : routes) {

@@ -62,7 +62,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(File source, Calendar startDate) throws IOException {
+    public List<Wgs84Route> read(InputStream source, Calendar startDate) throws IOException {
         List<Wgs84Route> route = read(source, startDate, UTF8_ENCODING);
         if (route == null)
             route = read(source, startDate, DEFAULT_ENCODING);

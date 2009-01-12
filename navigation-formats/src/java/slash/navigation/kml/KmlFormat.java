@@ -26,11 +26,8 @@ import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.util.Conversion;
-import slash.navigation.util.InputOutput;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -92,7 +89,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
-    abstract List<KmlRoute> read(InputStream in) throws JAXBException;
+    abstract List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException;
 
     boolean isPosition(String line) {
         Matcher matcher = PATTERN.matcher(line);
@@ -153,30 +150,31 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return aDouble != null ? aDouble.toString() : "0.0";
     }
 
-    // TODO should be generalized by parsing always from input stream
     protected List<KmlRoute> parseRouteFromUrl(String url) {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
-        File tempFile = null;
+        return parseRouteFromUrl(url, KmlRoute.class);
+    }
+
+    protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) { // TODO move to more central position, use from UI
+        List<T> result = new ArrayList<T>();
+        InputStream source = null;
         try {
-            tempFile = File.createTempFile("routeconverter", ".kml");
-            InputOutput inout = new InputOutput(new URL(url).openStream(), new FileOutputStream(tempFile));
-            inout.start();
-            inout.close();
-            NavigationFileParser parser = new NavigationFileParser();
-            boolean success = parser.read(tempFile);
-            if (success) {
-                List<BaseRoute> routes = parser.getAllRoutes();
-                for (BaseRoute route : routes) {
-                    if (route instanceof KmlRoute)
-                        result.add((KmlRoute) route);
+            try {
+                source = new URL(url).openStream();
+                NavigationFileParser parser = new NavigationFileParser();
+                boolean success = parser.read(source);
+                if (success) {
+                    List<BaseRoute> routes = parser.getAllRoutes();
+                    for (BaseRoute route : routes) {
+                        if (resultClass.isInstance(route))
+                            result.add((T) route);
+                    }
                 }
+            } finally {
+                if (source != null)
+                    source.close();
             }
         } catch (Exception e) {
             log.fine("Error reading " + url + ": " + e.getMessage());
-        }
-        finally {
-            if (tempFile != null)
-                tempFile.delete();
         }
         return result;
     }

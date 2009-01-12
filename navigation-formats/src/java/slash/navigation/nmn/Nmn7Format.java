@@ -29,11 +29,13 @@ import slash.navigation.util.Conversion;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Reads and writes Navigon Mobile Navigator 7 (.freshroute) files.
@@ -42,6 +44,7 @@ import java.util.List;
  */
 
 public class Nmn7Format extends NmnFormat {
+    private static final Logger log = Logger.getLogger(Nmn7Format.class.getName());
 
     public String getExtension() {
         return ".freshroute";
@@ -68,11 +71,12 @@ public class Nmn7Format extends NmnFormat {
         return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
     }
 
-    public List<NmnRoute> read(File source, Calendar startDate) throws IOException {
+    public List<NmnRoute> read(InputStream source, Calendar startDate) throws IOException {
         try {
             Route route = Nmn7Util.unmarshal(source);
             return Arrays.asList(process(route));
         } catch (JAXBException e) {
+            log.fine("Error reading " + source + ": " + e.getMessage());
             return null;
         }
     }
