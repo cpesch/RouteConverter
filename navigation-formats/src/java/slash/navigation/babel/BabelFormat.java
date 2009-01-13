@@ -353,7 +353,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     public List<GpxRoute> read(InputStream in, Calendar startDate) throws IOException {
         if (isStreamingCapable()) {
-            DebugOutput.activate(); // TODO remove me later!
             InputStream target = startBabel(in, getBabelFormatName(), BABEL_INTERFACE_FORMAT_NAME, "-r -w -t");
             List<GpxRoute> result = getGpxFormat().read(target, startDate);
             if (result != null && result.size() > 0)
