@@ -20,6 +20,20 @@
 
 package slash.navigation.babel;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
@@ -27,16 +41,9 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.util.DebugOutput;
 import slash.navigation.util.Externalization;
 import slash.navigation.util.InputOutput;
 import slash.navigation.util.Platform;
-
-import java.io.*;
-import java.util.Calendar;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 /**
  * The base of all GPSBabel based formats.
