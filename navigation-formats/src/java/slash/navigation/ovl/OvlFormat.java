@@ -132,7 +132,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private boolean hasValidSections(List<OvlSection> sections) {
-        if (!existsSection(sections, OVERLAY_TITLE) || !existsSection(sections, MAPLAGE_TITLE))
+        if (!existsSection(sections, OVERLAY_TITLE))
             return false;
 
         OvlSection overlay = findSection(sections, OVERLAY_TITLE);
@@ -156,6 +156,9 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         List<OvlRoute> result = new ArrayList<OvlRoute>();
 
         OvlSection mapLage = findSection(sections, MAPLAGE_TITLE);
+        if(mapLage == null)
+            mapLage = new OvlSection(MAPLAGE_TITLE);
+
         OvlSection overlay = findSection(sections, OVERLAY_TITLE);
         int symbolCount = getSymbolCount(overlay);
 
