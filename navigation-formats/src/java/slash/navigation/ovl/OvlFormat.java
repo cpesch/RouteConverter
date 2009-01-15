@@ -196,26 +196,23 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return result;
     }
 
+    private RouteCharacteristics estimateCharacteristics(int positionCount) {
+        return positionCount > 100 ? RouteCharacteristics.Track : RouteCharacteristics.Route;
+    }
+
     private OvlRoute extractRoute(OvlSection symbol, OvlSection overlay, OvlSection mapLage) {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        RouteCharacteristics characteristics = symbol.getCharacteristics();
-        if (characteristics == null)
-            characteristics = RouteCharacteristics.Route;
-
         int positionCount = symbol.getPositionCount();
         for (int i = 0; i < positionCount; i++) {
             positions.add(symbol.getPosition(i));
         }
         symbol.removePositions();
-        return new OvlRoute(this, characteristics, symbol.getTitle(), symbol, overlay, mapLage, positions);
+        return new OvlRoute(this, estimateCharacteristics(positionCount), symbol.getTitle(), symbol, overlay, mapLage, positions);
     }
 
     private OvlRoute extractRoute(List<OvlSection> symbols, OvlSection overlay, OvlSection mapLage) {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        RouteCharacteristics characteristics = null;
         for (OvlSection symbol : symbols) {
-            if (characteristics == null)
-                characteristics = symbol.getCharacteristics();
             int positionCount = symbol.getPositionCount();
             for (int i = 0; i < positionCount; i++) {
                 positions.add(symbol.getPosition(i));
@@ -223,9 +220,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             symbol.removePositions();
         }
         OvlSection symbol = symbols.size() > 0 ? symbols.get(0) : null;
-        if (characteristics == null)
-            characteristics = RouteCharacteristics.Route;
-        return new OvlRoute(this, characteristics, mapLage.getTitle(), symbol, overlay, mapLage, positions);
+        return new OvlRoute(this, estimateCharacteristics(positions.size()), mapLage.getTitle(), symbol, overlay, mapLage, positions);
     }
 
     static RouteCharacteristics getCharacteristics(int typ) {
@@ -273,12 +268,10 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
 
     private void writeSymbol(OvlRoute route, PrintWriter writer, int startIndex, int endIndex, int symbolIndex) {
         writer.println(SECTION_PREFIX + SYMBOL_TITLE + " " + symbolIndex + SECTION_POSTFIX);
-        // the Top 50 does not like other characteristics than Route :-(
-        // writer.println(OvlSection.CHARACTERISTICS + NAME_VALUE_SEPARATOR + getTyp(route.getCharacteristics()));
-        writer.println(OvlSection.CHARACTERISTICS + NAME_VALUE_SEPARATOR + getTyp(RouteCharacteristics.Route));
         writer.println(OvlSection.GROUP + NAME_VALUE_SEPARATOR + symbolIndex);
 
         writeSection(route.getSymbol(), writer, Arrays.asList(OvlSection.TEXT));
+        writeMissingAttribute(route.getSymbol(), writer, "Typ", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Col", "3");
         writeMissingAttribute(route.getSymbol(), writer, "Zoom", "1");
         writeMissingAttribute(route.getSymbol(), writer, "Size", "106");

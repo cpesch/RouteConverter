@@ -21,7 +21,6 @@
 package slash.navigation.ovl;
 
 import slash.navigation.IniFileSection;
-import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.Conversion;
 
@@ -40,7 +39,6 @@ class OvlSection extends IniFileSection {
     private static final Pattern EASY_GPS_PATTERN = Pattern.compile(".*?([-\\d\\.]+).*?([-\\d\\.]+).*?");
 
     static final String GROUP = "Group";
-    static final String CHARACTERISTICS = "Typ";
     static final String POSITION_COUNT = "Punkte";
     static final String X_POSITION = "XKoord";
     static final String Y_POSITION = "YKoord";
@@ -60,10 +58,6 @@ class OvlSection extends IniFileSection {
 
     void setText(String text) {
         put(TEXT, text);
-    }
-
-    RouteCharacteristics getCharacteristics() {
-        return OvlFormat.getCharacteristics(getInteger(CHARACTERISTICS));
     }
 
     int getPositionCount() {
@@ -102,7 +96,6 @@ class OvlSection extends IniFileSection {
         remove(GROUP);
         remove(TEXT);
         remove(POSITION_COUNT);
-        remove(CHARACTERISTICS);
     }
 
     public boolean equals(Object o) {
