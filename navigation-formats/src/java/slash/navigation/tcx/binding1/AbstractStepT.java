@@ -11,7 +11,7 @@ package slash.navigation.tcx.binding1;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+// import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -38,10 +38,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "AbstractStep_t", propOrder = {
     "stepId"
 })
+/*
 @XmlSeeAlso({
     RepeatT.class,
     StepT.class
 })
+*/
 public abstract class AbstractStepT {
 
     @XmlElement(name = "StepId")

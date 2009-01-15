@@ -10,7 +10,7 @@ package slash.navigation.tcx.binding1;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+// import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Duration_t")
+/*
 @XmlSeeAlso({
     DistanceT.class,
     TimeT.class,
@@ -40,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
     CaloriesBurnedT.class,
     HeartRateBelowT.class
 })
+*/
 public abstract class DurationT {
 
 
