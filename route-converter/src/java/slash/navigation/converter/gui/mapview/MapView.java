@@ -454,6 +454,8 @@ public class MapView {
         if (significant == null) {
             significant = new BitSet(positions.size());
 
+            // TODO could remove MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION and filterVisiblePositions()
+            // double threshold = zoomLevel > ZOOMLEVEL_SCALE.length - 1 ? ZOOMLEVEL_SCALE[zoomLevel] / 2500.0 : 1.0;
             if (zoomLevel <= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION){
                 double threshold = ZOOMLEVEL_SCALE[zoomLevel] / 2500.0;
                 for (int significantPosition : Calculation.getSignificantPositions(positions, threshold))
@@ -748,6 +750,7 @@ public class MapView {
     }
 
     private BaseNavigationPosition getMapNorthEast(){
+        String bounds = executeScript("map.getBounds();");
         String northEastLatitude = executeScript("map.getBounds().getNorthEast().lat();");
         String northEastLongitude = executeScript("map.getBounds().getNorthEast().lng();");
         return northEastLatitude != null && northEastLongitude != null ? new Wgs84Position(Double.parseDouble(northEastLongitude), Double.parseDouble(northEastLatitude), null, null, null) : null;
@@ -787,6 +790,7 @@ public class MapView {
     private void addPolylinesToMap(List<BaseNavigationPosition> positions) {
         removeOverlays();
 
+        // TODO could remove this?!
         if (positions.size() > MAXIMUM_POLYLINE_POSITION_COUNT)
             positions = filterVisiblePositions(positions);
 
