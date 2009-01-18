@@ -750,19 +750,22 @@ public class MapView {
     private BaseNavigationPosition getMapNorthEast(){
         String northEastLatitude = executeScript("map.getBounds().getNorthEast().lat();");
         String northEastLongitude = executeScript("map.getBounds().getNorthEast().lng();");
-        return new Wgs84Position(Double.parseDouble(northEastLongitude), Double.parseDouble(northEastLatitude), null, null, null);
+        return northEastLatitude != null && northEastLongitude != null ? new Wgs84Position(Double.parseDouble(northEastLongitude), Double.parseDouble(northEastLatitude), null, null, null) : null;
     }
     
     private BaseNavigationPosition getMapSouthWest(){
         String southWestLatitude = executeScript("map.getBounds().getSouthWest().lat();");
         String southWestLongitude = executeScript("map.getBounds().getSouthWest().lng();");
-        return new Wgs84Position(Double.parseDouble(southWestLongitude), Double.parseDouble(southWestLatitude), null, null, null);
+        return southWestLatitude != null && southWestLongitude != null ? new Wgs84Position(Double.parseDouble(southWestLongitude), Double.parseDouble(southWestLatitude), null, null, null) : null;
     }
 
     private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions) {
         BaseNavigationPosition northEast = getMapNorthEast();
         BaseNavigationPosition southWest = getMapSouthWest();
+        if(northEast == null || southWest == null)
+            return positions;
 
+        // TODO this code seems to be never reached 
         double width = northEast.getLongitude() - southWest.getLongitude();
         double height = southWest.getLatitude() - northEast.getLatitude();
         northEast.setLongitude(northEast.getLongitude() + width);
