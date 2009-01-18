@@ -64,6 +64,14 @@ public class CategorysTest extends BaseRouteServiceTest {
         }
     }
 
+    public void testAddSubCategoryWithPluses() throws Exception {
+        try {
+            addSubCategory(adminService.getRootCategory(), "A + B + C" + System.currentTimeMillis() + "/");
+            assertTrue(false);
+        } catch (IOException e) {
+        }
+    }
+
     public void testRename() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Category root = adminService.getRootCategory();
