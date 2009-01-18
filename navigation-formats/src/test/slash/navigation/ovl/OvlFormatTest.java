@@ -67,7 +67,6 @@ public class OvlFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
         assertNull(position.getElevation());
         assertNull(position.getTime());
-        assertEquals(RouteCharacteristics.Waypoints, section.getCharacteristics());
     }
 
     public void testOvlSectionWithOnePositionFromEasyGps() {
@@ -93,7 +92,6 @@ public class OvlFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
         assertNull(position.getElevation());
         assertNull(position.getTime());
-        assertEquals(RouteCharacteristics.Route, section.getCharacteristics());
     }
 
     public void testOvlSectionWithTwoPositionsFromGpsDings() {
@@ -117,6 +115,5 @@ public class OvlFormatTest extends NavigationTestCase {
         Wgs84Position position2 = section.getPosition(1);
         assertEquals(13.4119689, position2.getLongitude());
         assertEquals(52.5206319, position2.getLatitude());
-        assertEquals(RouteCharacteristics.Route, section.getCharacteristics());
     }
 }
