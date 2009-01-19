@@ -891,35 +891,14 @@
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
             </manifest>
         </jar>
+    </target>
 
-        <!--
-        <jar destfile="${build.output}/RouteConverterCmdLine.jar">
-            <fileset dir="${build.output.tmp5}"/>
-            <fileset dir="${common.output.classes5}">
-                <exclude name="**/*.properties"/>
-            </fileset>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
-                <exclude name="**/*.dll"/>
-                <exclude name="**/*.exe"/>
-            </fileset>
-            <fileset dir="${route-converter-cmdline.output.classes5}"/>
-            <fileset dir="${build.output.tmp-linux}">
-                <include name="/slash/navigation/babel/gps*"/>
-            </fileset>
-            <fileset dir="${build.output.tmp-mac}">
-                <include name="/slash/navigation/babel/gps*"/>
-            </fileset>
-            <fileset dir="${build.output.tmp-windows}">
-                <include name="/slash/navigation/babel/*dll"/>
-                <include name="/slash/navigation/babel/*exe"/>
-            </fileset>
-            <manifest>
-                <attribute name="Created-By" value="Christian Pesch"/>
-                <attribute name="Main-Class" value="slash.navigation.converter.cmdline.RouteConverterCmdLine"/>
-            </manifest>
-        </jar>
-        -->
+    <target name="exe" depends="jar">
+        <path id="jsmoothgen.classpath">
+            <path location="c:/Program Files/JSmooth 0.9.9-7/lib/jsmoothgen-ant.jar"/>
+        </path>
+        <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmoothgen.classpath"/>
+        <jsmoothgen project="build/RouteConverter.jsmooth" skeletonroot="c:/Programme/JSmooth 0.9.9-7/skeletons"/>
     </target>
 
     <!-- Cleans up any temporary stuff -->

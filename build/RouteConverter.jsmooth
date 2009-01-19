@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<jsmoothproject>
+<JVMSearchPath>registry</JVMSearchPath>
+<JVMSearchPath>javahome</JVMSearchPath>
+<JVMSearchPath>jrepath</JVMSearchPath>
+<JVMSearchPath>jdkpath</JVMSearchPath>
+<JVMSearchPath>exepath</JVMSearchPath>
+<JVMSearchPath>jview</JVMSearchPath>
+<arguments></arguments>
+<embeddedJar>true</embeddedJar>
+<executableName>output\RouteConverter.exe</executableName>
+<iconLocation>..\route-converter\src\resources\slash\navigation\converter\gui\RouteConverter.png</iconLocation>
+<initialMemoryHeap>-1</initialMemoryHeap>
+<jarLocation>output\RouteConverter.jar</jarLocation>
+<mainClassName>slash.navigation.converter.gui.RouteConverter6</mainClassName>
+<maximumMemoryHeap>268435456</maximumMemoryHeap>
+<maximumVersion></maximumVersion>
+<minimumVersion>1.6</minimumVersion>
+<skeletonName>Autodownload Wrapper</skeletonName>
+<skeletonProperties>
+<key>Message</key>
+<value>Java wurde nicht auf Deinem Rechner gefunden. Möchtest Du es herunterladen?
+Java has not been found on your computer. Do you want to download it?</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>DownloadURL</key>
+<value>http://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>SingleProcess</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>SingleInstance</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>JniSmooth</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>Debug</key>
+<value>0</value>
+</skeletonProperties>
+</jsmoothproject>
