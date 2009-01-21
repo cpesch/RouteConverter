@@ -49,11 +49,9 @@ public class Tcx2Format extends TcxFormat {
     private TcxRoute process(TrackT trackT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
         for(TrackpointT trackpointT : trackT.getTrackpoint()) {
-            positions.add(new TcxPosition(trackpointT.getPosition().getLongitudeDegrees(),
-                                          trackpointT.getPosition().getLatitudeDegrees(),
-                                          trackpointT.getAltitudeMeters(),
-                                          parseTime(trackpointT.getTime()),
-                                          null));
+            Double longitude = trackpointT.getPosition() != null ? trackpointT.getPosition().getLongitudeDegrees() : null;
+            Double latitude = trackpointT.getPosition() != null ? trackpointT.getPosition().getLatitudeDegrees() : null;
+            positions.add(new TcxPosition(longitude, latitude, trackpointT.getAltitudeMeters(), parseTime(trackpointT.getTime()), null));
         }
         return new TcxRoute(this, RouteCharacteristics.Track, positions);
     }

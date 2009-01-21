@@ -168,7 +168,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JButton buttonCheckForUpdate;
     private JButton buttonTestDragListenerPort;
 
-    private RouteService routeService = new RouteService("http://" + System.getProperty("host", "www.routeconverter.de") + "/catalog/");
+    private RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
     private RouteServiceOperator operator = new RouteServiceOperator(this);
 
     protected JTree treeCategories;

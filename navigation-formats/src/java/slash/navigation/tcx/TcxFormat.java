@@ -51,6 +51,6 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> {
     }
 
     public <P extends BaseNavigationPosition> TcxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new TcxRoute(this, (List<TcxPosition>) positions);
+        return new TcxRoute(this, characteristics, (List<TcxPosition>) positions);
     }
 }

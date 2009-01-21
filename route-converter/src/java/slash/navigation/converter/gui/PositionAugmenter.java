@@ -68,6 +68,10 @@ public class PositionAugmenter {
         return description != null;
     }
 
+    private boolean hasLongitudeAndLatitude(BaseNavigationPosition position) {
+        return position.getLongitude() != null && position.getLatitude() != null;
+    }
+
 
     private void addElevations(final PositionsModel positionsModel, final OverwritePredicate predicate) {
         Constants.startWaitCursor(routeConverter.getFrame().getRootPane());
@@ -79,7 +83,7 @@ public class PositionAugmenter {
                     GeoNamesService service = new GeoNamesService();
                     for (int i = 0, c = positionsModel.getRowCount(); i < c; i++) {
                         BaseNavigationPosition position = positionsModel.getPosition(i);
-                        if (predicate.shouldOverwrite(position)) {
+                        if (hasLongitudeAndLatitude(position) && predicate.shouldOverwrite(position)) {
                             try {
                                 if (addElevation(service, position)) {
                                     final int index = i;
@@ -133,7 +137,7 @@ public class PositionAugmenter {
                     GeoNamesService service = new GeoNamesService();
                     for (int i = 0, c = positionsModel.getRowCount(); i < c; i++) {
                         BaseNavigationPosition position = positionsModel.getPosition(i);
-                        if (predicate.shouldOverwrite(position)) {
+                        if (hasLongitudeAndLatitude(position) && predicate.shouldOverwrite(position)) {
                             try {
                                 if (addDescription(service, position)) {
                                     final int index = i;
