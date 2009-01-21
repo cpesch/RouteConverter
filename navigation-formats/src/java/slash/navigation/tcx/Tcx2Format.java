@@ -20,9 +20,7 @@
 
 package slash.navigation.tcx;
 
-import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.XmlNavigationFormat;
 import slash.navigation.tcx.binding2.*;
 
 import javax.xml.bind.JAXBException;
@@ -48,71 +46,103 @@ public class Tcx2Format extends TcxFormat {
     }
 
 
-    private TcxRoute process(ActivityT activityT, TrackT trackT) {
+    private TcxRoute process(TrackT trackT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
         for(TrackpointT trackpointT : trackT.getTrackpoint()) {
-            positions.add(null); // TODO new TcxPosition(trackpointT));
+            positions.add(new TcxPosition(trackpointT.getPosition().getLongitudeDegrees(),
+                                          trackpointT.getPosition().getLatitudeDegrees(),
+                                          trackpointT.getAltitudeMeters(),
+                                          parseTime(trackpointT.getTime()),
+                                          null));
         }
-        return null; // TODO new TcxRoute(activityT, positions);
+        return new TcxRoute(this, RouteCharacteristics.Track, positions);
     }
 
-    private List<TcxRoute> process(ActivityT activityT, ActivityLapT activityLapT) {
+    private TcxRoute process(CourseLapT courseLapT) {
+        List<TcxPosition> positions = new ArrayList<TcxPosition>();
+        positions.add(new TcxPosition(courseLapT.getBeginPosition().getLongitudeDegrees(),
+                                      courseLapT.getBeginPosition().getLatitudeDegrees(),
+                                      courseLapT.getBeginAltitudeMeters(),
+                                      null,
+                                      "0 seconds"));
+        positions.add(new TcxPosition(courseLapT.getEndPosition().getLongitudeDegrees(),
+                                      courseLapT.getEndPosition().getLatitudeDegrees(),
+                                      courseLapT.getEndAltitudeMeters(),
+                                      null,
+                                      courseLapT.getTotalTimeSeconds() + " seconds"));
+        return new TcxRoute(this, RouteCharacteristics.Track, positions);
+    }
+
+    private List<TcxRoute> process(ActivityLapT activityLapT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
         for (TrackT trackT : activityLapT.getTrack()) {
-            result.add(process(activityT, trackT));
+            result.add(process(trackT));
         }
         return result;
     }
 
-    private List<TcxRoute> process(ActivityListT activityListT) {
+    private List<TcxRoute> process(ActivityT activityT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
-        for (ActivityT activityT : activityListT.getActivity()) {
-            for(ActivityLapT activityLapT : activityT.getLap()) {
-                result.addAll(process(activityT, activityLapT));
-            }
+        for (ActivityLapT activityLapT : activityT.getLap()) {
+            result.addAll(process(activityLapT));
         }
-        activityListT.getMultiSportSession(); // TODO
+        return result;
+    }
+
+    private TcxRoute processCoursePoints(List<CoursePointT> coursePointTs) {
+        List<TcxPosition> positions = new ArrayList<TcxPosition>();
+        for(CoursePointT coursePointT : coursePointTs) {
+            positions.add(new TcxPosition(coursePointT.getPosition().getLongitudeDegrees(),
+                                          coursePointT.getPosition().getLatitudeDegrees(),
+                                          coursePointT.getAltitudeMeters(),
+                                          parseTime(coursePointT.getTime()),
+                                          coursePointT.getName()));
+        }
+        return new TcxRoute(this, RouteCharacteristics.Route, positions);
+    }
+
+    private List<TcxRoute> processCourseLaps(List<CourseLapT> courseLapTs) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        for(CourseLapT courseLapT : courseLapTs) {
+            result.add(process(courseLapT));
+        }
         return result;
     }
 
     private List<TcxRoute> process(TrainingCenterDatabaseT trainingCenterDatabaseT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
+
         ActivityListT activityListT = trainingCenterDatabaseT.getActivities();
         if (activityListT != null) {
             // TrainingCenterDatabase -> ActivityList -> Activity -> ActivityLap -> Track -> TrackPoint -> Position
             for (ActivityT activityT : activityListT.getActivity()) {
-                for (ActivityLapT activityLapT : activityT.getLap()) {
-                    result.addAll(process(activityT, activityLapT));
-                }
+                result.addAll(process(activityT));
             }
             // TrainingCenterDatabase -> ActivityList -> MultiSportSession -> FirstSport -> Activity -> ActivityLap -> Track -> TrackPoint -> Position
             // TrainingCenterDatabase -> ActivityList -> MultiSportSession -> NextSport -> Activity -> ActivityLap -> Track -> TrackPoint -> Position
             // TrainingCenterDatabase -> ActivityList -> MultiSportSession -> NextSport -> ActivityLap -> Track -> TrackPoint -> Position
             for (MultiSportSessionT multiSportSessionT : activityListT.getMultiSportSession()) {
-                ActivityT activity1 = multiSportSessionT.getFirstSport().getActivity();
-                for (ActivityLapT activityLapT : activity1.getLap()) {
-                    result.addAll(process(activity1, activityLapT));
-                }
+                result.addAll(process(multiSportSessionT.getFirstSport().getActivity()));
                 for (NextSportT nextSportT : multiSportSessionT.getNextSport()) {
                     ActivityT activityT = nextSportT.getActivity();
-                    for (ActivityLapT activityLapT : activityT.getLap()) {
-                        result.addAll(process(activityT, activityLapT));
-                    }
+                    result.addAll(process(activityT));
                     ActivityLapT transition = nextSportT.getTransition();
-                    result.addAll(process(activityT /*TODO*/, transition));
+                    result.addAll(process(transition));
                 }
             }
         }
 
         // TrainingCenterDatabase -> CourseList -> Course -> CoursePoint -> Position
-        // TrainingCenterDatabase -> CourseList -> Course -> CourseLap -> Position
+        // TrainingCenterDatabase -> CourseList -> Course -> CourseLap -> BeginPosition/EndPosition
         // TrainingCenterDatabase -> CourseList -> Course -> Track -> TrackPoint -> Position
         CourseListT courseListT = trainingCenterDatabaseT.getCourses();
         if (courseListT != null)
             for (CourseT courseT : courseListT.getCourse()) {
-                courseT.getCoursePoint(); // TODO
-                courseT.getLap(); // TODO
-                courseT.getTrack(); // TODO
+                result.add(processCoursePoints(courseT.getCoursePoint()));
+                result.addAll(processCourseLaps(courseT.getLap()));
+                for(TrackT trackT : courseT.getTrack()) {
+                    result.add(process(trackT));
+                }
             }
         return result;
     }
@@ -128,16 +158,7 @@ public class Tcx2Format extends TcxFormat {
         }
     }
 
-
-    private TrainingCenterDatabaseT createTcx(TcxRoute route) {
-        return null; // TODO
-    }
-
     public void write(TcxRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        try {
-            TcxUtil.marshal2(createTcx(route), target);
-        } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
+        throw new UnsupportedOperationException();
     }
 }

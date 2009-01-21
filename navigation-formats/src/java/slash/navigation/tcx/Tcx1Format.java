@@ -23,13 +23,13 @@ package slash.navigation.tcx;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.XmlNavigationFormat;
+import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.tcx.binding1.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,10 +47,39 @@ public class Tcx1Format extends TcxFormat {
         return "Training Center Database 1 (*" + getExtension() + ")";
     }
 
-   
 
     private List<TcxRoute> process(TrainingCenterDatabaseT trainingCenterDatabaseT) {
-        return new ArrayList<TcxRoute>(); // TODO
+        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> CoursePoint -> Position
+        // TrainingCenterDatabase -> Courses -> CourseFolder -> CourseFolder -> Course -> CoursePoint -> Position
+        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> BeginPosition
+        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> EndPosition
+        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Track -> TrackPoint -> Position
+        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getCoursePoint().get(0).getPosition();
+        trainingCenterDatabaseT.getCourses().getCourseFolder().getFolder().get(0).getCourse().get(0).getCoursePoint().get(0).getPosition();
+        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getLap().get(0).getBeginPosition();
+        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getLap().get(0).getEndPosition();
+        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+
+        // TrainingCenterDatabase -> History -> Biking -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> Biking -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> Other -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> Other -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> Running -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> Running -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        trainingCenterDatabaseT.getHistory().getBiking().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getBiking().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getOther().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getOther().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getRunning().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getRunning().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+
+        // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> FirstSport -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> NextSport -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+        // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> NextSport -> Transition -> Track -> TrackPoint -> Position
+        trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getFirstSport().getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getTransition().getTrack().get(0).getTrackpoint().get(0).getPosition();
+        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     public List<TcxRoute> read(InputStream source, Calendar startDate) throws IOException {
@@ -64,16 +93,7 @@ public class Tcx1Format extends TcxFormat {
         }
     }
 
-
-    private TrainingCenterDatabaseT createTcx(TcxRoute route) {
-        return null; // TODO
-    }
-
     public void write(TcxRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        try {
-            TcxUtil.marshal1(createTcx(route), target);
-        } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
+        throw new UnsupportedOperationException();
     }
 }

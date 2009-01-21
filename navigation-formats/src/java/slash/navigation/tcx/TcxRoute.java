@@ -24,6 +24,7 @@ import slash.navigation.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
@@ -35,10 +36,8 @@ import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.tcx.binding2.ActivityT;
 import slash.navigation.tcx.binding2.PositionT;
 import slash.navigation.tcx.binding2.TrackpointT;
-import slash.navigation.tcx.binding2.TrainingCenterDatabaseT;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
@@ -57,8 +56,8 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
     private List<TcxPosition> positions;
 
 
-    public TcxRoute(TcxFormat format, List<TcxPosition> positions) {
-        super(format, RouteCharacteristics.Route);
+    public TcxRoute(TcxFormat format, RouteCharacteristics characteristics, List<TcxPosition> positions) {
+        super(format, characteristics);
         this.positions = positions;
     }
 
@@ -269,7 +268,11 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
     }
 
     public GoPalRoute asGoPalRouteFormat() {
-        throw new UnsupportedOperationException(); // TODO FIX ME
+        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        for (TcxPosition position : positions) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPalRoute(getName(), gopalPositions);
     }
 
     public SimpleRoute asGoPalTrackFormat() {

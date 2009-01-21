@@ -42,6 +42,10 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
+    public boolean isSupportsWriting() {
+        return false;
+    }
+
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
