@@ -154,7 +154,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return parseRouteFromUrl(url, KmlRoute.class);
     }
 
-    protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) { // TODO move to more central position, use from UI
+    protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) {
         List<T> result = new ArrayList<T>();
         InputStream source = null;
         try {

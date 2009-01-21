@@ -179,7 +179,7 @@ public class RouteConverter5 extends RouteConverter {
                     Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
                     if (data != null) {
                         List<File> files = (List<File>) data;
-                        addFiles(target, files);
+                        addFilesToCatalog(target, files);
                     }
                     dropTargetDropEvent.dropComplete(true);
                 }
@@ -189,7 +189,7 @@ public class RouteConverter5 extends RouteConverter {
                     Object data = t.getTransferData(DataFlavor.stringFlavor);
                     if (data != null) {
                         String url = (String) data;
-                        addUrl(target, url);
+                        addUrlToCatalog(target, url);
                     }
                     dropTargetDropEvent.dropComplete(true);
                 }

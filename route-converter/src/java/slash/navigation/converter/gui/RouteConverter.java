@@ -33,10 +33,10 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
-import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -45,8 +45,8 @@ import slash.navigation.gui.Constants;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.kml.KmlFormat;
-import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.*;
 
 import javax.swing.*;
@@ -64,8 +64,9 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
@@ -247,19 +248,19 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonOpenFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onOpen();
+                onOpenPositionList();
             }
         });
 
         buttonNewFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onNew();
+                onNewPositionList();
             }
         });
 
         buttonAppendFileToPositionList.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onAppendFileToPositionList();
+                onAppend();
             }
         });
 
@@ -646,13 +647,13 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonAddFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onAddFile();
+                onAddFileToCatalog();
             }
         });
 
         buttonAddUrl.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                addUrl(getSelectedTreeNode(), "");
+                addUrlToCatalog(getSelectedTreeNode(), "");
             }
         });
 
@@ -763,17 +764,17 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                     return;
 
                 Route route = getRoutesListModel().getRoute(selectedRows[0]);
-                File file;
+                URL url;
                 try {
-                    file = route.getFile(); // TODO use InputStream
-                    if (file == null)
+                    url = route.getUrl();
+                    if (url == null)
                         return;
                 } catch (Throwable t) {
                     operator.handleServiceError(t);
                     return;
                 }
 
-                open(file);
+                openPositionList(url);
             }
         });
 
@@ -982,10 +983,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     }
 
     protected List<CategoryTreeNode> getSelectedTreeNodes() {
-        TreePath[] treePath = treeCategories.getSelectionPaths();
+        TreePath[] treePaths = treeCategories.getSelectionPaths();
         List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
-        for (int i = 0; i < treePath.length; i++) {
-            treeNodes.add((CategoryTreeNode) treePath[i].getLastPathComponent());
+        for (TreePath treePath : treePaths) {
+            treeNodes.add((CategoryTreeNode) treePath.getLastPathComponent());
         }
         return treeNodes;
     }
@@ -1069,25 +1070,20 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         if (tabbedPane.getSelectedComponent().equals(convertPanel))
             openFiles(files);
         else if (tabbedPane.getSelectedComponent().equals(browsePanel))
-            addFiles(getSelectedTreeNode(), files);
+            addFilesToCatalog(getSelectedTreeNode(), files);
     }
 
     protected void onDrop(String string) {
         if (tabbedPane.getSelectedComponent().equals(convertPanel)) {
             String url = DnDHelper.extractUrl(string);
             try {
-                File file = File.createTempFile("routeconverter", ".url"); // TODO avoid creating temp file
-                FileWriter writer = new FileWriter(file);
-                writer.write(url);
-                writer.flush();
-                writer.close();
-                openFiles(Arrays.asList(file));
+                openPositionList(new URL(url));
             }
-            catch (IOException e) {
-                log.severe("Could not store '" + url + "' to temp file");
+            catch (MalformedURLException e) {
+                log.severe("Could not create URL from '" + url + "'");
             }
         } else if (tabbedPane.getSelectedComponent().equals(browsePanel))
-            addUrl(getSelectedTreeNode(), string);
+            addUrlToCatalog(getSelectedTreeNode(), string);
     }
 
     private void parseArgs(String[] args) {
@@ -1101,7 +1097,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             File source = new File(preferences.get(SOURCE_PREFERENCE, ""));
             openFiles(Arrays.asList(source));
         } else {
-            onNew();
+            onNewPositionList();
         }
     }
 
@@ -1200,10 +1196,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         });
     }
 
-    private void handleOpenError(final Exception e, final File[] files) {
+    private void handleOpenError(final Exception e, final URL[] urls) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.printArrayToDialogString(files), e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.printArrayToDialogString(urls), e.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -1242,12 +1238,12 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         // start with a non-existant file
         if (copy.size() == 0) {
-            onNew();
+            onNewPositionList();
             return;
         }
 
         if (copy.size() > 0) {
-            open(copy.toArray(new File[copy.size()]));
+            openPositionList(Files.toUrls(copy.toArray(new File[copy.size()])));
         }
     }
 
@@ -1264,6 +1260,15 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         chooser.setFileFilter(fileFilter);
     }
 
+    private void setReadFormatFileFilterPreference(JFileChooser chooser) {
+        FileFilter fileFilter = chooser.getFileFilter();
+        String preference = "";
+        if (fileFilter instanceof NavigationFormatFileFilter)
+            preference = ((NavigationFormatFileFilter) fileFilter).getFormat().getClass().getName();
+        preferences.put(SOURCE_FORMAT_PREFERENCE, preference);
+
+    }
+
     // create this only once to make users choices stable at least for one program start
     private JFileChooser chooser;
 
@@ -1273,7 +1278,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         return chooser;
     }
 
-    private void onOpen() {
+    private void onOpenPositionList() {
         if (!confirmDiscard())
             return;
 
@@ -1291,12 +1296,12 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             return;
 
         setReadFormatFileFilterPreference(getChooser());
-        open(selected);
+        openPositionList(Files.toUrls(selected));
     }
 
-    private void open(final File... files) {
-        final File file = files[0];
-        final String path = Files.createReadablePath(file);
+    private void openPositionList(final URL... urls) {
+        final URL url = urls[0];
+        final String path = Files.createReadablePath(url);
         textFieldSource.setText(path);
         preferences.put(SOURCE_PREFERENCE, path);
 
@@ -1313,7 +1318,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                         });
 
                         final NavigationFileParser parser = new NavigationFileParser();
-                        if (parser.read(file)) {
+                        if (parser.read(url.openStream())) {
                             log.info("Opened: " + path);
 
                             SwingUtilities.invokeLater(new Runnable() {
@@ -1323,11 +1328,11 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                                 }
                             });
 
-                            if (files.length > 1) {
-                                List<File> append = new ArrayList<File>(Arrays.asList(files));
+                            if (urls.length > 1) {
+                                List<URL> append = new ArrayList<URL>(Arrays.asList(urls));
                                 append.remove(0);
                                 // this way the route is always marked as modified :-(
-                                appendFileToPositionList(append.toArray(new File[append.size()]));
+                                appendToPositionList(append.toArray(new URL[append.size()]));
                             }
 
                         } else
@@ -1351,7 +1356,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         }, "Open").start();
     }
 
-    private void onNew() {
+    private void onNewPositionList() {
         if (!confirmDiscard())
             return;
 
@@ -1407,19 +1412,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             return;
 
         setReadFormatFileFilterPreference(getChooser());
-        addPositionList(selected);
+        addPositionList(Files.toUrls(selected));
     }
 
-    private void setReadFormatFileFilterPreference(JFileChooser chooser) {
-        FileFilter fileFilter = chooser.getFileFilter();
-        String preference = "";
-        if (fileFilter instanceof NavigationFormatFileFilter)
-            preference = ((NavigationFormatFileFilter) fileFilter).getFormat().getClass().getName();
-        preferences.put(SOURCE_FORMAT_PREFERENCE, preference);
-
-    }
-
-    private void addPositionList(final File[] files) {
+    private void addPositionList(final URL[] urls) {
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -1430,11 +1426,11 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                             }
                         });
 
-                        for (File file : files) {
-                            final String path = Files.createReadablePath(file);
+                        for (URL url : urls) {
+                            final String path = Files.createReadablePath(url);
 
                             final NavigationFileParser parser = new NavigationFileParser();
-                            if (parser.read(file)) {
+                            if (parser.read(url.openStream())) {
                                 log.info("Added route: " + path);
 
                                 SwingUtilities.invokeLater(new Runnable() {
@@ -1463,14 +1459,14 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                     }
                 } catch (Exception e) {
                     log.severe("Add route error: " + e.getMessage());
-                    handleOpenError(e, files);
+                    handleOpenError(e, urls);
                 }
             }
         }, "AddRoute").start();
     }
 
 
-    private void onAppendFileToPositionList() {
+    private void onAppend() {
         getChooser().setDialogTitle(BUNDLE.getString("append-source"));
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
@@ -1485,10 +1481,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             return;
 
         setReadFormatFileFilterPreference(getChooser());
-        appendFileToPositionList(selected);
+        appendToPositionList(Files.toUrls(selected));
     }
 
-    private void appendFileToPositionList(final File... files) {
+    private void appendToPositionList(final URL... urls) {
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -1499,11 +1495,11 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                             }
                         });
 
-                        for (File file : files) {
-                            final String path = Files.createReadablePath(file);
+                        for (URL url : urls) {
+                            final String path = Files.createReadablePath(url);
 
                             final NavigationFileParser parser = new NavigationFileParser();
-                            if (parser.read(file)) {
+                            if (parser.read(url.openStream())) {
                                 log.info("Appended: " + path);
 
                                 SwingUtilities.invokeLater(new Runnable() {
@@ -1539,12 +1535,11 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                     }
                 } catch (Exception e) {
                     log.severe("Append error: " + e.getMessage());
-                    handleOpenError(e, files);
+                    handleOpenError(e, urls);
                 }
             }
         }, "FileAppender").start();
     }
-
 
     private void onSave() {
         NavigationFormat format = getFormat();
@@ -1563,10 +1558,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        save(selected, format);
+        saveFile(selected, format);
     }
 
-    private void save(File file, NavigationFormat format) {
+    private void saveFile(File file, NavigationFormat format) {
         preferences.put(getTarget(), file.getParent());
 
         boolean duplicateFirstPosition = checkboxDuplicateFirstPosition.isSelected();
@@ -1631,27 +1626,28 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         }
     }
 
-    private void onAddFile() {
+    private void onAddFileToCatalog() {
         CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
 
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle(BUNDLE.getString("add-file"));
         chooser.setSelectedFile(createUploadRoute());
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
         int open = chooser.showOpenDialog(frame);
         if (open != JFileChooser.APPROVE_OPTION)
             return;
 
-        final File file = chooser.getSelectedFile();
-        if (file == null || file.getName().length() == 0)
+        final File[] selected = chooser.getSelectedFiles();
+        if (selected == null || selected.length == 0)
             return;
 
-        preferences.put(UPLOAD_ROUTE_PREFERENCE, file.getPath());
+        preferences.put(UPLOAD_ROUTE_PREFERENCE, selected[0].getPath());
 
-        addFile(categoryTreeNode, file);
+        addFilesToCatalog(categoryTreeNode, Arrays.asList(selected));
     }
 
-    private void addFile(CategoryTreeNode categoryTreeNode, File file) {
+    private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
         String path = Files.createReadablePath(file);
         String description = null;
         Double length = null;
@@ -1664,26 +1660,26 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                     description = RouteComments.createRouteDescription(route);
                     length = route.getLength();
                 }
-                showAddFile(categoryTreeNode, description, length, file);
+                showAddFileToCatalog(categoryTreeNode, description, length, file);
             } else
                 handleUnsupportedFormat(path);
         } catch (Exception e) {
             log.severe("Cannot parse description from route " + path + ": " + e.getMessage());
-            handleOpenError(e, new File[]{file});
+            handleOpenError(e, Files.toUrls(file));
         }
         finally {
             Constants.stopWaitCursor(frame.getRootPane());
         }
     }
 
-    protected void addFiles(CategoryTreeNode category, List<File> files) {
+    protected void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
         for (File file : files) {
-            addFile(category, file);
+            addFileToCatalog(category, file);
         }
     }
 
-    protected void addUrl(CategoryTreeNode category, String string) {
-        showAddUrl(category, DnDHelper.extractDescription(string), DnDHelper.extractUrl(string));
+    protected void addUrlToCatalog(CategoryTreeNode category, String string) {
+        showAddUrlToCatalog(category, DnDHelper.extractDescription(string), DnDHelper.extractUrl(string));
     }
 
     protected void onMove(final List<CategoryTreeNode> categories, final CategoryTreeNode parent) {
@@ -1749,14 +1745,14 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         options.setVisible(true);
     }
 
-    private void showAddUrl(CategoryTreeNode categoryTreeNode, String description, String url) {
+    private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
         AddUrlDialog addUrlDialog = new AddUrlDialog(this, categoryTreeNode, description, url);
         addUrlDialog.pack();
         addUrlDialog.setLocationRelativeTo(frame);
         addUrlDialog.setVisible(true);
     }
 
-    private void showAddFile(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
+    private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
         AddFileDialog addFileDialog = new AddFileDialog(this, categoryTreeNode, description, length, file);
         addFileDialog.pack();
         addFileDialog.setLocationRelativeTo(frame);

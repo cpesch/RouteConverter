@@ -205,9 +205,11 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                         babelFile = Externalization.extractFile(getClass(), "gpsbabel-mac");
                     }
                     if (babelFile != null) {
+                        /* TODO let's hope we don't need this - 1.6 only
                         if (!babelFile.canExecute()) {
-                            babelFile.setExecutable(true); // TODO won't work on JDK 1.5
+                            babelFile.setExecutable(true);
                         }
+                        */
                         babel = babelFile.getAbsolutePath();
                         process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
 

@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -23,6 +23,9 @@ package slash.navigation.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +40,7 @@ public class Files {
     /**
      * @param file the file to find the extension
      * @return the extension of the file, which are the characters
-     * starting with the last dot in the file name.
+     *         starting with the last dot in the file name.
      */
     public static String getExtension(File file) {
         return getExtension(file.getName());
@@ -46,7 +49,7 @@ public class Files {
     /**
      * @param name the file name to find the extension
      * @return the extension of a file name, which are the characters
-     * starting with the last dot in the file name.
+     *         starting with the last dot in the file name.
      */
     public static String getExtension(String name) {
         int index = name.lastIndexOf(".");
@@ -85,10 +88,33 @@ public class Files {
         try {
             path = file.getCanonicalPath();
         }
-        catch(IOException e) {
+        catch (IOException e) {
             // intentionally left empty
         }
         return path;
+    }
+
+    public static String createReadablePath(URL url) {
+        try {
+            if (url.getProtocol().equals("file"))
+                return createReadablePath(new File(url.toURI()));
+        }
+        catch (URISyntaxException e) {
+            // intentionally left empty
+        }
+        return url.toExternalForm();
+    }
+
+    public static URL[] toUrls(File... files) {
+        List<URL> urls = new ArrayList<URL>(files.length);
+        for (File file : files) {
+            try {
+                urls.add(file.toURI().toURL());
+            } catch (MalformedURLException e) {
+                // intentionally left empty
+            }
+        }
+        return urls.toArray(new URL[urls.size()]);
     }
 
     public static String createGoPalFileName(String fileName) {
@@ -120,7 +146,7 @@ public class Files {
 
         int numberLength = calculateNumberLength(maximum);
         StringBuffer result = new StringBuffer(Integer.toString(number));
-        while(result.length() < numberLength) {
+        while (result.length() < numberLength) {
             result.insert(0, "0");
         }
         return result.toString();
@@ -131,7 +157,7 @@ public class Files {
         name = removeExtension(name);
         name = name.substring(0, Math.min(name.length(), fileNameLength));
 
-        if(calculateNumberLength(maximum) > 0) {
+        if (calculateNumberLength(maximum) > 0) {
             String number = numberToString(index, maximum);
             name = name.substring(0, Math.min(name.length(), fileNameLength - number.length()));
             name += number;
@@ -198,21 +224,6 @@ public class Files {
             path = path.getParentFile();
         }
         return path != null && path.exists() ? path : null;
-    }
-
-    public static String printArrayToString(Object[] array) {
-        if (array == null)
-            return "null";
-
-        StringBuffer buffer = new StringBuffer();
-        buffer.append('{');
-        for (int i = 0; i < array.length; i++) {
-            if (i > 0)
-                buffer.append(',');
-            buffer.append(array[i]);
-        }
-        buffer.append('}');
-        return buffer.toString();
     }
 
     public static String printArrayToDialogString(Object[] array) {

@@ -23,8 +23,8 @@ package slash.navigation.catalog.domain;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.RteType;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Represents a route on the server which is transferred via {@link RouteService}
@@ -39,7 +39,6 @@ public class Route {
     private String name, creator, description;
     private boolean fromCategory = false;
     private GpxType gpx;
-    private File file;
 
 
     public Route(RouteService routeService, String url) {
@@ -93,25 +92,22 @@ public class Route {
         return getRte().getDesc();
     }
 
-    public String getFileUrl() throws IOException {
+    private String getRteLinkHref() throws IOException {
         return getRte().getLink().get(0).getHref();
     }
 
-    public synchronized File getFile() throws IOException {   // TODO use InputStream
-        if(file == null) {
-            this.file = routeService.fetchFile(getFileUrl());
-        }
-        return file;
+    public URL getUrl() throws IOException {
+        return new URL(getRteLinkHref());
     }
 
     public void update(String categoryUrl, String description) throws IOException {
-        routeService.updateRoute(categoryUrl, url, description, getFileUrl());
+        routeService.updateRoute(categoryUrl, url, description, getRteLinkHref());
         invalidate();
     }
 
     public void delete() throws IOException {
         routeService.deleteRoute(url);
-        routeService.deleteFile(getFileUrl());
+        routeService.deleteFile(getRteLinkHref());
     }
 
 

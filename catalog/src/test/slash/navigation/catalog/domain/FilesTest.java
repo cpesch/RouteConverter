@@ -5,6 +5,7 @@ import slash.navigation.util.InputOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class FilesTest extends BaseRouteServiceTest {
 
@@ -26,8 +27,8 @@ public class FilesTest extends BaseRouteServiceTest {
 
         assertTrue(in.delete());
 
-        File out = route.getFile();
-        assertEquals(inLength, out.length());
-        assertEquals(in.getName(), out.getName());
+        InputStream out = route.getUrl().openStream();
+        assertEquals(inLength, out.available());
+        assertEquals(in.getName(), route.getName());
     }
 }

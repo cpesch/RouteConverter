@@ -27,9 +27,8 @@ import slash.navigation.catalog.domain.exception.UnAuthorizedException;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.navigation.util.Files;
-import slash.navigation.util.InputOutput;
 import slash.navigation.rest.*;
+import slash.navigation.util.Files;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -100,22 +99,6 @@ public class RouteService {
                 file = tmp;
         }
         return file;
-    }
-
-    File fetchFile(String url) throws IOException {    // TODO use InputStream
-        log.fine(System.currentTimeMillis() + " fetching " + url);
-        Get get = new Get(url);
-        InputStream in = get.executeAsStream();
-        if (get.isSuccessful()) {
-            String attachmentFileName = get.getAttachmentFileName();
-            File file = createTempFile(attachmentFileName);
-            file.deleteOnExit();
-            InputOutput inOut = new InputOutput(in, new FileOutputStream(file));
-            inOut.start();
-            inOut.close();
-            return file;
-        } else
-            return null;
     }
 
     private static final ObjectFactory gpxFactory = new ObjectFactory();
