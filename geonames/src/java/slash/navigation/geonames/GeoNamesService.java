@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 public class GeoNamesService {
     protected static Logger log = Logger.getLogger(GeoNamesService.class.getName());
 
-    private static final String ROOT_URL = "http://ws.geonames.org/";
+    private static final String ROOT_URL = System.getProperty("geonames", "http://ws.geonames.org/");
 
     private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
         Get get = new Get(ROOT_URL + uri + "?lat=" + latitude + "&lng=" + longitude);
