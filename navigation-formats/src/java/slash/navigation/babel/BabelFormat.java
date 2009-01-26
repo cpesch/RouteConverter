@@ -48,7 +48,7 @@ import slash.navigation.util.Platform;
 /**
  * The base of all GPSBabel based formats.
  *
- * @author Christian Pesch
+ * @author Christian Pesch, Axel Uhl
  */
 
 public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
