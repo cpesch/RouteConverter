@@ -27,6 +27,7 @@ import slash.navigation.util.Conversion;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * Encapsulates REST access to the GeoNames.org service.
@@ -36,11 +37,15 @@ import java.util.logging.Logger;
 
 public class GeoNamesService {
     protected static Logger log = Logger.getLogger(GeoNamesService.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
+    private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
 
-    private static final String ROOT_URL = System.getProperty("geonames", "http://ws.geonames.org/");
+    private static String getGeoNamesUrlPreference() {
+        return preferences.get(GEONAMES_URL_PREFERENCE, "http://ws.geonames.org/");
+    }
 
     private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
-        Get get = new Get(ROOT_URL + uri + "?lat=" + latitude + "&lng=" + longitude);
+        Get get = new Get(getGeoNamesUrlPreference() + uri + "?lat=" + latitude + "&lng=" + longitude);
         String result = get.execute();
         if (get.isSuccessful())
             try {
@@ -71,7 +76,7 @@ public class GeoNamesService {
     }
 
     private String getNearByFor(String uri, double longitude, double latitude) throws IOException {
-        Get get = new Get(ROOT_URL + uri + "?lat=" + latitude + "&lng=" + longitude);
+        Get get = new Get(getGeoNamesUrlPreference() + uri + "?lat=" + latitude + "&lng=" + longitude);
         String result = get.execute();
         if (get.isSuccessful())
             try {
