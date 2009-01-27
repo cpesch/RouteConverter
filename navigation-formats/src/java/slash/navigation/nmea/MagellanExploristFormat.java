@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Magellan Explorist (.trk) files.
+ * Reads and writes Magellan Explorist (.log) files.
  *
  * @author Christian Pesch
  */
@@ -48,7 +48,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
     }
 
     public String getExtension() {
-        return ".trk";
+        return ".log";
     }
 
     public String getName() {
