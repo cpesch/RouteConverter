@@ -61,7 +61,7 @@
   </dependencies>
   <modules>
     <module>jaxb6</module>
-    <module>jdic-0.9.3</module>
+    <module>jdic-0.9.5</module>
     <module>common</module>
     <module>rest</module>
     <module>catalog</module>
