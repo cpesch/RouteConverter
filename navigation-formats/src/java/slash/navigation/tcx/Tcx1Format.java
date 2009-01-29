@@ -20,20 +20,16 @@
 
 package slash.navigation.tcx;
 
-import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.XmlNavigationFormat;
-import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.tcx.binding1.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -49,15 +45,74 @@ public class Tcx1Format extends TcxFormat {
         return "Training Center Database 1 (*" + getExtension() + ")";
     }
 
+    private Double convertLongitude(PositionT positionT) {
+        return positionT != null ? positionT.getLongitudeDegrees() : null;
+    }
+
+    private Double convertLatitude(PositionT positionT) {
+        return positionT != null ? positionT.getLatitudeDegrees() : null;
+    }
+
+    private TcxRoute process(String name, TrackT trackT) {
+        List<TcxPosition> positions = new ArrayList<TcxPosition>();
+        for (TrackpointT trackpointT : trackT.getTrackpoint()) {
+            positions.add(new TcxPosition(convertLongitude(trackpointT.getPosition()), convertLatitude(trackpointT.getPosition()), trackpointT.getAltitudeMeters(), parseTime(trackpointT.getTime()), null));
+        }
+        return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
+    }
+
+    private List<TcxRoute> processTrack(CourseT courseT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        for (TrackT trackT : courseT.getTrack()) {
+            result.add(process(courseT.getName(), trackT));
+        }
+        return result;
+    }
+
+    private TcxRoute processCoursePoints(CourseT courseT) {
+        List<TcxPosition> positions = new ArrayList<TcxPosition>();
+        for (CoursePointT coursePointT : courseT.getCoursePoint()) {
+            positions.add(new TcxPosition(convertLongitude(coursePointT.getPosition()),
+                    convertLatitude(coursePointT.getPosition()),
+                    coursePointT.getAltitudeMeters(),
+                    parseTime(coursePointT.getTime()),
+                    coursePointT.getName()));
+        }
+        return new TcxRoute(this, RouteCharacteristics.Route, courseT.getName(), positions);
+    }
+
+    private TcxRoute process(String name, CourseLapT courseLapT) {
+        List<TcxPosition> positions = new ArrayList<TcxPosition>();
+        positions.add(new TcxPosition(convertLongitude(courseLapT.getBeginPosition()),
+                convertLatitude(courseLapT.getBeginPosition()),
+                courseLapT.getBeginAltitudeMeters(),
+                null,
+                "0 seconds"));
+        positions.add(new TcxPosition(convertLongitude(courseLapT.getEndPosition()),
+                convertLatitude(courseLapT.getEndPosition()),
+                courseLapT.getEndAltitudeMeters(),
+                null,
+                courseLapT.getTotalTimeSeconds() + " seconds"));
+        return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
+    }
+
+    private List<TcxRoute> processLap(CourseT courseT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        for (CourseLapT courseLapT : courseT.getLap()) {
+            result.add(process(courseT.getName(), courseLapT));
+        }
+        return result;
+    }
 
     private List<TcxRoute> process(CourseFolderT courseFolderT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
-        for(CourseFolderT t : courseFolderT.getFolder())
+        for (CourseFolderT t : courseFolderT.getFolder())
             result.addAll(process(t));
 
-        for(CourseT course : courseFolderT.getCourse()) {
-            // TODO process Course
-            course.getName();
+        for (CourseT course : courseFolderT.getCourse()) {
+            result.add(processCoursePoints(course));
+            result.addAll(processLap(course));
+            result.addAll(processTrack(course));
         }
 
         return result;
@@ -68,36 +123,34 @@ public class Tcx1Format extends TcxFormat {
 
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> CoursePoint -> Position
         // TrainingCenterDatabase -> Courses -> CourseFolder -> CourseFolder -> Course -> CoursePoint -> Position
-        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> BeginPosition
-        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> EndPosition
+        // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> BeginPosition/EndPosition
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Track -> TrackPoint -> Position
         result.addAll(process(trainingCenterDatabaseT.getCourses().getCourseFolder()));
-        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getCoursePoint().get(0).getPosition();
-        trainingCenterDatabaseT.getCourses().getCourseFolder().getFolder().get(0).getCourse().get(0).getCoursePoint().get(0).getPosition();
-        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getLap().get(0).getBeginPosition();
-        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getLap().get(0).getEndPosition();
-        trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
 
-        // TrainingCenterDatabase -> History -> Biking -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> Biking -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> Other -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> Other -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> Running -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> Running -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        trainingCenterDatabaseT.getHistory().getBiking().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getBiking().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getOther().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getOther().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getRunning().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getRunning().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+        HistoryT historyT = trainingCenterDatabaseT.getHistory();
+        if (historyT != null) {
+            // TrainingCenterDatabase -> History -> Biking -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> Biking -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> Other -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> Other -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> Running -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> Running -> HistoryFolder -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TODO implement me
+            historyT.getBiking().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getBiking().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getOther().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getOther().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getRunning().getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getRunning().getFolder().get(0).getRun().get(0).getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
 
-        // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> FirstSport -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> NextSport -> Run -> ActivityLap -> Track -> TrackPoint -> Position
-        // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> NextSport -> Transition -> Track -> TrackPoint -> Position
-        trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getFirstSport().getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
-        trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getTransition().getTrack().get(0).getTrackpoint().get(0).getPosition();
-
+            // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> FirstSport -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> NextSport -> Run -> ActivityLap -> Track -> TrackPoint -> Position
+            // TrainingCenterDatabase -> History -> MultiSport -> MultiSportSession -> NextSport -> Transition -> Track -> TrackPoint -> Position
+            // TODO implement me
+            historyT.getMultiSport().getMultiSportSession().get(0).getFirstSport().getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
+            historyT.getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getTransition().getTrack().get(0).getTrackpoint().get(0).getPosition();
+        }
         return result;
     }
 

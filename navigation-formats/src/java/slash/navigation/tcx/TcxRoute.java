@@ -36,8 +36,6 @@ import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.tcx.binding2.PositionT;
-import slash.navigation.tcx.binding2.TrackpointT;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
@@ -54,22 +52,24 @@ import java.util.List;
 
 public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
     private List<TcxPosition> positions;
+    private String name;
 
-    public TcxRoute(TcxFormat format, RouteCharacteristics characteristics, List<TcxPosition> positions) {
+    public TcxRoute(TcxFormat format, RouteCharacteristics characteristics, String name, List<TcxPosition> positions) {
         super(format, characteristics);
+        this.name = name;
         this.positions = positions;
     }
 
     public String getName() {
-        return RouteComments.createRouteName(positions); // TODO
+        return name != null ? name : RouteComments.createRouteName(positions);
     }
 
     public void setName(String name) {
-        // TODO
+        this.name = name;
     }
 
     public List<String> getDescription() {
-        return null; // TODO
+        return null;
     }
 
     public List<TcxPosition> getPositions() {
@@ -163,7 +163,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
         return asKmlFormat(new Kmz22Format());
     }
 
-    
+
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (TcxPosition position : positions) {
@@ -309,12 +309,13 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
         TcxRoute tcxRoute = (TcxRoute) o;
 
-        return !(getName() != null ? !getName().equals(tcxRoute.getName()) : tcxRoute.getName() != null) &&
+        return !(name != null ? !name.equals(tcxRoute.name) : tcxRoute.name != null) &&
                 !(positions != null ? !positions.equals(tcxRoute.positions) : tcxRoute.positions != null);
     }
 
     public int hashCode() {
         int result = (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (positions != null ? positions.hashCode() : 0);
         return result;
     }

@@ -342,13 +342,13 @@
         <mkdir dir="${build.output.tmp-solaris}/slash/navigation/babel"/>
         <copy todir="${build.output.tmp-solaris}/slash/navigation/babel" flatten="true">
             <fileset file="${gpsbabel.bin}">
-                <include name="**/gpsbabel-solaris*"/>
+                <include name="**/gpsbabel-sunos*"/>
             </fileset>
         </copy>
         <mkdir dir="${build.output.tmp-solaris}/bin"/>
         <copy todir="${build.output.tmp-solaris}/bin">
             <fileset dir="${sun.jdic.bin}">
-                <include name="solaris/**"/>
+                <include name="sunos/**"/>
             </fileset>
         </copy>
 

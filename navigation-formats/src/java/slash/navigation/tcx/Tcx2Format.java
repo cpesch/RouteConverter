@@ -45,36 +45,26 @@ public class Tcx2Format extends TcxFormat {
         return "Training Center Database 2 (*" + getExtension() + ")";
     }
 
-
-    private TcxRoute process(TrackT trackT) {
-        List<TcxPosition> positions = new ArrayList<TcxPosition>();
-        for(TrackpointT trackpointT : trackT.getTrackpoint()) {
-            Double longitude = trackpointT.getPosition() != null ? trackpointT.getPosition().getLongitudeDegrees() : null;
-            Double latitude = trackpointT.getPosition() != null ? trackpointT.getPosition().getLatitudeDegrees() : null;
-            positions.add(new TcxPosition(longitude, latitude, trackpointT.getAltitudeMeters(), parseTime(trackpointT.getTime()), null));
-        }
-        return new TcxRoute(this, RouteCharacteristics.Track, positions);
+    private Double convertLongitude(PositionT positionT) {
+        return positionT != null ? positionT.getLongitudeDegrees() : null;
     }
 
-    private TcxRoute process(CourseLapT courseLapT) {
+    private Double convertLatitude(PositionT positionT) {
+        return positionT != null ? positionT.getLatitudeDegrees() : null;
+    }
+
+    private TcxRoute process(String name, TrackT trackT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
-        positions.add(new TcxPosition(courseLapT.getBeginPosition().getLongitudeDegrees(),
-                                      courseLapT.getBeginPosition().getLatitudeDegrees(),
-                                      courseLapT.getBeginAltitudeMeters(),
-                                      null,
-                                      "0 seconds"));
-        positions.add(new TcxPosition(courseLapT.getEndPosition().getLongitudeDegrees(),
-                                      courseLapT.getEndPosition().getLatitudeDegrees(),
-                                      courseLapT.getEndAltitudeMeters(),
-                                      null,
-                                      courseLapT.getTotalTimeSeconds() + " seconds"));
-        return new TcxRoute(this, RouteCharacteristics.Track, positions);
+        for (TrackpointT trackpointT : trackT.getTrackpoint()) {
+            positions.add(new TcxPosition(convertLongitude(trackpointT.getPosition()), convertLatitude(trackpointT.getPosition()), trackpointT.getAltitudeMeters(), parseTime(trackpointT.getTime()), null));
+        }
+        return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
     }
 
     private List<TcxRoute> process(ActivityLapT activityLapT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
         for (TrackT trackT : activityLapT.getTrack()) {
-            result.add(process(trackT));
+            result.add(process(activityLapT.getNotes(), trackT));
         }
         return result;
     }
@@ -87,22 +77,37 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    private TcxRoute processCoursePoints(List<CoursePointT> coursePointTs) {
+    private TcxRoute processCoursePoints(CourseT courseT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
-        for(CoursePointT coursePointT : coursePointTs) {
-            positions.add(new TcxPosition(coursePointT.getPosition().getLongitudeDegrees(),
-                                          coursePointT.getPosition().getLatitudeDegrees(),
-                                          coursePointT.getAltitudeMeters(),
-                                          parseTime(coursePointT.getTime()),
-                                          coursePointT.getName()));
+        for (CoursePointT coursePointT : courseT.getCoursePoint()) {
+            positions.add(new TcxPosition(convertLongitude(coursePointT.getPosition()),
+                    convertLatitude(coursePointT.getPosition()),
+                    coursePointT.getAltitudeMeters(),
+                    parseTime(coursePointT.getTime()),
+                    coursePointT.getName()));
         }
-        return new TcxRoute(this, RouteCharacteristics.Route, positions);
+        return new TcxRoute(this, RouteCharacteristics.Route, courseT.getName(), positions);
     }
 
-    private List<TcxRoute> processCourseLaps(List<CourseLapT> courseLapTs) {
+    private TcxRoute process(String name, CourseLapT courseLapT) {
+        List<TcxPosition> positions = new ArrayList<TcxPosition>();
+        positions.add(new TcxPosition(convertLongitude(courseLapT.getBeginPosition()),
+                convertLatitude(courseLapT.getBeginPosition()),
+                courseLapT.getBeginAltitudeMeters(),
+                null,
+                "0 seconds"));
+        positions.add(new TcxPosition(convertLongitude(courseLapT.getEndPosition()),
+                convertLatitude(courseLapT.getEndPosition()),
+                courseLapT.getEndAltitudeMeters(),
+                null,
+                courseLapT.getTotalTimeSeconds() + " seconds"));
+        return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
+    }
+
+    private List<TcxRoute> processCourseLaps(CourseT courseT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
-        for(CourseLapT courseLapT : courseLapTs) {
-            result.add(process(courseLapT));
+        for (CourseLapT courseLapT : courseT.getLap()) {
+            result.add(process(courseT.getName(), courseLapT));
         }
         return result;
     }
@@ -137,10 +142,10 @@ public class Tcx2Format extends TcxFormat {
         CourseListT courseListT = trainingCenterDatabaseT.getCourses();
         if (courseListT != null) {
             for (CourseT courseT : courseListT.getCourse()) {
-                result.add(processCoursePoints(courseT.getCoursePoint()));
-                result.addAll(processCourseLaps(courseT.getLap()));
-                for(TrackT trackT : courseT.getTrack()) {
-                    result.add(process(trackT));
+                result.add(processCoursePoints(courseT));
+                result.addAll(processCourseLaps(courseT));
+                for (TrackT trackT : courseT.getTrack()) {
+                    result.add(process(courseT.getName(), trackT));
                 }
             }
         }

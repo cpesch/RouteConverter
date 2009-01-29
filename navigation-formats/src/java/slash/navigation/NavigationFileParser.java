@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 
 public class NavigationFileParser {
     private static final Logger log = Logger.getLogger(NavigationFileParser.class.getName());
-    private static final int READ_BUFFER_SIZE = 1024 * 1024;
+    private static final int READ_BUFFER_SIZE = 10 * 1024 * 1024;
 
     private FormatAndRoutes formatAndRoutes;
 
