@@ -11,7 +11,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common" />
-    <orderEntry type="library" name="sun/jdic" level="project" />
+    <orderEntry type="library" name="sun/jdic-0.9.3" level="project" />
     <orderEntryProperties />
   </component>
 </module>

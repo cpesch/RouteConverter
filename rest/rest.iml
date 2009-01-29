@@ -10,9 +10,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="junit/junit" level="project" />
     <orderEntry type="library" name="apache/commons-codec" level="project" />
     <orderEntry type="library" name="apache/commons-httpclient" level="project" />
+    <orderEntry type="library" name="junit/junit" level="project" />
     <orderEntryProperties />
   </component>
 </module>

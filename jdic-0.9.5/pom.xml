@@ -1,0 +1,31 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>slash.navigation</groupId>
+    <artifactId>jdic-0.9.5</artifactId>
+    <packaging>jar</packaging>
+    <name>Patches for the Java Desktop Integration Component (JDIC) 0.9.5 library</name>
+    <parent>
+        <groupId>slash.navigation</groupId>
+        <artifactId>RouteConverter</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <dependencies>
+        <dependency>
+          <groupId>slash.navigation</groupId>
+          <artifactId>common</artifactId>
+          <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>sun</groupId>
+            <artifactId>jdic</artifactId>
+            <version>0.9.5-stripped</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>sun</groupId>
+            <artifactId>javaws</artifactId>
+            <version>jdk6</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>
