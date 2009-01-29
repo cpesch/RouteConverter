@@ -16,8 +16,8 @@
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="common-gui" />
     <orderEntry type="module" module-name="geonames" />
-    <orderEntry type="module" module-name="navigation-formats" />
     <orderEntry type="module" module-name="jdic-0.9.5" />
+    <orderEntry type="module" module-name="navigation-formats" />
     <orderEntry type="library" name="intellij/forms-rt" level="project" />
     <orderEntry type="library" name="junit/junit" level="project" />
     <orderEntry type="library" name="sun/jdic-0.9.5" level="project" />

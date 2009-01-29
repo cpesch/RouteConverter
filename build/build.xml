@@ -377,8 +377,8 @@
                 <include name="**/*.dll"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-0.9.5.output.classes}"/>
-        <copy todir="${jdic-0.9.5.output.classes}">
+        <mkdir dir="${jdic-0.9.5.output.classes}/bin"/>
+        <copy todir="${jdic-0.9.5.output.classes}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>
@@ -393,8 +393,8 @@
                 <include name="**/*.dll"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-0.9.5.output.classes5}"/>
-        <copy todir="${jdic-0.9.5.output.classes5}">
+        <mkdir dir="${jdic-0.9.5.output.classes5}/bin"/>
+        <copy todir="${jdic-0.9.5.output.classes5}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>

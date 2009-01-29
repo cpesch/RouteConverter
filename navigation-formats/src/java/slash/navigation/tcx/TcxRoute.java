@@ -55,7 +55,6 @@ import java.util.List;
 public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
     private List<TcxPosition> positions;
 
-
     public TcxRoute(TcxFormat format, RouteCharacteristics characteristics, List<TcxPosition> positions) {
         super(format, characteristics);
         this.positions = positions;
@@ -87,15 +86,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
 
     public TcxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        // TODO COMMENT?
-        PositionT positionT = new PositionT();
-        positionT.setLatitudeDegrees(latitude); // TODO degrees?
-        positionT.setLongitudeDegrees(latitude); // TODO degrees?
-        TrackpointT trackpointT = new TrackpointT();
-        trackpointT.setTime(TcxFormat.formatTime(time));
-        trackpointT.setPosition(positionT);
-        // TODO muﬂ noch in Struktur...
-        return null; // TODO new TcxPosition(null, null, null, null, null);
+        return new TcxPosition(longitude, latitude, null, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

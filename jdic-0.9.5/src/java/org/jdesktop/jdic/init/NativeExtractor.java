@@ -173,9 +173,11 @@ public class NativeExtractor {
             public Object run() throws IOException {
                 File dll = new File(extractBinary( libName + getPlatformDLLext() ));
 
+                /* TODO let's hope we don't need this - 1.6 only
                 dll.setExecutable(true);
                 dll.setReadable(true);
                 dll.setWritable(true);
+                */
 
                 System.load(dll.getCanonicalPath());
                 return null;
@@ -192,10 +194,12 @@ public class NativeExtractor {
                 String exeName = args[0];
                 File exe = new File( extractBinary(exeName) );
                 
+                /* TODO let's hope we don't need this - 1.6 only
                 exe.setExecutable(true);
                 exe.setReadable(true);
                 exe.setWritable(true);
-                
+                */
+
                 args[0] = exe.getCanonicalPath();
                 res[0] = Runtime.getRuntime().exec( args );
                 return null;

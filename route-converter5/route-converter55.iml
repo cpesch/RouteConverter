@@ -17,7 +17,6 @@
     <orderEntry type="module" module-name="route-converter5" />
     <orderEntry type="library" name="intellij/forms-rt" level="project" />
     <orderEntry type="library" name="junit/junit" level="project" />
-    <orderEntry type="library" name="sun/jdic" level="project" />
     <orderEntry type="library" name="sun/activation" level="project" />
     <orderEntry type="library" name="sun/jaxb-api" level="project" />
     <orderEntry type="library" name="sun/jsr173-api" level="project" />

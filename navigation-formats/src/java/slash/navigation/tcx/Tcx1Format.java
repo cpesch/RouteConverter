@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -48,12 +50,28 @@ public class Tcx1Format extends TcxFormat {
     }
 
 
+    private List<TcxRoute> process(CourseFolderT courseFolderT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        for(CourseFolderT t : courseFolderT.getFolder())
+            result.addAll(process(t));
+
+        for(CourseT course : courseFolderT.getCourse()) {
+            // TODO process Course
+            course.getName();
+        }
+
+        return result;
+    }
+
     private List<TcxRoute> process(TrainingCenterDatabaseT trainingCenterDatabaseT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> CoursePoint -> Position
         // TrainingCenterDatabase -> Courses -> CourseFolder -> CourseFolder -> Course -> CoursePoint -> Position
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> BeginPosition
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Lap -> EndPosition
         // TrainingCenterDatabase -> Courses -> CourseFolder -> Course -> Track -> TrackPoint -> Position
+        result.addAll(process(trainingCenterDatabaseT.getCourses().getCourseFolder()));
         trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getCoursePoint().get(0).getPosition();
         trainingCenterDatabaseT.getCourses().getCourseFolder().getFolder().get(0).getCourse().get(0).getCoursePoint().get(0).getPosition();
         trainingCenterDatabaseT.getCourses().getCourseFolder().getCourse().get(0).getLap().get(0).getBeginPosition();
@@ -79,7 +97,8 @@ public class Tcx1Format extends TcxFormat {
         trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getFirstSport().getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
         trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getRun().getLap().get(0).getTrack().get(0).getTrackpoint().get(0).getPosition();
         trainingCenterDatabaseT.getHistory().getMultiSport().getMultiSportSession().get(0).getNextSport().get(0).getTransition().getTrack().get(0).getTrackpoint().get(0).getPosition();
-        return null;  //To change body of created methods use File | Settings | File Templates.
+
+        return result;
     }
 
     public List<TcxRoute> read(InputStream source, Calendar startDate) throws IOException {

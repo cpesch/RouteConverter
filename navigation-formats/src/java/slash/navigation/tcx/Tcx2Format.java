@@ -116,6 +116,7 @@ public class Tcx2Format extends TcxFormat {
             for (ActivityT activityT : activityListT.getActivity()) {
                 result.addAll(process(activityT));
             }
+
             // TrainingCenterDatabase -> ActivityList -> MultiSportSession -> FirstSport -> Activity -> ActivityLap -> Track -> TrackPoint -> Position
             // TrainingCenterDatabase -> ActivityList -> MultiSportSession -> NextSport -> Activity -> ActivityLap -> Track -> TrackPoint -> Position
             // TrainingCenterDatabase -> ActivityList -> MultiSportSession -> NextSport -> ActivityLap -> Track -> TrackPoint -> Position
@@ -134,7 +135,7 @@ public class Tcx2Format extends TcxFormat {
         // TrainingCenterDatabase -> CourseList -> Course -> CourseLap -> BeginPosition/EndPosition
         // TrainingCenterDatabase -> CourseList -> Course -> Track -> TrackPoint -> Position
         CourseListT courseListT = trainingCenterDatabaseT.getCourses();
-        if (courseListT != null)
+        if (courseListT != null) {
             for (CourseT courseT : courseListT.getCourse()) {
                 result.add(processCoursePoints(courseT.getCoursePoint()));
                 result.addAll(processCourseLaps(courseT.getLap()));
@@ -142,6 +143,7 @@ public class Tcx2Format extends TcxFormat {
                     result.add(process(trackT));
                 }
             }
+        }
         return result;
     }
 
