@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import org.jdesktop.jdic.browser.WebBrowser;
 import org.jdesktop.jdic.browser.WebBrowserEvent;
 import org.jdesktop.jdic.browser.WebBrowserListener;
+import org.jdesktop.jdic.browser.WebBrowser;
 import org.jdesktop.jdic.init.JdicManager;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
@@ -107,7 +107,7 @@ public class MapView {
     private Map<Integer,BitSet> significantPositionCache = new HashMap<Integer,BitSet>(ZOOMLEVEL_SCALE.length);
 
     public static boolean isSupportedPlatform() {
-        return Platform.isLinux() || Platform.isWindows();
+        return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
     }
 
     public MapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
@@ -142,6 +142,7 @@ public class MapView {
 
     private WebBrowser createWebBrowser() {
         try {
+            /* for JDIC 0.9.3
             if (Platform.isLinux()) {
                 Externalization.extractFile(JdicManager.class, "libmozembed-linux-gtk1.2.so");
                 Externalization.extractFile(JdicManager.class, "libmozembed-linux-gtk2.so");
@@ -154,8 +155,9 @@ public class MapView {
                 Externalization.extractFile(JdicManager.class, "IeEmbed.exe");
                 scrollBarSize = 20;
             }
+            */
 
-            /* for current JDIC from CVS
+            /* for JDIC from CVS
             BrowserEngineManager browserEngineManager = BrowserEngineManager.instance();
             if (Platform.isLinux())
                 browserEngineManager.setActiveEngine(BrowserEngineManager.MOZILLA);

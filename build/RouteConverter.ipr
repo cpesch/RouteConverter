@@ -330,7 +330,7 @@
     </library>
     <library name="sun/jdic-0.9.3">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -373,8 +373,7 @@
     </library>
     <library name="sun/jdic-0.9.5">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/0.9.5-stripped/jdic.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/0.9.5-stripped/jdic_stub_windows.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/lib-0.9.5/jdic-0.9.5-stripped.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

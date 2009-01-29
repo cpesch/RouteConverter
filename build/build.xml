@@ -32,6 +32,7 @@
         <property name="build.output.tmp5-gui" location="${build.output}/tmp5-gui"/>
         <property name="build.output.tmp-linux" location="${build.output}/tmp-linux"/>
         <property name="build.output.tmp-mac" location="${build.output}/tmp-mac"/>
+        <property name="build.output.tmp-solaris" location="${build.output}/tmp-solaris"/>
         <property name="build.output.tmp-windows" location="${build.output}/tmp-windows"/>
         <property name="build.test.dir" location="${build.output}/test"/>
         <property name="build.test.dir5" location="${build.output}/test5"/>
@@ -68,10 +69,10 @@
         <property name="jaxb6.output" location="jaxb6/output"/>
         <property name="jaxb6.output.classes" location="${jaxb6.output}/classes"/>
 
-        <property name="jdic-0.9.3.src" location="jdic-0.9.3/src"/>
-        <property name="jdic-0.9.3.src.java" location="${jdic-0.9.3.src}/java"/>
-        <property name="jdic-0.9.3.output" location="jdic-0.9.3/output"/>
-        <property name="jdic-0.9.3.output.classes" location="${jdic-0.9.3.output}/classes"/>
+        <property name="jdic-0.9.5.src" location="jdic-0.9.5/src"/>
+        <property name="jdic-0.9.5.src.java" location="${jdic-0.9.5.src}/java"/>
+        <property name="jdic-0.9.5.output" location="jdic-0.9.5/output"/>
+        <property name="jdic-0.9.5.output.classes" location="${jdic-0.9.5.output}/classes"/>
 
         <property name="navigation-formats.src" location="navigation-formats/src"/>
         <property name="navigation-formats.src.java" location="${navigation-formats.src}/java"/>
@@ -111,10 +112,10 @@
         <property name="sun.jsr173.impl.lib" location="thirdparty/sun/jsr173-impl/lib/jsr173-impl-1.0.jar"/>
         <property name="sun.jaxb.impl.lib" location="thirdparty/sun/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar"/>
         <property name="sun.jaxb.jdk6.impl.lib" location="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
-        <property name="sun.jdic.lib" location="thirdparty/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar"/>
+        <property name="sun.jdic.lib" location="thirdparty/sun/jdic/lib-0.9.5/jdic-0.9.5-stripped.jar"/>
 
         <property name="gpsbabel.bin" location="thirdparty/gpsbabel/gpsbabel/bin/"/>
-        <property name="sun.jdic.bin" location="thirdparty/sun/jdic/bin"/>
+        <property name="sun.jdic.bin" location="thirdparty/sun/jdic/bin-0.9.5"/>
 
         <path id="catalog.classpath">
             <path refid="navigation-formats.classpath"/>
@@ -159,11 +160,11 @@
             <path location="${jaxb6.output.classes}"/>
         </path>
 
-        <path id="jdic-0.9.3.classpath">
+        <path id="jdic-0.9.5.classpath">
             <path location="${sun.javaws.lib}"/>
             <path location="${sun.jdic.lib}"/>
             <path refid="common.classpath"/>
-            <path location="${jdic-0.9.3.output.classes}"/>
+            <path location="${jdic-0.9.5.output.classes}"/>
         </path>
 
         <path id="navigation-formats.classpath">
@@ -193,7 +194,7 @@
             <path refid="common-gui.classpath"/>
             <path refid="geonames.classpath"/>
             <path refid="navigation-formats.classpath"/>
-            <path refid="jdic-0.9.3.classpath"/>
+            <path refid="jdic-0.9.5.classpath"/>
             <path location="${route-converter.output.classes}"/>
         </path>
     </target>
@@ -209,7 +210,7 @@
         <property name="jaxb5.src.java" location="jaxb5/src/java"/>
         <property name="jaxb5.output" location="jaxb5/output"/>
         <property name="jaxb5.output.classes5" location="${jaxb5.output}/classes5"/>
-        <property name="jdic-0.9.3.output.classes5" location="${jdic-0.9.3.output}/classes5"/>
+        <property name="jdic-0.9.5.output.classes5" location="${jdic-0.9.5.output}/classes5"/>
         <property name="navigation-formats.output.classes5" location="${navigation-formats.output}/classes5"/>
         <property name="navigation-formats.output.testclasses5" location="${navigation-formats.output}/testclasses5"/>
         <property name="rest.output.classes5" location="${rest.output}/classes5"/>
@@ -265,11 +266,11 @@
             <path location="${jaxb5.output.classes5}"/>
         </path>
 
-        <path id="jdic-0.9.3.classpath5">
+        <path id="jdic-0.9.5.classpath5">
             <path location="${sun.javaws.lib}"/>
             <path location="${sun.jdic.lib}"/>
             <path refid="common.classpath5"/>
-            <path location="${jdic-0.9.3.output.classes5}"/>
+            <path location="${jdic-0.9.5.output.classes5}"/>
         </path>
 
         <path id="navigation-formats.classpath5">
@@ -300,7 +301,7 @@
             <path refid="common-gui.classpath5"/>
             <path refid="geonames.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
-            <path refid="jdic-0.9.3.classpath5"/>
+            <path refid="jdic-0.9.5.classpath5"/>
             <path location="${route-converter.output.classes5}"/>
         </path>
 
@@ -312,33 +313,16 @@
     </target>
 
     <target name="copy-native" depends="init">
-        <mkdir dir="${build.output.tmp-windows}/slash/navigation/babel"/>
-        <copy todir="${build.output.tmp-windows}/slash/navigation/babel" flatten="true">
-            <fileset file="${gpsbabel.bin}">
-                <include name="**/*.exe"/>
-                <include name="**/*.dll"/>
-            </fileset>
-        </copy>
-        <mkdir dir="${build.output.tmp-windows}/org/jdesktop/jdic/init"/>
-        <copy todir="${build.output.tmp-windows}/org/jdesktop/jdic/init" flatten="true">
-            <fileset file="${sun.jdic.bin}">
-                <include name="**/*.exe"/>
-                <include name="**/*.dll"/>
-            </fileset>
-        </copy>
-
         <mkdir dir="${build.output.tmp-linux}/slash/navigation/babel"/>
         <copy todir="${build.output.tmp-linux}/slash/navigation/babel" flatten="true">
             <fileset file="${gpsbabel.bin}">
                 <include name="**/gpsbabel-linux-glibc2.3"/>
             </fileset>
         </copy>
-        <mkdir dir="${build.output.tmp-linux}/org/jdesktop/jdic/init"/>
-        <copy todir="${build.output.tmp-linux}/org/jdesktop/jdic/init" flatten="true">
-            <fileset file="${sun.jdic.bin}">
-                <include name="**/libmozembed-linux-gtk*.so"/>
-                <include name="**/mozembed-linux-gtk*"/>
-                <include name="**/libjdic.so"/>
+        <mkdir dir="${build.output.tmp-linux}/bin"/>
+        <copy todir="${build.output.tmp-linux}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="linux/**"/>
             </fileset>
         </copy>
 
@@ -348,10 +332,37 @@
                 <include name="**/gpsbabel-mac"/>
             </fileset>
         </copy>
-        <mkdir dir="${build.output.tmp-mac}/org/jdesktop/jdic/init"/>
-        <copy todir="${build.output.tmp-mac}/org/jdesktop/jdic/init" flatten="true">
-            <fileset file="${sun.jdic.bin}">
-                <include name="**/libjdic.jnilib"/>
+        <mkdir dir="${build.output.tmp-mac}/bin"/>
+        <copy todir="${build.output.tmp-mac}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="mac_os_x/**"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${build.output.tmp-solaris}/slash/navigation/babel"/>
+        <copy todir="${build.output.tmp-solaris}/slash/navigation/babel" flatten="true">
+            <fileset file="${gpsbabel.bin}">
+                <include name="**/gpsbabel-solaris*"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${build.output.tmp-solaris}/bin"/>
+        <copy todir="${build.output.tmp-solaris}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="solaris/**"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${build.output.tmp-windows}/slash/navigation/babel"/>
+        <copy todir="${build.output.tmp-windows}/slash/navigation/babel" flatten="true">
+            <fileset file="${gpsbabel.bin}">
+                <include name="**/*.exe"/>
+                <include name="**/*.dll"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${build.output.tmp-windows}/bin"/>
+        <copy todir="${build.output.tmp-windows}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="windows/**"/>
             </fileset>
         </copy>
     </target>
@@ -366,11 +377,10 @@
                 <include name="**/*.dll"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-0.9.3.output.classes}/org/jdesktop/jdic/init"/>
-        <copy todir="${jdic-0.9.3.output.classes}/org/jdesktop/jdic/init" flatten="true">
-            <fileset file="${sun.jdic.bin}">
-                <include name="**/*.exe"/>
-                <include name="**/*.dll"/>
+        <mkdir dir="${jdic-0.9.5.output.classes}"/>
+        <copy todir="${jdic-0.9.5.output.classes}">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="windows/**"/>
             </fileset>
         </copy>
     </target>
@@ -383,11 +393,10 @@
                 <include name="**/*.dll"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-0.9.3.output.classes5}/org/jdesktop/jdic/init"/>
-        <copy todir="${jdic-0.9.3.output.classes5}/org/jdesktop/jdic/init" flatten="true">
-            <fileset file="${sun.jdic.bin}">
-                <include name="**/*.exe"/>
-                <include name="**/*.dll"/>
+        <mkdir dir="${jdic-0.9.5.output.classes5}"/>
+        <copy todir="${jdic-0.9.5.output.classes5}">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="windows/**"/>
             </fileset>
         </copy>
     </target>
@@ -451,10 +460,10 @@
             <classpath refid="jaxb6.classpath"/>
         </javac>
 
-        <mkdir dir="${jdic-0.9.3.output.classes}"/>
-        <javac destdir="${jdic-0.9.3.output.classes}" debug="${javac.debug}">
-            <src location="${jdic-0.9.3.src.java}"/>
-            <classpath refid="jdic-0.9.3.classpath"/>
+        <mkdir dir="${jdic-0.9.5.output.classes}"/>
+        <javac destdir="${jdic-0.9.5.output.classes}" debug="${javac.debug}">
+            <src location="${jdic-0.9.5.src.java}"/>
+            <classpath refid="jdic-0.9.5.classpath"/>
         </javac>
 
         <mkdir dir="${navigation-formats.output.classes}"/>
@@ -532,10 +541,10 @@
             <classpath refid="jaxb5.classpath"/>
         </javac>
 
-        <mkdir dir="${jdic-0.9.3.output.classes5}"/>
-        <javac destdir="${jdic-0.9.3.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${jdic-0.9.3.src.java}"/>
-            <classpath refid="jdic-0.9.3.classpath5"/>
+        <mkdir dir="${jdic-0.9.5.output.classes5}"/>
+        <javac destdir="${jdic-0.9.5.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${jdic-0.9.5.src.java}"/>
+            <classpath refid="jdic-0.9.5.classpath5"/>
         </javac>
 
         <mkdir dir="${navigation-formats.output.classes5}"/>
@@ -736,7 +745,7 @@
             <fileset dir="${common-gui.output.classes}"/>
             <fileset dir="${geonames.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
-            <fileset dir="${jdic-0.9.3.output.classes}">
+            <fileset dir="${jdic-0.9.5.output.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
@@ -823,7 +832,7 @@
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
+            <fileset dir="${jdic-0.9.5.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
@@ -849,7 +858,7 @@
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
+            <fileset dir="${jdic-0.9.5.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
@@ -875,7 +884,33 @@
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
+            <fileset dir="${jdic-0.9.5.output.classes5}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${navigation-formats.output.classes5}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${rest.output.classes5}"/>
+            <fileset dir="${route-converter.output.classes5}"/>
+            <fileset dir="${route-converter5.output.classes5}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${build.output}/RouteConverterSolaris.jar">
+            <fileset dir="${build.output.tmp5}"/>
+            <fileset dir="${build.output.tmp5-gui}"/>
+            <fileset dir="${build.output.tmp-solaris}"/>
+            <fileset dir="${catalog.output.classes5}"/>
+            <fileset dir="${common.output.classes5}"/>
+            <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${jaxb5.output.classes5}"/>
+            <fileset dir="${jdic-0.9.5.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
@@ -909,7 +944,7 @@
         <delete dir="${geonames.output}"/>
         <delete dir="${jaxb5.output}"/>
         <delete dir="${jaxb6.output}"/>
-        <delete dir="${jdic-0.9.3.output}"/>
+        <delete dir="${jdic-0.9.5.output}"/>
         <delete dir="${navigation-formats.output}"/>
         <delete dir="${rest.output}"/>
         <delete dir="${route-converter.output}"/>
