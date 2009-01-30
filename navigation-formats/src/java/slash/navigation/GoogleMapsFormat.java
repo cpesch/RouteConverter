@@ -23,6 +23,7 @@ package slash.navigation;
 import slash.navigation.util.Conversion;
 
 import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Logger;
@@ -94,7 +95,11 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
             return null;
     }
 
-    String findURL(String text) {
+    public static boolean isGoogleMapsUrl(URL url) {
+        return findURL(url.toExternalForm()) != null;
+    }
+
+    static String findURL(String text) {
         text = text.replaceAll("\n", " ");
         text = text.replaceAll("\r", " ");
         Matcher matcher = URL_PATTERN.matcher(text);
