@@ -87,8 +87,10 @@ public class GoPalRouteFormat extends XmlNavigationFormat<GoPalRoute> {
         Tour tour = objectFactory.createTour();
         for (GoPalPosition position : route.getPositions()) {
             Tour.Dest dest = objectFactory.createTourDest();
-            dest.setLongitude(position.getX());
-            dest.setLatitude(position.getY());
+            if (position.getX() != null)
+                dest.setLongitude(position.getX());
+            if (position.getY() != null)
+                dest.setLatitude(position.getY());
             dest.setCity(position.getCity());
             if (position.getCountry() != null)
                 dest.setCountry(position.getCountry());
