@@ -137,4 +137,9 @@ public class FilesTest extends TestCase {
     public void testCreateGoPalFileName() {
         assertEquals("EIFELSTERN AACHEN", Files.createGoPalFileName("Eifelstern-Aachen"));
     }
+
+    public void testShortenPath() {
+        assertEquals("http://maps.google.de/maps?f=d&hl=de&geocode=142500959607...",
+                     Files.shortenPath("http://maps.google.de/maps?f=d&hl=de&geocode=14250095960720490931,54.083160,13.475246%3B13832872253745319564,54.096925,13.383573%3B4731465831403354564,54.114440,13.528310&saddr=54.096925,+13.383573&daddr=54.08316,13.475246+to:54.114440,+13.528310&mra=ps&mrcr=0,1&sll=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12"));
+    }
 }

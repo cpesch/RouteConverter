@@ -23,9 +23,9 @@ package slash.navigation.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +103,13 @@ public class Files {
             // intentionally left empty
         }
         return url.toExternalForm();
+    }
+
+    public static String shortenPath(String path) {
+        if (path.length() > 60) {
+            path = path.substring(0, 57) + "...";
+        }
+        return path;
     }
 
     public static URL[] toUrls(File... files) {
@@ -237,7 +244,7 @@ public class Files {
                     buffer.append(" and\n");
                 else
                     buffer.append(",\n");
-            buffer.append("'").append(array[i]).append("'");
+            buffer.append("'").append(shortenPath(array[i].toString())).append("'");
         }
         return buffer.toString();
     }
