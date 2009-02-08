@@ -43,7 +43,7 @@ public abstract class ExternalPrograms {
     }
 
     public void startBrowserForTerms(Window window) {
-        startBrowser(window, "www.routeconverter.de/terms.html");
+        startBrowser(window, "www.routeconverter.de/routecatalog/terms.html");
     }
 
     public void startBrowserForForum(Window window) {
