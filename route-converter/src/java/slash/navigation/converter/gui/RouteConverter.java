@@ -362,6 +362,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         });
 
         getFormatAndRoutesModel().addListDataListener(new ListDataListener() {
+            @SuppressWarnings({"UnusedDeclaration"})
             private void handleEvent(ListDataEvent e) {
                 handleRoutesUpdate();
             }
@@ -1185,7 +1186,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void handleOpenError(final Exception e, final String path) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), path, e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.shortenPath(path), e.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -1215,7 +1216,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             public void run() {
                 log.severe("Unsupported format: " + path);
                 JOptionPane.showMessageDialog(frame,
-                        MessageFormat.format(BUNDLE.getString("unsupported-format"), path),
+                        MessageFormat.format(BUNDLE.getString("unsupported-format"), Files.shortenPath(path)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
@@ -1318,7 +1319,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                         });
 
                         final NavigationFileParser parser = new NavigationFileParser();
-                        if (parser.read(url.openStream())) {
+                        if (parser.read(url)) {
                             log.info("Opened: " + path);
 
                             SwingUtilities.invokeLater(new Runnable() {
@@ -1430,7 +1431,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                             final String path = Files.createReadablePath(url);
 
                             final NavigationFileParser parser = new NavigationFileParser();
-                            if (parser.read(url.openStream())) {
+                            if (parser.read(url)) {
                                 log.info("Added route: " + path);
 
                                 SwingUtilities.invokeLater(new Runnable() {
@@ -1499,7 +1500,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                             final String path = Files.createReadablePath(url);
 
                             final NavigationFileParser parser = new NavigationFileParser();
-                            if (parser.read(url.openStream())) {
+                            if (parser.read(url)) {
                                 log.info("Appended: " + path);
 
                                 SwingUtilities.invokeLater(new Runnable() {
@@ -1570,7 +1571,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         int fileCount = parser.getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(frame,
-                    MessageFormat.format(BUNDLE.getString("save-confirm-split"), getSource(),
+                    MessageFormat.format(BUNDLE.getString("save-confirm-split"), Files.shortenPath(getSource()),
                             route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     frame.getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
@@ -1621,7 +1622,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             log.severe("Save error " + file + "," + format + ": " + e.getMessage());
 
             JOptionPane.showMessageDialog(frame,
-                    MessageFormat.format(BUNDLE.getString("save-error"), getSource(), targetsAsString, e.getMessage()),
+                    MessageFormat.format(BUNDLE.getString("save-error"), Files.shortenPath(getSource()), targetsAsString, e.getMessage()),
                     frame.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }

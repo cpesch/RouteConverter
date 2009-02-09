@@ -53,7 +53,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected static final String TRACK = "Track";
     protected static final String ROUTE_LINE_STYLE = "routeStyle";
     protected static final String TRACK_LINE_STYLE = "trackStyle";
-    protected static final String [] SPEED_COLORS = {
+    protected static final String[] SPEED_COLORS = {
             "FF00ffff",
             "FF008080",
             "FF00ff00",
@@ -156,22 +156,15 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) {
         List<T> result = new ArrayList<T>();
-        InputStream source = null;
         try {
-            try {
-                source = new URL(url).openStream();
-                NavigationFileParser parser = new NavigationFileParser();
-                boolean success = parser.read(source);
-                if (success) {
-                    List<BaseRoute> routes = parser.getAllRoutes();
-                    for (BaseRoute route : routes) {
-                        if (resultClass.isInstance(route))
-                            result.add((T) route);
-                    }
+            NavigationFileParser parser = new NavigationFileParser();
+            boolean success = parser.read(new URL(url));
+            if (success) {
+                List<BaseRoute> routes = parser.getAllRoutes();
+                for (BaseRoute route : routes) {
+                    if (resultClass.isInstance(route))
+                        result.add((T) route);
                 }
-            } finally {
-                if (source != null)
-                    source.close();
             }
         } catch (Exception e) {
             log.fine("Error reading " + url + ": " + e.getMessage());
@@ -182,7 +175,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected float getLineWidth() {
         return preferences.getFloat("lineWidth", 3.0f);
     }
-    
+
     protected byte[] getRouteLineColor() {
         String color = preferences.get("routeLineColor", "7FFF0055");
         return HexDecoder.decodeBytes(color);

@@ -28,6 +28,8 @@ import slash.navigation.util.Conversion;
 import slash.navigation.util.NotClosingUnderlyingInputStream;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -42,7 +44,7 @@ import java.util.logging.Logger;
 
 public class NavigationFileParser {
     private static final Logger log = Logger.getLogger(NavigationFileParser.class.getName());
-    private static final int READ_BUFFER_SIZE = 10 * 1024 * 1024;
+    private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
     private FormatAndRoutes formatAndRoutes;
 
@@ -89,9 +91,9 @@ public class NavigationFileParser {
     }
 
     private FormatAndRoutes read(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize));
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
-            buffer.mark(readBufferSize);
+            buffer.mark(readBufferSize + 1);
 
             for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
                 List<BaseRoute> routes = format.read(buffer, startDate);
@@ -126,12 +128,37 @@ public class NavigationFileParser {
         startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
         try {
-            this.formatAndRoutes = read(fis, (int) source.length() + 1, startDate);
+            this.formatAndRoutes = read(fis, (int) source.length(), startDate);
             return formatAndRoutes != null;
         }
         finally {
             fis.close();
         }
+    }
+
+    private int getSize(URL url) throws IOException {
+        try {
+            if (url.getProtocol().equals("file"))
+                return (int) new File(url.toURI()).length();
+            else
+                return READ_BUFFER_SIZE;
+        } catch (URISyntaxException e) {
+            throw new IOException("Cannot determine file from URL: " + e.getMessage());
+        }
+    }
+
+    public boolean read(URL url) throws IOException {
+        int readBufferSize;
+        InputStream in;
+        if (GoogleMapsFormat.isGoogleMapsUrl(url)) {
+            byte[] bytes = url.toExternalForm().getBytes();
+            readBufferSize = bytes.length;
+            in = new ByteArrayInputStream(bytes);
+        } else {
+            readBufferSize = getSize(url);
+            in = url.openStream();
+        }
+        return read(in, readBufferSize);
     }
 
     public boolean read(InputStream source, int readBufferSize) throws IOException {
