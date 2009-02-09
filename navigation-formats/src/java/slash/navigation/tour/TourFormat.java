@@ -51,7 +51,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     static final String VISITED = "Visited";
     static final String CREATOR = "Creator";
     private static final Pattern SECTION_TITLE_PATTERN = Pattern.
-            compile("\\" + SECTION_PREFIX + "(" + "\\d+" + "|" + TOUR_TITLE + ")\\" + SECTION_POSTFIX);
+            compile(".*\\" + SECTION_PREFIX + "(" + "\\d+" + "|" + TOUR_TITLE + ")\\" + SECTION_POSTFIX + ".*");
 
     public String getName() {
         return "Falk Navigator (*" + getExtension() + ")";
