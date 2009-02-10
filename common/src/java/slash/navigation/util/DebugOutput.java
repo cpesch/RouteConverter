@@ -21,6 +21,7 @@
 package slash.navigation.util;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.logging.LogManager;
 
 /**
@@ -32,6 +33,8 @@ import java.util.logging.LogManager;
 public class DebugOutput {
     public static void activate() {
         // System.setProperty("java.util.logging.config.class", DebugOutput.class.getName());
+        File logFile = new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
+        System.out.println("Logging to " + logFile.getAbsolutePath());
         readDebugConfig();
     }
 
