@@ -3,7 +3,7 @@
     <groupId>slash.navigation</groupId>
     <artifactId>jdic-current</artifactId>
     <packaging>jar</packaging>
-    <name>Patches for the Java Desktop Integration Component (JDIC) current library</name>
+    <name>Patches for the Java Desktop Integration Component (JDIC) CVS HEAD library</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
