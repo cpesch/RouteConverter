@@ -75,7 +75,8 @@ public abstract class BaseNavigationPosition {
     public abstract void setComment(String comment);
 
     /**
-     * @return the distance in m this and the other position
+     * @param other the other position
+     * @return the distance in meter this and the other position
      */
     public double getDistance(BaseNavigationPosition other) {
         Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
@@ -83,6 +84,7 @@ public abstract class BaseNavigationPosition {
     }
 
     /**
+     * @param other the other position
      * @return the azimuth in degree this and the other position
      */
     public double getAngle(BaseNavigationPosition other) {
@@ -112,6 +114,7 @@ public abstract class BaseNavigationPosition {
     }
 
     /**
+     * @param other the other position
      * @return the speed in km/h between this and the other position
      */
     public double getSpeed(KmlPosition other) {
@@ -167,8 +170,16 @@ public abstract class BaseNavigationPosition {
         return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
+    public KmlPosition asKmlBetaPosition() {
+        return asKmlPosition();
+    }
+
     public KmlPosition asKmzPosition() {
         return asKmlPosition();
+    }
+
+    public KmlPosition asKmzBetaPosition() {
+        return asKmzPosition();
     }
 
     public BcrPosition asMTPPosition() {

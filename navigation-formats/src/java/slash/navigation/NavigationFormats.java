@@ -73,8 +73,8 @@ public final class NavigationFormats {
         addFormat(Kmz20Format.class);
         addFormat(Kml21Format.class);
         addFormat(Kmz21Format.class);
-        addFormat(Kml22Format.class);
-        addFormat(Kmz22Format.class);
+        addFormat(Kml22BetaFormat.class);
+        addFormat(Kmz22BetaFormat.class);
         addFormat(Gpx10Format.class);
         addFormat(Gpx11Format.class);
         addFormat(Nmn7Format.class);
@@ -123,7 +123,7 @@ public final class NavigationFormats {
         addFormat(BrokenGpx10Format.class);
         addFormat(BrokenGpx11Format.class);
         addFormat(BrokenKml21Format.class);
-        addFormat(BrokenKml22Format.class);
+        addFormat(BrokenKml22BetaFormat.class);
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
     }

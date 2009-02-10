@@ -154,10 +154,8 @@ public class NavigationFileParserTest extends NavigationTestCase {
     }
 
     public void testIsValidOvl() throws IOException {
-        readWaypoints(TEST_PATH + "from.ovl", 476);
-        readRoute(TEST_PATH + "from.ovl", 1, 476);
-        readTrack(TEST_PATH + "from.ovl", 1, 476);
-
+        readRoute(TEST_PATH + "from-rte.ovl", 1, 100);
+        readTrack(TEST_PATH + "from.ovl", 3, 476, 476, 476);
         read(TEST_PATH + "from.ovl");
     }
 

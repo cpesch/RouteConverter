@@ -22,7 +22,6 @@ package slash.navigation.kml;
 
 import junit.framework.Assert;
 import slash.navigation.NavigationTestCase;
-import slash.navigation.NavigationFileParser;
 import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;
@@ -126,7 +125,7 @@ public class KmlFormatTest extends NavigationTestCase {
 
     public void testUnmarshal22() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from22.kml");
-        slash.navigation.kml.binding22.KmlType kml = KmlUtil.unmarshal22(reader);
+        slash.navigation.kml.binding22beta.KmlType kml = KmlUtil.unmarshal22Beta(reader);
         assertNotNull(kml);
     }
 
@@ -175,7 +174,7 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testOnlyPlacemark() throws IOException {
-        List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(SAMPLE_PATH + "Home to Corfe Castle.kml")));
+        List<KmlRoute> routes = new Kml22BetaFormat().read(new FileInputStream(new File(SAMPLE_PATH + "Home to Corfe Castle.kml")));
         assertNotNull(routes);
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);

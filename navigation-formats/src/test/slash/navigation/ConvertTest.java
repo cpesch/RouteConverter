@@ -212,7 +212,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertMTP0607ToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml22BetaFormat());
     }
 
     public void testConvertMTP0607ToCoPilot() throws IOException {
@@ -222,7 +222,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertMTP0809ToKmz() throws IOException {
         convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz20Format());
         convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz21Format());
-        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz22Format());
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz22BetaFormat());
     }
 
 
@@ -256,7 +256,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertItnToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml22BetaFormat());
     }
 
 
@@ -278,7 +278,7 @@ public class ConvertTest extends NavigationTestCase {
         // TODO positions with the same coordinates are not saved separately within GDB files
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22BetaFormat());
     }
 
     public void testConvertGpx10ToGarminMapSource6() throws IOException {
@@ -398,15 +398,15 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml22ToKml22() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new Kml22BetaFormat());
     }
 
     public void testConvertKml22ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new ItnFormat());
     }
 
     public void testConvertKml22ToMTP0607() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new MTP0607Format());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new MTP0607Format());
     }
 
 
@@ -624,8 +624,8 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml22ToNmn7() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Nmn7Format());
-        convertRoundtrip(TEST_PATH + "from22.kmz", new Kmz22Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from22.kmz", new Kmz22BetaFormat(), new Nmn7Format());
     }
 
     public void testConvertCoPilotToNmn7() throws IOException {
@@ -661,7 +661,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertRoute66ToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Kml22BetaFormat());
     }
 
     public void testConvertNationalGeographicToRoute66() throws IOException {
@@ -672,7 +672,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertGlopusToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml22BetaFormat());
     }
 
     public void testConvertGpx11ToGlopus() throws IOException {
@@ -684,7 +684,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertGpsTunerToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml22BetaFormat());
     }
 
     public void testConvertGpsTunerToGarminPcx5() throws IOException {
@@ -694,7 +694,7 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertKmlToGpsTuner() throws IOException {
         convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new GpsTunerFormat());
         convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new GpsTunerFormat());
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new GpsTunerFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new GpsTunerFormat());
     }
 
 
@@ -776,7 +776,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertHaicomLoggerToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-haicomlogger.csv", new HaicomLoggerFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-haicomlogger.csv", new HaicomLoggerFormat(), new Kml22BetaFormat());
     }
 
     public void testConvertNationalGeographicToHaicomLogger() throws IOException {

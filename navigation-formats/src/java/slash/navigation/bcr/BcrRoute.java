@@ -195,8 +195,8 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asKmlFormat(new Kml21Format());
     }
 
-    public KmlRoute asKml22Format() {
-        return asKmlFormat(new Kml22Format());
+    public KmlRoute asKml22BetaFormat() {
+        return asKmlFormat(new Kml22BetaFormat());
     }
 
     public KmlRoute asKmz20Format() {
@@ -207,8 +207,8 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asKmlFormat(new Kmz21Format());
     }
 
-    public KmlRoute asKmz22Format() {
-        return asKmlFormat(new Kmz22Format());
+    public KmlRoute asKmz22BetaFormat() {
+        return asKmlFormat(new Kmz22BetaFormat());
     }
 
     
