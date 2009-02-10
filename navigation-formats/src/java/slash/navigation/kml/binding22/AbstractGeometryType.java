@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+// import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlType;
     "abstractGeometrySimpleExtensionGroup",
     "abstractGeometryObjectExtensionGroup"
 })
+/*
 @XmlSeeAlso({
     LinearRingType.class,
     PointType.class,
@@ -51,6 +52,7 @@ import javax.xml.bind.annotation.XmlType;
     LineStringType.class,
     PolygonType.class
 })
+*/
 public abstract class AbstractGeometryType
     extends AbstractObjectType
 {

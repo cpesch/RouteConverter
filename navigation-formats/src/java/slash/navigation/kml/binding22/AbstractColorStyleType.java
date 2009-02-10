@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+// import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -49,12 +49,14 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "abstractColorStyleSimpleExtensionGroup",
     "abstractColorStyleObjectExtensionGroup"
 })
+/*
 @XmlSeeAlso({
     LabelStyleType.class,
     LineStyleType.class,
     PolyStyleType.class,
     IconStyleType.class
 })
+*/
 public abstract class AbstractColorStyleType
     extends AbstractSubStyleType
 {

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+// import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import slash.navigation.kml.bindingatom.AtomPersonConstruct;
 import slash.navigation.kml.bindingatom.Link;
@@ -88,12 +88,14 @@ import slash.navigation.kml.bindingxal.AddressDetails;
     "abstractFeatureSimpleExtensionGroup",
     "abstractFeatureObjectExtensionGroup"
 })
+/*
 @XmlSeeAlso({
     AbstractOverlayType.class,
     NetworkLinkType.class,
     AbstractContainerType.class,
     PlacemarkType.class
 })
+ */
 public abstract class AbstractFeatureType
     extends AbstractObjectType
 {
