@@ -145,6 +145,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asKmlFormat(new Kml22BetaFormat());
     }
 
+    public KmlRoute asKml22Format() {
+        return asKmlFormat(new Kml22Format());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }
@@ -155,6 +159,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     public KmlRoute asKmz22BetaFormat() {
         return asKmlFormat(new Kmz22BetaFormat());
+    }
+
+    public KmlRoute asKmz22Format() {
+        return asKmlFormat(new Kmz22Format());
     }
 
 

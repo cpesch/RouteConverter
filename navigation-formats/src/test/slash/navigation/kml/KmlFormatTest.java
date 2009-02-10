@@ -123,9 +123,15 @@ public class KmlFormatTest extends NavigationTestCase {
         }
     }
 
+    public void testUnmarshal22Beta() throws IOException, JAXBException {
+        Reader reader = new FileReader(TEST_PATH + "from22beta.kml");
+        slash.navigation.kml.binding22beta.KmlType kml = KmlUtil.unmarshal22Beta(reader);
+        assertNotNull(kml);
+    }
+
     public void testUnmarshal22() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from22.kml");
-        slash.navigation.kml.binding22beta.KmlType kml = KmlUtil.unmarshal22Beta(reader);
+        slash.navigation.kml.binding22.KmlType kml = KmlUtil.unmarshal22(reader);
         assertNotNull(kml);
     }
 

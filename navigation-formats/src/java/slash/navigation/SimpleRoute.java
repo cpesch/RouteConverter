@@ -131,6 +131,10 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asKmlFormat(new Kml22BetaFormat());
     }
 
+    public KmlRoute asKml22Format() {
+        return asKmlFormat(new Kml22Format());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }
@@ -141,6 +145,10 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     public KmlRoute asKmz22BetaFormat() {
         return asKmlFormat(new Kmz22BetaFormat());
+    }
+
+    public KmlRoute asKmz22Format() {
+        return asKmlFormat(new Kmz22Format());
     }
 
 

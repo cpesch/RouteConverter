@@ -138,6 +138,12 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asKmlFormat(new Kml22BetaFormat());
     }
 
+    public KmlRoute asKml22Format() {
+        if (getFormat() instanceof Kml22Format)
+            return this;
+        return asKmlFormat(new Kml22Format());
+    }
+
     public KmlRoute asKmz20Format() {
         if (getFormat() instanceof Kmz20Format)
             return this;
@@ -154,6 +160,12 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         if (getFormat() instanceof Kmz22BetaFormat)
             return this;
         return asKmlFormat(new Kmz22BetaFormat());
+    }
+
+    public KmlRoute asKmz22Format() {
+        if (getFormat() instanceof Kmz22Format)
+            return this;
+        return asKmlFormat(new Kmz22Format());
     }
 
     private GpxRoute asGpxFormat(GpxFormat format) {

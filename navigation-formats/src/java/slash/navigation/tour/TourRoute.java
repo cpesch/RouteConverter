@@ -154,6 +154,10 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asKmlFormat(new Kml22BetaFormat());
     }
 
+    public KmlRoute asKml22Format() {
+        return asKmlFormat(new Kml22Format());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }
@@ -164,6 +168,10 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
 
     public KmlRoute asKmz22BetaFormat() {
         return asKmlFormat(new Kmz22BetaFormat());
+    }
+
+    public KmlRoute asKmz22Format() {
+        return asKmlFormat(new Kmz22Format());
     }
 
     

@@ -216,9 +216,11 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract KmlRoute asKml20Format();
     public abstract KmlRoute asKml21Format();
     public abstract KmlRoute asKml22BetaFormat();
+    public abstract KmlRoute asKml22Format();
     public abstract KmlRoute asKmz20Format();
     public abstract KmlRoute asKmz21Format();
     public abstract KmlRoute asKmz22BetaFormat();
+    public abstract KmlRoute asKmz22Format();
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
     public abstract NmeaRoute asMagellanExploristFormat();
