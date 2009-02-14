@@ -44,6 +44,8 @@ public abstract class BaseNavigationGUI {
     private static final String Y_PREFERENCE = "y";
     private static final String WIDTH_PREFERENCE = "width";
     private static final String HEIGHT_PREFERENCE = "height";
+    private static final String STATE_PREFERENCE = "state";
+    private static final String DEVICE_PREFERENCE = "device";
     private static final int MAXIMIZE_OFFSET = 4;
 
     protected JFrame frame;
@@ -75,9 +77,21 @@ public abstract class BaseNavigationGUI {
     }
 
     protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton) {
-        frame = new JFrame();
+        GraphicsConfiguration gc = null;
+        String deviceId = preferences.get(DEVICE_PREFERENCE, null);
+        if (deviceId != null) {
+            GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            for (GraphicsDevice device : devices) {
+                if (deviceId.equals(device.getIDstring())) {
+                    gc = device.getDefaultConfiguration();
+                    log.info("graphics device is " + deviceId);
+                    break;
+                }
+            }
+        }
+
+        frame = new JFrame(frameTitle, gc);
         frame.setIconImage(loadIcon(iconName).getImage());
-        frame.setTitle(frameTitle);
         frame.setContentPane(contentPane);
         frame.getRootPane().setDefaultButton(defaultButton);
     }
@@ -99,20 +113,27 @@ public abstract class BaseNavigationGUI {
         frame.pack();
         frame.setLocationRelativeTo(null);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        log.info("screen size is " + screenSize);
+        Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
+        log.info("screen size is " + bounds);
 
-        int width = crop("width", getPreferenceWidth(), -MAXIMIZE_OFFSET, (int) screenSize.getWidth() + 2 * MAXIMIZE_OFFSET);
-        int height = crop("height", getPreferenceHeight(), -MAXIMIZE_OFFSET, (int) screenSize.getHeight() + 2 * MAXIMIZE_OFFSET);
+        int width = crop("width", getPreferenceWidth(), -MAXIMIZE_OFFSET, (int) bounds.getWidth() + 2 * MAXIMIZE_OFFSET);
+        int height = crop("height", getPreferenceHeight(), -MAXIMIZE_OFFSET, (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET);
         if (width != -1 && height != -1)
             frame.setSize(width, height);
         log.info("frame size is " + frame.getSize());
 
-        int x = crop("x", preferences.getInt(X_PREFERENCE, -1), -MAXIMIZE_OFFSET, screenSize.width + 2 * MAXIMIZE_OFFSET - width);
-        int y = crop("y", preferences.getInt(Y_PREFERENCE, -1), -MAXIMIZE_OFFSET, screenSize.height + 2 * MAXIMIZE_OFFSET - height);
+        int x = crop("x", preferences.getInt(X_PREFERENCE, -1),
+                (int) bounds.getX() - MAXIMIZE_OFFSET,
+                (int) bounds.getX() + (int) bounds.getWidth() + 2 * MAXIMIZE_OFFSET - width);
+        int y = crop("y", preferences.getInt(Y_PREFERENCE, -1),
+                (int) bounds.getY() - MAXIMIZE_OFFSET,
+                (int) bounds.getY() + (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET - height);
         if (x != -1 && y != -1)
             frame.setLocation(x, y);
         log.info("frame location is " + frame.getLocation());
+
+        frame.setExtendedState(preferences.getInt(STATE_PREFERENCE, Frame.NORMAL));
+        log.info("frame state is " + frame.getExtendedState());
 
         frame.setVisible(true);
         frame.toFront();
@@ -142,6 +163,11 @@ public abstract class BaseNavigationGUI {
         preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
         preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
         preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
+
+        log.info("Storing frame state as " + frame.getExtendedState());
+        log.info("Storing graphics device as " + frame.getGraphicsConfiguration().getDevice().getIDstring());
+        preferences.putInt(STATE_PREFERENCE, frame.getExtendedState());
+        preferences.put(DEVICE_PREFERENCE, frame.getGraphicsConfiguration().getDevice().getIDstring());
 
         frame.dispose();
     }
