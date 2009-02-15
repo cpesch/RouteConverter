@@ -197,6 +197,13 @@
             <path refid="jdic-0.9.5.classpath"/>
             <path location="${route-converter.output.classes}"/>
         </path>
+
+        <condition property="java5">
+            <equals arg1="${ant.java.version}" arg2="1.5"/>
+        </condition>
+        <condition property="java6">
+            <equals arg1="${ant.java.version}" arg2="1.6"/>
+        </condition>
     </target>
 
     <target name="init5" depends="init">
@@ -443,6 +450,14 @@
 
     <!-- Compiles all java classes -->
     <target name="compile" depends="init,copy-resources">
+        <fail message="Need to Java 6 to compile.">
+            <condition>
+                <not>
+                    <isset property="java6"/>
+                </not>
+            </condition>
+        </fail>
+
         <mkdir dir="${common.output.classes}"/>
         <javac destdir="${common.output.classes}" debug="${javac.debug}">
             <src location="${common.src.java}"/>
@@ -524,6 +539,19 @@
     </target>
 
     <target name="compile5" depends="init5,copy-resources5">
+        <fail message="Compiling Java 5 code on Java 6.">
+            <condition>
+                <isset property="java6"/>
+            </condition>
+        </fail>
+        <fail message="Need to Java 5 to compile.">
+            <condition>
+                <not>
+                    <isset property="java5"/>
+                </not>
+            </condition>
+        </fail>
+
         <mkdir dir="${common.output.classes5}"/>
         <javac destdir="${common.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${common.src.java}"/>
