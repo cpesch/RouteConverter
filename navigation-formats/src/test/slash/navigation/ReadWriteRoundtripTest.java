@@ -44,12 +44,14 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
     public void testKmlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from20.kml");
         readWriteRoundtrip(TEST_PATH + "from21.kml");
+        readWriteRoundtrip(TEST_PATH + "from22beta.kml");
         readWriteRoundtrip(TEST_PATH + "from22.kml");
     }
 
     public void testKmzReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from20.kmz");
         readWriteRoundtrip(TEST_PATH + "from21.kmz");
+        readWriteRoundtrip(TEST_PATH + "from22beta.kmz");
         readWriteRoundtrip(TEST_PATH + "from22.kmz");
     }
 

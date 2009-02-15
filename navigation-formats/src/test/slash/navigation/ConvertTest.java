@@ -213,6 +213,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Kml22Format());
     }
 
     public void testConvertMTP0607ToCoPilot() throws IOException {
@@ -223,6 +224,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz20Format());
         convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz21Format());
         convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new Kmz22Format());
     }
 
 
@@ -257,6 +259,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml22Format());
     }
 
 
@@ -279,6 +282,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22Format());
     }
 
     public void testConvertGpx10ToGarminMapSource6() throws IOException {
@@ -397,16 +401,28 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new MTP0607Format());
     }
 
+    public void testConvertKml22BetaToKml22Beta() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new Kml22BetaFormat());
+    }
+
+    public void testConvertKml22BetaToItn() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new ItnFormat());
+    }
+
+    public void testConvertKml22BetaToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new MTP0607Format());
+    }
+
     public void testConvertKml22ToKml22() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Kml22BetaFormat());
     }
 
     public void testConvertKml22ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new ItnFormat());
     }
 
     public void testConvertKml22ToMTP0607() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new MTP0607Format());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new MTP0607Format());
     }
 
 
@@ -623,9 +639,9 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Nmn7Format());
     }
 
-    public void testConvertKml22ToNmn7() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new Nmn7Format());
-        convertRoundtrip(TEST_PATH + "from22.kmz", new Kmz22BetaFormat(), new Nmn7Format());
+    public void testConvertKml22BetaToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from22beta.kmz", new Kmz22BetaFormat(), new Nmn7Format());
     }
 
     public void testConvertCoPilotToNmn7() throws IOException {
@@ -661,7 +677,10 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertRoute66ToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Kml22Format());
     }
 
     public void testConvertNationalGeographicToRoute66() throws IOException {
@@ -673,6 +692,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml22Format());
     }
 
     public void testConvertGpx11ToGlopus() throws IOException {
@@ -777,6 +797,7 @@ public class ConvertTest extends NavigationTestCase {
 
     public void testConvertHaicomLoggerToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-haicomlogger.csv", new HaicomLoggerFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-haicomlogger.csv", new HaicomLoggerFormat(), new Kml22Format());
     }
 
     public void testConvertNationalGeographicToHaicomLogger() throws IOException {
