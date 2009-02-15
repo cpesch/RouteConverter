@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.mapview;
 import org.jdesktop.jdic.browser.WebBrowserEvent;
 import org.jdesktop.jdic.browser.WebBrowserListener;
 import org.jdesktop.jdic.browser.WebBrowser;
-import org.jdesktop.jdic.init.JdicManager;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
 import slash.navigation.converter.gui.RouteConverter;
@@ -66,10 +65,10 @@ public class MapView {
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = 35;
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = 1500;
-    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = 20;
-    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = 200;
-    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = 4;
-    private static final int MAXIMUM_MARKER_POSITION_COUNT = 16;
+    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = 24;
+    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = 500;
+    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = 5;
+    private static final int MAXIMUM_MARKER_POSITION_COUNT = 50;
     private static final int MAXIMUM_SELECTION_COUNT = 10;
     private static final int[] ZOOMLEVEL_SCALE = {
             400000000,
@@ -100,11 +99,14 @@ public class MapView {
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
     private boolean initialized = false, running = true,
+            haveToInitializeMapOnFirstStart = true,
+
+
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
-            haveToUpdatePosition = false, firstStart = true;
+            haveToUpdatePosition = false;
     private int scrollBarSize = 0;
-    private Map<Integer,BitSet> significantPositionCache = new HashMap<Integer,BitSet>(ZOOMLEVEL_SCALE.length);
+    private Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
     public static boolean isSupportedPlatform() {
         return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
@@ -121,15 +123,20 @@ public class MapView {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                update((e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE) ||
-                        (e.getType() == TableModelEvent.DELETE));
+                if (e.getType() == TableModelEvent.DELETE && e.getFirstRow() == e.getLastRow())
+                    updateButDontRecenter();
+                else
+                    update((e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE) ||
+                            (e.getType() == TableModelEvent.DELETE));
             }
         });
         characteristicsModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
             }
+
             public void intervalRemoved(ListDataEvent e) {
             }
+
             public void contentsChanged(ListDataEvent e) {
                 update(true);
             }
@@ -286,6 +293,28 @@ public class MapView {
                         if (!isVisible())
                             continue;
 
+                        /*
+                           Update conditions:
+
+                           - new route was loaded
+                             - clear cache
+                             - center map
+                             - set zoom level according to route bounds
+                             - repaint immediately
+                           - user has moved position
+                             - clear cache
+                             - stay on current zoom level
+                             - center map to position
+                             - repaint
+                           - user has removed position
+                             - clear cache
+                             - stay on current zoom level
+                             - repaint
+                           - user has zoomed map
+                             - repaint if zooming into the map as it reveals more details
+                           - user has moved map
+                             - repaint if m
+                         */
                         long currentTime = System.currentTimeMillis();
                         if (haveToRepaintImmediately ||
                                 haveToReplaceRoute ||
@@ -299,7 +328,7 @@ public class MapView {
                             continue;
                     }
 
-                    copiedPositions = reducePositions(copiedPositions, recenter);
+                    copiedPositions = reducePositions(copiedPositions, recenter, getMaximumPositionCount());
                     setCenterOfMap(copiedPositions, recenter);
                     switch (positionsModel.getRoute().getCharacteristics()) {
                         case Route:
@@ -456,15 +485,18 @@ public class MapView {
         if (significant == null) {
             significant = new BitSet(positions.size());
 
-            // TODO could remove MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION and filterVisiblePositions()
-            // double threshold = zoomLevel > ZOOMLEVEL_SCALE.length - 1 ? ZOOMLEVEL_SCALE[zoomLevel] / 2500.0 : 1.0;
-            if (zoomLevel <= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION){
+            if (zoomLevel <= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
                 double threshold = ZOOMLEVEL_SCALE[zoomLevel] / 2500.0;
-                for (int significantPosition : Calculation.getSignificantPositions(positions, threshold))
+                long start = System.currentTimeMillis();
+                int[] significantPositions = Calculation.getSignificantPositions(positions, threshold);
+                long end = System.currentTimeMillis();
+                log.info("zoomLevel " + zoomLevel + " < " + MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION + " threshold " + threshold + " significant positions " + significantPositions.length + " calculated in " + (end - start) + " milliseconds");
+                for (int significantPosition : significantPositions)
                     significant.set(significantPosition);
             } else {
                 // on all zoom level about MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION
-                // print all positions since the calculation is too expensive
+                // user all positions since the calculation is too expensive
+                log.info("zoomLevel " + zoomLevel + " use all " + positions.size() + "positions");
                 significant.set(0, positions.size(), true);
             }
             significantPositionCache.put(zoomLevel, significant);
@@ -472,17 +504,39 @@ public class MapView {
         return significant;
     }
 
-    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, boolean recenter) {
-        if (positions.size() < 1)
+    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, boolean recenter, int maximumPositionCount) {
+        if (positions.size() < 2)
             return positions;
 
+        positions = filterSignificantPositions(positions, recenter);
+        return filterEveryNthPosition(positions,  maximumPositionCount);
+    }
+
+    private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions, boolean recenter) {
         int zoomLevel = recenter ? getBoundsZoomLevel(positions) : getCurrentZoomLevel();
+
         BitSet pointStatus = calculateSignificantPositionsForZoomLevel(positions, zoomLevel);
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int i = 0; i < positions.size(); i++)
             if (pointStatus.get(i))
                 result.add(positions.get(i));
+        return result;
+    }
+
+    private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
+        if (positions.size() < maximumPositionCount)
+            return positions;
+
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        result.add(positions.get(0));
+
+        double increment = positions.size() / maximumPositionCount;
+        for (double i = 1; i < positions.size() - 1; i += increment) {
+            result.add(positions.get((int) i));
+        }
+
+        result.add(positions.get(positions.size() - 1));
         return result;
     }
 
@@ -499,7 +553,7 @@ public class MapView {
     private List<BaseNavigationPosition> filterPositionsWithoutCoordinates(List<BaseNavigationPosition> positions) {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (BaseNavigationPosition position : positions) {
-            if(position.hasCoordinates())
+            if (position.hasCoordinates())
                 result.add(position);
         }
         return result;
@@ -679,7 +733,7 @@ public class MapView {
 
         synchronized (notificationMutex) {
             this.positions = positionsModel.getRoute() != null ? positionsModel.getRoute().getPositions() : null;
-            haveToUpdateRoute = true;
+            this.haveToUpdateRoute = true;
             if (haveToReplaceRoute) {
                 this.haveToReplaceRoute = true;
                 this.haveToUpdatePosition = true;
@@ -751,50 +805,8 @@ public class MapView {
         }
     }
 
-    private BaseNavigationPosition getMapNorthEast(){
-        String bounds = executeScript("map.getBounds();");
-        String northEastLatitude = executeScript("map.getBounds().getNorthEast().lat();");
-        String northEastLongitude = executeScript("map.getBounds().getNorthEast().lng();");
-        return northEastLatitude != null && northEastLongitude != null ? new Wgs84Position(Double.parseDouble(northEastLongitude), Double.parseDouble(northEastLatitude), null, null, null) : null;
-    }
-    
-    private BaseNavigationPosition getMapSouthWest(){
-        String southWestLatitude = executeScript("map.getBounds().getSouthWest().lat();");
-        String southWestLongitude = executeScript("map.getBounds().getSouthWest().lng();");
-        return southWestLatitude != null && southWestLongitude != null ? new Wgs84Position(Double.parseDouble(southWestLongitude), Double.parseDouble(southWestLatitude), null, null, null) : null;
-    }
-
-    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions) {
-        BaseNavigationPosition northEast = getMapNorthEast();
-        BaseNavigationPosition southWest = getMapSouthWest();
-        if(northEast == null || southWest == null)
-            return positions;
-
-        // TODO this code seems to be never reached 
-        double width = northEast.getLongitude() - southWest.getLongitude();
-        double height = southWest.getLatitude() - northEast.getLatitude();
-        northEast.setLongitude(northEast.getLongitude() + width);
-        northEast.setLatitude(northEast.getLatitude() - height);
-        southWest.setLongitude(southWest.getLongitude() - width);
-        southWest.setLatitude(southWest.getLatitude() + height);
-
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        result.add(positions.get(0));
-        for (int i = 1; i < positions.size(); i++) {
-            BaseNavigationPosition position = positions.get(i);
-            if (Calculation.containsPosition(northEast, southWest, position)) {
-                result.add(position);
-            }
-        }
-        return result;
-    }
-    
     private void addPolylinesToMap(List<BaseNavigationPosition> positions) {
         removeOverlays();
-
-        // TODO could remove this?!
-        if (positions.size() > MAXIMUM_POLYLINE_POSITION_COUNT)
-            positions = filterVisiblePositions(positions);
 
         lastPolylinesCount = Conversion.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
         for (int j = 0; j < lastPolylinesCount; j++) {
@@ -821,7 +833,7 @@ public class MapView {
         for (int j = 0; j < Conversion.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false); j++) {
             StringBuffer buffer = new StringBuffer();
 
-            int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH );
+            int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
                 buffer.append("var marker").append(i).append(" = new GMarker(new GLatLng(").
@@ -837,13 +849,13 @@ public class MapView {
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
         StringBuffer buffer = new StringBuffer();
         // set map type only on first start
-        if (firstStart) {
+        if (haveToInitializeMapOnFirstStart) {
             String mapType = preferences.get(MAP_TYPE_PREFERENCE, "Map");
             buffer.append("setMapType(\"").append(mapType).append("\");\n");
         }
 
         // if there are positions center on first start or if we have to recenter
-        if (positions.size() > 0 && (firstStart || recenter)) {
+        if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
             Wgs84Position northEast = Calculation.getNorthEast(positions);
             Wgs84Position southWest = Calculation.getSouthWest(positions);
             buffer.append("var zoomLevel = map.getBoundsZoomLevel(new GLatLngBounds(").
@@ -855,7 +867,7 @@ public class MapView {
                     append(center.getLongitude()).append("), zoomLevel);");
         }
         executeScript(buffer);
-        firstStart = false;
+        haveToInitializeMapOnFirstStart = false;
     }
 
     private int lastSelectedPositionCount = -1;
@@ -898,7 +910,7 @@ public class MapView {
     }
 
     private String executeScript(StringBuffer buffer) {
-        if(buffer.length() == 0)
+        if (buffer.length() == 0)
             return null;
 
         if ((1000 <= buffer.length() % 1024) && (buffer.length() % 1024) <= 1018) {
@@ -942,56 +954,58 @@ public class MapView {
         executeScript("testDragListenerPort()");
     }
 
-    private static final Pattern POSITION_LINE_PATTERN = Pattern.compile("^GET /dragend/(.*)/(.*)/(.*) .*$");
-    private static final Pattern DIRECTION_LINE_PATTERN = Pattern.compile("^GET /load/(\\d*)/(\\d*) .*$");
-    private static final Pattern MAP_TYPE_LINE_PATTERN = Pattern.compile("^GET /maptypechanged/(.*) .*$");
-    private static final Pattern ZOOMLEVEL_PATTERN = Pattern.compile("^GET /zoomend/(.*)/(.*) .*$");
-    private static final Pattern MAP_VIEW_MOVE_ENDS_PATTERN = Pattern.compile("^GET /moveend/(.*)/(.*) .*$");
-    private static final Pattern TEST_LINE_PATTERN = Pattern.compile("^GET /test/(\\d+) .*$");
+    private static final Pattern DRAG_END_PATTERN = Pattern.compile("^GET /dragend/(.*)/(.*)/(.*) .*$");
+    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^GET /load/(\\d*)/(\\d*) .*$");
+    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^GET /maptypechanged/(.*) .*$");
+    private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^GET /zoomend/(.*)/(.*) .*$");
+    private static final Pattern MOVE_END_PATTERN = Pattern.compile("^GET /moveend/(.*)/(.*) .*$");
+    private static final Pattern COMMUNICATION_TEST_PATTERN = Pattern.compile("^GET /test/(\\d+) .*$");
 
     private void processDragListenerCallBack(List<String> lines) {
         if (!isAuthenticated(lines))
             return;
 
         for (String line : lines) {
-            Matcher positionMatcher = POSITION_LINE_PATTERN.matcher(line);
-            if (positionMatcher.matches()) {
-                int index = Conversion.parseInt(positionMatcher.group(1));
-                Double latitude = Conversion.parseDouble(positionMatcher.group(2));
-                Double longitude = Conversion.parseDouble(positionMatcher.group(3));
-                modifyPosition(index, longitude, latitude);
+            Matcher dragEndMatcher = DRAG_END_PATTERN.matcher(line);
+            if (dragEndMatcher.matches()) {
+                int index = Conversion.parseInt(dragEndMatcher.group(1));
+                Double latitude = Conversion.parseDouble(dragEndMatcher.group(2));
+                Double longitude = Conversion.parseDouble(dragEndMatcher.group(3));
+                movedPosition(index, longitude, latitude);
             }
 
-            Matcher directionMatcher = DIRECTION_LINE_PATTERN.matcher(line);
-            if (directionMatcher.matches()) {
-                meters += Conversion.parseInt(directionMatcher.group(1));
-                seconds += Conversion.parseInt(directionMatcher.group(2));
+            Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
+            if (directionsLoadMatcher.matches()) {
+                meters += Conversion.parseInt(directionsLoadMatcher.group(1));
+                seconds += Conversion.parseInt(directionsLoadMatcher.group(2));
+                // TODO pass them to the UI
             }
 
-            Matcher mapTypeMatcher = MAP_TYPE_LINE_PATTERN.matcher(line);
-            if (mapTypeMatcher.matches()) {
-                String mapType = mapTypeMatcher.group(1);
+            Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
+            if (mapTypeChangedMatcher.matches()) {
+                String mapType = mapTypeChangedMatcher.group(1);
                 preferences.put(MAP_TYPE_PREFERENCE, mapType);
             }
 
-            Matcher zoomMatcher = ZOOMLEVEL_PATTERN.matcher(line);
-            if (zoomMatcher.matches()) {
+            Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
+            if (zoomEndMatcher.matches()) {
                 synchronized (notificationMutex) {
                     haveToRepaintImmediately = true;
                     notificationMutex.notifyAll();
                 }
             }
 
-            Matcher moveendMather = MAP_VIEW_MOVE_ENDS_PATTERN.matcher(line);
-            if (moveendMather.matches()) {
-                synchronized (notificationMutex) {
-                    if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION)
+            Matcher moveEndMather = MOVE_END_PATTERN.matcher(line);
+            if (moveEndMather.matches()) {
+                if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
+                    synchronized (notificationMutex) {
                         haveToRepaintImmediately = true;
-                    notificationMutex.notifyAll();
+                        notificationMutex.notifyAll();
+                    }
                 }
             }
 
-            Matcher testMatcher = TEST_LINE_PATTERN.matcher(line);
+            Matcher testMatcher = COMMUNICATION_TEST_PATTERN.matcher(line);
             if (testMatcher.matches()) {
                 String dragListenerPort = testMatcher.group(1);
                 JOptionPane.showMessageDialog(getCanvas(), "Got a request from the map view on port " + dragListenerPort + ".");
@@ -999,17 +1013,12 @@ public class MapView {
         }
     }
 
-    private void modifyPosition(int index, Double longitude, Double latitude) {
+    private void movedPosition(int index, Double longitude, Double latitude) {
         BaseNavigationPosition modify = lastSelectedPositions.get(index);
         modify.setLatitude(latitude);
         modify.setLongitude(longitude);
 
-        // repaint route immediately, simulates update(true) without recentering
-        synchronized (notificationMutex) {
-            haveToRepaintImmediately = true;
-            significantPositionCache.clear();
-            notificationMutex.notifyAll();
-        }
+        updateButDontRecenter();
 
         // notify views about change, leads to update(false)
         int row = positions.indexOf(modify);
@@ -1025,6 +1034,15 @@ public class MapView {
         // repaint position marker
         synchronized (notificationMutex) {
             haveToUpdatePosition = true;
+            notificationMutex.notifyAll();
+        }
+    }
+
+    private void updateButDontRecenter() {
+        // repaint route immediately, simulates update(true) without recentering
+        synchronized (notificationMutex) {
+            haveToRepaintImmediately = true;
+            significantPositionCache.clear();
             notificationMutex.notifyAll();
         }
     }
