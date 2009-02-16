@@ -72,8 +72,8 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean shouldCreateRoute(List<Wgs84Position> positions) {
-        // otherwhise NMN4Format aka gpsbabel -i nmn4 tries to readSampleGpxFile and complain forever
-        return true;
+        // otherwhise NMN4Format aka gpsbabel -i nmn4 tries to read gopal track files and complains forever
+        return positions.size() > 0;
     }
 
     protected boolean isValidLine(String line) {
