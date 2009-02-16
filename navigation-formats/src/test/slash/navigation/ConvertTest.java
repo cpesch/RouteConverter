@@ -714,7 +714,8 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertKmlToGpsTuner() throws IOException {
         convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new GpsTunerFormat());
         convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new GpsTunerFormat());
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22BetaFormat(), new GpsTunerFormat());
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new GpsTunerFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new GpsTunerFormat());
     }
 
 
