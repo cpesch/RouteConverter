@@ -45,6 +45,7 @@ public class Tcx2Format extends TcxFormat {
         return "Training Center Database 2 (*" + getExtension() + ")";
     }
 
+
     private Double convertLongitude(PositionT positionT) {
         return positionT != null ? positionT.getLongitudeDegrees() : null;
     }
@@ -53,28 +54,12 @@ public class Tcx2Format extends TcxFormat {
         return positionT != null ? positionT.getLatitudeDegrees() : null;
     }
 
-    private TcxRoute process(String name, TrackT trackT) {
+    private TcxRoute processTrack(String name, TrackT trackT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
             positions.add(new TcxPosition(convertLongitude(trackpointT.getPosition()), convertLatitude(trackpointT.getPosition()), trackpointT.getAltitudeMeters(), parseTime(trackpointT.getTime()), null));
         }
         return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
-    }
-
-    private List<TcxRoute> process(ActivityLapT activityLapT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
-        for (TrackT trackT : activityLapT.getTrack()) {
-            result.add(process(activityLapT.getNotes(), trackT));
-        }
-        return result;
-    }
-
-    private List<TcxRoute> process(ActivityT activityT) {
-        List<TcxRoute> result = new ArrayList<TcxRoute>();
-        for (ActivityLapT activityLapT : activityT.getLap()) {
-            result.addAll(process(activityLapT));
-        }
-        return result;
     }
 
     private TcxRoute processCoursePoints(CourseT courseT) {
@@ -89,7 +74,7 @@ public class Tcx2Format extends TcxFormat {
         return new TcxRoute(this, RouteCharacteristics.Route, courseT.getName(), positions);
     }
 
-    private TcxRoute process(String name, CourseLapT courseLapT) {
+    private TcxRoute processCourseLap(String name, CourseLapT courseLapT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
         positions.add(new TcxPosition(convertLongitude(courseLapT.getBeginPosition()),
                 convertLatitude(courseLapT.getBeginPosition()),
@@ -104,10 +89,31 @@ public class Tcx2Format extends TcxFormat {
         return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
     }
 
-    private List<TcxRoute> processCourseLaps(CourseT courseT) {
+
+    private List<TcxRoute> process(ActivityLapT activityLapT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
+        for (TrackT trackT : activityLapT.getTrack()) {
+            result.add(processTrack(activityLapT.getNotes(), trackT));
+        }
+        return result;
+    }
+
+    private List<TcxRoute> process(ActivityT activityT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        for (ActivityLapT activityLapT : activityT.getLap()) {
+            result.addAll(process(activityLapT));
+        }
+        return result;
+    }
+
+    private List<TcxRoute> process(CourseT courseT) {
+        List<TcxRoute> result = new ArrayList<TcxRoute>();
+        result.add(processCoursePoints(courseT));
         for (CourseLapT courseLapT : courseT.getLap()) {
-            result.add(process(courseT.getName(), courseLapT));
+            result.add(processCourseLap(courseT.getName(), courseLapT));
+        }
+        for (TrackT trackT : courseT.getTrack()) {
+            result.add(processTrack(courseT.getName(), trackT));
         }
         return result;
     }
@@ -128,10 +134,8 @@ public class Tcx2Format extends TcxFormat {
             for (MultiSportSessionT multiSportSessionT : activityListT.getMultiSportSession()) {
                 result.addAll(process(multiSportSessionT.getFirstSport().getActivity()));
                 for (NextSportT nextSportT : multiSportSessionT.getNextSport()) {
-                    ActivityT activityT = nextSportT.getActivity();
-                    result.addAll(process(activityT));
-                    ActivityLapT transition = nextSportT.getTransition();
-                    result.addAll(process(transition));
+                    result.addAll(process(nextSportT.getActivity()));
+                    result.addAll(process(nextSportT.getTransition()));
                 }
             }
         }
@@ -142,11 +146,7 @@ public class Tcx2Format extends TcxFormat {
         CourseListT courseListT = trainingCenterDatabaseT.getCourses();
         if (courseListT != null) {
             for (CourseT courseT : courseListT.getCourse()) {
-                result.add(processCoursePoints(courseT));
-                result.addAll(processCourseLaps(courseT));
-                for (TrackT trackT : courseT.getTrack()) {
-                    result.add(process(courseT.getName(), trackT));
-                }
+                result.addAll(process(courseT));
             }
         }
         return result;
