@@ -119,18 +119,25 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }, "BabelStreamPumper-" + streamName).start();
     }
 
-    private Process execute(String babel, String inputFormatName, String outputFormatName,
-                            String commandLineFlags) throws BabelException {
-        String command = babel + " " + commandLineFlags
+    private Process execute(String babelPath, String inputFormatName, String outputFormatName,
+                            String commandLineFlags) throws IOException {
+        String command = babelPath + " " + commandLineFlags
                 + " -i " + inputFormatName + " -f - -o " + outputFormatName
                 + " -F -";
-        log.info("Executing '" + command + "'");   // TODO log level
+
+        log.info("Executing '" + command + "'");   // TODO log level should be fine
+
+        if (Platform.isLinux() || Platform.isMac()) {
+            File shellScript = createShellScript(babelPath, command);
+            command = "/bin/sh " + shellScript.getAbsolutePath();
+        }
+
         try {
             Process process = Runtime.getRuntime().exec(command);
             execute(process, COMMAND_EXECUTION_TIMEOUT);
             return process;
         } catch (IOException e) {
-            throw new BabelException("Cannot execute '" + command + "'", babel, e);
+            throw new BabelException("Cannot execute '" + command + "'", babelPath, e);
         }
     }
 
@@ -205,7 +212,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                         babelFile = Externalization.extractFile(getClass(), "gpsbabel-mac");
                     }
                     if (babelFile != null) {
-                        /* TODO let's hope we don't need this - 1.6 only
+                        /* this is 1.6 only, we try to use the workaround from the file-based stuff
                         if (!babelFile.canExecute()) {
                             babelFile.setExecutable(true);
                         }
@@ -267,11 +274,11 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                 " -i " + sourceFormat + " -f \"" + source.getAbsolutePath() + "\"" +
                 " -o " + targetFormat + " -F \"" + target.getAbsolutePath() + "\"";
 
-        log.fine("Executing '" + command + "'");
+        log.info("Executing '" + command + "'");
 
         if (Platform.isLinux() || Platform.isMac()) {
-            File temp = executeViaShell(babel.getAbsolutePath(), command);
-            command = "/bin/sh " + temp.getAbsolutePath();
+            File shellScript = createShellScript(babel.getAbsolutePath(), command);
+            command = "/bin/sh " + shellScript.getAbsolutePath();
         }
 
         int exitCode = execute(babel.getAbsolutePath(), command);
@@ -279,13 +286,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return exitCode == 0;
     }
 
-    private File executeViaShell(String babel, String command) throws IOException {
+    private File createShellScript(String babelPath, String command) throws IOException {
         File temp = File.createTempFile("gpsbabel", ".sh");
         temp.deleteOnExit();
         BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
         writer.write("#!/bin/sh");
         writer.newLine();
-        writer.write("`which chmod` a+x \"" + babel + "\"");
+        writer.write("`which chmod` a+x \"" + babelPath + "\"");
         writer.newLine();
         writer.write(command);
         writer.newLine();
@@ -370,7 +377,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         } else {
             List<GpxRoute> result = null;
             File source = File.createTempFile("babelsource", "." + getBabelFormatName());
-            InputOutput inputOutput = new InputOutput(in, new FileOutputStream(source)); // TODO copying source stream to temp file is ugly, but works
+            InputOutput inputOutput = new InputOutput(in, new FileOutputStream(source));
             inputOutput.start();
             inputOutput.close();
             File target = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
