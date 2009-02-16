@@ -71,7 +71,7 @@ public class Tcx2Format extends TcxFormat {
                     parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
-        return new TcxRoute(this, RouteCharacteristics.Route, courseT.getName(), positions);
+        return positions.size() > 0 ? new TcxRoute(this, RouteCharacteristics.Route, courseT.getName(), positions) : null;
     }
 
     private TcxRoute processCourseLap(String name, CourseLapT courseLapT) {
@@ -108,7 +108,9 @@ public class Tcx2Format extends TcxFormat {
 
     private List<TcxRoute> process(CourseT courseT) {
         List<TcxRoute> result = new ArrayList<TcxRoute>();
-        result.add(processCoursePoints(courseT));
+        TcxRoute coursePoints = processCoursePoints(courseT);
+        if (coursePoints != null)
+            result.add(coursePoints);
         for (CourseLapT courseLapT : courseT.getLap()) {
             result.add(processCourseLap(courseT.getName(), courseLapT));
         }
