@@ -71,7 +71,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected static final int SPEED_SCALE = 10;
     protected static final String SPEEDBAR_URL = "http://ww.routeconverter.de/images/speedbar.png";
 
-    private static final Pattern PATTERN = Pattern.compile("(\\s*[[-|+]|\\d|\\.|E]*\\s*),(\\s*[[-|+]|\\d|\\.|E]*\\s*),?,?(\\s*[[-|+]|\\d|\\.|E]+\\s*)?");
+    static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*[[-|+]|\\d|\\.|E]*\\s*),(\\s*[[-|+]|\\d|\\.|E]*\\s*),?,?(\\s*[[-|+]|\\d|\\.|E]+\\s*)?");
 
     public String getExtension() {
         return ".kml";
@@ -92,12 +92,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
     abstract List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException;
 
     boolean isPosition(String line) {
-        Matcher matcher = PATTERN.matcher(line);
+        Matcher matcher = POSITION_PATTERN.matcher(line);
         return matcher.matches();
     }
 
     protected KmlPosition parsePosition(String coordinates, String comment) {
-        Matcher matcher = PATTERN.matcher(coordinates);
+        Matcher matcher = POSITION_PATTERN.matcher(coordinates);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
         String longitude = matcher.group(1);

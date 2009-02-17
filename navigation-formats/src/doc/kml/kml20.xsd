@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl"  href="xs3p.xsl"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://earth.google.com/kml/2.0" targetNamespace="http://earth.google.com/kml/2.0" elementFormDefault="qualified">
 	<xsd:annotation>
-		<xsd:documentation>TimeStamp: 30-10-2005
-  KML schema version 2.0 -
+		<xsd:documentation>TimeStamp: 30-10-2005  
+  KML schema version 2.0 - 
   For more information on KML visit http://www.keyhole.com/kml/docs/webhelp/index.htm
   The KML 2.0 vocabulary was not fixed  at the end of October 2005.
   This schema will be update weekly until fixation.</xsd:documentation>
@@ -75,6 +75,7 @@
 				<xsd:element ref="Snippet" minOccurs="0"/>
 				<xsd:element ref="Style" minOccurs="0"/>
 				<xsd:element ref="LookAt" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="GeometryCollection" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="MultiGeometry" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="MultiLineString" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="MultiPoint" minOccurs="0" maxOccurs="unbounded"/>
@@ -315,6 +316,19 @@
 			<xsd:attribute name="id" type="xsd:ID" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
+    <xsd:element name="GeometryCollection">
+        <xsd:annotation>
+            <xsd:documentation>
+                added by Christian Pesch at 17/02/09 since Google Maps URLs with output=kml return this
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element ref="LineString" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:choice>
+            <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
 	<xsd:element name="MultiLineString">
 		<xsd:complexType>
 			<xsd:all>

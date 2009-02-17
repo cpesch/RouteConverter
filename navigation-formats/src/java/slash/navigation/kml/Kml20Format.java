@@ -34,8 +34,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 
 /**
  * Reads and writes Google Earth 3 (.kml) files.
@@ -110,7 +110,12 @@ public class Kml20Format extends KmlFormat {
 
     private String extractDescription(List<Object> elements) {
         JAXBElement name = findElement(elements, "description");
-        return name != null ? (String) name.getValue() : null;
+        if (name == null)
+            return null;
+        String string = (String) name.getValue();
+        string = string.replace("&#160;", " ");
+        string = string.replace("&#169;", "(c)");
+        return string;
     }
 
     private List<String> extractDescriptionList(List<Object> elements) {
@@ -211,35 +216,46 @@ public class Kml20Format extends KmlFormat {
         return result;
     }
 
+    List<String> findPositions(String line) {
+        List<String> result = new ArrayList<String>();
+        Matcher matcher = POSITION_PATTERN.matcher(line);
+        while (matcher.find()) {
+            result.add(Conversion.trim(matcher.group(0)));
+        }
+        return result;
+    }
+
+    private List<KmlPosition> extractPositions(LineString lineString) {
+        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        for (String string : findPositions(lineString.getCoordinates())) {
+            result.add(parsePosition(string, null));
+        }
+        return result;
+    }
+
     private List<KmlPosition> extractPositions(List<Object> elements) {
-        List<KmlPosition> positions = new ArrayList<KmlPosition>();
+        List<KmlPosition> result = new ArrayList<KmlPosition>();
         for (Object element : elements) {
             if (element instanceof Point) {
                 Point point = (Point) element;
-                positions.add(parsePosition(point.getCoordinates(), null));
+                result.add(parsePosition(point.getCoordinates(), null));
             }
             if (element instanceof LineString) {
                 LineString lineString = (LineString) element;
-                String coordinates = lineString.getCoordinates().trim();
-                // for DataLogger which has spaces between commata and numbers
-                String delimiter = "\n\r\t";
-                if (!(coordinates.contains("\n") || coordinates.contains("\r") || coordinates.contains("\t")))
-                    delimiter += " ";
-                StringTokenizer tokenizer = new StringTokenizer(coordinates, delimiter);
-                while (tokenizer.hasMoreTokens()) {
-                    String token = tokenizer.nextToken().trim();
-                    if (token.length() > 0)
-                        positions.add(parsePosition(token, null));
-                }
+                result.addAll(extractPositions(lineString));
             }
             if (element instanceof MultiGeometry) {
                 MultiGeometry multiGeometry = (MultiGeometry) element;
-                positions.addAll(extractPositions(multiGeometry.getExtrudeOrTessellateOrAltitudeMode()));
+                result.addAll(extractPositions(multiGeometry.getExtrudeOrTessellateOrAltitudeMode()));
+            }
+            if (element instanceof GeometryCollection) {
+                GeometryCollection geometryCollection = (GeometryCollection) element;
+                for (LineString lineString : geometryCollection.getLineString())
+                    result.addAll(extractPositions(lineString));
             }
         }
-        return positions;
+        return result;
     }
-
 
     private Folder createWayPoints(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();

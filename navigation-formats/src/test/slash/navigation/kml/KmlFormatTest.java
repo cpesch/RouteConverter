@@ -27,6 +27,7 @@ import slash.navigation.kml.binding20.Kml;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.List;
+import java.util.Arrays;
 
 public class KmlFormatTest extends NavigationTestCase {
     KmlFormat format = new Kml20Format();
@@ -67,12 +68,25 @@ public class KmlFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
+    public void testParseFloatElevationPosition() {
+        KmlPosition position = format.parsePosition("13.383570,54.096930,0.000000", null);
+        assertEquals(13.383570, position.getLongitude());
+        assertEquals(54.096930, position.getLatitude());
+        assertEquals(0.0, position.getElevation());
+        assertNull(position.getComment());
+    }
+
     public void testParseScientificNumberPosition() {
         KmlPosition position = format.parsePosition("0.1E-4,-0.2E-5,0.3E-6", null);
         assertEquals(0.00001, position.getLongitude());
         assertEquals(-0.000002, position.getLatitude());
         assertEquals(0.0000003, position.getElevation());
         assertNull(position.getComment());
+    }
+
+    public void testKml20LineStringPositions() {
+        Kml20Format format = new Kml20Format();
+        assertEquals(Arrays.asList("1,2,3", "4,5,6", "7,8,9"), format.findPositions("1,2,3 4,5,6 7,8,9"));
     }
 
     public void testReader() throws FileNotFoundException, JAXBException {

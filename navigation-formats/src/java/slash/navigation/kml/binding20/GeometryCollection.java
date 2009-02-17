@@ -8,6 +8,8 @@
 
 package slash.navigation.kml.binding20;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -29,9 +31,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;all>
- *         &lt;element ref="{http://earth.google.com/kml/2.0}Polygon" minOccurs="0"/>
- *       &lt;/all>
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0">
+ *         &lt;element ref="{http://earth.google.com/kml/2.0}LineString" maxOccurs="unbounded" minOccurs="0"/>
+ *       &lt;/choice>
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -42,13 +44,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-
+    "lineString"
 })
-@XmlRootElement(name = "MultiPolygon")
-public class MultiPolygon {
+@XmlRootElement(name = "GeometryCollection")
+public class GeometryCollection {
 
-    @XmlElement(name = "Polygon")
-    protected Polygon polygon;
+    @XmlElement(name = "LineString")
+    protected List<LineString> lineString;
     @XmlAttribute
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -56,27 +58,32 @@ public class MultiPolygon {
     protected String id;
 
     /**
-     * Gets the value of the polygon property.
+     * Gets the value of the lineString property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Polygon }
-     *     
-     */
-    public Polygon getPolygon() {
-        return polygon;
-    }
-
-    /**
-     * Sets the value of the polygon property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the lineString property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Polygon }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getLineString().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link LineString }
+     * 
+     * 
      */
-    public void setPolygon(Polygon value) {
-        this.polygon = value;
+    public List<LineString> getLineString() {
+        if (lineString == null) {
+            lineString = new ArrayList<LineString>();
+        }
+        return this.lineString;
     }
 
     /**
