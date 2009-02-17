@@ -45,7 +45,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
                     "(@?(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + ")," +
                     "(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + "))?");
     public static final String DESTINATION_SEPARATOR = "to:";
-    private static final int SIZE_LIMIT = 1024 * 1024;
+    private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
     public String getExtension() {
         return ".url";
@@ -73,7 +73,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     public List<Wgs84Route> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         StringBuffer buffer = new StringBuffer();
 
-        while (buffer.length() < SIZE_LIMIT) {
+        while (buffer.length() < READ_BUFFER_SIZE) {
             String line = reader.readLine();
             if (line == null)
                 break;
@@ -308,6 +308,9 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
         List<Wgs84Position> positions = route.getPositions();
         writer.println("[InternetShortcut]");
+        // idea from forum: add start point from previous route section since your not at the
+        // last position of the previous segment heading for the first position of the next segment
+        startIndex = Math.max(startIndex - 1, 0);
         writer.println("URL=" + createURL(positions, startIndex, endIndex));
         writer.println();
     }
