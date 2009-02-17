@@ -100,8 +100,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     }
 
     static String findURL(String text) {
-        text = text.replaceAll("\n", " ");
-        text = text.replaceAll("\r", " ");
+        text = text.replaceAll("[\n|\r]", "");
         Matcher matcher = URL_PATTERN.matcher(text);
         if (!matcher.matches())
             return null;
