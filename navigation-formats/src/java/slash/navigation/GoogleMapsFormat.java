@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(GoogleMapsFormat.class.getName());
     private static final Pattern URL_PATTERN = Pattern.compile(".*http://maps\\.google\\..+/maps\\?([^\\s]+).*");
+    private static final Pattern BOOKMARK_PATTERN = Pattern.compile(".*InternetShortcut(.+)IconFile.*");
     private static final Pattern START_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
     private static final Pattern COMMENT_POSITION_PATTERN = Pattern.
             compile("(" + WHITE_SPACE + ".*?" + WHITE_SPACE + ")" +
@@ -101,10 +102,13 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
 
     static String findURL(String text) {
         text = text.replaceAll("[\n|\r]", "");
-        Matcher matcher = URL_PATTERN.matcher(text);
-        if (!matcher.matches())
+        Matcher bookmarkMatcher = BOOKMARK_PATTERN.matcher(text);
+        if (bookmarkMatcher.matches())
+            text = bookmarkMatcher.group(1);
+        Matcher urlMatcher = URL_PATTERN.matcher(text);
+        if (!urlMatcher.matches())
             return null;
-        return Conversion.trim(matcher.group(1));
+        return Conversion.trim(urlMatcher.group(1));
     }
 
     Map<String, List<String>> parseURLParameters(String data, String encoding) {
