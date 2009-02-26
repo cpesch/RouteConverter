@@ -552,6 +552,8 @@ public class MapView {
 
     private List<BaseNavigationPosition> filterPositionsWithoutCoordinates(List<BaseNavigationPosition> positions) {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        // copy to avoid ConcurrentModificationException
+        positions = new ArrayList<BaseNavigationPosition>(positions);
         for (BaseNavigationPosition position : positions) {
             if (position.hasCoordinates())
                 result.add(position);
