@@ -83,8 +83,8 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
- public void testIsNmn6FavoritesWithValidPositions() throws IOException {
-        File source = new File(SAMPLE_PATH + "dieter3-GoPal3Track.trk");
+    public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {
+        File source = new File(SAMPLE_PATH + "dieter2-GoPal3Track.trk");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
         assertEquals(GoPalTrackFormat.class, parser.getFormat().getClass());
