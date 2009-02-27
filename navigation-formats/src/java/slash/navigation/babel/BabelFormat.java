@@ -119,25 +119,21 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }, "BabelStreamPumper-" + streamName).start();
     }
 
-    private Process execute(String babelPath, String inputFormatName, String outputFormatName,
+    private Process execute(String babel, String inputFormatName, String outputFormatName,
                             String commandLineFlags) throws IOException {
-        String command = babelPath + " " + commandLineFlags
+        String command = babel + " " + commandLineFlags
                 + " -i " + inputFormatName + " -f - -o " + outputFormatName
                 + " -F -";
+        log.info("Executing '" + command + "'"); 
 
-        log.info("Executing '" + command + "'");   // TODO log level should be fine
-
-        if (Platform.isLinux() || Platform.isMac()) {
-            File shellScript = createShellScript(babelPath, command);
-            command = "/bin/sh " + shellScript.getAbsolutePath();
-        }
+        command = considerShellScriptForBabel(babel, command);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
             execute(process, COMMAND_EXECUTION_TIMEOUT);
             return process;
         } catch (IOException e) {
-            throw new BabelException("Cannot execute '" + command + "'", babelPath, e);
+            throw new BabelException("Cannot execute '" + command + "'", babel, e);
         }
     }
 
@@ -162,75 +158,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     private InputStream startBabel(final InputStream source, String sourceFormat,
                                    String targetFormat, String commandLineFlags) throws IOException {
-        // strategy:
-        //  1) look for "gpsbabel" in path first (unqualified)
-        //  2) check if there is a preference (may cause SecurityException) and try to find this way
-        //  3) extract from classpath into temp directrory and execute there
-        String babel = "/usr/bin/gpsbabel"; // for Unix/Linux absolute path helps security configuration
-        Process process = null;
-        Throwable cause = null; // remembers any exception causing gpsbabel not to be found
-        try {
-            process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
-        } catch (BabelException be) {
-
-            babel = "gpsbabel"; // security manager will have to allow <<ALL FILES>> for this
-            try {
-                process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
-            } catch (BabelException be2) {
-
-                // not found in path; try next option: lookup via preferences
-                boolean babelFound = false;
-                try {
-                    File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
-                    if (babelFile != null && babelFile.exists()) {
-                        babelFound = true;
-                    }
-                } catch (SecurityException se) {
-                    // either access to preferences was not allowed or checking if file exists (file
-                    // system access) was not allowed; in either case, this option is considered not
-                    // successful; babelFound remains false
-                    cause = se;
-                }
-                if (babelFound) {
-                    try {
-                        process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
-                    } catch (BabelException be3) {
-                        cause = be2;
-                        babelFound = false;
-                    }
-                }
-
-                // not found in preferences either; try next option: extract from classpath
-                if (!babelFound) {
-                    File babelFile = null;
-                    if (Platform.isWindows()) {
-                        Externalization.extractFile(getClass(), "libexpat.dll");
-                        babelFile = Externalization.extractFile(getClass(), "gpsbabel.exe");
-                    } else if (Platform.isLinux()) {
-                        babelFile = Externalization.extractFile(getClass(), "gpsbabel-linux-glibc2.3");
-                    } else if (Platform.isMac()) {
-                        babelFile = Externalization.extractFile(getClass(), "gpsbabel-mac");
-                    }
-                    if (babelFile != null) {
-                        /* this is 1.6 only, we try to use the workaround from the file-based stuff
-                        if (!babelFile.canExecute()) {
-                            babelFile.setExecutable(true);
-                        }
-                        */
-                        babel = babelFile.getAbsolutePath();
-                        process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
-
-                    } else {
-                        // out of options
-                        throw new BabelException("Unable to find gpsbabel executable. Tried in PATH, from preferences and by extracting from JAR", babel, cause);
-                    }
-                }
-            }
-        }
-
+        String babel = findBabel();
+        Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
         pumpStream(source, process.getOutputStream(), "stdin");
         pumpStream(process.getErrorStream(), System.err, "stderr");
-
         return process.getInputStream();
     }
 
@@ -247,43 +178,55 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private boolean startBabel(File source, String sourceFormat,
                                File target, String targetFormat,
                                String commandLineFlags) throws IOException {
-        File babel = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
-        boolean babelExists = false;
-        try {
-            babelExists = babel.exists();
-        } catch (SecurityException se) {
-            // that's ok, we assume that the file does not exist because we can't access it
-        }
-        if (babel == null || !babelExists) {
-            if (Platform.isWindows()) {
-                Externalization.extractFile(getClass(), "libexpat.dll");
-                babel = Externalization.extractFile(getClass(), "gpsbabel.exe");
-            }
-            if (Platform.isLinux()) {
-                babel = Externalization.extractFile(getClass(), "gpsbabel-linux-glibc2.3");
-            }
-            if (Platform.isMac()) {
-                babel = Externalization.extractFile(getClass(), "gpsbabel-mac");
-            }
-        }
-
-        if (babel == null || !babel.exists())
-            return false;
-
-        String command = babel.getAbsolutePath() + " -D9 " + commandLineFlags +
+        String babel = findBabel();
+        String command = babel + " -D9 " + commandLineFlags +
                 " -i " + sourceFormat + " -f \"" + source.getAbsolutePath() + "\"" +
                 " -o " + targetFormat + " -F \"" + target.getAbsolutePath() + "\"";
-
         log.info("Executing '" + command + "'");
 
-        if (Platform.isLinux() || Platform.isMac()) {
-            File shellScript = createShellScript(babel.getAbsolutePath(), command);
-            command = "/bin/sh " + shellScript.getAbsolutePath();
-        }
+        command = considerShellScriptForBabel(babel, command);
 
-        int exitCode = execute(babel.getAbsolutePath(), command);
+        int exitCode = execute(babel, command);
         log.info("Executed '" + command + "' with exit code: " + exitCode + " target exists: " + target.exists());
         return exitCode == 0;
+    }
+
+    private String findBabel() throws IOException {
+        // 1. check if there is a preference and try to find its file
+        File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
+        if (babelFile == null || !babelFile.exists()) {
+            babelFile = null;
+        }
+
+        // 2. look for "/usr/bin/gpsbabel" in path
+        if(babelFile == null) {
+            babelFile = new File("/usr/bin/gpsbabel");
+            if (!babelFile.exists()) {
+                babelFile = null;
+            }
+        }
+
+        // 3. extract from classpath into temp directrory and execute there
+        if(babelFile == null) {
+            String path = "bin/" + Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/";
+            if (Platform.isWindows()) {
+                Externalization.extractFile(path + "libexpat.dll");
+                babelFile = Externalization.extractFile(path + "gpsbabel.exe");
+            } else if (Platform.isLinux() || Platform.isMac()) {
+                babelFile = Externalization.extractFile(path + "gpsbabel");
+            }
+        }
+
+        // 4. look for unqualified "gpsbabel"
+        return babelFile != null ? babelFile.getAbsolutePath() : "gpsbabel";
+    }
+
+    private String considerShellScriptForBabel(String babel, String command) throws IOException {
+        if (Platform.isLinux() || Platform.isMac()) {
+            File shellScript = createShellScript(babel, command);
+            command = "/bin/sh " + shellScript.getAbsolutePath();
+        }
+        return command;
     }
 
     private File createShellScript(String babelPath, String command) throws IOException {

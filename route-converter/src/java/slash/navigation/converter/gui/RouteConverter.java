@@ -184,7 +184,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     public void run(String[] args) {
         DebugOutput.activate();
-        log.info("Started " + BUNDLE.getString("title") + " on " + Platform.getOs() + " with " + Platform.getJvm());
+        log.info("Started " + BUNDLE.getString("title") + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
         show();
         createUpdater().implicitCheck(frame);
         parseArgs(args);
@@ -1733,7 +1733,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             mapView.dispose();
         closeFrame();
 
-        log.info("Exited " + BUNDLE.getString("title") + " on " + Platform.getOs() + " with " + Platform.getJvm());
+        log.info("Exited " + BUNDLE.getString("title") + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
         System.exit(0);
     }
 

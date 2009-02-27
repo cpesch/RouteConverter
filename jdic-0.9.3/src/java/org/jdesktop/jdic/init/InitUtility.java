@@ -34,7 +34,7 @@ public class InitUtility {
         // TODO modified to work out of the temp directory 
         // System.loadLibrary("jdic");
         try {
-            Externalization.loadLibrary(InitUtility.class, "jdic");
+            Externalization.loadLibrary("jdic");
         } catch (IOException e) {
             System.err.println("Cannot load native library 'jdic': " + e.getMessage());
         }

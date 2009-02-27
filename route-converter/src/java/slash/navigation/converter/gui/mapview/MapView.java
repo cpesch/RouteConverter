@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import org.jdesktop.jdic.browser.WebBrowserEvent;
 import org.jdesktop.jdic.browser.WebBrowserListener;
 import org.jdesktop.jdic.browser.WebBrowser;
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
 import slash.navigation.converter.gui.RouteConverter;
@@ -149,20 +150,23 @@ public class MapView {
 
     private WebBrowser createWebBrowser() {
         try {
-            /* for JDIC 0.9.3
+            /* for JDIC 0.9.3 */
+            String path = "bin/" + Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/";
             if (Platform.isLinux()) {
-                Externalization.extractFile(JdicManager.class, "libmozembed-linux-gtk1.2.so");
-                Externalization.extractFile(JdicManager.class, "libmozembed-linux-gtk2.so");
-                Externalization.extractFile(JdicManager.class, "mozembed-linux-gtk1.2");
-                Externalization.extractFile(JdicManager.class, "mozembed-linux-gtk2");
+                Externalization.extractFile(path + "libmozembed-linux-gtk1.2.so");
+                Externalization.extractFile(path + "libmozembed-linux-gtk2.so");
+                Externalization.extractFile(path + "mozembed-linux-gtk1.2");
+                Externalization.extractFile(path + "mozembed-linux-gtk2");
             }
             if (Platform.isMac())
-                Externalization.extractFile(JdicManager.class, "libjdic.jnilib");
+                Externalization.extractFile(path + "libjdic.jnilib");
             if (Platform.isWindows()) {
-                Externalization.extractFile(JdicManager.class, "IeEmbed.exe");
+                Externalization.extractFile(path + "IeEmbed.exe");
                 scrollBarSize = 20;
             }
-            */
+
+            if (Platform.isLinux())
+                WebBrowserUtil.enableDebugMessages(true);
 
             /* for JDIC from CVS
             BrowserEngineManager browserEngineManager = BrowserEngineManager.instance();
@@ -185,7 +189,9 @@ public class MapView {
 
     private boolean loadWebPage(WebBrowser webBrowser) {
         try {
-            File html = Externalization.extractFile(getClass(), "routeconverter.html");
+            File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html");
+            if (html == null)
+                throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.setURL(html.toURI().toURL());
         } catch (Throwable t) {
             processThrowable(t, "Cannot initialize WebBrowser");
@@ -450,7 +456,11 @@ public class MapView {
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {
-                        log.severe("Cannot listen at drag listener socket: " + e.getMessage());
+                        synchronized (notificationMutex) {
+                            if (running) {
+                                log.severe("Cannot listen at drag listener socket: " + e.getMessage());
+                            }
+                        }
                         break;
                     }
                     finally {
@@ -679,12 +689,22 @@ public class MapView {
         }
     }
 
+    private int lastWidth = -1, lastHeight = -1;
+
     private void resizeMap() {
-        synchronized (notificationMutex) {
-            int width = Math.max(getCanvas().getWidth() - scrollBarSize, 0);
-            int height = Math.max(getCanvas().getHeight() - scrollBarSize, 0);
-            executeScript("resize(" + width + "," + height + ")");
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                synchronized (notificationMutex) {
+                    int width = Math.max(getCanvas().getWidth() - scrollBarSize, 0);
+                    int height = Math.max(getCanvas().getHeight() - scrollBarSize, 0);
+                    if (width != lastWidth || height != lastHeight) {
+                        executeScript("resize(" + width + "," + height + ")");
+                    }
+                    lastWidth = width;
+                    lastHeight = height;
+                }
+            }
+        }, "BrowserResizer").start();
     }
 
     private void forceResize() {

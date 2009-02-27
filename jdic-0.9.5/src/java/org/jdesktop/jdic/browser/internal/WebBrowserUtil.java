@@ -88,6 +88,7 @@ public class WebBrowserUtil {
                                    "libwidget_gtk2.so";
             File file = new File(libwidgetpath);
             if (!file.exists()) {
+                trace("Expecting GTK1.2 " + libwidgetpath);
                 if (osname.indexOf("Linux") >= 0) {
                     embedBinary = EMBED_BINARY_LINUX_GTK1;
                 }
@@ -99,6 +100,7 @@ public class WebBrowserUtil {
                 }
             }
             else {
+                trace("Found GTK2 " + libwidgetpath);
                 if (osname.indexOf("Linux") >= 0) {
                     embedBinary = EMBED_BINARY_LINUX_GTK2;
                 }

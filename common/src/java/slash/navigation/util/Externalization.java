@@ -23,6 +23,7 @@ package slash.navigation.util;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
 
 /**
  * Provides externalization functionality.
@@ -31,51 +32,53 @@ import java.net.URLConnection;
  */
 
 public class Externalization {
-    private static File tempDirectory;
+    private static final Logger log = Logger.getLogger(Externalization.class.getName());
+    private static File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
 
     public synchronized static File getTempDirectory() throws IOException {
-        if (tempDirectory == null) {
-            File tempFile = File.createTempFile("routeconverter", ".tmp");
-            tempDirectory = tempFile.getParentFile();
-            tempFile.delete();
-        }
+        if (!tempDirectory.exists())
+            tempDirectory.mkdir();
         return tempDirectory;
     }
 
     private static File getTempFile(String fileName) throws IOException {
+        int index = fileName.lastIndexOf('/');
+        if (index != -1)
+            fileName = fileName.substring(index);
         return new File(getTempDirectory(), fileName);
     }
 
-    private static long getLastModified(Class<?> clazz, String fileName) throws IOException {
+    private static long getLastModified(String fileName) throws IOException {
         long lastModified = Long.MAX_VALUE;
-        URL url = clazz.getResource(fileName);
-        if(url != null) {
+        URL url = Externalization.class.getClassLoader().getResource(fileName);
+        if (url != null) {
             URLConnection connection = url.openConnection();
             lastModified = connection.getLastModified();
         }
         return lastModified;
     }
 
-    public static File extractFile(Class<?> clazz, String fileName) throws IOException {
+    public static File extractFile(String fileName) throws IOException {
         File target = getTempFile(fileName);
-        if (target.exists() &&  target.lastModified() >= getLastModified(clazz, fileName))
+        if (target.exists() && target.lastModified() >= getLastModified(fileName))
             return target;
 
-        InputStream in = clazz.getResourceAsStream(fileName);
+        InputStream in = Externalization.class.getClassLoader().getResourceAsStream(fileName);
         if (in == null)
             return null;
 
+        log.info("Extracting " + fileName + " to " + target); // TODO fine!
         InputOutput inout = new InputOutput(in, new FileOutputStream(target));
         inout.start();
         inout.close();
         return target;
     }
 
-    public static void loadLibrary(Class<?> clazz, String libName) throws IOException {
-        String platformLibName = System.mapLibraryName(libName);
-        File lib = extractFile(clazz, platformLibName);
+    public static void loadLibrary(String libName) throws IOException {
+        String path = "bin/" + Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/" + System.mapLibraryName(libName);
+        File lib = extractFile(path);
         if (lib == null)
-            throw new FileNotFoundException("Native library " + platformLibName + " not in class path");
+            throw new FileNotFoundException("Native library " + path + " not in class path");
         System.load(lib.getAbsolutePath());
     }
 }

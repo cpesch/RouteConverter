@@ -28,31 +28,46 @@ package slash.navigation.util;
 
 public class Platform {
     public static boolean isLinux() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().indexOf("linux") != -1;
+        return getOsName().indexOf("linux") != -1;
     }
 
     public static boolean isMac() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().indexOf("mac") != -1;
+        return getOsName().indexOf("mac") != -1;
     }
 
     public static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().indexOf("windows") != -1;
+        return getOsName().indexOf("windows") != -1;
     }
 
     public static boolean isWebStarted() {
         return System.getProperty("javawebstart.version") != null;
     }
 
-    public static String getOs() {
+    public static String getPlatform() {
         return System.getProperty("os.name") + " " +
                 System.getProperty("os.version") + " " +
-                System.getProperty("os.arch");        
+                System.getProperty("os.arch");
     }
 
     public static String getJvm() {
         return "Java " + System.getProperty("java.version");
+    }
+
+    private static String canonical(String value) {
+        return value.toLowerCase().replaceAll("[\\\\/ ]", "_");
+    }
+
+    public static String getOsName() {
+        String osName = System.getProperty("os.name");
+        if (osName.startsWith("Windows"))
+            return "windows";
+        return canonical(osName);
+    }
+
+    public static String getOsArchitecture() {
+        String osArch = System.getProperty("os.arch");
+        if (osArch.endsWith("86"))
+            return "x86";
+        return canonical(osArch);
     }
 }

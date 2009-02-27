@@ -338,7 +338,7 @@
       <module fileurl="file://$PROJECT_DIR$/../common-gui/common-gui.iml" filepath="$PROJECT_DIR$/../common-gui/common-gui.iml" />
       <module fileurl="file://$PROJECT_DIR$/../geonames/geonames.iml" filepath="$PROJECT_DIR$/../geonames/geonames.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxb6/jaxb6.iml" filepath="$PROJECT_DIR$/../jaxb6/jaxb6.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../jdic-0.9.5/jdic-0.9.5.iml" filepath="$PROJECT_DIR$/../jdic-0.9.5/jdic-0.9.5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.3.iml" filepath="$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.3.iml" />
       <module fileurl="file://$PROJECT_DIR$/../navigation-formats/navigation-formats.iml" filepath="$PROJECT_DIR$/../navigation-formats/navigation-formats.iml" />
       <module fileurl="file://$PROJECT_DIR$/../rest/rest.iml" filepath="$PROJECT_DIR$/../rest/rest.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter/route-converter.iml" filepath="$PROJECT_DIR$/../route-converter/route-converter.iml" />
