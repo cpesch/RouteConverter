@@ -51,7 +51,7 @@ public class InitUtility {
     /**
      * Sets the environment variable. 
      *
-     * @param ennVarName The name of the environment variable.
+     * @param envVarName The name of the environment variable.
      * @param envValue The value to be set.
      */
     public static native void setEnv(String envVarName, String envValue);
