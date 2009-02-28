@@ -215,9 +215,14 @@ public class JdicManager {
         String jdicLibFolder = null;
         ClassLoader cl = this.getClass().getClassLoader();
         if (cl instanceof JNLPClassLoader) {
-            JNLPClassLoader jnlpCl = (JNLPClassLoader) cl;
-            String jdicLibURL = jnlpCl.findLibrary("jdic");//get lib path by classloder
-            jdicLibFolder = (new File(jdicLibURL)).getParentFile().getCanonicalPath();
+            // Initialize native libs' running path if loaded by webstart.This method
+            // only works for sun webstart implementaion,for other webstart
+            // implementations, you have to rewrite this method.
+            nativeLibPath = (new File(
+                JNLPClassLoaderAccessor.findLibrary(
+                    (JNLPClassLoader) cl, 
+                    "jdic")
+            )).getParentFile().getCanonicalPath();
             WebBrowserUtil.trace("running path " + nativeLibPath);
             isShareNativeInitialized = true;
         } else {
@@ -357,5 +362,38 @@ public class JdicManager {
     public String getBinaryPath() {
         //WebBrowserUtil.trace("native lib path " + nativeLibPath);
         return nativeLibPath;
+    }
+}
+
+// TODO copied from JDIC 0.9.5 since com.sun.jnlp.JNLPClassLoader#findLibrary is protected now
+class JNLPClassLoaderAccessor {
+    static java.lang.reflect.Method mdJNLPClassLoader_findLibrary = null;
+
+    static {
+        java.security.AccessController.doPrivileged(new java.security.PrivilegedAction() {
+            public Object run() {
+                try {
+                    mdJNLPClassLoader_findLibrary = Class
+                            .forName("com.sun.jnlp.JNLPClassLoader")
+                            .getDeclaredMethod(
+                                    "findLibrary",
+                                    new Class[]{String.class});
+                    mdJNLPClassLoader_findLibrary.setAccessible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // to please javac
+                return null;
+            }
+        });
+    }
+
+    public static String findLibrary(JNLPClassLoader o, String name) {
+        try {
+            return (String) mdJNLPClassLoader_findLibrary.invoke(o, new Object[]{name});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
