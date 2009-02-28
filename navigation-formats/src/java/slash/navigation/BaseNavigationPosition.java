@@ -166,6 +166,10 @@ public abstract class BaseNavigationPosition {
         return new ItnPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
+    public Wgs84Position asKlickTelRoutePosition() {
+        return asWgs84Position();
+    }
+
     public KmlPosition asKmlPosition() {
         return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }

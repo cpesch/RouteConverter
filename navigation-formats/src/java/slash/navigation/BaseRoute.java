@@ -34,6 +34,7 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Calculation;
 import slash.navigation.util.Range;
 import slash.navigation.viamichelin.ViaMichelinRoute;
+import slash.navigation.klicktel.KlickTelRoute;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -213,6 +214,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract GpxRoute asGpx10Format();
     public abstract GpxRoute asGpx11Format();
     public abstract ItnRoute asItnFormat();
+    public abstract KlickTelRoute asKlickTelRouteFormat();
     public abstract KmlRoute asKml20Format();
     public abstract KmlRoute asKml21Format();
     public abstract KmlRoute asKml22BetaFormat();

@@ -38,6 +38,7 @@ import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
+import slash.navigation.klicktel.KlickTelRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +110,14 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
             itnPositions.add(position.asItnPosition());
         }
         return new ItnRoute(getCharacteristics(), getName(), itnPositions);
+    }
+
+    public KlickTelRoute asKlickTelRouteFormat() {
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (P position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new KlickTelRoute(getName(), wgs84Positions);
     }
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {

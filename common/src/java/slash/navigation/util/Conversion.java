@@ -404,9 +404,10 @@ public class Conversion {
 
     public static Double parseDouble(String string) {
         String trimmed = trim(string);
-        if (trimmed != null)
+        if (trimmed != null) {
+            trimmed = trimmed.replaceAll(",", ".");
             return Double.parseDouble(trimmed);
-        else
+        } else
             return null;
     }
 

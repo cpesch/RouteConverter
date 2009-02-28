@@ -97,6 +97,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
     }
     */
 
+    public void testKlickTelRouteReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.krt");
+    }
+
     public void testNavigatingPOIWarnerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc");
     }

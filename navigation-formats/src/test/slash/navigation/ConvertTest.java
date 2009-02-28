@@ -39,6 +39,7 @@ import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
+import slash.navigation.klicktel.KlickTelRouteFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -374,6 +375,16 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertGpx11ToMTP0607() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new MTP0607Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new MTP0607Format());
+    }
+
+
+    public void testConvertKlickTelRouteToKlickTelRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.krt", new KlickTelRouteFormat(), new KlickTelRouteFormat());
+    }
+
+    public void testConvertKlickTelRouteToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.krt", new KlickTelRouteFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.krt", new KlickTelRouteFormat(), new Gpx11Format());
     }
 
 

@@ -33,11 +33,12 @@ import java.util.logging.Logger;
 
 public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
-    private static File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
+    private static File tempDirectory = new File(System.getProperty("java.io.tmpdir")); // + File.separator + "routeconverter");
 
     public synchronized static File getTempDirectory() throws IOException {
         if (!tempDirectory.exists())
-            tempDirectory.mkdir();
+            if(!tempDirectory.mkdir())
+                log.severe("Could not create temp directory " + tempDirectory);
         return tempDirectory;
     }
 
@@ -67,7 +68,7 @@ public class Externalization {
         if (in == null)
             return null;
 
-        log.info("Extracting " + fileName + " to " + target); // TODO fine!
+        log.fine("Extracting " + fileName + " to " + target);
         InputOutput inout = new InputOutput(in, new FileOutputStream(target));
         inout.start();
         inout.close();

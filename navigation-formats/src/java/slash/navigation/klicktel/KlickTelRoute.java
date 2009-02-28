@@ -18,10 +18,10 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.tcx;
+package slash.navigation.klicktel;
 
 import slash.navigation.*;
-import slash.navigation.klicktel.KlickTelRoute;
+import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -46,19 +46,31 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * A Training Center Database (.tcx) route.
+ * A klickTel Routenplaner 2009 (.krt) route.
  *
  * @author Christian Pesch
  */
 
-public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
-    private List<TcxPosition> positions;
+public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat> {
     private String name;
+    private KDRoute.RouteOptions options;
+    private List<Wgs84Position> positions;
 
-    public TcxRoute(TcxFormat format, RouteCharacteristics characteristics, String name, List<TcxPosition> positions) {
-        super(format, characteristics);
-        this.name = name;
+
+    public KlickTelRoute(String name, List<Wgs84Position> positions) {
+        this(name, defaultOptions(), positions);
+    }
+
+    private static KDRoute.RouteOptions defaultOptions() {
+        KDRoute.RouteOptions options = new KDRoute.RouteOptions();
+        return options;
+    }
+
+    public KlickTelRoute(String name, KDRoute.RouteOptions options, List<Wgs84Position> positions) {
+        super(new KlickTelRouteFormat(), RouteCharacteristics.Route);
+        this.options = options;
         this.positions = positions;
+        setName(name);
     }
 
     public String getName() {
@@ -73,7 +85,11 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
         return null;
     }
 
-    public List<TcxPosition> getPositions() {
+    public KDRoute.RouteOptions getOptions() {
+        return options;
+    }
+
+    public List<Wgs84Position> getPositions() {
         return positions;
     }
 
@@ -81,18 +97,18 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
         return positions.size();
     }
 
-    public void add(int index, TcxPosition position) {
+    public void add(int index, Wgs84Position position) {
         positions.add(index, position);
     }
 
 
-    public TcxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new TcxPosition(longitude, latitude, null, time, comment);
+    public Wgs84Position createPosition(Double longitude, Double latitude, Calendar time, String comment) {
+        return new Wgs84Position(longitude, latitude, null, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
@@ -108,7 +124,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, RouteCharacteristics.Route, getName(), getDescription(), gpxPositions);
@@ -125,23 +141,21 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public ItnRoute asItnFormat() {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             itnPositions.add(position.asItnPosition());
         }
         return new ItnRoute(getCharacteristics(), getName(), itnPositions);
     }
 
+
     public KlickTelRoute asKlickTelRouteFormat() {
-        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxPosition position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new KlickTelRoute(getName(), wgs84Positions);
+        return this;
     }
+
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -182,7 +196,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
@@ -190,7 +204,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public MagicMapsPthRoute asMagicMapsPthFormat() {
         List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
@@ -198,7 +212,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -214,10 +228,10 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (TcxPosition Wgs84Position : positions) {
+        for (Wgs84Position Wgs84Position : positions) {
             nmnPositions.add(Wgs84Position.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     public NmnRoute asNmn4Format() {
@@ -243,7 +257,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             wgs84Positions.add(position.asOvlPosition());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
@@ -251,11 +265,11 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> tcxPositions = new ArrayList<Wgs84Position>();
-        for (TcxPosition position : positions) {
-            tcxPositions.add(position.asWgs84Position());
+        List<Wgs84Position> Wgs84Positions = new ArrayList<Wgs84Position>();
+        for (Wgs84Position position : positions) {
+            Wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), tcxPositions);
+        return new Wgs84Route(format, getCharacteristics(), Wgs84Positions);
     }
 
     public SimpleRoute asCoPilot6Format() {
@@ -276,7 +290,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public GoPalRoute asGoPalRouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPalRoute(getName(), gopalPositions);
@@ -304,7 +318,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             tourPositions.add(position.asTourPosition());
         }
         return new TourRoute(getName(), tourPositions);
@@ -312,7 +326,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
 
     public ViaMichelinRoute asViaMichelinFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (TcxPosition position : positions) {
+        for (Wgs84Position position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new ViaMichelinRoute(getName(), wgs84Positions);
@@ -323,15 +337,14 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TcxRoute tcxRoute = (TcxRoute) o;
+        KlickTelRoute klicktelRoute = (KlickTelRoute) o;
 
-        return !(name != null ? !name.equals(tcxRoute.name) : tcxRoute.name != null) &&
-                !(positions != null ? !positions.equals(tcxRoute.positions) : tcxRoute.positions != null);
+        return !(name != null ? !name.equals(klicktelRoute.name) : klicktelRoute.name != null) &&
+                !(positions != null ? !positions.equals(klicktelRoute.positions) : klicktelRoute.positions != null);
     }
 
     public int hashCode() {
-        int result = (getName() != null ? getName().hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
+        int result = (name != null ? name.hashCode() : 0);
         result = 31 * result + (positions != null ? positions.hashCode() : 0);
         return result;
     }

@@ -12,4 +12,5 @@ bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\p4\RouteCo
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding1 c:\p4\RouteConverter\trunk\navigation-formats\src\doc\tcx\TrainingCenterDatabasev1.xsd
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\p4\RouteConverter\trunk\navigation-formats\src\doc\tcx\TrainingCenterDatabasev2.xsd
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\p4\RouteConverter\trunk\navigation-formats\src\doc\nmn\nmn7.xsd
+bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\p4\RouteConverter\trunk\navigation-formats\src\doc\klicktel\klicktel.xsd
 

@@ -20,6 +20,7 @@
 package slash.navigation.itn;
 
 import slash.navigation.*;
+import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -113,6 +114,14 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
 
     public ItnRoute asItnFormat() {
         return this;
+    }
+
+    public KlickTelRoute asKlickTelRouteFormat() {
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (ItnPosition position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new KlickTelRoute(getName(), wgs84Positions);
     }
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {

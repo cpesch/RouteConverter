@@ -45,6 +45,7 @@ import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.viamichelin.ViaMichelinFormat;
+import slash.navigation.klicktel.KlickTelRouteFormat;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -100,8 +101,9 @@ public final class NavigationFormats {
         addFormat(MagicMapsIktFormat.class);
         addFormat(MagellanExploristFormat.class);
         addFormat(KienzleGpsFormat.class);
-        addFormat(Tcx1Format.class);
-        addFormat(Tcx2Format.class);
+        addFormat(Tcx1Format.class);          // TODO 1.25
+        addFormat(Tcx2Format.class);          // TODO 1.25
+        addFormat(KlickTelRouteFormat.class); // TODO 1.25
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);
@@ -112,10 +114,10 @@ public final class NavigationFormats {
         addFormat(MagellanMapSendFormat.class);
         addFormat(AlanTrackLogFormat.class);
         addFormat(AlanWaypointsAndRoutesFormat.class);
-        addFormat(OziExplorerReadFormat.class);
-        addFormat(OziExplorerRouteFormat.class);
-        addFormat(OziExplorerTrackFormat.class);
-        addFormat(OziExplorerWaypointFormat.class);
+        addFormat(OziExplorerReadFormat.class);          // TODO 1.25
+        addFormat(OziExplorerRouteFormat.class);         // TODO 1.25
+        addFormat(OziExplorerTrackFormat.class);         // TODO 1.25
+        addFormat(OziExplorerWaypointFormat.class);      // TODO 1.25
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);

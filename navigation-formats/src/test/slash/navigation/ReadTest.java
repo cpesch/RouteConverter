@@ -117,6 +117,10 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".kmz");
     }
 
+    public void testKlickTelRouteFilesAreValid() throws IOException {
+        readFiles(".krt");
+    }
+
     public void testMagellanExploristFilesAreValid() throws IOException {
         readFiles(".log");
     }

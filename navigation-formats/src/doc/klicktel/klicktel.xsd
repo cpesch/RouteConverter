@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="kDRoute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Stations">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Station">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Street" type="xs:string" />
+                    <xs:element minOccurs="0" name="HouseNumber" type="xs:unsignedByte" />
+                    <xs:element name="PostalCode" type="xs:unsignedInt" />
+                    <xs:element name="City" type="xs:string" />
+                    <xs:element minOccurs="0" name="District" type="xs:string" />
+                    <xs:element name="CountryShortcut" type="xs:string" />
+                    <xs:element minOccurs="0" name="LocationType" type="xs:unsignedShort" />
+                    <xs:element name="EdgeReference">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Edge" type="xs:unsignedByte" />
+                          <xs:element name="Tile" type="xs:unsignedInt" />
+                          <xs:element name="Node" type="xs:unsignedByte" />
+                          <xs:element name="Country" type="xs:unsignedByte" />
+                          <xs:element name="DBVersion" type="xs:unsignedByte" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Point">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="X" type="xs:unsignedInt" />
+                          <xs:element name="Y" type="xs:unsignedInt" />
+                          <xs:element name="Latitude" type="xs:string" />
+                          <xs:element name="Longitude" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="RouteOptions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Vehicle">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="DisplayName" type="xs:string" />
+                    <xs:element name="RoadCategory3">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Speed" type="xs:unsignedByte" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="RoadCategory4">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Consumption" type="xs:unsignedByte" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="RoadCategory7">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Speed" type="xs:unsignedByte" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="RouteOption">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OptimizeVias" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

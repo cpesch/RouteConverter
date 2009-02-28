@@ -104,7 +104,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                             if (count > 0) {
                                 output.write(buffer, 0, count);
                                 String output = new String(buffer).trim();
-                                log.info("Read " + count + " bytes of " + streamName + " output from gpsbabel process: '" + output + "'"); // TODO log level
+                                log.fine("Read " + count + " bytes of " + streamName + " output from gpsbabel process: '" + output + "'");
                             }
                         }
                     } finally {
@@ -315,7 +315,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             InputStream target = startBabel(in, getBabelFormatName(), BABEL_INTERFACE_FORMAT_NAME, "-r -w -t");
             List<GpxRoute> result = getGpxFormat().read(target, startDate);
             if (result != null && result.size() > 0)
-                log.info("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME + " stream"); // TODO log level
+                log.fine("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME + " stream");
             return result;
         } else {
             List<GpxRoute> result = null;
