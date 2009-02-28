@@ -106,12 +106,13 @@ public class JdicManager {
         try {
             // Find the root path of this class.
             String jwsVersion = System.getProperty("javawebstart.version");
-            if (jwsVersion != null) {
+            if (false && jwsVersion != null) {
                 //loaded by JWS
                 WebBrowserUtil.trace("Loaded by JavaWebStart,version is "
                                 + jwsVersion);
                 //native libs will be loaded by webstart automatically
                 nativeLibPath = caculateNativeLibPathBySunJWS();
+                WebBrowserUtil.trace("caculateNativeLibPathBySunJWS " + nativeLibPath);
                 return;
             } else {
                 /* TODO modified to work out of the temp directory 
@@ -129,6 +130,7 @@ public class JdicManager {
                 */
                 String runningPath = Externalization.getTempDirectory().getAbsolutePath();
                 nativeLibPath = caculateNativeLibPath(runningPath);
+                WebBrowserUtil.trace("caculateNativeLibPath " + nativeLibPath);
 
                 // Add the binary path (including jdic.dll or libjdic.so) to
                 // "java.library.path", since we need to use the native methods
@@ -176,7 +178,7 @@ public class JdicManager {
                 //not URLClassLoader,omit it,in case the stub jar has been
                 // set to claspath
                 String exceptionInfo =
-                    "We detect that you are not using java.net.URLClassLoader for cross platform versoin, "
+                    "We detect that you are not using java.net.URLClassLoader for cross platform version, "
                     + "you have to set jdic_stub.jar manually!";
                 WebBrowserUtil.error(exceptionInfo);
                 return architecturePath;//return the native lib path
@@ -218,7 +220,7 @@ public class JdicManager {
             // Initialize native libs' running path if loaded by webstart.This method
             // only works for sun webstart implementaion,for other webstart
             // implementations, you have to rewrite this method.
-            nativeLibPath = (new File(
+            jdicLibFolder = (new File(
                 JNLPClassLoaderAccessor.findLibrary(
                     (JNLPClassLoader) cl, 
                     "jdic")

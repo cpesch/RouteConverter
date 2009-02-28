@@ -165,7 +165,7 @@ public class MapView {
                 scrollBarSize = 20;
             }
 
-            if (Platform.isLinux())
+            if (!Platform.isWindows())
                 WebBrowserUtil.enableDebugMessages(true);
 
             /* for JDIC from CVS

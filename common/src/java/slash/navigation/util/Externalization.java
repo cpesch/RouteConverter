@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
-    private static File tempDirectory = new File(System.getProperty("java.io.tmpdir")); // + File.separator + "routeconverter");
+    private static File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
 
     public synchronized static File getTempDirectory() throws IOException {
         if (!tempDirectory.exists())
@@ -68,7 +68,7 @@ public class Externalization {
         if (in == null)
             return null;
 
-        log.fine("Extracting " + fileName + " to " + target);
+        log.info("Extracting " + fileName + " to " + target);
         InputOutput inout = new InputOutput(in, new FileOutputStream(target));
         inout.start();
         inout.close();
@@ -81,5 +81,6 @@ public class Externalization {
         if (lib == null)
             throw new FileNotFoundException("Native library " + path + " not in class path");
         System.load(lib.getAbsolutePath());
+        log.info("Loaded system library " + lib);
     }
 }
