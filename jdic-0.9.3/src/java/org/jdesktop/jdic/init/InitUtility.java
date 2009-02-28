@@ -24,6 +24,8 @@ import slash.navigation.util.Externalization;
 import java.io.File;
 import java.io.IOException;
 
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+
 /**
  * Utility class for JDIC initialization.
  * @author Paul Huang
@@ -36,7 +38,7 @@ public class InitUtility {
         try {
             Externalization.loadLibrary("jdic");
         } catch (IOException e) {
-            System.err.println("Cannot load native library 'jdic': " + e.getMessage());
+            WebBrowserUtil.trace("Cannot load externalized library 'jdic': " + e.getMessage());
         }
     }
 
