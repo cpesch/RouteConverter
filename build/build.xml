@@ -945,7 +945,7 @@
 
     <target name="exe" depends="jar">
         <path id="jsmoothgen.classpath">
-            <path location="c:/Program Files/JSmooth 0.9.9-7/lib/jsmoothgen-ant.jar"/>
+            <path location="c:/Programme/JSmooth 0.9.9-7/lib/jsmoothgen-ant.jar"/>
         </path>
         <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmoothgen.classpath"/>
         <jsmoothgen project="build/RouteConverter.jsmooth" skeletonroot="c:/Programme/JSmooth 0.9.9-7/skeletons"/>
