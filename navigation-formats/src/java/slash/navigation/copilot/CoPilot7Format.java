@@ -66,9 +66,13 @@ public class CoPilot7Format extends CoPilotFormat {
             writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
             String latitude = Conversion.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
             writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
+            // TODO write decomposed comment
             String comment = position.getComment();
             writer.println(CITY + NAME_VALUE_SEPARATOR + comment);
             writer.println(END_STOP);
+            writer.println(START_STOP_OPT + NAME_VALUE_SEPARATOR + "Stop " + i);
+            writer.println("Loaded=1");
+            writer.println(END_STOP_OPT);
         }
     }
 }

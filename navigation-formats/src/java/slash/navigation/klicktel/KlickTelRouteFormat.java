@@ -105,6 +105,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
             point.setLatitude(Conversion.formatDoubleAsString(position.getLatitude()));
             KDRoute.Stations.Station station = objectFactory.createKDRouteStationsStation();
             station.setCity(position.getComment());
+            // TODO write decomposed comment
             // TODO as in GopalRouteFormat? station.setCountryShortcut();
             // TODO as in GopalRouteFormat? station.setDistrict();
             // TODO as in GopalRouteFormat? station.setHouseNumber();
