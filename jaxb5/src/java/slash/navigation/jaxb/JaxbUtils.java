@@ -26,6 +26,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 
 /**
@@ -36,6 +37,9 @@ import java.util.logging.Logger;
 
 public class JaxbUtils {
     private static final Logger log = Logger.getLogger(JaxbUtils.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(JaxbUtils.class);
+    public static final String JAXB_IMPL_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+    public static final String JAXB_IMPL_HEADER = "com.sun.xml.bind.xmlHeaders";
 
     public static JAXBContext newContext(Class<?>... classes) {
         try {
@@ -48,13 +52,13 @@ public class JaxbUtils {
     public static Marshaller newMarshaller(JAXBContext context, String ... uriToPrefix) {
         try {
             Marshaller result = context.createMarshaller();
-            result.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            result.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
             try {
-                result.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl(map(uriToPrefix)));
+                result.setProperty(JAXB_IMPL_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperImpl(map(uriToPrefix)));
             }
             catch (Throwable t) {
                 // t.printStackTrace();
-                // log.severe("Could not set namespace prefix mapper: " + t.getMessage());
+                log.finer("Could not set namespace prefix mapper: " + t.getMessage());
             }
             return result;
         } catch (JAXBException e) {
