@@ -70,7 +70,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         for (KDRoute.Stations.Station station : route.getStations().getStation()) {
             KDRoute.Stations.Station.Point point = station.getPoint();
             String comment = (station.getCountryShortcut() != null ? station.getCountryShortcut() + " " : "") +
-                    (station.getPostalCode() > 0 ? station.getPostalCode() + " " : "") +
+                    (station.getPostalCode() != null ? station.getPostalCode() + " " : "") +
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
@@ -90,6 +90,9 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         }
     }
 
+    private String formatAsDouble(Double aDouble) {
+        return Conversion.formatDoubleAsString(aDouble, 8).replace('.', ',');
+    }
 
     private KDRoute createKlicktel(KlickTelRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
@@ -99,13 +102,18 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         kdRoute.setStations(stations);
         for (Wgs84Position position : route.getPositions()) {
             KDRoute.Stations.Station.Point point = objectFactory.createKDRouteStationsStationPoint();
-            // TODO Mercator? point.setX();
-            // TODO Mercator? point.setY();
-            point.setLongitude(Conversion.formatDoubleAsString(position.getLongitude()));
-            point.setLatitude(Conversion.formatDoubleAsString(position.getLatitude()));
+            point.setLongitude(formatAsDouble(position.getLongitude()));
+            point.setLatitude(formatAsDouble(position.getLatitude()));
             KDRoute.Stations.Station station = objectFactory.createKDRouteStationsStation();
             station.setCity(position.getComment());
+
             // TODO write decomposed comment
+            // <Street>Raiffeisenstr.</Street>
+            // <HouseNumber>33</HouseNumber>
+            // <PostalCode>47665</PostalCode>
+            // <City>Sonsbeck</City>
+            // <CountryShortcut>D</CountryShortcut>
+
             // TODO as in GopalRouteFormat? station.setCountryShortcut();
             // TODO as in GopalRouteFormat? station.setDistrict();
             // TODO as in GopalRouteFormat? station.setHouseNumber();
