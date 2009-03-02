@@ -21,8 +21,8 @@
 package slash.navigation.klicktel;
 
 import slash.navigation.jaxb.JaxbUtils;
-import slash.navigation.klicktel.binding.ObjectFactory;
 import slash.navigation.klicktel.binding.KDRoute;
+import slash.navigation.klicktel.binding.ObjectFactory;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -38,13 +38,7 @@ public class KlickTelUtil {
     }
 
     public static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
-        try {
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
-        } catch (PropertyException e) {
-            // intentionally left empty
-        }
-        return marshaller;
+        return JaxbUtils.newMarshaller(CONTEXT);
     }
 
 
