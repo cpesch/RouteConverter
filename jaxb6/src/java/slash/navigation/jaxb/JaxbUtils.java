@@ -24,10 +24,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.util.Map;
 import java.util.LinkedHashMap;
-import java.util.prefs.Preferences;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * Provides JAXB helpers.
@@ -38,6 +38,8 @@ import java.util.logging.Logger;
 public class JaxbUtils {
     private static final Logger log = Logger.getLogger(JaxbUtils.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(JaxbUtils.class);
+    public static final String JAXB_IMPL_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
+    public static final String JAXB_IMPL_HEADER = "com.sun.xml.internal.bind.xmlHeaders";
 
     public static JAXBContext newContext(Class<?>... classes) {
         try {
@@ -52,7 +54,7 @@ public class JaxbUtils {
             Marshaller result = context.createMarshaller();
             result.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
             try {
-                result.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl(map(uriToPrefix)));
+                result.setProperty(JAXB_IMPL_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperImpl(map(uriToPrefix)));
             }
             catch (Throwable t) {
                 t.printStackTrace();
