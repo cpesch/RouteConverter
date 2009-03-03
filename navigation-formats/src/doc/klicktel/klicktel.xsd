@@ -9,12 +9,12 @@
               <xs:element maxOccurs="unbounded" name="Station">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Street" type="xs:string" />
+                    <xs:element minOccurs="0" name="Street" type="xs:string" />
                     <xs:element minOccurs="0" name="HouseNumber" type="xs:unsignedByte" />
-                    <xs:element name="PostalCode" type="xs:unsignedInt" />
-                    <xs:element name="City" type="xs:string" />
+                    <xs:element minOccurs="0" name="PostalCode" type="xs:unsignedInt" />
+                    <xs:element minOccurs="0" name="City" type="xs:string" />
                     <xs:element minOccurs="0" name="District" type="xs:string" />
-                    <xs:element name="CountryShortcut" type="xs:string" />
+                    <xs:element minOccurs="0" name="CountryShortcut" type="xs:string" />
                     <xs:element minOccurs="0" name="LocationType" type="xs:unsignedShort" />
                     <xs:element name="EdgeReference">
                       <xs:complexType>
@@ -30,8 +30,8 @@
                     <xs:element name="Point">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="X" type="xs:unsignedInt" />
-                          <xs:element name="Y" type="xs:unsignedInt" />
+                          <xs:element minOccurs="0" name="X" type="xs:unsignedInt" />
+                          <xs:element minOccurs="0" name="Y" type="xs:unsignedInt" />
                           <xs:element name="Latitude" type="xs:string" />
                           <xs:element name="Longitude" type="xs:string" />
                         </xs:sequence>
@@ -40,6 +40,13 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="RouteOption">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OptimizeVias" type="xs:string" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -74,13 +81,6 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element minOccurs="0" name="RouteOption">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="OptimizeVias" type="xs:string" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

@@ -23,6 +23,7 @@ package slash.navigation.klicktel;
 import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
+import slash.navigation.XmlNavigationFormat;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -38,7 +39,13 @@ public class KlickTelUtil {
     }
 
     public static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(CONTEXT);
+        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
+        try {
+            marshaller.setProperty(JaxbUtils.JAXB_IMPL_HEADER, XmlNavigationFormat.HEADER);
+        } catch (PropertyException e) {
+            // intentionally left empty
+        }
+        return marshaller;
     }
 
 
