@@ -171,14 +171,17 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
     }
 
     String formatFirstOrLastName(ItnPosition position, String firstOrLast) {
-        return TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " + firstOrLast + " : " +
-                TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " +
-                position.getComment() + " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6";
+        return (position.getTime() != null ? TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
+                firstOrLast + " : " +
+                (position.getTime() != null ? TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " : "") +
+                position.getComment() +
+                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6" : "");
     }
 
     String formatIntermediateName(ItnPosition position) {
-        return TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " + position.getComment() + " - " +
-                position.getElevation() + " m - 0 km - 0 Km/h - 6";
+        return (position.getTime() != null ? TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
+                position.getComment() +
+                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6" : "");
     }
 
     public void write(ItnRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
@@ -197,10 +200,10 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
                 type = ItnFormat.END_TYPE;
 
             String comment = position.getComment();
-            if(route.getCharacteristics().equals(RouteCharacteristics.Track)) {
-                if(first)
+            if (route.getCharacteristics().equals(RouteCharacteristics.Track)) {
+                if (first)
                     comment = formatFirstOrLastName(position, "Start");
-                else if(last)
+                else if (last)
                     comment = formatFirstOrLastName(position, "Finish");
                 else
                     comment = formatIntermediateName(position);
