@@ -1619,6 +1619,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                 createExternalPrograms().startGoogleEarth(frame, targets);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.severe("Save error " + file + "," + format + ": " + e.getMessage());
 
             JOptionPane.showMessageDialog(frame,
