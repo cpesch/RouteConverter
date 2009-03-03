@@ -54,7 +54,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     protected static final String ZIP = "Zip";
     protected static final String CITY = "City";
     protected static final String COUNTY = "County";
-    protected static final String ADDRESS = "Address";
+    protected static final String ADDRESS = "Address"; // houseNumber<space>street
 
 
     public String getExtension() {
