@@ -323,7 +323,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         if (string == null)
             return "";
         try {
-            string = URLEncoder.encode(string, "UTF-8");
+            string = URLEncoder.encode(string, UTF8_ENCODING);
             string = string.replace("%2C", ",");
             return string;
         } catch (UnsupportedEncodingException e) {

@@ -39,6 +39,7 @@ import java.io.*;
 public class ViaMichelinUtil {
     public static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
 
+    private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     public static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
 
     public static Unmarshaller newUnmarshaller() {
@@ -72,7 +73,7 @@ public class ViaMichelinUtil {
         EntityResolver entityResolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (systemId != null && systemId.contains("viamichelin") && systemId.endsWith("export.dtd"))
-                    return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
+                    return new InputSource(new ByteArrayInputStream(XML_PREAMBLE.getBytes()));
                 else
                     return null;
             }
@@ -119,7 +120,7 @@ public class ViaMichelinUtil {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             try {
-                String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                String header = XML_PREAMBLE + "\n" +
                         "<!DOCTYPE poi_list SYSTEM \"" + VIAMICHELIN_NAMESPACE_URI + "\">";
                 fos.write(header.getBytes());
                 newMarshaller().marshal(new JAXBElement<PoiList>(new QName("poi_list"), PoiList.class, poiList), fos);

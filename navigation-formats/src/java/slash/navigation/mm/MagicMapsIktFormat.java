@@ -153,7 +153,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                 if (ROOT_ELEMENT.equals(elementName)) {
                     return routes;
                 } else if (elementName.startsWith(GEO_OBJECTS_ELEMENT)) {
-                    ;
+                    // ignore these
                 } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
                     if (name == null)
                         name = projectName;
@@ -174,19 +174,6 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         }
     }
 
-    private List<MagicMapsIktRoute> unmarshal(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
-    }
-
     public List<MagicMapsIktRoute> read(InputStream source, Calendar startDate) throws IOException {
         try {
             List<MagicMapsIktRoute> routes = unmarshal(source);
@@ -199,7 +186,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private void writeHeader(String name, String description, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {
-        writer.add(eventFactory.createStartDocument("UTF-8", "1.0", true));
+        writer.add(eventFactory.createStartDocument(UTF8_ENCODING, "1.0", true));
         List<Attribute> rootAttributes = new ArrayList<Attribute>();
         rootAttributes.add(eventFactory.createAttribute(FILE_FORMAT_ATTRIBUTE, FILE_FORMAT));
         writer.add(eventFactory.createStartElement(new QName(ROOT_ELEMENT), rootAttributes.iterator(), null));
@@ -267,7 +254,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public void write(MagicMapsIktRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        write(Arrays.asList(new MagicMapsIktRoute[]{route}), target);
+        write(Arrays.asList(route), target);
     }
 
     private String getProjectName(List<MagicMapsIktRoute> routes) {
