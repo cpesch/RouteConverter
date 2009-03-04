@@ -32,11 +32,11 @@ import java.util.logging.Logger;
 
 public class Helper {
     private static Logger log = Logger.getLogger(Helper.class.getName());
-    public static final String UTF8_CHARSET = "UTF-8";
+    private static final String UTF8_ENCODING = "UTF-8";
 
     public static String encodeUri(String uri) {
         try {
-            String encoded = URLEncoder.encode(uri, UTF8_CHARSET);
+            String encoded = URLEncoder.encode(uri, UTF8_ENCODING);
             return encoded.replace("%2F", "/"); // TODO .replace("%3A", ":");
         } catch (UnsupportedEncodingException e) {
             log.severe("Cannot encode uri " + uri + ": " + e.getMessage());
@@ -46,7 +46,7 @@ public class Helper {
 
     public static String decodeUri(String uri) {
         try {
-            return URLDecoder.decode(uri, UTF8_CHARSET);
+            return URLDecoder.decode(uri, UTF8_ENCODING);
         } catch (UnsupportedEncodingException e) {
             log.severe("Cannot decode uri " + uri + ": " + e.getMessage());
             return uri;
@@ -55,10 +55,10 @@ public class Helper {
 
     public static String asUtf8(String string) {
         try {
-            byte[] bytes = string.getBytes(UTF8_CHARSET);
+            byte[] bytes = string.getBytes(UTF8_ENCODING);
             return new String(bytes);
         } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot encode " + string + " as " + UTF8_CHARSET + ": " + e.getMessage());
+            log.severe("Cannot encode " + string + " as " + UTF8_ENCODING + ": " + e.getMessage());
             return string;
         }
     }
