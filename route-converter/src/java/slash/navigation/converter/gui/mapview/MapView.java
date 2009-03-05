@@ -20,13 +20,12 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import org.jdesktop.jdic.browser.WebBrowser;
 import org.jdesktop.jdic.browser.WebBrowserEvent;
 import org.jdesktop.jdic.browser.WebBrowserListener;
-import org.jdesktop.jdic.browser.WebBrowser;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Calculation;
@@ -46,7 +45,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Logger;
@@ -182,7 +180,8 @@ public class MapView {
             */
             return new WebBrowser(false);
         } catch (Throwable t) {
-            processThrowable(t, "Cannot create WebBrowser");
+            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            initializationCause = t;
             return null;
         }
     }
@@ -194,19 +193,17 @@ public class MapView {
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.setURL(html.toURI().toURL());
         } catch (Throwable t) {
-            processThrowable(t, "Cannot initialize WebBrowser");
+            log.severe("Cannot create WebBrowser: " + t.getMessage());
+            initializationCause = t;
             return false;
         }
         return true;
     }
 
-    private void processThrowable(Throwable t, String message) {
-        log.severe(message + ": " + t.getMessage());
-        t.printStackTrace();
+    private Throwable initializationCause = null;
 
-        JOptionPane.showMessageDialog(null,
-                MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), message + ":" + t + ":" + t.getMessage()),
-                RouteConverter.BUNDLE.getString("title"), JOptionPane.ERROR_MESSAGE);
+    public Throwable getInitializationCause() {
+        return initializationCause;
     }
 
     private void initialize() {
@@ -257,8 +254,10 @@ public class MapView {
             }
         });
 
-        if (!loadWebPage(webBrowser))
+        if (!loadWebPage(webBrowser)) {
+            dispose();
             return;
+        }
 
         initializeBrowserInteraction();
     }
@@ -614,6 +613,8 @@ public class MapView {
                     // intentionally left empty
                 }
             }
+
+            webBrowser = null;
         }
 
         if (dragListenerServerSocket != null) {

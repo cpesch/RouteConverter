@@ -65,6 +65,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -112,6 +114,9 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JSplitPane splitPane;
     private JPanel mapPanel;
     private MapView mapView;
+    private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+            new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
 
     private JTabbedPane tabbedPane;
     private JPanel convertPanel;
@@ -807,19 +812,21 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         }, "CategoryTreeCreator").start();
     }
 
-
     private void createMapView() {
         new Thread(new Runnable() {
             public void run() {
+                // can do this outside of Swing
                 mapView = new MapView(getPositionsModel(), getCharacteristicsModel());
-                if (mapView.getCanvas() == null) {
-                    return;
-                }
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        mapPanel.add(mapView.getCanvas(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                                new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true));
+                        if (mapView.getCanvas() == null || mapView.getInitializationCause() != null) {
+                            StringWriter stackTrace = new StringWriter();
+                            mapView.getInitializationCause().printStackTrace(new PrintWriter(stackTrace));
+                            mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                        } else {
+                            mapPanel.add(mapView.getCanvas(), MAP_PANEL_CONSTRAINTS);
+                        }
 
                         int location = preferences.getInt(DIVIDER_LOCATION_PREFERENCE, -1);
                         if (location > 0)
