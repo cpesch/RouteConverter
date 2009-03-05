@@ -62,13 +62,13 @@ public class MapView {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     private static final Logger log = Logger.getLogger(MapView.class.getName());
     private static final String MAP_TYPE_PREFERENCE = "mapType";
-    private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = 35;
-    private static final int MAXIMUM_POLYLINE_POSITION_COUNT = 1500;
-    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = 24;
-    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = 500;
-    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = 5;
-    private static final int MAXIMUM_MARKER_POSITION_COUNT = 50;
-    private static final int MAXIMUM_SELECTION_COUNT = 10;
+    private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
+    private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);
+    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength", 24);
+    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount", 500);
+    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength", 5);
+    private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount", 50);
+    private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount", 10);
     private static final int[] ZOOMLEVEL_SCALE = {
             400000000,
             200000000,
@@ -99,8 +99,6 @@ public class MapView {
     private final Object notificationMutex = new Object();
     private boolean initialized = false, running = true,
             haveToInitializeMapOnFirstStart = true,
-
-
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
