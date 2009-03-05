@@ -59,8 +59,8 @@ public class Kml21Format extends KmlFormat {
         }
     }
 
-    List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException {
-        KmlType kmlType = KmlUtil.unmarshal21(inputStream);
+    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+        KmlType kmlType = KmlUtil.unmarshal21(source);
         return process(kmlType);
     }
 
@@ -183,22 +183,24 @@ public class Kml21Format extends KmlFormat {
 
     private List<KmlPosition> extractPositions(JAXBElement<? extends GeometryType> geometryType) {
         List<KmlPosition> positions = new ArrayList<KmlPosition>();
-        GeometryType geometryTypeValue = geometryType.getValue();
-        if (geometryTypeValue instanceof PointType) {
-            PointType point = (PointType) geometryTypeValue;
-            for (String coordinates : point.getCoordinates())
-                positions.add(parsePosition(coordinates, null));
-        }
-        if (geometryTypeValue instanceof LineStringType) {
-            LineStringType lineString = (LineStringType) geometryTypeValue;
-            for (String coordinates : lineString.getCoordinates())
-                positions.add(parsePosition(coordinates, null));
-        }
-        if (geometryTypeValue instanceof MultiGeometryType) {
-            MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
-            List<JAXBElement<? extends GeometryType>> geometryTypes = multiGeometryType.getGeometry();
-            for (JAXBElement<? extends GeometryType> geometryType2 : geometryTypes) {
-                positions.addAll(extractPositions(geometryType2));
+        if(geometryType != null) {
+            GeometryType geometryTypeValue = geometryType.getValue();
+            if (geometryTypeValue instanceof PointType) {
+                PointType point = (PointType) geometryTypeValue;
+                for (String coordinates : point.getCoordinates())
+                    positions.add(parsePosition(coordinates, null));
+            }
+            if (geometryTypeValue instanceof LineStringType) {
+                LineStringType lineString = (LineStringType) geometryTypeValue;
+                for (String coordinates : lineString.getCoordinates())
+                    positions.add(parsePosition(coordinates, null));
+            }
+            if (geometryTypeValue instanceof MultiGeometryType) {
+                MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
+                List<JAXBElement<? extends GeometryType>> geometryTypes = multiGeometryType.getGeometry();
+                for (JAXBElement<? extends GeometryType> geometryType2 : geometryTypes) {
+                    positions.addAll(extractPositions(geometryType2));
+                }
             }
         }
         return positions;

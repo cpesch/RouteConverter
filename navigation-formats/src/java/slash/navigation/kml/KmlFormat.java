@@ -29,6 +29,7 @@ import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
-    abstract List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException;
+    abstract List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException;
 
     boolean isPosition(String line) {
         Matcher matcher = POSITION_PATTERN.matcher(line);

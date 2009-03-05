@@ -154,6 +154,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public GpxPosition asBrokenGpxPosition() {
+        return asGpxPosition();
+    }
+
     public GpxPosition asGpxPosition() {
         return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
@@ -170,12 +174,32 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public KmlPosition asBrokenKmlPosition() {
+        return asKmlPosition();
+    }
+
+    public KmlPosition asBrokenKmlLittleEndianPosition() {
+        return asKmlPosition();
+    }
+
+    public KmlPosition asBrokenKmlBetaPosition() {
+        return asKmlPosition();
+    }
+
     public KmlPosition asKmlPosition() {
         return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
     public KmlPosition asKmlBetaPosition() {
         return asKmlPosition();
+    }
+
+    public KmlPosition asBrokenKmzPosition() {
+        return asKmzPosition();
+    }
+
+    public KmlPosition asBrokenKmzLittleEndianPosition() {
+        return asKmzPosition();
     }
 
     public KmlPosition asKmzPosition() {

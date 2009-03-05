@@ -59,8 +59,8 @@ public class Kml20Format extends KmlFormat {
         }
     }
 
-    List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException {
-        Object o = KmlUtil.unmarshal20(inputStream);
+    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+        Object o = KmlUtil.unmarshal20(source);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;
             return extractTracks(kml.getDocument(), kml.getFolder());

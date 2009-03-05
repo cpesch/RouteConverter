@@ -20,27 +20,26 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.kml.binding22beta.KmlType;
+import slash.navigation.kml.binding21.KmlType;
 
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Calendar;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes broken Google Earth 4.2 (.kml) files.
+ * Reads and writes broken little endian Google Earth 4 (.kml) files.
  *
  * @author Christian Pesch
  */
 
-public class BrokenKml22BetaFormat extends Kml22BetaFormat {
-    private static final Logger log = Logger.getLogger(BrokenKml22BetaFormat.class.getName());
+public class BrokenKml21LittleEndianFormat extends Kml21Format {
+    private static final Logger log = Logger.getLogger(BrokenKml21LittleEndianFormat.class.getName());
 
     public String getName() {
-        return "Google Earth 4.2 Garble (*" + getExtension() + ")";
+        return "Google Earth 4 Little Endian Garble (*" + getExtension() + ")";
     }
 
     public boolean isSupportsWriting() {
@@ -48,9 +47,9 @@ public class BrokenKml22BetaFormat extends Kml22BetaFormat {
     }
 
     List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
-        InputStreamReader reader = new InputStreamReader(source);
+        InputStreamReader reader = new InputStreamReader(source, UTF16LE_ENCODING);
         try {
-            KmlType kmlType = KmlUtil.unmarshal22Beta(reader);
+            KmlType kmlType = KmlUtil.unmarshal21(reader);
             return process(kmlType);
         } catch (JAXBException e) {
             log.fine("Error reading " + source + ": " + e.getMessage());

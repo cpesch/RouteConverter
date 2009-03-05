@@ -127,6 +127,9 @@ public final class NavigationFormats {
         addFormat(BrokenGpx10Format.class);
         addFormat(BrokenGpx11Format.class);
         addFormat(BrokenKml21Format.class);
+        addFormat(BrokenKml21LittleEndianFormat.class);
+        addFormat(BrokenKmz21Format.class);
+        addFormat(BrokenKmz21LittleEndianFormat.class);
         addFormat(BrokenKml22BetaFormat.class);
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);

@@ -62,8 +62,8 @@ public class Kml22Format extends KmlFormat {
         }
     }
 
-    List<KmlRoute> internalRead(InputStream inputStream) throws JAXBException {
-        KmlType kmlType = KmlUtil.unmarshal22(inputStream);
+    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+        KmlType kmlType = KmlUtil.unmarshal22(source);
         return process(kmlType);
     }
 

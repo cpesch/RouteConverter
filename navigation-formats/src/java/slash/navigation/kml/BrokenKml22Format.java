@@ -47,7 +47,7 @@ public class BrokenKml22Format extends Kml22Format {
         return false;
     }
 
-    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
+    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
         InputStreamReader reader = new InputStreamReader(source);
         try {
             KmlType kmlType = KmlUtil.unmarshal22(reader);
