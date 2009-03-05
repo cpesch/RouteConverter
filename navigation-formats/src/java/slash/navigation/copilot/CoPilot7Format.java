@@ -26,8 +26,8 @@ import slash.navigation.util.Conversion;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class CoPilot7Format extends CoPilotFormat {
     }
 
     public void write(Wgs84Route route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        write(route, target, UTF16_ENCODING, startIndex, endIndex, numberPositionNames);
+        write(route, target, UTF16LE_ENCODING, startIndex, endIndex, numberPositionNames);
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
@@ -57,6 +57,7 @@ public class CoPilot7Format extends CoPilotFormat {
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
         writer.println("TollClosed=0");
         writer.println(END_TRIP);
+        writer.println();
 
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
@@ -66,13 +67,30 @@ public class CoPilot7Format extends CoPilotFormat {
             writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
             String latitude = Conversion.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
             writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
+
             // TODO write decomposed comment
+            // Name=
+            // Address=11 Veilchenstrasse
+            // City=Gladbeck
+            // State=DE
+            // County=Recklinghausen
+            // Zip=47853
+
             String comment = position.getComment();
-            writer.println(CITY + NAME_VALUE_SEPARATOR + comment);
+            int index = comment.indexOf(',');
+            String city = index != -1 ? comment.substring(0, index) : comment;
+            String address = index != -1 ? comment.substring(index + 1) : comment;
+            address = Conversion.trim(address);
+
+            writer.println(ADDRESS + NAME_VALUE_SEPARATOR + address);
+            writer.println(CITY + NAME_VALUE_SEPARATOR + city);
             writer.println(END_STOP);
+            writer.println();
+
             writer.println(START_STOP_OPT + NAME_VALUE_SEPARATOR + "Stop " + i);
             writer.println("Loaded=1");
             writer.println(END_STOP_OPT);
+            writer.println();
         }
     }
 }
