@@ -128,14 +128,14 @@ public class Kml22BetaFormat extends KmlFormat {
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
-            String folderName = concatPath(name, Conversion.trim(folderTypeValue.getNameElement()));
+            String folderName = concatPath(name, folderTypeValue.getNameElement());
             result.addAll(extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup()));
         }
 
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
         for (JAXBElement<DocumentType> document : documents) {
             DocumentType documentTypeValue = document.getValue();
-            String documentName = concatPath(name, Conversion.trim(documentTypeValue.getNameElement()));
+            String documentName = concatPath(name, documentTypeValue.getNameElement());
             result.addAll(extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup()));
         }
         return result;

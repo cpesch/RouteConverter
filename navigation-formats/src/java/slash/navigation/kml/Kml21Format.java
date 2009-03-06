@@ -133,7 +133,7 @@ public class Kml21Format extends KmlFormat {
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
         for (JAXBElement<DocumentType> document : documents) {
             DocumentType documentTypeValue = document.getValue();
-            String documentName = concatPath(name, Conversion.trim(documentTypeValue.getName()));
+            String documentName = concatPath(name, documentTypeValue.getName());
             result.addAll(extractTracks(documentName, description, documentTypeValue.getFeature()));
         }
         return result;
