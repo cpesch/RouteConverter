@@ -822,6 +822,7 @@ public class MapView {
             buffer.append("];\n");
             buffer.append("directions").append(j).append(".loadFromWaypoints(latlngs, " +
                     "{ preserveViewport: true, getPolyline: true });");
+            // TODO add avoidHighways: true as an "shortest route" option
             executeScript(buffer);
         }
     }
