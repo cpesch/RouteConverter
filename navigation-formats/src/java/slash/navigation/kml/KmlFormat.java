@@ -147,6 +147,15 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return result;
     }
 
+    protected String concatPath(String path, String fragment) {
+        path = Conversion.trim(path);
+        fragment = Conversion.trim(fragment);
+        String result = path != null ? path : "";
+        if(fragment != null)
+            result = path + "/" + fragment;
+        return result;
+    }
+
     protected String formatElevation(Double aDouble) {
         return aDouble != null ? aDouble.toString() : "0.0";
     }

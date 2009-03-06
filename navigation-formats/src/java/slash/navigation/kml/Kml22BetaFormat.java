@@ -128,10 +128,16 @@ public class Kml22BetaFormat extends KmlFormat {
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
-            String folderName = (name != null ? name + "/" : "") + Conversion.trim(folderTypeValue.getNameElement());
+            String folderName = concatPath(name, Conversion.trim(folderTypeValue.getNameElement()));
             result.addAll(extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup()));
         }
 
+        List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
+        for (JAXBElement<DocumentType> document : documents) {
+            DocumentType documentTypeValue = document.getValue();
+            String documentName = concatPath(name, Conversion.trim(documentTypeValue.getNameElement()));
+            result.addAll(extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup()));
+        }
         return result;
     }
 
@@ -156,7 +162,7 @@ public class Kml22BetaFormat extends KmlFormat {
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = (name != null ? name + "/" : "") + placemarkName;
+                String routeName = concatPath(name, placemarkName);
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, RouteCharacteristics.Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -483,8 +489,7 @@ public class Kml22BetaFormat extends KmlFormat {
                     placeMark.setVisibility(false);
                     PointType point = objectFactory.createPointType();
                     point.getCoordinates().add(Conversion.formatDoubleAsString(lastPosition.getLongitude()) + "," +
-                            Conversion.formatDoubleAsString(lastPosition.getLatitude()) + "," +
-                            "0");
+                            Conversion.formatDoubleAsString(lastPosition.getLatitude()) + "," + "0");
                     placeMark.setAbstractGeometryGroup(objectFactory.createPoint(point));
 
                     marks.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placeMark));

@@ -165,7 +165,7 @@ public class Kml20Format extends KmlFormat {
         List<Folder> folders = findFolders(elements);
         for (Folder folder : folders) {
             List<Object> overlays = folder.getDocumentOrFolderOrGroundOverlay();
-            String folderName = (name != null ? name + "/" : "") + extractName(overlays);
+            String folderName = concatPath(name, extractName(overlays));
             result.addAll(extractTracks(folderName, description, overlays));
         }
 
@@ -190,7 +190,7 @@ public class Kml20Format extends KmlFormat {
                 wayPoints.add(positions.get(0));
             } else {
                 // each placemark with more than one position is one track
-                String routeName = (name != null ? name + "/" : "") + placemarkName;
+                String routeName = concatPath(name, placemarkName);
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
                 if (routeDescription == null)
                     routeDescription = description;
