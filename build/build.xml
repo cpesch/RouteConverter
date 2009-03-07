@@ -771,6 +771,7 @@
             <fileset dir="${route-converter6.output.classes}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter6"/>
             </manifest>
         </jar>
@@ -860,6 +861,7 @@
             <fileset dir="${route-converter5.output.classes5}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
             </manifest>
         </jar>
@@ -886,6 +888,7 @@
             <fileset dir="${route-converter5.output.classes5}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
             </manifest>
         </jar>
@@ -912,6 +915,7 @@
             <fileset dir="${route-converter5.output.classes5}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
             </manifest>
         </jar>
@@ -938,6 +942,7 @@
             <fileset dir="${route-converter5.output.classes5}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
             </manifest>
         </jar>

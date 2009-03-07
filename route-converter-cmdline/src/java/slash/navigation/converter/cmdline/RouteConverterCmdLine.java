@@ -26,10 +26,9 @@ import slash.navigation.util.Platform;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * A simple command line user interface for the route conversion
@@ -55,13 +54,6 @@ public class RouteConverterCmdLine {
             log.info(format.getClass().getSimpleName() + " for " + format.getName());
     }
 
-    private List<String> getFormatNames(List<NavigationFormat> formats) {
-        List<String> result = new ArrayList<String>();
-        for(NavigationFormat format : NavigationFormats.getWriteFormats())
-            result.add(format.getClass().getSimpleName());
-        return result;
-    }
-
     private BaseNavigationFormat findFormat(String formatName) {
         List<NavigationFormat> formats = NavigationFormats.getWriteFormats();
         for(NavigationFormat format : formats)
@@ -71,7 +63,7 @@ public class RouteConverterCmdLine {
     }
 
     private void run(String[] args) {
-        log.info("Started RouteConverter on " + Platform.getOs() + " with " + Platform.getJvm());
+        log.info("Started RouteConverter on " + Platform.getOsName() + " with " + Platform.getJvm());
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
             logFormatNames(NavigationFormats.getWriteFormatsSortedByName());

@@ -101,9 +101,9 @@ public final class NavigationFormats {
         addFormat(MagicMapsIktFormat.class);
         addFormat(MagellanExploristFormat.class);
         addFormat(KienzleGpsFormat.class);
-        addFormat(Tcx1Format.class);          // TODO 1.25
-        addFormat(Tcx2Format.class);          // TODO 1.25
-        addFormat(KlickTelRouteFormat.class); // TODO 1.25
+        // TODO 1.25 addFormat(Tcx1Format.class);
+        // TODO 1.25 addFormat(Tcx2Format.class);
+        // TODO 1.25 addFormat(KlickTelRouteFormat.class);
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);
@@ -114,10 +114,10 @@ public final class NavigationFormats {
         addFormat(MagellanMapSendFormat.class);
         addFormat(AlanTrackLogFormat.class);
         addFormat(AlanWaypointsAndRoutesFormat.class);
-        addFormat(OziExplorerReadFormat.class);          // TODO 1.25
-        addFormat(OziExplorerRouteFormat.class);         // TODO 1.25
-        addFormat(OziExplorerTrackFormat.class);         // TODO 1.25
-        addFormat(OziExplorerWaypointFormat.class);      // TODO 1.25
+        // TODO 1.25 addFormat(OziExplorerReadFormat.class);
+        // TODO 1.25 addFormat(OziExplorerRouteFormat.class);
+        // TODO 1.25 addFormat(OziExplorerTrackFormat.class);
+        // TODO 1.25 addFormat(OziExplorerWaypointFormat.class);      
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
