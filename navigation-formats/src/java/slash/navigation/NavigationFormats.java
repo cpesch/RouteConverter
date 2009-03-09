@@ -114,10 +114,10 @@ public final class NavigationFormats {
         addFormat(MagellanMapSendFormat.class);
         addFormat(AlanTrackLogFormat.class);
         addFormat(AlanWaypointsAndRoutesFormat.class);
-        // TODO 1.25 addFormat(OziExplorerReadFormat.class);
-        // TODO 1.25 addFormat(OziExplorerRouteFormat.class);
-        // TODO 1.25 addFormat(OziExplorerTrackFormat.class);
-        // TODO 1.25 addFormat(OziExplorerWaypointFormat.class);      
+        addFormat(OziExplorerReadFormat.class);
+        addFormat(OziExplorerRouteFormat.class);
+        addFormat(OziExplorerTrackFormat.class);
+        addFormat(OziExplorerWaypointFormat.class);      
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);

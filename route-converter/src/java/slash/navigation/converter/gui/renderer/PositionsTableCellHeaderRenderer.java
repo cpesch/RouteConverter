@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.PositionTableColumn;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -37,22 +38,8 @@ public class PositionsTableCellHeaderRenderer extends DefaultTableCellRenderer {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(JLabel.LEFT);
         label.setOpaque(false);
-        switch (columnIndex) {
-            case 0:
-                label.setText(RouteConverter.BUNDLE.getString("description"));
-                break;
-            case 1:
-                label.setText(RouteConverter.BUNDLE.getString("longitude"));
-                break;
-            case 2:
-                label.setText(RouteConverter.BUNDLE.getString("latitude"));
-                break;
-            case 3:
-                label.setText(RouteConverter.BUNDLE.getString("elevation"));
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", columnIndex " + columnIndex + " does not exist");
-        }
+        PositionTableColumn column = (PositionTableColumn) table.getColumnModel().getColumn(columnIndex);
+        label.setText(RouteConverter.BUNDLE.getString(column.getName()));
         return label;
     }
 }

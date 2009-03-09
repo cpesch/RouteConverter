@@ -29,7 +29,7 @@ import java.text.MessageFormat;
 
 /**
  * A bidirectional adapter that extracts the route format name and the number
- * of position lists per route characteristics of a {@link FormatAndRoutesListModel} for display.
+ * of position lists per route characteristics of a {@link FormatAndRoutesModel} for display.
  *
  * @author Christian Pesch
  */
@@ -37,10 +37,10 @@ import java.text.MessageFormat;
 public class RouteFormatToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
     private JLabel labelFormat, labelPositionLists;
 
-    public RouteFormatToJLabelAdapter(FormatAndRoutesListModel formatAndRoutesListModel,
+    public RouteFormatToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
                                       JLabel labelFormat,
                                       JLabel labelPositionLists) {
-        super(formatAndRoutesListModel);
+        super(formatAndRoutesModel);
         this.labelFormat = labelFormat;
         this.labelPositionLists = labelPositionLists;
     }

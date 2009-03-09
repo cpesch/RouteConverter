@@ -34,6 +34,7 @@ import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
+import slash.navigation.converter.gui.helper.TableHeaderPopupMenu;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
@@ -122,7 +123,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JPanel convertPanel;
     private JPanel browsePanel;
 
-    private FormatAndRoutesListModel formatAndRoutesListModel = new FormatAndRoutesListModel();
+    private FormatAndRoutesModel formatAndRoutesModel = new FormatAndRoutesModel();
     protected JTextField textFieldSource;
     private JLabel labelPositionLists;
     private JLabel labelPositions;
@@ -414,23 +415,16 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         });
 
         tablePositions.setModel(getPositionsModel());
-        tablePositions.setDefaultRenderer(Object.class, new PositionsTableCellRenderer());
-        TableCellRenderer positionsHeaderRenderer = new PositionsTableCellHeaderRenderer();
-        TableColumnModel positionColumns = tablePositions.getColumnModel();
-        for (int i = 0; i < positionColumns.getColumnCount(); i++) {
-            TableColumn column = positionColumns.getColumn(i);
-            column.setHeaderRenderer(positionsHeaderRenderer);
-            if (i == 1 || i == 2)
-                column.setMaxWidth(68);
-            if (i == 3)
-                column.setMaxWidth(50);
-        }
+        final PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
+        tablePositions.setColumnModel(tableColumnModel);
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 handlePositionsUpdate();
             }
         });
+
+        new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
 
         NavigationFormat[] formats = NavigationFormats.getWriteFormatsSortedByName();
         comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formats));
@@ -855,8 +849,8 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         }, "MapViewCreator").start();
     }
 
-    FormatAndRoutesListModel getFormatAndRoutesModel() {
-        return formatAndRoutesListModel;
+    FormatAndRoutesModel getFormatAndRoutesModel() {
+        return formatAndRoutesModel;
     }
 
     CharacteristicsModel getCharacteristicsModel() {
@@ -1931,6 +1925,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         final JScrollPane scrollPane1 = new JScrollPane();
         convertPanel.add(scrollPane1, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tablePositions = new JTable();
+        tablePositions.setAutoCreateColumnsFromModel(false);
         tablePositions.setShowHorizontalLines(false);
         tablePositions.setShowVerticalLines(false);
         scrollPane1.setViewportView(tablePositions);

@@ -26,7 +26,7 @@ import javax.swing.event.TableModelListener;
 
 /**
  * A bidirectional adapter that extracts the route format name from the selected route
- * of a {@link FormatAndRoutesListModel} for display.
+ * of a {@link FormatAndRoutesModel} for display.
  *
  * @author Christian Pesch
  */

@@ -27,27 +27,27 @@ import javax.swing.text.PlainDocument;
 import java.util.logging.Logger;
 
 /**
- * An unidirectional adapter that extracts information from a {@link FormatAndRoutesListModel} for display.
+ * An unidirectional adapter that extracts information from a {@link FormatAndRoutesModel} for display.
  *
  * @author Christian Pesch
  */
 
 public abstract class FormatAndRoutesListModelToDocumentAdapter extends PlainDocument {
     private static final Logger log = Logger.getLogger(FormatAndRoutesListModelToDocumentAdapter.class.getName());
-    private FormatAndRoutesListModel delegate;
+    private FormatAndRoutesModel delegate;
 
-    protected FormatAndRoutesListModelToDocumentAdapter(FormatAndRoutesListModel delegate) {
+    protected FormatAndRoutesListModelToDocumentAdapter(FormatAndRoutesModel delegate) {
         setDelegate(delegate);
     }
 
-    protected FormatAndRoutesListModel getDelegate() {
+    protected FormatAndRoutesModel getDelegate() {
         return delegate;
     }
 
-    private void setDelegate(FormatAndRoutesListModel formatAndRoutesListModel) {
-        this.delegate = formatAndRoutesListModel;
+    private void setDelegate(FormatAndRoutesModel formatAndRoutesModel) {
+        this.delegate = formatAndRoutesModel;
 
-        formatAndRoutesListModel.addListDataListener(new ListDataListener() {
+        formatAndRoutesModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
                 updateAdapterFromDelegate();
             }

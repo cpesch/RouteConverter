@@ -36,14 +36,14 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class FormatAndRoutesListModel extends AbstractListModel implements ComboBoxModel {
+public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxModel {
     private boolean modified = false;
     private FormatAndRoutes formatAndRoutes;
     private PositionsModel positionsModel = new PositionsModel();
     private CharacteristicsModel characteristicsModel = new CharacteristicsModel();
 
 
-    public FormatAndRoutesListModel() {
+    public FormatAndRoutesModel() {
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedItem()

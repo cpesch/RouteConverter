@@ -96,6 +96,7 @@
                       <component id="394b2" class="javax.swing.JTable" binding="tablePositions">
                         <constraints/>
                         <properties>
+                          <autoCreateColumnsFromModel value="false"/>
                           <showHorizontalLines value="false"/>
                           <showVerticalLines value="false"/>
                         </properties>

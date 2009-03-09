@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -58,24 +58,22 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 4;
+        throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         BaseNavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
-            case 0:
-                String comment = position.getComment();
-                String time = "";
+            case PositionsTableColumnModel.DESCRIPTION_COLUMN_INDEX:
+                return position.getComment();
+            case PositionsTableColumnModel.TIME_COLUMN_INDEX:
                 Calendar calendar = position.getTime();
-                if(calendar != null)
-                    time = " (" + TIME_FORMAT.format(calendar.getTime()) + ")";
-                return comment != null ? " " + comment + time + " " : "";
-            case 1:
+                return calendar != null ? TIME_FORMAT.format(calendar.getTime()) : "";
+            case PositionsTableColumnModel.LONGITUDE_COLUMN_INDEX:
                 return formatLongitudeOrLatitude(position.getLongitude());
-            case 2:
+            case PositionsTableColumnModel.LATITUDE_COLUMN_INDEX:
                 return formatLongitudeOrLatitude(position.getLatitude());
-            case 3:
+            case PositionsTableColumnModel.ELEVATION_COLUMN_INDEX:
                 return formatElevation(position.getElevation());
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
