@@ -33,6 +33,7 @@ public class TourFormatTest extends NavigationTestCase {
         assertTrue(format.isSectionTitle("[1]"));
         assertTrue(format.isSectionTitle("[1234]"));
         assertTrue(format.isSectionTitle("[TOUR]"));
+        assertTrue(format.isSectionTitle("[HOME]"));
 
         assertFalse(format.isSectionTitle("[Tour]"));
         assertFalse(format.isSectionTitle("[Egal]"));
