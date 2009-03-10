@@ -29,7 +29,9 @@ import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.itn.ItnFormat;
+import slash.navigation.itn.Itn5Format;
+import slash.navigation.itn.Itn8Format;
+import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
@@ -39,7 +41,6 @@ import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
-import slash.navigation.klicktel.KlickTelRouteFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -203,11 +204,11 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertMTP0607ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Itn5Format());
     }
 
     public void testConvertGpxToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Itn8Format());
     }
 
     public void testConvertMTP0607ToKml() throws IOException {
@@ -249,18 +250,30 @@ public class ConvertTest extends NavigationTestCase {
 
 
     public void testConvertItnToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Itn5Format());
+        convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new Itn5Format());
+        convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new Itn8Format());
     }
 
     public void testConvertItnToMTP0607() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new MTP0607Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MTP0607Format());
+        // contain umlauts currently not read by MTP:
+        // convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MTP0607Format());
+        // convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MTP0607Format());
+    }
+
+    public void testConvertItnToMTP0809() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MTP0809Format());
+        // contain umlauts currently not read by MTP:
+        // convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MTP0809Format());
+        // convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MTP0809Format());
     }
 
     public void testConvertItnToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml22BetaFormat());
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml22Format());
     }
 
 
@@ -269,7 +282,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertGoogleMapsToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new Itn5Format());
     }
 
 
@@ -353,8 +366,8 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertGpx10ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ItnFormat());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Itn8Format());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new Itn8Format());
     }
 
     public void testConvertGpx10ToMTP0607() throws IOException {
@@ -368,8 +381,8 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertGpx11ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new ItnFormat());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new Itn8Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Itn8Format());
     }
 
     public void testConvertGpx11ToMTP0607() throws IOException {
@@ -393,7 +406,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml20ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new Itn8Format());
     }
 
     public void testConvertKml20ToMTP0607() throws IOException {
@@ -405,7 +418,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml21ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new Itn8Format());
     }
 
     public void testConvertKml21ToMTP0607() throws IOException {
@@ -417,7 +430,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml22BetaToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new Itn8Format());
     }
 
     public void testConvertKml22BetaToMTP0607() throws IOException {
@@ -429,7 +442,7 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml22ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new ItnFormat());
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Itn8Format());
     }
 
     public void testConvertKml22ToMTP0607() throws IOException {
@@ -446,7 +459,9 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertItnToMagicMapsPth() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MagicMapsPthFormat());
     }
 
     public void testConvertTop50ToMagicMapsPth() throws IOException {
@@ -467,7 +482,9 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertItnToMagicMapsIkt() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new ItnFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MagicMapsIktFormat());
     }
 
     public void testConvertTop50ToMagicMapsIkt() throws IOException {
@@ -856,15 +873,15 @@ public class ConvertTest extends NavigationTestCase {
 
 
     public void testConvertLargeItnToSeveralItns() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new ItnFormat());
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new Itn5Format(), new Itn8Format());
     }
 
     public void testConvertLargeItnToSeveralMTP0607s() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new ItnFormat(), new MTP0607Format());
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new Itn5Format(), new MTP0607Format());
     }
 
     public void testConvertLargeMTP0607ToSeveralItns() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new ItnFormat());
+        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new Itn8Format());
     }
 
     public void testConvertLargeMTP0607ToSeveralMTP0607s() throws IOException {

@@ -29,8 +29,7 @@ import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
-import slash.navigation.itn.ItnPosition;
-import slash.navigation.itn.ItnRoute;
+import slash.navigation.itn.*;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -52,7 +51,6 @@ import java.util.List;
 public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
     private List<TourPosition> positions;
     private String name;
-
 
     public TourRoute(String name, List<TourPosition> positions) {
         this(new TourFormat(), name, positions);
@@ -125,13 +123,20 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-
-    public ItnRoute asItnFormat() {
+    private ItnRoute asItnFormat(ItnFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (TourPosition position : positions) {
             itnPositions.add(position.asItnPosition());
         }
-        return new ItnRoute(getCharacteristics(), getName(), itnPositions);
+        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+    }
+
+    public ItnRoute asItn5Format() {
+        return asItnFormat(new Itn5Format());
+    }
+
+    public ItnRoute asItn8Format() {
+        return asItnFormat(new Itn8Format());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {

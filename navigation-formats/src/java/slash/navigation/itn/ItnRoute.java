@@ -59,7 +59,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
     }
 
     public ItnRoute(RouteCharacteristics characteristics, String name, List<ItnPosition> positions) {
-        this(new ItnFormat(), characteristics, name, positions);
+        this(new Itn5Format(), characteristics, name, positions);
     }
 
     public String getName() {
@@ -112,8 +112,24 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    public ItnRoute asItnFormat() {
-        return this;
+    private ItnRoute asItnFormat(ItnFormat format) {
+        List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
+        for (ItnPosition position : positions) {
+            itnPositions.add(position.asItnPosition());
+        }
+        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+    }
+
+    public ItnRoute asItn5Format() {
+        if (getFormat() instanceof Itn5Format)
+            return this;
+        return asItnFormat(new Itn5Format());
+    }
+
+    public ItnRoute asItn8Format() {
+        if (getFormat() instanceof Itn8Format)
+            return this;
+        return asItnFormat(new Itn8Format());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {

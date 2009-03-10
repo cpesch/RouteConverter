@@ -21,15 +21,13 @@
 package slash.navigation.itn;
 
 import junit.framework.Assert;
-import slash.navigation.NavigationFileParser;
-import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.*;
 
 import java.io.File;
 import java.io.IOException;
 
 public class ItnFormatTest extends NavigationTestCase {
-    ItnFormat format = new ItnFormat();
+    ItnFormat format = new Itn5Format();
 
     public void testIsPosition() {
         assertTrue(format.isPosition("1046348|5364352|Linau|1|"));
@@ -41,6 +39,7 @@ public class ItnFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("-7342221|4111437||4|"));
         assertTrue(format.isPosition("980401|4894505|TC-Rp,27,|5|"));
         assertTrue(format.isPosition("980401|4894505|TC-Rp,27,|7|"));
+        assertTrue(format.isPosition("718697|5334397|Borkum - Anleger|0|"));
 
         assertFalse(format.isPosition("1046348|5364352|Linau|1"));
         assertFalse(format.isPosition("-+1046348|5364352|Linau|1"));
@@ -169,5 +168,23 @@ public class ItnFormatTest extends NavigationTestCase {
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
         assertNull(position.getElevation());
+    }
+
+    public void testItn5() throws IOException {
+        File source = new File(TEST_PATH + "from5.itn");
+        NavigationFileParser parser = new NavigationFileParser();
+        assertTrue(parser.read(source));
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+        BaseNavigationPosition first = route.getPositions().get(0);
+        Assert.assertEquals("abcäöüß€", first.getComment());
+    }
+
+    public void testItn8() throws IOException {
+        File source = new File(TEST_PATH + "from8.itn");
+        NavigationFileParser parser = new NavigationFileParser();
+        assertTrue(parser.read(source));
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+        BaseNavigationPosition first = route.getPositions().get(0);
+        Assert.assertEquals("abcäöüß€", first.getComment());
     }
 }

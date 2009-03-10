@@ -27,8 +27,7 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.binding3.Tour;
 import slash.navigation.gpx.*;
-import slash.navigation.itn.ItnPosition;
-import slash.navigation.itn.ItnRoute;
+import slash.navigation.itn.*;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -158,12 +157,20 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
     }
 
 
-    public ItnRoute asItnFormat() {
+    private ItnRoute asItnFormat(ItnFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (GoPalPosition position : positions) {
             itnPositions.add(position.asItnPosition());
         }
-        return new ItnRoute(getCharacteristics(), getName(), itnPositions);
+        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+    }
+
+    public ItnRoute asItn5Format() {
+        return asItnFormat(new Itn5Format());
+    }
+
+    public ItnRoute asItn8Format() {
+        return asItnFormat(new Itn8Format());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {

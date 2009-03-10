@@ -117,9 +117,9 @@ public abstract class BaseNavigationPosition {
      * @param other the other position
      * @return the speed in km/h between this and the other position
      */
-    public double getSpeed(KmlPosition other) {
+    public double getSpeed(BaseNavigationPosition other) {
         if (getTime() != null && other.getTime() != null) {
-            long interval = Math.abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000;
+            double interval = Math.abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
             return getDistance(other) / interval * 3.6;
         } else
             return 0.0;

@@ -65,10 +65,8 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public List<Wgs84Route> read(InputStream source, Calendar startDate) throws IOException {
-        List<Wgs84Route> route = read(source, startDate, UTF8_ENCODING);
-        if (route == null)
-            route = read(source, startDate, DEFAULT_ENCODING);
-        return route;
+        // used to be a UTF-8 then ISO-8859-1 fallback style
+        return read(source, startDate, UTF8_ENCODING);
     }
 
     public List<Wgs84Route> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {

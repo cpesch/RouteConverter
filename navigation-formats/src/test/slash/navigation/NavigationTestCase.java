@@ -28,6 +28,7 @@ import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.Itn5Format;
 import slash.navigation.itn.ItnFormat;
 import slash.navigation.itn.ItnPosition;
 import slash.navigation.itn.ItnRoute;
@@ -47,8 +48,8 @@ import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -453,7 +454,7 @@ public abstract class NavigationTestCase extends TestCase {
             startDate = Calendar.getInstance();
             startDate.setTimeInMillis(source.lastModified());
         }
-        return new ItnFormat().read(new FileInputStream(source), startDate);
+        return new Itn5Format().read(new FileInputStream(source), startDate);
     }
 
     protected List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws IOException {

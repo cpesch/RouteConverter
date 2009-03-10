@@ -29,8 +29,7 @@ import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
-import slash.navigation.itn.ItnPosition;
-import slash.navigation.itn.ItnRoute;
+import slash.navigation.itn.*;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.nmea.*;
@@ -108,12 +107,20 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    public ItnRoute asItnFormat() {
+    private ItnRoute asItnFormat(ItnFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
-        for (KmlPosition kmlPosition : positions) {
-            itnPositions.add(kmlPosition.asItnPosition());
+        for (KmlPosition position : positions) {
+            itnPositions.add(position.asItnPosition());
         }
-        return new ItnRoute(getCharacteristics(), getName(), itnPositions);
+        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+    }
+
+    public ItnRoute asItn5Format() {
+        return asItnFormat(new Itn5Format());
+    }
+
+    public ItnRoute asItn8Format() {
+        return asItnFormat(new Itn8Format());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {

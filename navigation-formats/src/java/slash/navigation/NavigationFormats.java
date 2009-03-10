@@ -31,7 +31,9 @@ import slash.navigation.gpx.BrokenGpx10Format;
 import slash.navigation.gpx.BrokenGpx11Format;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.itn.ItnFormat;
+import slash.navigation.itn.Itn5Format;
+import slash.navigation.itn.Itn8Format;
+import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
@@ -45,7 +47,6 @@ import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.viamichelin.ViaMichelinFormat;
-import slash.navigation.klicktel.KlickTelRouteFormat;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -69,7 +70,8 @@ public final class NavigationFormats {
         addFormat(NmeaFormat.class);
         addFormat(MTP0809Format.class);
         addFormat(MTP0607Format.class);
-        addFormat(ItnFormat.class);
+        addFormat(Itn8Format.class);
+        addFormat(Itn5Format.class);
         addFormat(Kml20Format.class);
         addFormat(Kmz20Format.class);
         addFormat(Kml21Format.class);
@@ -101,9 +103,10 @@ public final class NavigationFormats {
         addFormat(MagicMapsIktFormat.class);
         addFormat(MagellanExploristFormat.class);
         addFormat(KienzleGpsFormat.class);
-        // TODO 1.25 addFormat(Tcx1Format.class);
-        // TODO 1.25 addFormat(Tcx2Format.class);
-        // TODO 1.25 addFormat(KlickTelRouteFormat.class);
+        /* TODO 1.25 */
+        addFormat(Tcx1Format.class);
+        addFormat(Tcx2Format.class);
+        addFormat(KlickTelRouteFormat.class);      
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);

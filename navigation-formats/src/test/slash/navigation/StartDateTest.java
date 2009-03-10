@@ -21,7 +21,7 @@
 package slash.navigation;
 
 import slash.navigation.gopal.GoPalTrackFormat;
-import slash.navigation.itn.ItnFormat;
+import slash.navigation.itn.Itn5Format;
 import slash.navigation.itn.ItnRoute;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
@@ -76,7 +76,7 @@ public class StartDateTest extends NavigationTestCase {
     public void testCurrentStartDateForItnWithDate() throws IOException {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.itn"));
         Calendar startDate = Calendar.getInstance();
-        List<ItnRoute> routes = new ItnFormat().read(source, startDate);
+        List<ItnRoute> routes = new Itn5Format().read(source, startDate);
         checkPositions(routes);
     }
 
@@ -90,14 +90,14 @@ public class StartDateTest extends NavigationTestCase {
         File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<ItnRoute> routes = new ItnFormat().read(new FileInputStream(source), startDate);
+        List<ItnRoute> routes = new Itn5Format().read(new FileInputStream(source), startDate);
         checkPositionsWithDate(routes, startDate);
     }
 
     public void testCurrentStartDateForItnWithoutDate() throws IOException {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.itn"));
         Calendar startDate = Calendar.getInstance();
-        List<ItnRoute> routes = new ItnFormat().read(source, startDate);
+        List<ItnRoute> routes = new Itn5Format().read(source, startDate);
         checkPositionsWithDate(routes, startDate);
     }
 

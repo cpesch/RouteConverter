@@ -51,6 +51,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         }
     }
 
+    // encoding currently only used in GoogleMapsFormat
     public abstract List<R> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException;
 
     protected void write(R route, File target, String encoding, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {

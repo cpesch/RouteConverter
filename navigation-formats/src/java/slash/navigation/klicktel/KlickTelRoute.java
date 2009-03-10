@@ -21,7 +21,6 @@
 package slash.navigation.klicktel;
 
 import slash.navigation.*;
-import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -29,8 +28,8 @@ import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
-import slash.navigation.itn.ItnPosition;
-import slash.navigation.itn.ItnRoute;
+import slash.navigation.itn.*;
+import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -62,8 +61,7 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
     }
 
     private static KDRoute.RouteOptions defaultOptions() {
-        KDRoute.RouteOptions options = new KDRoute.RouteOptions();
-        return options;
+        return new KDRoute.RouteOptions();
     }
 
     public KlickTelRoute(String name, KDRoute.RouteOptions options, List<Wgs84Position> positions) {
@@ -138,20 +136,25 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return asGpxFormat(new Gpx11Format());
     }
 
-
-    public ItnRoute asItnFormat() {
+    private ItnRoute asItnFormat(ItnFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (Wgs84Position position : positions) {
             itnPositions.add(position.asItnPosition());
         }
-        return new ItnRoute(getCharacteristics(), getName(), itnPositions);
+        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
     }
 
+    public ItnRoute asItn5Format() {
+        return asItnFormat(new Itn5Format());
+    }
+
+    public ItnRoute asItn8Format() {
+        return asItnFormat(new Itn8Format());
+    }
 
     public KlickTelRoute asKlickTelRouteFormat() {
         return this;
     }
-
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();

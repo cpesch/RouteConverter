@@ -38,12 +38,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Tom Tom Rider (.itn) files.
+ * Reads and writes Tom Tom Route (.itn) files.
  *
  * @author Christian Pesch
  */
 
-public class ItnFormat extends TextNavigationFormat<ItnRoute> {
+public abstract class ItnFormat extends TextNavigationFormat<ItnRoute> {
     private static final int MAXIMUM_POSITION_COUNT = 48;
     private static final char SEPARATOR_CHAR = '|';
     private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
@@ -79,10 +79,6 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
     public static final int END_TYPE = 3;
     public static final int WAYPOINT = 1;
 
-    public String getName() {
-        return "Tom Tom Route (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".itn";
     }
@@ -103,6 +99,8 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
         return new ItnRoute(characteristics, name, (List<ItnPosition>) positions);
     }
 
+    protected abstract boolean isIso885915ButReadWithUtf8(String string);
+
     public List<ItnRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
         List<ItnPosition> positions = new ArrayList<ItnPosition>();
 
@@ -113,6 +111,7 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
                 break;
             if (line.length() == 0 || line.startsWith("~"))
                 continue;
+            line = line.replaceAll("\u0080", "€");
 
             if (isPosition(line)) {
                 ItnPosition position = parsePosition(line);
@@ -120,6 +119,10 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
                     startDate = position.getTime();
                 else if (startDate != null)
                     position.setStartDate(startDate);
+
+                if (isIso885915ButReadWithUtf8(position.getComment()))
+                    return null;
+
                 positions.add(position);
             } else if (isName(line)) {
                 name = parseName(line);
@@ -211,7 +214,7 @@ public class ItnFormat extends TextNavigationFormat<ItnRoute> {
             if (comment != null)
                 comment = numberPositionNames ? RouteComments.numberPosition(comment, i + 1) : comment;
             if (comment != null)
-                comment = comment.replaceAll(SEPARATOR, ";");
+                comment = comment.replaceAll(SEPARATOR, ";").replaceAll("€", "\u0080");
             writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + comment + SEPARATOR_CHAR + type + SEPARATOR_CHAR);
         }
     }

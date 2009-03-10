@@ -213,7 +213,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asGpsTunerFormat();
     public abstract GpxRoute asGpx10Format();
     public abstract GpxRoute asGpx11Format();
-    public abstract ItnRoute asItnFormat();
+    public abstract ItnRoute asItn5Format();
+    public abstract ItnRoute asItn8Format();
     public abstract KlickTelRoute asKlickTelRouteFormat();
     public abstract KmlRoute asKml20Format();
     public abstract KmlRoute asKml21Format();
