@@ -99,6 +99,9 @@ public class Kml21Format extends KmlFormat {
             String placemarkName = asComment(Conversion.trim(placemarkType.getName()),
                     Conversion.trim(placemarkType.getDescription()));
             Calendar placemarkTime = extractTime(placemarkType.getTimePrimitive());
+            if(placemarkTime == null)
+                placemarkTime = parseTime(placemarkType.getDescription());
+
             List<KmlPosition> positions = extractPositions(placemarkType.getGeometry());
             for (KmlPosition position : positions) {
                 if (position.getTime() == null)
@@ -148,8 +151,10 @@ public class Kml21Format extends KmlFormat {
             String placemarkName = asComment(Conversion.trim(placemarkTypeValue.getName()),
                     Conversion.trim(placemarkTypeValue.getDescription()));
             Calendar placemarkTime = extractTime(placemarkTypeValue.getTimePrimitive());
-            List<KmlPosition> positions = extractPositions(placemarkTypeValue.getGeometry());
+            if(placemarkTime == null)
+                placemarkTime = parseTime(placemarkTypeValue.getDescription());
 
+            List<KmlPosition> positions = extractPositions(placemarkTypeValue.getGeometry());
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
@@ -245,7 +250,7 @@ public class Kml21Format extends KmlFormat {
             placemarkType.setGeometry(objectFactory.createPoint(pointType));
             pointType.getCoordinates().add(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
                     Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    formatElevation(position.getElevation()));
+                    Conversion.formatDoubleAsString(position.getElevation()));
         }
         return folderType;
     }
@@ -263,7 +268,7 @@ public class Kml21Format extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             coordinates.add(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
                     Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    formatElevation(position.getElevation()));
+                    Conversion.formatDoubleAsString(position.getElevation()));
         }
         return placemarkType;
     }
@@ -279,7 +284,7 @@ public class Kml21Format extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             coordinates.add(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
                     Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    formatElevation(position.getElevation()));
+                    Conversion.formatDoubleAsString(position.getElevation()));
         }
         return placemarkType;
     }

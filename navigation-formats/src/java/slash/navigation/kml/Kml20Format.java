@@ -275,7 +275,7 @@ public class Kml20Format extends KmlFormat {
             placemarkList.add(point);
             point.setCoordinates(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
                     Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    formatElevation(position.getElevation()));
+                    Conversion.formatDoubleAsString(position.getElevation()));
         }
         return folder;
     }
@@ -294,7 +294,7 @@ public class Kml20Format extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             coordinates.append(Conversion.formatDoubleAsString(position.getLongitude())).append(",").
                     append(Conversion.formatDoubleAsString(position.getLatitude())).append(",").
-                    append(formatElevation(position.getElevation())).append(" ");
+                    append(Conversion.formatDoubleAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
@@ -312,7 +312,7 @@ public class Kml20Format extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             coordinates.append(Conversion.formatDoubleAsString(position.getLongitude())).append(",").
                     append(Conversion.formatDoubleAsString(position.getLatitude())).append(",").
-                    append(formatElevation(position.getElevation())).append(" ");
+                    append(Conversion.formatDoubleAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;

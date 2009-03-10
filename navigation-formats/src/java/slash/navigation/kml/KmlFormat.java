@@ -31,13 +31,13 @@ import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * The base of all Google Earth formats.
@@ -147,17 +147,38 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return result;
     }
 
+    static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    static final Pattern TAVELLOG_PATTERN = Pattern.compile(".*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
+
+    protected Calendar parseTime(String description) {
+        // <description><![CDATA[<html><body>Time: 2009/02/07 21:45:55<BR>Altitude: 62.20<BR>Speed: 15.37<BR></body></html>]]></description>
+        // TODO could extract speed as well
+        if (description != null) {
+            Matcher matcher = TAVELLOG_PATTERN.matcher(description);
+            if (matcher.matches()) {
+                String timeString = matcher.group(1);
+                try {
+                    Date date = TAVELLOG_DATE.parse(timeString);
+                    Calendar time = Calendar.getInstance();
+                    time.setTime(date);
+                    return time;
+                }
+                catch (ParseException e) {
+                    // intentionally left empty;
+                }
+            }
+
+        }
+        return null;
+    }
+
     protected String concatPath(String path, String fragment) {
         path = Conversion.trim(path);
         fragment = Conversion.trim(fragment);
         String result = path != null ? path : "";
         if(fragment != null)
-            result = path + "/" + fragment;
+            result = result + "/" + fragment;
         return result;
-    }
-
-    protected String formatElevation(Double aDouble) {
-        return aDouble != null ? aDouble.toString() : "0.0";
     }
 
     protected List<KmlRoute> parseRouteFromUrl(String url) {
