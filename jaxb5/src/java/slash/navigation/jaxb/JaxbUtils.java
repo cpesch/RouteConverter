@@ -38,8 +38,8 @@ import java.util.logging.Logger;
 public class JaxbUtils {
     private static final Logger log = Logger.getLogger(JaxbUtils.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(JaxbUtils.class);
-    public static final String JAXB_IMPL_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
-    public static final String JAXB_IMPL_HEADER = "com.sun.xml.bind.xmlHeaders";
+    public static final String JAXB_IMPL_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper".intern();
+    public static final String JAXB_IMPL_HEADER = "com.sun.xml.bind.xmlHeaders".intern();
 
     public static JAXBContext newContext(Class<?>... classes) {
         try {
