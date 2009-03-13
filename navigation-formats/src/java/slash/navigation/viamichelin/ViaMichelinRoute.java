@@ -121,7 +121,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return asGpxFormat(new Gpx11Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (Wgs84Position position : positions) {
             itnPositions.add(position.asItnPosition());

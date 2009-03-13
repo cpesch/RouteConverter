@@ -28,11 +28,9 @@ import slash.navigation.util.ContinousRange;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Calendar;
-import java.util.ArrayList;
+import java.util.*;
 import java.text.DateFormat;
+import java.text.ParseException;
 
 /**
  * Acts as a {@link TableModel} for the positions of a {@link BaseRoute}.
@@ -93,10 +91,21 @@ public class PositionsModel extends AbstractTableModel {
         BaseNavigationPosition position = getPosition(rowIndex);
         String value = Conversion.trim(aValue.toString());
         switch(columnIndex) {
-            case 0:
+            case PositionsTableColumnModel.DESCRIPTION_COLUMN_INDEX:
                 position.setComment(value);
                 break;
-            case 1:
+            case PositionsTableColumnModel.TIME_COLUMN_INDEX:
+                try {
+                    Date date = TIME_FORMAT.parse(value);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    position.setTime(calendar);
+                }
+                catch(ParseException e) {
+                    // intentionally left empty
+                }
+                break;
+            case PositionsTableColumnModel.LONGITUDE_COLUMN_INDEX:
                 try {
                     position.setLongitude(Conversion.parseDouble(value));
                 }
@@ -104,14 +113,14 @@ public class PositionsModel extends AbstractTableModel {
                     // intentionally left empty
                 }
                 break;
-            case 2:
+            case PositionsTableColumnModel.LATITUDE_COLUMN_INDEX:
                 try {
                     position.setLatitude(Conversion.parseDouble(value));
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }
                 break;
-            case 3:
+            case PositionsTableColumnModel.ELEVATION_COLUMN_INDEX:
                 try {
                     value = value.replaceAll("m", "");
                     position.setElevation(Conversion.parseDouble(value));

@@ -32,19 +32,16 @@ import java.util.Calendar;
 
 public class MercatorPosition extends BaseNavigationPosition {
     protected Long x, y;
-    protected Double elevation;
     protected String comment;
-    protected Calendar time;
 
     public MercatorPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
         this(asX(longitude), asY(latitude), elevation, time, comment);
     }
 
     public MercatorPosition(Long x, Long y, Double elevation, Calendar time, String comment) {
+        super(elevation, time);
         this.x = x;
         this.y = y;
-        this.elevation = elevation;
-        this.time = time;
         setComment(comment);
     }
 
@@ -78,22 +75,6 @@ public class MercatorPosition extends BaseNavigationPosition {
 
     public Long getY() {
         return y;
-    }
-
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
-    public Calendar getTime() {
-        return time;
-    }
-
-    public void setTime(Calendar time) {
-        this.time = time;
     }
 
     public String getComment() {

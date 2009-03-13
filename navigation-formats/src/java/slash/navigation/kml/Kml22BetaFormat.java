@@ -398,7 +398,7 @@ public class Kml22BetaFormat extends KmlFormat {
         List<String> coordinates = null;
         List<KmlPosition> positions = route.getPositions();
         for (int i = 0; i < positions.size() - 1; i++) {
-            double speed = positions.get(i).getSpeed(positions.get(i + 1));
+            double speed = positions.get(i).calculateSpeed(positions.get(i + 1));
             String speedColorCode = getSpeedColorCode(speed);
 
             // if speed class is different
@@ -467,7 +467,7 @@ public class Kml22BetaFormat extends KmlFormat {
             KmlPosition position = route.getPositions().get(i);
             KmlPosition previousPosition = route.getPositions().get(i - 1);
 
-            distance += position.getDistance(previousPosition);
+            distance += position.calculateDistance(previousPosition);
             if (distance >= 1000) {
                 // calculate the point at the Kilometermark that's between the current position and the
                 // previous one. It is possible, that there's more than one point to create
@@ -477,7 +477,7 @@ public class Kml22BetaFormat extends KmlFormat {
                 // remaining distance between the last point and the mark
                 double remaining = 1000 - (previousDistance % (1000));
                 do {
-                    double angle = Math.toRadians(lastPosition.getAngle(position));
+                    double angle = Math.toRadians(lastPosition.calculateAngle(position));
                     double latitude1 = Math.toRadians(lastPosition.getLatitude());
                     double longitude1 = Math.toRadians(lastPosition.getLongitude());
                     double latitude2 = Math.asin(Math.sin(latitude1) * Math.cos(remaining / Bearing.EARTH_RADIUS) +
@@ -500,7 +500,7 @@ public class Kml22BetaFormat extends KmlFormat {
                     marks.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placeMark));
 
                     remaining = 1000;
-                } while (lastPosition.getDistance(position) > 1000);
+                } while (lastPosition.calculateDistance(position) > 1000);
 
                 distance = distance % 1000;
             }

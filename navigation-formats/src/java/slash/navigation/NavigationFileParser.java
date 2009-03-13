@@ -22,7 +22,7 @@ package slash.navigation;
 
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.gpx.GpxFormat;
-import slash.navigation.itn.ItnFormat;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.NotClosingUnderlyingInputStream;
@@ -230,7 +230,7 @@ public class NavigationFileParser {
      * Gives splitted ITNRoute and SimpleRoutes a more useful name for the fragment
      */
     private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int j, File... targets) {
-        if (route.getFormat() instanceof ItnFormat || route.getFormat() instanceof SimpleFormat ||
+        if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
             String name = RouteComments.createRouteName(routeToWrite.getPositions().subList(startIndex, endIndex));
             if (targets.length > 1)

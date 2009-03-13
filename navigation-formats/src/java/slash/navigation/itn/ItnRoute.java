@@ -48,11 +48,11 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
+public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
     private List<ItnPosition> positions;
     private String name;
 
-    public ItnRoute(ItnFormat format, RouteCharacteristics characteristics, String name, List<ItnPosition> positions) {
+    public ItnRoute(TomTomRouteFormat format, RouteCharacteristics characteristics, String name, List<ItnPosition> positions) {
         super(format, characteristics);
         this.name = name;
         this.positions = positions;
@@ -112,7 +112,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, ItnFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (ItnPosition position : positions) {
             itnPositions.add(position.asItnPosition());

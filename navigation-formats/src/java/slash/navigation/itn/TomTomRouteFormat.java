@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 
-public abstract class ItnFormat extends TextNavigationFormat<ItnRoute> {
+public abstract class TomTomRouteFormat extends TextNavigationFormat<ItnRoute> {
     private static final int MAXIMUM_POSITION_COUNT = 48;
     private static final char SEPARATOR_CHAR = '|';
     private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
@@ -111,6 +111,13 @@ public abstract class ItnFormat extends TextNavigationFormat<ItnRoute> {
                 break;
             if (line.length() == 0 || line.startsWith("~"))
                 continue;
+            // some files contain EF BB BF which is displayed as FF FE in UltraEdit
+            // in UTF-8 mode we filter like this for a valid line:
+            if (line.startsWith("\ufeff"))
+                line = line.substring(1);
+            // in ISO-8859-1 mode we filter like this:
+            if (line.startsWith("\357\273\277"))
+                line = line.substring(3);
             line = line.replaceAll("\u0080", "€");
 
             if (isPosition(line)) {
@@ -196,11 +203,11 @@ public abstract class ItnFormat extends TextNavigationFormat<ItnRoute> {
             boolean first = i == startIndex;
             boolean last = i == endIndex - 1;
 
-            int type = ItnFormat.WAYPOINT;
+            int type = TomTomRouteFormat.WAYPOINT;
             if (first)
-                type = ItnFormat.START_TYPE;
+                type = TomTomRouteFormat.START_TYPE;
             else if (last)
-                type = ItnFormat.END_TYPE;
+                type = TomTomRouteFormat.END_TYPE;
 
             String comment = position.getComment();
             if (route.getCharacteristics().equals(RouteCharacteristics.Track)) {

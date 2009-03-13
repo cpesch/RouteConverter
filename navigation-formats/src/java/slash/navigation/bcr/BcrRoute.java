@@ -165,7 +165,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (BcrPosition bcrPosition : positions) {
             ItnPosition itnPosition = bcrPosition.asItnPosition();

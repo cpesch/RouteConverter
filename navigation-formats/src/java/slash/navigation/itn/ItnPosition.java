@@ -38,18 +38,21 @@ public class ItnPosition extends BaseNavigationPosition {
     static final double INTEGER_FACTOR = 100000.0;
 
     private Integer longitude, latitude;
-    private Double elevation;
     private String city, reason;
-    private Calendar time;
 
     public ItnPosition(Integer longitude, Integer latitude, String comment) {
+        super(null, null);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);
     }
 
     public ItnPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        this(asInt(longitude), asInt(latitude), comment);
+        super(elevation, time);
+        setLongitude(longitude);
+        setLatitude(latitude);
+        setComment(comment);
+        // TODO check this out
         // there could be an elevation/time already parsed from comment or one given as a parameter
         if (getElevation() == null || elevation != null)
             setElevation(elevation);
@@ -83,14 +86,6 @@ public class ItnPosition extends BaseNavigationPosition {
         this.latitude = asInt(latitude);
     }
 
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
     public String getComment() {
         return city;
     }
@@ -98,11 +93,10 @@ public class ItnPosition extends BaseNavigationPosition {
     public void setComment(String comment) {
         this.city = comment;
         this.reason = null;
-        this.elevation = null;
         if (comment == null)
             return;
 
-        Matcher matcher = ItnFormat.TRIPMASTER_1dot4_PATTERN.matcher(comment);
+        Matcher matcher = TomTomRouteFormat.TRIPMASTER_1dot4_PATTERN.matcher(comment);
         if (matcher.matches()) {
             reason = Conversion.trim(matcher.group(1));
             setTime(parseTripmaster1dot4Time(matcher.group(2)));
@@ -110,7 +104,7 @@ public class ItnPosition extends BaseNavigationPosition {
             city = Conversion.trim(matcher.group(4));
         }
 
-        matcher = ItnFormat.TRIPMASTER_SHORT_STARTEND_PATTERN.matcher(comment);
+        matcher = TomTomRouteFormat.TRIPMASTER_SHORT_STARTEND_PATTERN.matcher(comment);
         if (matcher.matches()) {
             String dateStr = Conversion.trim(matcher.group(4));
             city = Conversion.trim(matcher.group(3));
@@ -126,7 +120,7 @@ public class ItnPosition extends BaseNavigationPosition {
             elevation = Conversion.parseDouble(matcher.group(6));
         }
 
-        matcher = ItnFormat.TRIPMASTER_SHORT_WAYPOINT_PATTERN.matcher(comment);
+        matcher = TomTomRouteFormat.TRIPMASTER_SHORT_WAYPOINT_PATTERN.matcher(comment);
         if (matcher.matches()) {
             setTime(parseTripmaster1dot4Time(matcher.group(1)));
             reason = "Waypoint";
@@ -134,7 +128,7 @@ public class ItnPosition extends BaseNavigationPosition {
             city = null;
         }
 
-        matcher = ItnFormat.TRIPMASTER_MIDDLE_WAYPOINT_PATTERN.matcher(comment);
+        matcher = TomTomRouteFormat.TRIPMASTER_MIDDLE_WAYPOINT_PATTERN.matcher(comment);
         if (matcher.matches()) {
             reason = Conversion.trim(matcher.group(2));
             city = Conversion.trim(matcher.group(3));
@@ -142,7 +136,7 @@ public class ItnPosition extends BaseNavigationPosition {
             elevation = Conversion.parseDouble(matcher.group(4));
         }
 
-        matcher = ItnFormat.TRIPMASTER_LONG_PATTERN.matcher(comment);
+        matcher = TomTomRouteFormat.TRIPMASTER_LONG_PATTERN.matcher(comment);
         if (matcher.matches()) {
             reason = Conversion.trim(matcher.group(2));
             if (reason != null && reason.endsWith(" :"))
@@ -154,14 +148,14 @@ public class ItnPosition extends BaseNavigationPosition {
             elevation = Conversion.parseDouble(matcher.group(7));
         }
 
-        matcher = ItnFormat.LOGPOS_PATTERN.matcher(comment);
+        matcher = TomTomRouteFormat.LOGPOS_PATTERN.matcher(comment);
         if (matcher.matches()) {
             setTime(parsePilogDate(matcher.group(1)));
             city = Conversion.trim(matcher.group(2));
             reason = Conversion.trim(matcher.group(3));
         }
 
-        matcher = ItnFormat.PILOG_PATTERN.matcher(comment);
+        matcher = TomTomRouteFormat.PILOG_PATTERN.matcher(comment);
         if (matcher.matches()) {
             setTime(parsePilogDate(matcher.group(1)));
             city = Conversion.trim(matcher.group(2));
@@ -184,7 +178,7 @@ public class ItnPosition extends BaseNavigationPosition {
         if (string == null)
             return null;
         try {
-            Date date = ItnFormat.TRIPMASTER_TIME.parse(string);
+            Date date = TomTomRouteFormat.TRIPMASTER_TIME.parse(string);
             Calendar time = Calendar.getInstance();
             time.setTime(date);
             return time;
@@ -197,7 +191,7 @@ public class ItnPosition extends BaseNavigationPosition {
         if (string == null)
             return null;
         try {
-            Date date = ItnFormat.TRIPMASTER_DATE.parse(string);
+            Date date = TomTomRouteFormat.TRIPMASTER_DATE.parse(string);
             Calendar time = Calendar.getInstance();
             time.setTime(date);
             return time;
@@ -210,21 +204,12 @@ public class ItnPosition extends BaseNavigationPosition {
         if (string == null)
             return null;
         try {
-            Date date = ItnFormat.PILOG_DATE.parse(string);
+            Date date = TomTomRouteFormat.PILOG_DATE.parse(string);
             Calendar time = Calendar.getInstance();
             time.setTime(date);
             return time;
         } catch (ParseException e) {
             return null;
-        }
-    }
-
-
-    public void setStartDate(Calendar startDate) {
-        if (time != null) {
-            time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
-            time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
-            time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
         }
     }
 
@@ -234,14 +219,6 @@ public class ItnPosition extends BaseNavigationPosition {
 
     public String getReason() {
         return reason;
-    }
-
-    public Calendar getTime() {
-        return time;
-    }
-
-    public void setTime(Calendar time) {
-        this.time = time;
     }
 
     public ItnPosition asItnPosition() {

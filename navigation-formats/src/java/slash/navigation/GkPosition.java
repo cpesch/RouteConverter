@@ -32,22 +32,20 @@ import java.util.Calendar;
 
 public class GkPosition extends BaseNavigationPosition {
     protected double right, height;
-    protected Double elevation;
     protected String comment;
-    protected Calendar time;
 
     public GkPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
+        super(elevation, time);
         if (longitude != null && latitude != null) {
             double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, latitude);
             setRight(gk[0]);
             setHeight(gk[1]);
         }
-        this.elevation = elevation;
-        this.time = time;
         setComment(comment);
     }
 
     public GkPosition(double right, double height, String comment) {
+        super(null, null);
         this.right = right;
         this.height = height;
         setComment(comment);
@@ -87,18 +85,6 @@ public class GkPosition extends BaseNavigationPosition {
     public void setLatitude(Double latitude) {
         double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(getLongitude(), latitude);
         setHeight(gk[1]);
-    }
-
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
-    public Calendar getTime() {
-        return time;
     }
 
     public String getComment() {

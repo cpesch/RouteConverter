@@ -47,7 +47,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(window,
                         MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), e.getMessage()),
-                        RouteConverter.BUNDLE.getString("title"), JOptionPane.ERROR_MESSAGE);
+                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -63,7 +63,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(window,
                         MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), e.getMessage()),
-                        RouteConverter.BUNDLE.getString("title"), JOptionPane.ERROR_MESSAGE);
+                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -87,7 +87,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
             e.printStackTrace();
             JOptionPane.showMessageDialog(window,
                     MessageFormat.format(RouteConverter.BUNDLE.getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
-                    RouteConverter.BUNDLE.getString("title"), JOptionPane.ERROR_MESSAGE);
+                    RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -99,7 +99,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
             e.printStackTrace();
             JOptionPane.showMessageDialog(window,
                     MessageFormat.format(RouteConverter.BUNDLE.getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
-                    RouteConverter.BUNDLE.getString("title"), JOptionPane.ERROR_MESSAGE);
+                    RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
 

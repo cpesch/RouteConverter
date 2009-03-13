@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.BaseNavigationPosition;
+import slash.navigation.Wgs84Position;
 
 import java.util.Calendar;
 
@@ -30,60 +30,11 @@ import java.util.Calendar;
  * @author Christian Pesch
  */
 
-public class KmlPosition extends BaseNavigationPosition {
-    private Double longitude, latitude, elevation /* called altitude */;
-    private Calendar time;
-    private String comment;
+public class KmlPosition extends Wgs84Position {
 
     public KmlPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        setLongitude(longitude);
-        setLatitude(latitude);
-        setElevation(elevation);
-        this.time = time;
-        setComment(comment);
+        super(longitude, latitude, elevation, time, comment);
     }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
-    public Calendar getTime() {
-        return time;
-    }
-
-    public void setTime(Calendar time) {
-        this.time = time;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        // TODO use same logic as in ItnPosition#setComment
-        this.comment = comment;
-    }
-
 
     public KmlPosition asKmlPosition() {
         return this;

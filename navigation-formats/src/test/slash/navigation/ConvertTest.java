@@ -135,7 +135,8 @@ public class ConvertTest extends NavigationTestCase {
             for (int i = 0; i < targetParser.getAllRoutes().size(); i++) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = targetParser.getAllRoutes().get(i);
                 compareRouteMetaData(sourceParser.getTheRoute(), route);
-                comparePositions(sourceRoutes.get(i), sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 1);
+                BaseRoute sourceRoute = sourceFormat instanceof MicrosoftAutoRouteFormat ? sourceRoutes.get(0) : sourceRoutes.get(i);
+                comparePositions(sourceRoute, sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 1);
             }
 
             assertTrue(target.exists());
@@ -291,8 +292,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource6Format());
     }
 
-    public void testConvertGarminMapSource6ToKmlFails() throws IOException {
-        // TODO positions with the same coordinates are not saved separately within GDB files
+    public void testConvertGarminMapSource6ToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22BetaFormat());
@@ -309,7 +309,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource6Format());
     }
 
-    public void testConvertMicrosoftAutoRouteToGarminMapSource6Fails() throws IOException {
+    public void testConvertMicrosoftAutoRouteToGarminMapSource6() throws IOException {
         convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource6Format());
     }
 
@@ -339,6 +339,13 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertGarminMapSource5ToGarminMapSource5() throws IOException {
         convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
         convertRoundtrip(TEST_PATH + "large.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
+    }
+
+    public void testConvertGarminMapSource5ToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new Kml22Format());
     }
 
     public void testConvertGpx10ToGarminMapSource5() throws IOException {
@@ -438,6 +445,10 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertKml22ToKml22() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Kml22Format());
+    }
+
+    public void testConvertKml22ToKml22Beta() throws IOException {
         convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Kml22BetaFormat());
     }
 

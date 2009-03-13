@@ -27,7 +27,7 @@ import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6Format;
 import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.itn.ItnFormat;
+import slash.navigation.itn.TomTomRouteFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class AppendTest extends NavigationTestCase {
 
     static boolean isStoringRouteName(NavigationFormat format) {
         return !(format instanceof GoPalRouteFormat) && !(format instanceof GoPalTrackFormat) &&
-                !(format instanceof GpsTunerFormat) && !(format instanceof ItnFormat) &&
+                !(format instanceof GpsTunerFormat) && !(format instanceof TomTomRouteFormat) &&
                 !(format instanceof NmeaFormat) && !(format instanceof Nmn4Format) &&
                 !(format instanceof Nmn5Format) && !(format instanceof Nmn6Format) &&
                 !(format instanceof MagicMapsPthFormat);

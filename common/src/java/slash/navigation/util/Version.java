@@ -21,14 +21,17 @@
 package slash.navigation.util;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.jar.JarFile;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 /**
  * Provides version parsing functionality.
@@ -36,10 +39,9 @@ import java.util.zip.ZipEntry;
  * @author Christian Pesch
  */
 
-public abstract class Version {
+public class Version {
     public static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
     public static final String ROUTECONVERTER_IS_LATEST_KEY = "routeconverter.islatest";
-    private static final Pattern TITLE_PATTERN = Pattern.compile("(.+) (\\d+\\.\\d+.?\\d*) (from|vom|van)(.+)");
 
     public static String getSystemProperty(String propertyName) {
         String propertyValue = propertyName;
@@ -107,29 +109,57 @@ public abstract class Version {
             return major <= 0;
         String latestVersionMinor = getMinor(latestVersion);
         String foundMinor = getMinor(foundVersion);
-        while(foundMinor.length() < latestVersionMinor.length())
+        while (foundMinor.length() < latestVersionMinor.length())
             foundMinor = "0" + foundMinor;
         return latestVersionMinor.compareTo(foundMinor) <= 0;
     }
 
-    public static String parseVersionFromTitle(String title) {
-        Matcher titleMatcher = TITLE_PATTERN.matcher(title);
-        if (!titleMatcher.matches())
-            throw new IllegalArgumentException("'" + title + "' does not match");
-        return titleMatcher.group(2).trim();
+    private static final SimpleDateFormat BUILD_DATE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private String version;
+    private String buildDate;
+
+    private Version() {
     }
 
-    public static String parseVersionFromJar(JarFile file) {
-        ZipEntry entry = file.getEntry("slash/navigation/converter/gui/RouteConverter.properties");
-        if (entry == null)
-            throw new IllegalArgumentException("slash/navigation/converter/gui/RouteConverter.properties does not exist");
-        Properties properties = new Properties();
-        try {
-            properties.load(file.getInputStream(entry));
-        } catch (IOException e) {
-            throw new IllegalArgumentException("cannot load slash/navigation/converter/gui/RouteConverter.properties", e);
+    public String getVersion() {
+        return version != null ? version : "?";
+    }
+
+    public String getBuildDate() {
+        if (buildDate != null) {
+            try {
+                Date date = BUILD_DATE.parse(buildDate);
+                return DateFormat.getDateInstance(DateFormat.LONG).format(date);
+            }
+            catch (ParseException e) {
+                // intentionally ignored
+            }
         }
-        String title = (String) properties.get("title");
-        return parseVersionFromTitle(title);
+        return "?";
+    }
+
+    public static Version parseVersionFromManifest() {
+        try {
+            URL url = Version.class.getProtectionDomain().getCodeSource().getLocation();
+            InputStream in = url.openStream();
+            if (in != null) {
+                JarInputStream jar = new JarInputStream(in);
+                try {
+                    Manifest manifest = jar.getManifest();
+                    if (manifest != null) {
+                        Version data = new Version();
+                        data.version = manifest.getMainAttributes().getValue("Version");
+                        data.buildDate = manifest.getMainAttributes().getValue("Build-Date");
+                        return data;
+                    }
+                }
+                finally {
+                    jar.close();
+                }
+            }
+        } catch (IOException e) {
+            // intentionally ignored
+        }
+        return new Version();
     }
 }

@@ -123,7 +123,7 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (TourPosition position : positions) {
             itnPositions.add(position.asItnPosition());

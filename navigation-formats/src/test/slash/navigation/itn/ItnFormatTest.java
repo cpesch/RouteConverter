@@ -22,12 +22,14 @@ package slash.navigation.itn;
 
 import junit.framework.Assert;
 import slash.navigation.*;
+import slash.navigation.util.Files;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class ItnFormatTest extends NavigationTestCase {
-    ItnFormat format = new Itn5Format();
+    TomTomRouteFormat format = new Itn5Format();
 
     public void testIsPosition() {
         assertTrue(format.isPosition("1046348|5364352|Linau|1|"));
@@ -187,4 +189,30 @@ public class ItnFormatTest extends NavigationTestCase {
         BaseNavigationPosition first = route.getPositions().get(0);
         Assert.assertEquals("abcäöüß€", first.getComment());
     }
+
+    public void testItn8FromDevice() throws IOException {
+        File source = new File(TEST_PATH + "from85.itn");
+        NavigationFileParser parser = new NavigationFileParser();
+        assertTrue(parser.read(source));
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+        BaseNavigationPosition first = route.getPositions().get(0);
+        Assert.assertEquals("Borkum - Anleger", first.getComment());
+    }
+
+    public void checkManfredsTourFiles() throws IOException {
+        NavigationFileParser parser = new NavigationFileParser();
+        List<File> files = Files.collectFiles(new File(SAMPLE_PATH), ".itn");
+        for (File file : files) {
+            if(file.getName().startsWith("Tour")) {
+                if(!parser.read(file))
+                    System.out.println("Cannot read route from " + file);
+                else {
+                    assertNotNull(parser.getFormat());
+                    assertNotNull("Cannot get route from " + file, parser.getTheRoute());
+                    assertNotNull(parser.getAllRoutes());
+                }
+            }
+        }
+    }
 }
+

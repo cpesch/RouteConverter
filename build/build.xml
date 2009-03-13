@@ -25,7 +25,7 @@
     <!-- Initializes properties -->
     <target name="init">
         <property name="javac.debug" value="false"/>
-        <property file="build.properties"/>
+        <property file="build/build.properties"/>
         <property name="build.output" location="build/output"/>
         <property name="build.output.tmp" location="${build.output}/tmp"/>
         <property name="build.output.tmp5" location="${build.output}/tmp5"/>
@@ -718,9 +718,16 @@
         </junit>
     </target>
 
-    <!-- Jars all classes and resources -->
-    <target name="jar" depends="init,compile">
+    <target name="prepare-jar">
         <mkdir dir="${build.output}"/>
+        <buildnumber file="build/build.number"/>
+        <tstamp>
+            <format property="today" pattern="dd-MM-yyyy HH:mm:ss"/>
+        </tstamp>
+    </target>
+
+    <!-- Jars all classes and resources -->
+    <target name="jar" depends="init,compile,prepare-jar">
         <delete dir="${build.output.tmp}"/>
         <mkdir dir="${build.output.tmp}"/>
 
@@ -773,12 +780,14 @@
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter6"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
             </manifest>
         </jar>
     </target>
 
-    <target name="jar5" depends="init5,compile5">
-        <mkdir dir="${build.output}"/>
+    <target name="jar5" depends="init5,compile5,prepare-jar">
         <delete dir="${build.output.tmp5}"/>
         <mkdir dir="${build.output.tmp5}"/>
         <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp5}">
@@ -863,6 +872,9 @@
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
             </manifest>
         </jar>
 
@@ -890,6 +902,9 @@
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
             </manifest>
         </jar>
 
@@ -917,6 +932,9 @@
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
             </manifest>
         </jar>
 
@@ -944,6 +962,9 @@
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
             </manifest>
         </jar>
     </target>

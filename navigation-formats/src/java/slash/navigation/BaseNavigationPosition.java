@@ -39,6 +39,13 @@ import java.util.Calendar;
  */
 
 public abstract class BaseNavigationPosition {
+    protected Double elevation;
+    protected Calendar time;
+
+    protected BaseNavigationPosition(Double elevation, Calendar time) {
+        setElevation(elevation);
+        setTime(time);
+    }
 
     /**
      * Return the longitude in the WGS84 coordinate system
@@ -62,14 +69,33 @@ public abstract class BaseNavigationPosition {
      * Return the elevation in meters above sea level
      * @return the elevation in meters above sea level
      */
-    public abstract Double getElevation();
-    public abstract void setElevation(Double elevation);
+    public Double getElevation() {
+        return elevation;
+    }
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
+    }
 
     /**
      * Return the date and time in UTC time zone
      * @return the date and time in UTC time zone
      */
-    public abstract Calendar getTime();
+    public Calendar getTime() {
+        return time;
+    }
+
+    public void setTime(Calendar time) {
+        this.time = time;
+    }
+
+    public void setStartDate(Calendar startDate) {
+        if(time != null) {
+            time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
+            time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
+            time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
+        }
+    }
+
 
     public abstract String getComment();
     public abstract void setComment(String comment);
@@ -78,7 +104,7 @@ public abstract class BaseNavigationPosition {
      * @param other the other position
      * @return the distance in meter this and the other position
      */
-    public double getDistance(BaseNavigationPosition other) {
+    public double calculateDistance(BaseNavigationPosition other) {
         Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
         return bearing.getDistance();
     }
@@ -87,7 +113,7 @@ public abstract class BaseNavigationPosition {
      * @param other the other position
      * @return the azimuth in degree this and the other position
      */
-    public double getAngle(BaseNavigationPosition other) {
+    public double calculateAngle(BaseNavigationPosition other) {
         Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
         return bearing.getAngle();
     }
@@ -105,10 +131,10 @@ public abstract class BaseNavigationPosition {
      * @return the orthogonal distance to the line from pointA to pointB in meter. Positive numbers
      * mean right of course, negative numbers mean left of course
      */
-    public double getOrthogonalDistance(BaseNavigationPosition pointA, BaseNavigationPosition pointB){
-        double distanceAtoD = getDistance(pointA);
-        double courseAtoD = Math.toRadians(pointA.getAngle(this));
-        double courseAtoB = Math.toRadians(pointA.getAngle(pointB));
+    public double calculateOrthogonalDistance(BaseNavigationPosition pointA, BaseNavigationPosition pointB){
+        double distanceAtoD = calculateDistance(pointA);
+        double courseAtoD = Math.toRadians(pointA.calculateAngle(this));
+        double courseAtoB = Math.toRadians(pointA.calculateAngle(pointB));
         return Math.asin(Math.sin(distanceAtoD / Bearing.EARTH_RADIUS) *
                 Math.sin(courseAtoD - courseAtoB)) * Bearing.EARTH_RADIUS;
     }
@@ -117,10 +143,10 @@ public abstract class BaseNavigationPosition {
      * @param other the other position
      * @return the speed in km/h between this and the other position
      */
-    public double getSpeed(BaseNavigationPosition other) {
+    public double calculateSpeed(BaseNavigationPosition other) {
         if (getTime() != null && other.getTime() != null) {
             double interval = Math.abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
-            return getDistance(other) / interval * 3.6;
+            return calculateDistance(other) / interval * 3.6;
         } else
             return 0.0;
     }

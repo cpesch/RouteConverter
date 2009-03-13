@@ -111,7 +111,7 @@ public class TourPosition extends MercatorPosition {
     public GoPalPosition asGoPalRoutePosition() {
         short houseNo = 0;
         try {
-            houseNo = Short.parseShort(getHouseNo());
+            houseNo = Short.parseShort(getHouseNo());   // TODO eliminate this
         } catch (NumberFormatException e) {
             // intentionally left empty
         }

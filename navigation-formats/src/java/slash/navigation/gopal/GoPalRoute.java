@@ -157,7 +157,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
     }
 
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (GoPalPosition position : positions) {
             itnPositions.add(position.asItnPosition());

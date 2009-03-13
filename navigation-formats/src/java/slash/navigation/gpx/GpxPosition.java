@@ -20,7 +20,7 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.BaseNavigationPosition;
+import slash.navigation.Wgs84Position;
 import slash.navigation.util.Conversion;
 
 import java.math.BigDecimal;
@@ -33,17 +33,11 @@ import java.util.regex.Matcher;
  * @author Christian Pesch
  */
 
-public class GpxPosition extends BaseNavigationPosition {
-    private Double longitude, latitude, elevation;
-    private Calendar time;
-    private String city, reason;
+public class GpxPosition extends Wgs84Position {
+    private String reason;
 
     public GpxPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        setLongitude(longitude);
-        setLatitude(latitude);
-        setElevation(elevation);
-        setTime(time);
-        setComment(comment);
+        super(longitude, latitude, elevation, time, comment);
     }
 
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Calendar time, String comment) {
@@ -51,57 +45,22 @@ public class GpxPosition extends BaseNavigationPosition {
                 Conversion.formatDouble(elevation), time, comment);
     }
 
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
-    public Calendar getTime() {
-        return time;
-    }
-
-    public void setTime(Calendar time) {
-        this.time = time;
-    }
-
-    public String getComment() {
-        return city;
-    }
-
     public void setComment(String comment) {
-        this.city = comment;
+        this.comment = comment;
         this.reason = null;
         if (comment == null)
             return;
 
+        // TODO move this logic up
         Matcher matcher = GpxFormat.TRIPMASTER_PATTERN.matcher(comment);
         if (matcher.matches()) {
             this.reason = Conversion.trim(matcher.group(1));
-            this.city = Conversion.trim(matcher.group(3));
+            this.comment = Conversion.trim(matcher.group(3));
         }
     }
 
     public String getCity() {
-        return city;
+        return comment;
     }
 
     public String getReason() {
@@ -120,7 +79,7 @@ public class GpxPosition extends BaseNavigationPosition {
 
         GpxPosition that = (GpxPosition) o;
 
-        return !(city != null ? !city.equals(that.city) : that.city != null) &&
+        return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
@@ -134,7 +93,7 @@ public class GpxPosition extends BaseNavigationPosition {
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
-        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
         return result;
     }

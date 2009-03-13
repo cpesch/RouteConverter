@@ -63,7 +63,7 @@ public class Updater {
     private UpdateResult check(int timeout) {
         UpdateResult result = new UpdateResult();
         try {
-            result.myVersion = Version.parseVersionFromTitle(RouteConverter.BUNDLE.getString("title"));
+            result.myVersion = Version.parseVersionFromManifest().getVersion();
             String payload = Version.getRouteConverterVersion(result.myVersion) +
                     "routeconverter.startcount=" + getStartCount() + "," +
                     "user.locale=" + Locale.getDefault() + "," +
@@ -109,7 +109,7 @@ public class Updater {
     private void offerUpdate(Window window, UpdateResult result) {
         int confirm = JOptionPane.showConfirmDialog(window,
                 MessageFormat.format(RouteConverter.BUNDLE.getString("confirm-update"), result.myVersion, result.latestVersion),
-                RouteConverter.BUNDLE.getString("title"), JOptionPane.YES_NO_OPTION);
+                RouteConverter.getTitle(), JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION)
             return;
         createExternalPrograms().startBrowserForUpdate(window);
@@ -118,7 +118,7 @@ public class Updater {
     private void noUpdateAvailable(Window window) {
         JOptionPane.showMessageDialog(window,
                 RouteConverter.BUNDLE.getString("no-update-available"),
-                RouteConverter.BUNDLE.getString("title"), JOptionPane.INFORMATION_MESSAGE);
+                RouteConverter.getTitle(), JOptionPane.INFORMATION_MESSAGE);
     }
 
 

@@ -20,7 +20,7 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.Wgs84Position;
+import slash.navigation.BaseNavigationPosition;
 import slash.navigation.util.Conversion;
 
 import java.util.Calendar;
@@ -31,20 +31,25 @@ import java.util.Calendar;
  * @author Christian Pesch
  */
 
-public class NmeaPosition extends Wgs84Position {
+public class NmeaPosition extends BaseNavigationPosition {
+    private Double longitude, latitude;
     private String northOrSouth /*latitude*/, westOrEast /*longitude*/;
+    private String comment;
 
     public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, time, comment);
-        this.northOrSouth = northOrSouth;
+        super(elevation, time);
+        this.longitude = longitude;
         this.westOrEast = westOrEast;
+        this.latitude = latitude;
+        this.northOrSouth = northOrSouth;
+        this.comment = comment;
     }
 
     public NmeaPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(null, null, elevation, time, comment);
+        super(elevation, time);
         setLongitude(longitude);
         setLatitude(latitude);
-        setComment(comment);
+        this.comment = comment;
     }
 
     private static Double toDegrees(Double ddmm2, String direction) {
@@ -87,7 +92,7 @@ public class NmeaPosition extends Wgs84Position {
     }
 
     public Double getLongitudeAsDdmm() {
-        return super.getLongitude();
+        return longitude;
     }
 
     public String getNorthOrSouth() {
@@ -95,20 +100,24 @@ public class NmeaPosition extends Wgs84Position {
     }
 
     public Double getLatitudeAsDdmm() {
-        return super.getLatitude();
+        return latitude;
     }
 
     public String getWestOrEast() {
         return westOrEast;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 
     public NmeaPosition asNmeaPosition() {
         return this;
-    }
-
-    public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
 

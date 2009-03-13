@@ -12,19 +12,20 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteComments;
-import slash.navigation.gui.Constants;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.gui.Constants;
 import slash.navigation.util.Conversion;
 
 import javax.swing.*;
@@ -32,17 +33,18 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
- * Helps to augment positions with elevation and description information.
+ * Helps to augment positions with elevation and comment information.
  *
  * @author Christian Pesch
  */
 
 public class PositionAugmenter {
-    private RouteConverter routeConverter;
+    private JFrame frame;
 
-    public PositionAugmenter(RouteConverter routeConverter) {
-        this.routeConverter = routeConverter;
+    public PositionAugmenter(JFrame frame) {
+        this.frame = frame;
     }
+
 
     private interface OverwritePredicate {
         boolean shouldOverwrite(BaseNavigationPosition position);
@@ -54,6 +56,20 @@ public class PositionAugmenter {
         }
     };
 
+    private static final OverwritePredicate NO_ELEVATION_PREDICATE = new OverwritePredicate() {
+        public boolean shouldOverwrite(BaseNavigationPosition position) {
+            return position.getElevation() == null || position.getElevation() == 0.0;
+        }
+    };
+
+    private static final OverwritePredicate NO_COMMENT_PREDICATE = new OverwritePredicate() {
+        public boolean shouldOverwrite(BaseNavigationPosition position) {
+            return Conversion.trim(position.getComment()) == null ||
+                    RouteComments.isPositionComment(position.getComment());
+        }
+    };
+
+
     private boolean addElevation(GeoNamesService service, final BaseNavigationPosition position) throws IOException {
         final Integer elevation = service.getElevationFor(position.getLongitude(), position.getLatitude());
         if (elevation != null)
@@ -61,11 +77,11 @@ public class PositionAugmenter {
         return elevation != null;
     }
 
-    private boolean addDescription(GeoNamesService service, BaseNavigationPosition position) throws IOException {
-        String description = service.getNearByFor(position.getLongitude(), position.getLatitude());
-        if (description != null)
-            position.setComment(description);
-        return description != null;
+    private boolean addComment(GeoNamesService service, BaseNavigationPosition position) throws IOException {
+        String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
+        if (comment != null)
+            position.setComment(comment);
+        return comment != null;
     }
 
     private boolean hasLongitudeAndLatitude(BaseNavigationPosition position) {
@@ -73,23 +89,24 @@ public class PositionAugmenter {
     }
 
 
-    private void addElevations(final PositionsModel positionsModel, final OverwritePredicate predicate) {
-        Constants.startWaitCursor(routeConverter.getFrame().getRootPane());
+    private void addElevations(final PositionsModel positionsModel,
+                               final int[] rows,
+                               final OverwritePredicate predicate) {
+        Constants.startWaitCursor(frame.getRootPane());
 
         new Thread(new Runnable() {
             public void run() {
                 try {
                     IOException exception = null;
                     GeoNamesService service = new GeoNamesService();
-                    for (int i = 0, c = positionsModel.getRowCount(); i < c; i++) {
-                        BaseNavigationPosition position = positionsModel.getPosition(i);
+                    for (final int row : rows) {
+                        BaseNavigationPosition position = positionsModel.getPosition(row);
                         if (hasLongitudeAndLatitude(position) && predicate.shouldOverwrite(position)) {
                             try {
                                 if (addElevation(service, position)) {
-                                    final int index = i;
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run() {
-                                            positionsModel.fireTableRowsUpdated(index, index);
+                                            positionsModel.fireTableRowsUpdated(row, row);
                                         }
                                     });
                                 }
@@ -99,14 +116,14 @@ public class PositionAugmenter {
                         }
                     }
                     if (exception != null)
-                        JOptionPane.showMessageDialog(routeConverter.getFrame(),
+                        JOptionPane.showMessageDialog(frame,
                                 MessageFormat.format(RouteConverter.BUNDLE.getString("add-elevation-error"), exception.getMessage()),
-                                routeConverter.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+                                frame.getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
                 finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(routeConverter.getFrame().getRootPane());
+                            Constants.stopWaitCursor(frame.getRootPane());
                         }
                     });
                 }
@@ -114,36 +131,48 @@ public class PositionAugmenter {
         }, "ElevationPositionAugmenter").start();
     }
 
+    private void addAllElevations(PositionsModel positionsModel, OverwritePredicate predicate) {
+        int[] selectedRows = new int[positionsModel.getRowCount()];
+        for (int i = 0; i < selectedRows.length; i++)
+            selectedRows[i] = i;
+        addElevations(positionsModel, selectedRows, predicate);
+    }
+
     public void addElevations(PositionsModel positionsModel) {
-        addElevations(positionsModel, TAUTOLOGY_PREDICATE);
+        addAllElevations(positionsModel, TAUTOLOGY_PREDICATE);
+    }
+
+    public void addElevations(PositionsModel positionsModel, int[] selectedRows) {
+        addElevations(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
     public void complementElevations(PositionsModel positionsModel) {
-        addElevations(positionsModel, new OverwritePredicate() {
-            public boolean shouldOverwrite(BaseNavigationPosition position) {
-                return position.getElevation() == null || position.getElevation() == 0.0;
-            }
-        });
+        addAllElevations(positionsModel, NO_ELEVATION_PREDICATE);
+    }
+
+    public void complementElevations(PositionsModel positionsModel, int[] selectedRows) {
+        addElevations(positionsModel, selectedRows, NO_ELEVATION_PREDICATE);
     }
 
 
-    private void addDescriptions(final PositionsModel positionsModel, final OverwritePredicate predicate) {
-        Constants.startWaitCursor(routeConverter.getFrame().getRootPane());
+    private void addComments(final PositionsModel positionsModel,
+                             final int[] rows,
+                             final OverwritePredicate predicate) {
+        Constants.startWaitCursor(frame.getRootPane());
 
         new Thread(new Runnable() {
             public void run() {
                 try {
                     IOException exception = null;
                     GeoNamesService service = new GeoNamesService();
-                    for (int i = 0, c = positionsModel.getRowCount(); i < c; i++) {
-                        BaseNavigationPosition position = positionsModel.getPosition(i);
+                    for (final int row : rows) {
+                        BaseNavigationPosition position = positionsModel.getPosition(row);
                         if (hasLongitudeAndLatitude(position) && predicate.shouldOverwrite(position)) {
                             try {
-                                if (addDescription(service, position)) {
-                                    final int index = i;
+                                if (addComment(service, position)) {
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run() {
-                                            positionsModel.fireTableRowsUpdated(index, index);
+                                            positionsModel.fireTableRowsUpdated(row, row);
                                         }
                                     });
                                 }
@@ -153,31 +182,41 @@ public class PositionAugmenter {
                         }
                     }
                     if (exception != null)
-                        JOptionPane.showMessageDialog(routeConverter.getFrame(),
-                                MessageFormat.format(RouteConverter.BUNDLE.getString("add-description-error"), exception.getMessage()),
-                                routeConverter.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame,
+                                MessageFormat.format(RouteConverter.BUNDLE.getString("add-comment-error"), exception.getMessage()),
+                                frame.getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
                 finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(routeConverter.getFrame().getRootPane());
+                            Constants.stopWaitCursor(frame.getRootPane());
                         }
                     });
                 }
             }
-        }, "DescriptionPositionAugmenter").start();
+        }, "CommentPositionAugmenter").start();
     }
 
-    public void addDescriptions(PositionsModel positionsModel) {
-        addDescriptions(positionsModel, TAUTOLOGY_PREDICATE);
+    private void addAllComments(PositionsModel positionsModel, OverwritePredicate predicate) {
+        int[] selectedRows = new int[positionsModel.getRowCount()];
+        for (int i = 0; i < selectedRows.length; i++)
+            selectedRows[i] = i;
+        addComments(positionsModel, selectedRows, predicate);
     }
 
-    public void complementDescriptions(PositionsModel positionsModel) {
-        addDescriptions(positionsModel, new OverwritePredicate() {
-            public boolean shouldOverwrite(BaseNavigationPosition position) {
-                return Conversion.trim(position.getComment()) == null ||
-                        RouteComments.isPositionComment(position.getComment());
-            }
-        });
+    public void addComments(PositionsModel positionsModel) {
+        addAllComments(positionsModel, TAUTOLOGY_PREDICATE);
+    }
+
+    public void addComments(PositionsModel positionsModel, int[] selectedRows) {
+        addComments(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
+    public void complementComments(PositionsModel positionsModel) {
+        addAllComments(positionsModel, NO_COMMENT_PREDICATE);
+    }
+
+    public void complementComments(PositionsModel positionsModel, int[] selectedRows) {
+        addComments(positionsModel, selectedRows, NO_COMMENT_PREDICATE);
     }
 }

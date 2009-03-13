@@ -67,15 +67,4 @@ public class VersionTest extends TestCase {
         assertFalse(Version.isLatestVersion("1.10", "1.9"));
         assertFalse(Version.isLatestVersion("1.100", "1.99"));
     }
-
-    public void _testReadVersion() throws IOException {
-        assertEquals("1.4.1", Version.parseVersionFromJar(new JarFile("C:\\p4\\RouteConverter\\build\\output\\RouteConverter.jar")));
-    }
-
-    public void testParseVersionFromTitle() throws IOException {
-        assertEquals("1.3", Version.parseVersionFromTitle("RouteConverter 1.3 from 06/21/07"));
-        assertEquals("1.3", Version.parseVersionFromTitle("RouteConverter 1.3 vom 21. Juni '07"));
-        assertEquals("1.3", Version.parseVersionFromTitle("RouteConverter 1.3 van 06/21/07"));
-        assertEquals("1.15.10", Version.parseVersionFromTitle("RouteConverter 1.15.10 vom 25. Februar '08"));
-    }
 }

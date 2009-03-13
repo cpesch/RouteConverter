@@ -633,20 +633,20 @@
                           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-elevation"/>
                         </properties>
                       </component>
-                      <component id="8ede5" class="javax.swing.JButton" binding="buttonAddDescription">
+                      <component id="8ede5" class="javax.swing.JButton" binding="buttonAddComment">
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-description"/>
+                          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-comment"/>
                         </properties>
                       </component>
-                      <component id="489d4" class="javax.swing.JButton" binding="buttonComplementDescription">
+                      <component id="489d4" class="javax.swing.JButton" binding="buttonComplementComment">
                         <constraints>
                           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-description"/>
+                          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-comment"/>
                         </properties>
                       </component>
                     </children>

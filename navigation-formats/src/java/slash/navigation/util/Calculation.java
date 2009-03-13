@@ -42,7 +42,7 @@ public class Calculation {
         int maximumDistanceIndex = -1;
         double maximumDistance = 0.0;
         for (int i = from + 1; i < to; i++) {
-            double d = Math.abs(positions.get(i).getOrthogonalDistance(pointA, pointB));
+            double d = Math.abs(positions.get(i).calculateOrthogonalDistance(pointA, pointB));
             if (d > maximumDistance) {
                 maximumDistance = d;
                 maximumDistanceIndex = i;

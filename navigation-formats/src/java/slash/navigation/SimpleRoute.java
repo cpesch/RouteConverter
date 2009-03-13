@@ -103,7 +103,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (P position : positions) {
             itnPositions.add(position.asItnPosition());

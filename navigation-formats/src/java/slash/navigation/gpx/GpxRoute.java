@@ -117,7 +117,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (GpxPosition position : positions) {
             itnPositions.add(position.asItnPosition());

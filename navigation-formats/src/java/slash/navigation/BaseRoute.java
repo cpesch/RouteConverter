@@ -112,7 +112,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         int index = 0;
         while (index < positions.size()) {
             P next = positions.get(index);
-            if (previous != null && (!next.hasCoordinates() || next.getDistance(previous) <= 0.0)) {
+            if (previous != null && (!next.hasCoordinates() || next.calculateDistance(previous) <= 0.0)) {
                 positions.remove(index);
             } else
                 index++;
@@ -126,7 +126,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         P previous = null;
         for (int i = 0; i < positions.size(); i++) {
             P next = positions.get(i);
-            if (previous != null && (!next.hasCoordinates() || next.getDistance(previous) <= distance))
+            if (previous != null && (!next.hasCoordinates() || next.calculateDistance(previous) <= distance))
                 result.add(i);
             previous = next;
         }
@@ -141,7 +141,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         P previous = positions.get(0);
         for (int i = 1; i < positions.size() - 1; i++) {
             P next = positions.get(i);
-            if (!next.hasCoordinates() || next.getDistance(previous) <= distance)
+            if (!next.hasCoordinates() || next.calculateDistance(previous) <= distance)
                 result.add(i);
             else
                 previous = next;
@@ -169,7 +169,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         P previous = null;
         for (P next : positions) {
             if (previous != null && previous.hasCoordinates() && next.hasCoordinates())
-                result += previous.getDistance(next);
+                result += previous.calculateDistance(next);
             previous = next;
         }
         return result;

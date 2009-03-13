@@ -35,6 +35,8 @@ import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helper.TableHeaderPopupMenu;
+import slash.navigation.converter.gui.helper.TablePopupMenu;
+import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
@@ -44,7 +46,7 @@ import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.BaseNavigationGUI;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
-import slash.navigation.itn.ItnFormat;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
@@ -88,6 +90,11 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     protected static void setBundle(Class clazz) {
         BUNDLE = ResourceBundle.getBundle(clazz.getName());
+    }
+
+    static String getTitle() {
+        Version version = Version.parseVersionFromManifest();
+        return MessageFormat.format(BUNDLE.getString("title"), version.getVersion(), version.getBuildDate());
     }
 
     private static final String SOURCE_PREFERENCE = "source";
@@ -153,8 +160,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
 
-    private PositionAugmenter augmenter = new PositionAugmenter(this);
-
     private JPanel expertPanel;
     private JLabel labelBrowse;
     private JLabel labelMail;
@@ -169,8 +174,8 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JButton buttonRenumberPositions;
     private JButton buttonAddElevation;
     private JButton buttonComplementElevation;
-    private JButton buttonAddDescription;
-    private JButton buttonComplementDescription;
+    private JButton buttonAddComment;
+    private JButton buttonComplementComment;
     private JButton buttonCheckForUpdate;
     private JButton buttonTestDragListenerPort;
 
@@ -190,7 +195,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     public void run(String[] args) {
         DebugOutput.activate();
-        log.info("Started " + BUNDLE.getString("title") + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
+        log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
         show();
         createUpdater().implicitCheck(frame);
         parseArgs(args);
@@ -198,7 +203,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
 
     private void show() {
-        createFrame(BUNDLE.getString("title"), "RouteConverter", contentPane, buttonOpenFile);
+        createFrame(getTitle(), "RouteConverter", contentPane, buttonOpenFile);
         prepareConvertPane();
 
         tabbedPane.addChangeListener(new ChangeListener() {
@@ -425,6 +430,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         });
 
         new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
+        new TablePopupMenu(frame, tablePositions, getPositionsModel());
 
         NavigationFormat[] formats = NavigationFormats.getWriteFormatsSortedByName();
         comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formats));
@@ -564,6 +570,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonAddElevation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 tabbedPane.setSelectedComponent(convertPanel);
+                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
                 augmenter.addElevations(getPositionsModel());
             }
         });
@@ -571,21 +578,24 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonComplementElevation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 tabbedPane.setSelectedComponent(convertPanel);
+                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
                 augmenter.complementElevations(getPositionsModel());
             }
         });
 
-        buttonAddDescription.addActionListener(new ActionListener() {
+        buttonAddComment.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 tabbedPane.setSelectedComponent(convertPanel);
-                augmenter.addDescriptions(getPositionsModel());
+                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
+                augmenter.addComments(getPositionsModel());
             }
         });
 
-        buttonComplementDescription.addActionListener(new ActionListener() {
+        buttonComplementComment.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 tabbedPane.setSelectedComponent(convertPanel);
-                augmenter.complementDescriptions(getPositionsModel());
+                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
+                augmenter.complementComments(getPositionsModel());
             }
         });
     }
@@ -1020,9 +1030,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         boolean existsOneRoute = getFormatAndRoutesModel().getSize() == 1;
         boolean existsMoreThanOneRoute = getFormatAndRoutesModel().getSize() > 1;
 
-        checkboxStartGoogleEarth.setVisible(getFormat() instanceof KmlFormat);
+        // TODO nobody seems to use this checkboxStartGoogleEarth.setVisible(getFormat() instanceof KmlFormat);
+        checkboxStartGoogleEarth.setVisible(false);
         checkboxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
-        checkboxNumberPositionNames.setVisible(getFormat() instanceof ItnFormat);
+        checkboxNumberPositionNames.setVisible(getFormat() instanceof TomTomRouteFormat);
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
@@ -1735,7 +1746,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             mapView.dispose();
         closeFrame();
 
-        log.info("Exited " + BUNDLE.getString("title") + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
+        log.info("Exited " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
         System.exit(0);
     }
 
@@ -2143,12 +2154,12 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonComplementElevation = new JButton();
         this.$$$loadButtonText$$$(buttonComplementElevation, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-elevation"));
         panel12.add(buttonComplementElevation, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonAddDescription = new JButton();
-        this.$$$loadButtonText$$$(buttonAddDescription, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-description"));
-        panel12.add(buttonAddDescription, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonComplementDescription = new JButton();
-        this.$$$loadButtonText$$$(buttonComplementDescription, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-description"));
-        panel12.add(buttonComplementDescription, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonAddComment = new JButton();
+        this.$$$loadButtonText$$$(buttonAddComment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-comment"));
+        panel12.add(buttonAddComment, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonComplementComment = new JButton();
+        this.$$$loadButtonText$$$(buttonComplementComment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-comment"));
+        panel12.add(buttonComplementComment, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel13 = new JPanel();
         panel13.setLayout(new GridLayoutManager(3, 2, new Insets(5, 5, 5, 5), -1, -1));
         expertPanel.add(panel13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

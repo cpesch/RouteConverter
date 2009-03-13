@@ -32,7 +32,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class Itn8Format extends ItnFormat {
+public class Itn8Format extends TomTomRouteFormat {
 
     public String getName() {
         return "Tom Tom 8 Route (*" + getExtension() + ")";

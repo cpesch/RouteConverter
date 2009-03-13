@@ -29,17 +29,14 @@ import java.util.Calendar;
  */
 
 public class Wgs84Position extends BaseNavigationPosition {
-    protected Double longitude, latitude, elevation;
+    protected Double longitude, latitude;
     protected String comment;
-    protected Calendar time;
 
 
     public Wgs84Position(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        // don't call setter here since they are overwritten with different semantic in NmeaPosition
+        super(elevation, time);
         this.longitude = longitude;
         this.latitude = latitude;
-        this.elevation = elevation;
-        this.time = time;
         setComment(comment);
     }
 
@@ -60,36 +57,13 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.latitude = latitude;
     }
 
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
-    public Calendar getTime() {
-        return time;
-    }
-
-    public void setTime(Calendar time) {
-        this.time = time;
-    }
-
     public String getComment() {
         return comment;
     }
 
     public void setComment(String comment) {
+        // TODO use same logic as in ItnPosition#setComment
         this.comment = comment;
-    }
-
-    public void setStartDate(Calendar startDate) {
-        if(time != null) {
-            time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
-            time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
-            time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
-        }
     }
 
 

@@ -20,18 +20,13 @@
 
 package slash.navigation.itn;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.List;
-
 /**
  * Reads and writes Tom Tom 5 Route (.itn) files.
  *
  * @author Christian Pesch
  */
 
-public class Itn5Format extends ItnFormat {
+public class Itn5Format extends TomTomRouteFormat {
 
     public String getName() {
         return "Tom Tom 5 Route (*" + getExtension() + ")";

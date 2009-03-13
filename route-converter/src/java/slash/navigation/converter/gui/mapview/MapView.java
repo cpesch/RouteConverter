@@ -949,6 +949,8 @@ public class MapView {
     }
 
     private String escape(String string) {
+        if(string == null)
+            return "";
         StringBuffer buffer = new StringBuffer(string);
         for (int i = 0; i < buffer.length(); i++) {
             char c = buffer.charAt(i);

@@ -110,7 +110,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (Wgs84Position position : positions) {
             itnPositions.add(position.asItnPosition());

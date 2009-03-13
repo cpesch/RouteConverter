@@ -146,7 +146,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    private ItnRoute asItnFormat(ItnFormat format) {
+    private ItnRoute asItnFormat(TomTomRouteFormat format) {
         List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
         for (Wgs84Position position : positions) {
             itnPositions.add(position.asItnPosition());
