@@ -34,9 +34,11 @@
         <property name="build.output.tmp-mac" location="${build.output}/tmp-mac"/>
         <property name="build.output.tmp-solaris" location="${build.output}/tmp-solaris"/>
         <property name="build.output.tmp-windows" location="${build.output}/tmp-windows"/>
+        <property name="build.output.src" location="${build.output}/src"/>
+        <property name="build.output.javadoc" location="${build.output}/javadoc"/>
         <property name="build.test.dir" location="${build.output}/test"/>
         <property name="build.test.dir5" location="${build.output}/test5"/>
-        <property name="gpl" location="common/src/doc/gpl/gpl.txt"/>
+        <property name="license" location="LICENSE.txt"/>
 
         <property name="catalog.src" location="catalog/src"/>
         <property name="catalog.src.java" location="${catalog.src}/java"/>
@@ -53,7 +55,7 @@
         <property name="common.output.classes" location="${common.output}/classes"/>
         <property name="common.output.testclasses" location="${common.output}/testclasses"/>
 
-        <property name="common-gui.java" location="common-gui/src/java"/>
+        <property name="common-gui.src.java" location="common-gui/src/java"/>
         <property name="common-gui.output" location="common-gui/output"/>
         <property name="common-gui.output.classes" location="${common-gui.output}/classes"/>
 
@@ -88,11 +90,11 @@
         <property name="rest.output.testclasses" location="${rest.output}/testclasses"/>
 
         <property name="route-converter.src" location="route-converter/src"/>
-        <property name="route-converter.java" location="${route-converter.src}/java"/>
+        <property name="route-converter.src.java" location="${route-converter.src}/java"/>
         <property name="route-converter.resources" location="${route-converter.src}/resources"/>
         <property name="route-converter.output" location="route-converter/output"/>
         <property name="route-converter.output.classes" location="${route-converter.output}/classes"/>
-        <property name="route-converter6.java" location="route-converter6/src/java"/>
+        <property name="route-converter6.src.java" location="route-converter6/src/java"/>
         <property name="route-converter6.output" location="route-converter6/output"/>
         <property name="route-converter6.output.classes" location="${route-converter6.output}/classes"/>
         <property name="route-converter-cmdline.src" location="route-converter-cmdline/src"/>
@@ -508,17 +510,17 @@
 
         <mkdir dir="${common-gui.output.classes}"/>
         <javac destdir="${common-gui.output.classes}" debug="${javac.debug}">
-            <src location="${common-gui.java}"/>
+            <src location="${common-gui.src.java}"/>
             <classpath refid="common-gui.classpath"/>
         </javac>
 
         <javac destdir="${route-converter.output.classes}" debug="${javac.debug}">
-            <src location="${route-converter.java}"/>
+            <src location="${route-converter.src.java}"/>
             <classpath refid="route-converter.classpath"/>
         </javac>
         <mkdir dir="${route-converter6.output.classes}"/>
         <javac destdir="${route-converter6.output.classes}" debug="${javac.debug}">
-            <src location="${route-converter6.java}"/>
+            <src location="${route-converter6.src.java}"/>
             <classpath refid="route-converter.classpath"/>
         </javac>
     </target>
@@ -602,12 +604,12 @@
 
         <mkdir dir="${common-gui.output.classes5}"/>
         <javac destdir="${common-gui.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${common-gui.java}"/>
+            <src location="${common-gui.src.java}"/>
             <classpath refid="common-gui.classpath5"/>
         </javac>
 
         <javac destdir="${route-converter.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${route-converter.java}"/>
+            <src location="${route-converter.src.java}"/>
             <classpath refid="route-converter.classpath5"/>
         </javac>
         <mkdir dir="${route-converter5.output.classes5}"/>
@@ -718,6 +720,57 @@
         </junit>
     </target>
 
+    <target name="javadoc" depends="init">
+        <delete dir="${build.output.javadoc}"/>
+        <mkdir dir="${build.output.javadoc}"/>
+
+        <property name="javadoc.title" value="RouteConverter ${build.version} API"/>
+        <javadoc destdir="${build.output.javadoc}" use="true" useexternalfile="true" 
+                 windowtitle="${javadoc.title}" classpathref="navigation-formats.classpath">
+            <doctitle>${javadoc.title}</doctitle>
+            <bottom>Created by Christian Pesch</bottom>
+
+            <fileset dir="${navigation-formats.src.java}"/>
+
+            <group title="Core">
+                <package name="slash.navigation*"/>
+            </group>
+
+            <group title="Formats">
+                <package name="slash.navigation.*"/>
+            </group>
+
+            <group title="Utilities">
+                <package name="slash.navigation.util*"/>
+            </group>
+
+            <link href="http://java.sun.com/javase/6/docs/api/"/>
+            <link href="http://jakarta.apache.org/commons/logging/apidocs/"/>
+        </javadoc>
+
+        <copy todir="${build.output.javadoc}">
+            <fileset file="${license}"/>
+        </copy>
+    </target>
+
+    <target name="source" depends="init">
+        <delete dir="${build.output.src}"/>
+        <mkdir dir="${build.output.src}"/>
+
+        <copy todir="${build.output.src}">
+            <fileset dir="${catalog.src.java}"/>
+            <fileset dir="${common.src.java}"/>
+            <fileset dir="${common-gui.src.java}"/>
+            <fileset dir="${geonames.src.java}"/>
+            <fileset dir="${jaxb6.src.java}"/>
+            <fileset dir="${navigation-formats.src.java}"/>
+            <fileset dir="${rest.src.java}"/>
+            <fileset dir="${route-converter.src.java}"/>
+            <fileset dir="${route-converter6.src.java}"/>
+            <fileset file="${license}"/>
+        </copy>
+    </target>
+
     <target name="prepare-jar">
         <mkdir dir="${build.output}"/>
         <buildnumber file="build/build.number"/>
@@ -776,6 +829,7 @@
             <fileset dir="${rest.output.classes}"/>
             <fileset dir="${route-converter.output.classes}"/>
             <fileset dir="${route-converter6.output.classes}"/>
+            <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
@@ -868,6 +922,7 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
@@ -898,6 +953,7 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
@@ -928,6 +984,7 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
@@ -958,10 +1015,43 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
                 <attribute name="Download-At" value="http://www.routeconverter.de"/>
                 <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${build.output}/RouteConverterCmdLine.jar">
+            <fileset dir="${build.output.tmp5}"/>
+            <fileset dir="${common.output.classes5}">
+                <exclude name="**/*.properties"/>
+            </fileset>
+            <fileset dir="${jaxb5.output.classes5}"/>
+            <fileset dir="${navigation-formats.output.classes5}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${route-converter-cmdline.output.classes5}"/>
+            <fileset dir="${build.output.tmp-linux}">
+                <include name="bin/**/gpsbabel"/>
+            </fileset>
+            <fileset dir="${build.output.tmp-mac}">
+                <include name="bin/**/gpsbabel"/>
+            </fileset>
+            <fileset dir="${build.output.tmp-windows}">
+                <include name="bin/**/libexpat.dll"/>
+                <include name="bin/**/gpsbabel.exe"/>
+            </fileset>
+            <fileset file="${license}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.cmdline.RouteConverterCmdLine"/>
                 <attribute name="Version" value="${build.version}"/>
                 <attribute name="Build-Number" value="${build.number}"/>
                 <attribute name="Build-Date" value="${today}"/>
