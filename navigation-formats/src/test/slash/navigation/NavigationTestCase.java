@@ -283,7 +283,7 @@ public abstract class NavigationTestCase extends TestCase {
                     assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment(), 39)), trim(targetPosition.getComment(), 39));
                 else if (targetFormat instanceof Route66Format)
                     assertEquals("Comment " + index + " does not match", Conversion.toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
-                else if (sourceFormat instanceof GarminMapSource6Format) {
+                else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format) {
                     String sourceName = getGarminMapSource6PositionComment(sourcePosition);
                     String targetName = getGarminMapSource6PositionComment(targetPosition);
                     assertEquals(sourceName, targetName);
@@ -375,7 +375,9 @@ public abstract class NavigationTestCase extends TestCase {
             int sourcePositionCount = sourceRoute.getPositionCount() / 3;
             assertEquals(sourcePositionCount, targetRoute.getPositionCount());
             comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, false, commentPositionNames, false, targetRoute.getCharacteristics());
-        } else if (sourceFormat instanceof MicrosoftAutoRouteFormat && targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
+        } else if (sourceFormat instanceof MicrosoftAutoRouteFormat &&
+                (targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format || targetFormat instanceof KmlFormat) && 
+                targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
             int sourcePositionCount = sourceRoute.getPositionCount() - 1;
             assertEquals(sourcePositionCount, targetRoute.getPositionCount());
             comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, false, commentPositionNames, false, targetRoute.getCharacteristics());
