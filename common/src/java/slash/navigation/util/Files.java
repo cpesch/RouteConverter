@@ -95,13 +95,9 @@ public class Files {
     }
 
     public static String createReadablePath(URL url) {
-        try {
-            if (url.getProtocol().equals("file"))
-                return createReadablePath(new File(url.toURI()));
-        }
-        catch (URISyntaxException e) {
-            // intentionally left empty
-        }
+        File file = toFile(url);
+        if (file != null)
+            return createReadablePath(file);
         return url.toExternalForm();
     }
 
@@ -112,7 +108,36 @@ public class Files {
         return path;
     }
 
-    public static URL[] toUrls(File... files) {
+    public static File toFile(URL url) {
+        if ("file".equals(url.getProtocol())) {
+            try {
+                return new File(url.toURI());
+            } catch (URISyntaxException e) {
+                // intentionally left empty
+            }
+        }
+        return null;
+    }
+
+    public static List<URL> toUrls(String... urls) {
+        List<URL> result = new ArrayList<URL>(urls.length);
+        for (String url : urls) {
+            try {
+                result.add(new URL(url));
+            } catch (MalformedURLException e) {
+
+                // fallback from URL to file
+                try {
+                    result.add(new File(url).toURI().toURL());
+                } catch (MalformedURLException e1) {
+                    // intentionally left empty
+                }
+            }
+        }
+        return result;
+    }
+
+    public static List<URL> toUrls(File... files) {
         List<URL> urls = new ArrayList<URL>(files.length);
         for (File file : files) {
             try {
@@ -121,7 +146,7 @@ public class Files {
                 // intentionally left empty
             }
         }
-        return urls.toArray(new URL[urls.size()]);
+        return urls;
     }
 
     public static String createGoPalFileName(String fileName) {
@@ -200,6 +225,7 @@ public class Files {
             if (collectDirectories)
                 list.add(path);
 
+            //noinspection ResultOfMethodCallIgnored
             path.listFiles(new FileFilter() {
                 public boolean accept(File file) {
                     recursiveCollect(file, collectDirectories, collectFiles, extension, list);

@@ -784,7 +784,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                     return;
                 }
 
-                openPositionList(url);
+                openPositionList(Arrays.asList(url));
             }
         });
 
@@ -1081,7 +1081,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     protected void onDrop(List<File> files) {
         if (tabbedPane.getSelectedComponent().equals(convertPanel))
-            openFiles(files);
+            openUrls(Files.toUrls(files.toArray(new File[files.size()])));
         else if (tabbedPane.getSelectedComponent().equals(browsePanel))
             addFilesToCatalog(getSelectedTreeNode(), files);
     }
@@ -1090,7 +1090,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         if (tabbedPane.getSelectedComponent().equals(convertPanel)) {
             String url = DnDHelper.extractUrl(string);
             try {
-                openPositionList(new URL(url));
+                openPositionList(Arrays.asList(new URL(url)));
             }
             catch (MalformedURLException e) {
                 log.severe("Could not create URL from '" + url + "'");
@@ -1101,14 +1101,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     private void parseArgs(String[] args) {
         if (args.length > 0) {
-            List<File> files = new ArrayList<File>();
-            for (String arg : args) {
-                files.add(new File(arg));
-            }
-            openFiles(files);
+            openUrls(Files.toUrls(args));
         } else if (getStartWithLastFilePreference()) {
-            File source = new File(preferences.get(SOURCE_PREFERENCE, ""));
-            openFiles(Arrays.asList(source));
+            String source = preferences.get(SOURCE_PREFERENCE, "");
+            openUrls(Files.toUrls(source));
         } else {
             onNewPositionList();
         }
@@ -1209,10 +1205,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         });
     }
 
-    private void handleOpenError(final Exception e, final URL[] urls) {
+    private void handleOpenError(final Exception e, final List<URL> urls) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.printArrayToDialogString(urls), e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), e.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -1235,15 +1231,16 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     }
 
 
-    protected void openFiles(List<File> files) {
+    protected void openUrls(List<URL> urls) {
         if (!confirmDiscard())
             return;
 
         // make copy which we could modify freely
-        List<File> copy = new ArrayList<File>(files);
-        for (Iterator<File> it = copy.iterator(); it.hasNext();) {
-            File file = it.next();
-            if (!file.exists() && !file.isFile()) {
+        List<URL> copy = new ArrayList<URL>(urls);
+        for (Iterator<URL> it = copy.iterator(); it.hasNext();) {
+            URL url = it.next();
+            File file = Files.toFile(url);
+            if (file != null && !file.exists() && !file.isFile()) {
                 log.warning(file + " does not exist or is not a file");
                 it.remove();
             }
@@ -1256,7 +1253,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         }
 
         if (copy.size() > 0) {
-            openPositionList(Files.toUrls(copy.toArray(new File[copy.size()])));
+            openPositionList(copy);
         }
     }
 
@@ -1312,8 +1309,8 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         openPositionList(Files.toUrls(selected));
     }
 
-    private void openPositionList(final URL... urls) {
-        final URL url = urls[0];
+    private void openPositionList(final List<URL> urls) {
+        final URL url = urls.get(0);
         final String path = Files.createReadablePath(url);
         textFieldSource.setText(path);
         preferences.put(SOURCE_PREFERENCE, path);
@@ -1341,11 +1338,11 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                                 }
                             });
 
-                            if (urls.length > 1) {
-                                List<URL> append = new ArrayList<URL>(Arrays.asList(urls));
+                            if (urls.size() > 1) {
+                                List<URL> append = new ArrayList<URL>(urls);
                                 append.remove(0);
                                 // this way the route is always marked as modified :-(
-                                appendToPositionList(append.toArray(new URL[append.size()]));
+                                appendToPositionList(append);
                             }
 
                         } else
@@ -1428,7 +1425,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         addPositionList(Files.toUrls(selected));
     }
 
-    private void addPositionList(final URL[] urls) {
+    private void addPositionList(final List<URL> urls) {
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -1497,7 +1494,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         appendToPositionList(Files.toUrls(selected));
     }
 
-    private void appendToPositionList(final URL... urls) {
+    private void appendToPositionList(final List<URL> urls) {
         new Thread(new Runnable() {
             public void run() {
                 try {
