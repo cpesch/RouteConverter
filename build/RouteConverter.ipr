@@ -401,7 +401,7 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/junit/junit/junit-4.1-src.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/junit/junit/junit-4.1-src.zip!/" />
       </SOURCES>
     </library>
     <library name="intellij/forms-rt">
