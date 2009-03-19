@@ -20,10 +20,6 @@
 
 package slash.navigation;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
-import slash.navigation.HaicomLoggerFormat;
-
 import java.text.DateFormat;
 import java.util.Calendar;
 

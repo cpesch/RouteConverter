@@ -22,12 +22,12 @@ package slash.navigation;
 
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.itn.TomTomRouteFormat;
+import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6Format;
-import slash.navigation.nmn.Nmn4Format;
-import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.itn.TomTomRouteFormat;
 
 import java.io.File;
 import java.io.IOException;

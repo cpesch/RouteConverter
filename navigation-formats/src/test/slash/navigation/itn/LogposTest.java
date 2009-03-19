@@ -20,7 +20,6 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.itn.ItnPosition;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.RouteCharacteristics;
 

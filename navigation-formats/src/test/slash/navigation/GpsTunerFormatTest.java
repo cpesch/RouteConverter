@@ -20,8 +20,8 @@
 
 package slash.navigation;
 
-import java.util.Calendar;
 import java.text.DateFormat;
+import java.util.Calendar;
 
 public class GpsTunerFormatTest extends NavigationTestCase {
     GpsTunerFormat format = new GpsTunerFormat();
