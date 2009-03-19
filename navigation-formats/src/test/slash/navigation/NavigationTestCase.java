@@ -28,9 +28,9 @@ import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.itn.Itn5Format;
-import slash.navigation.itn.ItnPosition;
-import slash.navigation.itn.ItnRoute;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTomPosition;
+import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.kml.KmlRoute;
@@ -56,6 +56,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import junit.framework.AssertionFailedError;
+
 public abstract class NavigationTestCase extends TestCase {
     protected static final Logger log = Logger.getLogger(NavigationTestCase.class.getName());
 
@@ -73,6 +75,23 @@ public abstract class NavigationTestCase extends TestCase {
         if (wasFiltered.size() == 0)
             wasFiltered = null;
         assertEquals(expected, wasFiltered);
+    }
+
+    protected void assertException(Class exceptionClass, ThrowsException runner) {
+        try {
+            runner.run();
+            fail("Worked?");
+        } catch (Throwable throwable) {
+            assertTrue("Wrong exception: " + throwable.getClass().getName(), exceptionClass.isInstance(throwable));
+        }
+    }
+
+    protected void assertTestFails(ThrowsException runner) {
+      assertException(AssertionFailedError.class, runner);
+    }
+
+    protected interface ThrowsException {
+        void run() throws Exception;
     }
 
     static boolean isReallyUnprecise(NavigationFormat format) {
@@ -212,7 +231,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (targetFormat instanceof GpxFormat || targetFormat instanceof KmlFormat ||
                         targetFormat instanceof KmzFormat || targetFormat instanceof Nmn5Format))
             assertEquals(0.0, targetPosition.getElevation());
-        else if (!(targetPosition instanceof ItnPosition))
+        else if (!(targetPosition instanceof TomTomPosition))
             assertEquals(sourcePosition.getElevation(), targetPosition.getElevation());
     }
 
@@ -482,14 +501,14 @@ public abstract class NavigationTestCase extends TestCase {
         return format.read(new FileInputStream(source));
     }
 
-    protected List<ItnRoute> readSampleItnFile(String fileName, boolean setStartDateFromFile) throws IOException {
+    protected List<TomTomRoute> readSampleTomTomRouteFile(String fileName, boolean setStartDateFromFile) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
         Calendar startDate = null;
         if (setStartDateFromFile) {
             startDate = Calendar.getInstance();
             startDate.setTimeInMillis(source.lastModified());
         }
-        return new Itn5Format().read(new FileInputStream(source), startDate);
+        return new TomTom5RouteFormat().read(new FileInputStream(source), startDate);
     }
 
     protected List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws IOException {

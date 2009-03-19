@@ -121,20 +121,20 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    private ItnRoute asItnFormat(TomTomRouteFormat format) {
-        List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
+    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (TcxPosition position : positions) {
-            itnPositions.add(position.asItnPosition());
+            tomTomPositions.add(position.asTomTomRoutePosition());
         }
-        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
     }
 
-    public ItnRoute asItn5Format() {
-        return asItnFormat(new Itn5Format());
+    public TomTomRoute asTomTom5RouteFormat() {
+        return asTomTomRouteFormat(new TomTom5RouteFormat());
     }
 
-    public ItnRoute asItn8Format() {
-        return asItnFormat(new Itn8Format());
+    public TomTomRoute asTomTom8RouteFormat() {
+        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {

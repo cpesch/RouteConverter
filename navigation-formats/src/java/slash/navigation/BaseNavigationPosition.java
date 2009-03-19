@@ -23,7 +23,7 @@ package slash.navigation;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
-import slash.navigation.itn.ItnPosition;
+import slash.navigation.itn.TomTomPosition;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmn.NmnPosition;
@@ -192,8 +192,8 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
-    public ItnPosition asItnPosition() {
-        return new ItnPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+    public TomTomPosition asTomTomRoutePosition() {
+        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
     }
 
     public Wgs84Position asKlickTelRoutePosition() {

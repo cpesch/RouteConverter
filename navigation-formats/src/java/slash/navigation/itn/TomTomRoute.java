@@ -43,23 +43,23 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * A Tom Tom Rider (.itn) route.
+ * Represents the route in a Tom Tom Route (.itn) file.
  *
  * @author Christian Pesch
  */
 
-public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
-    private List<ItnPosition> positions;
+public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
+    private List<TomTomPosition> positions;
     private String name;
 
-    public ItnRoute(TomTomRouteFormat format, RouteCharacteristics characteristics, String name, List<ItnPosition> positions) {
+    public TomTomRoute(TomTomRouteFormat format, RouteCharacteristics characteristics, String name, List<TomTomPosition> positions) {
         super(format, characteristics);
         this.name = name;
         this.positions = positions;
     }
 
-    public ItnRoute(RouteCharacteristics characteristics, String name, List<ItnPosition> positions) {
-        this(new Itn5Format(), characteristics, name, positions);
+    public TomTomRoute(RouteCharacteristics characteristics, String name, List<TomTomPosition> positions) {
+        this(new TomTom5RouteFormat(), characteristics, name, positions);
     }
 
     public String getName() {
@@ -74,7 +74,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
         return null;
     }
 
-    public List<ItnPosition> getPositions() {
+    public List<TomTomPosition> getPositions() {
         return positions;
     }
 
@@ -82,21 +82,21 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
         return positions.size();
     }
 
-    public void add(int index, ItnPosition position) {
+    public void add(int index, TomTomPosition position) {
         positions.add(index, position);
     }
 
 
-    public ItnPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new ItnPosition(longitude, latitude, null, time, comment);
+    public TomTomPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
+        return new TomTomPosition(longitude, latitude, null, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (ItnPosition itnPosition : positions) {
-            BcrPosition bcrPosition = itnPosition.asMTPPosition();
+        for (TomTomPosition tomTomPosition : positions) {
+            BcrPosition bcrPosition = tomTomPosition.asMTPPosition();
             // shortens comment to better fit to Map&Guide Tourenplaner station list
-            String location = itnPosition.getCity();
+            String location = tomTomPosition.getCity();
             if (location != null)
                 bcrPosition.setComment(location);
             bcrPositions.add(bcrPosition);
@@ -112,29 +112,29 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(TomTomRouteFormat format) {
-        List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
-        for (ItnPosition position : positions) {
-            itnPositions.add(position.asItnPosition());
+    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        for (TomTomPosition position : positions) {
+            tomTomPositions.add(position.asTomTomRoutePosition());
         }
-        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
     }
 
-    public ItnRoute asItn5Format() {
-        if (getFormat() instanceof Itn5Format)
+    public TomTomRoute asTomTom5RouteFormat() {
+        if (getFormat() instanceof TomTom5RouteFormat)
             return this;
-        return asItnFormat(new Itn5Format());
+        return asTomTomRouteFormat(new TomTom5RouteFormat());
     }
 
-    public ItnRoute asItn8Format() {
-        if (getFormat() instanceof Itn8Format)
+    public TomTomRoute asTomTom8RouteFormat() {
+        if (getFormat() instanceof TomTom8RouteFormat)
             return this;
-        return asItnFormat(new Itn8Format());
+        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new KlickTelRoute(getName(), wgs84Positions);
@@ -142,8 +142,8 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (ItnPosition itnPosition : positions) {
-            kmlPositions.add(itnPosition.asKmlPosition());
+        for (TomTomPosition tomTomPosition : positions) {
+            kmlPositions.add(tomTomPosition.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
@@ -183,8 +183,8 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (ItnPosition itnPosition : positions) {
-            gpxPositions.add(itnPosition.asGpxPosition());
+        for (TomTomPosition tomTomPosition : positions) {
+            gpxPositions.add(tomTomPosition.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
@@ -200,7 +200,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
@@ -208,7 +208,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     public MagicMapsPthRoute asMagicMapsPthFormat() {
         List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
@@ -216,7 +216,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -232,8 +232,8 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (ItnPosition itnPosition : positions) {
-            nmnPositions.add(itnPosition.asNmnPosition());
+        for (TomTomPosition tomTomPosition : positions) {
+            nmnPositions.add(tomTomPosition.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
@@ -261,7 +261,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
@@ -270,8 +270,8 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> simplePositions = new ArrayList<Wgs84Position>();
-        for (ItnPosition itnPosition : positions) {
-            simplePositions.add(itnPosition.asWgs84Position());
+        for (TomTomPosition tomTomPosition : positions) {
+            simplePositions.add(tomTomPosition.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), simplePositions);
     }
@@ -294,7 +294,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     public GoPalRoute asGoPalRouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPalRoute(getName(), gopalPositions);
@@ -322,7 +322,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             tourPositions.add(position.asTourPosition());
         }
         return new TourRoute(getName(), tourPositions);
@@ -330,7 +330,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
 
     public ViaMichelinRoute asViaMichelinFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (ItnPosition position : positions) {
+        for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new ViaMichelinRoute(getName(), wgs84Positions);
@@ -341,7 +341,7 @@ public class ItnRoute extends BaseRoute<ItnPosition, TomTomRouteFormat> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ItnRoute route = (ItnRoute) o;
+        TomTomRoute route = (TomTomRoute) o;
 
         return !(name != null ? !name.equals(route.name) : route.name != null) &&
                 characteristics.equals(route.characteristics) &&

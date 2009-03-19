@@ -227,7 +227,7 @@ public class NavigationFileParser {
     }
 
     /**
-     * Gives splitted ITNRoute and SimpleRoutes a more useful name for the fragment
+     * Gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment.
      */
     private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int j, File... targets) {
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||

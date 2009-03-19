@@ -115,7 +115,7 @@ public class NavigationFileParserTest extends NavigationTestCase {
         read(TEST_PATH + "large.gdb");
     }
 
-    public void testIsValidItn() throws IOException {
+    public void testIsValidTomTomRoute() throws IOException {
         read(TEST_PATH + "from.itn");
         read(TEST_PATH + "large.itn");
     }

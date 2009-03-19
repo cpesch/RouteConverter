@@ -21,8 +21,8 @@
 package slash.navigation;
 
 import slash.navigation.gopal.GoPalTrackFormat;
-import slash.navigation.itn.Itn5Format;
-import slash.navigation.itn.ItnRoute;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTomRoute;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
 
@@ -68,41 +68,41 @@ public class StartDateTest extends NavigationTestCase {
     }
 
 
-    public void testFileStartDateForItnWithDate() throws IOException {
-        List<ItnRoute> routes = readSampleItnFile("startdate-with-date.itn", true);
+    public void testFileStartDateForTomTomRouteWithDate() throws IOException {
+        List<TomTomRoute> routes = readSampleTomTomRouteFile("startdate-with-date.itn", true);
         checkPositions(routes);
     }
 
-    public void testCurrentStartDateForItnWithDate() throws IOException {
+    public void testCurrentStartDateForTomTomRouteWithDate() throws IOException {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.itn"));
         Calendar startDate = Calendar.getInstance();
-        List<ItnRoute> routes = new Itn5Format().read(source, startDate);
+        List<TomTomRoute> routes = new TomTom5RouteFormat().read(source, startDate);
         checkPositions(routes);
     }
 
-    public void testNullStartDateForItnWithDate() throws IOException {
-        List<ItnRoute> routes = readSampleItnFile("startdate-with-date.itn", false);
+    public void testNullStartDateForTomTomRouteWithDate() throws IOException {
+        List<TomTomRoute> routes = readSampleTomTomRouteFile("startdate-with-date.itn", false);
         checkPositions(routes);
     }
 
 
-    public void testFileStartDateForItnWithoutDate() throws IOException {
+    public void testFileStartDateForTomTomRouteWithoutDate() throws IOException {
         File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<ItnRoute> routes = new Itn5Format().read(new FileInputStream(source), startDate);
+        List<TomTomRoute> routes = new TomTom5RouteFormat().read(new FileInputStream(source), startDate);
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testCurrentStartDateForItnWithoutDate() throws IOException {
+    public void testCurrentStartDateForTomTomRouteWithoutDate() throws IOException {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.itn"));
         Calendar startDate = Calendar.getInstance();
-        List<ItnRoute> routes = new Itn5Format().read(source, startDate);
+        List<TomTomRoute> routes = new TomTom5RouteFormat().read(source, startDate);
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testNullStartDateForItnWithoutDate() throws IOException {
-        List<ItnRoute> routes = readSampleItnFile("startdate-without-date.itn", false);
+    public void testNullStartDateForTomTomRouteWithoutDate() throws IOException {
+        List<TomTomRoute> routes = readSampleTomTomRouteFile("startdate-without-date.itn", false);
         Calendar startDate = Calendar.getInstance();
         startDate.set(1970, 0, 1);
         checkPositionsWithDate(routes, startDate);

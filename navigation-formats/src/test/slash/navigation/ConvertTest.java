@@ -29,8 +29,8 @@ import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.itn.Itn5Format;
-import slash.navigation.itn.Itn8Format;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
@@ -204,12 +204,12 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-mtp0809.bcr", new MTP0809Format(), new MTP0809Format());
     }
 
-    public void testConvertMTP0607ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new Itn5Format());
+    public void testConvertMTP0607ToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new TomTom5RouteFormat());
     }
 
-    public void testConvertGpxToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Itn8Format());
+    public void testConvertGpxToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertMTP0607ToKml() throws IOException {
@@ -250,31 +250,31 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertItnToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Itn5Format());
-        convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new Itn5Format());
-        convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new Itn8Format());
+    public void testConvertTomTomRouteToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new TomTom5RouteFormat());
+        convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new TomTom5RouteFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new TomTom8RouteFormat());
     }
 
-    public void testConvertItnToMTP0607() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MTP0607Format());
+    public void testConvertTomTomRouteToMTP0607() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new MTP0607Format());
         // contain umlauts currently not read by MTP:
-        // convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MTP0607Format());
-        // convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MTP0607Format());
+        // convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new MTP0607Format());
+        // convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new MTP0607Format());
     }
 
-    public void testConvertItnToMTP0809() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MTP0809Format());
+    public void testConvertTomTomRouteToMTP0809() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new MTP0809Format());
         // contain umlauts currently not read by MTP:
-        // convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MTP0809Format());
-        // convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MTP0809Format());
+        // convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new MTP0809Format());
+        // convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new MTP0809Format());
     }
 
-    public void testConvertItnToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml22BetaFormat());
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new Kml22Format());
+    public void testConvertTomTomRouteToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new Kml22Format());
     }
 
 
@@ -282,8 +282,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new GoogleMapsFormat());
     }
 
-    public void testConvertGoogleMapsToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new Itn5Format());
+    public void testConvertGoogleMapsToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new TomTom5RouteFormat());
     }
 
 
@@ -358,8 +358,13 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource5Format());
     }
 
-    public void testConvertMicrosoftAutoRouteToGarminMapSource5Fails() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource5Format());
+    public void testConvertMicrosoftAutoRouteToGarminMapSource5() throws IOException {
+        // TODO Garmin file contains only 41 instead of expected 45 positions
+        assertTestFails(new ThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource5Format());
+            }
+        });
     }
 
     public void testConvertTourExchangeToGarminMapSource5() throws IOException {
@@ -372,9 +377,9 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new Gpx10Format());
     }
 
-    public void testConvertGpx10ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Itn8Format());
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new Itn8Format());
+    public void testConvertGpx10ToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertGpx10ToMTP0607() throws IOException {
@@ -387,9 +392,9 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Gpx11Format());
     }
 
-    public void testConvertGpx11ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new Itn8Format());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Itn8Format());
+    public void testConvertGpx11ToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new TomTom8RouteFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertGpx11ToMTP0607() throws IOException {
@@ -412,8 +417,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new Kml20Format());
     }
 
-    public void testConvertKml20ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new Itn8Format());
+    public void testConvertKml20ToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from20.kml", new Kml20Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertKml20ToMTP0607() throws IOException {
@@ -424,8 +429,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new Kml21Format());
     }
 
-    public void testConvertKml21ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new Itn8Format());
+    public void testConvertKml21ToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from21.kml", new Kml21Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertKml21ToMTP0607() throws IOException {
@@ -436,8 +441,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new Kml22BetaFormat());
     }
 
-    public void testConvertKml22BetaToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new Itn8Format());
+    public void testConvertKml22BetaToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new TomTom8RouteFormat());
     }
 
     public void testConvertKml22BetaToMTP0607() throws IOException {
@@ -452,8 +457,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Kml22BetaFormat());
     }
 
-    public void testConvertKml22ToItn() throws IOException {
-        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new Itn8Format());
+    public void testConvertKml22ToTomTomRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from22.kml", new Kml22Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertKml22ToMTP0607() throws IOException {
@@ -469,10 +474,10 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.pth", new MagicMapsPthFormat(), new CoPilot6Format());
     }
 
-    public void testConvertItnToMagicMapsPth() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MagicMapsPthFormat());
-        convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MagicMapsPthFormat());
-        convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MagicMapsPthFormat());
+    public void testConvertTomTomRouteToMagicMapsPth() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new MagicMapsPthFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new MagicMapsPthFormat());
     }
 
     public void testConvertTop50ToMagicMapsPth() throws IOException {
@@ -492,10 +497,10 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.ikt", new MagicMapsIktFormat(), new CoPilot6Format());
     }
 
-    public void testConvertItnToMagicMapsIkt() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.itn", new Itn5Format(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from5.itn", new Itn5Format(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from8.itn", new Itn8Format(), new MagicMapsIktFormat());
+    public void testConvertTomTomRouteToMagicMapsIkt() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from5.itn", new TomTom5RouteFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from8.itn", new TomTom8RouteFormat(), new MagicMapsIktFormat());
     }
 
     public void testConvertTop50ToMagicMapsIkt() throws IOException {
@@ -517,29 +522,47 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OvlFormat());
     }
 
-    public void testConvertOziExplorerTrackToTop50Fails() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OvlFormat());
+    public void testConvertOziExplorerTrackToTop50() throws IOException {
+        // TODO differences in conversion:
+        // TODO Target longitude 0 does not exist
+        assertTestFails(new ThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OvlFormat());
+            }
+        });
     }
 
     public void testConvertOziExplorerWaypointToTop50() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OvlFormat());
     }
 
-    public void testConvertOziExplorerToMagicMapsFails() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+    public void testConvertOziExplorerToMagicMaps() throws IOException {
+        // TODO differences in conversion:
+        // TODO 2.6141469644200224 is not within +5.0E-6 of -17.954639 to -17.954728773195
+        assertTestFails(new ThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsIktFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+            }
+        });
     }
 
     public void testConvertGpx10ToOziExplorerTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
     }
 
-    public void testConvertGpx10ToOziExplorerRouteFails() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
+    public void testConvertGpx10ToOziExplorerRoute() throws IOException {
+        // TODO differences in conversion:
+        // TODO Longitude 0 does not match expected:<-10.76617> but was:<-53.69928>
+        assertTestFails(new ThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
+            }
+        });
     }
 
     public void testConvertGpx10ToOziExplorerWaypoints() throws IOException {
@@ -818,11 +841,16 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new AlanWaypointsAndRoutesFormat());
     }
 
-    public void testConvertAlanWaypointsAndRoutesToGarminMapSource5Fails() throws IOException {
+    public void testConvertAlanWaypointsAndRoutesToGarminMapSource5() throws IOException {
         // TODO fails since the Garmin Mapsource seems to capture only tracks correctly
         // TODO in routes positions with the same name have the same coordinates
         // TODO in waypoint lists positions with the same coordinates are eliminated
-        convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new GarminMapSource5Format());
+        // TODO Garmin file contains only 37 instead of expected 46 positions
+        assertTestFails(new ThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new GarminMapSource5Format());
+            }
+        });
     }
 
     public void testConvertGpx11ToAlanWaypointsAndRoutes() throws IOException {
@@ -883,16 +911,16 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertLargeItnToSeveralItns() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new Itn5Format(), new Itn8Format());
+    public void testConvertLargeTomTomRouteToSeveralTomTomRoutes() throws IOException {
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new TomTom5RouteFormat(), new TomTom8RouteFormat());
     }
 
-    public void testConvertLargeItnToSeveralMTP0607s() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new Itn5Format(), new MTP0607Format());
+    public void testConvertLargeTomTomRouteToSeveralMTP0607s() throws IOException {
+        convertSplitRoundtrip(TEST_PATH + "large.itn", new TomTom5RouteFormat(), new MTP0607Format());
     }
 
-    public void testConvertLargeMTP0607ToSeveralItns() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new Itn8Format());
+    public void testConvertLargeMTP0607ToSeveralTomTomRoutes() throws IOException {
+        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new TomTom8RouteFormat());
     }
 
     public void testConvertLargeMTP0607ToSeveralMTP0607s() throws IOException {

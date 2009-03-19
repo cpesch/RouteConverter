@@ -62,7 +62,7 @@ public class Wgs84Position extends BaseNavigationPosition {
     }
 
     public void setComment(String comment) {
-        // TODO use same logic as in ItnPosition#setComment
+        // TODO use same logic as in TomTomPosition#setComment
         this.comment = comment;
     }
 

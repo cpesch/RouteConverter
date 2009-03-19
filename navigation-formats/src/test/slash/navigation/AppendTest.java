@@ -100,7 +100,7 @@ public class AppendTest extends NavigationTestCase {
         }
     }
 
-    public void testAppendItnToMTP0607() throws IOException {
+    public void testAppendTomTomRouteToMTP0607() throws IOException {
         append(TEST_PATH + "from-mtp0607.bcr", TEST_PATH + "large.itn");
     }
 
@@ -116,7 +116,7 @@ public class AppendTest extends NavigationTestCase {
         append(TEST_PATH + "from20.kml", TEST_PATH + "large11.gpx");
     }
 
-    public void testAppendKmlToItn() throws IOException {
+    public void testAppendKmlToTomTomRoute() throws IOException {
         append(TEST_PATH + "large.itn", TEST_PATH + "large20.kml");
     }
 

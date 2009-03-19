@@ -26,7 +26,7 @@ package slash.navigation.itn;
  * @author Christian Pesch
  */
 
-public class Itn5Format extends TomTomRouteFormat {
+public class TomTom5RouteFormat extends TomTomRouteFormat {
 
     public String getName() {
         return "Tom Tom 5 Route (*" + getExtension() + ")";

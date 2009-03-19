@@ -104,7 +104,7 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".gpx");
     }
 
-    public void testItnFilesAreValid() throws IOException {
+    public void testTomTomRouteFilesAreValid() throws IOException {
         readFiles(".itn");
     }
 

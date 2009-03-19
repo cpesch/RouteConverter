@@ -30,7 +30,7 @@ public class SplitTest extends ReadWriteBase {
         splitReadWriteRoundtrip(TEST_PATH + "large.bcr");
     }
 
-    public void testSplitItnReadWriteRoundtrip() throws IOException {
+    public void testSplitTomTomRouteReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large.itn", false, false);
         splitReadWriteRoundtrip(TEST_PATH + "large.itn", false, true);
     }

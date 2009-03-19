@@ -29,25 +29,25 @@ import java.util.Date;
 import java.util.regex.Matcher;
 
 /**
- * Represents a position in a Tom Tom Rider (.itn) file.
+ * Represents a position in a Tom Tom Route (.itn) file.
  *
  * @author Christian Pesch
  */
 
-public class ItnPosition extends BaseNavigationPosition {
+public class TomTomPosition extends BaseNavigationPosition {
     static final double INTEGER_FACTOR = 100000.0;
 
     private Integer longitude, latitude;
     private String city, reason;
 
-    public ItnPosition(Integer longitude, Integer latitude, String comment) {
+    public TomTomPosition(Integer longitude, Integer latitude, String comment) {
         super(null, null);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);
     }
 
-    public ItnPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
+    public TomTomPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
         super(elevation, time);
         setLongitude(longitude);
         setLatitude(latitude);
@@ -221,7 +221,7 @@ public class ItnPosition extends BaseNavigationPosition {
         return reason;
     }
 
-    public ItnPosition asItnPosition() {
+    public TomTomPosition asTomTomRoutePosition() {
         return this;
     }
 
@@ -230,7 +230,7 @@ public class ItnPosition extends BaseNavigationPosition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ItnPosition that = (ItnPosition) o;
+        TomTomPosition that = (TomTomPosition) o;
 
         return !(city != null ? !city.equals(that.city) : that.city != null) &&
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&

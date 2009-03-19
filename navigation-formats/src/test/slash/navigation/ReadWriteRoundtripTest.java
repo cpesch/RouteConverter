@@ -36,7 +36,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "large.bcr");
     }
 
-    public void testItnReadWriteRoundtrip() throws IOException {
+    public void testTomTomRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.itn");
         readWriteRoundtrip(TEST_PATH + "large.itn");
     }

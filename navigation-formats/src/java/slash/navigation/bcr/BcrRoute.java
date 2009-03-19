@@ -165,26 +165,26 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
-    private ItnRoute asItnFormat(TomTomRouteFormat format) {
-        List<ItnPosition> itnPositions = new ArrayList<ItnPosition>();
+    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
         for (BcrPosition bcrPosition : positions) {
-            ItnPosition itnPosition = bcrPosition.asItnPosition();
+            TomTomPosition tomTomPosition = bcrPosition.asTomTomRoutePosition();
             // shortens comment to better fit to Tom Tom Rider display
             String city = bcrPosition.getCity();
             String street = bcrPosition.getStreet();
             if (city != null)
-                itnPosition.setComment(city + (street != null && !BcrPosition.STREET_DEFINES_CENTER_SYMBOL.equals(street) ? "," + street : ""));
-            itnPositions.add(itnPosition);
+                tomTomPosition.setComment(city + (street != null && !BcrPosition.STREET_DEFINES_CENTER_SYMBOL.equals(street) ? "," + street : ""));
+            tomTomPositions.add(tomTomPosition);
         }
-        return new ItnRoute(format, getCharacteristics(), getName(), itnPositions);
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
     }
 
-    public ItnRoute asItn5Format() {
-        return asItnFormat(new Itn5Format());
+    public TomTomRoute asTomTom5RouteFormat() {
+        return asTomTomRouteFormat(new TomTom5RouteFormat());
     }
 
-    public ItnRoute asItn8Format() {
-        return asItnFormat(new Itn8Format());
+    public TomTomRoute asTomTom8RouteFormat() {
+        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {

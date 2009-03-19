@@ -32,13 +32,13 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class Itn8Format extends TomTomRouteFormat {
+public class TomTom8RouteFormat extends TomTomRouteFormat {
 
     public String getName() {
         return "Tom Tom 8 Route (*" + getExtension() + ")";
     }
 
-    public List<ItnRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<TomTomRoute> read(InputStream source, Calendar startDate) throws IOException {
         return read(source, startDate, UTF8_ENCODING);
     }
 
@@ -53,7 +53,7 @@ public class Itn8Format extends TomTomRouteFormat {
         return false;
     }
 
-    public void write(ItnRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(TomTomRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
         write(route, target, UTF8_ENCODING, startIndex, endIndex, numberPositionNames);
     }
 }

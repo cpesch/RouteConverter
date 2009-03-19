@@ -28,8 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class ItnFormatTest extends NavigationTestCase {
-    TomTomRouteFormat format = new Itn5Format();
+public class TomTomRouteFormatTest extends NavigationTestCase {
+    TomTomRouteFormat format = new TomTom5RouteFormat();
 
     public void testIsPosition() {
         assertTrue(format.isPosition("1046348|5364352|Linau|1|"));
@@ -56,35 +56,35 @@ public class ItnFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        ItnPosition position = format.parsePosition("1003200|5356948|Hamburg/Uhlenhorst|4|");
+        TomTomPosition position = format.parsePosition("1003200|5356948|Hamburg/Uhlenhorst|4|");
         assertEquals(1003200, (int)position.getLongitudeAsInt());
         assertEquals(5356948, (int)position.getLatitudeAsInt());
         assertEquals("Hamburg/Uhlenhorst", position.getComment());
     }
 
     public void testParsePositionFromITNConv() {
-        ItnPosition position = format.parsePosition("+1003200|+5356948|Hamburg/Uhlenhorst|4|");
+        TomTomPosition position = format.parsePosition("+1003200|+5356948|Hamburg/Uhlenhorst|4|");
         assertEquals(1003200, (int)position.getLongitudeAsInt());
         assertEquals(5356948, (int)position.getLatitudeAsInt());
         assertEquals("Hamburg/Uhlenhorst", position.getComment());
     }
 
     public void testParsePositionWithNegativeNumbers() {
-        ItnPosition position = format.parsePosition("-4253127|-3910293|Nirgendwo|3|");
+        TomTomPosition position = format.parsePosition("-4253127|-3910293|Nirgendwo|3|");
         assertEquals(-4253127, (int)position.getLongitudeAsInt());
         assertEquals(-3910293, (int)position.getLatitudeAsInt());
         assertEquals("Nirgendwo", position.getComment());
     }
 
     public void testParsePositionFromMotorradTourenplaner() {
-        ItnPosition position = format.parsePosition("1003200|5356949|Finkenau, Hamburg, Uhlenhorst (Hamburg) |2|");
+        TomTomPosition position = format.parsePosition("1003200|5356949|Finkenau, Hamburg, Uhlenhorst (Hamburg) |2|");
         assertEquals(1003200, (int)position.getLongitudeAsInt());
         assertEquals(5356949, (int)position.getLatitudeAsInt());
         assertEquals("Finkenau, Hamburg, Uhlenhorst (Hamburg)", position.getComment());
     }
 
     public void testParsePositionFromTripmaster() {
-        ItnPosition position = format.parsePosition("992001|5356396|Abstand 6 - 11:32:26 - 34 m - Bahrenfeld|0|");
+        TomTomPosition position = format.parsePosition("992001|5356396|Abstand 6 - 11:32:26 - 34 m - Bahrenfeld|0|");
         assertEquals(992001, (int)position.getLongitudeAsInt());
         assertEquals(5356396, (int)position.getLatitudeAsInt());
         assertEquals("Bahrenfeld", position.getComment());
@@ -95,7 +95,7 @@ public class ItnFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionFromTripmasterWithStrangeNullPointerException() {
-        ItnPosition position = format.parsePosition("967193|5362179|Punkt - 12:01:38 - 10.9 m - Holm DE (Pinneberg)|0|");
+        TomTomPosition position = format.parsePosition("967193|5362179|Punkt - 12:01:38 - 10.9 m - Holm DE (Pinneberg)|0|");
         assertEquals(967193, (int)position.getLongitudeAsInt());
         assertEquals(5362179, (int)position.getLatitudeAsInt());
         assertEquals("Holm DE (Pinneberg)", position.getComment());
@@ -130,7 +130,7 @@ public class ItnFormatTest extends NavigationTestCase {
     }
 
     public void testSinglePositionFile() throws IOException {
-        ItnPosition position = format.parsePosition("883644|4939999|kommandantenhaus|2|");
+        TomTomPosition position = format.parsePosition("883644|4939999|kommandantenhaus|2|");
         assertEquals(883644, (int)position.getLongitudeAsInt());
         assertEquals(4939999, (int)position.getLatitudeAsInt());
         assertEquals("kommandantenhaus", position.getComment());
@@ -150,7 +150,7 @@ public class ItnFormatTest extends NavigationTestCase {
     }
 
     public void testSetLongitudeAndLatitudeAndElevation() {
-        ItnPosition position = format.parsePosition("992001|5356396|Abstand 6 - 11:32:26 - 34 m - Bahrenfeld|0|");
+        TomTomPosition position = format.parsePosition("992001|5356396|Abstand 6 - 11:32:26 - 34 m - Bahrenfeld|0|");
         assertEquals(992001, (int)position.getLongitudeAsInt());
         assertEquals(5356396, (int)position.getLatitudeAsInt());
         assertEquals(34.0, position.getElevation());
@@ -172,7 +172,7 @@ public class ItnFormatTest extends NavigationTestCase {
         assertNull(position.getElevation());
     }
 
-    public void testItn5() throws IOException {
+    public void testTomTomRoute5() throws IOException {
         File source = new File(TEST_PATH + "from5.itn");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
@@ -181,7 +181,7 @@ public class ItnFormatTest extends NavigationTestCase {
         Assert.assertEquals("abcäöüß€", first.getComment());
     }
 
-    public void testItn8() throws IOException {
+    public void testTomTomRoute8() throws IOException {
         File source = new File(TEST_PATH + "from8.itn");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
@@ -190,7 +190,7 @@ public class ItnFormatTest extends NavigationTestCase {
         Assert.assertEquals("abcäöüß€", first.getComment());
     }
 
-    public void testItn8FromDevice() throws IOException {
+    public void testTomTomRoute8FromDevice() throws IOException {
         File source = new File(TEST_PATH + "from85.itn");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));

@@ -27,8 +27,8 @@ import java.io.IOException;
 
 public class LogposTest extends NavigationTestCase {
 
-    public void testLogposItnPosition() {
-        ItnPosition position = new ItnPosition(0, 0, "080530 08:11:44: + Neuhaus Im Solling (Holzminden); B497 In Der Fahrt; 3  (s=69 d=207)");
+    public void testLogposPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "080530 08:11:44: + Neuhaus Im Solling (Holzminden); B497 In Der Fahrt; 3  (s=69 d=207)");
         assertEquals("s=69 d=207", position.getReason());
         assertEquals("Neuhaus Im Solling (Holzminden); B497 In Der Fahrt; 3", position.getCity());
         assertNull(position.getElevation());
@@ -39,7 +39,7 @@ public class LogposTest extends NavigationTestCase {
         readFiles("logpos", extension, routeCount, expectElevation, expectTime, characteristics);
     }
 
-    public void testAllLogpasItnTracks() throws IOException {
+    public void testAllLogposTracks() throws IOException {
         readFiles(".itn", 1, false, true, RouteCharacteristics.Track);
     }
 }
