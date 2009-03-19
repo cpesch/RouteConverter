@@ -108,9 +108,8 @@ public abstract class NavigationTestCase extends TestCase {
                                    BaseNavigationPosition targetPosition) {
         if (sourceFormat.getClass().equals(targetFormat.getClass()))
             return !(isSlightlyUnprecise(sourceFormat) || isSlightlyUnprecise(targetFormat));
-        if (sourcePosition.getClass().equals(targetPosition.getClass()))
-            return !isSlightlyUnprecise(sourceFormat, targetFormat);
-        return false;
+        return sourcePosition.getClass().equals(targetPosition.getClass()) &&
+                !isSlightlyUnprecise(sourceFormat, targetFormat);
     }
 
     private static String getKmlRouteName(BaseRoute route) {
@@ -448,7 +447,8 @@ public abstract class NavigationTestCase extends TestCase {
         for (int i = 0; i < parser.getAllRoutes().size(); i++) {
             BaseRoute route = parser.getAllRoutes().get(i);
             assertNotNull(route);
-            assertEquals(characteristics[i], route.getCharacteristics());
+            assertEquals("Route " + i + " from " + source + " is not " + characteristics[i],
+                    characteristics[i], route.getCharacteristics());
             assertTrue(route.getPositionCount() > 0);
             List<BaseNavigationPosition> positions = route.getPositions();
             BaseNavigationPosition previous = null;

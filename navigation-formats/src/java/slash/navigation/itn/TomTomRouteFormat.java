@@ -72,8 +72,22 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<ItnRoute> {
                     "(" + ELEVATION + ") m - ([\\d\\.]+) (K|k)m - ([\\d\\.]+) (K|k)m/h( - \\d+)?");
 
     private static final String DATE = "\\d{6}";
-    static final Pattern PILOG_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): [+-] (.+) @(\\d+\\.\\d+)m \\((.+)\\)");
-    static final Pattern LOGPOS_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): [+-] (.+) \\((.+)\\)");
+    /**
+     * pilog/logpos encoding of the comment:
+     * + looks like a planned position with a verbose comment
+     * + Rottstücker (Wiesloch); K4174 Horrenberger Straße @166.6m (s=60 d=34)
+     * - looks like a tracked position with a verbose comment
+     * - Rottstücker (Wiesloch); K4174 Horrenberger Straße @162.6m (s=66 d=6)
+     * * is a coordinate comment
+     * * 1000462:4889518 @365.8m (s=1 d=193)
+     * = seems to be written if the position does not change for a time period
+     * = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)
+     */
+    private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
+    static final Pattern PILOG_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
+            COMMENT_SEPARATOR + " (.+) \\(?@(\\d+\\.\\d+)m \\(?(.+)\\)");
+    static final Pattern LOGPOS_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
+            COMMENT_SEPARATOR + " (.+) \\((.+)\\)");
 
     public static final int START_TYPE = 4;
     public static final int END_TYPE = 3;
@@ -139,7 +153,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<ItnRoute> {
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new ItnRoute(this, isTripmasterOrPilogTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Route, name, positions));
+            return Arrays.asList(new ItnRoute(this, isTripmasterOrPilogOrLogposTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Route, name, positions));
         else
             return null;
     }
@@ -154,7 +168,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<ItnRoute> {
         return matcher.matches();
     }
 
-    private boolean isTripmasterOrPilogTrack(List<ItnPosition> positions) {
+    private boolean isTripmasterOrPilogOrLogposTrack(List<ItnPosition> positions) {
         for (ItnPosition position : positions) {
             if (position.getReason() == null && position.getTime() == null)
                 return false;

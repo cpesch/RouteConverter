@@ -28,12 +28,28 @@ import java.io.IOException;
 
 public class PilogTest extends NavigationTestCase {
 
-    public void testPilogItnPosition() {
+    public void testPilog1ItnPosition() {
         ItnPosition position = new ItnPosition(0, 0, "080629 07:33:00: + Eschelbach (Rhein-Neckar-Kreis, Baden-Württemberg); L612 @196.9m (s=66 d=91)");
         assertEquals("s=66 d=91", position.getReason());
         assertEquals("Eschelbach (Rhein-Neckar-Kreis, Baden-Württemberg); L612", position.getCity());
         assertEquals(196.9, position.getElevation());
         assertEquals(calendar(2008, 6, 29, 7, 33, 0), position.getTime());
+    }
+
+    public void testPilog2aItnPosition() {
+        ItnPosition position = new ItnPosition(0, 0, "090314 08:05:55: * 1000462:4889518 @365.8m (s=1 d=193)");
+        assertEquals("s=1 d=193", position.getReason());
+        assertEquals("1000462:4889518", position.getCity());
+        assertEquals(365.8, position.getElevation());
+        assertEquals(calendar(2009, 3, 14, 8, 5, 55), position.getTime());
+    }
+
+    public void testPilog2bItnPosition() {
+        ItnPosition position = new ItnPosition(0, 0, "090314 07:36:52: = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)");
+        assertEquals("090314 07:36:52 - 090314 08:02:04", position.getReason());
+        assertEquals("1000466:4889529", position.getCity());
+        assertEquals(365.8, position.getElevation());
+        assertEquals(calendar(2009, 3, 14, 7, 36, 52), position.getTime());
     }
 
     private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {

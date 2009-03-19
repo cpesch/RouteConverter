@@ -151,16 +151,16 @@ public class ItnPosition extends BaseNavigationPosition {
         matcher = TomTomRouteFormat.LOGPOS_PATTERN.matcher(comment);
         if (matcher.matches()) {
             setTime(parsePilogDate(matcher.group(1)));
-            city = Conversion.trim(matcher.group(2));
-            reason = Conversion.trim(matcher.group(3));
+            city = Conversion.trim(matcher.group(3));
+            reason = Conversion.trim(matcher.group(4));
         }
 
         matcher = TomTomRouteFormat.PILOG_PATTERN.matcher(comment);
         if (matcher.matches()) {
             setTime(parsePilogDate(matcher.group(1)));
-            city = Conversion.trim(matcher.group(2));
-            elevation = Conversion.parseDouble(matcher.group(3));
-            reason = Conversion.trim(matcher.group(4));
+            city = Conversion.trim(matcher.group(3));
+            elevation = Conversion.parseDouble(matcher.group(4));
+            reason = Conversion.trim(matcher.group(5));
         }
     }
 
