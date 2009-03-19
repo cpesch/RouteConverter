@@ -20,9 +20,9 @@
 
 package slash.navigation.nmea;
 
+import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.SimpleRoute;
-import slash.navigation.BaseNavigationFormat;
 
 import java.io.*;
 import java.text.DateFormat;

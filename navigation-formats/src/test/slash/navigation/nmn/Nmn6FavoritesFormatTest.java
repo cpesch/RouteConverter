@@ -20,12 +20,12 @@
 
 package slash.navigation.nmn;
 
+import slash.navigation.NavigationFileParser;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
-import slash.navigation.NavigationFileParser;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 public class Nmn6FavoritesFormatTest extends NavigationTestCase {
     Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();

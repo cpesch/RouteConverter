@@ -26,8 +26,8 @@ import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 public class KmlFormatTest extends NavigationTestCase {
     KmlFormat format = new Kml20Format();

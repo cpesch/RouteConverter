@@ -22,7 +22,6 @@ package slash.navigation.ovl;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
-import slash.navigation.RouteCharacteristics;
 
 public class OvlFormatTest extends NavigationTestCase {
     OvlFormat format = new OvlFormat();

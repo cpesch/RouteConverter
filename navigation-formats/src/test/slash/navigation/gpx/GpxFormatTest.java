@@ -22,9 +22,9 @@ package slash.navigation.gpx;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.gpx.binding10.Gpx;
+import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
 
 import javax.xml.bind.JAXBException;
