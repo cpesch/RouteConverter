@@ -119,6 +119,9 @@
         <property name="gpsbabel.bin" location="thirdparty/gpsbabel/gpsbabel/bin-1.3.6"/>
         <property name="sun.jdic.bin" location="thirdparty/sun/jdic/bin-0.9.3"/>
 
+        <property name="jarbundler.jarbundler.lib" location="thirdparty/jarbundler/jarbundler/lib/jarbundler-1.8.1.jar"/>
+        <property name="jsmooth.jsmooth.lib" location="thirdparty/jsmooth/jsmooth/lib/jsmoothgen-ant-0.9.9-7.jar"/>
+
         <path id="catalog.classpath">
             <path refid="navigation-formats.classpath"/>
             <path refid="rest.classpath"/>
@@ -1061,10 +1064,32 @@
 
     <target name="exe" depends="jar">
         <path id="jsmoothgen.classpath">
-            <path location="c:/Programme/JSmooth 0.9.9-7/lib/jsmoothgen-ant.jar"/>
+            <path location="${jsmooth.jsmooth.lib}"/>
         </path>
-        <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmoothgen.classpath"/>
-        <jsmoothgen project="build/RouteConverter.jsmooth" skeletonroot="c:/Programme/JSmooth 0.9.9-7/skeletons"/>
+        <taskdef name="jsmoothgen"
+                 classname="net.charabia.jsmoothgen.ant.JSmoothGen"
+                 classpathref="jsmoothgen.classpath"/>
+        <jsmoothgen project="build/RouteConverter.jsmooth"
+                    skeletonroot="thirdparty/jsmooth/jsmooth/skeletons"/>
+    </target>
+
+    <target name="app" depends="jar5">
+        <path id="jarbundler.classpath">
+            <path location="${jarbundler.jarbundler.lib}"/>
+        </path>
+        <taskdef name="jarbundler"
+                 classname="net.sourceforge.jarbundler.JarBundler"
+                 classpathref="jarbundler.classpath"/>
+        <jarbundler dir="build/output"
+                    name="RouteConverter"
+                    mainclass="slash.navigation.converter.gui.RouteConverter5"
+                    jar="build/output/RouteConverterMac.jar"
+                    build="${build.number}"
+                    jvmversion="1.5+"
+                    signature="RCNV"
+                    stubfile="thirdparty/jarbundler/jarbundler/stub/JavaApplicationStub"
+                    version="${build.version}"
+                />
     </target>
 
     <!-- Cleans up any temporary stuff -->
