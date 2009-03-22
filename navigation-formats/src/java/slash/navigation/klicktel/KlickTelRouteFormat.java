@@ -74,9 +74,8 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
-            positions.add(new Wgs84Position(Conversion.parseDouble(point.getLongitude()),
-                    Conversion.parseDouble(point.getLatitude()),
-                    null, null, Conversion.trim(comment)));
+            positions.add(new Wgs84Position(Conversion.parseDouble(point.getLongitude()), Conversion.parseDouble(point.getLatitude()),
+                    null, null, null, Conversion.trim(comment)));
         }
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }

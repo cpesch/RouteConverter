@@ -35,8 +35,8 @@ public class Wgs84Position extends BaseNavigationPosition {
     protected String comment;
 
 
-    public Wgs84Position(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(elevation, time);
+    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(elevation, speed, time);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);

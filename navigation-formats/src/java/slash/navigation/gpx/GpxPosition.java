@@ -37,13 +37,13 @@ import java.util.regex.Matcher;
 public class GpxPosition extends Wgs84Position {
     private String reason;
 
-    public GpxPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, time, comment);
+    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Calendar time, String comment) {
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, BigDecimal speed, Calendar time, String comment) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
-                Conversion.formatDouble(elevation), time, comment);
+                Conversion.formatDouble(elevation), Conversion.formatDouble(speed), time, comment);
     }
 
     public void setComment(String comment) {

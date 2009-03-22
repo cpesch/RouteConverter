@@ -150,6 +150,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
     static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     static final Pattern TAVELLOG_PATTERN = Pattern.compile(".*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
 
+    // TODO move this to RouteComments
+
     protected Calendar parseTime(String description) {
         // <description><![CDATA[<html><body>Time: 2009/02/07 21:45:55<BR>Altitude: 62.20<BR>Speed: 15.37<BR></body></html>]]></description>
         // TODO could extract speed as well

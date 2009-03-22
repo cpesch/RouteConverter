@@ -72,8 +72,8 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
         String comment = Conversion.trim(lineMatcher.group(3));
         if (comment != null && comment.toUpperCase().equals(comment))
             comment = Conversion.toMixedCase(comment);
-        return new Wgs84Position(Conversion.parseDouble(longitude),
-                Conversion.parseDouble(latitude), null, null, comment);
+        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+                null, null, null, comment);
     }
 
     private static String formatForRoute66(String string) {

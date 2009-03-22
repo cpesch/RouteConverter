@@ -66,6 +66,6 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
     }
 
     public NmeaPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new NmeaPosition(longitude, latitude, null, time, comment);
+        return new NmeaPosition(longitude, latitude, null, null, time, comment);
     }
 }

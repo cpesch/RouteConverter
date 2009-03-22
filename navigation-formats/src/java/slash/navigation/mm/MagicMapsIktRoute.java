@@ -91,7 +91,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
 
     public Wgs84Position createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, null, time, comment);
+        return new Wgs84Position(longitude, latitude, null, null, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

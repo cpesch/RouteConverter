@@ -93,7 +93,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
 
     public GpxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new GpxPosition(longitude, latitude, null, time, comment);
+        return new GpxPosition(longitude, latitude, null, null, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

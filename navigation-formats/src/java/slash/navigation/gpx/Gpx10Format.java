@@ -121,7 +121,7 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc())));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), null, parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc())));
             }
         }
         return positions;
@@ -130,7 +130,7 @@ public class Gpx10Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc())));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), null, parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc())));
         }
         return positions;
     }
@@ -140,7 +140,7 @@ public class Gpx10Format extends GpxFormat {
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPtr : trkSeg.getTrkpt()) {
-                    positions.add(new GpxPosition(trkPtr.getLon(), trkPtr.getLat(), trkPtr.getEle(), parseTime(trkPtr.getTime()), asComment(trkPtr.getName(), trkPtr.getDesc())));
+                    positions.add(new GpxPosition(trkPtr.getLon(), trkPtr.getLat(), trkPtr.getEle(), trkPtr.getSpeed(), parseTime(trkPtr.getTime()), asComment(trkPtr.getName(), trkPtr.getDesc())));
                 }
             }
         }

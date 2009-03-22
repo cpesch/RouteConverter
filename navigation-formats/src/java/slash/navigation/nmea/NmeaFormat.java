@@ -75,7 +75,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "[AV]" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR +       // Speed over ground, knots
+                    "([\\d\\.]*)" + SEPARATOR +     // Speed over ground, knots
                     "[\\d\\.]*" + SEPARATOR +
                     "(\\d*)" + SEPARATOR +          // Date, ddmmyy
                     "[\\d\\.]*" + SEPARATOR +
@@ -153,8 +153,16 @@ public class NmeaFormat extends BaseNmeaFormat {
             String northOrSouth = rmcMatcher.group(3);
             String longitude = rmcMatcher.group(4);
             String westOrEast = rmcMatcher.group(5);
-            String date = rmcMatcher.group(6);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth, null, parseDateAndTime(date, time), null);
+            Double speed = null;
+            String speedStr = rmcMatcher.group(6);
+            if (speedStr != null) {
+                Double knots = Conversion.parseDouble(speedStr);
+                if (knots != null)
+                    speed = Conversion.knotsToKilometers(knots);
+            }
+            String date = rmcMatcher.group(7);
+            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
+                    null, speed, parseDateAndTime(date, time), null);
         }
 
         Matcher ggaMatcher = GGA_PATTERN.matcher(line);
@@ -165,7 +173,8 @@ public class NmeaFormat extends BaseNmeaFormat {
             String longitude = ggaMatcher.group(4);
             String westOrEast = ggaMatcher.group(5);
             String altitude = ggaMatcher.group(6);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth, Conversion.parseDouble(altitude), parseTime(time), null);
+            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
+                    Conversion.parseDouble(altitude), null, parseTime(time), null);
         }
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
@@ -175,7 +184,8 @@ public class NmeaFormat extends BaseNmeaFormat {
             String longitude = wplMatcher.group(3);
             String westOrEast = wplMatcher.group(4);
             String comment = wplMatcher.group(5);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth, null, null, Conversion.trim(comment));
+            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
+                    null, null, null, Conversion.trim(comment));
         }
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
@@ -185,7 +195,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String month = Conversion.trim(zdaMatcher.group(3));
             String year = Conversion.trim(zdaMatcher.group(4));
             String date = (day != null ? day : "") + (month != null ? month : "") + (year != null ? year : "");
-            return new NmeaPosition(null, null, null, null, null, parseDateAndTime(date, time), null);
+            return new NmeaPosition(null, null, null, null, null, null, parseDateAndTime(date, time), null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -218,6 +228,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = Conversion.formatDoubleAsString(position.getElevation(), "");
+        String speed = position.getSpeed() != null ? Conversion.formatDoubleAsString(Conversion.kilometerToKnots(position.getSpeed()), "") : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +
@@ -235,7 +246,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         // $GPRMC,180114,EARTH_RADIUS,4808.9490,N,00928.9610,E,000.0,000.0,160607,,EARTH_RADIUS*76
         String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                SEPARATOR + SEPARATOR +
+                speed + SEPARATOR + SEPARATOR +
                 date + SEPARATOR + SEPARATOR + "A";
         writeSentence(writer, rmc);
 

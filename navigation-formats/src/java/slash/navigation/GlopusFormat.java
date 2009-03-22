@@ -77,8 +77,8 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = lineMatcher.group(2);
         String elevation = lineMatcher.group(3);
         String comment = lineMatcher.group(4);
-        return new Wgs84Position(Conversion.parseDouble(longitude),
-                Conversion.parseDouble(latitude), Conversion.parseDouble(elevation), null, Conversion.trim(comment));
+        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+                Conversion.parseDouble(elevation), null, null, Conversion.trim(comment));
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

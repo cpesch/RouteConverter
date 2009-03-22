@@ -42,8 +42,9 @@ public abstract class BaseNavigationPosition {
     protected Double elevation, speed;
     protected Calendar time;
 
-    protected BaseNavigationPosition(Double elevation, Calendar time) {
+    protected BaseNavigationPosition(Double elevation, Double speed, Calendar time) {
         setElevation(elevation);
+        setSpeed(speed);
         setTime(time);
     }
 
@@ -231,7 +232,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public GpxPosition asGpxPosition() {
-        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asHaicomLoggerPosition() {
@@ -303,7 +304,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public NmeaPosition asNmeaPosition() {
-        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new NmeaPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public NmnPosition asNmnFavoritesPosition() {
@@ -327,6 +328,6 @@ public abstract class BaseNavigationPosition {
     }
 
     public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 }

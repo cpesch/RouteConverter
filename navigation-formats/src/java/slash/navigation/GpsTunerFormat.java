@@ -46,7 +46,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + POSITION + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + 
@@ -94,9 +94,10 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String altitude = lineMatcher.group(3);
-        String time = lineMatcher.group(4);
+        String speed = lineMatcher.group(4);
+        String time = lineMatcher.group(5);
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                Conversion.parseDouble(altitude), parseTime(time), null);
+                Conversion.parseDouble(altitude), Conversion.parseDouble(speed), parseTime(time), null);
     }
 
 
@@ -115,8 +116,9 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = Conversion.formatDoubleAsString(position.getLongitude());
         String latitude = Conversion.formatDoubleAsString(position.getLatitude());
         String altitude = Conversion.formatDoubleAsString(position.getElevation());
+        String speed = Conversion.formatDoubleAsString(position.getSpeed());
         String time = formatTime(position.getTime());
         writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + altitude + SEPARATOR_CHAR +
-                "0" + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + "0");
+                speed + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + "0");
     }
 }

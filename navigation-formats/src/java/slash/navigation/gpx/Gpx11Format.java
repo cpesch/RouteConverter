@@ -120,7 +120,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), null, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
             }
         }
         return positions;
@@ -130,7 +130,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), null, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
 
                 for (Object any : wptType.getExtensions().getAny()) {
                     if(any instanceof JAXBElement) {
@@ -138,7 +138,7 @@ public class Gpx11Format extends GpxFormat {
                         if (anyValue instanceof RoutePointExtensionT) {
                             RoutePointExtensionT routePoint = (RoutePointExtensionT) anyValue;
                             for (AutoroutePointT autoroutePoint : routePoint.getRpt()) {
-                                positions.add(new GpxPosition(autoroutePoint.getLon(), autoroutePoint.getLat(), null, null, null));
+                                positions.add(new GpxPosition(autoroutePoint.getLon(), autoroutePoint.getLat(), null, null, null, null));
                             }
                         }
                     }
@@ -151,7 +151,7 @@ public class Gpx11Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<WptType> wptTypes) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (WptType wptType : wptTypes) {
-            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
+            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), null, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
         }
         return positions;
     }
@@ -161,7 +161,7 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), null, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc())));
                 }
             }
         }

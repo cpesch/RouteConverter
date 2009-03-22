@@ -131,8 +131,8 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
             if("W".equals(westOrEast))
                 longitude = -longitude;
             String altitude = matcher.group(7);
-            // course and speed currently ignored
-            return new Wgs84Position(longitude, latitude, Double.parseDouble(altitude), parseDateAndTime(date, time), null);
+            String speed = matcher.group(9);
+            return new Wgs84Position(longitude, latitude, Conversion.parseDouble(altitude), Conversion.parseDouble(speed), parseDateAndTime(date, time), null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -173,10 +173,11 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String northOrSouth = position.getLatitude() >= 0.0 ? "N" : "S";
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
-        String altitude = Conversion.formatDoubleAsString(position.getElevation(), "0.0");
+        String altitude = Conversion.formatDoubleAsString(position.getElevation());
+        String speed = Conversion.formatDoubleAsString(position.getSpeed());
         writer.println((index + 1) + SEPARATOR + "T" + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                altitude + "m" + SEPARATOR + "0.0" + SEPARATOR + "0.0km/h");
+                altitude + "m" + SEPARATOR + "0.0" + SEPARATOR + speed + "km/h");
     }
 }

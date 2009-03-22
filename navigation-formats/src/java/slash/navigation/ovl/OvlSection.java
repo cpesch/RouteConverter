@@ -85,7 +85,7 @@ class OvlSection extends IniFileSection {
         }
         x = Conversion.parseDouble(xValue);
         y = Conversion.parseDouble(yValue);
-        return new Wgs84Position(x, y, null, null, comment);
+        return new Wgs84Position(x, y, null, null, null, comment);
     }
 
     void removePositions() {

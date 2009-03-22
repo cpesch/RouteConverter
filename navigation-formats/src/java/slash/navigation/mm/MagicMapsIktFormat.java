@@ -99,8 +99,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private Wgs84Position processPosition(StartElement startElement) {
-        return new Wgs84Position(extractValue(startElement, X_ATTRIBUTE),
-                extractValue(startElement, Y_ATTRIBUTE), null, null, null);
+        return new Wgs84Position(extractValue(startElement, X_ATTRIBUTE), extractValue(startElement, Y_ATTRIBUTE),
+                null, null, null, null);
     }
 
     private List<MagicMapsIktRoute> process(XMLEventReader eventReader) throws XMLStreamException {

@@ -39,6 +39,7 @@ public class Conversion {
     static final double EARTH_RADIUS = 6371000.0;
 
     private static final double METER_OF_A_FEET = 0.3048;
+    private static final double KILOMETER_OF_A_KNOT = 1.8520043;
     private static final double ALTITUDE_146m = 210945416903L;
     private static final double ELEVATION_146m = 146;
     private static final double ALTITUDE_6m = 210945415755L;
@@ -322,6 +323,14 @@ public class Conversion {
 
     public static double meterToFeets(double meter) {
         return meter / METER_OF_A_FEET;
+    }
+
+    public static double knotsToKilometers(double knots) {
+        return knots * KILOMETER_OF_A_KNOT;
+    }
+
+    public static double kilometerToKnots(double kilometer) {
+        return kilometer / KILOMETER_OF_A_KNOT;
     }
 
     public static double roundMeterToMillimeterPrecision(double number) {

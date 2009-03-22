@@ -134,7 +134,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
                 (county != null ? ", " + county : "") + (address != null ? ", " + address : "");
         return new Wgs84Position(longitude != null ? longitude / INTEGER_FACTOR : null,
                 latitude != null ? latitude / INTEGER_FACTOR : null,
-                null, null, Conversion.trim(comment));
+                null, null, null, Conversion.trim(comment));
     }
 
 }

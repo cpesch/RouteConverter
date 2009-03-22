@@ -106,29 +106,29 @@ public class NmeaFormatTest extends NavigationTestCase {
     }
 
     public void testHaveDifferentLongitudeAndLatitude() {
-        NmeaPosition one = new NmeaPosition(1.0, "E", 5159.971, "N", 22.0, Calendar.getInstance(), null);
-        NmeaPosition two = new NmeaPosition(1.1, "E", 5159.971, "N", 22.0, Calendar.getInstance(), null);
+        NmeaPosition one = new NmeaPosition(1.0, "E", 5159.971, "N", 22.0, 14.0, Calendar.getInstance(), null);
+        NmeaPosition two = new NmeaPosition(1.1, "E", 5159.971, "N", 22.0, 14.0, Calendar.getInstance(), null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(one, two));
         assertTrue(format.haveDifferentLongitudeAndLatitude(two, one));
         assertFalse(format.haveDifferentLongitudeAndLatitude(one, one));
         assertFalse(format.haveDifferentLongitudeAndLatitude(two, two));
 
-        NmeaPosition three = new NmeaPosition(528.81, "E", 1.0, "N", 22.0, Calendar.getInstance(), null);
-        NmeaPosition four = new NmeaPosition(528.9, "E", 1.1, "N", 22.0, Calendar.getInstance(), null);
+        NmeaPosition three = new NmeaPosition(528.81, "E", 1.0, "N", 22.0, 14.0, Calendar.getInstance(), null);
+        NmeaPosition four = new NmeaPosition(528.9, "E", 1.1, "N", 22.0, 14.0, Calendar.getInstance(), null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(three, four));
         assertTrue(format.haveDifferentLongitudeAndLatitude(four, three));
         assertFalse(format.haveDifferentLongitudeAndLatitude(three, three));
         assertFalse(format.haveDifferentLongitudeAndLatitude(four, four));
 
-        NmeaPosition five = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, Calendar.getInstance(), null);
-        NmeaPosition six = new NmeaPosition(528.82, "E", 5159.971, "N", 22.0, Calendar.getInstance(), null);
+        NmeaPosition five = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, 14.0, Calendar.getInstance(), null);
+        NmeaPosition six = new NmeaPosition(528.82, "E", 5159.971, "N", 22.0, 14.0, Calendar.getInstance(), null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(five, six));
         assertTrue(format.haveDifferentLongitudeAndLatitude(six, five));
         assertFalse(format.haveDifferentLongitudeAndLatitude(five, five));
         assertFalse(format.haveDifferentLongitudeAndLatitude(six, six));
 
-        NmeaPosition seven = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, Calendar.getInstance(), null);
-        NmeaPosition eight = new NmeaPosition(528.81, "E", 5159.972, "N", 22.0, Calendar.getInstance(), null);
+        NmeaPosition seven = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, 14.0, Calendar.getInstance(), null);
+        NmeaPosition eight = new NmeaPosition(528.81, "E", 5159.972, "N", 22.0, 14.0, Calendar.getInstance(), null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(seven, eight));
         assertTrue(format.haveDifferentLongitudeAndLatitude(eight, seven));
         assertFalse(format.haveDifferentLongitudeAndLatitude(seven, seven));

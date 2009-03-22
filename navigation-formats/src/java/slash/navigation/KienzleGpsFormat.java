@@ -125,7 +125,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 (street != null ? street + " " : "") +
                 (houseNo != null ? houseNo : "");
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, parseTime(time, startDate), comment);
+                null, null, parseTime(time, startDate), comment);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

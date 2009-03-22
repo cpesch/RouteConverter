@@ -46,6 +46,6 @@ public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
     }
 
     public Wgs84Position createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, null, time, comment);
+        return new Wgs84Position(longitude, latitude, null, null, time, comment);
     }
 }

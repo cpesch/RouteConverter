@@ -72,7 +72,7 @@ public class TimeZoneTest extends NavigationTestCase {
         Calendar utc = utcCalendar(now);
         assertNotEquals(local, utc);
 
-        GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, local, "gpx");
+        GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, local, "gpx");
         assertCalendarEquals(utc, gpxPosition.getTime());
     }
 }

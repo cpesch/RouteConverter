@@ -121,7 +121,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, parseTime(time, startDate), null);
+                null, null, parseTime(time, startDate), null);
     }
 
     private String formatNumber(int number) {

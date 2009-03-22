@@ -35,7 +35,7 @@ import java.util.Calendar;
 public class TcxPosition extends Wgs84Position { // TODO same as GpxPositin
 
     public TcxPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, time, comment);
+        super(longitude, latitude, elevation, null, time, comment);
     }
 
     public TcxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Calendar time, String comment) {

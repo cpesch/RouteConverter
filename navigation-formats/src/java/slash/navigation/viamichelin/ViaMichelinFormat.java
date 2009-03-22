@@ -89,12 +89,12 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
                 Itinerary itinerary = (Itinerary) itineraryOrPoi;
                 routeName = itinerary.getName();
                 for (Step step : itinerary.getStep()) {
-                    positions.add(new Wgs84Position(Conversion.parseDouble(step.getLongitude()), Conversion.parseDouble(step.getLatitude()), null, null, step.getName()));
+                    positions.add(new Wgs84Position(Conversion.parseDouble(step.getLongitude()), Conversion.parseDouble(step.getLatitude()), null, null, null, step.getName()));
                 }
             }
             if (itineraryOrPoi instanceof Poi) {
                 Poi poi = (Poi) itineraryOrPoi;
-                positions.add(new Wgs84Position(Conversion.parseDouble(poi.getLongitude()), Conversion.parseDouble(poi.getLatitude()), null, null, parseComment(poi)));
+                positions.add(new Wgs84Position(Conversion.parseDouble(poi.getLongitude()), Conversion.parseDouble(poi.getLatitude()), null, null, null, parseComment(poi)));
             }    
         }
         return new ViaMichelinRoute(routeName, positions);

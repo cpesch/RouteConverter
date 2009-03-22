@@ -36,8 +36,8 @@ public class NmeaPosition extends BaseNavigationPosition {
     private String northOrSouth /*latitude*/, westOrEast /*longitude*/;
     private String comment;
 
-    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Calendar time, String comment) {
-        super(elevation, time);
+    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, Calendar time, String comment) {
+        super(elevation, speed, time);
         this.longitude = longitude;
         this.westOrEast = westOrEast;
         this.latitude = latitude;
@@ -45,8 +45,8 @@ public class NmeaPosition extends BaseNavigationPosition {
         this.comment = comment;
     }
 
-    public NmeaPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(elevation, time);
+    public NmeaPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(elevation, speed, time);
         setLongitude(longitude);
         setLatitude(latitude);
         this.comment = comment;

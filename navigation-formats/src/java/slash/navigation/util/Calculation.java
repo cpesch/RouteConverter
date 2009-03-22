@@ -88,7 +88,7 @@ public class Calculation {
                     (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
             time.setTimeInMillis(millis);
         }
-        return new Wgs84Position(longitude, latitude, null, time, null);
+        return new Wgs84Position(longitude, latitude, null, null, time, null);
     }
 
     public static Wgs84Position getNorthEast(List<? extends BaseNavigationPosition> positions) {
@@ -111,7 +111,7 @@ public class Calculation {
             if(minimumTime == null || time.before(minimumTime))
                 minimumTime = time;
         }
-        return new Wgs84Position(minimumLongitude, minimumLatitude, null, minimumTime, null);
+        return new Wgs84Position(minimumLongitude, minimumLatitude, null, null, minimumTime, null);
     }
 
     public static Wgs84Position getSouthWest(List<? extends BaseNavigationPosition> positions) {
@@ -134,7 +134,7 @@ public class Calculation {
             if(maximumTime == null || time.after(maximumTime))
                 maximumTime = time;
         }
-        return new Wgs84Position(maximumLongitude, maximumLatitude, null, maximumTime, null);
+        return new Wgs84Position(maximumLongitude, maximumLatitude, null, null, maximumTime, null);
     }
 
     public static Wgs84Position duplicateALittleNorth(BaseNavigationPosition position) {
@@ -142,7 +142,7 @@ public class Calculation {
         if (latitude != null)
             latitude += 0.001;
         return new Wgs84Position(position.getLongitude(), latitude,
-                position.getElevation(), position.getTime(), position.getComment());
+                position.getElevation(), position.getSpeed(), position.getTime(), position.getComment());
     }
 
     public static  boolean containsPosition(BaseNavigationPosition northEastCorner,

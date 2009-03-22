@@ -38,14 +38,14 @@ public class TomTomPosition extends BaseNavigationPosition {
     private String city, reason;
 
     public TomTomPosition(Integer longitude, Integer latitude, String comment) {
-        super(null, null);
+        super(null, null, null);
         this.longitude = longitude;
         this.latitude = latitude;
         setComment(comment);
     }
 
     public TomTomPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(elevation, time);
+        super(elevation, null, time);
         setLongitude(longitude);
         setLatitude(latitude);
         setComment(comment);

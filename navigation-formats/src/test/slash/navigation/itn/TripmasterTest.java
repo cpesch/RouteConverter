@@ -157,7 +157,7 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     private void checkTripmasterGpxComment(String expectedComment, String expectedReason, String comment) {
-        GpxPosition position = new GpxPosition(0.0, 0.0, 0.0, null, comment);
+        GpxPosition position = new GpxPosition(0.0, 0.0, 0.0, null, null, comment);
         assertEquals(expectedReason, position.getReason());
         assertEquals(expectedComment, position.getCity());
         assertEquals(expectedComment, position.getComment());

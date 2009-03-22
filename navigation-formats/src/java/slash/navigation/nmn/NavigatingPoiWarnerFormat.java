@@ -71,8 +71,8 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
         String comment = lineMatcher.group(3);
-        return new Wgs84Position(Conversion.parseDouble(longitude),
-                Conversion.parseDouble(latitude), null, null, Conversion.trim(comment));
+        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+                null, null, null, Conversion.trim(comment));
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

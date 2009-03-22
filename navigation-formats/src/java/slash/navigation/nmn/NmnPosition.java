@@ -37,14 +37,14 @@ public class NmnPosition extends Wgs84Position {
 
 
     public NmnPosition(Double longitude, Double latitude, String zip, String city, String street, String number) {
-        super(longitude, latitude, null, null, city);
+        super(longitude, latitude, null, null, null, city);
         this.zip = zip;
         this.street = street;
         this.number = number;
     }
 
     public NmnPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, time, comment);
+        super(longitude, latitude, elevation, null, time, comment);
     }
 
     public boolean isUnstructured() {
@@ -98,7 +98,7 @@ public class NmnPosition extends Wgs84Position {
     }
 
     public Wgs84Position asWgs84Position() {
-        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
     
 

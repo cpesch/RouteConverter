@@ -50,14 +50,16 @@ public class GpsTunerFormatTest extends NavigationTestCase {
         expectedCal.setLenient(true);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
+        assertEquals(77.56176, position.getSpeed());
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getComment());
     }
 
     public void testParseNegativePosition() {
-        Wgs84Position position = format.parsePosition("-50.3965966666667;-7.53247333333333;-74.4000015258789;77.56176;1172932595;1;279", null);
+        Wgs84Position position = format.parsePosition("-50.3965966666667;-7.53247333333333;-74.4000015258789;-77.56176;1172932595;1;279", null);
         assertEquals(-7.53247333333333, position.getLongitude());
         assertEquals(-50.3965966666667, position.getLatitude());
         assertEquals(-74.4000015258789, position.getElevation());
+        assertEquals(-77.56176, position.getSpeed());
     }
 }

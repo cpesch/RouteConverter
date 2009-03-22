@@ -194,7 +194,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         if (position != null && position.hasCoordinates()) {
             return position;
         } else {
-            return new Wgs84Position(longitude, latitude, null, null, Conversion.trim(comment));
+            return new Wgs84Position(longitude, latitude, null, null, null, Conversion.trim(comment));
         }
     }
 
@@ -205,7 +205,8 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         String comment = matcher.group(1);
         String latitude = matcher.group(3);
         String longitude = matcher.group(4);
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), null, null, Conversion.trim(comment));
+        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+                null, null, null, Conversion.trim(comment));
     }
 
     List<Wgs84Position> parseDestinationPositions(String destinationComments) {

@@ -39,7 +39,7 @@ public class MercatorPosition extends BaseNavigationPosition {
     }
 
     public MercatorPosition(Long x, Long y, Double elevation, Calendar time, String comment) {
-        super(elevation, time);
+        super(elevation, null, time);
         this.x = x;
         this.y = y;
         setComment(comment);
