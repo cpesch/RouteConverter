@@ -24,6 +24,7 @@ import slash.navigation.*;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Range;
 import slash.navigation.util.ContinousRange;
+import slash.navigation.util.RouteComments;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;

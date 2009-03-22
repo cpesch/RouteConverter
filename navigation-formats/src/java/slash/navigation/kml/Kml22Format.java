@@ -21,7 +21,7 @@
 package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.RouteComments;
+import slash.navigation.util.RouteComments;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.bindingatom.Link;

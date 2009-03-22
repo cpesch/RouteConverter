@@ -32,7 +32,7 @@ import java.util.HashMap;
  * @author Christian Pesch
  */
 
-public class GoPalPosition extends MercatorPosition { // TODO eliminate this
+public class GoPalPosition extends MercatorPosition { // TODO eliminate this class
     private Short country, houseNo;
     private String zipCode, street; // comment = city
 

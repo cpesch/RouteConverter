@@ -22,14 +22,13 @@ package slash.navigation.itn;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.RouteComments;
 import slash.navigation.TextNavigationFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.RouteComments;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -52,42 +51,6 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                     "(.*)" + SEPARATOR + "\\d" + SEPARATOR);
     private static final Pattern NAME_PATTERN = Pattern.
             compile("^\"([^\"]*)\"$");
-    static final SimpleDateFormat TRIPMASTER_TIME = new SimpleDateFormat("HH:mm:ss");
-    static final SimpleDateFormat TRIPMASTER_DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    static final SimpleDateFormat PILOG_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
-
-    private static final String TIME = "\\d{1,2}:\\d{2}:\\d{2}";
-    private static final String ELEVATION = "[-\\d\\.]+";
-    private static final String REASONS = "Dur. " + TIME + "|Dauer " + TIME + "|" +
-            "Abstand \\d+|Dist. \\d+|Distanz \\d+|Course \\d+|Cape \\d+|Kurs \\d+|Richtung \\d+|Waypoint|Wpt|Punkt|Pause";
-
-    static final Pattern TRIPMASTER_1dot4_PATTERN = Pattern.compile("(" + REASONS + ") - (" + TIME + ") - (" + ELEVATION + ") m - (.+)");
-    static final Pattern TRIPMASTER_SHORT_STARTEND_PATTERN = Pattern.compile(
-            "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + ELEVATION + ") m - ([\\d\\.]+) km");
-    static final Pattern TRIPMASTER_SHORT_WAYPOINT_PATTERN = Pattern.compile("(" + TIME + ") - (" + ELEVATION + ") m");
-    static final Pattern TRIPMASTER_MIDDLE_WAYPOINT_PATTERN = Pattern.compile(
-            "(\\d+:\\d+:\\d+) - (" + REASONS + ") : (.+) - (" + ELEVATION + ") m - ([\\d\\.]+) (K|k)m");
-    static final Pattern TRIPMASTER_LONG_PATTERN = Pattern.compile(
-            "(" + TIME + ") - ((Start : (.*)|Finish : (.*)|" + REASONS + ") : )?(.+) - " +
-                    "(" + ELEVATION + ") m - ([\\d\\.]+) (K|k)m - ([\\d\\.]+) (K|k)m/h( - \\d+)?");
-
-    private static final String DATE = "\\d{6}";
-    /**
-     * pilog/logpos encoding of the comment:
-     * + looks like a planned position with a verbose comment
-     * + Rottstücker (Wiesloch); K4174 Horrenberger Straße @166.6m (s=60 d=34)
-     * - looks like a tracked position with a verbose comment
-     * - Rottstücker (Wiesloch); K4174 Horrenberger Straße @162.6m (s=66 d=6)
-     * * is a coordinate comment
-     * * 1000462:4889518 @365.8m (s=1 d=193)
-     * = seems to be written if the position does not change for a time period
-     * = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)
-     */
-    private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
-    static final Pattern PILOG_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
-            COMMENT_SEPARATOR + " (.+) \\(?@(\\d+\\.\\d+)m \\(?(.+)\\)");
-    static final Pattern LOGPOS_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
-            COMMENT_SEPARATOR + " (.+) \\((.+)\\)");
 
     public static final int START_TYPE = 4;
     public static final int END_TYPE = 3;
@@ -195,15 +158,15 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast) {
-        return (position.getTime() != null ? TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
+        return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
                 firstOrLast + " : " +
-                (position.getTime() != null ? TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " : "") +
+                (position.getTime() != null ? RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " : "") +
                 position.getComment() +
                 (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6" : "");
     }
 
     String formatIntermediateName(TomTomPosition position) {
-        return (position.getTime() != null ? TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
+        return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
                 position.getComment() +
                 (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6" : "");
     }

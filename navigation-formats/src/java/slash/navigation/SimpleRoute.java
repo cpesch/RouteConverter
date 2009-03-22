@@ -38,6 +38,7 @@ import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.klicktel.KlickTelRoute;
+import slash.navigation.util.RouteComments;
 
 import java.util.ArrayList;
 import java.util.List;

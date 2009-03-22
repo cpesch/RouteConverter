@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.RouteComments;
+import slash.navigation.util.RouteComments;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.geonames.GeoNamesService;

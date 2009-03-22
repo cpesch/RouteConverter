@@ -21,7 +21,7 @@
 package slash.navigation.bcr;
 
 import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteComments;
+import slash.navigation.util.RouteComments;
 
 import java.util.ArrayList;
 import java.util.List;

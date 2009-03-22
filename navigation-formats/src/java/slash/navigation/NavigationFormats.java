@@ -46,6 +46,7 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 
 import java.io.IOException;

@@ -22,6 +22,7 @@ package slash.navigation.gpx;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.RouteComments;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -51,6 +52,7 @@ public class GpxPosition extends Wgs84Position {
         if (comment == null)
             return;
 
+        RouteComments.parseComment(this, comment);
         // TODO move this logic up
         Matcher matcher = GpxFormat.TRIPMASTER_PATTERN.matcher(comment);
         if (matcher.matches()) {
@@ -67,6 +69,9 @@ public class GpxPosition extends Wgs84Position {
         return reason;
     }
 
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
     public GpxPosition asGpxPosition() {
         return this;

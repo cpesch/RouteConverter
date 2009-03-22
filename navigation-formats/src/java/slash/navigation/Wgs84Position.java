@@ -20,6 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.RouteComments;
+
 import java.util.Calendar;
 
 /**
@@ -62,8 +64,11 @@ public class Wgs84Position extends BaseNavigationPosition {
     }
 
     public void setComment(String comment) {
-        // TODO use same logic as in TomTomPosition#setComment
         this.comment = comment;
+        if (comment == null)
+            return;
+
+        RouteComments.parseComment(this, comment);
     }
 
 

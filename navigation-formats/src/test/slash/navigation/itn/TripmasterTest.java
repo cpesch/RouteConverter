@@ -51,28 +51,52 @@ public class TripmasterTest extends NavigationTestCase {
         checkTripmaster1dot4Position(position);
     }
 
+    public void testTripmasterShortPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "09:02:43 - 47.5 m");
+        assertEquals("Waypoint", position.getReason());
+        assertEquals(47.5, position.getElevation());
+        assertEquals(calendar(1970, 1, 1, 9, 2, 43), position.getTime());
+    }
+
     public void testTripmasterMiddlePosition() {
-        TomTomPosition position1 = new TomTomPosition(0, 0, "Start : Weil Der Stadt - 27/12/2006 - 13:35:13 - 430.5 m - 0.0 km");
-        assertEquals("Start : 27/12/2006 - 13:35:13", position1.getReason());
-        assertEquals("Weil Der Stadt", position1.getCity());
-        assertEquals(430.5, position1.getElevation());
-        assertEquals(calendar(2006, 12, 27, 13, 35, 13), position1.getTime());
+        TomTomPosition position1 = new TomTomPosition(0, 0, "Start : Noyal-Sur-Vilaine - 23/11/2006 - 08:50:26 - 37.2 m - 0.4 Km");
+        assertEquals("Start : 23/11/2006 - 08:50:26", position1.getReason());
+        assertEquals("Noyal-Sur-Vilaine", position1.getCity());
+        assertEquals(37.2, position1.getElevation());
+        assertEquals(calendar(2006, 11, 23, 8, 50, 26), position1.getTime());
 
-        TomTomPosition position2 = new TomTomPosition(0, 0, "Ende : Herrenberg - 14:03:45 - 437.4 m - 25.5 km");
-        assertEquals("Ende : 14:03:45", position2.getReason());
-        assertEquals("Herrenberg", position2.getCity());
-        assertEquals(437.4, position2.getElevation());
-        String cal1 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
-        Calendar expected = calendar(1970, 1, 1, 14, 3, 45);
-        String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
-        assertEquals(cal2, cal1);
-        assertEquals(calendar(1970, 1, 1, 14, 3, 45), position2.getTime());
+        TomTomPosition position2a = new TomTomPosition(0, 0, "Finish : Cesson-Sévigné - 09:03:23 - 51.9 m - 8.6 Km");
+        assertEquals("Finish : 09:03:23", position2a.getReason());
+        assertEquals("Cesson-Sévigné", position2a.getCity());
+        assertEquals(51.9, position2a.getElevation());
+        String actualStr = DateFormat.getDateTimeInstance().format(position2a.getTime().getTime());
+        Calendar expected = calendar(1970, 1, 1, 9, 3, 23);
+        String expectedStr = DateFormat.getDateTimeInstance().format(expected.getTime());
+        assertEquals(expectedStr, actualStr);
+        assertEquals(calendar(1970, 1, 1, 9, 3, 23), position2a.getTime());
 
-        TomTomPosition position3 = new TomTomPosition(0, 0, "13:39:33 - Distanz 2 : Weil Der Stadt - 408.3 m - 2.0 km - 39 km/h");
-        assertEquals("Distanz 2", position3.getReason());
-        assertEquals("Weil Der Stadt", position3.getCity());
-        assertEquals(408.3, position3.getElevation());
-        assertEquals(calendar(1970, 1, 1, 13, 39, 33), position3.getTime());
+        TomTomPosition position2b = new TomTomPosition(0, 0, "Ende : Herrenberg - 14:03:45 - 437.4 m - 25.5 km");
+        assertEquals("Ende : 14:03:45", position2b.getReason());
+        assertEquals("Herrenberg", position2b.getCity());
+        assertEquals(437.4, position2b.getElevation());
+        actualStr = DateFormat.getDateTimeInstance().format(position2b.getTime().getTime());
+        expected = calendar(1970, 1, 1, 14, 3, 45);
+        expectedStr = DateFormat.getDateTimeInstance().format(expected.getTime());
+        assertEquals(expectedStr, actualStr);
+        assertEquals(calendar(1970, 1, 1, 14, 3, 45), position2b.getTime());
+
+        TomTomPosition position3a = new TomTomPosition(0, 0, "13:39:33 - Distanz 2 : Weil Der Stadt - 408.3 m - 2.0 km - 39 km/h");
+        assertEquals("Distanz 2", position3a.getReason());
+        assertEquals("Weil Der Stadt", position3a.getCity());
+        assertEquals(39.0, position3a.getSpeed());
+        assertEquals(408.3, position3a.getElevation());
+        assertEquals(calendar(1970, 1, 1, 13, 39, 33), position3a.getTime());
+
+        TomTomPosition position4 = new TomTomPosition(0, 0, "09:01:31 - Cape 125: Cesson-Sévigné - 62.0 m - 7.1 Km");
+        assertEquals("Cape 125", position4.getReason());
+        assertEquals("Cesson-Sévigné", position4.getCity());
+        assertEquals(62.0, position4.getElevation());
+        assertEquals(calendar(1970, 1, 1, 9, 1, 31), position4.getTime());
     }
 
     public void testTripmasterLongPosition() {
@@ -87,6 +111,13 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Hohenfelde (Hamburg)", position2.getCity());
         assertEquals(41.0, position2.getElevation());
         assertEquals(calendar(2007, 7, 21, 18, 51, 36), position2.getTime());
+
+        TomTomPosition position3 = new TomTomPosition(0, 0, "08:51:25 - Km 1.4: Acigné - 26.5 m - 1.4 km - 69 Km/h");
+        assertEquals("Km 1.4", position3.getReason());
+        assertEquals("Acigné", position3.getCity());
+        assertEquals(69.0, position3.getSpeed());
+        assertEquals(26.5, position3.getElevation());
+        assertEquals(calendar(1970, 1, 1, 8, 51, 25), position3.getTime());
     }
 
 

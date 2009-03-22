@@ -26,6 +26,7 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.NotClosingUnderlyingInputStream;
+import slash.navigation.util.RouteComments;
 
 import java.io.*;
 import java.net.URISyntaxException;

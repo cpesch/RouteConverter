@@ -21,12 +21,9 @@
 package slash.navigation.itn;
 
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.RouteComments;
 
-import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.regex.Matcher;
 
 /**
  * Represents a position in a Tom Tom Route (.itn) file.
@@ -96,72 +93,7 @@ public class TomTomPosition extends BaseNavigationPosition {
         if (comment == null)
             return;
 
-        Matcher matcher = TomTomRouteFormat.TRIPMASTER_1dot4_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            reason = Conversion.trim(matcher.group(1));
-            setTime(parseTripmaster1dot4Time(matcher.group(2)));
-            elevation = Conversion.parseDouble(matcher.group(3));
-            city = Conversion.trim(matcher.group(4));
-        }
-
-        matcher = TomTomRouteFormat.TRIPMASTER_SHORT_STARTEND_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            String dateStr = Conversion.trim(matcher.group(4));
-            city = Conversion.trim(matcher.group(3));
-            if (city == null) {
-                city = dateStr;
-                dateStr = null;
-            }
-            String timeStr = Conversion.trim(matcher.group(5));
-            setTime(parseTripmaster1dot8Date(dateStr + " " + timeStr));
-            if (getTime() == null)
-                setTime(parseTripmaster1dot4Time(timeStr));
-            reason = Conversion.trim(matcher.group(1)) + " : " + (dateStr != null ? dateStr + " - " : "") + timeStr;
-            elevation = Conversion.parseDouble(matcher.group(6));
-        }
-
-        matcher = TomTomRouteFormat.TRIPMASTER_SHORT_WAYPOINT_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            setTime(parseTripmaster1dot4Time(matcher.group(1)));
-            reason = "Waypoint";
-            elevation = Conversion.parseDouble(matcher.group(2));
-            city = null;
-        }
-
-        matcher = TomTomRouteFormat.TRIPMASTER_MIDDLE_WAYPOINT_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            reason = Conversion.trim(matcher.group(2));
-            city = Conversion.trim(matcher.group(3));
-            setTime(parseTripmaster1dot4Time(Conversion.trim(matcher.group(1))));
-            elevation = Conversion.parseDouble(matcher.group(4));
-        }
-
-        matcher = TomTomRouteFormat.TRIPMASTER_LONG_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            reason = Conversion.trim(matcher.group(2));
-            if (reason != null && reason.endsWith(" :"))
-                reason = reason.substring(0, reason.length() - 2);
-            setTime(parseTripmaster1dot8Date(matcher.group(4)));
-            if (getTime() == null)
-                setTime(parseTripmaster1dot4Time(matcher.group(1)));
-            city = Conversion.trim(matcher.group(6));
-            elevation = Conversion.parseDouble(matcher.group(7));
-        }
-
-        matcher = TomTomRouteFormat.LOGPOS_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            setTime(parsePilogDate(matcher.group(1)));
-            city = Conversion.trim(matcher.group(3));
-            reason = Conversion.trim(matcher.group(4));
-        }
-
-        matcher = TomTomRouteFormat.PILOG_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            setTime(parsePilogDate(matcher.group(1)));
-            city = Conversion.trim(matcher.group(3));
-            elevation = Conversion.parseDouble(matcher.group(4));
-            reason = Conversion.trim(matcher.group(5));
-        }
+        RouteComments.parseComment(this, comment);
     }
 
 
@@ -173,52 +105,20 @@ public class TomTomPosition extends BaseNavigationPosition {
         return latitude;
     }
 
-
-    private Calendar parseTripmaster1dot4Time(String string) {
-        if (string == null)
-            return null;
-        try {
-            Date date = TomTomRouteFormat.TRIPMASTER_TIME.parse(string);
-            Calendar time = Calendar.getInstance();
-            time.setTime(date);
-            return time;
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
-    private Calendar parseTripmaster1dot8Date(String string) {
-        if (string == null)
-            return null;
-        try {
-            Date date = TomTomRouteFormat.TRIPMASTER_DATE.parse(string);
-            Calendar time = Calendar.getInstance();
-            time.setTime(date);
-            return time;
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
-    private Calendar parsePilogDate(String string) {
-        if (string == null)
-            return null;
-        try {
-            Date date = TomTomRouteFormat.PILOG_DATE.parse(string);
-            Calendar time = Calendar.getInstance();
-            time.setTime(date);
-            return time;
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
     public String getCity() {
         return city;
     }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getReason() {
         return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public TomTomPosition asTomTomRoutePosition() {

@@ -31,6 +31,7 @@ public class PilogTest extends NavigationTestCase {
         TomTomPosition position = new TomTomPosition(0, 0, "080629 07:33:00: + Eschelbach (Rhein-Neckar-Kreis, Baden-Württemberg); L612 @196.9m (s=66 d=91)");
         assertEquals("s=66 d=91", position.getReason());
         assertEquals("Eschelbach (Rhein-Neckar-Kreis, Baden-Württemberg); L612", position.getCity());
+        assertEquals(66.0, position.getSpeed());
         assertEquals(196.9, position.getElevation());
         assertEquals(calendar(2008, 6, 29, 7, 33, 0), position.getTime());
     }
@@ -39,6 +40,7 @@ public class PilogTest extends NavigationTestCase {
         TomTomPosition position = new TomTomPosition(0, 0, "090314 08:05:55: * 1000462:4889518 @365.8m (s=1 d=193)");
         assertEquals("s=1 d=193", position.getReason());
         assertEquals("1000462:4889518", position.getCity());
+        assertEquals(1.0, position.getSpeed());
         assertEquals(365.8, position.getElevation());
         assertEquals(calendar(2009, 3, 14, 8, 5, 55), position.getTime());
     }
@@ -47,8 +49,18 @@ public class PilogTest extends NavigationTestCase {
         TomTomPosition position = new TomTomPosition(0, 0, "090314 07:36:52: = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)");
         assertEquals("090314 07:36:52 - 090314 08:02:04", position.getReason());
         assertEquals("1000466:4889529", position.getCity());
+        assertNull(position.getSpeed());
         assertEquals(365.8, position.getElevation());
         assertEquals(calendar(2009, 3, 14, 7, 36, 52), position.getTime());
+    }
+
+    public void testPilog2cPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "081012 19:00:47: * 17159970:-4176126 @?m (s=12 d=170)");
+        assertEquals("s=12 d=170", position.getReason());
+        assertEquals("17159970:-4176126", position.getCity());
+        assertEquals(12.0, position.getSpeed());
+        assertNull(position.getElevation());
+        assertEquals(calendar(2008, 10, 12, 19, 0, 47), position.getTime());
     }
 
     private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {

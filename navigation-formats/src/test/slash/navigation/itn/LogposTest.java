@@ -31,6 +31,7 @@ public class LogposTest extends NavigationTestCase {
         TomTomPosition position = new TomTomPosition(0, 0, "080530 08:11:44: + Neuhaus Im Solling (Holzminden); B497 In Der Fahrt; 3  (s=69 d=207)");
         assertEquals("s=69 d=207", position.getReason());
         assertEquals("Neuhaus Im Solling (Holzminden); B497 In Der Fahrt; 3", position.getCity());
+        assertEquals(69.0, position.getSpeed());
         assertNull(position.getElevation());
         assertEquals(calendar(2008, 5, 30, 8, 11, 44), position.getTime());
     }
