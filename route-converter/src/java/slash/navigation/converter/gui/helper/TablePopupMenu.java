@@ -40,15 +40,6 @@ public class TablePopupMenu {
     public TablePopupMenu(JFrame frame, final JTable table, final PositionsModel positionsModel) {
         augmenter = new PositionAugmenter(frame);
 
-        JMenuItem buttonRenumberPositions = new JMenuItem(RouteConverter.BUNDLE.getString("renumber-positions"));
-        buttonRenumberPositions.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                positionsModel.renumberPositions();
-            }
-        });
-        popupMenu.add(buttonRenumberPositions);
-        popupMenu.addSeparator();
-
         JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.BUNDLE.getString("add-elevation-popup"));
         buttonAddElevation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -59,15 +50,6 @@ public class TablePopupMenu {
             }
         });
         popupMenu.add(buttonAddElevation);
-
-        JMenuItem buttonComplementElevation = new JMenuItem(RouteConverter.BUNDLE.getString("complement-elevation-popup"));
-        buttonComplementElevation.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                augmenter.complementElevations(positionsModel);
-            }
-        });
-        popupMenu.add(buttonComplementElevation);
-        popupMenu.addSeparator();
 
         JMenuItem buttonAddComment = new JMenuItem(RouteConverter.BUNDLE.getString("add-comment-popup"));
         buttonAddComment.addActionListener(new ActionListener() {
@@ -80,13 +62,16 @@ public class TablePopupMenu {
         });
         popupMenu.add(buttonAddComment);
 
-        JMenuItem buttonComplementComment = new JMenuItem(RouteConverter.BUNDLE.getString("complement-comment-popup"));
-        buttonComplementComment.addActionListener(new ActionListener() {
+        JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.BUNDLE.getString("add-speed-popup"));
+        buttonAddSpeed.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                augmenter.complementComments(positionsModel);
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    augmenter.addSpeeds(positionsModel, selectedRows);
+                }
             }
         });
-        popupMenu.add(buttonComplementComment);
+        popupMenu.add(buttonAddSpeed);
 
         // cannot use table.setComponentPopupMenu(popupMenu); since it does ensure a selection
         table.addMouseListener(new MouseAdapter() {

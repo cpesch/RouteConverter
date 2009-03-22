@@ -39,7 +39,7 @@ import java.util.Calendar;
  */
 
 public abstract class BaseNavigationPosition {
-    protected Double elevation;
+    protected Double elevation, speed;
     protected Calendar time;
 
     protected BaseNavigationPosition(Double elevation, Calendar time) {
@@ -49,16 +49,20 @@ public abstract class BaseNavigationPosition {
 
     /**
      * Return the longitude in the WGS84 coordinate system
+     *
      * @return the longitude in the WGS84 coordinate system
      */
     public abstract Double getLongitude();
+
     public abstract void setLongitude(Double longitude);
 
     /**
      * Return the latitude in the WGS84 coordinate system
+     *
      * @return the latitude in the WGS84 coordinate system
      */
     public abstract Double getLatitude();
+
     public abstract void setLatitude(Double latitude);
 
     public boolean hasCoordinates() {
@@ -67,17 +71,20 @@ public abstract class BaseNavigationPosition {
 
     /**
      * Return the elevation in meters above sea level
+     *
      * @return the elevation in meters above sea level
      */
     public Double getElevation() {
         return elevation;
     }
+
     public void setElevation(Double elevation) {
         this.elevation = elevation;
     }
 
     /**
      * Return the date and time in UTC time zone
+     *
      * @return the date and time in UTC time zone
      */
     public Calendar getTime() {
@@ -88,8 +95,26 @@ public abstract class BaseNavigationPosition {
         this.time = time;
     }
 
+    /**
+     * Return the speed in kilometers per hour
+     *
+     * @return the speed in kilometers per hour
+     */
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
+    }
+
+    /**
+     * Set the day/month/year-offset for date-less, time-only positions
+     *
+     * @param startDate the day/month/year-offset
+     */
     public void setStartDate(Calendar startDate) {
-        if(time != null) {
+        if (time != null) {
             time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
             time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
             time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
@@ -101,54 +126,75 @@ public abstract class BaseNavigationPosition {
     public abstract void setComment(String comment);
 
     /**
+     * Calculate the distance in meter between this and the other position.
+     *
      * @param other the other position
-     * @return the distance in meter this and the other position
+     * @return the distance in meter between this and the other position
+     *         or null if the distance cannot be calculated
      */
-    public double calculateDistance(BaseNavigationPosition other) {
-        Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
-        return bearing.getDistance();
+    public Double calculateDistance(BaseNavigationPosition other) {
+        if (hasCoordinates() && other.hasCoordinates()) {
+            Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
+            return bearing.getDistance();
+        }
+        return null;
     }
 
     /**
+     * Calculate the angle in degree between this and the other position.
+     *
      * @param other the other position
-     * @return the azimuth in degree this and the other position
+     * @return the angle in degree beween this and the other position
+     *         or null if the angle cannot be calculated
      */
-    public double calculateAngle(BaseNavigationPosition other) {
-        Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
-        return bearing.getAngle();
+    public Double calculateAngle(BaseNavigationPosition other) {
+        if (hasCoordinates() && other.hasCoordinates()) {
+            Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
+            return bearing.getAngle();
+        }
+        return null;
     }
-    
+
     /**
      * Calculate the orthogonal distance of this position to the line from pointA to pointB,
      * supposed you are proceeding on a great circle route from A to B and end up at D, perhaps
      * ending off course.
-     *
+     * <p/>
      * http://williams.best.vwh.net/avform.htm#XTE
      * http://www.movable-type.co.uk/scripts/latlong.html
      *
      * @param pointA the first point determining the line between pointA and pointB
      * @param pointB the second point determining the line between pointA and pointB
-     * @return the orthogonal distance to the line from pointA to pointB in meter. Positive numbers
-     * mean right of course, negative numbers mean left of course
+     * @return the orthogonal distance to the line from pointA to pointB in meter
+     *         or null if the orthogonal distance cannot be calculated
      */
-    public double calculateOrthogonalDistance(BaseNavigationPosition pointA, BaseNavigationPosition pointB){
-        double distanceAtoD = calculateDistance(pointA);
-        double courseAtoD = Math.toRadians(pointA.calculateAngle(this));
-        double courseAtoB = Math.toRadians(pointA.calculateAngle(pointB));
-        return Math.asin(Math.sin(distanceAtoD / Bearing.EARTH_RADIUS) *
-                Math.sin(courseAtoD - courseAtoB)) * Bearing.EARTH_RADIUS;
+    public Double calculateOrthogonalDistance(BaseNavigationPosition pointA, BaseNavigationPosition pointB) {
+        if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
+            double distanceAtoD = calculateDistance(pointA);
+            double courseAtoD = Math.toRadians(pointA.calculateAngle(this));
+            double courseAtoB = Math.toRadians(pointA.calculateAngle(pointB));
+            return Math.asin(Math.sin(distanceAtoD / Bearing.EARTH_RADIUS) *
+                    Math.sin(courseAtoD - courseAtoB)) * Bearing.EARTH_RADIUS;
+        }
+        return null;
     }
 
     /**
+     * Calculate the average speed between this and the other position.
+     *
      * @param other the other position
-     * @return the speed in km/h between this and the other position
+     * @return the speed in kilometers per hour between this and the other position
+     *         or null if time or distance cannot be calculated
      */
-    public double calculateSpeed(BaseNavigationPosition other) {
+    public Double calculateSpeed(BaseNavigationPosition other) {
         if (getTime() != null && other.getTime() != null) {
             double interval = Math.abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
-            return calculateDistance(other) / interval * 3.6;
-        } else
-            return 0.0;
+
+            Double distance = calculateDistance(other);
+            if (distance != null)
+                return distance / interval * 3.6;
+        }
+        return null;
     }
 
 

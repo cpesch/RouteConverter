@@ -69,6 +69,69 @@ public class PositionAugmenter {
         }
     };
 
+    private static final OverwritePredicate NO_SPEED_PREDICATE = new OverwritePredicate() {
+        public boolean shouldOverwrite(BaseNavigationPosition position) {
+            return position.getSpeed() == null || position.getSpeed() == 0.0;
+        }
+    };
+
+
+    private int[] selectAllRows(PositionsModel positionsModel) {
+        int[] selectedRows = new int[positionsModel.getRowCount()];
+        for (int i = 0; i < selectedRows.length; i++)
+            selectedRows[i] = i;
+        return selectedRows;
+    }
+
+
+    private interface Operation {
+        String getName();
+        boolean run(BaseNavigationPosition position) throws Exception;
+        String getErrorMessage();
+    }
+
+    private void executeOperation(final PositionsModel positionsModel,
+                                  final int[] rows,
+                                  final OverwritePredicate predicate,
+                                  final Operation operation) {
+        Constants.startWaitCursor(frame.getRootPane());
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Exception exception = null;
+                    for (final int row : rows) {
+                        BaseNavigationPosition position = positionsModel.getPosition(row);
+                        if (position.hasCoordinates() && predicate.shouldOverwrite(position)) {
+                            try {
+                                if (operation.run(position)) {
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            positionsModel.fireTableRowsUpdated(row, row);
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
+                                exception = e;
+                            }
+                        }
+                    }
+                    if (exception != null)
+                        JOptionPane.showMessageDialog(frame,
+                                MessageFormat.format(operation.getErrorMessage(), exception.getMessage()),
+                                frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+                finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            Constants.stopWaitCursor(frame.getRootPane());
+                        }
+                    });
+                }
+            }
+        }, operation.getName()).start();
+    }
+
 
     private boolean addElevation(GeoNamesService service, final BaseNavigationPosition position) throws IOException {
         final Integer elevation = service.getElevationFor(position.getLongitude(), position.getLatitude());
@@ -77,6 +140,37 @@ public class PositionAugmenter {
         return elevation != null;
     }
 
+    private void processElevations(final PositionsModel positionsModel,
+                                   final int[] rows,
+                                   final OverwritePredicate predicate) {
+        executeOperation(positionsModel, rows, predicate,
+                new Operation() {
+                    private GeoNamesService service = new GeoNamesService();
+
+                    public String getName() {
+                        return "ElevationPositionAugmenter";
+                    }
+
+                    public boolean run(BaseNavigationPosition position) throws Exception {
+                        return addElevation(service, position);
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.BUNDLE.getString("add-elevation-error");
+                    }
+                }
+        );
+    }
+
+    public void addElevations(PositionsModel positionsModel, int[] selectedRows) {
+        processElevations(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
+    public void complementElevations(PositionsModel positionsModel) {
+        processElevations(positionsModel, selectAllRows(positionsModel), NO_ELEVATION_PREDICATE);
+    }
+
+
     private boolean addComment(GeoNamesService service, BaseNavigationPosition position) throws IOException {
         String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
         if (comment != null)
@@ -84,128 +178,26 @@ public class PositionAugmenter {
         return comment != null;
     }
 
-    private boolean hasLongitudeAndLatitude(BaseNavigationPosition position) {
-        return position.getLongitude() != null && position.getLatitude() != null;
-    }
-
-
-    private void addElevations(final PositionsModel positionsModel,
-                               final int[] rows,
-                               final OverwritePredicate predicate) {
-        Constants.startWaitCursor(frame.getRootPane());
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    IOException exception = null;
-                    GeoNamesService service = new GeoNamesService();
-                    for (final int row : rows) {
-                        BaseNavigationPosition position = positionsModel.getPosition(row);
-                        if (hasLongitudeAndLatitude(position) && predicate.shouldOverwrite(position)) {
-                            try {
-                                if (addElevation(service, position)) {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            positionsModel.fireTableRowsUpdated(row, row);
-                                        }
-                                    });
-                                }
-                            } catch (IOException e) {
-                                exception = e;
-                            }
-                        }
-                    }
-                    if (exception != null)
-                        JOptionPane.showMessageDialog(frame,
-                                MessageFormat.format(RouteConverter.BUNDLE.getString("add-elevation-error"), exception.getMessage()),
-                                frame.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-                finally {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            Constants.stopWaitCursor(frame.getRootPane());
-                        }
-                    });
-                }
-            }
-        }, "ElevationPositionAugmenter").start();
-    }
-
-    private void addAllElevations(PositionsModel positionsModel, OverwritePredicate predicate) {
-        int[] selectedRows = new int[positionsModel.getRowCount()];
-        for (int i = 0; i < selectedRows.length; i++)
-            selectedRows[i] = i;
-        addElevations(positionsModel, selectedRows, predicate);
-    }
-
-    public void addElevations(PositionsModel positionsModel) {
-        addAllElevations(positionsModel, TAUTOLOGY_PREDICATE);
-    }
-
-    public void addElevations(PositionsModel positionsModel, int[] selectedRows) {
-        addElevations(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
-    }
-
-    public void complementElevations(PositionsModel positionsModel) {
-        addAllElevations(positionsModel, NO_ELEVATION_PREDICATE);
-    }
-
-    public void complementElevations(PositionsModel positionsModel, int[] selectedRows) {
-        addElevations(positionsModel, selectedRows, NO_ELEVATION_PREDICATE);
-    }
-
-
     private void addComments(final PositionsModel positionsModel,
                              final int[] rows,
                              final OverwritePredicate predicate) {
-        Constants.startWaitCursor(frame.getRootPane());
+        executeOperation(positionsModel, rows, predicate,
+                new Operation() {
+                    private GeoNamesService service = new GeoNamesService();
 
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    IOException exception = null;
-                    GeoNamesService service = new GeoNamesService();
-                    for (final int row : rows) {
-                        BaseNavigationPosition position = positionsModel.getPosition(row);
-                        if (hasLongitudeAndLatitude(position) && predicate.shouldOverwrite(position)) {
-                            try {
-                                if (addComment(service, position)) {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            positionsModel.fireTableRowsUpdated(row, row);
-                                        }
-                                    });
-                                }
-                            } catch (IOException e) {
-                                exception = e;
-                            }
-                        }
+                    public String getName() {
+                        return "CommentPositionAugmenter";
                     }
-                    if (exception != null)
-                        JOptionPane.showMessageDialog(frame,
-                                MessageFormat.format(RouteConverter.BUNDLE.getString("add-comment-error"), exception.getMessage()),
-                                frame.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-                finally {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            Constants.stopWaitCursor(frame.getRootPane());
-                        }
-                    });
-                }
-            }
-        }, "CommentPositionAugmenter").start();
-    }
 
-    private void addAllComments(PositionsModel positionsModel, OverwritePredicate predicate) {
-        int[] selectedRows = new int[positionsModel.getRowCount()];
-        for (int i = 0; i < selectedRows.length; i++)
-            selectedRows[i] = i;
-        addComments(positionsModel, selectedRows, predicate);
-    }
+                    public boolean run(BaseNavigationPosition position) throws Exception {
+                        return addComment(service, position);
+                    }
 
-    public void addComments(PositionsModel positionsModel) {
-        addAllComments(positionsModel, TAUTOLOGY_PREDICATE);
+                    public String getErrorMessage() {
+                        return RouteConverter.BUNDLE.getString("add-comment-error");
+                    }
+                }
+        );
     }
 
     public void addComments(PositionsModel positionsModel, int[] selectedRows) {
@@ -213,10 +205,41 @@ public class PositionAugmenter {
     }
 
     public void complementComments(PositionsModel positionsModel) {
-        addAllComments(positionsModel, NO_COMMENT_PREDICATE);
+        addComments(positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
     }
 
-    public void complementComments(PositionsModel positionsModel, int[] selectedRows) {
-        addComments(positionsModel, selectedRows, NO_COMMENT_PREDICATE);
+
+    private void processSpeeds(final PositionsModel positionsModel,
+                               final int[] rows,
+                               final OverwritePredicate predicate) {
+        executeOperation(positionsModel, rows, predicate,
+                new Operation() {
+                    public String getName() {
+                        return "SpeedPositionAugmenter";
+                    }
+
+                    public boolean run(BaseNavigationPosition position) throws Exception {
+                        BaseNavigationPosition predecessor = positionsModel.getPredecessor(position);
+                        if (predecessor != null) {
+                            Double speed = position.calculateSpeed(predecessor);
+                            position.setSpeed(speed);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.BUNDLE.getString("add-speed-error");
+                    }
+                }
+        );
+    }
+
+    public void addSpeeds(PositionsModel positionsModel, int[] selectedRows) {
+        processSpeeds(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
+    public void complementSpeeds(PositionsModel positionsModel) {
+        processSpeeds(positionsModel, selectAllRows(positionsModel), NO_SPEED_PREDICATE);
     }
 }

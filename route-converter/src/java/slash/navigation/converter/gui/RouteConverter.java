@@ -36,7 +36,6 @@ import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helper.TableHeaderPopupMenu;
 import slash.navigation.converter.gui.helper.TablePopupMenu;
-import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
@@ -172,10 +171,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JCheckBox checkBoxStartWithLastFile;
     private JButton buttonPrintMap;
     private JButton buttonRenumberPositions;
-    private JButton buttonAddElevation;
-    private JButton buttonComplementElevation;
-    private JButton buttonAddComment;
-    private JButton buttonComplementComment;
     private JButton buttonCheckForUpdate;
     private JButton buttonTestDragListenerPort;
 
@@ -562,40 +557,13 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonRenumberPositions.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                tabbedPane.setSelectedComponent(convertPanel);
-                getPositionsModel().renumberPositions();
-            }
-        });
-
-        buttonAddElevation.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                tabbedPane.setSelectedComponent(convertPanel);
-                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
-                augmenter.addElevations(getPositionsModel());
-            }
-        });
-
-        buttonComplementElevation.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                tabbedPane.setSelectedComponent(convertPanel);
-                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
-                augmenter.complementElevations(getPositionsModel());
-            }
-        });
-
-        buttonAddComment.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                tabbedPane.setSelectedComponent(convertPanel);
-                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
-                augmenter.addComments(getPositionsModel());
-            }
-        });
-
-        buttonComplementComment.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                tabbedPane.setSelectedComponent(convertPanel);
-                PositionAugmenter augmenter = new PositionAugmenter(getFrame());
-                augmenter.complementComments(getPositionsModel());
+                Constants.startWaitCursor(frame.getRootPane());
+                try {
+                    tabbedPane.setSelectedComponent(convertPanel);
+                    getPositionsModel().renumberPositions();
+                } finally {
+                    Constants.stopWaitCursor(frame.getRootPane());
+                }
             }
         });
     }
@@ -824,9 +792,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        if (mapView.getCanvas() == null || mapView.getInitializationCause() != null) {
+                        Throwable cause = mapView.getInitializationCause();
+                        if (mapView.getCanvas() == null || cause != null) {
                             StringWriter stackTrace = new StringWriter();
-                            mapView.getInitializationCause().printStackTrace(new PrintWriter(stackTrace));
+                            cause.printStackTrace(new PrintWriter(stackTrace));
                             mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                         } else {
                             mapPanel.add(mapView.getCanvas(), MAP_PANEL_CONSTRAINTS);
@@ -2137,26 +2106,14 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         final JPanel panel11 = new JPanel();
         expertPanel.add(panel11, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JPanel panel12 = new JPanel();
-        panel12.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel12.setLayout(new GridLayoutManager(1, 2, new Insets(3, 3, 3, 3), -1, -1));
         expertPanel.add(panel12, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonAddElevation = new JButton();
-        this.$$$loadButtonText$$$(buttonAddElevation, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-elevation"));
-        panel12.add(buttonAddElevation, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenumberPositions = new JButton();
         this.$$$loadButtonText$$$(buttonRenumberPositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("renumber-positions"));
-        panel12.add(buttonRenumberPositions, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel12.add(buttonRenumberPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonPrintMap = new JButton();
         this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
-        panel12.add(buttonPrintMap, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonComplementElevation = new JButton();
-        this.$$$loadButtonText$$$(buttonComplementElevation, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-elevation"));
-        panel12.add(buttonComplementElevation, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonAddComment = new JButton();
-        this.$$$loadButtonText$$$(buttonAddComment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-comment"));
-        panel12.add(buttonAddComment, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonComplementComment = new JButton();
-        this.$$$loadButtonText$$$(buttonComplementComment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-comment"));
-        panel12.add(buttonComplementComment, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel12.add(buttonPrintMap, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel13 = new JPanel();
         panel13.setLayout(new GridLayoutManager(3, 2, new Insets(5, 5, 5, 5), -1, -1));
         expertPanel.add(panel13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

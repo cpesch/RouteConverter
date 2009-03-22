@@ -73,14 +73,23 @@ public class PositionsModel extends AbstractTableModel {
                 return formatLongitudeOrLatitude(position.getLatitude());
             case PositionsTableColumnModel.ELEVATION_COLUMN_INDEX:
                 return formatElevation(position.getElevation());
+            case PositionsTableColumnModel.SPEED_COLUMN_INDEX:
+                return formatSpeed(position.getSpeed());
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
     }
 
+    public BaseNavigationPosition getPredecessor(BaseNavigationPosition position) {
+        return getRoute().getPredecessor(position);
+    }
+
     public BaseNavigationPosition getPosition(int rowIndex) {
-        List<BaseNavigationPosition> positions = getRoute().getPositions();
-        return positions.get(rowIndex);
+        return getRoute().getPosition(rowIndex);
+    }
+
+    public BaseNavigationPosition getSuccessor(BaseNavigationPosition position) {
+        return getRoute().getSuccessor(position);
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -136,7 +145,11 @@ public class PositionsModel extends AbstractTableModel {
 
 
     private String formatElevation(Double elevation) {
-        return elevation != null ? Math.round(elevation) + "m " : "";
+        return elevation != null ? Math.round(elevation) + " m" : "";
+    }
+
+    private String formatSpeed(Double speed) {
+        return speed != null ? Math.round(speed) + " km/h" : "";
     }
 
     private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {

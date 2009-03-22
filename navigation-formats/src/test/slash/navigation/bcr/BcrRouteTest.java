@@ -316,4 +316,20 @@ public class BcrRouteTest extends NavigationTestCase {
         assertEquals("Hamburg (Position 4)", positions.get(3).getComment());
         assertEquals("Position 5: Hamburg", positions.get(4).getComment());
     }
+
+    public void testSuccessor() {
+        initialize();
+        assertEquals(b, route.getSuccessor(a));
+        assertEquals(c, route.getSuccessor(b));
+        assertNull(route.getSuccessor(c));
+        assertNull(route.getSuccessor(d));
+    }
+
+    public void testPredecessor() {
+        initialize();
+        assertEquals(b, route.getPredecessor(a));
+        assertEquals(c, route.getPredecessor(b));
+        assertNull(route.getPredecessor(c));
+        assertNull(route.getPredecessor(d));
+    }
 }

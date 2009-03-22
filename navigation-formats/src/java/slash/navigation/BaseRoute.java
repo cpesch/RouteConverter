@@ -71,11 +71,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public abstract String getName();
+
     public abstract void setName(String name);
 
     public abstract List<String> getDescription();
 
     public abstract List<P> getPositions();
+
     public abstract int getPositionCount();
 
     public abstract void add(int index, P position);
@@ -163,6 +165,22 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public P getPredecessor(P position) {
+        List<P> positions = getPositions();
+        int index = positions.indexOf(position);
+        return index > 0 && index < positions.size() ? positions.get(index - 1) : null;
+    }
+
+    public P getPosition(int index) {
+        return getPositions().get(index);
+    }
+
+    public P getSuccessor(P position) {
+        List<P> positions = getPositions();
+        int index = positions.indexOf(position);
+        return index != -1 && index < positions.size() -1 ? positions.get(index + 1) : null;
+    }
+
     public double getLength() {
         double result = 0;
         List<P> positions = getPositions();
@@ -205,39 +223,74 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Calendar time, String comment);
 
     public abstract SimpleRoute asCoPilot6Format();
+
     public abstract SimpleRoute asCoPilot7Format();
+
     public abstract SimpleRoute asGlopusFormat();
+
     public abstract SimpleRoute asGoogleMapsFormat();
+
     public abstract GoPalRoute asGoPalRouteFormat();
+
     public abstract SimpleRoute asGoPalTrackFormat();
+
     public abstract SimpleRoute asGpsTunerFormat();
+
     public abstract GpxRoute asGpx10Format();
+
     public abstract GpxRoute asGpx11Format();
+
     public abstract TomTomRoute asTomTom5RouteFormat();
+
     public abstract TomTomRoute asTomTom8RouteFormat();
+
     public abstract KlickTelRoute asKlickTelRouteFormat();
+
     public abstract KmlRoute asKml20Format();
+
     public abstract KmlRoute asKml21Format();
+
     public abstract KmlRoute asKml22BetaFormat();
+
     public abstract KmlRoute asKml22Format();
+
     public abstract KmlRoute asKmz20Format();
+
     public abstract KmlRoute asKmz21Format();
+
     public abstract KmlRoute asKmz22BetaFormat();
+
     public abstract KmlRoute asKmz22Format();
+
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
+
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
+
     public abstract NmeaRoute asMagellanExploristFormat();
+
     public abstract BcrRoute asMTP0607Format();
+
     public abstract BcrRoute asMTP0809Format();
+
     public abstract SimpleRoute asNavigatingPoiWarnerFormat();
+
     public abstract NmeaRoute asNmeaFormat();
+
     public abstract NmnRoute asNmn4Format();
+
     public abstract NmnRoute asNmn5Format();
+
     public abstract NmnRoute asNmn6Format();
+
     public abstract NmnRoute asNmn6FavoritesFormat();
+
     public abstract NmnRoute asNmn7Format();
+
     public abstract OvlRoute asOvlFormat();
+
     public abstract SimpleRoute asRoute66Format();
+
     public abstract TourRoute asTourFormat();
+
     public abstract ViaMichelinRoute asViaMichelinFormat();
 }

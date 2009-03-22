@@ -30,10 +30,15 @@ import java.awt.*;
  */
 
 public class PositionsTableCellRenderer extends AlternatingColorTableCellRenderer {
+    private int alignment;
+
+    public PositionsTableCellRenderer(int alignment) {
+        this.alignment = alignment;
+    }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        label.setHorizontalAlignment(columnIndex == 3 ? SwingConstants.RIGHT : SwingConstants.LEFT);
+        label.setHorizontalAlignment(alignment);
         return label;
     }
 }
