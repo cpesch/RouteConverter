@@ -21,9 +21,14 @@
 package slash.navigation.tour;
 
 import slash.navigation.NavigationTestCase;
+import slash.navigation.kml.binding20.Kml;
+import slash.navigation.kml.KmlUtil;
 
+import javax.xml.bind.JAXBException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.io.*;
 
 public class TourFormatTest extends NavigationTestCase {
     TourFormat format = new TourFormat();
@@ -49,8 +54,8 @@ public class TourFormatTest extends NavigationTestCase {
         nameValues.put("Visited", "0");
         TourPosition position = new TourPosition(1489415L, 6886471L, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", nameValues);
         position.put("Assembly", "FalkNavigator");
-        assertEquals((Long)1489415L, position.getX());
-        assertEquals((Long)6886471L, position.getY());
+        assertEquals((Long) 1489415L, position.getX());
+        assertEquals((Long) 6886471L, position.getY());
         assertEquals(13.39463, position.getLongitude());
         assertEquals(52.51718, position.getLatitude());
         assertEquals("10117 Berlin, Unter den Linden 7, Staatsoper unter den Linden", position.getComment());
@@ -64,5 +69,14 @@ public class TourFormatTest extends NavigationTestCase {
         TourPosition position = new TourPosition(null, null, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", new HashMap<String, String>());
         position.setComment("ABC");
         assertEquals("ABC", position.getComment());
+    }
+
+    public void testPositionInListOrder() throws IOException {
+        List<TourRoute> routeList = format.read(new FileInputStream(TEST_PATH + "from.tour"));
+        assertEquals(1, routeList.size());
+        TourRoute route = routeList.get(0);
+        assertEquals("10117 Berlin/Mitte, Platz Vor Dem Brandenburger Tor 1, Home", route.getPosition(0).getComment());
+        assertEquals("10787 Berlin, Hardenbergstraﬂe 8, Zoologischer Garten", route.getPosition(1).getComment());
+        assertEquals("10789 Berlin, Breitscheidplatz, Kaiser-Wilhelm-Ged‰chtniskirche", route.getPosition(2).getComment());
     }
 }

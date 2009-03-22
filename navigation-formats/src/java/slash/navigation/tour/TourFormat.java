@@ -46,7 +46,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     private static final String HOUSENO = "HouseNo";
     private static final String LONGITUDE = "Longitude";
     private static final String LATITUDE = "Latitude";
-    private static final String POSITION_IN_LIST = "PositionInList";
+    static final String POSITION_IN_LIST = "PositionInList";
     static final String CLASS = "Class";
     static final String ASSEMBLY = "Assembly";
     static final String VISITED = "Visited";
@@ -96,6 +96,9 @@ public class TourFormat extends IniFileFormat<TourRoute> {
 
             if (isSectionTitle(line)) {
                 if (sectionTitle != null) {
+                    // let the HOME entry be the very first one
+                    if (HOME_TITLE.equals(sectionTitle))
+                        map.put(POSITION_IN_LIST, "-1");
                     if (TOUR_TITLE.equals(sectionTitle)) {
                         routeName = map.get(NAME);
                         // ignore everything else from the [TOUR] section
@@ -118,6 +121,9 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         }
 
         if (positions.size() > 0) {
+            TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
+            Arrays.sort(positionArray, new PositionInListComparator());
+            positions = Arrays.asList(positionArray);
             return Arrays.asList(new TourRoute(this, routeName, positions));
         }
 
@@ -155,7 +161,6 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         map.remove(NAME);
         map.remove(LONGITUDE);
         map.remove(LATITUDE);
-        map.remove(POSITION_IN_LIST);
 
         return new TourPosition(x, y, zipCode, city, street, houseNo, name, map);
     }
