@@ -21,7 +21,7 @@
 package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.RouteComments;
+import slash.navigation.util.RouteComments;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.ISO8601;
@@ -118,6 +118,23 @@ public class Kml20Format extends KmlFormat {
         return string;
     }
 
+    private String extractTime(TimeInstant timeInstant) {
+        return timeInstant != null ? timeInstant.getTimePosition() : null;
+    }
+
+    private Calendar extractTime(List<Object> elements) {
+        JAXBElement element = findElement(elements, "TimePeriod");
+        if (element == null)
+            return null;
+        TimePeriod timePeriod = (TimePeriod) element.getValue();
+        String time = "";
+        if (timePeriod.getBegin() != null)
+            time = extractTime(timePeriod.getBegin().getTimeInstant());
+        if (time == null && timePeriod.getEnd() != null)
+            time = extractTime(timePeriod.getEnd().getTimeInstant());
+        return time != null ? ISO8601.parse(time) : null;
+    }
+
     private List<String> extractDescriptionList(List<Object> elements) {
         JAXBElement name = findElement(elements, "description");
         return name != null ? asDescription((String) name.getValue()) : null;
@@ -179,12 +196,16 @@ public class Kml20Format extends KmlFormat {
         for (Placemark placemark : placemarks) {
             String placemarkName = asComment(extractName(placemark.getDescriptionOrNameOrSnippet()),
                     extractDescription(placemark.getDescriptionOrNameOrSnippet()));
-            // cannot extract time in KML 2.0
+            Calendar placemarkTime = extractTime(placemark.getDescriptionOrNameOrSnippet());
+            if(placemarkTime == null)
+                placemarkTime = parseTime(extractDescription(placemark.getDescriptionOrNameOrSnippet()));
             List<KmlPosition> positions = extractPositions(placemark.getDescriptionOrNameOrSnippet());
 
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
+                if (wayPoint.getTime() == null)
+                    wayPoint.setTime(placemarkTime);
                 if (wayPoint.getComment() == null)
                     wayPoint.setComment(placemarkName);
                 wayPoints.add(positions.get(0));
