@@ -90,7 +90,7 @@ public class NavigationFileParser {
         return positionCounts;
     }
 
-    private FormatAndRoutes read(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
+    private FormatAndRoutes internalRead(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
             buffer.mark(readBufferSize + 1);
@@ -128,7 +128,7 @@ public class NavigationFileParser {
         startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
         try {
-            this.formatAndRoutes = read(fis, (int) source.length(), startDate);
+            this.formatAndRoutes = internalRead(fis, (int) source.length(), startDate);
             return formatAndRoutes != null;
         }
         finally {
@@ -147,24 +147,40 @@ public class NavigationFileParser {
         }
     }
 
-    public boolean read(URL url) throws IOException {
-        int readBufferSize;
-        InputStream in;
-        if (GoogleMapsFormat.isGoogleMapsUrl(url)) {
-            byte[] bytes = url.toExternalForm().getBytes();
-            readBufferSize = bytes.length;
-            in = new ByteArrayInputStream(bytes);
-        } else {
-            readBufferSize = getSize(url);
-            in = url.openStream();
+    private Calendar getStartDate(URL url) throws IOException {
+        try {
+            if (url.getProtocol().equals("file")) {
+                Calendar startDate = Calendar.getInstance();
+                startDate.setTimeInMillis(new File(url.toURI()).lastModified());
+                return startDate;
+            } else
+                return null;
+        } catch (URISyntaxException e) {
+            throw new IOException("Cannot determine file from URL: " + e.getMessage());
         }
-        return read(in, readBufferSize);
     }
 
-    public boolean read(InputStream source, int readBufferSize) throws IOException {
+    public boolean read(URL url) throws IOException {
+        InputStream in;
+        int readBufferSize;
+        Calendar startDate;
+        if (GoogleMapsFormat.isGoogleMapsUrl(url)) {
+            byte[] bytes = url.toExternalForm().getBytes();
+            in = new ByteArrayInputStream(bytes);
+            readBufferSize = bytes.length;
+            startDate = Calendar.getInstance();
+        } else {
+            in = url.openStream();
+            readBufferSize = getSize(url);
+            startDate = getStartDate(url);
+        }
+        return read(in, readBufferSize, startDate);
+    }
+
+    public boolean read(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
         log.info("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes");
         try {
-            this.formatAndRoutes = read(source, readBufferSize, null);
+            this.formatAndRoutes = internalRead(source, readBufferSize, startDate);
             return formatAndRoutes != null;
         }
         finally {
@@ -173,7 +189,7 @@ public class NavigationFileParser {
     }
 
     public boolean read(InputStream source) throws IOException {
-        return read(source, READ_BUFFER_SIZE);
+        return read(source, READ_BUFFER_SIZE, null);
     }
 
 
