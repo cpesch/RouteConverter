@@ -18,7 +18,9 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation;
+package slash.navigation.simple;
+
+import slash.navigation.*;
 
 import java.io.File;
 import java.io.IOException;

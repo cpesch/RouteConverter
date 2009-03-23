@@ -21,14 +21,12 @@
 package slash.navigation.tour;
 
 import slash.navigation.NavigationTestCase;
-import slash.navigation.kml.binding20.Kml;
-import slash.navigation.kml.KmlUtil;
 
-import javax.xml.bind.JAXBException;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-import java.io.*;
+import java.util.Map;
 
 public class TourFormatTest extends NavigationTestCase {
     TourFormat format = new TourFormat();

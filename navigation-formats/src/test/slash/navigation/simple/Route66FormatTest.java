@@ -17,7 +17,10 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation;
+package slash.navigation.simple;
+
+import slash.navigation.NavigationTestCase;
+import slash.navigation.Wgs84Position;
 
 public class Route66FormatTest extends NavigationTestCase {
     Route66Format format = new Route66Format();

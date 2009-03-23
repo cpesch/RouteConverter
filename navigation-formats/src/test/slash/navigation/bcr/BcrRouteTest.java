@@ -327,9 +327,9 @@ public class BcrRouteTest extends NavigationTestCase {
 
     public void testPredecessor() {
         initialize();
-        assertEquals(b, route.getPredecessor(a));
-        assertEquals(c, route.getPredecessor(b));
-        assertNull(route.getPredecessor(c));
+        assertNull(route.getPredecessor(a));
+        assertEquals(a, route.getPredecessor(b));
+        assertEquals(b, route.getPredecessor(c));
         assertNull(route.getPredecessor(d));
     }
 }

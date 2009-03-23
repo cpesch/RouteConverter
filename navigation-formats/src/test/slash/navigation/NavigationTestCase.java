@@ -20,6 +20,7 @@
 
 package slash.navigation;
 
+import junit.framework.AssertionFailedError;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
@@ -43,6 +44,10 @@ import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Route66Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
@@ -55,8 +60,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
-
-import junit.framework.AssertionFailedError;
 
 public abstract class NavigationTestCase extends TestCase {
     protected static final Logger log = Logger.getLogger(NavigationTestCase.class.getName());

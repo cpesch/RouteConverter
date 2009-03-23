@@ -39,6 +39,10 @@ import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoogleMapsFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.Route66Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 

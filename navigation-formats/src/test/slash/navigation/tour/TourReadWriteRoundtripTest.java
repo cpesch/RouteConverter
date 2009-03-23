@@ -37,14 +37,16 @@ public class TourReadWriteRoundtripTest extends ReadWriteBase {
                 TourRoute sourceRoute = (TourRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.ASSEMBLY, "FalkNavigator");
                 checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.VISITED, "1");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), "PoiId", "46120");
+                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.VISITED, "0");
+                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.POSITION_IN_LIST, "0");
+                checkUnprocessedValue(sourceRoute.getPositions().get(1), "PoiId", "46108");
                 checkUnprocessedValue(sourceRoute.getPositions().get(1), "AreaId", "1001");
                 TourRoute targetRoute = (TourRoute) target.getAllRoutes().get(0);
                 checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.ASSEMBLY, "FalkNavigator");
                 checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.VISITED, "1");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), "PoiId", "46120");
+                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.VISITED, "0");
+                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.POSITION_IN_LIST, "0");
+                checkUnprocessedValue(targetRoute.getPositions().get(1), "PoiId", "46108");
                 checkUnprocessedValue(targetRoute.getPositions().get(1), "AreaId", "1001");
             }
         });

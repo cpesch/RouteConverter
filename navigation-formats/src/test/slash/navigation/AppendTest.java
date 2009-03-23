@@ -28,6 +28,7 @@ import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.Nmn4Format;
 import slash.navigation.nmn.Nmn5Format;
 import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.simple.GpsTunerFormat;
 
 import java.io.File;
 import java.io.IOException;
