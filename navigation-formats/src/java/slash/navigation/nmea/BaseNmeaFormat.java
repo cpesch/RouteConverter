@@ -131,6 +131,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             position.setComment(toBeMergedInto.getComment());
         if (position.getElevation() == null)
             position.setElevation(toBeMergedInto.getElevation());
+        if (position.getSpeed() == null)
+            position.setSpeed(toBeMergedInto.getSpeed());
         if (position.getLatitude() == null)
             position.setLatitude(toBeMergedInto.getLatitude());
         if (position.getLongitude() == null)

@@ -203,7 +203,7 @@ public class NmeaFormatTest extends NavigationTestCase {
     public void testMerging() throws IOException {
         StringReader reader = new StringReader(
                 "$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D\n" +
-                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160600,,,A*7B\n" +
+                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,034.5,000.0,160600,,,A*79\n" +
                         "$GPZDA,032910,07,08,2004,00,00*48"
         );
         List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
@@ -213,6 +213,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         NmeaPosition position = (NmeaPosition) route.getPositions().get(0);
         assertEquals(9.0567266, position.getLongitude());
         assertEquals(48.6239566, position.getLatitude());
+        assertEquals(63.894148349999995, position.getSpeed());
         assertEquals(16.76, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         Calendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
@@ -234,6 +235,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         NmeaPosition position = route.getPositions().get(0);
         assertEquals(9.0567266, position.getLongitude());
         assertEquals(48.6239566, position.getLatitude());
+        assertEquals(5.5560129, position.getSpeed());
         assertEquals(-48.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         Calendar expectedCal = calendar(2007, 7, 26, 13, 40, 12);
@@ -247,7 +249,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         String eol = System.getProperty("line.separator");
         String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,,,-48.0,M,,M,,*7F" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
-                "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,,,260707,,A*44" + eol +
+                "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
                 "$GPZDA,134012.000,26,07,07,,*57" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
