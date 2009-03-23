@@ -48,6 +48,7 @@ import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinFormat;
+import slash.navigation.simple.*;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -104,7 +105,7 @@ public final class NavigationFormats {
         addFormat(MagicMapsIktFormat.class);
         addFormat(MagellanExploristFormat.class);
         addFormat(KienzleGpsFormat.class);
-        /* TODO 1.25 */
+        /* TODO 1.26 */
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
         addFormat(KlickTelRouteFormat.class);      

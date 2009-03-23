@@ -27,6 +27,7 @@ import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.NotClosingUnderlyingInputStream;
 import slash.navigation.util.RouteComments;
+import slash.navigation.simple.GoogleMapsFormat;
 
 import java.io.*;
 import java.net.URISyntaxException;

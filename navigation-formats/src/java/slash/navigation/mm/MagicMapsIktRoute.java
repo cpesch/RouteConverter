@@ -21,6 +21,7 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
+import slash.navigation.simple.*;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;

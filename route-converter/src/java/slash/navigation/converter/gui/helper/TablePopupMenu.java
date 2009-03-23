@@ -71,7 +71,7 @@ public class TablePopupMenu {
                 }
             }
         });
-        popupMenu.add(buttonAddSpeed);
+        // TODO 1.26 popupMenu.add(buttonAddSpeed);
 
         // cannot use table.setComponentPopupMenu(popupMenu); since it does ensure a selection
         table.addMouseListener(new MouseAdapter() {
