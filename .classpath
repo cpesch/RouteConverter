@@ -27,7 +27,7 @@
 	<classpathentry kind="lib" path="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
 	<classpathentry kind="lib" path="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
 	<classpathentry kind="lib" path="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
-	<classpathentry kind="lib" path="thirdparty/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar"/>
+	<classpathentry kind="lib" path="thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/output/tmp"/>
 </classpath>
