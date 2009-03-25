@@ -86,7 +86,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         while (true) {
             String line = reader.readLine();
             if (line == null) {
-                TourPosition position = parsePosition(map);
+                TourPosition position = parsePosition(map, sectionTitle);
                 if (position != null)
                     positions.add(position);
                 break;
@@ -96,15 +96,12 @@ public class TourFormat extends IniFileFormat<TourRoute> {
 
             if (isSectionTitle(line)) {
                 if (sectionTitle != null) {
-                    // let the HOME entry be the very first one
-                    if (HOME_TITLE.equals(sectionTitle))
-                        map.put(POSITION_IN_LIST, "-1");
                     if (TOUR_TITLE.equals(sectionTitle)) {
                         routeName = map.get(NAME);
                         // ignore everything else from the [TOUR] section
                         map.clear();
                     } else {
-                        TourPosition position = parsePosition(map);
+                        TourPosition position = parsePosition(map, sectionTitle);
                         if (position != null)
                             positions.add(position);
                         map = new HashMap<String, String>();
@@ -142,7 +139,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return matcher.group(1);
     }
 
-    TourPosition parsePosition(Map<String, String> map) {
+    TourPosition parsePosition(Map<String, String> map, String sectionTitle) {
         String zipCode = Conversion.trim(map.get(ZIPCODE));
         String city = Conversion.trim(map.get(CITY));
         String street = Conversion.trim(map.get(STREET));
@@ -162,7 +159,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         map.remove(LONGITUDE);
         map.remove(LATITUDE);
 
-        return new TourPosition(x, y, zipCode, city, street, houseNo, name, map);
+        return new TourPosition(x, y, zipCode, city, street, houseNo, name, HOME_TITLE.equals(sectionTitle), map);
     }
 
 
@@ -170,47 +167,53 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         write(route, target, UTF8_ENCODING, startIndex, endIndex, numberPositionNames);
     }
 
+    private static final String TOUR_FORMAT_NAME_VALUE_SEPARATOR = " " + NAME_VALUE_SEPARATOR + " ";
+
     public void write(TourRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
         writer.println(SECTION_PREFIX + TOUR_TITLE + SECTION_POSTFIX);
-        writer.println(NAME + NAME_VALUE_SEPARATOR + route.getName());
-        writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
-
+        writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + route.getName());
+        writer.println(CREATOR + TOUR_FORMAT_NAME_VALUE_SEPARATOR + GENERATED_BY);
+        writer.println();
+ 
         List<TourPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             TourPosition position = positions.get(i);
 
-            writer.println(SECTION_PREFIX + Integer.toString(i) + SECTION_POSTFIX);
+            String sectionTitle = position.isHome() ? HOME_TITLE : Integer.toString(i);
+            writer.println(SECTION_PREFIX + sectionTitle + SECTION_POSTFIX);
 
             String name = position.getName();
             if (name == null)
                 name = position.getCity();
             if (name == null)
                 name = position.getComment();
-            writer.println(NAME + NAME_VALUE_SEPARATOR + name);
-            writer.println(POSITION_IN_LIST + NAME_VALUE_SEPARATOR + Integer.toString(i));
+            writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + name);
+            writer.println(POSITION_IN_LIST + TOUR_FORMAT_NAME_VALUE_SEPARATOR + Integer.toString(i));
             if (position.getZipCode() != null)
-                writer.println(ZIPCODE + NAME_VALUE_SEPARATOR + position.getZipCode());
+                writer.println(ZIPCODE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getZipCode());
             if (position.getCity() != null && !position.getCity().equals(name))
-                writer.println(CITY + NAME_VALUE_SEPARATOR + position.getCity());
+                writer.println(CITY + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getCity());
             if (position.getStreet() != null)
-                writer.println(STREET + NAME_VALUE_SEPARATOR + position.getStreet());
+                writer.println(STREET + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getStreet());
             if (position.getHouseNo() != null)
-                writer.println(HOUSENO + NAME_VALUE_SEPARATOR + position.getHouseNo());
+                writer.println(HOUSENO + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getHouseNo());
 
-            writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + position.getX());
-            writer.println(LATITUDE + NAME_VALUE_SEPARATOR + position.getY());
+            writer.println(LONGITUDE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getX());
+            writer.println(LATITUDE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getY());
 
             for (String key : position.keySet()) {
                 String value = position.get(key);
-                writer.println(key + NAME_VALUE_SEPARATOR + value);
+                writer.println(key + TOUR_FORMAT_NAME_VALUE_SEPARATOR + value);
             }
 
             if (!position.keySet().contains(CLASS))
-                writer.println(CLASS + NAME_VALUE_SEPARATOR + "FMI.FalkNavigator.PersistentAddress");
+                writer.println(CLASS + TOUR_FORMAT_NAME_VALUE_SEPARATOR + "FMI.FalkNavigator.PersistentAddress");
             if (!position.keySet().contains(ASSEMBLY))
-                writer.println(ASSEMBLY + NAME_VALUE_SEPARATOR + "FalkNavigator");
+                writer.println(ASSEMBLY + TOUR_FORMAT_NAME_VALUE_SEPARATOR + "FalkNavigator");
             if (!position.keySet().contains(VISITED))
-                writer.println(VISITED + NAME_VALUE_SEPARATOR + "0");
+                writer.println(VISITED + TOUR_FORMAT_NAME_VALUE_SEPARATOR + "0");
+
+            writer.println();
         }
     }
 }

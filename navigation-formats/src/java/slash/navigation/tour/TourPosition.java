@@ -35,6 +35,7 @@ import java.util.Set;
  */
 
 public class TourPosition extends MercatorPosition {
+    private boolean home = false;
     private String name, zipCode, street, houseNo; // comment = city
     private Map<String, String> nameValues = new HashMap<String, String>();
 
@@ -42,12 +43,13 @@ public class TourPosition extends MercatorPosition {
         super(longitude, latitude, null, null, comment);
     }
 
-    public TourPosition(Long x, Long y, String zipCode, String city, String street, String houseNo, String name, Map<String, String> nameValues) {
+    public TourPosition(Long x, Long y, String zipCode, String city, String street, String houseNo, String name, boolean home, Map<String, String> nameValues) {
         super(x, y, null, null, city);
         this.name = name;
         this.zipCode = zipCode;
         this.street = street;
         this.houseNo = houseNo;
+        this.home = home;
         this.nameValues = nameValues;
     }
 
@@ -90,6 +92,9 @@ public class TourPosition extends MercatorPosition {
         return houseNo;
     }
 
+    public boolean isHome() {
+        return home;
+    }
 
     public String get(String name) {
         return nameValues.get(name);

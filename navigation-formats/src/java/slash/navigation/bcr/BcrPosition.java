@@ -147,7 +147,7 @@ public class BcrPosition extends MercatorPosition {
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getX(), getY(), getZipCode(), getCity(), getStreet(), null, null, new HashMap<String, String>());
+        return new TourPosition(getX(), getY(), getZipCode(), getCity(), getStreet(), null, null, false, new HashMap<String, String>());
     }
 
 

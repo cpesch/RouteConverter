@@ -50,7 +50,7 @@ public class TourFormatTest extends NavigationTestCase {
     public void testTourPosition() {
         Map<String, String> nameValues = new HashMap<String, String>();
         nameValues.put("Visited", "0");
-        TourPosition position = new TourPosition(1489415L, 6886471L, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", nameValues);
+        TourPosition position = new TourPosition(1489415L, 6886471L, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", true, nameValues);
         position.put("Assembly", "FalkNavigator");
         assertEquals((Long) 1489415L, position.getX());
         assertEquals((Long) 6886471L, position.getY());
@@ -61,10 +61,11 @@ public class TourFormatTest extends NavigationTestCase {
         assertNull(position.getTime());
         assertEquals("0", position.get("Visited"));
         assertEquals("FalkNavigator", position.get("Assembly"));
+        assertTrue(position.isHome());
     }
 
     public void testSetComment() {
-        TourPosition position = new TourPosition(null, null, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", new HashMap<String, String>());
+        TourPosition position = new TourPosition(null, null, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", false, new HashMap<String, String>());
         position.setComment("ABC");
         assertEquals("ABC", position.getComment());
     }
@@ -73,8 +74,8 @@ public class TourFormatTest extends NavigationTestCase {
         List<TourRoute> routeList = format.read(new FileInputStream(TEST_PATH + "from.tour"));
         assertEquals(1, routeList.size());
         TourRoute route = routeList.get(0);
-        assertEquals("10117 Berlin/Mitte, Platz Vor Dem Brandenburger Tor 1, Home", route.getPosition(0).getComment());
-        assertEquals("10787 Berlin, Hardenbergstraﬂe 8, Zoologischer Garten", route.getPosition(1).getComment());
+        assertEquals("10787 Berlin, Hardenbergstraﬂe 8, Zoologischer Garten", route.getPosition(0).getComment());
+        assertEquals("10117 Berlin/Mitte, Platz Vor Dem Brandenburger Tor 1, Home", route.getPosition(1).getComment());
         assertEquals("10789 Berlin, Breitscheidplatz, Kaiser-Wilhelm-Ged‰chtniskirche", route.getPosition(2).getComment());
     }
 }
