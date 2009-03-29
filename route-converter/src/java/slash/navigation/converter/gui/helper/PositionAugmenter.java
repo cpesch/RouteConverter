@@ -21,12 +21,12 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.util.RouteComments;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.gui.Constants;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -99,7 +99,7 @@ public class PositionAugmenter {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Exception exception = null;
+                    Exception lastException = null;
                     for (final int row : rows) {
                         BaseNavigationPosition position = positionsModel.getPosition(row);
                         if (position.hasCoordinates() && predicate.shouldOverwrite(position)) {
@@ -112,13 +112,13 @@ public class PositionAugmenter {
                                     });
                                 }
                             } catch (Exception e) {
-                                exception = e;
+                                lastException = e;
                             }
                         }
                     }
-                    if (exception != null)
+                    if (lastException != null)
                         JOptionPane.showMessageDialog(frame,
-                                MessageFormat.format(operation.getErrorMessage(), exception.getMessage()),
+                                MessageFormat.format(operation.getErrorMessage(), lastException.getMessage()),
                                 frame.getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
                 finally {
