@@ -147,7 +147,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                 }
                 try {
                     int exitValue = process.exitValue();
-                    log.info("gpsbabel process terminated with exit code " + exitValue);
+                    log.info("gpsbabel process terminated with exit value " + exitValue);
                 } catch (IllegalThreadStateException itse) {
                     log.info("gpsbabel process for format " + getBabelFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
                     process.destroy();
@@ -172,7 +172,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             buffer[count++] = (byte) inputStream.read();
         }
         String output = new String(buffer).trim();
-        log.info("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
+        log.fine("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
     }
 
     private boolean startBabel(File source, String sourceFormat,
@@ -186,9 +186,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         command = considerShellScriptForBabel(babel, command);
 
-        int exitCode = execute(babel, command);
-        log.info("Executed '" + command + "' with exit code: " + exitCode + " target exists: " + target.exists());
-        return exitCode == 0;
+        int exitValue = execute(babel, command);
+        log.info("Executed '" + command + "' with exit value: " + exitValue + " target exists: " + target.exists());
+        return exitValue == 0;
     }
 
     private String findBabel() throws IOException {
@@ -307,6 +307,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             log.severe("Couldn't read final response: " + e.getMessage());
         }
 
+        log.info("Executed '" + process + "' with exit value: " + exitValue);
         return exitValue;
     }
 
