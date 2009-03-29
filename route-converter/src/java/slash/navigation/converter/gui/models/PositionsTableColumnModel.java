@@ -29,6 +29,7 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.prefs.Preferences;
 
 /**
  * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
@@ -37,6 +38,9 @@ import java.util.ArrayList;
  */
 
 public class PositionsTableColumnModel extends DefaultTableColumnModel {
+    private static final Preferences preferences = Preferences.userNodeForPackage(PositionsTableColumnModel.class);
+    private static final String VISIBLE_PREFERENCE = "visible";
+
     public static final int DESCRIPTION_COLUMN_INDEX = 0;
     public static final int TIME_COLUMN_INDEX = 1;
     public static final int LONGITUDE_COLUMN_INDEX = 2;
@@ -63,8 +67,9 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
-    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visible,
+    private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
                                  TableCellRenderer cellRenderer, TableCellRenderer headerRenderer) {
+        boolean visible = preferences.getBoolean(VISIBLE_PREFERENCE + name, visiblityDefault);
         PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, null);
         column.setHeaderRenderer(headerRenderer);
         if (maxWidth != null) {
@@ -116,6 +121,6 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
             addColumn(indexOf(column), column);
         else
             removeColumn(column);
+        preferences.putBoolean(VISIBLE_PREFERENCE + column.getName(), column.isVisible());
     }
-
 }
