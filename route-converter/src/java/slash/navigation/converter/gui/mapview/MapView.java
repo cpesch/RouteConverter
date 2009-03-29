@@ -61,6 +61,7 @@ import java.util.regex.Pattern;
 public class MapView {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     private static final Logger log = Logger.getLogger(MapView.class.getName());
+    private static final String DEBUG_PREFERENCE = "debug";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);
@@ -97,7 +98,7 @@ public class MapView {
     private CharacteristicsModel characteristicsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
-    private boolean initialized = false, running = true,
+    private boolean debug, initialized = false, running = true,
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
@@ -110,6 +111,7 @@ public class MapView {
     }
 
     public MapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
+        debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
         initialize();
         setModel(positionsModel, characteristicsModel);
     }
@@ -161,7 +163,7 @@ public class MapView {
                 scrollBarSize = 20;
             }
 
-            if (!Platform.isWindows())
+            if (debug)
                 WebBrowserUtil.enableDebugMessages(true);
 
             /* for JDIC from CVS
@@ -502,7 +504,7 @@ public class MapView {
                     significant.set(significantPosition);
             } else {
                 // on all zoom level about MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION
-                // user all positions since the calculation is too expensive
+                // use all positions since the calculation is too expensive
                 log.info("zoomLevel " + zoomLevel + " use all " + positions.size() + "positions");
                 significant.set(0, positions.size(), true);
             }
@@ -515,8 +517,18 @@ public class MapView {
         if (positions.size() < 2)
             return positions;
 
+        // determine significant positions for this zoom level
         positions = filterSignificantPositions(positions, recenter);
-        return filterEveryNthPosition(positions,  maximumPositionCount);
+
+        // reduce the number of significant positions by a visibility heuristic
+        if (positions.size() > maximumPositionCount)
+            positions = filterVisiblePositions(positions);
+
+        // reduce the number of visible positions by a JS-stability heuristic
+        if (positions.size() > maximumPositionCount)
+            positions = filterEveryNthPosition(positions, maximumPositionCount);
+
+        return positions;
     }
 
     private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions, boolean recenter) {
@@ -531,19 +543,46 @@ public class MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
-        if (positions.size() < maximumPositionCount)
+    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions) {
+        BaseNavigationPosition northEast = getNorthEastBounds();
+        BaseNavigationPosition southWest = getSouthWestBounds();
+        if (northEast == null || southWest == null)
             return positions;
 
+        // heuristic: increase bounds for visible positions to enable dragging the map
+        // at the same zoom level, with a factor of 2 you hardly see the cropping even
+        // with a small map and a big screen (meaning lots of space to drag the map)
+        double width = (northEast.getLongitude() - southWest.getLongitude()) * 2.0;
+        double height = (southWest.getLatitude() - northEast.getLatitude()) * 2.0;
+        northEast.setLongitude(northEast.getLongitude() + width);
+        northEast.setLatitude(northEast.getLatitude() - height);
+        southWest.setLongitude(southWest.getLongitude() - width);
+        southWest.setLatitude(southWest.getLatitude() + height);
+
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        for (int i = 1; i < positions.size(); i++) {
+            BaseNavigationPosition position = positions.get(i);
+            if (Calculation.containsPosition(northEast, southWest, position)) {
+                result.add(position);
+            }
+        }
+
+        log.info("filtered visible positions to reduce " + positions.size() + " positions to " + result.size());
+        return result;
+    }
+
+    private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         result.add(positions.get(0));
 
-        double increment = positions.size() / maximumPositionCount;
+        double increment = positions.size() / (double) maximumPositionCount;
         for (double i = 1; i < positions.size() - 1; i += increment) {
             result.add(positions.get((int) i));
         }
 
         result.add(positions.get(positions.size() - 1));
+
+        log.info("filtered every " + increment + "th position to reduce " + positions.size() + " positions to " + result.size() + " (maximum was " + maximumPositionCount + ")");
         return result;
     }
 
@@ -748,6 +787,28 @@ public class MapView {
         return Conversion.parseInt(zoomLevel);
     }
 
+    private BaseNavigationPosition getBounds(String script) {
+        String result = executeScript(script);
+        if (result == null)
+            return null;
+
+        StringTokenizer tokenizer = new StringTokenizer(result, ",");
+        if (tokenizer.countTokens() != 2)
+            return null;
+
+        String latitude = tokenizer.nextToken();
+        String longitude = tokenizer.nextToken();
+        return new Wgs84Position(Double.parseDouble(longitude), Double.parseDouble(latitude), null, null, null, null);
+    }
+
+    private BaseNavigationPosition getNorthEastBounds() {
+        return getBounds("getNorthEastBounds();");
+    }
+
+    private BaseNavigationPosition getSouthWestBounds() {
+        return getBounds("getSouthWestBounds();");
+    }
+
     private void update(boolean haveToReplaceRoute) {
         if (!isInitialized() || !getCanvas().isShowing())
             return;
@@ -944,8 +1005,14 @@ public class MapView {
     }
 
     private synchronized String executeScript(String string) {
-        log.info(System.currentTimeMillis() + " executing script '" + string + "'");
-        return webBrowser.executeScript(string);
+        String result = webBrowser.executeScript(string);
+        String output = System.currentTimeMillis() + " executing script '" + string + "' with result '" + result + "'";
+        if(debug) {
+            System.out.println(output);
+            log.info(output);
+        } else
+            log.fine(output);
+        return result;
     }
 
     private String escape(String string) {

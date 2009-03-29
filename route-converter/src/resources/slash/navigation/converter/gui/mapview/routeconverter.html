@@ -6,6 +6,7 @@
             type="text/javascript"></script>
     <style type="text/css">
         .nomargin { margin: 0; padding: 0 }
+        #map { width: 100%; height: 100% }
     </style>
 </head>
 <body onunload="unload()" class="nomargin"
@@ -105,6 +106,14 @@
            map.addOverlay(directions.getPolyline());
        });
        return directions;
+   }
+
+   function getNorthEastBounds() {
+       return map.getBounds().getNorthEast().toUrlValue(6);
+   }
+
+   function getSouthWestBounds() {
+       return map.getBounds().getSouthWest().toUrlValue(6);
    }
 
    var debug = document.createElement('div');
