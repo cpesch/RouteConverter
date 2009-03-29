@@ -67,8 +67,8 @@ public class NmeaFormat extends BaseNmeaFormat {
                     ".*" +                           // Differential reference station ID, 0000-1023 
                     END_OF_LINE);
 
-    // $GPRMC,180114,EARTH_RADIUS,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,EARTH_RADIUS*76
-    // $GPRMC,140403.000,EARTH_RADIUS,4837.5194,N,00903.4022,E,15.00,0.00,260707,,  *3E
+    // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,A*76
+    // $GPRMC,140403.000,A,4837.5194,N,00903.4022,E,15.00,0.00,260707,,  *3E
     private static final Pattern RMC_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time
@@ -102,15 +102,15 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "\\d*" +
                     END_OF_LINE);
 
-    // $GPVTG,138.7,T,,M,014.2,N,026.3,K,EARTH_RADIUS*00
+    // $GPVTG,138.7,T,,M,014.2,N,026.3,K,A*00
     // 26.3 = km/h
 
     // Unbekannte Herkunft: GLL - Geographic position, latitude / longitude
     // http://www.gpsinformation.org/dale/nmea.htm#GLL
-    // $GPGLL,5239.3154,N,00907.7011,E,130441.89,EARTH_RADIUS,EARTH_RADIUS*6C
+    // $GPGLL,5239.3154,N,00907.7011,E,130441.89,A,A*6C
     // $GPGLL,3751.65,S,14507.36,E*77
-    // $GPGLL,4916.45,N,12311.12,W,225444,EARTH_RADIUS
-    // $GPGLL,4858.330500,N,1223.554680,E,151518.000,EARTH_RADIUS,EARTH_RADIUS*6C
+    // $GPGLL,4916.45,N,12311.12,W,225444,A
+    // $GPGLL,4858.330500,N,1223.554680,E,151518.000,A,A*6C
 
     // Garmin: RMZ - Altitude Information
     // $PGRMZ,246,f,3*1B
@@ -243,7 +243,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                 comment;
         writeSentence(writer, wpl);
 
-        // $GPRMC,180114,EARTH_RADIUS,4808.9490,N,00928.9610,E,000.0,000.0,160607,,EARTH_RADIUS*76
+        // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76
         String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
                 speed + SEPARATOR + SEPARATOR +

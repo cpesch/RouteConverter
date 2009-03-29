@@ -24,7 +24,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         log = Logger.getLogger(MagellanExploristFormat.class.getName());
     }
 
-    // $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,EARTH_RADIUS,KLLERTAL-RADWEG,210307*48
+    // $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
     private static final Pattern PMGNTRK_PATTERN = Pattern.
             compile("^\\$PMGNTRK" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
@@ -100,7 +100,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
 
-        // $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,EARTH_RADIUS,KLLERTAL-RADWEG,210307*48
+        // $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
         String trk = "PMGNTRK" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
                 altitude + SEPARATOR + "M" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
