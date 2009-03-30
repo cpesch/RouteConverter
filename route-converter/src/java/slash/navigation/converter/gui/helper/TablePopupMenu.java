@@ -21,11 +21,15 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.AddCommentsToPositions;
+import slash.navigation.converter.gui.actions.AddElevationsToPositions;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Creates a {@link JPopupMenu} for the {@link JTable} of the {@link PositionsModel}.
@@ -34,54 +38,78 @@ import java.awt.*;
  */
 
 public class TablePopupMenu {
+    private RouteConverter routeConverter;
     private JPopupMenu popupMenu = new JPopupMenu();
     private PositionAugmenter augmenter;
 
-    public TablePopupMenu(JFrame frame, final JTable table, final PositionsModel positionsModel) {
-        augmenter = new PositionAugmenter(frame);
+    public TablePopupMenu(RouteConverter routeConverter) {
+        this.routeConverter = routeConverter;
+        augmenter = new PositionAugmenter(routeConverter.getFrame());
+        initialize();
+    }
 
-        JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.BUNDLE.getString("add-elevation-popup"));
-        buttonAddElevation.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                int[] selectedRows = table.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    augmenter.addElevations(positionsModel, selectedRows);
-                }
-            }
-        });
+    protected void initialize() {
+        JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.BUNDLE.getString("add-elevation"));
+        buttonAddElevation.addActionListener(new AddElevationsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddElevation);
 
-        JMenuItem buttonAddComment = new JMenuItem(RouteConverter.BUNDLE.getString("add-comment-popup"));
-        buttonAddComment.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                int[] selectedRows = table.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    augmenter.addComments(positionsModel, selectedRows);
-                }
-            }
-        });
+        JMenuItem buttonAddComment = new JMenuItem(RouteConverter.BUNDLE.getString("add-comment"));
+        buttonAddComment.addActionListener(new AddCommentsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddComment);
 
-        JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.BUNDLE.getString("add-speed-popup"));
-        buttonAddSpeed.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                int[] selectedRows = table.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    augmenter.addSpeeds(positionsModel, selectedRows);
+        /* TODO 1.26
+        JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.BUNDLE.getString("add-speed"));
+        buttonAddElevation.addActionListener(new AddSpeedsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
+        popupMenu.add(buttonAddSpeed);
+
+        popupMenu.addSeparator();
+
+        JMenuItem buttonSplitPositionlist = new JMenuItem(new SplitPositionList(routeConverter.getPositionsTable(), routeConverter.getFormatComboBox(), routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
+        buttonSplitPositionlist.setText(RouteConverter.BUNDLE.getString("split-positionlist"));
+        popupMenu.add(buttonSplitPositionlist);
+
+        final JMenu menuMergePositionlist = new JMenu(RouteConverter.BUNDLE.getString("merge-positionlist"));
+        popupMenu.add(menuMergePositionlist);
+
+        routeConverter.getFormatAndRoutesModel().addListDataListener(new ListDataListener() {
+            public void intervalAdded(ListDataEvent e) {
+                for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
+                    BaseRoute route = routeConverter.getFormatAndRoutesModel().getRoute(i);
+                    JMenuItem menuItem = new JMenuItem();
+                    menuItem.setAction(new MergePositionList(routeConverter.getPositionsTable(), routeConverter.getPositionListComboBox(), route, routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
+                    menuItem.setText(RouteComments.shortenRouteName(route));
+                    menuMergePositionlist.add(menuItem, i);
+                }
+            }
+
+            public void intervalRemoved(ListDataEvent e) {
+                for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
+                    if (i >= 0 && i < menuMergePositionlist.getMenuComponentCount())
+                        menuMergePositionlist.remove(i);
+                }
+            }
+
+            public void contentsChanged(ListDataEvent e) {
+                for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
+                    if (i >= 0 && i < menuMergePositionlist.getMenuComponentCount()) {
+                        BaseRoute route = routeConverter.getFormatAndRoutesModel().getRoute(i);
+                        JMenuItem menuItem = (JMenuItem) menuMergePositionlist.getMenuComponent(i);
+                        menuItem.setText(RouteComments.shortenRouteName(route));
+                    }
                 }
             }
         });
-        // TODO 1.26 popupMenu.add(buttonAddSpeed);
+        */
 
         // cannot use table.setComponentPopupMenu(popupMenu); since it does ensure a selection
-        table.addMouseListener(new MouseAdapter() {
+        routeConverter.getPositionsTable().addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                ensureSelection(table, e);
+                ensureSelection(routeConverter.getPositionsTable(), e);
                 showPopup(e);
             }
 
             public void mouseReleased(MouseEvent e) {
-                ensureSelection(table, e);
+                ensureSelection(routeConverter.getPositionsTable(), e);
                 showPopup(e);
             }
         });
@@ -94,9 +122,9 @@ public class TablePopupMenu {
     private void showPopup(final MouseEvent e) {
         if (e.isPopupTrigger()) {
             SwingUtilities.invokeLater(new Runnable() {
-              public void run() {
-                popupMenu.show(e.getComponent(), e.getX(), e.getY());
-              }
+                public void run() {
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
             });
         }
     }

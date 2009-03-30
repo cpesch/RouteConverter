@@ -36,6 +36,7 @@ import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helper.TableHeaderPopupMenu;
 import slash.navigation.converter.gui.helper.TablePopupMenu;
+import slash.navigation.converter.gui.helper.AbstractListDataListener;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
@@ -134,7 +135,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JLabel labelPositionLists;
     private JLabel labelPositions;
     private JLabel labelFormat;
-    protected JTable tablePositions;
+    private JTable tablePositions;
     private JButton buttonOpenFile;
     private JButton buttonNewFile;
     private JButton buttonAppendFileToPositionList;
@@ -304,7 +305,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonMovePositionToTop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().top(selectedRows);
                     reestablishPositionSelection(0);
@@ -314,7 +315,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonMovePositionUp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().up(selectedRows);
                     reestablishPositionSelection(-1);
@@ -349,7 +350,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonMovePositionDown.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().down(selectedRows);
                     reestablishPositionSelection(+1);
@@ -359,7 +360,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonMovePositionToBottom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().bottom(selectedRows);
                     reestablishPositionSelection(0);
@@ -367,46 +368,33 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             }
         });
 
-        getFormatAndRoutesModel().addListDataListener(new ListDataListener() {
-            @SuppressWarnings({"UnusedDeclaration"})
-            private void handleEvent(ListDataEvent e) {
+        getFormatAndRoutesModel().addListDataListener(new AbstractListDataListener() {
+            public void process(ListDataEvent e) {
                 handleRoutesUpdate();
-            }
-
-            public void intervalAdded(ListDataEvent e) {
-                handleEvent(e);
-            }
-
-            public void intervalRemoved(ListDataEvent e) {
-                handleEvent(e);
-            }
-
-            public void contentsChanged(ListDataEvent e) {
-                handleEvent(e);
             }
         });
 
-        tablePositions.registerKeyboardAction(new ActionListener() {
+        getPositionsTable().registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onAddPosition();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        tablePositions.registerKeyboardAction(new ActionListener() {
+        getPositionsTable().registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onRemovePosition();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        tablePositions.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        getPositionsTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (e.getValueIsAdjusting() || selectedRows.length == 0)
                     return;
                 boolean firstRowNotSelected = selectedRows[0] != 0;
                 buttonMovePositionToTop.setEnabled(firstRowNotSelected);
                 buttonMovePositionUp.setEnabled(firstRowNotSelected);
-                boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
+                boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != getPositionsTable().getRowCount() - 1;
                 buttonMovePositionDown.setEnabled(lastRowNotSelected);
                 buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
                 if (isMapViewAvailable())
@@ -414,9 +402,9 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             }
         });
 
-        tablePositions.setModel(getPositionsModel());
+        getPositionsTable().setModel(getPositionsModel());
         final PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
-        tablePositions.setColumnModel(tableColumnModel);
+        getPositionsTable().setColumnModel(tableColumnModel);
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -424,18 +412,18 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             }
         });
 
-        new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
-        new TablePopupMenu(frame, tablePositions, getPositionsModel());
+        new TableHeaderPopupMenu(getPositionsTable().getTableHeader(), tableColumnModel);
+        new TablePopupMenu(this);
 
         NavigationFormat[] formats = NavigationFormats.getWriteFormatsSortedByName();
-        comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formats));
-        comboBoxChooseFormat.setRenderer(new NavigationFormatListCellRenderer());
+        getFormatComboBox().setModel(new DefaultComboBoxModel(formats));
+        getFormatComboBox().setRenderer(new NavigationFormatListCellRenderer());
         String preferredFormat = preferences.get(TARGET_FORMAT_PREFERENCE, Gpx11Format.class.getName());
         for (NavigationFormat format : formats) {
             if (format.getClass().getName().equals(preferredFormat))
-                comboBoxChooseFormat.setSelectedItem(format);
+                getFormatComboBox().setSelectedItem(format);
         }
-        comboBoxChooseFormat.addItemListener(new ItemListener() {
+        getFormatComboBox().addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 handleFormatUpdate();
             }
@@ -449,9 +437,9 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         handleRoutesUpdate();
         handlePositionsUpdate();
 
-        comboBoxChoosePositionList.setModel(getFormatAndRoutesModel());
-        comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
-        comboBoxChoosePositionList.addItemListener(new ItemListener() {
+        getPositionListComboBox().setModel(getFormatAndRoutesModel());
+        getPositionListComboBox().setRenderer(new RouteListCellRenderer());
+        getPositionListComboBox().addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED)
                     getFormatAndRoutesModel().setSelectedItem(e.getItem());
@@ -828,16 +816,37 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         }, "MapViewCreator").start();
     }
 
-    FormatAndRoutesModel getFormatAndRoutesModel() {
-        return formatAndRoutesModel;
-    }
-
     CharacteristicsModel getCharacteristicsModel() {
         return getFormatAndRoutesModel().getCharacteristicsModel();
     }
 
-    PositionsModel getPositionsModel() {
+
+    // start: public API for actions
+
+    public JTable getPositionsTable() {
+        return tablePositions;
+    }
+
+    public PositionsModel getPositionsModel() {
         return getFormatAndRoutesModel().getPositionsModel();
+    }
+
+    public JComboBox getFormatComboBox() {
+        return comboBoxChooseFormat;
+    }
+
+    public JComboBox getPositionListComboBox() {
+        return comboBoxChoosePositionList;
+    }
+
+    public FormatAndRoutesModel getFormatAndRoutesModel() {
+        return formatAndRoutesModel;
+    }
+
+    // end: public API for actions
+
+    NavigationFormat getFormat() {
+        return (NavigationFormat) getFormatComboBox().getSelectedItem();
     }
 
     RoutesListModel getRoutesListModel() {
@@ -860,9 +869,9 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     }
 
     private void onAddPosition() {
-        int[] selectedRows = tablePositions.getSelectedRows();
+        int[] selectedRows = getPositionsTable().getSelectedRows();
         // final int row = selectedRows.length > 0 ? selectedRows[0] : 0;
-        int row = selectedRows.length > 0 ? selectedRows[0] : tablePositions.getRowCount();
+        int row = selectedRows.length > 0 ? selectedRows[0] : getPositionsTable().getRowCount();
         BaseNavigationPosition center = selectedRows.length > 0 ? getCenter(row) :
                 // getPositionsModel().getRowCount() > 0 ? getCenter(0) : null;
                 getPositionsModel().getRowCount() > 0 ? getCenter(getPositionsModel().getRowCount() - 1) : null;
@@ -879,21 +888,21 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                 BUNDLE.getString("add-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Rectangle rectangle = tablePositions.getCellRect(insertRow, 1, true);
-                tablePositions.scrollRectToVisible(rectangle);
+                Rectangle rectangle = getPositionsTable().getCellRect(insertRow, 1, true);
+                getPositionsTable().scrollRectToVisible(rectangle);
                 selectPositions(insertRow, insertRow);
             }
         });
     }
 
-    private void onRemovePosition() {
+    public void onRemovePosition() {
         Constants.startWaitCursor(frame.getRootPane());
         try {
-            int[] selectedRows = tablePositions.getSelectedRows();
+            int[] selectedRows = getPositionsTable().getSelectedRows();
             if (selectedRows.length > 0) {
                 getPositionsModel().remove(selectedRows);
                 final int row = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
-                if (tablePositions.getRowCount() > 0)
+                if (getPositionsTable().getRowCount() > 0)
                     selectPositions(row, row);
             }
         } finally {
@@ -905,7 +914,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         clearPositionSelection();
         int[] indices = getPositionsModel().getDuplicatesWithinDistance(distance);
         for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
+            getPositionsTable().getSelectionModel().addSelectionInterval(index, index);
         }
         return indices.length;
     }
@@ -914,7 +923,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         clearPositionSelection();
         int[] indices = getPositionsModel().getPositionsThatRemainingHaveDistance(distance);
         for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
+            getPositionsTable().getSelectionModel().addSelectionInterval(index, index);
         }
         return indices.length;
     }
@@ -924,7 +933,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         int rowCount = getPositionsModel().getRowCount();
         int[] indices = Range.allButEveryNthAndFirstAndLast(rowCount, order);
         for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
+            getPositionsTable().getSelectionModel().addSelectionInterval(index, index);
         }
         return indices.length;
     }
@@ -933,7 +942,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         clearPositionSelection();
         int[] indices = getPositionsModel().getInsignificantPositions(threshold);
         for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
+            getPositionsTable().getSelectionModel().addSelectionInterval(index, index);
         }
         return indices.length;
     }
@@ -941,18 +950,18 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void selectPositions(final int index0, final int index1) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                tablePositions.getSelectionModel().setSelectionInterval(index0, index1);
+                getPositionsTable().getSelectionModel().setSelectionInterval(index0, index1);
             }
         });
     }
 
     public void clearPositionSelection() {
-        tablePositions.getSelectionModel().clearSelection();
+        getPositionsTable().getSelectionModel().clearSelection();
     }
 
     private void reestablishPositionSelection(final int upOrDown) {
-        final int minSelectedRow = tablePositions.getSelectionModel().getMinSelectionIndex();
-        final int maxSelectedRow = tablePositions.getSelectionModel().getMaxSelectionIndex();
+        final int minSelectedRow = getPositionsTable().getSelectionModel().getMinSelectionIndex();
+        final int maxSelectedRow = getPositionsTable().getSelectionModel().getMaxSelectionIndex();
         if (minSelectedRow != -1 && maxSelectedRow != -1)
             selectPositions(minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
     }
@@ -1006,6 +1015,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
+        // TODO check this later
         buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
@@ -1020,9 +1030,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
-        comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
+        getPositionListComboBox().setEnabled(existsMoreThanOneRoute);
         buttonRenamePositionList.setEnabled(existsARoute);
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
+        // TODO check this later
         buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsARoute);
         buttonAppendFileToPositionList.setEnabled(existsARoute);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
@@ -1041,6 +1052,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonFilterPositionList.setEnabled(existsMoreThanOnePosition);
         buttonRevertPositionList.setEnabled(existsMoreThanOnePosition);
 
+        // TODO check this later
         buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
     }
 
@@ -1095,10 +1107,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private String getSource() {
         String source = textFieldSource.getText();
         return (source != null && source.length() > 0) ? source : "<null>";
-    }
-
-    private NavigationFormat getFormat() {
-        return (NavigationFormat) comboBoxChooseFormat.getSelectedItem();
     }
 
     private File[] createTargetFiles(File pattern, int fileCount, String extension, int fileNameLength) {
@@ -1303,7 +1311,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
-                                    comboBoxChoosePositionList.setModel(getFormatAndRoutesModel());
+                                    getPositionListComboBox().setModel(getFormatAndRoutesModel());
                                 }
                             });
 
@@ -1488,7 +1496,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                                             if (getFormatAndRoutesModel().getRoutes() == null) {
                                                 textFieldSource.setText(path);
                                                 getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
-                                                comboBoxChoosePositionList.setModel(getFormatAndRoutesModel());
+                                                getPositionListComboBox().setModel(getFormatAndRoutesModel());
                                             } else {
                                                 getPositionsModel().append(parser.getTheRoute());
                                             }
