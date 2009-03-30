@@ -38,20 +38,20 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 public abstract class RouteComments {
+    private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
+
     private static final String POSITION = "Position";
     private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + " (\\d+)(.*)");
 
-    public static String createRouteDescription(BaseRoute route) {
-        String name = Conversion.trim(route.getName());
-        List<String> description = route.getDescription();
-        StringBuffer buffer = new StringBuffer();
-        if (name != null)
-            buffer.append(name);
-        if (description != null) {
-            for (String line : description)
-                buffer.append(line);
+    public static String shortenRouteName(BaseRoute route) {
+        String result = "?";
+        if (route != null) {
+            if (route.getName() != null)
+                result = route.getName();
+            if (result.length() > MAXIMUM_ROUTE_NAME_LENGTH)
+                result = result.substring(0, MAXIMUM_ROUTE_NAME_LENGTH) + "...";
         }
-        return buffer.toString();
+        return result;
     }
 
     public static String createRouteName(List<? extends BaseNavigationPosition> positions) {
@@ -66,6 +66,20 @@ public abstract class RouteComments {
             route.setName(createRouteName(route.getPositions()));
         }
     }
+
+    public static String createRouteDescription(BaseRoute route) {
+        String name = Conversion.trim(route.getName());
+        List<String> description = route.getDescription();
+        StringBuffer buffer = new StringBuffer();
+        if (name != null)
+            buffer.append(name);
+        if (description != null) {
+            for (String line : description)
+                buffer.append(line);
+        }
+        return buffer.toString();
+    }
+
 
     private static String getPositionComment(int index) {
         return POSITION + " " + (index + 1);
