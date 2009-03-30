@@ -176,11 +176,12 @@ public class NavigationFileParser {
             readBufferSize = getSize(url);
             startDate = getStartDate(url);
         }
+        log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
         return read(in, readBufferSize, startDate);
     }
 
     public boolean read(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
-        log.info("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes");
+        log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes");
         try {
             this.formatAndRoutes = internalRead(source, readBufferSize, startDate);
             return formatAndRoutes != null;
