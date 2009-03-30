@@ -21,12 +21,13 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.*;
+import slash.navigation.converter.gui.helper.AbstractListDataListener;
 
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListDataEvent;
 import java.io.IOException;
 import java.util.List;
 
@@ -52,16 +53,10 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
                 setModified(true);
             }
         });
-        addListDataListener(new ListDataListener() {
-            public void intervalAdded(ListDataEvent e) {
-                setModified(true);
-            }
-            public void intervalRemoved(ListDataEvent e) {
-                setModified(true);
-            }
-            public void contentsChanged(ListDataEvent e) {
+        addListDataListener(new AbstractListDataListener() {
+            public void process(ListDataEvent e) {
                 // ignore events following setSelectedItem()
-                if (e.getIndex0() == -1 && e.getIndex1() == -1)
+                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == -1 && e.getIndex1() == -1)
                     return;
                 setModified(true);
             }
@@ -136,13 +131,16 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     }
 
     public int getSize() {
-        return formatAndRoutes != null ? formatAndRoutes.getRoutes().size() : 0;
+        return getRoutes() != null ? getRoutes().size() : 0;
     }
 
     public Object getElementAt(int index) {
-        return formatAndRoutes.getRoutes().get(index);
+        return getRoute(index);
     }
 
+    public BaseRoute getRoute(int index) {
+        return getRoutes().get(index);
+    }
 
     public PositionsModel getPositionsModel() {
         return positionsModel;

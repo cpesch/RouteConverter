@@ -20,8 +20,9 @@
 
 package slash.navigation.converter.gui.models;
 
+import slash.navigation.converter.gui.helper.AbstractListDataListener;
+
 import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.util.logging.Logger;
@@ -47,14 +48,8 @@ public abstract class FormatAndRoutesListModelToDocumentAdapter extends PlainDoc
     private void setDelegate(FormatAndRoutesModel formatAndRoutesModel) {
         this.delegate = formatAndRoutesModel;
 
-        formatAndRoutesModel.addListDataListener(new ListDataListener() {
-            public void intervalAdded(ListDataEvent e) {
-                updateAdapterFromDelegate();
-            }
-            public void intervalRemoved(ListDataEvent e) {
-                updateAdapterFromDelegate();
-            }
-            public void contentsChanged(ListDataEvent e) {
+        formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {
+            public void process(ListDataEvent e) {
                 updateAdapterFromDelegate();
             }
         });
