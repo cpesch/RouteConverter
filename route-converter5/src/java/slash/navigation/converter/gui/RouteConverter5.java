@@ -51,7 +51,7 @@ public class RouteConverter5 extends RouteConverter {
     protected void addDragAndDropToConvertPane() {
         FrameDropHandler dropHandler = new FrameDropHandler();
         textFieldSource.setTransferHandler(dropHandler);
-        tablePositions.setTransferHandler(dropHandler);
+        getPositionsTable().setTransferHandler(dropHandler);
         contentPane.setTransferHandler(dropHandler);
     }
 
