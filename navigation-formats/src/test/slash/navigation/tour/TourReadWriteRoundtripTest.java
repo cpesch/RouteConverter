@@ -28,26 +28,26 @@ import java.io.IOException;
 public class TourReadWriteRoundtripTest extends ReadWriteBase {
     private void checkUnprocessedValue(TourPosition position, String name, String value) {
         assertNotNull(position);
-        assertEquals(value, position.get(name));
+        assertEquals(name + " does not contain expected value", value, position.get(name));
     }
 
     public void testTourReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.tour", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 TourRoute sourceRoute = (TourRoute) source.getAllRoutes().get(0);
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.ASSEMBLY, "FalkNavigator");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.VISITED, "0");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), TourFormat.POSITION_IN_LIST, "0");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), "PoiId", "46108");
-                checkUnprocessedValue(sourceRoute.getPositions().get(1), "AreaId", "1001");
+                checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.ASSEMBLY, "FalkNavigator");
+                checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
+                checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.VISITED, "0");
+                checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.POSITION_IN_LIST, "1");
+                checkUnprocessedValue(sourceRoute.getPositions().get(2), "PoiId", "43870");
+                checkUnprocessedValue(sourceRoute.getPositions().get(2), "AreaId", "1001");
                 TourRoute targetRoute = (TourRoute) target.getAllRoutes().get(0);
-                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.ASSEMBLY, "FalkNavigator");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.VISITED, "0");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), TourFormat.POSITION_IN_LIST, "0");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), "PoiId", "46108");
-                checkUnprocessedValue(targetRoute.getPositions().get(1), "AreaId", "1001");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.ASSEMBLY, "FalkNavigator");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.VISITED, "0");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.POSITION_IN_LIST, "1");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), "PoiId", "43870");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), "AreaId", "1001");
             }
         });
     }
