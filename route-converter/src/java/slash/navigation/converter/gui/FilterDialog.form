@@ -51,15 +51,15 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="9fde5" class="javax.swing.JButton" binding="buttonClear">
+              <component id="17c0c" class="javax.swing.JButton" binding="buttonDeletePositions">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="filter-remove-selection"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positions"/>
                 </properties>
               </component>
-              <hspacer id="a7c3b">
+              <hspacer id="c4be8">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -162,14 +162,6 @@
             </constraints>
             <properties>
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
-            </properties>
-          </component>
-          <component id="b1743" class="javax.swing.JButton" binding="buttonClose">
-            <constraints>
-              <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="close"/>
             </properties>
           </component>
           <grid id="2cd2" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -281,6 +273,14 @@
               </component>
             </children>
           </grid>
+          <component id="9fde5" class="javax.swing.JButton" binding="buttonClearSelection">
+            <constraints>
+              <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="filter-remove-selection"/>
+            </properties>
+          </component>
         </children>
       </grid>
     </children>

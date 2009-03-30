@@ -50,8 +50,8 @@ public class FilterDialog extends JDialog {
     private JButton buttonSelectByDistance;
     private JButton buttonSelectByOrder;
     private JButton buttonSelectBySignificance;
-    private JButton buttonClear;
-    private JButton buttonClose;
+    private JButton buttonDeletePositions;
+    private JButton buttonClearSelection;
     private JLabel labelResult;
     private NumberDocument duplicate;
     private NumberDocument distance;
@@ -63,7 +63,6 @@ public class FilterDialog extends JDialog {
         this.routeConverter = routeConverter;
         setTitle(RouteConverter.BUNDLE.getString("filter-title"));
         setContentPane(contentPane);
-        getRootPane().setDefaultButton(buttonClose);
 
         buttonSelectDuplicates.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -89,15 +88,15 @@ public class FilterDialog extends JDialog {
             }
         });
 
-        buttonClear.addActionListener(new ActionListener() {
+        buttonDeletePositions.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onRemoveSelection();
+                onDeletePositions();
             }
         });
 
-        buttonClose.addActionListener(new ActionListener() {
+        buttonClearSelection.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onClose();
+                onRemoveSelection();
             }
         });
 
@@ -163,10 +162,14 @@ public class FilterDialog extends JDialog {
         int significance = this.significance.getNumber();
         if (significance >= 0) {
             int selectedRowCount = routeConverter.selectInsignificantPositions(significance);
-            int unselectedRowCount = routeConverter.getPositionsModel().getRowCount() - selectedRowCount;
             labelResult.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("filter-select-by-significance-result"), selectedRowCount, significance));
             savePreferences();
         }
+    }
+
+    private void onDeletePositions() {
+        routeConverter.onRemovePosition();
+        onClose();
     }
 
     private void onRemoveSelection() {
@@ -214,9 +217,9 @@ public class FilterDialog extends JDialog {
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
-        buttonClear = new JButton();
-        this.$$$loadButtonText$$$(buttonClear, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("filter-remove-selection"));
-        panel3.add(buttonClear, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonDeletePositions = new JButton();
+        this.$$$loadButtonText$$$(buttonDeletePositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positions"));
+        panel3.add(buttonDeletePositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel3.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
@@ -259,9 +262,6 @@ public class FilterDialog extends JDialog {
         buttonSelectByOrder = new JButton();
         this.$$$loadButtonText$$$(buttonSelectByOrder, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select"));
         panel1.add(buttonSelectByOrder, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonClose = new JButton();
-        this.$$$loadButtonText$$$(buttonClose, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("close"));
-        panel1.add(buttonClose, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel7, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
@@ -298,6 +298,9 @@ public class FilterDialog extends JDialog {
         panel1.add(panel11, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JSeparator separator4 = new JSeparator();
         panel11.add(separator4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        buttonClearSelection = new JButton();
+        this.$$$loadButtonText$$$(buttonClearSelection, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("filter-remove-selection"));
+        panel1.add(buttonClearSelection, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
