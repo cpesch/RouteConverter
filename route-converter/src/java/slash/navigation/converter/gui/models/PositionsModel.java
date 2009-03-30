@@ -132,7 +132,8 @@ public class PositionsModel extends AbstractTableModel {
                 break;
             case PositionsTableColumnModel.ELEVATION_COLUMN_INDEX:
                 try {
-                    value = value.replaceAll("m", "");
+                    if (value != null)
+                        value = value.replaceAll("m", "");
                     position.setElevation(Conversion.parseDouble(value));
                 } catch (NumberFormatException e) {
                     // intentionally left empty
@@ -183,10 +184,14 @@ public class PositionsModel extends AbstractTableModel {
         }
     }
 
-    public void add(int row, Double longitude, Double latitude, Calendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, time, comment);
+    public void add(int row, BaseNavigationPosition position) {
         getRoute().add(row, position);
         fireTableRowsInserted(row, row);
+    }
+
+    public void add(int row, Double longitude, Double latitude, Calendar time, String comment) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, time, comment);
+        add(row, position);
     }
 
     public List<BaseNavigationPosition> remove(int from, int to) {
