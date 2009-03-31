@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.*;
 import java.util.*;
+import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +43,7 @@ import java.util.regex.Pattern;
  */
 
 public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(BaseNmeaFormat.class);
     protected static Logger log = Logger.getLogger(BaseNmeaFormat.class.getName());
 
     protected static final String SEPARATOR = ",";
@@ -169,8 +171,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         byte[] actual = HexDecoder.decodeBytes(actualStr);
         if (actual.length != 1 || actual[0] != expected) {
             String expectedStr = HexEncoder.encodeByte(expected);
-            NmeaFormat.log.severe("Checksum of '" + line + "' is invalid. Expected '" + expectedStr + "' but found '" + actualStr + "'");
-            return false;
+            log.severe("Checksum of '" + line + "' is invalid. Expected '" + expectedStr + "' but found '" + actualStr + "'");
+            return preferences.getBoolean("ignoreInvalidChecksum", false);
         }
         return true;
     }
