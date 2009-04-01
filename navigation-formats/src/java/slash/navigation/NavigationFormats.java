@@ -105,10 +105,11 @@ public final class NavigationFormats {
         addFormat(MagicMapsIktFormat.class);
         addFormat(MagellanExploristFormat.class);
         addFormat(KienzleGpsFormat.class);
-        /* TODO 1.26 */
+        /* TODO 1.26
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
-        addFormat(KlickTelRouteFormat.class);      
+        addFormat(KlickTelRouteFormat.class);
+        */      
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);
