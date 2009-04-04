@@ -35,4 +35,8 @@ public class BrokenKmz21LittleEndianFormat extends KmzFormat {
     public String getName() {
         return "Google Earth 4 Little Endian Garble Compressed (*" + getExtension() + ")";
     }
+
+    public boolean isSupportsWriting() {
+        return false;
+    }
 }

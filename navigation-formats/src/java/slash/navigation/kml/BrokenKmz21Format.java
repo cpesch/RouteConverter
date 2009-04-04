@@ -35,4 +35,8 @@ public class BrokenKmz21Format extends KmzFormat {
     public String getName() {
         return "Google Earth 4 Garble Compressed (*" + getExtension() + ")";
     }
+
+    public boolean isSupportsWriting() {
+        return false;
+    }
 }
