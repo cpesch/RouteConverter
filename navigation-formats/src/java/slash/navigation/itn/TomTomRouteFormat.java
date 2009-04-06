@@ -48,7 +48,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
     private static final Pattern POSITION_PATTERN = Pattern.
             compile("([+-]?\\d+)" + SEPARATOR + "([+-]?\\d+)" + SEPARATOR +
-                    "(.*)" + SEPARATOR + "\\d" + SEPARATOR);
+                    "(.*)" + SEPARATOR + "\\d" + SEPARATOR + "?");
     private static final Pattern NAME_PATTERN = Pattern.
             compile("^\"([^\"]*)\"$");
 
@@ -116,7 +116,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new TomTomRoute(this, isTripmasterOrPilogOrLogposTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Route, name, positions));
+            return Arrays.asList(new TomTomRoute(this, isTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Route, name, positions));
         else
             return null;
     }
@@ -131,7 +131,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         return matcher.matches();
     }
 
-    private boolean isTripmasterOrPilogOrLogposTrack(List<TomTomPosition> positions) {
+    private boolean isTrack(List<TomTomPosition> positions) {
         for (TomTomPosition position : positions) {
             if (position.getReason() == null && position.getTime() == null)
                 return false;

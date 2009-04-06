@@ -179,19 +179,19 @@ public abstract class RouteComments {
     private static final String TIME = "\\d{1,2}:\\d{2}:\\d{2}";
     private static final String DATE = "\\d{6}";
     private static final String DOUBLE = "[-\\d\\.]+";
-    private static final String REASONS = "Dur. " + TIME + "|Dauer " + TIME + "|" +
+    private static final String TRIPMASTER_REASONS = "Dur. " + TIME + "|Dauer " + TIME + "|" +
             "Abstand \\d+|Dist. \\d+|Distanz \\d+|Km " + DOUBLE + "|" +
             "Course \\d+|Cape \\d+|Kurs \\d+|Richtung \\d+|" +
             "Waypoint|Wpt|Punkt|Pause";
 
-    private static final Pattern TRIPMASTER_1dot4_PATTERN = Pattern.compile("(" + REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
+    private static final Pattern TRIPMASTER_1dot4_PATTERN = Pattern.compile("(" + TRIPMASTER_REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
     private static final Pattern TRIPMASTER_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
     private static final Pattern TRIPMASTER_SHORT_WAYPOINT_PATTERN = Pattern.compile("(" + TIME + ") - (" + DOUBLE + ") m");
     private static final Pattern TRIPMASTER_MIDDLE_WAYPOINT_PATTERN = Pattern.compile(
-            "(\\d+:\\d+:\\d+) - (" + REASONS + ")\\s*:\\s*(.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
+            "(\\d+:\\d+:\\d+) - (" + TRIPMASTER_REASONS + ")\\s*:\\s*(.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
     private static final Pattern TRIPMASTER_LONG_PATTERN = Pattern.compile(
-            "(" + TIME + ") - ((Start : (.*)|Finish : (.*)|" + REASONS + ")\\s*:\\s*)?(.+) - " +
+            "(" + TIME + ") - ((Start : (.*)|Finish : (.*)|" + TRIPMASTER_REASONS + ")\\s*:\\s*)?(.+) - " +
                     "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
 
     /**
@@ -211,6 +211,15 @@ public abstract class RouteComments {
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+))?.+)\\)");
     private static final Pattern LOGPOS_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\((s=(\\d+).+)\\)");
+
+
+    private static final String TTTRACKLOG_NUMBER = "\\d+\\.?\\d?";
+    private static final String TTTRACKLOG_REASONS = "Start|End|" +
+            TTTRACKLOG_NUMBER + " \\w+ Pause( (" + TTTRACKLOG_NUMBER + ")m)?|" +
+            "v=(" + TTTRACKLOG_NUMBER + ") alt=(" + TTTRACKLOG_NUMBER + ")";
+    private static final Pattern TTTRACKLOG_PATTERN = Pattern.compile("(\\d{2}:\\d{2}:?\\d{0,2}) " +
+            "(" + TTTRACKLOG_REASONS + ") .*");
+//    "(" + TTTRACKLOG_REASONS + ") \\(\\#\\d+\\)");
 
 
     private static Calendar parse(String string, DateFormat dateFormat) {
@@ -236,6 +245,12 @@ public abstract class RouteComments {
 
     private static Calendar parsePilogDate(String string) {
         return parse(string, PILOG_DATE);
+    }
+
+    private static Calendar parseTTTracklogTime(String string) {
+        if (string.length() == 5)
+            string += ":00";
+        return parseTripmaster1dot4Time(string);
     }
 
 
@@ -344,6 +359,20 @@ public abstract class RouteComments {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 tomTomPosition.setReason(Conversion.trim(matcher.group(5)));
                 tomTomPosition.setCity(Conversion.trim(matcher.group(3)));
+            }
+        }
+
+        matcher = TTTRACKLOG_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            position.setTime(parseTTTracklogTime(matcher.group(1)));
+            position.setSpeed(Conversion.parseDouble(matcher.group(5)));
+            Double elevation = Conversion.parseDouble(matcher.group(6));
+            if(elevation == null)
+                elevation = Conversion.parseDouble(matcher.group(4)); // Pause with Elevation
+            position.setElevation(elevation);
+            if (position instanceof TomTomPosition) {
+                TomTomPosition tomTomPosition = (TomTomPosition) position;
+                tomTomPosition.setReason(Conversion.trim(matcher.group(2)));
             }
         }
     }

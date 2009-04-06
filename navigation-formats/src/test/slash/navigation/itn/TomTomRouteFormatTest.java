@@ -42,8 +42,10 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("980401|4894505|TC-Rp,27,|5|"));
         assertTrue(format.isPosition("980401|4894505|TC-Rp,27,|7|"));
         assertTrue(format.isPosition("718697|5334397|Borkum - Anleger|0|"));
+        assertTrue(format.isPosition("991830|5755430|12:23:10 Start (#1)|0"));
 
-        assertFalse(format.isPosition("1046348|5364352|Linau|1"));
+        assertFalse(format.isPosition("1046348|5364352|Linau"));
+        assertFalse(format.isPosition("1046348|5364352|Linau|"));
         assertFalse(format.isPosition("-+1046348|5364352|Linau|1"));
         assertFalse(format.isPosition("+-1046348|5364352|Linau|1"));
         assertFalse(format.isPosition("1046348|+-5364352|Linau|1"));
