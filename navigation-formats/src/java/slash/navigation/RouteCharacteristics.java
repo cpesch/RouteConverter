@@ -21,7 +21,7 @@
 package slash.navigation;
 
 /**
- * Enumeration of the characteristics of a route (route in RouteConverter class speak).
+ * Enumeration of the characteristics of a {@link BaseRoute}.
  *
  * Route: a list of points (often with names) connected in a specific order.
  * Usually a collection of waypoints defining the route you want to pass while

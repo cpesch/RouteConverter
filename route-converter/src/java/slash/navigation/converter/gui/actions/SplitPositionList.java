@@ -20,15 +20,17 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.*;
+import slash.navigation.BaseNavigationFormat;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.BaseRoute;
+import slash.navigation.NavigationFormat;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.Constants;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 import java.util.List;
 
 /**
@@ -40,12 +42,14 @@ import java.util.List;
  */
 
 public class SplitPositionList extends AbstractAction {
+    private JFrame frame;
     private JTable table;
     private JComboBox combobox;
     private PositionsModel positionsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
 
-    public SplitPositionList(JTable table, JComboBox combobox, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
+    public SplitPositionList(JFrame frame, JTable table, JComboBox combobox, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
+        this.frame = frame;
         this.table = table;
         this.combobox = combobox;
         this.positionsModel = positionsModel;
@@ -88,25 +92,38 @@ public class SplitPositionList extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
-            int routeInsertIndex = formatAndRoutesModel.getSize();
+            Constants.startWaitCursor(frame.getRootPane());
 
-            for (int i = selectedRows.length - 1; i >= 0; i--) {
-                int fromIndex = selectedRows[i] - 1;
-                fromIndex = Math.max(fromIndex, 0);
-                int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
-                toIndex--;
-                toIndex = Math.max(toIndex, 0);
-                if (fromIndex == 0 && toIndex == 0)
-                    break;
+            try {
+                BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
+                int routeInsertIndex = formatAndRoutesModel.getSize();
 
-                List<BaseNavigationPosition> positions = positionsModel.remove(fromIndex, toIndex);
-                NavigationFormat format = formatAndRoutesModel.getFormat();
-                @SuppressWarnings({"unchecked"})
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target = 
-                        format.createRoute(selectedRoute.getCharacteristics(), selectedRoute.getName() + "(" + (i + 1) + ")", positions);
-                formatAndRoutesModel.addRoute(routeInsertIndex, target);
+                for (int i = selectedRows.length - 1; i >= 0; i--) {
+                    int fromIndex = selectedRows[i] - 1;
+                    fromIndex = Math.max(fromIndex, 0);
+                    int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
+                    toIndex--;
+                    toIndex = Math.max(toIndex, 0);
+                    if (fromIndex == 0 && toIndex == 0)
+                        break;
+
+                    List<BaseNavigationPosition> positions = positionsModel.remove(fromIndex, toIndex);
+                    NavigationFormat format = formatAndRoutesModel.getFormat();
+                    @SuppressWarnings({"unchecked"})
+                    BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =
+                            format.createRoute(selectedRoute.getCharacteristics(), selectedRoute.getName() + "(" + (i + 1) + ")", positions);
+                    formatAndRoutesModel.addRoute(routeInsertIndex, target);
+                }
+            } finally {
+                Constants.stopWaitCursor(frame.getRootPane());
             }
+
+            final int selectedRow = Math.max(selectedRows[selectedRows.length - 1] - 1, 0);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    table.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+                }
+            });
         }
     }
 }

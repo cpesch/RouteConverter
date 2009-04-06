@@ -21,11 +21,14 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.AddCommentsToPositions;
-import slash.navigation.converter.gui.actions.AddElevationsToPositions;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.util.RouteComments;
+import slash.navigation.BaseRoute;
 
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
@@ -57,14 +60,13 @@ public class TablePopupMenu {
         buttonAddComment.addActionListener(new AddCommentsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddComment);
 
-        /* TODO 1.26
         JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.BUNDLE.getString("add-speed"));
-        buttonAddElevation.addActionListener(new AddSpeedsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
+        buttonAddSpeed.addActionListener(new AddSpeedsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddSpeed);
 
         popupMenu.addSeparator();
 
-        JMenuItem buttonSplitPositionlist = new JMenuItem(new SplitPositionList(routeConverter.getPositionsTable(), routeConverter.getFormatComboBox(), routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
+        JMenuItem buttonSplitPositionlist = new JMenuItem(new SplitPositionList(routeConverter.getFrame(), routeConverter.getPositionsTable(), routeConverter.getFormatComboBox(), routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
         buttonSplitPositionlist.setText(RouteConverter.BUNDLE.getString("split-positionlist"));
         popupMenu.add(buttonSplitPositionlist);
 
@@ -76,7 +78,7 @@ public class TablePopupMenu {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     BaseRoute route = routeConverter.getFormatAndRoutesModel().getRoute(i);
                     JMenuItem menuItem = new JMenuItem();
-                    menuItem.setAction(new MergePositionList(routeConverter.getPositionsTable(), routeConverter.getPositionListComboBox(), route, routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
+                    menuItem.setAction(new MergePositionList(routeConverter.getFrame(), routeConverter.getPositionsTable(), routeConverter.getPositionListComboBox(), route, routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
                     menuItem.setText(RouteComments.shortenRouteName(route));
                     menuMergePositionlist.add(menuItem, i);
                 }
@@ -99,7 +101,6 @@ public class TablePopupMenu {
                 }
             }
         });
-        */
 
         // cannot use table.setComponentPopupMenu(popupMenu); since it does ensure a selection
         routeConverter.getPositionsTable().addMouseListener(new MouseAdapter() {

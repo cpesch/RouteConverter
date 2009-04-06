@@ -20,15 +20,19 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.*;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.BaseRoute;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.Constants;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link ActionListener} that inserts the position list of a {@link PositionsModel} at
@@ -38,13 +42,15 @@ import java.awt.event.ItemEvent;
  */
 
 public class MergePositionList extends AbstractAction {
+    private JFrame frame;
     private JTable table;
     private JComboBox combobox;
     private BaseRoute sourceRoute;
     private PositionsModel positionsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
 
-    public MergePositionList(JTable table, JComboBox combobox, BaseRoute sourceRoute, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
+    public MergePositionList(JFrame frame, JTable table, JComboBox combobox, BaseRoute sourceRoute, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
+        this.frame = frame;
         this.table = table;
         this.combobox = combobox;
         this.sourceRoute = sourceRoute;
@@ -85,14 +91,16 @@ public class MergePositionList extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
-            int insertRow = Math.max(selectedRow - 1, 0);
+            Constants.startWaitCursor(frame.getRootPane());
 
-            for (int i = sourceRoute.getPositionCount() - 1; i >= 0; i--) {
-                BaseNavigationPosition position = sourceRoute.getPosition(i);
-                positionsModel.add(insertRow, position);
+            try {
+                int insertRow = Math.min(selectedRow + 1, table.getRowCount());
+                positionsModel.add(insertRow, sourceRoute.getPositions());
+                formatAndRoutesModel.removeRoute(sourceRoute);
             }
-
-            formatAndRoutesModel.removeRoute(sourceRoute);
+            finally {
+                Constants.stopWaitCursor(frame.getRootPane());
+            }
         }
     }
 }

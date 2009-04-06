@@ -316,7 +316,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="format"/>
                     </properties>
                   </component>
-                  <grid id="16b0b" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="16b0b" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -336,7 +336,7 @@
                       </component>
                       <component id="5723f" class="javax.swing.JButton" binding="buttonAppendFileToPositionList">
                         <constraints>
-                          <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <icon value="slash/navigation/converter/gui/append-route.png"/>
@@ -366,22 +366,12 @@
                       </component>
                       <component id="732dd" class="javax.swing.JButton" binding="buttonAddPositionList">
                         <constraints>
-                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <icon value="slash/navigation/converter/gui/add-route.png"/>
                           <text value=""/>
                           <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-position-list-tooltip"/>
-                        </properties>
-                      </component>
-                      <component id="9c4b1" class="javax.swing.JButton" binding="buttonSplitPositionList">
-                        <constraints>
-                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <icon value="slash/navigation/converter/gui/split-route.png"/>
-                          <text value=""/>
-                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="split-tooltip"/>
                         </properties>
                       </component>
                     </children>

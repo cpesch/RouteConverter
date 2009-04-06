@@ -143,7 +143,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JComboBox comboBoxChoosePositionListCharacteristics;
     private JButton buttonAddPositionList;
     private JButton buttonRenamePositionList;
-    private JButton buttonSplitPositionList;
     private JButton buttonRemovePositionList;
     private JButton buttonMovePositionToTop;
     private JButton buttonMovePositionUp;
@@ -274,12 +273,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonRenamePositionList.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onRenamePositionList();
-            }
-        });
-
-        buttonSplitPositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onSplitPositionList();
             }
         });
 
@@ -1016,7 +1009,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
         // TODO check this later
-        buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
+        // TODO buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
         preferences.put(TARGET_FORMAT_PREFERENCE, getFormat().getClass().getName());
@@ -1034,7 +1027,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonRenamePositionList.setEnabled(existsARoute);
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
         // TODO check this later
-        buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsARoute);
+        // TODO buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsARoute);
         buttonAppendFileToPositionList.setEnabled(existsARoute);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
     }
@@ -1053,7 +1046,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonRevertPositionList.setEnabled(existsMoreThanOnePosition);
 
         // TODO check this later
-        buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
+        // TODO buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
     }
 
     protected abstract void addDragAndDropToConvertPane();
@@ -1261,7 +1254,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     private synchronized JFileChooser getChooser() {
         if (chooser == null)
-            chooser = new JFileChooser();
+            chooser = createJFileChooser();
         return chooser;
     }
 
@@ -1361,27 +1354,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         renameDialog.pack();
         renameDialog.setLocationRelativeTo(frame);
         renameDialog.setVisible(true);
-    }
-
-    private void onSplitPositionList() {
-        int[] selectedRows = tablePositions.getSelectedRows();
-        if (selectedRows.length > 0) {
-            BaseRoute source = getFormatAndRoutesModel().getSelectedRoute();
-            int insert = getFormatAndRoutesModel().getSize();
-            for (int i = selectedRows.length - 1; i >= 0; i--) {
-                int fromIndex = selectedRows[i] - 1;
-                fromIndex = Math.max(fromIndex, 0);
-                int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : getPositionsModel().getRowCount();
-                toIndex--;
-                toIndex = Math.max(toIndex, 0);
-                if (fromIndex == 0 && toIndex == 0)
-                    break;
-                List<BaseNavigationPosition> positions = getPositionsModel().remove(fromIndex, toIndex);
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target = getFormatAndRoutesModel().getFormat().
-                        createRoute(source.getCharacteristics(), source.getName() + "(" + (i + 1) + ")", positions);
-                getFormatAndRoutesModel().addRoute(insert, target);
-            }
-        }
     }
 
     private void onAddPositionList() {
@@ -1617,7 +1589,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void onAddFileToCatalog() {
         CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
 
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(BUNDLE.getString("add-file"));
         chooser.setSelectedFile(createUploadRoute());
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1691,7 +1663,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     }
 
     private void onChooseBabelPath() {
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(BUNDLE.getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -2004,7 +1976,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("format"));
         convertPanel.add(label4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel6, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonRemovePositionList = new JButton();
         buttonRemovePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/remove-route.png")));
@@ -2015,7 +1987,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonAppendFileToPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/append-route.png")));
         buttonAppendFileToPositionList.setText("");
         buttonAppendFileToPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("append-tooltip"));
-        panel6.add(buttonAppendFileToPositionList, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel6.add(buttonAppendFileToPositionList, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenamePositionList = new JButton();
         buttonRenamePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/rename-route.png")));
         buttonRenamePositionList.setText("");
@@ -2030,12 +2002,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         buttonAddPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/add-route.png")));
         buttonAddPositionList.setText("");
         buttonAddPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-position-list-tooltip"));
-        panel6.add(buttonAddPositionList, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonSplitPositionList = new JButton();
-        buttonSplitPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/split-route.png")));
-        buttonSplitPositionList.setText("");
-        buttonSplitPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("split-tooltip"));
-        panel6.add(buttonSplitPositionList, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel6.add(buttonAddPositionList, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositionLists = new JLabel();
         labelPositionLists.setHorizontalAlignment(2);
         labelPositionLists.setHorizontalTextPosition(2);

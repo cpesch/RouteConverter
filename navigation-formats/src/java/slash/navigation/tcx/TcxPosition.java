@@ -32,7 +32,7 @@ import java.util.Calendar;
  * @author Christian Pesch
  */
 
-public class TcxPosition extends Wgs84Position { // TODO same as GpxPositin
+public class TcxPosition extends Wgs84Position { // TODO same as GpxPosition
 
     public TcxPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
         super(longitude, latitude, elevation, null, time, comment);
