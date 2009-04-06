@@ -331,6 +331,12 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
+    public void testConvertHoluxM241BinaryToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.bin", new HoluxM241BinaryFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.bin", new HoluxM241BinaryFormat(), new Gpx11Format());
+    }
+
+
     public void testConvertXcsvToXcvs() throws IOException {
         convertRoundtrip(TEST_PATH + "from.xcsv", new GarminPoiDbFormat(), new GarminPoiDbFormat());
     }

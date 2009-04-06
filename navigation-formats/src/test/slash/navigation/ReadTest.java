@@ -104,6 +104,10 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".gpx");
     }
 
+    public void testHoluxM241BinaryFilesAreValid() throws IOException {
+        readFiles(".bin");
+    }
+
     public void testTomTomRouteFilesAreValid() throws IOException {
         readFiles(".itn");
     }
