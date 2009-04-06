@@ -33,7 +33,7 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
  */
 public class InitUtility {
     static {
-        // TODO modified to work out of the temp directory 
+        // RouteConverter: modified to work out of the temp directory
         // System.loadLibrary("jdic");
         try {
             Externalization.loadLibrary("jdic");

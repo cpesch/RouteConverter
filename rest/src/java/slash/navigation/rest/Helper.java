@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -37,7 +37,7 @@ public class Helper {
     public static String encodeUri(String uri) {
         try {
             String encoded = URLEncoder.encode(uri, UTF8_ENCODING);
-            return encoded.replace("%2F", "/"); // TODO .replace("%3A", ":");
+            return encoded.replace("%2F", "/"); // better not .replace("%3A", ":");
         } catch (UnsupportedEncodingException e) {
             log.severe("Cannot encode uri " + uri + ": " + e.getMessage());
             return uri;

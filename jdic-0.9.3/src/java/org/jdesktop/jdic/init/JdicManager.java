@@ -115,7 +115,7 @@ public class JdicManager {
                 WebBrowserUtil.trace("caculateNativeLibPathBySunJWS " + nativeLibPath);
                 return;
             } else {
-                /* TODO modified to work out of the temp directory 
+                /* RouteConverter: modified to work out of the temp directory
                 // running url of current class
                 String runningURL =(
                     new URL(JdicManager.class
@@ -307,7 +307,7 @@ public class JdicManager {
                     "Can't locate the native browser path!");
             }
 
-            // TODO modified to avoid exceptions due to FF3 in c:\programme\mozilla firefox\firefox.exe as default browser
+            // RouteConverter: modified to avoid exceptions due to FF3 in c:\programme\mozilla firefox\firefox.exe as default browser
             if (WebBrowserUtil.isDefaultBrowserMozilla() && WebBrowserUtil.getBrowserPath().indexOf("firefox") == -1) {
                 // Mozilla is the default/embedded browser.
                 // Use the user defined value or the mozilla binary
@@ -367,7 +367,7 @@ public class JdicManager {
     }
 }
 
-// TODO copied from JDIC 0.9.5 since com.sun.jnlp.JNLPClassLoader#findLibrary is protected now
+// RouteConverter: copied from JDIC 0.9.5 since com.sun.jnlp.JNLPClassLoader#findLibrary is protected now
 class JNLPClassLoaderAccessor {
     static java.lang.reflect.Method mdJNLPClassLoader_findLibrary = null;
 
