@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -50,6 +50,18 @@ public abstract class BaseNavigationGUI {
 
     protected JFrame frame;
 
+    protected JFileChooser createJFileChooser() {
+        JFileChooser chooser;
+        try {
+            chooser = new JFileChooser();
+        }
+        catch (NullPointerException npe) {
+            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
+            UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
+            chooser = new JFileChooser();
+        }
+        return chooser;
+    }
 
     public void setLocale(Locale locale) {
         if (!Constants.ROOT_LOCALE.equals(locale)) {
