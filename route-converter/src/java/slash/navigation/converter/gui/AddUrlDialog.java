@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.util.Conversion;
+import slash.navigation.converter.gui.helper.FrameAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,14 +66,14 @@ public class AddUrlDialog extends JDialog {
         textFieldDescription.setText(description);
         textFieldUrl.setText(url);
 
-        buttonAdd.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonAdd.addActionListener(new FrameAction() {
+            public void run() {
                 onAdd();
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonCancel.addActionListener(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         });
@@ -84,8 +85,8 @@ public class AddUrlDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);

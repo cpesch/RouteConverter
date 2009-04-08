@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 import java.text.MessageFormat;
 
 import slash.navigation.converter.gui.models.NumberDocument;
+import slash.navigation.converter.gui.helper.FrameAction;
 
 /**
  * Dialog for selecting filter criteria
@@ -64,38 +65,38 @@ public class FilterDialog extends JDialog {
         setTitle(RouteConverter.getBundle().getString("filter-title"));
         setContentPane(contentPane);
 
-        buttonSelectDuplicates.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonSelectDuplicates.addActionListener(new FrameAction() {
+            public void run() {
                 onSelectDuplicates();
             }
         });
 
-        buttonSelectByDistance.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonSelectByDistance.addActionListener(new FrameAction() {
+            public void run() {
                 onSelectByDistance();
             }
         });
 
-        buttonSelectByOrder.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonSelectByOrder.addActionListener(new FrameAction() {
+            public void run() {
                 onSelectByOrder();
             }
         });
 
-        buttonSelectBySignificance.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonSelectBySignificance.addActionListener(new FrameAction() {
+            public void run() {
                 onSelectBySignificance();
             }
         });
 
-        buttonDeletePositions.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonDeletePositions.addActionListener(new FrameAction() {
+            public void run() {
                 onDeletePositions();
             }
         });
 
-        buttonClearSelection.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonClearSelection.addActionListener(new FrameAction() {
+            public void run() {
                 onRemoveSelection();
             }
         });
@@ -107,8 +108,8 @@ public class FilterDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onClose();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);

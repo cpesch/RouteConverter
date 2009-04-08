@@ -25,7 +25,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.*;
 import slash.navigation.babel.BabelException;
-import slash.navigation.babel.BabelFormat;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.domain.RouteService;
 import slash.navigation.catalog.model.CategoryTreeModel;
@@ -33,17 +32,18 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helper.TableHeaderPopupMenu;
 import slash.navigation.converter.gui.helper.TablePopupMenu;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
+import slash.navigation.converter.gui.helper.FrameAction;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.panels.MiscPanel;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.gui.*;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -88,6 +88,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
     private Preferences preferences = Preferences.userNodeForPackage(getClass());
 
+    public static RouteConverter getInstance() {
+        return (RouteConverter) Application.getInstance();
+    }
+
     public static ResourceBundle getBundle() {
         return getInstance().getContext().getBundle();
     }
@@ -107,7 +111,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
     private static final String NUMBER_POSITION_NAMES_PREFERENCE = "numberPositionNames";
     private static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
-    private static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
+    public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck"; // TODO move to separate interface?
+    public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile"; // TODO move to separate interface?
     private static final String SELECT_DUPLICATE_PREFERENCE = "selectDuplicate";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
@@ -159,20 +164,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
 
-    private JPanel expertPanel;
-    private JLabel labelBrowse;
-    private JLabel labelMail;
-    private JLabel labelCp;
-    private JLabel labelCredit;
-    private JComboBox comboBoxLocale;
-    private JTextField textFieldBabelPath;
-    private JButton buttonChooseGPSBabel;
-    private JCheckBox checkBoxAutomaticUpdateCheck;
-    private JCheckBox checkBoxStartWithLastFile;
-    private JButton buttonPrintMap;
-    private JButton buttonRenumberPositions;
-    private JButton buttonCheckForUpdate;
-    private JButton buttonTestDragListenerPort;
+    private JPanel miscPanel;
 
     private RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
     private RouteServiceOperator operator = new RouteServiceOperator(this);
@@ -198,7 +190,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected void startup() {
         log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
         show();
-        createUpdater().implicitCheck(frame);
+        new Updater().implicitCheck(frame);
         parseArgs(args);
     }
 
@@ -230,11 +222,42 @@ public abstract class RouteConverter extends SingleFrameApplication {
             private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
 
             {
-                lazyInitializers.put(expertPanel, new Runnable() {
+                lazyInitializers.put(miscPanel, new Runnable() {
                     public void run() {
-                        prepareExpertPane();
+                        MiscPanel panel = new MiscPanel();
+                        miscPanel.add(panel.getRootComponent());
                     }
                 });
+            }
+
+            public void stateChanged(ChangeEvent e) {
+                Component selected = ((JTabbedPane) e.getSource()).getSelectedComponent();
+                Runnable runnable = lazyInitializers.get(selected);
+                if (runnable != null) {
+                    lazyInitializers.remove(selected);
+
+                    Constants.startWaitCursor(frame.getRootPane());
+                    try {
+                        runnable.run();
+                    }
+                    finally {
+                        Constants.stopWaitCursor(frame.getRootPane());
+                    }
+                }
+            }
+        });
+
+        tabbedPane.addChangeListener(new ChangeListener() {
+            private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
+
+            {
+                /* TODO lazy initialize misc panel
+                lazyInitializers.put(miscPanel.getRootComponent(), new Runnable() {
+                    public void run() {
+                        miscPanel.initialize();
+                    }
+                });
+                */
                 lazyInitializers.put(browsePanel, new Runnable() {
                     public void run() {
                         prepareBrowsePane();
@@ -277,52 +300,52 @@ public abstract class RouteConverter extends SingleFrameApplication {
         new RouteFormatToJLabelAdapter(getFormatAndRoutesModel(), labelFormat, labelPositionLists);
         new PositionsCountToJLabelAdapter(getPositionsModel(), labelPositions);
 
-        buttonOpenFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonOpenFile.addActionListener(new FrameAction() {
+            public void run() {
                 onOpenPositionList();
             }
         });
 
-        buttonNewFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonNewFile.addActionListener(new FrameAction() {
+            public void run() {
                 onNewPositionList();
             }
         });
 
-        buttonAppendFileToPositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonAppendFileToPositionList.addActionListener(new FrameAction() {
+            public void run() {
                 onAppend();
             }
         });
 
-        buttonRenamePositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRenamePositionList.addActionListener(new FrameAction() {
+            public void run() {
                 onRenamePositionList();
             }
         });
 
-        buttonAddPositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonAddPositionList.addActionListener(new FrameAction() {
+            public void run() {
                 onAddPositionList();
             }
         });
 
-        buttonRemovePositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRemovePositionList.addActionListener(new FrameAction() {
+            public void run() {
                 BaseRoute selectedRoute = getFormatAndRoutesModel().getSelectedRoute();
                 if (selectedRoute != null)
                     getFormatAndRoutesModel().removeRoute(selectedRoute);
             }
         });
 
-        buttonSaveFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonSaveFile.addActionListener(new FrameAction() {
+            public void run() {
                 onSave();
             }
         });
 
-        buttonMovePositionToTop.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonMovePositionToTop.addActionListener(new FrameAction() {
+            public void run() {
                 int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().top(selectedRows);
@@ -331,8 +354,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonMovePositionUp.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonMovePositionUp.addActionListener(new FrameAction() {
+            public void run() {
                 int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().up(selectedRows);
@@ -341,33 +364,33 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonAddPosition.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonAddPosition.addActionListener(new FrameAction() {
+            public void run() {
                 onAddPosition();
             }
         });
 
-        buttonRemovePosition.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRemovePosition.addActionListener(new FrameAction() {
+            public void run() {
                 onRemovePosition();
             }
         });
 
-        buttonFilterPositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonFilterPositionList.addActionListener(new FrameAction() {
+            public void run() {
                 showFilter();
             }
         });
 
-        buttonRevertPositionList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRevertPositionList.addActionListener(new FrameAction() {
+            public void run() {
                 getPositionsModel().revert();
                 clearPositionSelection();
             }
         });
 
-        buttonMovePositionDown.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonMovePositionDown.addActionListener(new FrameAction() {
+            public void run() {
                 int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().down(selectedRows);
@@ -376,8 +399,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonMovePositionToBottom.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonMovePositionToBottom.addActionListener(new FrameAction() {
+            public void run() {
                 int[] selectedRows = getPositionsTable().getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().bottom(selectedRows);
@@ -392,14 +415,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        getPositionsTable().registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        getPositionsTable().registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onAddPosition();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        getPositionsTable().registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        getPositionsTable().registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onRemovePosition();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -416,7 +439,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 buttonMovePositionDown.setEnabled(lastRowNotSelected);
                 buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
                 if (isMapViewAvailable())
-                    mapView.setSelectedPositions(selectedRows);
+                    getMapView().setSelectedPositions(selectedRows);
             }
         });
 
@@ -469,114 +492,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         addDragAndDropToConvertPane();
     }
 
-    private boolean isMapViewAvailable() {
-        return mapView != null && mapView.isInitialized();
-    }
-
-    private void prepareExpertPane() {
-        labelBrowse.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                createExternalPrograms().startBrowserForHomepage(frame);
-            }
-        });
-
-        labelMail.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                createExternalPrograms().startBrowserForForum(frame);
-            }
-        });
-
-        labelCredit.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                createExternalPrograms().startBrowserForHomepage(frame);
-            }
-        });
-
-        labelCp.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                createExternalPrograms().startMail(frame);
-            }
-        });
-
-        buttonChooseGPSBabel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onChooseBabelPath();
-            }
-        });
-
-        comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{Locale.GERMANY, Locale.US, Locale.FRANCE, Constants.NL, Constants.ROOT_LOCALE}));
-        comboBoxLocale.setRenderer(new LocaleListCellRenderer());
-        comboBoxLocale.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != ItemEvent.SELECTED)
-                    return;
-                Locale locale = (Locale) e.getItem();
-                setLocale(locale);
-            }
-        });
-        comboBoxLocale.setSelectedItem(Locale.getDefault());
-
-        textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
-                BabelFormat.setBabelPathPreference(textFieldBabelPath.getText());
-            }
-
-            public void removeUpdate(DocumentEvent e) {
-                insertUpdate(e);
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                insertUpdate(e);
-            }
-        });
-        textFieldBabelPath.setText(BabelFormat.getBabelPathPreference());
-
-        checkBoxAutomaticUpdateCheck.setSelected(createUpdater().isAutomaticUpdateCheck());
-        checkBoxAutomaticUpdateCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createUpdater().setAutomaticUpdateCheck(checkBoxAutomaticUpdateCheck.isSelected());
-            }
-        });
-        new CheckBoxPreferencesSynchronizer(checkBoxStartWithLastFile, preferences, START_WITH_LAST_FILE_PREFERENCE, true);
-
-        buttonCheckForUpdate.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createUpdater().explicitCheck(frame);
-            }
-        });
-
-        buttonTestDragListenerPort.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (isMapViewAvailable())
-                    mapView.testDragListenerPort();
-            }
-        });
-        buttonTestDragListenerPort.setEnabled(isMapViewAvailable());
-
-        buttonPrintMap.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (isMapViewAvailable())
-                    mapView.print();
-            }
-        });
-        buttonPrintMap.setEnabled(isMapViewAvailable());
-
-        buttonRenumberPositions.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Constants.startWaitCursor(frame.getRootPane());
-                try {
-                    tabbedPane.setSelectedComponent(convertPanel);
-                    getPositionsModel().renumberPositions();
-                } finally {
-                    Constants.stopWaitCursor(frame.getRootPane());
-                }
-            }
-        });
-    }
-
     private void prepareBrowsePane() {
-        buttonAddCategory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonAddCategory.addActionListener(new FrameAction() {
+            public void run() {
                 final CategoryTreeNode selected = getSelectedTreeNode();
                 final String name = JOptionPane.showInputDialog(frame,
                         MessageFormat.format(getBundle().getString("add-category-label"), selected.getName()),
@@ -598,8 +516,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonRenameCategory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonRenameCategory.addActionListener(new FrameAction() {
+            public void run() {
                 final CategoryTreeNode selected = getSelectedTreeNode();
                 final String name = (String) JOptionPane.showInputDialog(frame,
                         MessageFormat.format(getBundle().getString("rename-category-label"), selected.getName()),
@@ -615,8 +533,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonDeleteCategory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonDeleteCategory.addActionListener(new FrameAction() {
+            public void run() {
                 final List<CategoryTreeNode> categories = getSelectedTreeNodes();
 
                 operator.executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -629,20 +547,20 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonAddFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonAddFile.addActionListener(new FrameAction() {
+            public void run() {
                 onAddFileToCatalog();
             }
         });
 
-        buttonAddUrl.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonAddUrl.addActionListener(new FrameAction() {
+            public void run() {
                 addUrlToCatalog(getSelectedTreeNode(), "");
             }
         });
 
-        buttonRenameRoute.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonRenameRoute.addActionListener(new FrameAction() {
+            public void run() {
                 int selectedRow = tableRoutes.getSelectedRow();
                 if (selectedRow == -1)
                     return;
@@ -673,8 +591,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonDeleteRoute.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonDeleteRoute.addActionListener(new FrameAction() {
+            public void run() {
                 final int[] selectedRows = tableRoutes.getSelectedRows();
                 if (selectedRows.length == 0)
                     return;
@@ -695,8 +613,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        buttonLogin.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        buttonLogin.addActionListener(new FrameAction() {
+            public void run() {
                 operator.showLogin();
             }
         });
@@ -798,13 +716,13 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        Throwable cause = mapView.getInitializationCause();
-                        if (mapView.getCanvas() == null || cause != null) {
+                        Throwable cause = getMapView().getInitializationCause();
+                        if (getMapView().getCanvas() == null || cause != null) {
                             StringWriter stackTrace = new StringWriter();
                             cause.printStackTrace(new PrintWriter(stackTrace));
                             mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                         } else {
-                            mapPanel.add(mapView.getCanvas(), MAP_PANEL_CONSTRAINTS);
+                            mapPanel.add(getMapView().getCanvas(), MAP_PANEL_CONSTRAINTS);
                         }
 
                         int location = preferences.getInt(DIVIDER_LOCATION_PREFERENCE, -1);
@@ -823,7 +741,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                                 if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
                                     if (splitPane.getDividerLocation() != location) {
                                         location = splitPane.getDividerLocation();
-                                        mapView.resize();
+                                        getMapView().resize();
                                     }
                                 }
                             }
@@ -861,7 +779,32 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return formatAndRoutesModel;
     }
 
+    public Preferences getPreferences() {
+        return preferences;
+    }
+
+
+    public boolean isMapViewAvailable() {
+        return getMapView() != null && getMapView().isInitialized();
+    }
+
+    public MapView getMapView() {
+        return mapView;
+    }
+
+    public JPanel getConvertPanel() {
+        return convertPanel;
+    }
+
+    public void selectPanel(JPanel panel) {
+        tabbedPane.setSelectedComponent(panel);
+    }
+
+
+    public abstract ExternalPrograms createExternalPrograms(); // TODO create factory
+
     // end: public API for actions
+
 
     NavigationFormat getFormat() {
         return (NavigationFormat) getFormatComboBox().getSelectedItem();
@@ -1676,22 +1619,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    private void onChooseBabelPath() {
-        JFileChooser chooser = Constants.createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-gpsbabel-path"));
-        chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int open = chooser.showOpenDialog(frame);
-        if (open != JFileChooser.APPROVE_OPTION)
-            return;
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
-            return;
-
-        textFieldBabelPath.setText(selected.getAbsolutePath());
-    }
-
     protected void shutdown() {
         preferences.putBoolean(START_GOOGLE_EARTH_PREFERENCE, checkboxStartGoogleEarth.isSelected());
         preferences.putBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, checkboxDuplicateFirstPosition.isSelected());
@@ -1699,8 +1626,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         preferences.putBoolean(SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE, checkBoxSaveAsRouteTrackWaypoints.isSelected());
         preferences.putInt(DIVIDER_LOCATION_PREFERENCE, splitPane.getDividerLocation());
 
-        if (mapView != null)
-            mapView.dispose();
+        if (getMapView() != null)
+            getMapView().dispose();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
@@ -1734,10 +1661,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     protected abstract FilterDialog createFilterDialog();
-
-    protected abstract ExternalPrograms createExternalPrograms();
-
-    protected abstract Updater createUpdater();
 
     // Callbacks from dialogs
 
@@ -1782,6 +1705,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     void setAddPositionLatitude(double latitude) {
         preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, latitude);
+    }
+
+    boolean isAutomaticUpdateCheck() {
+        return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
     }
 
     boolean getStartWithLastFilePreference() {
@@ -2045,126 +1972,51 @@ public abstract class RouteConverter extends SingleFrameApplication {
         this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("position-list"));
         label7.setVisible(true);
         convertPanel.add(label7, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        expertPanel = new JPanel();
-        expertPanel.setLayout(new GridLayoutManager(6, 1, new Insets(3, 3, 3, 3), -1, -1));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("expert-tab"), expertPanel);
-        final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 0, 0), -1, -1));
-        expertPanel.add(panel9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label8 = new JLabel();
-        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("preferred-locale"));
-        panel9.add(label8, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxLocale = new JComboBox();
-        panel9.add(comboBoxLocale, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label9 = new JLabel();
-        this.$$$loadLabelText$$$(label9, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("gpsbabel-path"));
-        panel9.add(label9, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textFieldBabelPath = new JTextField();
-        panel9.add(textFieldBabelPath, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        buttonChooseGPSBabel = new JButton();
-        buttonChooseGPSBabel.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/select.png")));
-        buttonChooseGPSBabel.setText("");
-        buttonChooseGPSBabel.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-gpsbabel-path"));
-        panel9.add(buttonChooseGPSBabel, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label10 = new JLabel();
-        this.$$$loadLabelText$$$(label10, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("start-with-last-file"));
-        panel9.add(label10, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxStartWithLastFile = new JCheckBox();
-        checkBoxStartWithLastFile.setHorizontalAlignment(11);
-        checkBoxStartWithLastFile.setSelected(false);
-        checkBoxStartWithLastFile.setText("");
-        panel9.add(checkBoxStartWithLastFile, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label11 = new JLabel();
-        this.$$$loadLabelText$$$(label11, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("automatic-update-check"));
-        panel9.add(label11, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxAutomaticUpdateCheck = new JCheckBox();
-        checkBoxAutomaticUpdateCheck.setHorizontalAlignment(11);
-        checkBoxAutomaticUpdateCheck.setHorizontalTextPosition(11);
-        checkBoxAutomaticUpdateCheck.setText("");
-        panel9.add(checkBoxAutomaticUpdateCheck, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel10 = new JPanel();
-        expertPanel.add(panel10, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        final JPanel panel11 = new JPanel();
-        expertPanel.add(panel11, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        final JPanel panel12 = new JPanel();
-        panel12.setLayout(new GridLayoutManager(1, 2, new Insets(3, 3, 3, 3), -1, -1));
-        expertPanel.add(panel12, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRenumberPositions = new JButton();
-        this.$$$loadButtonText$$$(buttonRenumberPositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("renumber-positions"));
-        panel12.add(buttonRenumberPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonPrintMap = new JButton();
-        this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
-        panel12.add(buttonPrintMap, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel13 = new JPanel();
-        panel13.setLayout(new GridLayoutManager(3, 2, new Insets(5, 5, 5, 5), -1, -1));
-        expertPanel.add(panel13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        labelBrowse = new JLabel();
-        this.$$$loadLabelText$$$(labelBrowse, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-www"));
-        panel13.add(labelBrowse, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelMail = new JLabel();
-        this.$$$loadLabelText$$$(labelMail, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-mail"));
-        panel13.add(labelMail, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelCp = new JLabel();
-        labelCp.setForeground(UIManager.getColor("Label.background"));
-        labelCp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/cp.png")));
-        labelCp.setInheritsPopupMenu(true);
-        labelCp.setOpaque(false);
-        labelCp.setText("");
-        panel13.add(labelCp, new GridConstraints(0, 1, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        labelCredit = new JLabel();
-        this.$$$loadLabelText$$$(labelCredit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-credit"));
-        panel13.add(labelCredit, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel14 = new JPanel();
-        panel14.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        expertPanel.add(panel14, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonCheckForUpdate = new JButton();
-        this.$$$loadButtonText$$$(buttonCheckForUpdate, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-check-for-update"));
-        panel14.add(buttonCheckForUpdate, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonTestDragListenerPort = new JButton();
-        buttonTestDragListenerPort.setText("Test Drag and Drop Communication");
-        panel14.add(buttonTestDragListenerPort, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        miscPanel = new JPanel();
+        miscPanel.setLayout(new BorderLayout(0, 0));
+        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("misc-tab"), miscPanel);
         browsePanel = new JPanel();
         browsePanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
-        final JPanel panel15 = new JPanel();
-        panel15.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
-        browsePanel.add(panel15, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JPanel panel9 = new JPanel();
+        panel9.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        browsePanel.add(panel9, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonAddCategory = new JButton();
         this.$$$loadButtonText$$$(buttonAddCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add"));
-        panel15.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel9.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeleteCategory = new JButton();
         this.$$$loadButtonText$$$(buttonDeleteCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
-        panel15.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel9.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenameCategory = new JButton();
         this.$$$loadButtonText$$$(buttonRenameCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
-        panel15.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label12 = new JLabel();
-        this.$$$loadLabelText$$$(label12, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("categories"));
-        browsePanel.add(label12, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label13 = new JLabel();
-        this.$$$loadLabelText$$$(label13, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));
-        browsePanel.add(label13, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel16 = new JPanel();
-        panel16.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
-        browsePanel.add(panel16, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel9.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label8 = new JLabel();
+        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("categories"));
+        browsePanel.add(label8, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label9 = new JLabel();
+        this.$$$loadLabelText$$$(label9, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));
+        browsePanel.add(label9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel10 = new JPanel();
+        panel10.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+        browsePanel.add(panel10, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonAddFile = new JButton();
         this.$$$loadButtonText$$$(buttonAddFile, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-file"));
-        panel16.add(buttonAddFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel10.add(buttonAddFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel16.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel10.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonDeleteRoute = new JButton();
         this.$$$loadButtonText$$$(buttonDeleteRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
-        panel16.add(buttonDeleteRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel10.add(buttonDeleteRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenameRoute = new JButton();
         this.$$$loadButtonText$$$(buttonRenameRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
-        panel16.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel10.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonAddUrl = new JButton();
         this.$$$loadButtonText$$$(buttonAddUrl, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-url"));
-        panel16.add(buttonAddUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel10.add(buttonAddUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonLogin = new JButton();
         this.$$$loadButtonText$$$(buttonLogin, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("login"));
         buttonLogin.setVisible(false);
-        panel16.add(buttonLogin, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel10.add(buttonLogin, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane2 = new JScrollPane();
         browsePanel.add(scrollPane2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableRoutes = new JTable();

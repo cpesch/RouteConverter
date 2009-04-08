@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.util.Conversion;
 import slash.navigation.gui.Constants;
+import slash.navigation.converter.gui.helper.FrameAction;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -86,26 +87,26 @@ public class LoginDialog extends JDialog {
             }
         });
 
-        buttonLogin.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonLogin.addActionListener(new FrameAction() {
+            public void run() {
                 onLogin();
             }
         });
 
-        buttonCancel1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonCancel1.addActionListener(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         });
 
-        buttonRegister.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRegister.addActionListener(new FrameAction() {
+            public void run() {
                 onRegister();
             }
         });
 
-        buttonCancel2.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonCancel2.addActionListener(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         });
@@ -119,8 +120,8 @@ public class LoginDialog extends JDialog {
 
         textFieldLogin.setText(routeConverter.getUserNamePreference());
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);

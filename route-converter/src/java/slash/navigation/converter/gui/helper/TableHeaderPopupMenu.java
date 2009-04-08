@@ -48,8 +48,8 @@ public class TableHeaderPopupMenu {
         for (final PositionTableColumn column : tableColumnModel.getPreparedColumns()) {
             String text = RouteConverter.getBundle().getString("show-column") + " " + RouteConverter.getBundle().getString(column.getName());
             JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text, column.isVisible());
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
+            menuItem.addActionListener(new FrameAction() {
+                public void run() {
                     tableColumnModel.toggleVisibility(column);
 
                     if (tableColumnModel.getVisibleColumnCount() > 1)

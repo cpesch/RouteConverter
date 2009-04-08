@@ -30,6 +30,7 @@ import java.awt.*;
 import java.util.ResourceBundle;
 
 import slash.navigation.gui.Constants;
+import slash.navigation.converter.gui.helper.FrameAction;
 
 /**
  * Dialog to rename position list
@@ -54,14 +55,14 @@ public class RenameDialog extends JDialog {
 
         textFieldName.setText(routeConverter.getPositionsModel().getRoute().getName());
 
-        buttonRename.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRename.addActionListener(new FrameAction() {
+            public void run() {
                 onRename();
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonCancel.addActionListener(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         });
@@ -73,8 +74,8 @@ public class RenameDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);

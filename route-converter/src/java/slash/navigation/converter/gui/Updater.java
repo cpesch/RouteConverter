@@ -44,13 +44,7 @@ public class Updater {
     private static final Logger log = Logger.getLogger(Updater.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(Updater.class);
     private static final String START_COUNT_PREFERENCE = "startCount";
-    private static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     private static final String CHARSET = "ISO8859-1";
-    private RouteConverter routeConverter;
-
-    public Updater(RouteConverter routeConverter) {
-        this.routeConverter = routeConverter;
-    }
 
     public static int getStartCount() {
         return preferences.getInt(START_COUNT_PREFERENCE, 0);
@@ -112,7 +106,7 @@ public class Updater {
                 RouteConverter.getTitle(), JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION)
             return;
-        createExternalPrograms().startBrowserForUpdate(window);
+        RouteConverter.getInstance().createExternalPrograms().startBrowserForUpdate(window);
     }
 
     private void noUpdateAvailable(Window window) {
@@ -122,13 +116,8 @@ public class Updater {
     }
 
 
-    protected ExternalPrograms createExternalPrograms() {
-        return routeConverter.createExternalPrograms();
-    }
-
-
     public void implicitCheck(final Window window) {
-        if (!isAutomaticUpdateCheck())
+        if (!RouteConverter.getInstance().isAutomaticUpdateCheck())
             return;
 
         new Thread(new Runnable() {
@@ -169,13 +158,5 @@ public class Updater {
         public boolean existsLaterVersion() {
             return !isLatestVersion && latestVersion != null;
         }
-    }
-
-    public boolean isAutomaticUpdateCheck() {
-        return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
-    }
-
-    public void setAutomaticUpdateCheck(boolean isAutomaticUpdateCheck) {
-        preferences.putBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, isAutomaticUpdateCheck);
     }
 }

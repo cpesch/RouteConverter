@@ -57,12 +57,8 @@ public class RouteConverter6 extends RouteConverter {
         return new FilterDialog(this);
     }
 
-    protected ExternalPrograms createExternalPrograms() {
+    public ExternalPrograms createExternalPrograms() {
         return new ExternalPrograms6();
-    }
-
-    protected Updater createUpdater() {
-        return new Updater(this);
     }
 
     private class FrameDropHandler extends TransferHandler {

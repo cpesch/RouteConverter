@@ -20,22 +20,23 @@
 
 package slash.navigation.converter.gui;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.converter.gui.helper.FrameAction;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
-import slash.navigation.gui.Application;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import java.text.MessageFormat;
-import java.io.File;
-
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.Spacer;
 
 /**
  * Dialog to add file to RouteService
@@ -74,14 +75,14 @@ public class AddFileDialog extends JDialog {
         textFieldLength.setText(Conversion.formatDoubleAsString(length / 1000.0, 1));
         textFieldDescription.setText(description);
 
-        buttonAdd.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonAdd.addActionListener(new FrameAction() {
+            public void run() {
                 onAdd();
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonCancel.addActionListener(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         });
@@ -93,8 +94,8 @@ public class AddFileDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
