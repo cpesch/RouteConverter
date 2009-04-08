@@ -41,11 +41,11 @@ public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
             CategoryTreeNode categoryTreeNode = (CategoryTreeNode) value;
             String name = categoryTreeNode.getName();
             if (name == null)
-                name = RouteConverter.BUNDLE.getString("no-name");
+                name = RouteConverter.getBundle().getString("no-name");
 
             label.setText(name);
         } else
-            label.setText(RouteConverter.BUNDLE.getString("loading"));
+            label.setText(RouteConverter.getBundle().getString("loading"));
         return label;
     }
 }

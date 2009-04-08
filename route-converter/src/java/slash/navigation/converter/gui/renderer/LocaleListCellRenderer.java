@@ -40,10 +40,10 @@ public class LocaleListCellRenderer extends DefaultListCellRenderer {
 
         String text;
         if (Constants.ROOT_LOCALE.equals(locale))
-            text = RouteConverter.BUNDLE.getString("locale-default");
+            text = RouteConverter.getBundle().getString("locale-default");
         else {
             String language = locale.getLanguage();
-            String localizedText = RouteConverter.BUNDLE.getString("locale-" + language);
+            String localizedText = RouteConverter.getBundle().getString("locale-" + language);
             if (localizedText != null)
                 text = localizedText;
             else

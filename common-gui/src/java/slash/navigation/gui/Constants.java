@@ -25,6 +25,8 @@ import slash.navigation.util.Platform;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
+import java.util.logging.Logger;
+import java.net.URL;
 
 /**
  * Constants used throughout the UI
@@ -33,11 +35,14 @@ import java.util.Locale;
  */
 
 public class Constants {
+    private static final Logger log = Logger.getLogger(Constants.class.getName());
+
     // for Java 5 compatibility
     public static final Locale ROOT_LOCALE = new Locale("", "", "");
 
     // for dutch support which is not defined by a constant in Locale
     public static final Locale NL = new Locale("nl", "NL");
+
 
     public static void setLookAndFeel() {
         try {
@@ -71,5 +76,23 @@ public class Constants {
 
     public static void stopWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    public static ImageIcon loadIcon(Object object, String name) {
+        URL iconURL = object.getClass().getResource(name);
+        return new ImageIcon(iconURL);
+    }
+
+    public static JFileChooser createJFileChooser() {
+        JFileChooser chooser;
+        try {
+            chooser = new JFileChooser();
+        }
+        catch (NullPointerException npe) {
+            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
+            UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
+            chooser = new JFileChooser();
+        }
+        return chooser;
     }
 }

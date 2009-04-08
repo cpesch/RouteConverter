@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -24,7 +24,6 @@ import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.dnd.CategorySelection;
-import slash.navigation.gui.Constants;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -34,7 +33,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * A small graphical user interface for the route conversion
@@ -170,10 +168,6 @@ public class RouteConverter6 extends RouteConverter {
     }
 
     public static void main(String[] args) {
-        Constants.setLookAndFeel();
-        setDefaultLocale(Preferences.userNodeForPackage(RouteConverter.class));
-        setBundle(RouteConverter.class);
-        RouteConverter gui = new RouteConverter6();
-        gui.run(args);
+        launch(RouteConverter6.class, args);
     }
 }

@@ -56,12 +56,12 @@ public class AddUrlDialog extends JDialog {
         super(routeConverter.getFrame());
         this.routeConverter = routeConverter;
         this.categoryTreeNode = categoryTreeNode;
-        setTitle(RouteConverter.BUNDLE.getString("add-url-title"));
+        setTitle(RouteConverter.getBundle().getString("add-url-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonAdd);
 
-        labelLabel.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("add-url-label"), categoryTreeNode.getName()));
+        labelLabel.setText(MessageFormat.format(RouteConverter.getBundle().getString("add-url-label"), categoryTreeNode.getName()));
         textFieldDescription.setText(description);
         textFieldUrl.setText(url);
 

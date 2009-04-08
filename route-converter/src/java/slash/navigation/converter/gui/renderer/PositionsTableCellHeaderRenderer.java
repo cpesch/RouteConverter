@@ -39,7 +39,7 @@ public class PositionsTableCellHeaderRenderer extends DefaultTableCellRenderer {
         label.setHorizontalAlignment(JLabel.LEFT);
         label.setOpaque(false);
         PositionTableColumn column = (PositionTableColumn) table.getColumnModel().getColumn(columnIndex);
-        label.setText(RouteConverter.BUNDLE.getString(column.getName()));
+        label.setText(RouteConverter.getBundle().getString(column.getName()));
         return label;
     }
 }

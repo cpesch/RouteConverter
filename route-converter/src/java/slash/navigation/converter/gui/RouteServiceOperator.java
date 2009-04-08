@@ -61,7 +61,7 @@ public class RouteServiceOperator {
                 t.printStackTrace();
                 log.severe("Error while operating on RouteService: " + t.getMessage());
                 JOptionPane.showMessageDialog(routeConverter.getFrame(),
-                        MessageFormat.format(RouteConverter.BUNDLE.getString("service-error"), t.getClass(), t.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("service-error"), t.getClass(), t.getMessage()),
                         routeConverter.getFrame().getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });

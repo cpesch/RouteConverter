@@ -61,7 +61,7 @@ public class FilterDialog extends JDialog {
     public FilterDialog(RouteConverter routeConverter) {
         super(routeConverter.getFrame());
         this.routeConverter = routeConverter;
-        setTitle(RouteConverter.BUNDLE.getString("filter-title"));
+        setTitle(RouteConverter.getBundle().getString("filter-title"));
         setContentPane(contentPane);
 
         buttonSelectDuplicates.addActionListener(new ActionListener() {
@@ -134,7 +134,7 @@ public class FilterDialog extends JDialog {
         int duplicate = this.duplicate.getNumber();
         if (duplicate >= 0) {
             int selectedRowCount = routeConverter.selectDuplicatesWithinDistance(duplicate);
-            labelResult.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("filter-select-duplicates-result"), selectedRowCount, duplicate));
+            labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-duplicates-result"), selectedRowCount, duplicate));
             savePreferences();
         }
     }
@@ -143,7 +143,7 @@ public class FilterDialog extends JDialog {
         int distance = this.distance.getNumber();
         if (distance >= 0) {
             int selectedRowCount = routeConverter.selectPositionsThatRemainingHaveDistance(distance);
-            labelResult.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("filter-select-by-distance-result"), selectedRowCount, distance));
+            labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-distance-result"), selectedRowCount, distance));
             savePreferences();
         }
     }
@@ -153,7 +153,7 @@ public class FilterDialog extends JDialog {
         if (order >= 0) {
             int selectedRowCount = routeConverter.selectAllButEveryNthPosition(order);
             int unselectedRowCount = routeConverter.getPositionsModel().getRowCount() - selectedRowCount;
-            labelResult.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("filter-select-by-order-result"), selectedRowCount, unselectedRowCount));
+            labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-order-result"), selectedRowCount, unselectedRowCount));
             savePreferences();
         }
     }
@@ -162,7 +162,7 @@ public class FilterDialog extends JDialog {
         int significance = this.significance.getNumber();
         if (significance >= 0) {
             int selectedRowCount = routeConverter.selectInsignificantPositions(significance);
-            labelResult.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("filter-select-by-significance-result"), selectedRowCount, significance));
+            labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-significance-result"), selectedRowCount, significance));
             savePreferences();
         }
     }
@@ -174,7 +174,7 @@ public class FilterDialog extends JDialog {
 
     private void onRemoveSelection() {
         routeConverter.clearPositionSelection();
-        labelResult.setText(RouteConverter.BUNDLE.getString("filter-remove-selection-result"));
+        labelResult.setText(RouteConverter.getBundle().getString("filter-remove-selection-result"));
     }
 
     private void onClose() {

@@ -68,7 +68,7 @@ public class LoginDialog extends JDialog {
     public LoginDialog(RouteConverter routeConverter) {
         super(routeConverter.getFrame());
         this.routeConverter = routeConverter;
-        setTitle(RouteConverter.BUNDLE.getString("login-title"));
+        setTitle(RouteConverter.getBundle().getString("login-title"));
         setContentPane(contentPane);
         setModal(true);
         setDefaultButton();

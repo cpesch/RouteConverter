@@ -43,7 +43,7 @@ import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gui.BaseNavigationGUI;
+import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -75,6 +75,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 
 /**
@@ -83,18 +84,17 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public abstract class RouteConverter extends BaseNavigationGUI {
+public abstract class RouteConverter extends SingleFrameApplication {
     private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
+    private Preferences preferences = Preferences.userNodeForPackage(getClass());
 
-    public static ResourceBundle BUNDLE;
-
-    protected static void setBundle(Class clazz) {
-        BUNDLE = ResourceBundle.getBundle(clazz.getName());
+    public static ResourceBundle getBundle() {
+        return getInstance().getContext().getBundle();
     }
 
     static String getTitle() {
         Version version = Version.parseVersionFromManifest();
-        return MessageFormat.format(BUNDLE.getString("title"), version.getVersion(), version.getBuildDate());
+        return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getBuildDate());
     }
 
     private static final String SOURCE_PREFERENCE = "source";
@@ -188,14 +188,30 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private JButton buttonDeleteRoute;
     private JButton buttonLogin;
 
-    public void run(String[] args) {
+    private String[] args;
+
+    protected void initialize(String[] args) {
         DebugOutput.activate();
+        this.args = args;
+    }
+
+    protected void startup() {
         log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
         show();
         createUpdater().implicitCheck(frame);
         parseArgs(args);
     }
 
+    private void parseArgs(String[] args) {
+        if (args.length > 0) {
+            openUrls(Files.toUrls(args));
+        } else if (getStartWithLastFilePreference()) {
+            String source = preferences.get(SOURCE_PREFERENCE, "");
+            openUrls(Files.toUrls(source));
+        } else {
+            onNewPositionList();
+        }
+    }
 
     private void show() {
         createFrame(getTitle(), "RouteConverter", contentPane, buttonOpenFile);
@@ -554,7 +570,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             public void actionPerformed(ActionEvent ae) {
                 final CategoryTreeNode selected = getSelectedTreeNode();
                 final String name = JOptionPane.showInputDialog(frame,
-                        MessageFormat.format(BUNDLE.getString("add-category-label"), selected.getName()),
+                        MessageFormat.format(getBundle().getString("add-category-label"), selected.getName()),
                         frame.getTitle(), JOptionPane.QUESTION_MESSAGE);
                 if (Conversion.trim(name) == null)
                     return;
@@ -577,7 +593,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             public void actionPerformed(ActionEvent ae) {
                 final CategoryTreeNode selected = getSelectedTreeNode();
                 final String name = (String) JOptionPane.showInputDialog(frame,
-                        MessageFormat.format(BUNDLE.getString("rename-category-label"), selected.getName()),
+                        MessageFormat.format(getBundle().getString("rename-category-label"), selected.getName()),
                         frame.getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
                 if (Conversion.trim(name) == null)
                     return;
@@ -630,7 +646,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                 String description = null;
                 try {
                     description = (String) JOptionPane.showInputDialog(frame,
-                            MessageFormat.format(BUNDLE.getString("rename-route-label"), selected.getName()),
+                            MessageFormat.format(getBundle().getString("rename-route-label"), selected.getName()),
                             frame.getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getDescription());
                 } catch (IOException e) {
                     operator.handleServiceError(e);
@@ -777,7 +793,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
                         if (mapView.getCanvas() == null || cause != null) {
                             StringWriter stackTrace = new StringWriter();
                             cause.printStackTrace(new PrintWriter(stackTrace));
-                            mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                            mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                         } else {
                             mapPanel.add(mapView.getCanvas(), MAP_PANEL_CONSTRAINTS);
                         }
@@ -878,7 +894,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
         getPositionsModel().add(insertRow, longitude, latitude,
                 center != null && center.getTime() != null ? center.getTime() : Calendar.getInstance(),
-                BUNDLE.getString("add-position-comment"));
+                getBundle().getString("add-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Rectangle rectangle = getPositionsTable().getCellRect(insertRow, 1, true);
@@ -1073,17 +1089,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             addUrlToCatalog(getSelectedTreeNode(), string);
     }
 
-    private void parseArgs(String[] args) {
-        if (args.length > 0) {
-            openUrls(Files.toUrls(args));
-        } else if (getStartWithLastFilePreference()) {
-            String source = preferences.get(SOURCE_PREFERENCE, "");
-            openUrls(Files.toUrls(source));
-        } else {
-            onNewPositionList();
-        }
-    }
-
     private File createSelectedSource() {
         File source = new File(textFieldSource.getText());
         source = Files.findExistingPath(source);
@@ -1138,7 +1143,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private boolean confirmDiscard() {
         if (getFormatAndRoutesModel().isModified()) {
             int confirm = JOptionPane.showConfirmDialog(frame,
-                    BUNDLE.getString("confirm-discard"),
+                    getBundle().getString("confirm-discard"),
                     frame.getTitle(), JOptionPane.YES_NO_OPTION);
             if (confirm != JOptionPane.YES_OPTION)
                 return false;
@@ -1148,7 +1153,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     private boolean confirmOverwrite(String file) {
         int confirm = JOptionPane.showConfirmDialog(frame,
-                MessageFormat.format(BUNDLE.getString("save-confirm-overwrite"), file),
+                MessageFormat.format(getBundle().getString("save-confirm-overwrite"), file),
                 frame.getTitle(), JOptionPane.YES_NO_OPTION);
         return confirm != JOptionPane.YES_OPTION;
     }
@@ -1156,7 +1161,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void handleBabelError(final BabelException e) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JOptionPane.showMessageDialog(frame, MessageFormat.format(BUNDLE.getString("babel-error"), e.getBabelPath()), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -1164,7 +1169,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void handleOpenError(final Exception e, final String path) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.shortenPath(path), e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path), e.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -1178,7 +1183,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void handleOpenError(final Exception e, final List<URL> urls) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(BUNDLE.getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), e.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -1194,7 +1199,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             public void run() {
                 log.severe("Unsupported format: " + path);
                 JOptionPane.showMessageDialog(frame,
-                        MessageFormat.format(BUNDLE.getString("unsupported-format"), Files.shortenPath(path)),
+                        MessageFormat.format(getBundle().getString("unsupported-format"), Files.shortenPath(path)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
@@ -1254,7 +1259,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
     private synchronized JFileChooser getChooser() {
         if (chooser == null)
-            chooser = createJFileChooser();
+            chooser = Constants.createJFileChooser();
         return chooser;
     }
 
@@ -1262,7 +1267,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         if (!confirmDiscard())
             return;
 
-        getChooser().setDialogTitle(BUNDLE.getString("open-source"));
+        getChooser().setDialogTitle(getBundle().getString("open-source"));
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1341,10 +1346,10 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             return;
 
         Constants.startWaitCursor(frame.getRootPane());
-        textFieldSource.setText(BUNDLE.getString("new-route"));
+        textFieldSource.setText(getBundle().getString("new-route"));
         Gpx11Format gpxFormat = new Gpx11Format();
         GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-        gpxRoute.setName(BUNDLE.getString("new-route"));
+        gpxRoute.setName(getBundle().getString("new-route"));
         getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
         Constants.stopWaitCursor(frame.getRootPane());
     }
@@ -1357,7 +1362,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     }
 
     private void onAddPositionList() {
-        getChooser().setDialogTitle(BUNDLE.getString("add-position-list-source"));
+        getChooser().setDialogTitle(getBundle().getString("add-position-list-source"));
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1426,7 +1431,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
 
 
     private void onAppend() {
-        getChooser().setDialogTitle(BUNDLE.getString("append-source"));
+        getChooser().setDialogTitle(getBundle().getString("append-source"));
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1503,7 +1508,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void onSave() {
         NavigationFormat format = getFormat();
 
-        getChooser().setDialogTitle(BUNDLE.getString("save-target"));
+        getChooser().setDialogTitle(getBundle().getString("save-target"));
         getChooser().resetChoosableFileFilters();
         getChooser().setFileFilter(new NavigationFormatFileFilter(format));
         getChooser().setSelectedFile(createSelectedTarget());
@@ -1529,7 +1534,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         int fileCount = parser.getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(frame,
-                    MessageFormat.format(BUNDLE.getString("save-confirm-split"), Files.shortenPath(getSource()),
+                    MessageFormat.format(getBundle().getString("save-confirm-split"), Files.shortenPath(getSource()),
                             route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     frame.getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
@@ -1581,7 +1586,7 @@ public abstract class RouteConverter extends BaseNavigationGUI {
             log.severe("Save error " + file + "," + format + ": " + e.getMessage());
 
             JOptionPane.showMessageDialog(frame,
-                    MessageFormat.format(BUNDLE.getString("save-error"), Files.shortenPath(getSource()), targetsAsString, e.getMessage()),
+                    MessageFormat.format(getBundle().getString("save-error"), Files.shortenPath(getSource()), targetsAsString, e.getMessage()),
                     frame.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -1589,8 +1594,8 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     private void onAddFileToCatalog() {
         CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
 
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(BUNDLE.getString("add-file"));
+        JFileChooser chooser = Constants.createJFileChooser();
+        chooser.setDialogTitle(getBundle().getString("add-file"));
         chooser.setSelectedFile(createUploadRoute());
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
@@ -1663,8 +1668,8 @@ public abstract class RouteConverter extends BaseNavigationGUI {
     }
 
     private void onChooseBabelPath() {
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(BUNDLE.getString("choose-gpsbabel-path"));
+        JFileChooser chooser = Constants.createJFileChooser();
+        chooser.setDialogTitle(getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int open = chooser.showOpenDialog(frame);
@@ -1717,10 +1722,6 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         addFileDialog.pack();
         addFileDialog.setLocationRelativeTo(frame);
         addFileDialog.setVisible(true);
-    }
-
-    protected ImageIcon loadIcon(String name) {
-        return super.loadIcon("/slash/navigation/converter/gui/" + name + ".png");
     }
 
     protected RenameDialog createRenameDialog() {
@@ -2082,13 +2083,13 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         expertPanel.add(panel11, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JPanel panel12 = new JPanel();
         panel12.setLayout(new GridLayoutManager(1, 2, new Insets(3, 3, 3, 3), -1, -1));
-        expertPanel.add(panel12, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        expertPanel.add(panel12, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenumberPositions = new JButton();
         this.$$$loadButtonText$$$(buttonRenumberPositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("renumber-positions"));
-        panel12.add(buttonRenumberPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel12.add(buttonRenumberPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonPrintMap = new JButton();
         this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
-        panel12.add(buttonPrintMap, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel12.add(buttonPrintMap, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel13 = new JPanel();
         panel13.setLayout(new GridLayoutManager(3, 2, new Insets(5, 5, 5, 5), -1, -1));
         expertPanel.add(panel13, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -2109,14 +2110,14 @@ public abstract class RouteConverter extends BaseNavigationGUI {
         this.$$$loadLabelText$$$(labelCredit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-credit"));
         panel13.add(labelCredit, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel14 = new JPanel();
-        panel14.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        expertPanel.add(panel14, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonTestDragListenerPort = new JButton();
-        buttonTestDragListenerPort.setText("Test Drag and Drop Communication");
-        panel14.add(buttonTestDragListenerPort, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel14.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        expertPanel.add(panel14, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCheckForUpdate = new JButton();
         this.$$$loadButtonText$$$(buttonCheckForUpdate, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-check-for-update"));
         panel14.add(buttonCheckForUpdate, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonTestDragListenerPort = new JButton();
+        buttonTestDragListenerPort.setText("Test Drag and Drop Communication");
+        panel14.add(buttonTestDragListenerPort, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         browsePanel = new JPanel();
         browsePanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);

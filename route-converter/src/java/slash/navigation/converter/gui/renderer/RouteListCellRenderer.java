@@ -40,7 +40,7 @@ public class RouteListCellRenderer extends DefaultListCellRenderer {
         BaseRoute route = (BaseRoute) value;
         String text = "?";
         if (route != null) {
-            String characteristics = RouteConverter.BUNDLE.getString(route.getCharacteristics().name().toLowerCase() + "-characteristics");
+            String characteristics = RouteConverter.getBundle().getString(route.getCharacteristics().name().toLowerCase() + "-characteristics");
             text = RouteComments.shortenRouteName(route) + " (" + characteristics + ")";
         }
         label.setText(text);

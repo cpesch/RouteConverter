@@ -63,7 +63,7 @@ public class RouteFormatToJLabelAdapter extends FormatAndRoutesListModelToDocume
         BaseRoute route = getDelegate().getSelectedRoute();
         if (route != null) {
             labelFormat.setText(getDelegate().getFormat().getName());
-            labelPositionLists.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("position-lists"),
+            labelPositionLists.setText(MessageFormat.format(RouteConverter.getBundle().getString("position-lists"),
                     count(RouteCharacteristics.Route),
                     count(RouteCharacteristics.Track),
                     count(RouteCharacteristics.Waypoints)

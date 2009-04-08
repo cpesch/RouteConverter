@@ -41,7 +41,7 @@ public class ExternalPrograms6 extends ExternalPrograms {
                 log.severe("Start Browser error: " + e.getMessage());
 
                 JOptionPane.showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), e.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
     }
@@ -54,7 +54,7 @@ public class ExternalPrograms6 extends ExternalPrograms {
                 log.severe("Start Mail error: " + e.getMessage());
 
                 JOptionPane.showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.BUNDLE.getString("start-mail-error"), e.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -73,7 +73,7 @@ public class ExternalPrograms6 extends ExternalPrograms {
                     log.severe("Open File error " + file + ": " + e.getMessage());
 
                     JOptionPane.showMessageDialog(window,
-                            MessageFormat.format(RouteConverter.BUNDLE.getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
+                            MessageFormat.format(RouteConverter.getBundle().getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
                             RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }

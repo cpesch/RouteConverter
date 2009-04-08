@@ -108,7 +108,7 @@ public class Updater {
 
     private void offerUpdate(Window window, UpdateResult result) {
         int confirm = JOptionPane.showConfirmDialog(window,
-                MessageFormat.format(RouteConverter.BUNDLE.getString("confirm-update"), result.myVersion, result.latestVersion),
+                MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.myVersion, result.latestVersion),
                 RouteConverter.getTitle(), JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION)
             return;
@@ -117,7 +117,7 @@ public class Updater {
 
     private void noUpdateAvailable(Window window) {
         JOptionPane.showMessageDialog(window,
-                RouteConverter.BUNDLE.getString("no-update-available"),
+                RouteConverter.getBundle().getString("no-update-available"),
                 RouteConverter.getTitle(), JOptionPane.INFORMATION_MESSAGE);
     }
 

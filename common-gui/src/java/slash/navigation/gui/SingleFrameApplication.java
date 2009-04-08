@@ -23,23 +23,20 @@ package slash.navigation.gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
-import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.net.URL;
 
 /**
- * The base of all navigation graphical user interfaces.
+ * The base of all single frame graphical user interfaces.
  *
  * @author Christian Pesch
  */
 
-public abstract class BaseNavigationGUI {
-    private static final Logger log = Logger.getLogger(BaseNavigationGUI.class.getName());
-    protected Preferences preferences = Preferences.userNodeForPackage(getClass());
+public abstract class SingleFrameApplication extends Application {
+    private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
+    private Preferences preferences = Preferences.userNodeForPackage(getClass());
 
-    private static final String PREFERRED_LANGUAGE_PREFERENCE = "preferredLanguage";
-    private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
     private static final String X_PREFERENCE = "x";
     private static final String Y_PREFERENCE = "y";
     private static final String WIDTH_PREFERENCE = "width";
@@ -50,42 +47,8 @@ public abstract class BaseNavigationGUI {
 
     protected JFrame frame;
 
-    protected JFileChooser createJFileChooser() {
-        JFileChooser chooser;
-        try {
-            chooser = new JFileChooser();
-        }
-        catch (NullPointerException npe) {
-            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
-            UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
-            chooser = new JFileChooser();
-        }
-        return chooser;
-    }
-
-    public void setLocale(Locale locale) {
-        if (!Constants.ROOT_LOCALE.equals(locale)) {
-            preferences.put(PREFERRED_LANGUAGE_PREFERENCE, locale.getLanguage());
-            preferences.put(PREFERRED_COUNTRY_PREFERENCE, locale.getCountry());
-        } else {
-            preferences.remove(PREFERRED_LANGUAGE_PREFERENCE);
-            preferences.remove(PREFERRED_COUNTRY_PREFERENCE);
-        }
-    }
-
     public JFrame getFrame() {
         return frame;
-    }
-
-    protected static void setDefaultLocale(Preferences preferences) {
-        String language = preferences.get(PREFERRED_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
-        String country = preferences.get(PREFERRED_COUNTRY_PREFERENCE, Locale.getDefault().getCountry());
-        Locale.setDefault(new Locale(language, country));
-    }
-
-    protected ImageIcon loadIcon(String name) {
-        URL iconURL = getClass().getResource(name);
-        return new ImageIcon(iconURL);
     }
 
     protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton) {
@@ -96,14 +59,14 @@ public abstract class BaseNavigationGUI {
             for (GraphicsDevice device : devices) {
                 if (deviceId.equals(device.getIDstring())) {
                     gc = device.getDefaultConfiguration();
-                    log.info("graphics device is " + deviceId);
+                    log.info("Graphics device is " + deviceId);
                     break;
                 }
             }
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(loadIcon(iconName).getImage());
+        frame.setIconImage(Constants.loadIcon(this, "/slash/navigation/converter/gui/" + iconName + ".png").getImage());
         frame.setContentPane(contentPane);
         frame.getRootPane().setDefaultButton(defaultButton);
     }
@@ -126,13 +89,13 @@ public abstract class BaseNavigationGUI {
         frame.setLocationRelativeTo(null);
 
         Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
-        log.info("screen size is " + bounds);
+        log.info("Screen size is " + bounds);
 
         int width = crop("width", getPreferenceWidth(), -MAXIMIZE_OFFSET, (int) bounds.getWidth() + 2 * MAXIMIZE_OFFSET);
         int height = crop("height", getPreferenceHeight(), -MAXIMIZE_OFFSET, (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET);
         if (width != -1 && height != -1)
             frame.setSize(width, height);
-        log.info("frame size is " + frame.getSize());
+        log.info("Frame size is " + frame.getSize());
 
         int x = crop("x", preferences.getInt(X_PREFERENCE, -1),
                 (int) bounds.getX() - MAXIMIZE_OFFSET,
@@ -142,20 +105,20 @@ public abstract class BaseNavigationGUI {
                 (int) bounds.getY() + (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET - height);
         if (x != -1 && y != -1)
             frame.setLocation(x, y);
-        log.info("frame location is " + frame.getLocation());
+        log.info("Frame location is " + frame.getLocation());
 
         frame.setExtendedState(preferences.getInt(STATE_PREFERENCE, Frame.NORMAL));
-        log.info("frame state is " + frame.getExtendedState());
+        log.info("Frame state is " + frame.getExtendedState());
 
         frame.setVisible(true);
         frame.toFront();
     }
 
-    protected int getPreferenceHeight() {
+    private int getPreferenceHeight() {
         return crop("preferencesHeight", preferences.getInt(HEIGHT_PREFERENCE, -1), 0, Integer.MAX_VALUE);
     }
 
-    protected int getPreferenceWidth() {
+    private int getPreferenceWidth() {
         return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, Integer.MAX_VALUE);
     }
 
@@ -165,8 +128,6 @@ public abstract class BaseNavigationGUI {
         log.info("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);
         return result;
     }
-
-    protected abstract void onExit();
 
     protected void closeFrame() {
         log.info("Storing frame location as " + frame.getLocation());

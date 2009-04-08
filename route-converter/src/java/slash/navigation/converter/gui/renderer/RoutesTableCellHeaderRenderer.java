@@ -39,13 +39,13 @@ public class RoutesTableCellHeaderRenderer extends DefaultTableCellRenderer {
         label.setOpaque(false);
         switch (columnIndex) {
             case 0:
-                label.setText(RouteConverter.BUNDLE.getString("number"));
+                label.setText(RouteConverter.getBundle().getString("number"));
                 break;
             case 1:
-                label.setText(RouteConverter.BUNDLE.getString("description"));
+                label.setText(RouteConverter.getBundle().getString("description"));
                 break;
             case 2:
-                label.setText(RouteConverter.BUNDLE.getString("creator"));
+                label.setText(RouteConverter.getBundle().getString("creator"));
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", columnIndex " + columnIndex + " does not exist");

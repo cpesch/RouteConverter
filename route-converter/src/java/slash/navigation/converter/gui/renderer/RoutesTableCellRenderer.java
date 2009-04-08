@@ -43,30 +43,30 @@ public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
                 try {
                     String name = route.getName();
                     if (name == null)
-                        name = RouteConverter.BUNDLE.getString("no-name");
+                        name = RouteConverter.getBundle().getString("no-name");
                     label.setText(name);
                 } catch (IOException e) {
-                    label.setText(RouteConverter.BUNDLE.getString("loading"));
+                    label.setText(RouteConverter.getBundle().getString("loading"));
                 }
                 break;
             case 1:
                 try {
                     String description = route.getDescription();
                     if (description == null)
-                        description = RouteConverter.BUNDLE.getString("no-description");
+                        description = RouteConverter.getBundle().getString("no-description");
                     label.setText(description);
                 } catch (IOException e) {
-                    label.setText(RouteConverter.BUNDLE.getString("loading"));
+                    label.setText(RouteConverter.getBundle().getString("loading"));
                 }
                 break;
             case 2:
                 try {
                     String creator = route.getCreator();
                     if (creator == null)
-                        creator = RouteConverter.BUNDLE.getString("no-creator");
+                        creator = RouteConverter.getBundle().getString("no-creator");
                     label.setText(creator);
                 } catch (IOException e) {
-                    label.setText(RouteConverter.BUNDLE.getString("loading"));
+                    label.setText(RouteConverter.getBundle().getString("loading"));
                 }
                 break;
             default:

@@ -156,7 +156,7 @@ public class PositionAugmenter {
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.BUNDLE.getString("add-elevation-error");
+                        return RouteConverter.getBundle().getString("add-elevation-error");
                     }
                 }
         );
@@ -194,7 +194,7 @@ public class PositionAugmenter {
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.BUNDLE.getString("add-comment-error");
+                        return RouteConverter.getBundle().getString("add-comment-error");
                     }
                 }
         );
@@ -229,7 +229,7 @@ public class PositionAugmenter {
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.BUNDLE.getString("add-speed-error");
+                        return RouteConverter.getBundle().getString("add-speed-error");
                     }
                 }
         );

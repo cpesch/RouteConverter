@@ -23,6 +23,7 @@ package slash.navigation.converter.gui;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
+import slash.navigation.gui.Application;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -63,12 +64,12 @@ public class AddFileDialog extends JDialog {
         this.routeConverter = routeConverter;
         this.categoryTreeNode = categoryTreeNode;
         this.file = file;
-        setTitle(RouteConverter.BUNDLE.getString("add-file-title"));
+        setTitle(RouteConverter.getBundle().getString("add-file-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonAdd);
 
-        labelLabel.setText(MessageFormat.format(RouteConverter.BUNDLE.getString("add-file-label"), categoryTreeNode.getName()));
+        labelLabel.setText(MessageFormat.format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
         textFieldFile.setText(Files.createReadablePath(file));
         textFieldLength.setText(Conversion.formatDoubleAsString(length / 1000.0, 1));
         textFieldDescription.setText(description);

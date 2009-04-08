@@ -39,7 +39,7 @@ public class RouteCharacteristicsListCellRenderer extends DefaultListCellRendere
 
         String text;
         if (characteristics != null)
-            text = RouteConverter.BUNDLE.getString(characteristics.name().toLowerCase() + "-characteristics");
+            text = RouteConverter.getBundle().getString(characteristics.name().toLowerCase() + "-characteristics");
         else
             text = "?";
         label.setText(text);

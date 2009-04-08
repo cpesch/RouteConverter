@@ -52,25 +52,25 @@ public class TablePopupMenu {
     }
 
     protected void initialize() {
-        JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.BUNDLE.getString("add-elevation"));
+        JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.getBundle().getString("add-elevation"));
         buttonAddElevation.addActionListener(new AddElevationsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddElevation);
 
-        JMenuItem buttonAddComment = new JMenuItem(RouteConverter.BUNDLE.getString("add-comment"));
+        JMenuItem buttonAddComment = new JMenuItem(RouteConverter.getBundle().getString("add-comment"));
         buttonAddComment.addActionListener(new AddCommentsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddComment);
 
-        JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.BUNDLE.getString("add-speed"));
+        JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.getBundle().getString("add-speed"));
         buttonAddSpeed.addActionListener(new AddSpeedsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddSpeed);
 
         popupMenu.addSeparator();
 
         JMenuItem buttonSplitPositionlist = new JMenuItem(new SplitPositionList(routeConverter.getFrame(), routeConverter.getPositionsTable(), routeConverter.getFormatComboBox(), routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
-        buttonSplitPositionlist.setText(RouteConverter.BUNDLE.getString("split-positionlist"));
+        buttonSplitPositionlist.setText(RouteConverter.getBundle().getString("split-positionlist"));
         popupMenu.add(buttonSplitPositionlist);
 
-        final JMenu menuMergePositionlist = new JMenu(RouteConverter.BUNDLE.getString("merge-positionlist"));
+        final JMenu menuMergePositionlist = new JMenu(RouteConverter.getBundle().getString("merge-positionlist"));
         popupMenu.add(menuMergePositionlist);
 
         routeConverter.getFormatAndRoutesModel().addListDataListener(new ListDataListener() {

@@ -47,7 +47,7 @@ public class RenameDialog extends JDialog {
     public RenameDialog(RouteConverter routeConverter) {
         super(routeConverter.getFrame());
         this.routeConverter = routeConverter;
-        setTitle(RouteConverter.BUNDLE.getString("rename-title"));
+        setTitle(RouteConverter.getBundle().getString("rename-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonRename);
