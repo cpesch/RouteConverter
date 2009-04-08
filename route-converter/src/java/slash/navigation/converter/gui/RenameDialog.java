@@ -82,13 +82,7 @@ public class RenameDialog extends JDialog {
     }
 
     private void onRename() {
-        Constants.startWaitCursor(getRootPane());
-        try {
-          routeConverter.getFormatAndRoutesModel().renameRoute(textFieldName.getText());
-        }
-        finally {
-            Constants.stopWaitCursor(getRootPane());
-        }
+        routeConverter.getFormatAndRoutesModel().renameRoute(textFieldName.getText());
         dispose();
     }
 

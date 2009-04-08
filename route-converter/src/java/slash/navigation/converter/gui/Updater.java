@@ -92,7 +92,7 @@ public class Updater {
             log.fine("I think it's latest: " + Version.isLatestVersion(result.latestVersion, result.myVersion));
 
             // some people reported update dialogs with null as latest version
-            if(Conversion.trim(result.latestVersion) == null)
+            if (Conversion.trim(result.latestVersion) == null)
                 result.isLatestVersion = true;
         } catch (Throwable t) {
             log.severe("Cannot check for update: " + t.getMessage());
@@ -135,18 +135,12 @@ public class Updater {
     }
 
     public void explicitCheck(Window window) {
-        Constants.startWaitCursor(window);
-        try {
-            // synchronous call, 20 seconds timeout
-            final UpdateResult result = check(20);
-            if (!result.existsLaterVersion())
-                noUpdateAvailable(window);
-            else {
-                offerUpdate(window, result);
-            }
-        }
-        finally {
-            Constants.stopWaitCursor(window);
+        // synchronous call, 20 seconds timeout
+        final UpdateResult result = check(20);
+        if (!result.existsLaterVersion())
+            noUpdateAvailable(window);
+        else {
+            offerUpdate(window, result);
         }
     }
 

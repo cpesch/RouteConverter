@@ -158,14 +158,8 @@ public class LoginDialog extends JDialog {
             return;
         }
 
-        Constants.startWaitCursor(getRootPane());
-        try {
-            routeConverter.login(name, password);
-            successful = true;
-        }
-        finally {
-            Constants.stopWaitCursor(getRootPane());
-        }
+        routeConverter.login(name, password);
+        successful = true;
         dispose();
     }
 

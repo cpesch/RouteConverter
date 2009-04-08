@@ -857,17 +857,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public void onRemovePosition() {
-        Constants.startWaitCursor(frame.getRootPane());
-        try {
-            int[] selectedRows = getPositionsTable().getSelectedRows();
-            if (selectedRows.length > 0) {
-                getPositionsModel().remove(selectedRows);
-                final int row = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
-                if (getPositionsTable().getRowCount() > 0)
-                    selectPositions(row, row);
-            }
-        } finally {
-            Constants.stopWaitCursor(frame.getRootPane());
+        int[] selectedRows = getPositionsTable().getSelectedRows();
+        if (selectedRows.length > 0) {
+            getPositionsModel().remove(selectedRows);
+            final int row = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
+            if (getPositionsTable().getRowCount() > 0)
+                selectPositions(row, row);
         }
     }
 
@@ -1245,43 +1240,33 @@ public abstract class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    try {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            Gpx11Format gpxFormat = new Gpx11Format();
+                            getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
+                        }
+                    });
+
+                    final NavigationFileParser parser = new NavigationFileParser();
+                    if (parser.read(url)) {
+                        log.info("Opened: " + path);
+
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                Constants.startWaitCursor(frame.getRootPane());
-                                Gpx11Format gpxFormat = new Gpx11Format();
-                                getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
+                                getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
+                                getPositionListComboBox().setModel(getFormatAndRoutesModel());
                             }
                         });
 
-                        final NavigationFileParser parser = new NavigationFileParser();
-                        if (parser.read(url)) {
-                            log.info("Opened: " + path);
+                        if (urls.size() > 1) {
+                            List<URL> append = new ArrayList<URL>(urls);
+                            append.remove(0);
+                            // this way the route is always marked as modified :-(
+                            appendToPositionList(append);
+                        }
 
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
-                                    getPositionListComboBox().setModel(getFormatAndRoutesModel());
-                                }
-                            });
-
-                            if (urls.size() > 1) {
-                                List<URL> append = new ArrayList<URL>(urls);
-                                append.remove(0);
-                                // this way the route is always marked as modified :-(
-                                appendToPositionList(append);
-                            }
-
-                        } else
-                            handleUnsupportedFormat(path);
-                    }
-                    finally {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                Constants.stopWaitCursor(frame.getRootPane());
-                            }
-                        });
-                    }
+                    } else
+                        handleUnsupportedFormat(path);
                 } catch (BabelException e) {
                     handleBabelError(e);
                 } catch (Exception e) {
@@ -1298,12 +1283,16 @@ public abstract class RouteConverter extends SingleFrameApplication {
             return;
 
         Constants.startWaitCursor(frame.getRootPane());
-        textFieldSource.setText(getBundle().getString("new-route"));
-        Gpx11Format gpxFormat = new Gpx11Format();
-        GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-        gpxRoute.setName(getBundle().getString("new-route"));
-        getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
-        Constants.stopWaitCursor(frame.getRootPane());
+        try {
+            textFieldSource.setText(getBundle().getString("new-route"));
+            Gpx11Format gpxFormat = new Gpx11Format();
+            GpxRoute gpxRoute = new GpxRoute(gpxFormat);
+            gpxRoute.setName(getBundle().getString("new-route"));
+            getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
+        }
+        finally {
+            Constants.stopWaitCursor(frame.getRootPane());
+        }
     }
 
     private void onRenamePositionList() {
@@ -1335,43 +1324,28 @@ public abstract class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    try {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                Constants.startWaitCursor(frame.getRootPane());
-                            }
-                        });
+                    for (URL url : urls) {
+                        final String path = Files.createReadablePath(url);
 
-                        for (URL url : urls) {
-                            final String path = Files.createReadablePath(url);
+                        final NavigationFileParser parser = new NavigationFileParser();
+                        if (parser.read(url)) {
+                            log.info("Added route: " + path);
 
-                            final NavigationFileParser parser = new NavigationFileParser();
-                            if (parser.read(url)) {
-                                log.info("Added route: " + path);
-
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        try {
-                                            getFormatAndRoutesModel().addRoutes(parser.getAllRoutes());
-                                        } catch (IOException e) {
-                                            log.severe("Open error: " + e.getMessage());
-                                            handleOpenError(e, path);
-                                        }
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    try {
+                                        getFormatAndRoutesModel().addRoutes(parser.getAllRoutes());
+                                    } catch (IOException e) {
+                                        log.severe("Open error: " + e.getMessage());
+                                        handleOpenError(e, path);
                                     }
-                                });
+                                }
+                            });
 
-                            } else {
-                                log.severe("Unsupported format: " + path);
-                                handleUnsupportedFormat(path);
-                            }
+                        } else {
+                            log.severe("Unsupported format: " + path);
+                            handleUnsupportedFormat(path);
                         }
-                    }
-                    finally {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                Constants.stopWaitCursor(frame.getRootPane());
-                            }
-                        });
                     }
                 } catch (Exception e) {
                     log.severe("Add route error: " + e.getMessage());
@@ -1404,50 +1378,35 @@ public abstract class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    try {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                Constants.startWaitCursor(frame.getRootPane());
-                            }
-                        });
+                    for (URL url : urls) {
+                        final String path = Files.createReadablePath(url);
 
-                        for (URL url : urls) {
-                            final String path = Files.createReadablePath(url);
+                        final NavigationFileParser parser = new NavigationFileParser();
+                        if (parser.read(url)) {
+                            log.info("Appended: " + path);
 
-                            final NavigationFileParser parser = new NavigationFileParser();
-                            if (parser.read(url)) {
-                                log.info("Appended: " + path);
-
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        try {
-                                            // if there is no file loaded: parseArgs()
-                                            if (getFormatAndRoutesModel().getRoutes() == null) {
-                                                textFieldSource.setText(path);
-                                                getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
-                                                getPositionListComboBox().setModel(getFormatAndRoutesModel());
-                                            } else {
-                                                getPositionsModel().append(parser.getTheRoute());
-                                            }
-                                        } catch (IOException e) {
-                                            log.severe("Open error: " + e.getMessage());
-                                            handleOpenError(e, path);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    try {
+                                        // if there is no file loaded: parseArgs()
+                                        if (getFormatAndRoutesModel().getRoutes() == null) {
+                                            textFieldSource.setText(path);
+                                            getFormatAndRoutesModel().setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
+                                            getPositionListComboBox().setModel(getFormatAndRoutesModel());
+                                        } else {
+                                            getPositionsModel().append(parser.getTheRoute());
                                         }
+                                    } catch (IOException e) {
+                                        log.severe("Open error: " + e.getMessage());
+                                        handleOpenError(e, path);
                                     }
-                                });
+                                }
+                            });
 
-                            } else {
-                                log.severe("Unsupported format: " + path);
-                                handleUnsupportedFormat(path);
-                            }
+                        } else {
+                            log.severe("Unsupported format: " + path);
+                            handleUnsupportedFormat(path);
                         }
-                    }
-                    finally {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                Constants.stopWaitCursor(frame.getRootPane());
-                            }
-                        });
                     }
                 } catch (Exception e) {
                     log.severe("Append error: " + e.getMessage());
@@ -1513,22 +1472,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         String targetsAsString = Files.printArrayToDialogString(targets);
         try {
-            try {
-                Constants.startWaitCursor(frame.getRootPane());
-
-                boolean saveAsRouteTrackWaypoints = checkBoxSaveAsRouteTrackWaypoints.isSelected();
-                if (format.isSupportsMultipleRoutes() && (getFormatAndRoutesModel().getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
-                    parser.write(getFormatAndRoutesModel().getRoutes(), (MultipleRoutesFormat) format, targets[0]);
-                } else {
-                    boolean numberPositionNames = checkboxNumberPositionNames.isSelected();
-                    parser.write(route, format, duplicateFirstPosition, numberPositionNames, true, targets);
-                }
-                getFormatAndRoutesModel().setModified(false);
-                log.info("Saved: " + targetsAsString);
+            boolean saveAsRouteTrackWaypoints = checkBoxSaveAsRouteTrackWaypoints.isSelected();
+            if (format.isSupportsMultipleRoutes() && (getFormatAndRoutesModel().getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
+                parser.write(getFormatAndRoutesModel().getRoutes(), (MultipleRoutesFormat) format, targets[0]);
+            } else {
+                boolean numberPositionNames = checkboxNumberPositionNames.isSelected();
+                parser.write(route, format, duplicateFirstPosition, numberPositionNames, true, targets);
             }
-            finally {
-                Constants.stopWaitCursor(frame.getRootPane());
-            }
+            getFormatAndRoutesModel().setModified(false);
+            log.info("Saved: " + targetsAsString);
 
             if (format instanceof KmlFormat && checkboxStartGoogleEarth.isSelected()) {
                 createExternalPrograms().startGoogleEarth(frame, targets);
@@ -1568,7 +1520,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         String path = Files.createReadablePath(file);
         String description = null;
         Double length = null;
-        Constants.startWaitCursor(frame.getRootPane());
         try {
             NavigationFileParser parser = new NavigationFileParser();
             if (parser.read(file)) {
@@ -1583,9 +1534,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         } catch (Exception e) {
             log.severe("Cannot parse description from route " + path + ": " + e.getMessage());
             handleOpenError(e, Files.toUrls(file));
-        }
-        finally {
-            Constants.stopWaitCursor(frame.getRootPane());
         }
     }
 

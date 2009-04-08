@@ -77,8 +77,7 @@ public class TablePopupMenu {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     BaseRoute route = routeConverter.getFormatAndRoutesModel().getRoute(i);
-                    JMenuItem menuItem = new JMenuItem();
-                    menuItem.setAction(new MergePositionList(routeConverter.getFrame(), routeConverter.getPositionsTable(), routeConverter.getPositionListComboBox(), route, routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
+                    JMenuItem menuItem = new JMenuItem(new MergePositionList(routeConverter.getFrame(), routeConverter.getPositionsTable(), routeConverter.getPositionListComboBox(), route, routeConverter.getPositionsModel(), routeConverter.getFormatAndRoutesModel()));
                     menuItem.setText(RouteComments.shortenRouteName(route));
                     menuMergePositionlist.add(menuItem, i);
                 }
