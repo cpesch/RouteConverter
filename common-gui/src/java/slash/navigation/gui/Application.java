@@ -119,10 +119,50 @@ public abstract class Application {
     private void waitForReady() {
     }
 
+
+    public void exit(EventObject event) {
+        for (ExitListener listener : exitListeners) {
+            if (!listener.canExit(event)) {
+                return;
+            }
+        }
+        try {
+            for (ExitListener listener : exitListeners) {
+                try {
+                    listener.willExit(event);
+                }
+                catch (Exception e) {
+                    log.log(Level.WARNING, "ExitListener.willExit() failed", e);
+                }
+            }
+            shutdown();
+        }
+        catch (Exception e) {
+            log.log(Level.WARNING, "unexpected error in Application.shutdown()", e);
+        }
+        finally {
+            end();
+        }
+    }
+
     public interface ExitListener extends EventListener {
         boolean canExit(EventObject event);
+
         void willExit(EventObject event);
     }
 
-    protected abstract void onExit();
+    public void addExitListener(ExitListener listener) {
+        exitListeners.add(listener);
+    }
+
+    public void removeExitListener(ExitListener listener) {
+        exitListeners.remove(listener);
+    }
+
+    protected void shutdown() {
+    }
+
+    protected void end() {
+        Runtime.getRuntime().exit(0);
+    }
 }

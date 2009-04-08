@@ -25,7 +25,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import java.net.URL;
 
 /**
  * The base of all single frame graphical user interfaces.
@@ -75,13 +74,13 @@ public abstract class SingleFrameApplication extends Application {
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onExit();
+                exit(e);
             }
         });
 
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onExit();
+                exit(e);
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -145,4 +144,7 @@ public abstract class SingleFrameApplication extends Application {
         frame.dispose();
     }
 
+    protected void shutdown() {
+        closeFrame();
+    }
 }

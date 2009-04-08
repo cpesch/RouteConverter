@@ -217,6 +217,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
         createFrame(getTitle(), "RouteConverter", contentPane, buttonOpenFile);
         prepareConvertPane();
 
+        addExitListener(new ExitListener() {
+            public boolean canExit(EventObject event) {
+                return confirmDiscard();
+            }
+
+            public void willExit(EventObject event) {
+            }
+        });
+
         tabbedPane.addChangeListener(new ChangeListener() {
             private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
 
@@ -1683,10 +1692,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         textFieldBabelPath.setText(selected.getAbsolutePath());
     }
 
-    protected void onExit() {
-        if (!confirmDiscard())
-            return;
-
+    protected void shutdown() {
         preferences.putBoolean(START_GOOGLE_EARTH_PREFERENCE, checkboxStartGoogleEarth.isSelected());
         preferences.putBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, checkboxDuplicateFirstPosition.isSelected());
         preferences.putBoolean(NUMBER_POSITION_NAMES_PREFERENCE, checkboxNumberPositionNames.isSelected());
@@ -1695,10 +1701,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         if (mapView != null)
             mapView.dispose();
-        closeFrame();
+        super.shutdown();
 
-        log.info("Exited " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
-        System.exit(0);
+        log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
     }
 
     // Dialogs
