@@ -63,7 +63,6 @@ public class MiscPanel {
     private JButton buttonPrintMap;
     private JButton buttonRenumberPositions;
     private JButton buttonCheckForUpdate;
-    private JButton buttonTestDragListenerPort;
 
     public MiscPanel() {
         initialize();
@@ -137,14 +136,6 @@ public class MiscPanel {
                 new Updater().explicitCheck(r.getFrame());
             }
         });
-
-        buttonTestDragListenerPort.addActionListener(new FrameAction() {
-            public void run() {
-                if (r.isMapViewAvailable())
-                    r.getMapView().testDragListenerPort();
-            }
-        });
-        buttonTestDragListenerPort.setEnabled(r.isMapViewAvailable());
 
         buttonPrintMap.addActionListener(new FrameAction() {
             public void run() {
@@ -234,9 +225,9 @@ public class MiscPanel {
         checkBoxAutomaticUpdateCheck.setText("");
         panel1.add(checkBoxAutomaticUpdateCheck, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        miscPanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
+        miscPanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        miscPanel.add(panel3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
+        miscPanel.add(panel3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 2, new Insets(3, 3, 3, 3), -1, -1));
         miscPanel.add(panel4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -266,14 +257,11 @@ public class MiscPanel {
         this.$$$loadLabelText$$$(labelCredit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-credit"));
         panel5.add(labelCredit, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         miscPanel.add(panel6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCheckForUpdate = new JButton();
         this.$$$loadButtonText$$$(buttonCheckForUpdate, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-check-for-update"));
         panel6.add(buttonCheckForUpdate, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonTestDragListenerPort = new JButton();
-        buttonTestDragListenerPort.setText("Test Drag and Drop Communication");
-        panel6.add(buttonTestDragListenerPort, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

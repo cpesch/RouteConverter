@@ -20,25 +20,13 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import java.awt.*;
-
 /**
- * Interface for a component that displays the positions of a route.
+ * Interface for events from a {@link MapView}
  *
  * @author Christian Pesch
  */
 
-public interface MapView {
-    Canvas getCanvas();
-
-    boolean isInitialized();
-    Throwable getInitializationCause();
-    void dispose();
-
-    void resize();
-    void setSelectedPositions(int[] selectedPositions);
-    void print();
-    
-    void addMapViewListener(MapViewListener listener);
-    void removeMapViewListener(MapViewListener listener);
+public interface MapViewListener {
+    void calculatedDistance(int meters, int seconds);
+    void receivedCallback(int port);
 }

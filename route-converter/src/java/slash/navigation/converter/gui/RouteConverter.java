@@ -25,9 +25,9 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.*;
 import slash.navigation.babel.BabelException;
-import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.helper.*;
+import slash.navigation.converter.gui.mapview.JdicMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.panels.BrowsePanel;
@@ -199,7 +199,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        if (MapView.isSupportedPlatform()) {
+        if (JdicMapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             createMapView();
         } else {
@@ -410,7 +410,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         new Thread(new Runnable() {
             public void run() {
                 // can do this outside of Swing
-                mapView = new MapView(getPositionsModel(), getCharacteristicsModel());
+                mapView = new JdicMapView(getPositionsModel(), getCharacteristicsModel());
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
