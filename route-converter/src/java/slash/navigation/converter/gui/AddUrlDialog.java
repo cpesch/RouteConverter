@@ -24,15 +24,18 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.util.Conversion;
 import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.util.Conversion;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 /**
  * Dialog to add url to RouteService
@@ -41,9 +44,7 @@ import java.util.logging.Logger;
  */
 
 public class AddUrlDialog extends JDialog {
-    private static final Logger log = Logger.getLogger(AddUrlDialog.class.getName());
-
-    private RouteConverter routeConverter;
+    private RouteServiceOperator operator;
     private CategoryTreeNode categoryTreeNode;
     private JPanel contentPane;
     private JLabel labelLabel;
@@ -53,9 +54,10 @@ public class AddUrlDialog extends JDialog {
     private JButton buttonCancel;
     private JLabel labelResult;
 
-    public AddUrlDialog(RouteConverter routeConverter, CategoryTreeNode categoryTreeNode, String description, String url) {
-        super(routeConverter.getFrame());
-        this.routeConverter = routeConverter;
+    public AddUrlDialog(RouteServiceOperator operator,
+                        CategoryTreeNode categoryTreeNode, String description, String url) {
+        super(RouteConverter.getInstance().getFrame());
+        this.operator = operator;
         this.categoryTreeNode = categoryTreeNode;
         setTitle(RouteConverter.getBundle().getString("add-url-title"));
         setContentPane(contentPane);
@@ -68,31 +70,39 @@ public class AddUrlDialog extends JDialog {
 
         buttonAdd.addActionListener(new FrameAction() {
             public void run() {
-                onAdd();
+                addUrl();
             }
         });
 
         buttonCancel.addActionListener(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onCancel();
+                cancel();
             }
         });
 
         contentPane.registerKeyboardAction(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onAdd() {
+    void addRoute(final CategoryTreeNode category, final String description, final String url) {
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                category.addRoute(description, url);
+            }
+        });
+    }
+
+    private void addUrl() {
         String url = textFieldUrl.getText();
         if (Conversion.trim(url) == null) {
             labelResult.setText("No url given!"); // TODO make nicer
@@ -107,13 +117,13 @@ public class AddUrlDialog extends JDialog {
             return;
         }
 
-        routeConverter.addUrl(categoryTreeNode, description, url);
+        addRoute(categoryTreeNode, description, url);
         labelResult.setText("Successfully added url!"); // TODO make nicer
         pack();
         dispose();
     }
 
-    private void onCancel() {
+    private void cancel() {
         dispose();
     }
 

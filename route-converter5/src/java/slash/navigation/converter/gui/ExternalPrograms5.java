@@ -29,7 +29,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
- * A small graphical user interface for the route conversion.
+ * Knows how to cope with external programs like mail when
+ * running under Java 5.
  *
  * @author Christian Pesch, Michel
  */
@@ -46,7 +47,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
                 log.severe("Start IE error " + uri + ": " + e.getMessage());
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), e.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -62,7 +63,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
                 log.severe("Start Firefox error " + uri + ": " + e.getMessage());
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(window,
-                        MessageFormat.format(RouteConverter.BUNDLE.getString("start-browser-error"), e.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -86,7 +87,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
             log.severe("Open file by cmd error " + file + ": " + e.getMessage());
             e.printStackTrace();
             JOptionPane.showMessageDialog(window,
-                    MessageFormat.format(RouteConverter.BUNDLE.getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
                     RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -98,7 +99,7 @@ public class ExternalPrograms5 extends ExternalPrograms {
             log.severe("Open file by run error " + file + ": " + e.getMessage());
             e.printStackTrace();
             JOptionPane.showMessageDialog(window,
-                    MessageFormat.format(RouteConverter.BUNDLE.getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
                     RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }

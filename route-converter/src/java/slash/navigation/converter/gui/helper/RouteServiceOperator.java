@@ -18,9 +18,12 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.helper;
 
+import slash.navigation.catalog.domain.RouteService;
 import slash.navigation.catalog.domain.exception.UnAuthorizedException;
+import slash.navigation.converter.gui.LoginDialog;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Constants;
 
 import javax.swing.*;
@@ -36,35 +39,36 @@ import java.util.logging.Logger;
 
 public class RouteServiceOperator {
     private static final Logger log = Logger.getLogger(RouteServiceOperator.class.getName());
+    private RouteService routeService;
+    private JFrame frame;
 
-    private RouteConverter routeConverter;
-
-    public RouteServiceOperator(RouteConverter routeConverter) {
-        this.routeConverter = routeConverter;
+    public RouteServiceOperator(JFrame frame, RouteService routeService) {
+        this.frame = frame;
+        this.routeService = routeService;
     }
 
-    public interface Operation {
-        void run() throws IOException;
-    }
-
-    boolean showLogin() {
-        LoginDialog loginDialog = new LoginDialog(routeConverter);
+    public boolean showLogin() {
+        LoginDialog loginDialog = new LoginDialog(routeService);
         loginDialog.pack();
-        loginDialog.setLocationRelativeTo(routeConverter.getFrame());
+        loginDialog.setLocationRelativeTo(frame);
         loginDialog.setVisible(true);
         return loginDialog.isSuccessful();
     }
 
-    void handleServiceError(final Throwable t) {
+    public void handleServiceError(final Throwable t) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 t.printStackTrace();
                 log.severe("Error while operating on RouteService: " + t.getMessage());
-                JOptionPane.showMessageDialog(routeConverter.getFrame(),
+                JOptionPane.showMessageDialog(frame,
                         MessageFormat.format(RouteConverter.getBundle().getString("service-error"), t.getClass(), t.getMessage()),
-                        routeConverter.getFrame().getTitle(), JOptionPane.WARNING_MESSAGE);
+                        frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
+    }
+
+    public interface Operation {
+        void run() throws IOException;
     }
 
     public void executeOnRouteService(final Operation operation) {
@@ -73,7 +77,7 @@ public class RouteServiceOperator {
                 try {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.startWaitCursor(routeConverter.getFrame().getRootPane());
+                            Constants.startWaitCursor(frame.getRootPane());
                         }
                     });
 
@@ -102,7 +106,7 @@ public class RouteServiceOperator {
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(routeConverter.getFrame().getRootPane());
+                            Constants.stopWaitCursor(frame.getRootPane());
                         }
                     });
                 }

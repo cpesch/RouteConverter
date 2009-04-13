@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
 
@@ -34,9 +35,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 /**
  * Dialog to add file to RouteService
@@ -45,9 +46,7 @@ import java.util.logging.Logger;
  */
 
 public class AddFileDialog extends JDialog {
-    private static final Logger log = Logger.getLogger(AddFileDialog.class.getName());
-
-    private RouteConverter routeConverter;
+    private RouteServiceOperator operator;
     private CategoryTreeNode categoryTreeNode;
     private File file;
     private JPanel contentPane;
@@ -59,10 +58,10 @@ public class AddFileDialog extends JDialog {
     private JButton buttonCancel;
     private JLabel labelResult;
 
-    public AddFileDialog(RouteConverter routeConverter, CategoryTreeNode categoryTreeNode,
-                         String description, Double length, File file) {
-        super(routeConverter.getFrame());
-        this.routeConverter = routeConverter;
+    public AddFileDialog(RouteServiceOperator operator,
+                         CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
+        super(RouteConverter.getInstance().getFrame());
+        this.operator = operator;
         this.categoryTreeNode = categoryTreeNode;
         this.file = file;
         setTitle(RouteConverter.getBundle().getString("add-file-title"));
@@ -77,31 +76,39 @@ public class AddFileDialog extends JDialog {
 
         buttonAdd.addActionListener(new FrameAction() {
             public void run() {
-                onAdd();
+                addFile();
             }
         });
 
         buttonCancel.addActionListener(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onCancel();
+                cancel();
             }
         });
 
         contentPane.registerKeyboardAction(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onAdd() {
+    void addRoute(final CategoryTreeNode category, final String description, final File file) {
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                category.addRoute(description, file);
+            }
+        });
+    }
+
+    private void addFile() {
         String description = textFieldDescription.getText();
         if (Conversion.trim(description) == null) {
             labelResult.setText("No description given!"); // TODO make nicer
@@ -109,13 +116,13 @@ public class AddFileDialog extends JDialog {
             return;
         }
 
-        routeConverter.addFile(categoryTreeNode, description, file);
+        addRoute(categoryTreeNode, description, file);
         labelResult.setText("Successfully added file!"); // TODO make nicer
         pack();
         dispose();
     }
 
-    private void onCancel() {
+    private void cancel() {
         dispose();
     }
 

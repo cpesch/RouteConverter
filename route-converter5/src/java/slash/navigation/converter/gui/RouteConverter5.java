@@ -20,19 +20,13 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.converter.gui.dnd.CategorySelection;
-import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.util.Platform;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -53,12 +47,6 @@ public class RouteConverter5 extends RouteConverter {
         contentPane.setTransferHandler(dropHandler);
     }
 
-    protected void addDragAndDropToBrowsePane() {
-        treeCategories.setDragEnabled(true);
-        new DropTarget(treeCategories, new TreeDropListener());
-        treeCategories.setTransferHandler(new TreeDragHandler());
-    }
-
     protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton) {
         super.createFrame(frameTitle, iconName, contentPane, defaultButton);
         if (Platform.isMac()) {
@@ -68,12 +56,12 @@ public class RouteConverter5 extends RouteConverter {
         }
     }
 
-    protected FilterDialog createFilterDialog() {
-        return new FilterDialog(this);
-    }
-
     public ExternalPrograms createExternalPrograms() {
         return new ExternalPrograms5();
+    }
+
+    protected BrowsePanel createBrowsePanel() {
+        return new BrowsePanel5();
     }
 
     private class FrameDropHandler extends TransferHandler {
@@ -116,86 +104,7 @@ public class RouteConverter5 extends RouteConverter {
         }
     }
 
-
-    private class TreeDragHandler extends TransferHandler {
-        public int getSourceActions(JComponent c) {
-            return MOVE;
-        }
-
-        protected Transferable createTransferable(JComponent c) {
-            return new CategorySelection(getSelectedTreeNodes());
-        }
-    }
-
-    private class TreeDropListener implements DropTargetListener {
-
-        public void dragEnter(DropTargetDragEvent dropTargetDragEvent) {
-        }
-
-        public void dragExit(DropTargetEvent dropTargetEvent) {
-        }
-
-        public void dragOver(DropTargetDragEvent dropTargetDragEvent) {
-        }
-
-        public void dropActionChanged(DropTargetDragEvent dropTargetDragEvent) {
-        }
-
-        public void drop(DropTargetDropEvent dropTargetDropEvent) {
-            CategoryTreeNode source = getSelectedTreeNode();
-            Point location = dropTargetDropEvent.getLocation();
-            TreePath path = treeCategories.getPathForLocation(location.x, location.y);
-            CategoryTreeNode target = (CategoryTreeNode) path.getLastPathComponent();
-            try {
-                Transferable t = dropTargetDropEvent.getTransferable();
-                if (t.isDataFlavorSupported(CategorySelection.categoryFlavor)) {
-                    dropTargetDropEvent.acceptDrop(DnDConstants.ACTION_MOVE);
-                    Object data = t.getTransferData(CategorySelection.categoryFlavor);
-                    if (data != null) {
-                        List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
-                        onMove(categories, target);
-                    }
-                    dropTargetDropEvent.dropComplete(true);
-                }
-
-                if (t.isDataFlavorSupported(RouteSelection.routeFlavor)) {
-                    dropTargetDropEvent.acceptDrop(DnDConstants.ACTION_MOVE);
-                    Object data = t.getTransferData(RouteSelection.routeFlavor);
-                    if (data != null) {
-                        List<Route> routes = (List<Route>) data;
-                        onMove(routes, source, target);
-                    }
-                    dropTargetDropEvent.dropComplete(true);
-                }
-
-                if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                    dropTargetDropEvent.acceptDrop(DnDConstants.ACTION_MOVE);
-                    Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
-                    if (data != null) {
-                        List<File> files = (List<File>) data;
-                        addFilesToCatalog(target, files);
-                    }
-                    dropTargetDropEvent.dropComplete(true);
-                }
-
-                if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    dropTargetDropEvent.acceptDrop(DnDConstants.ACTION_MOVE);
-                    Object data = t.getTransferData(DataFlavor.stringFlavor);
-                    if (data != null) {
-                        String url = (String) data;
-                        addUrlToCatalog(target, url);
-                    }
-                    dropTargetDropEvent.dropComplete(true);
-                }
-            } catch (UnsupportedFlavorException e) {
-                dropTargetDropEvent.rejectDrop();
-            } catch (IOException e) {
-                dropTargetDropEvent.rejectDrop();
-            }
-        }
-    }
-
     public static void main(String[] args) {
-        launch(RouteConverter6.class, args);
+        launch(RouteConverter5.class, args);
     }
 }

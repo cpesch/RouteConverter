@@ -23,9 +23,9 @@ package slash.navigation.converter.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.util.Conversion;
-import slash.navigation.gui.Constants;
 import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.util.Conversion;
+import slash.navigation.catalog.domain.RouteService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -34,6 +34,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.io.IOException;
 
 /**
  * Dialog to login a user to the RouteService.
@@ -44,8 +45,7 @@ import java.util.logging.Logger;
 public class LoginDialog extends JDialog {
     private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
 
-    private RouteConverter routeConverter;
-
+    private RouteService routeService;
     private JPanel contentPane;
     private JTabbedPane tabbedPane;
 
@@ -66,9 +66,9 @@ public class LoginDialog extends JDialog {
     private JButton buttonCancel2;
     private JCheckBox checkBoxAcceptTerms;
 
-    public LoginDialog(RouteConverter routeConverter) {
-        super(routeConverter.getFrame());
-        this.routeConverter = routeConverter;
+    public LoginDialog(RouteService routeService) {
+        super(RouteConverter.getInstance().getFrame());
+        this.routeService = routeService;
         setTitle(RouteConverter.getBundle().getString("login-title"));
         setContentPane(contentPane);
         setModal(true);
@@ -89,40 +89,40 @@ public class LoginDialog extends JDialog {
 
         buttonLogin.addActionListener(new FrameAction() {
             public void run() {
-                onLogin();
+                login();
             }
         });
 
         buttonCancel1.addActionListener(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         });
 
         buttonRegister.addActionListener(new FrameAction() {
             public void run() {
-                onRegister();
+                register();
             }
         });
 
         buttonCancel2.addActionListener(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onCancel();
+                cancel();
             }
         });
 
-        textFieldLogin.setText(routeConverter.getUserNamePreference());
+        textFieldLogin.setText(RouteConverter.getInstance().getUserNamePreference());
 
         contentPane.registerKeyboardAction(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
@@ -135,7 +135,7 @@ public class LoginDialog extends JDialog {
     }
 
     private ExternalPrograms createExternalPrograms() {
-        return routeConverter.createExternalPrograms();
+        return RouteConverter.getInstance().createExternalPrograms();
     }
 
     private boolean successful = false;
@@ -144,7 +144,16 @@ public class LoginDialog extends JDialog {
         return successful;
     }
 
-    private void onLogin() {
+    private void login(String userName, String password) {
+        routeService.setAuthentication(userName, password);
+        RouteConverter.getInstance().setUserNamePreference(userName, password);
+    }
+
+    private void register(String userName, String password, String firstName, String lastName, String email) throws IOException {
+        routeService.addUser(userName, password, firstName, lastName, email);
+    }
+
+    private void login() {
         String name = textFieldLogin.getText();
         if (Conversion.trim(name) == null) {
             labelLoginResult.setText("No name given!"); // TODO make nicer
@@ -158,12 +167,12 @@ public class LoginDialog extends JDialog {
             return;
         }
 
-        routeConverter.login(name, password);
+        login(name, password);
         successful = true;
         dispose();
     }
 
-    private void onRegister() {
+    private void register() {
         String userName = textFieldName.getText();
         if (Conversion.trim(userName) == null) {
             labelRegisterResult.setText("No user name given!"); // TODO make nicer
@@ -213,10 +222,10 @@ public class LoginDialog extends JDialog {
         }
 
         try {
-            routeConverter.register(userName, password, textFieldFirstName.getText(), textFieldLastName.getText(), email);
+            register(userName, password, textFieldFirstName.getText(), textFieldLastName.getText(), email);
             labelRegisterResult.setText("Successfully registred user!"); // TODO make nicer
             pack();
-            routeConverter.login(userName, password);
+            login(userName, password);
             successful = true;
             dispose();
         }
@@ -229,7 +238,7 @@ public class LoginDialog extends JDialog {
         }
     }
 
-    private void onCancel() {
+    private void cancel() {
         dispose();
     }
 

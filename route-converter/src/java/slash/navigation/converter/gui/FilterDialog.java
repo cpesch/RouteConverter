@@ -40,7 +40,6 @@ import slash.navigation.converter.gui.helper.FrameAction;
  */
 
 public class FilterDialog extends JDialog {
-    private RouteConverter routeConverter;
     private JPanel contentPane;
 
     private JTextField textFieldDuplicates;
@@ -59,9 +58,8 @@ public class FilterDialog extends JDialog {
     private NumberDocument order;
     private NumberDocument significance;
 
-    public FilterDialog(RouteConverter routeConverter) {
-        super(routeConverter.getFrame());
-        this.routeConverter = routeConverter;
+    public FilterDialog() {
+        super(RouteConverter.getInstance().getFrame());
         setTitle(RouteConverter.getBundle().getString("filter-title"));
         setContentPane(contentPane);
 
@@ -114,27 +112,29 @@ public class FilterDialog extends JDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        duplicate = new NumberDocument(routeConverter.getSelectDuplicatePreference());
+        RouteConverter r = RouteConverter.getInstance();
+        duplicate = new NumberDocument(r.getSelectDuplicatePreference());
         textFieldDuplicates.setDocument(duplicate);
-        distance = new NumberDocument(routeConverter.getSelectByDistancePreference());
+        distance = new NumberDocument(r.getSelectByDistancePreference());
         textFieldDistance.setDocument(distance);
-        order = new NumberDocument(routeConverter.getSelectByOrderPreference());
+        order = new NumberDocument(r.getSelectByOrderPreference());
         textFieldOrder.setDocument(order);
-        significance = new NumberDocument(routeConverter.getSelectBySignificancePreference());
+        significance = new NumberDocument(r.getSelectBySignificancePreference());
         textFieldSignificance.setDocument(significance);
     }
 
     private void savePreferences() {
-        routeConverter.setSelectDuplicatePreference(duplicate.getNumber());
-        routeConverter.setSelectByDistancePreference(distance.getNumber());
-        routeConverter.setSelectByOrderPreference(order.getNumber());
-        routeConverter.setSelectBySignificancePreference(significance.getNumber());
+        RouteConverter r = RouteConverter.getInstance();
+        r.setSelectDuplicatePreference(duplicate.getNumber());
+        r.setSelectByDistancePreference(distance.getNumber());
+        r.setSelectByOrderPreference(order.getNumber());
+        r.setSelectBySignificancePreference(significance.getNumber());
     }
 
     private void onSelectDuplicates() {
         int duplicate = this.duplicate.getNumber();
         if (duplicate >= 0) {
-            int selectedRowCount = routeConverter.selectDuplicatesWithinDistance(duplicate);
+            int selectedRowCount = RouteConverter.getInstance().selectDuplicatesWithinDistance(duplicate);
             labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-duplicates-result"), selectedRowCount, duplicate));
             savePreferences();
         }
@@ -143,7 +143,7 @@ public class FilterDialog extends JDialog {
     private void onSelectByDistance() {
         int distance = this.distance.getNumber();
         if (distance >= 0) {
-            int selectedRowCount = routeConverter.selectPositionsThatRemainingHaveDistance(distance);
+            int selectedRowCount = RouteConverter.getInstance().selectPositionsThatRemainingHaveDistance(distance);
             labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-distance-result"), selectedRowCount, distance));
             savePreferences();
         }
@@ -152,8 +152,8 @@ public class FilterDialog extends JDialog {
     private void onSelectByOrder() {
         int order = this.order.getNumber();
         if (order >= 0) {
-            int selectedRowCount = routeConverter.selectAllButEveryNthPosition(order);
-            int unselectedRowCount = routeConverter.getPositionsModel().getRowCount() - selectedRowCount;
+            int selectedRowCount = RouteConverter.getInstance().selectAllButEveryNthPosition(order);
+            int unselectedRowCount = RouteConverter.getInstance().getPositionsModel().getRowCount() - selectedRowCount;
             labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-order-result"), selectedRowCount, unselectedRowCount));
             savePreferences();
         }
@@ -162,19 +162,19 @@ public class FilterDialog extends JDialog {
     private void onSelectBySignificance() {
         int significance = this.significance.getNumber();
         if (significance >= 0) {
-            int selectedRowCount = routeConverter.selectInsignificantPositions(significance);
+            int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(significance);
             labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-significance-result"), selectedRowCount, significance));
             savePreferences();
         }
     }
 
     private void onDeletePositions() {
-        routeConverter.onRemovePosition();
+        RouteConverter.getInstance().onRemovePosition();
         onClose();
     }
 
     private void onRemoveSelection() {
-        routeConverter.clearPositionSelection();
+        RouteConverter.getInstance().clearPositionSelection();
         labelResult.setText(RouteConverter.getBundle().getString("filter-remove-selection-result"));
     }
 

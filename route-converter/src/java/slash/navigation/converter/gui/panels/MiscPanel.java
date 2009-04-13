@@ -98,7 +98,7 @@ public class MiscPanel {
 
         buttonChooseGPSBabel.addActionListener(new FrameAction() {
             public void run() {
-                onChooseBabelPath();
+                chooseBabelPath();
             }
         });
 
@@ -166,7 +166,7 @@ public class MiscPanel {
         return miscPanel;
     }
 
-    private void onChooseBabelPath() {
+    private void chooseBabelPath() {
         JFileChooser chooser = Constants.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));

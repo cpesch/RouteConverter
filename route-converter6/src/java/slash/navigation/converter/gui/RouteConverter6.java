@@ -20,13 +20,9 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.dnd.CategorySelection;
+import slash.navigation.converter.gui.panels.BrowsePanel;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -47,18 +43,12 @@ public class RouteConverter6 extends RouteConverter {
         frame.setTransferHandler(new FrameDropHandler());
     }
 
-    protected void addDragAndDropToBrowsePane() {
-        treeCategories.setDragEnabled(true);
-        treeCategories.setDropMode(DropMode.ON);
-        treeCategories.setTransferHandler(new TreeDragAndDropHandler());
-    }
-
-    protected FilterDialog createFilterDialog() {
-        return new FilterDialog(this);
-    }
-
     public ExternalPrograms createExternalPrograms() {
         return new ExternalPrograms6();
+    }
+
+    protected BrowsePanel createBrowsePanel() {
+        return new BrowsePanel6();
     }
 
     private class FrameDropHandler extends TransferHandler {
@@ -84,73 +74,6 @@ public class RouteConverter6 extends RouteConverter {
                     if (data != null) {
                         String url = (String) data;
                         onDrop(url);
-                        return true;
-                    }
-                }
-            } catch (UnsupportedFlavorException e) {
-                // intentionally left empty
-            } catch (IOException e) {
-                // intentionally left empty
-            }
-            return false;
-        }
-    }
-
-    private class TreeDragAndDropHandler extends TransferHandler {
-        public int getSourceActions(JComponent c) {
-            return MOVE;
-        }
-
-        protected Transferable createTransferable(JComponent c) {
-            return new CategorySelection(getSelectedTreeNodes());
-        }
-
-        public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(CategorySelection.categoryFlavor) ||
-                    support.isDataFlavorSupported(RouteSelection.routeFlavor) ||
-                    support.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                    support.isDataFlavorSupported(DataFlavor.stringFlavor);
-        }
-
-        public boolean importData(TransferSupport support) {
-            JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
-            TreePath path = dropLocation.getPath();
-            CategoryTreeNode target = (CategoryTreeNode) path.getLastPathComponent();
-            try {
-                Transferable t = support.getTransferable();
-                if (support.isDataFlavorSupported(CategorySelection.categoryFlavor)) {
-                    Object data = t.getTransferData(CategorySelection.categoryFlavor);
-                    if (data != null) {
-                        List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
-                        onMove(categories, target);
-                        return true;
-                    }
-                }
-
-                if (support.isDataFlavorSupported(RouteSelection.routeFlavor)) {
-                    Object data = t.getTransferData(RouteSelection.routeFlavor);
-                    if (data != null) {
-                        List<Route> routes = (List<Route>) data;
-                        CategoryTreeNode source = getSelectedTreeNode();
-                        onMove(routes, source, target);
-                        return true;
-                    }
-                }
-
-                if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
-                    if (data != null) {
-                        List<File> files = (List<File>) data;
-                        addFilesToCatalog(target, files);
-                        return true;
-                    }
-                }
-
-                if (support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.stringFlavor);
-                    if (data != null) {
-                        String url = (String) data;
-                        addUrlToCatalog(target, url);
                         return true;
                     }
                 }

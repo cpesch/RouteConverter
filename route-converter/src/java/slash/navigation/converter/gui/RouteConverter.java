@@ -25,26 +25,21 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.*;
 import slash.navigation.babel.BabelException;
-import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.domain.RouteService;
-import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.converter.gui.dnd.DnDHelper;
-import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.helper.TableHeaderPopupMenu;
-import slash.navigation.converter.gui.helper.TablePopupMenu;
-import slash.navigation.converter.gui.helper.AbstractListDataListener;
-import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.models.*;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
+import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
+import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gui.*;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
+import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
@@ -55,28 +50,21 @@ import slash.navigation.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
-import java.util.prefs.Preferences;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -132,8 +120,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
 
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel;
-    private JPanel browsePanel;
+    private JPanel convertPanel, miscPanel, browsePanel;
+    private LazyTabInitializer tabInitializer;
 
     private FormatAndRoutesModel formatAndRoutesModel = new FormatAndRoutesModel();
     protected JTextField textFieldSource;
@@ -163,22 +151,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
-
-    private JPanel miscPanel;
-
-    private RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
-    private RouteServiceOperator operator = new RouteServiceOperator(this);
-
-    protected JTree treeCategories;
-    protected JTable tableRoutes;
-    private JButton buttonDeleteCategory;
-    private JButton buttonAddCategory;
-    private JButton buttonRenameCategory;
-    private JButton buttonAddFile;
-    private JButton buttonAddUrl;
-    private JButton buttonRenameRoute;
-    private JButton buttonDeleteRoute;
-    private JButton buttonLogin;
 
     private String[] args;
 
@@ -218,69 +190,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             }
         });
 
-        tabbedPane.addChangeListener(new ChangeListener() {
-            private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
-
-            {
-                lazyInitializers.put(miscPanel, new Runnable() {
-                    public void run() {
-                        MiscPanel panel = new MiscPanel();
-                        miscPanel.add(panel.getRootComponent());
-                    }
-                });
-            }
-
-            public void stateChanged(ChangeEvent e) {
-                Component selected = ((JTabbedPane) e.getSource()).getSelectedComponent();
-                Runnable runnable = lazyInitializers.get(selected);
-                if (runnable != null) {
-                    lazyInitializers.remove(selected);
-
-                    Constants.startWaitCursor(frame.getRootPane());
-                    try {
-                        runnable.run();
-                    }
-                    finally {
-                        Constants.stopWaitCursor(frame.getRootPane());
-                    }
-                }
-            }
-        });
-
-        tabbedPane.addChangeListener(new ChangeListener() {
-            private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
-
-            {
-                /* TODO lazy initialize misc panel
-                lazyInitializers.put(miscPanel.getRootComponent(), new Runnable() {
-                    public void run() {
-                        miscPanel.initialize();
-                    }
-                });
-                */
-                lazyInitializers.put(browsePanel, new Runnable() {
-                    public void run() {
-                        prepareBrowsePane();
-                    }
-                });
-            }
-
-            public void stateChanged(ChangeEvent e) {
-                Component selected = ((JTabbedPane) e.getSource()).getSelectedComponent();
-                Runnable runnable = lazyInitializers.get(selected);
-                if (runnable != null) {
-                    lazyInitializers.remove(selected);
-
-                    Constants.startWaitCursor(frame.getRootPane());
-                    try {
-                        runnable.run();
-                    }
-                    finally {
-                        Constants.stopWaitCursor(frame.getRootPane());
-                    }
-                }
-            }
-        });
+        tabInitializer = new LazyTabInitializer();
+        tabbedPane.addChangeListener(tabInitializer);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -378,7 +289,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         buttonFilterPositionList.addActionListener(new FrameAction() {
             public void run() {
-                showFilter();
+                FilterDialog options = new FilterDialog();
+                options.pack();
+                options.setLocationRelativeTo(frame);
+                options.setVisible(true);
             }
         });
 
@@ -492,222 +406,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         addDragAndDropToConvertPane();
     }
 
-    private void prepareBrowsePane() {
-        buttonAddCategory.addActionListener(new FrameAction() {
-            public void run() {
-                final CategoryTreeNode selected = getSelectedTreeNode();
-                final String name = JOptionPane.showInputDialog(frame,
-                        MessageFormat.format(getBundle().getString("add-category-label"), selected.getName()),
-                        frame.getTitle(), JOptionPane.QUESTION_MESSAGE);
-                if (Conversion.trim(name) == null)
-                    return;
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        final CategoryTreeNode subCategory = selected.addSubCategory(name);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                treeCategories.expandPath(new TreePath(selected.getPath()));
-                                treeCategories.scrollPathToVisible(new TreePath(subCategory.getPath()));
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        buttonRenameCategory.addActionListener(new FrameAction() {
-            public void run() {
-                final CategoryTreeNode selected = getSelectedTreeNode();
-                final String name = (String) JOptionPane.showInputDialog(frame,
-                        MessageFormat.format(getBundle().getString("rename-category-label"), selected.getName()),
-                        frame.getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
-                if (Conversion.trim(name) == null)
-                    return;
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        selected.renameCategory(name);
-                    }
-                });
-            }
-        });
-
-        buttonDeleteCategory.addActionListener(new FrameAction() {
-            public void run() {
-                final List<CategoryTreeNode> categories = getSelectedTreeNodes();
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        for (CategoryTreeNode category : categories) {
-                            category.delete();
-                        }
-                    }
-                });
-            }
-        });
-
-        buttonAddFile.addActionListener(new FrameAction() {
-            public void run() {
-                onAddFileToCatalog();
-            }
-        });
-
-        buttonAddUrl.addActionListener(new FrameAction() {
-            public void run() {
-                addUrlToCatalog(getSelectedTreeNode(), "");
-            }
-        });
-
-        buttonRenameRoute.addActionListener(new FrameAction() {
-            public void run() {
-                int selectedRow = tableRoutes.getSelectedRow();
-                if (selectedRow == -1)
-                    return;
-
-                final CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
-                if (categoryTreeNode == null)
-                    return;
-
-                final Route selected = getRoutesListModel().getRoute(selectedRow);
-                String description = null;
-                try {
-                    description = (String) JOptionPane.showInputDialog(frame,
-                            MessageFormat.format(getBundle().getString("rename-route-label"), selected.getName()),
-                            frame.getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getDescription());
-                } catch (IOException e) {
-                    operator.handleServiceError(e);
-                }
-                if (Conversion.trim(description) == null)
-                    return;
-
-                final String theDescription = description;
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        // strange way to handle cache invalidations
-                        categoryTreeNode.renameRoute(selected, theDescription);
-                    }
-                });
-            }
-        });
-
-        buttonDeleteRoute.addActionListener(new FrameAction() {
-            public void run() {
-                final int[] selectedRows = tableRoutes.getSelectedRows();
-                if (selectedRows.length == 0)
-                    return;
-
-                final CategoryTreeNode category = getSelectedTreeNode();
-                if (category == null)
-                    return;
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        for (int selectedRow : selectedRows) {
-                            Route route = getRoutesListModel().getRoute(selectedRow);
-                            // strange way to handle cache invalidations
-                            category.deleteRoute(route);
-                        }
-                    }
-                });
-            }
-        });
-
-        buttonLogin.addActionListener(new FrameAction() {
-            public void run() {
-                operator.showLogin();
-            }
-        });
-
-        treeCategories.setModel(new DefaultTreeModel(new DefaultMutableTreeNode()));
-        treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                TreePath treePath = e.getPath();
-                selectTreePath(treePath);
-            }
-        });
-        treeCategories.getModel().addTreeModelListener(new TreeModelListener() {
-            public void treeNodesChanged(TreeModelEvent e) {
-                selectTreePath(treeCategories.getSelectionModel().getSelectionPath());
-            }
-
-            public void treeNodesInserted(TreeModelEvent e) {
-            }
-
-            public void treeNodesRemoved(TreeModelEvent e) {
-            }
-
-            public void treeStructureChanged(TreeModelEvent e) {
-            }
-        });
-        treeCategories.setCellRenderer(new CategoryTreeCellRenderer());
-
-        tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
-        tableRoutes.setDragEnabled(true);
-        tableRoutes.setTransferHandler(new TransferHandler() {
-            public int getSourceActions(JComponent comp) {
-                return MOVE;
-            }
-
-            protected Transferable createTransferable(JComponent c) {
-                int[] selectedRows = tableRoutes.getSelectedRows();
-                List<Route> selectedRoutes = new ArrayList<Route>();
-                for (int selectedRow : selectedRows) {
-                    Route route = getRoutesListModel().getRoute(selectedRow);
-                    selectedRoutes.add(route);
-                }
-                return new RouteSelection(selectedRoutes);
-            }
-        });
-        tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                int[] selectedRows = tableRoutes.getSelectedRows();
-                if (e.getValueIsAdjusting() || selectedRows.length == 0)
-                    return;
-
-                Route route = getRoutesListModel().getRoute(selectedRows[0]);
-                URL url;
-                try {
-                    url = route.getUrl();
-                    if (url == null)
-                        return;
-                } catch (Throwable t) {
-                    operator.handleServiceError(t);
-                    return;
-                }
-
-                openPositionList(Arrays.asList(url));
-            }
-        });
-
-        addDragAndDropToBrowsePane();
-
-        new Thread(new Runnable() {
-            public void run() {
-                routeService.setAuthentication(getUserNamePreference(), getPasswordPreference());
-                final CategoryTreeNode root = new CategoryTreeNode(routeService.getRootCategory());
-                final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        treeCategories.setModel(categoryTreeModel);
-                        selectTreeNode(root);
-                        /* TODO select path from previous start
-                        CategoryTreeNode m = root.getSubCategory("Motorradfahren");
-                        treeCategories.expandPath(new TreePath(new Object[]{m}));
-                        treeCategories.setSelectionPath(new TreePath(new Object[]{m}));
-                        CategoryTreeNode d = m.getSubCategory("Deutschland");
-                        treeCategories.expandPath(new TreePath(new Object[]{m, d}));
-                        CategoryTreeNode s = d.getSubCategory("Schleswig-Holstein");
-                        treeCategories.expandPath(new TreePath(new Object[]{m, d, s}));
-                        treeCategories.setSelectionPath(new TreePath(new Object[]{m, d, s}));
-                        */
-                    }
-                });
-            }
-        }, "CategoryTreeCreator").start();
-    }
-
     private void createMapView() {
         new Thread(new Runnable() {
             public void run() {
@@ -800,18 +498,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
         tabbedPane.setSelectedComponent(panel);
     }
 
-
-    public abstract ExternalPrograms createExternalPrograms(); // TODO create factory
-
     // end: public API for actions
+
+    public abstract ExternalPrograms createExternalPrograms();
+
+    protected abstract BrowsePanel createBrowsePanel();
 
 
     NavigationFormat getFormat() {
         return (NavigationFormat) getFormatComboBox().getSelectedItem();
-    }
-
-    RoutesListModel getRoutesListModel() {
-        return (RoutesListModel) tableRoutes.getModel();
     }
 
 
@@ -922,42 +617,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
             selectPositions(minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
     }
 
-    protected CategoryTreeNode getSelectedTreeNode() {
-        TreePath treePath = treeCategories.getSelectionPath();
-        return (CategoryTreeNode) (treePath != null ?
-                treePath.getLastPathComponent() : treeCategories.getModel().getRoot());
-    }
-
-    protected List<CategoryTreeNode> getSelectedTreeNodes() {
-        TreePath[] treePaths = treeCategories.getSelectionPaths();
-        List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
-        for (TreePath treePath : treePaths) {
-            treeNodes.add((CategoryTreeNode) treePath.getLastPathComponent());
-        }
-        return treeNodes;
-    }
-
-    private void selectTreePath(TreePath treePath) {
-        CategoryTreeNode selected = (CategoryTreeNode) treePath.getLastPathComponent();
-        selectTreeNode(selected);
-    }
-
-    private void selectTreeNode(CategoryTreeNode selected) {
-        tableRoutes.setModel(selected.getRoutesListModel());
-        TableCellRenderer routesHeaderRenderer = new RoutesTableCellHeaderRenderer();
-        TableColumnModel routeColumns = tableRoutes.getColumnModel();
-        for (int i = 0; i < routeColumns.getColumnCount(); i++) {
-            TableColumn column = routeColumns.getColumn(i);
-            column.setHeaderRenderer(routesHeaderRenderer);
-            if (i == 0)
-                column.setMaxWidth(50);
-            if (i == 2) {
-                column.setPreferredWidth(100);
-                column.setMaxWidth(100);
-            }
-        }
-    }
-
     private void handleFormatUpdate() {
         boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
@@ -1014,13 +673,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected abstract void addDragAndDropToConvertPane();
 
-    protected abstract void addDragAndDropToBrowsePane();
 
     protected void onDrop(List<File> files) {
         if (tabbedPane.getSelectedComponent().equals(convertPanel))
             openUrls(Files.toUrls(files.toArray(new File[files.size()])));
         else if (tabbedPane.getSelectedComponent().equals(browsePanel))
-            addFilesToCatalog(getSelectedTreeNode(), files);
+            tabInitializer.getBrowsePanel().addFilesToCatalog(files);
     }
 
     protected void onDrop(String string) {
@@ -1033,7 +691,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 log.severe("Could not create URL from '" + url + "'");
             }
         } else if (tabbedPane.getSelectedComponent().equals(browsePanel))
-            addUrlToCatalog(getSelectedTreeNode(), string);
+            tabInitializer.getBrowsePanel().addUrlToCatalog(string);
     }
 
     private File createSelectedSource() {
@@ -1081,11 +739,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return new File(Files.calculateConvertFileName(new File(path, fileName), getFormat().getExtension(), getFormat().getMaximumFileNameLength()));
     }
 
-    private File createUploadRoute() {
-        File path = new File(preferences.get(UPLOAD_ROUTE_PREFERENCE, ""));
-        return Files.findExistingPath(path);
-    }
-
 
     private boolean confirmDiscard() {
         if (getFormatAndRoutesModel().isModified()) {
@@ -1127,7 +780,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    private void handleOpenError(final Exception e, final List<URL> urls) {
+    public void handleOpenError(final Exception e, final List<URL> urls) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), e.getMessage()));
@@ -1141,7 +794,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    private void handleUnsupportedFormat(final String path) {
+    public void handleUnsupportedFormat(final String path) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 log.severe("Unsupported format: " + path);
@@ -1231,7 +884,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         openPositionList(Files.toUrls(selected));
     }
 
-    private void openPositionList(final List<URL> urls) {
+    public void openPositionList(final List<URL> urls) {
         final URL url = urls.get(0);
         final String path = Files.createReadablePath(url);
         textFieldSource.setText(path);
@@ -1296,7 +949,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void onRenamePositionList() {
-        RenameDialog renameDialog = createRenameDialog();
+        RenameDialog renameDialog = new RenameDialog();
         renameDialog.pack();
         renameDialog.setLocationRelativeTo(frame);
         renameDialog.setVisible(true);
@@ -1495,78 +1148,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private void onAddFileToCatalog() {
-        CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
-
-        JFileChooser chooser = Constants.createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("add-file"));
-        chooser.setSelectedFile(createUploadRoute());
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(frame);
-        if (open != JFileChooser.APPROVE_OPTION)
-            return;
-
-        final File[] selected = chooser.getSelectedFiles();
-        if (selected == null || selected.length == 0)
-            return;
-
-        preferences.put(UPLOAD_ROUTE_PREFERENCE, selected[0].getPath());
-
-        addFilesToCatalog(categoryTreeNode, Arrays.asList(selected));
-    }
-
-    private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
-        String path = Files.createReadablePath(file);
-        String description = null;
-        Double length = null;
-        try {
-            NavigationFileParser parser = new NavigationFileParser();
-            if (parser.read(file)) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
-                if (route != null) {
-                    description = RouteComments.createRouteDescription(route);
-                    length = route.getLength();
-                }
-                showAddFileToCatalog(categoryTreeNode, description, length, file);
-            } else
-                handleUnsupportedFormat(path);
-        } catch (Exception e) {
-            log.severe("Cannot parse description from route " + path + ": " + e.getMessage());
-            handleOpenError(e, Files.toUrls(file));
-        }
-    }
-
-    protected void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
-        for (File file : files) {
-            addFileToCatalog(category, file);
-        }
-    }
-
-    protected void addUrlToCatalog(CategoryTreeNode category, String string) {
-        showAddUrlToCatalog(category, DnDHelper.extractDescription(string), DnDHelper.extractUrl(string));
-    }
-
-    protected void onMove(final List<CategoryTreeNode> categories, final CategoryTreeNode parent) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                for (CategoryTreeNode category : categories) {
-                    category.moveCategory(parent);
-                }
-            }
-        });
-    }
-
-    protected void onMove(final List<Route> routes, final CategoryTreeNode source, final CategoryTreeNode target) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                for (Route route : routes) {
-                    source.moveRoute(route, target);
-                }
-            }
-        });
-    }
-
     protected void shutdown() {
         preferences.putBoolean(START_GOOGLE_EARTH_PREFERENCE, checkboxStartGoogleEarth.isSelected());
         preferences.putBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, checkboxDuplicateFirstPosition.isSelected());
@@ -1579,62 +1160,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
-    }
-
-    // Dialogs
-
-    private void showFilter() {
-        FilterDialog options = createFilterDialog();
-        options.pack();
-        options.setLocationRelativeTo(frame);
-        options.setVisible(true);
-    }
-
-    private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
-        AddUrlDialog addUrlDialog = new AddUrlDialog(this, categoryTreeNode, description, url);
-        addUrlDialog.pack();
-        addUrlDialog.setLocationRelativeTo(frame);
-        addUrlDialog.setVisible(true);
-    }
-
-    private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
-        AddFileDialog addFileDialog = new AddFileDialog(this, categoryTreeNode, description, length, file);
-        addFileDialog.pack();
-        addFileDialog.setLocationRelativeTo(frame);
-        addFileDialog.setVisible(true);
-    }
-
-    protected RenameDialog createRenameDialog() {
-        return new RenameDialog(this);
-    }
-
-    protected abstract FilterDialog createFilterDialog();
-
-    // Callbacks from dialogs
-
-    void login(String userName, String password) {
-        routeService.setAuthentication(userName, password);
-        setUserNamePreference(userName, password);
-    }
-
-    void register(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        routeService.addUser(userName, password, firstName, lastName, email);
-    }
-
-    void addFile(final CategoryTreeNode category, final String description, final File file) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                category.addRoute(description, file);
-            }
-        });
-    }
-
-    void addUrl(final CategoryTreeNode category, final String description, final String string) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                category.addRoute(description, string);
-            }
-        });
     }
 
     // Preferences handling
@@ -1695,11 +1220,20 @@ public abstract class RouteConverter extends SingleFrameApplication {
         preferences.putInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
     }
 
-    String getUserNamePreference() {
+    public File getUploadRoutePreference() {
+        File path = new File(preferences.get(UPLOAD_ROUTE_PREFERENCE, ""));
+        return Files.findExistingPath(path);
+    }
+
+    public void setUploadRoutePreference(File path) {
+        preferences.put(UPLOAD_ROUTE_PREFERENCE, path.getPath());
+    }
+
+    public String getUserNamePreference() {
         return preferences.get(USERNAME_PREFERENCE, "");
     }
 
-    String getPasswordPreference() {
+    public String getPasswordPreference() {
         return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]));
     }
 
@@ -1924,55 +1458,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         miscPanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("misc-tab"), miscPanel);
         browsePanel = new JPanel();
-        browsePanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+        browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
-        final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
-        browsePanel.add(panel9, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonAddCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonAddCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add"));
-        panel9.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonDeleteCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonDeleteCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
-        panel9.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRenameCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonRenameCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
-        panel9.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label8 = new JLabel();
-        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("categories"));
-        browsePanel.add(label8, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label9 = new JLabel();
-        this.$$$loadLabelText$$$(label9, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));
-        browsePanel.add(label9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel10 = new JPanel();
-        panel10.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
-        browsePanel.add(panel10, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonAddFile = new JButton();
-        this.$$$loadButtonText$$$(buttonAddFile, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-file"));
-        panel10.add(buttonAddFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel10.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        buttonDeleteRoute = new JButton();
-        this.$$$loadButtonText$$$(buttonDeleteRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
-        panel10.add(buttonDeleteRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRenameRoute = new JButton();
-        this.$$$loadButtonText$$$(buttonRenameRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
-        panel10.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonAddUrl = new JButton();
-        this.$$$loadButtonText$$$(buttonAddUrl, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-url"));
-        panel10.add(buttonAddUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonLogin = new JButton();
-        this.$$$loadButtonText$$$(buttonLogin, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("login"));
-        buttonLogin.setVisible(false);
-        panel10.add(buttonLogin, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane2 = new JScrollPane();
-        browsePanel.add(scrollPane2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        tableRoutes = new JTable();
-        scrollPane2.setViewportView(tableRoutes);
-        final JScrollPane scrollPane3 = new JScrollPane();
-        browsePanel.add(scrollPane3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        treeCategories = new JTree();
-        scrollPane3.setViewportView(treeCategories);
     }
 
     /**
@@ -2034,5 +1521,53 @@ public abstract class RouteConverter extends SingleFrameApplication {
      */
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
+    }
+
+    private class LazyTabInitializer implements ChangeListener {
+        private Map<Component, Runnable> lazyInitializers = new HashMap<Component, Runnable>();
+        private Map<Component, Object> initialized = new HashMap<Component, Object>();
+
+        LazyTabInitializer() {
+            lazyInitializers.put(miscPanel, new Runnable() {
+                public void run() {
+                    MiscPanel panel = new MiscPanel();
+                    miscPanel.add(panel.getRootComponent());
+                    initialized.put(miscPanel, panel);
+                }
+            });
+
+            lazyInitializers.put(browsePanel, new Runnable() {
+                public void run() {
+                    BrowsePanel panel = createBrowsePanel();
+                    browsePanel.add(panel.getRootComponent());
+                    initialized.put(browsePanel, panel);
+                }
+            });
+        }
+
+        private BrowsePanel getBrowsePanel() {
+            initialize(browsePanel);
+            return (BrowsePanel) initialized.get(browsePanel);
+        }
+
+        private void initialize(Component selected) {
+            Runnable runnable = lazyInitializers.get(selected);
+            if (runnable != null) {
+                lazyInitializers.remove(selected);
+
+                Constants.startWaitCursor(frame.getRootPane());
+                try {
+                    runnable.run();
+                }
+                finally {
+                    Constants.stopWaitCursor(frame.getRootPane());
+                }
+            }
+        }
+
+        public void stateChanged(ChangeEvent e) {
+            Component selected = ((JTabbedPane) e.getSource()).getSelectedComponent();
+            initialize(selected);
+        }
     }
 }

@@ -20,17 +20,17 @@
 
 package slash.navigation.converter.gui;
 
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.converter.gui.helper.FrameAction;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ResourceBundle;
-
-import slash.navigation.gui.Constants;
-import slash.navigation.converter.gui.helper.FrameAction;
 
 /**
  * Dialog to rename position list
@@ -39,21 +39,19 @@ import slash.navigation.converter.gui.helper.FrameAction;
  */
 
 public class RenameDialog extends JDialog {
-    private RouteConverter routeConverter;
     private JPanel contentPane;
     private JButton buttonRename;
     private JButton buttonCancel;
     private JTextField textFieldName;
 
-    public RenameDialog(RouteConverter routeConverter) {
-        super(routeConverter.getFrame());
-        this.routeConverter = routeConverter;
+    public RenameDialog() {
+        super(RouteConverter.getInstance().getFrame());
         setTitle(RouteConverter.getBundle().getString("rename-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonRename);
 
-        textFieldName.setText(routeConverter.getPositionsModel().getRoute().getName());
+        textFieldName.setText(RouteConverter.getInstance().getPositionsModel().getRoute().getName());
 
         buttonRename.addActionListener(new FrameAction() {
             public void run() {
@@ -82,7 +80,7 @@ public class RenameDialog extends JDialog {
     }
 
     private void onRename() {
-        routeConverter.getFormatAndRoutesModel().renameRoute(textFieldName.getText());
+        RouteConverter.getInstance().getFormatAndRoutesModel().renameRoute(textFieldName.getText());
         dispose();
     }
 
