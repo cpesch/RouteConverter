@@ -66,8 +66,8 @@ public class Gpx10Format extends GpxFormat {
         try {
             Gpx gpx = GpxUtil.unmarshal10(source);
             return process(gpx);
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+        } catch (Throwable t) {
+            log.fine("Error reading " + source + ": " + t.getMessage());
             return null;
         }
     }
