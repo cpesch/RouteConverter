@@ -142,6 +142,20 @@ public abstract class BaseNavigationPosition {
     }
 
     /**
+     * Calculate the time in milliseconds between this and the other position.
+     *
+     * @param other the other position
+     * @return the time in milliseconds between this and the other position
+     *         or null if the time cannot be calculated
+     */
+    public Long calculateTime(BaseNavigationPosition other) {
+        if (getTime() != null && other.getTime() != null) {
+            return other.getTime().getTimeInMillis() - getTime().getTimeInMillis();
+        }
+        return null;
+    }
+
+    /**
      * Calculate the angle in degree between this and the other position.
      *
      * @param other the other position
