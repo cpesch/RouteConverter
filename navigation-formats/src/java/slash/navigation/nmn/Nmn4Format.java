@@ -39,13 +39,16 @@ public class Nmn4Format extends NmnFormat {
     // -|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|
     // -|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|
     // -|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|
+    // -|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|
     private static final Pattern LINE_PATTERN = Pattern.
-            compile(WILDCARD + SEPARATOR + WILDCARD + SEPARATOR + WILDCARD + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
+            compile(WILDCARD + SEPARATOR +
                     WILDCARD + SEPARATOR +
+                    WILDCARD + SEPARATOR +
+                    "(" + WILDCARD + ")" + SEPARATOR +
+                    "(" + WILDCARD + ")" + SEPARATOR +
+                    "(" + WILDCARD + ")" + SEPARATOR +
+                    "(" + WILDCARD + ")" + SEPARATOR +
+                    "(" + WILDCARD + ")" + SEPARATOR +
                     WILDCARD + SEPARATOR +
                     WILDCARD + SEPARATOR +
                     "(" + WILDCARD + SEPARATOR + ")?" +
@@ -81,11 +84,15 @@ public class Nmn4Format extends NmnFormat {
 
         String zip = parseForNmn4(lineMatcher.group(1));
         String city = parseForNmn4(lineMatcher.group(2));
+        String street = parseForNmn4(lineMatcher.group(4));
+        if (zip == null)
+            zip = parseForNmn4(lineMatcher.group(4));
         if (city == null)
             city = parseForNmn4(lineMatcher.group(3));
-        String street = parseForNmn4(lineMatcher.group(4));
-        String longitude = parseForNmn4(lineMatcher.group(6));
-        String latitude = parseForNmn4(lineMatcher.group(7));
+        if (street != null && street.equals(zip))
+            street = parseForNmn4(lineMatcher.group(5));
+        String longitude = parseForNmn4(lineMatcher.group(7));
+        String latitude = parseForNmn4(lineMatcher.group(8));
         return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), zip, city, street, null);
     }
 
@@ -100,13 +107,22 @@ public class Nmn4Format extends NmnFormat {
         String zip = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getZip());
         String city = formatForNmn4(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
         String street = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
-        writer.println("-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR +
-                zip + SEPARATOR_CHAR +
+        writer.println(
+                "-" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
+                "17" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
                 city + SEPARATOR_CHAR +
                 zip + SEPARATOR_CHAR +
                 street + SEPARATOR_CHAR +
-                "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                "-" + SEPARATOR_CHAR);
+                "-" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
+                longitude + SEPARATOR_CHAR +
+                latitude + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR
+        );
     }
 }

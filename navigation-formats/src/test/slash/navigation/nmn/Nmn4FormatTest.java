@@ -26,6 +26,7 @@ public class Nmn4FormatTest extends NavigationTestCase {
     Nmn4Format format = new Nmn4Format();
 
     public void testIsPosition() {
+        assertTrue(format.isPosition("-|-|17|-|-|Gelsenkirchen|45896|Polsumer Straﬂe|-|-|-|7.05143|51.59682|-|-|"));
         assertTrue(format.isPosition("-|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|"));
         assertTrue(format.isPosition("-|-|-|45128|S¸dviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|"));
         assertTrue(format.isPosition("-|-|-|58452|Witten|58452|Schloss Steinhausen|-|-|-|-|-|460|"));
@@ -73,4 +74,16 @@ public class Nmn4FormatTest extends NavigationTestCase {
         assertNull(position.getStreet());
         assertNull(position.getNumber());
     }
+
+    public void testParseMN42Position() {
+        NmnPosition position = format.parsePosition("-|-|17|-|-|Gelsenkirchen|45896|Polsumer Straﬂe|-|-|-|7.05143|51.59682|-|-|", null);
+        assertEquals(7.05143, position.getLongitude());
+        assertEquals(51.59682, position.getLatitude());
+        assertEquals("45896 Gelsenkirchen, Polsumer Straﬂe", position.getComment());
+        assertEquals("45896", position.getZip());
+        assertEquals("Gelsenkirchen", position.getCity());
+        assertEquals("Polsumer Straﬂe", position.getStreet());
+        assertNull(position.getNumber());
+    }
+
 }

@@ -127,7 +127,6 @@ public final class NavigationFormats {
         addFormat(GoPalTrackFormat.class);
         addFormat(TomTomPoiFormat.class);
         addFormat(HoluxM241BinaryFormat.class);
-        addFormat(Igo8TrackFormat.class);
 
         addFormat(BrokenNmeaFormat.class);
         // TODO later... addFormat(BrokenHaicomLoggerFormat.class);
@@ -140,6 +139,7 @@ public final class NavigationFormats {
         addFormat(BrokenKml22BetaFormat.class);
 
         addFormat(GarminPoiFormat.class);
+        addFormat(Igo8TrackFormat.class);
         addFormat(GarminPoiDbFormat.class);
     }
 
