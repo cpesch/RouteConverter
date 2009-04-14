@@ -918,7 +918,6 @@ public class JdicMapView implements MapView {
             public void run() {
                 calculatedDistance(0, 0);
 
-                // TODO duplicated from BaseRoute#getPositions()
                 int distanceSum = 0;
                 int timeSum = 0;
                 BaseNavigationPosition previous = null;
@@ -1096,8 +1095,6 @@ public class JdicMapView implements MapView {
                 seconds += Conversion.parseInt(directionsLoadMatcher.group(2));
                 calculatedDistance(meters, seconds);
             }
-
-            // TODO support geocoding
 
             Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
             if (mapTypeChangedMatcher.matches()) {

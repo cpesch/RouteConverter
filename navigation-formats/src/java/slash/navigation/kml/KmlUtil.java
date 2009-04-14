@@ -89,6 +89,10 @@ public class KmlUtil {
         return result;
     }
 
+    public static Kml unmarshal20(String string) throws JAXBException {
+        return unmarshal20(new StringReader(string));
+    }
+
     public static Object unmarshal20(InputStream in) throws JAXBException {
         Object result = null;
         try {

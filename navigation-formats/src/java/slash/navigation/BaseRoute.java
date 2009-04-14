@@ -186,8 +186,11 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         P previous = null;
         for (P next : positions) {
-            if (previous != null && previous.hasCoordinates() && next.hasCoordinates())
-                result += previous.calculateDistance(next);
+            if (previous != null) {
+                Double distance = previous.calculateDistance(next);
+                if (distance != null)
+                    result += distance;
+            }
             previous = next;
         }
         return result;

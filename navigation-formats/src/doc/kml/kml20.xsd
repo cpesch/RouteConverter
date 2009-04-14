@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl"  href="xs3p.xsl"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://earth.google.com/kml/2.0" targetNamespace="http://earth.google.com/kml/2.0" elementFormDefault="qualified">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://earth.google.com/kml/2.0" xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" targetNamespace="http://earth.google.com/kml/2.0" elementFormDefault="qualified">
+
+    <!-- import xAL:Address -->
+    <xsd:import namespace="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" schemaLocation="http://docs.oasis-open.org/election/external/xAL.xsd"/>
+
 	<xsd:annotation>
 		<xsd:documentation>TimeStamp: 30-10-2005  
   KML schema version 2.0 - 
@@ -13,6 +17,7 @@
 	<xsd:element name="kml">
 		<xsd:complexType>
 			<xsd:choice>
+                <xsd:element ref="Response"/>
 				<xsd:element ref="Document"/>
 				<xsd:element ref="Folder"/>
 				<xsd:element ref="Placemark"/>
@@ -25,6 +30,25 @@
 			<xsd:attribute name="id" type="xsd:ID" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
+
+    <xsd:element name="Response">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element ref="name" minOccurs="0"/>
+                <xsd:element ref="Status" minOccurs="1" maxOccurs="1"/>
+                <xsd:element ref="Placemark" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="Status">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="code" type="xsd:int"/>
+                <xsd:element name="request" type="xsd:string"/>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+
 	<xsd:element name="Document">
 		<xsd:complexType>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -85,6 +109,7 @@
 				<xsd:element ref="TimePeriod" minOccurs="0"/>
 				<xsd:element ref="LineString" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="address" minOccurs="0"/>
+                <xsd:element ref="xal:AddressDetails" minOccurs="0"/>
 				<xsd:element ref="styleUrl" minOccurs="0"/>
 				<xsd:element ref="visibility" minOccurs="0"/>
 			</xsd:choice>
