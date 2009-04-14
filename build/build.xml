@@ -66,6 +66,13 @@
         <property name="geonames.output.classes" location="${geonames.output}/classes"/>
         <property name="geonames.output.testclasses" location="${geonames.output}/testclasses"/>
 
+        <property name="googlemaps.src" location="googlemaps/src"/>
+        <property name="googlemaps.src.java" location="${googlemaps.src}/java"/>
+        <property name="googlemaps.src.test" location="${googlemaps.src}/test"/>
+        <property name="googlemaps.output" location="googlemaps/output"/>
+        <property name="googlemaps.output.classes" location="${googlemaps.output}/classes"/>
+        <property name="googlemaps.output.testclasses" location="${googlemaps.output}/testclasses"/>
+
         <property name="jaxb6.src" location="jaxb6/src"/>
         <property name="jaxb6.src.java" location="${jaxb6.src}/java"/>
         <property name="jaxb6.output" location="jaxb6/output"/>
@@ -160,6 +167,17 @@
             <path location="${geonames.output.testclasses}"/>
         </path>
 
+        <path id="googlemaps.classpath">
+            <path refid="navigation-formats.classpath"/>
+            <path refid="rest.classpath"/>
+            <path location="${googlemaps.output.classes}"/>
+        </path>
+        <path id="googlemaps.testclasspath">
+            <path location="${junit.junit.lib}"/>
+            <path refid="googlemaps.classpath"/>
+            <path location="${googlemaps.output.testclasses}"/>
+        </path>
+
         <path id="jaxb6.classpath">
             <path location="${sun.jaxb.jdk6.impl.lib}"/>
             <path location="${jaxb6.output.classes}"/>
@@ -198,6 +216,7 @@
             <path refid="common.classpath"/>
             <path refid="common-gui.classpath"/>
             <path refid="geonames.classpath"/>
+            <path refid="googlemaps.classpath"/>
             <path refid="navigation-formats.classpath"/>
             <path refid="jdic-0.9.3.classpath"/>
             <path location="${route-converter.output.classes}"/>
@@ -219,6 +238,8 @@
         <property name="common-gui.output.classes5" location="${common-gui.output}/classes5"/>
         <property name="geonames.output.classes5" location="${geonames.output}/classes5"/>
         <property name="geonames.output.testclasses5" location="${geonames.output}/testclasses5"/>
+        <property name="googlemaps.output.classes5" location="${googlemaps.output}/classes5"/>
+        <property name="googlemaps.output.testclasses5" location="${googlemaps.output}/testclasses5"/>
         <property name="jaxb5.src.java" location="jaxb5/src/java"/>
         <property name="jaxb5.output" location="jaxb5/output"/>
         <property name="jaxb5.output.classes5" location="${jaxb5.output}/classes5"/>
@@ -271,6 +292,17 @@
             <path location="${geonames.output.testclasses5}"/>
         </path>
 
+        <path id="googlemaps.classpath5">
+            <path refid="navigation-formats.classpath5"/>
+            <path refid="rest.classpath5"/>
+            <path location="${googlemaps.output.classes5}"/>
+        </path>
+        <path id="googlemaps.testclasspath5">
+            <path location="${junit.junit.lib}"/>
+            <path refid="googlemaps.classpath5"/>
+            <path location="${googlemaps.output.testclasses5}"/>
+        </path>
+
         <path id="jaxb5.classpath">
             <path location="${sun.jaxb.api.lib}"/>
             <path location="${sun.jaxb.impl.lib}"/>
@@ -312,6 +344,7 @@
             <path refid="common.classpath5"/>
             <path refid="common-gui.classpath5"/>
             <path refid="geonames.classpath5"/>
+            <path refid="googlemaps.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
             <path refid="jdic-0.9.3.classpath5"/>
             <path location="${route-converter.output.classes5}"/>
@@ -453,11 +486,6 @@
             <src location="${common.src.java}"/>
             <classpath refid="common.classpath"/>
         </javac>
-        <mkdir dir="${common.output.testclasses}"/>
-        <javac destdir="${common.output.testclasses}" debug="${javac.debug}">
-            <src location="${common.src.test}"/>
-            <classpath refid="common.testclasspath"/>
-        </javac>
 
         <mkdir dir="${jaxb6.output.classes}"/>
         <javac destdir="${jaxb6.output.classes}" debug="${javac.debug}">
@@ -476,28 +504,17 @@
             <src location="${navigation-formats.src.java}"/>
             <classpath refid="navigation-formats.classpath"/>
         </javac>
-        <mkdir dir="${navigation-formats.output.testclasses}"/>
-        <javac destdir="${navigation-formats.output.testclasses}" debug="${javac.debug}">
-            <src location="${navigation-formats.src.test}"/>
-            <classpath refid="navigation-formats.testclasspath"/>
-        </javac>
 
         <mkdir dir="${rest.output.classes}"/>
         <javac destdir="${rest.output.classes}" debug="${javac.debug}">
             <src location="${rest.src.java}"/>
             <classpath refid="rest.classpath"/>
         </javac>
-        <mkdir dir="${rest.output.testclasses}"/>
 
         <mkdir dir="${catalog.output.classes}"/>
         <javac destdir="${catalog.output.classes}" debug="${javac.debug}">
             <src location="${catalog.src.java}"/>
             <classpath refid="catalog.classpath"/>
-        </javac>
-        <mkdir dir="${catalog.output.testclasses}"/>
-        <javac destdir="${catalog.output.testclasses}" debug="${javac.debug}">
-            <src location="${catalog.src.test}"/>
-            <classpath refid="catalog.testclasspath"/>
         </javac>
 
         <mkdir dir="${geonames.output.classes}"/>
@@ -505,10 +522,11 @@
             <src location="${geonames.src.java}"/>
             <classpath refid="geonames.classpath"/>
         </javac>
-        <mkdir dir="${geonames.output.testclasses}"/>
-        <javac destdir="${geonames.output.testclasses}" debug="${javac.debug}">
-            <src location="${geonames.src.test}"/>
-            <classpath refid="geonames.testclasspath"/>
+
+        <mkdir dir="${googlemaps.output.classes}"/>
+        <javac destdir="${googlemaps.output.classes}" debug="${javac.debug}">
+            <src location="${googlemaps.src.java}"/>
+            <classpath refid="googlemaps.classpath"/>
         </javac>
 
         <mkdir dir="${common-gui.output.classes}"/>
@@ -525,6 +543,38 @@
         <javac destdir="${route-converter6.output.classes}" debug="${javac.debug}">
             <src location="${route-converter6.src.java}"/>
             <classpath refid="route-converter.classpath"/>
+        </javac>
+    </target>
+
+    <target name="compile-test" depends="compile">
+        <mkdir dir="${common.output.testclasses}"/>
+        <javac destdir="${common.output.testclasses}" debug="${javac.debug}">
+            <src location="${common.src.test}"/>
+            <classpath refid="common.testclasspath"/>
+        </javac>
+
+        <mkdir dir="${navigation-formats.output.testclasses}"/>
+        <javac destdir="${navigation-formats.output.testclasses}" debug="${javac.debug}">
+            <src location="${navigation-formats.src.test}"/>
+            <classpath refid="navigation-formats.testclasspath"/>
+        </javac>
+
+        <mkdir dir="${catalog.output.testclasses}"/>
+        <javac destdir="${catalog.output.testclasses}" debug="${javac.debug}">
+            <src location="${catalog.src.test}"/>
+            <classpath refid="catalog.testclasspath"/>
+        </javac>
+
+       <mkdir dir="${geonames.output.testclasses}"/>
+        <javac destdir="${geonames.output.testclasses}" debug="${javac.debug}">
+            <src location="${geonames.src.test}"/>
+            <classpath refid="geonames.testclasspath"/>
+        </javac>
+
+         <mkdir dir="${googlemaps.output.testclasses}"/>
+        <javac destdir="${googlemaps.output.testclasses}" debug="${javac.debug}">
+            <src location="${googlemaps.src.test}"/>
+            <classpath refid="googlemaps.testclasspath"/>
         </javac>
     </target>
 
@@ -547,11 +597,6 @@
             <src location="${common.src.java}"/>
             <classpath refid="common.classpath5"/>
         </javac>
-        <mkdir dir="${common.output.testclasses5}"/>
-        <javac destdir="${common.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${common.src.test}"/>
-            <classpath refid="common.testclasspath5"/>
-        </javac>
 
         <mkdir dir="${jaxb5.output.classes5}"/>
         <javac destdir="${jaxb5.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
@@ -570,28 +615,17 @@
             <src location="${navigation-formats.src.java}"/>
             <classpath refid="navigation-formats.classpath5"/>
         </javac>
-        <mkdir dir="${navigation-formats.output.testclasses5}"/>
-        <javac destdir="${navigation-formats.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${navigation-formats.src.test}"/>
-            <classpath refid="navigation-formats.testclasspath5"/>
-        </javac>
 
         <mkdir dir="${rest.output.classes5}"/>
         <javac destdir="${rest.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${rest.src.java}"/>
             <classpath refid="rest.classpath5"/>
         </javac>
-        <mkdir dir="${rest.output.testclasses5}"/>
 
         <mkdir dir="${catalog.output.classes5}"/>
         <javac destdir="${catalog.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${catalog.src.java}"/>
             <classpath refid="catalog.classpath5"/>
-        </javac>
-        <mkdir dir="${catalog.output.testclasses5}"/>
-        <javac destdir="${catalog.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${catalog.src.test}"/>
-            <classpath refid="catalog.testclasspath5"/>
         </javac>
 
         <mkdir dir="${geonames.output.classes5}"/>
@@ -599,10 +633,11 @@
             <src location="${geonames.src.java}"/>
             <classpath refid="geonames.classpath5"/>
         </javac>
-        <mkdir dir="${geonames.output.testclasses5}"/>
-        <javac destdir="${geonames.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${geonames.src.test}"/>
-            <classpath refid="geonames.testclasspath5"/>
+
+        <mkdir dir="${googlemaps.output.classes5}"/>
+        <javac destdir="${googlemaps.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${googlemaps.src.java}"/>
+            <classpath refid="googlemaps.classpath5"/>
         </javac>
 
         <mkdir dir="${common-gui.output.classes5}"/>
@@ -611,23 +646,52 @@
             <classpath refid="common-gui.classpath5"/>
         </javac>
 
+        <mkdir dir="${route-converter.output.classes5}"/>
         <javac destdir="${route-converter.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${route-converter.src.java}"/>
             <classpath refid="route-converter.classpath5"/>
         </javac>
-        <mkdir dir="${route-converter5.output.classes5}"/>
-        <javac destdir="${route-converter5.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${route-converter5.java}"/>
-            <classpath refid="route-converter.classpath5"/>
-        </javac>
 
+        <mkdir dir="${route-converter-cmdline.output.classes5}"/>
         <javac destdir="${route-converter-cmdline.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${route-converter-cmdline.java}"/>
             <classpath refid="route-converter-cmdline.classpath5"/>
         </javac>
     </target>
 
-    <target name="test" depends="compile">
+    <target name="compile-test5" depends="compile5">
+        <mkdir dir="${common.output.testclasses5}"/>
+        <javac destdir="${common.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${common.src.test}"/>
+            <classpath refid="common.testclasspath5"/>
+        </javac>
+
+        <mkdir dir="${navigation-formats.output.testclasses5}"/>
+        <javac destdir="${navigation-formats.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${navigation-formats.src.test}"/>
+            <classpath refid="navigation-formats.testclasspath5"/>
+        </javac>
+
+        <mkdir dir="${catalog.output.testclasses5}"/>
+        <javac destdir="${catalog.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${catalog.src.test}"/>
+            <classpath refid="catalog.testclasspath5"/>
+        </javac>
+
+        <mkdir dir="${geonames.output.testclasses5}"/>
+        <javac destdir="${geonames.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${geonames.src.test}"/>
+            <classpath refid="geonames.testclasspath5"/>
+        </javac>
+
+        <mkdir dir="${googlemaps.output.testclasses5}"/>
+        <javac destdir="${googlemaps.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${googlemaps.src.test}"/>
+            <classpath refid="googlemaps.testclasspath5"/>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile, compile-test">
         <mkdir dir="${build.test.dir}"/>
 
         <junit fork="yes" haltonfailure="yes">
@@ -671,11 +735,22 @@
                 </fileset>
             </batchtest>
             <formatter type="plain" usefile="false"/>
-            <classpath refid="rest.testclasspath"/>
+            <classpath refid="geonames.testclasspath"/>
+        </junit>
+
+        <junit fork="yes" haltonfailure="yes">
+            <batchtest fork="yes" todir="${build.test.dir}">
+                <fileset dir="${googlemaps.src.test}">
+                    <include name="**/*Test*.java"/>
+                    <exclude name="**/*TestCase.java"/>
+                </fileset>
+            </batchtest>
+            <formatter type="plain" usefile="false"/>
+            <classpath refid="googlemaps.testclasspath"/>
         </junit>
     </target>
 
-    <target name="test5" depends="compile5">
+    <target name="test5" depends="compile5, compile-test5">
         <mkdir dir="${build.test.dir5}"/>
 
         <junit fork="yes" haltonfailure="yes">
@@ -721,6 +796,17 @@
             <formatter type="plain" usefile="false"/>
             <classpath refid="geonames.testclasspath5"/>
         </junit>
+
+        <junit fork="yes" haltonfailure="yes">
+            <batchtest fork="yes" todir="${build.test.dir5}">
+                <fileset dir="${googlemaps.src.test}">
+                    <include name="**/*Test*.java"/>
+                    <exclude name="**/*TestCase.java"/>
+                </fileset>
+            </batchtest>
+            <formatter type="plain" usefile="false"/>
+            <classpath refid="googlemaps.testclasspath5"/>
+        </junit>
     </target>
 
     <target name="javadoc" depends="init">
@@ -765,6 +851,7 @@
             <fileset dir="${common.src.java}"/>
             <fileset dir="${common-gui.src.java}"/>
             <fileset dir="${geonames.src.java}"/>
+            <fileset dir="${googlemaps.src.java}"/>
             <fileset dir="${jaxb6.src.java}"/>
             <fileset dir="${navigation-formats.src.java}"/>
             <fileset dir="${rest.src.java}"/>
@@ -820,6 +907,7 @@
             <fileset dir="${common.output.classes}"/>
             <fileset dir="${common-gui.output.classes}"/>
             <fileset dir="${geonames.output.classes}"/>
+            <fileset dir="${googlemaps.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
             <fileset dir="${jdic-0.9.3.output.classes}">
                 <exclude name="**/*.dll"/>
@@ -913,6 +1001,7 @@
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
             <fileset dir="${jdic-0.9.3.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -944,6 +1033,7 @@
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
             <fileset dir="${jdic-0.9.3.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -975,6 +1065,7 @@
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
             <fileset dir="${jdic-0.9.3.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -1006,6 +1097,7 @@
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
             <fileset dir="${jdic-0.9.3.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -1098,6 +1190,7 @@
         <delete dir="${common.output}"/>
         <delete dir="${common-gui.output}"/>
         <delete dir="${geonames.output}"/>
+        <delete dir="${googlemaps.output}"/>
         <delete dir="${jaxb5.output}"/>
         <delete dir="${jaxb6.output}"/>
         <delete dir="${jdic-0.9.3.output}"/>
