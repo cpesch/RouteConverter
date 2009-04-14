@@ -20,14 +20,12 @@
 
 package slash.navigation.gui;
 
-import javax.swing.*;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import java.beans.Beans;
-import java.lang.reflect.Constructor;
 
 /**
  * The base of all graphical user interfaces.
@@ -94,7 +92,9 @@ public abstract class Application {
                 }
             }
         };
-        SwingUtilities.invokeLater(doCreateAndShowGUI);
+        // TODO why not do the initialization in two threads?
+        // SwingUtilities.invokeLater(doCreateAndShowGUI);
+        doCreateAndShowGUI.run();
     }
 
     static <T extends Application> T create(Class<T> applicationClass) throws Exception {
@@ -147,7 +147,6 @@ public abstract class Application {
 
     public interface ExitListener extends EventListener {
         boolean canExit(EventObject event);
-
         void willExit(EventObject event);
     }
 
