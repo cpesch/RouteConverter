@@ -16,6 +16,7 @@
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="common-gui" />
     <orderEntry type="module" module-name="geonames" />
+    <orderEntry type="module" module-name="googlemaps" />
     <orderEntry type="module" module-name="jdic-0.9.3" />
     <orderEntry type="module" module-name="navigation-formats" />
     <orderEntry type="library" name="intellij/forms-rt" level="project" />

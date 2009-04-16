@@ -56,9 +56,13 @@ public class TablePopupMenu {
         buttonAddElevation.addActionListener(new AddElevationsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
         popupMenu.add(buttonAddElevation);
 
-        JMenuItem buttonAddComment = new JMenuItem(RouteConverter.getBundle().getString("add-comment"));
-        buttonAddComment.addActionListener(new AddCommentsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
-        popupMenu.add(buttonAddComment);
+        JMenuItem buttonAddPostalAddress = new JMenuItem(RouteConverter.getBundle().getString("add-postal-address"));
+        buttonAddPostalAddress.addActionListener(new AddPostalAddressesToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
+        popupMenu.add(buttonAddPostalAddress);
+
+        JMenuItem buttonAddPopulatedPlace = new JMenuItem(RouteConverter.getBundle().getString("add-populated-place"));
+        buttonAddPopulatedPlace.addActionListener(new AddPopulatedPlacesToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));
+        popupMenu.add(buttonAddPopulatedPlace);
 
         JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.getBundle().getString("add-speed"));
         buttonAddSpeed.addActionListener(new AddSpeedsToPositions(routeConverter.getPositionsTable(), routeConverter.getPositionsModel(), augmenter));

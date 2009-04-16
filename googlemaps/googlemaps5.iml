@@ -14,6 +14,7 @@
     <orderEntry type="module" module-name="catalog5" />
     <orderEntry type="module" module-name="common5" />
     <orderEntry type="module" module-name="jaxb5" />
+    <orderEntry type="module" module-name="navigation-formats5" />
     <orderEntry type="module" module-name="rest5" />
     <orderEntry type="library" name="apache/commons-httpclient" level="project" />
     <orderEntry type="library" name="junit/junit" level="project" />

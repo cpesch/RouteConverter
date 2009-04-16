@@ -28,18 +28,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * {@link ActionListener} that adds comments to the selected rows of a {@link JTable}
- * with the help of a {@link PositionAugmenter}.
+ * {@link ActionListener} that adds postal addresses from Google Maps as comments to
+ * the selected rows of a {@link JTable} with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class AddCommentsToPositions implements ActionListener {
+public class AddPostalAddressesToPositions implements ActionListener {
     private JTable table;
     private PositionsModel positionsModel;
     private PositionAugmenter augmenter;
 
-    public AddCommentsToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddPostalAddressesToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;
@@ -48,7 +48,7 @@ public class AddCommentsToPositions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addComments(positionsModel, selectedRows);
+            augmenter.addPostalAddresses(positionsModel, selectedRows);
         }
     }
 }

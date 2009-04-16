@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
@@ -33,7 +34,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
- * Helps to augment positions with elevation and comment information.
+ * Helps to augment positions with elevation, postal address and populated place information.
  *
  * @author Christian Pesch
  */
@@ -171,41 +172,79 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addComment(GeoNamesService service, BaseNavigationPosition position) throws IOException {
+    private boolean addPopulatedPlace(GeoNamesService service, BaseNavigationPosition position) throws IOException {
         String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
         if (comment != null)
             position.setComment(comment);
         return comment != null;
     }
 
-    private void addComments(final PositionsModel positionsModel,
-                             final int[] rows,
-                             final OverwritePredicate predicate) {
+    private void addPopulatedPlaces(final PositionsModel positionsModel,
+                                    final int[] rows,
+                                    final OverwritePredicate predicate) {
         executeOperation(positionsModel, rows, predicate,
                 new Operation() {
                     private GeoNamesService service = new GeoNamesService();
 
                     public String getName() {
-                        return "CommentPositionAugmenter";
+                        return "PopulatedPlacePositionAugmenter";
                     }
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
-                        return addComment(service, position);
+                        return addPopulatedPlace(service, position);
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-comment-error");
+                        return RouteConverter.getBundle().getString("add-populated-place-error");
                     }
                 }
         );
     }
 
-    public void addComments(PositionsModel positionsModel, int[] selectedRows) {
-        addComments(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addPopulatedPlaces(PositionsModel positionsModel, int[] selectedRows) {
+        addPopulatedPlaces(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
-    public void complementComments(PositionsModel positionsModel) {
-        addComments(positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
+    public void complementPopulatedPlaces(PositionsModel positionsModel) {
+        addPopulatedPlaces(positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
+    }
+
+
+    private boolean addPostalAddress(GoogleMapsService service, BaseNavigationPosition position) throws IOException {
+        String comment = service.getLocationFor(position.getLongitude(), position.getLatitude());
+        if (comment != null)
+            position.setComment(comment);
+        return comment != null;
+    }
+
+    private void addPostalAddresses(final PositionsModel positionsModel,
+                                    final int[] rows,
+                                    final OverwritePredicate predicate) {
+        executeOperation(positionsModel, rows, predicate,
+                new Operation() {
+                    private GoogleMapsService service = new GoogleMapsService();
+
+                    public String getName() {
+                        return "PostalAddressPositionAugmenter";
+                    }
+
+                    public boolean run(BaseNavigationPosition position) throws Exception {
+                        return addPostalAddress(service, position);
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.getBundle().getString("add-postal-address-error");
+                    }
+                }
+        );
+    }
+
+    public void addPostalAddresses(PositionsModel positionsModel, int[] selectedRows) {
+        addPostalAddresses(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
+    public void complementPostalAddresses(PositionsModel positionsModel) {
+        addPostalAddresses(positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
     }
 
 
