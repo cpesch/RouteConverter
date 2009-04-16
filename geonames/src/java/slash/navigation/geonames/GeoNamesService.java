@@ -100,9 +100,9 @@ public class GeoNamesService {
     }
 
     public String getNearByFor(double longitude, double latitude) throws IOException {
-        String description = getNearByToponymFor(longitude, latitude);
+        String description = getNearByPlaceNameFor(longitude, latitude);
         if (description == null)
-            description = getNearByPlaceNameFor(longitude, latitude);
+            description = getNearByToponymFor(longitude, latitude);
         return description;
     }
 }
