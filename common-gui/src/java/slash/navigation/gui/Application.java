@@ -20,6 +20,7 @@
 
 package slash.navigation.gui;
 
+import javax.swing.*;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -92,9 +93,7 @@ public abstract class Application {
                 }
             }
         };
-        // TODO why not do the initialization in two threads?
-        // SwingUtilities.invokeLater(doCreateAndShowGUI);
-        doCreateAndShowGUI.run();
+        SwingUtilities.invokeLater(doCreateAndShowGUI);
     }
 
     static <T extends Application> T create(Class<T> applicationClass) throws Exception {
