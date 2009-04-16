@@ -110,7 +110,7 @@ public class Nmn4Format extends NmnFormat {
         writer.println(
                 "-" + SEPARATOR_CHAR +
                 "-" + SEPARATOR_CHAR +
-                "17" + SEPARATOR_CHAR +
+                "-" + SEPARATOR_CHAR +
                 "-" + SEPARATOR_CHAR +
                 "-" + SEPARATOR_CHAR +
                 city + SEPARATOR_CHAR +
