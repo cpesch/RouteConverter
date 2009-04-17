@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.panels;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.AddUrlDialog;
-import slash.navigation.converter.gui.AddFileDialog;
+import slash.navigation.converter.gui.dialogs.AddUrlDialog;
+import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.dnd.DnDHelper;

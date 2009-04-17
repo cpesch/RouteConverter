@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.helper;
 
 import slash.navigation.catalog.domain.RouteService;
 import slash.navigation.catalog.domain.exception.UnAuthorizedException;
-import slash.navigation.converter.gui.LoginDialog;
+import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Constants;
 

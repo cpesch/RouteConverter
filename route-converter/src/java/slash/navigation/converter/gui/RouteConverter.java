@@ -34,6 +34,8 @@ import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
+import slash.navigation.converter.gui.dialogs.FilterDialog;
+import slash.navigation.converter.gui.dialogs.RenameDialog;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -1188,35 +1190,35 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return preferences.getBoolean(START_WITH_LAST_FILE_PREFERENCE, true);
     }
 
-    int getSelectDuplicatePreference() {
+    public int getSelectDuplicatePreference() {
         return preferences.getInt(SELECT_DUPLICATE_PREFERENCE, 5);
     }
 
-    void setSelectDuplicatePreference(int selectDuplicatePreference) {
+    public void setSelectDuplicatePreference(int selectDuplicatePreference) {
         preferences.putInt(SELECT_DUPLICATE_PREFERENCE, selectDuplicatePreference);
     }
 
-    int getSelectByDistancePreference() {
+    public int getSelectByDistancePreference() {
         return preferences.getInt(SELECT_BY_DISTANCE_PREFERENCE, 1000);
     }
 
-    void setSelectByDistancePreference(int selectByDistancePreference) {
+    public  void setSelectByDistancePreference(int selectByDistancePreference) {
         preferences.putInt(SELECT_BY_DISTANCE_PREFERENCE, selectByDistancePreference);
     }
 
-    int getSelectByOrderPreference() {
+    public int getSelectByOrderPreference() {
         return preferences.getInt(SELECT_BY_ORDER_PREFERENCE, 5);
     }
 
-    void setSelectByOrderPreference(int selectByOrderPreference) {
+    public  void setSelectByOrderPreference(int selectByOrderPreference) {
         preferences.putInt(SELECT_BY_ORDER_PREFERENCE, selectByOrderPreference);
     }
 
-    int getSelectBySignificancePreference() {
+    public int getSelectBySignificancePreference() {
         return preferences.getInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, 20);
     }
 
-    void setSelectBySignificancePreference(int selectBySignificancePreference) {
+    public  void setSelectBySignificancePreference(int selectBySignificancePreference) {
         preferences.putInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
     }
 
@@ -1237,7 +1239,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]));
     }
 
-    void setUserNamePreference(String userNamePreference, String passwordPreference) {
+    public void setUserNamePreference(String userNamePreference, String passwordPreference) {
         preferences.put(USERNAME_PREFERENCE, userNamePreference);
         preferences.putByteArray(PASSWORD_PREFERENCE, passwordPreference.getBytes());
     }

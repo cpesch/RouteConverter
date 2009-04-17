@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.dialogs;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 
 import slash.navigation.converter.gui.models.NumberDocument;
 import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.converter.gui.RouteConverter;
 
 /**
  * Dialog for selecting filter criteria

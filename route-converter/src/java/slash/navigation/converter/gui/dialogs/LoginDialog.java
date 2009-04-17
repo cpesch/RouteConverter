@@ -18,12 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.dialogs;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.util.Conversion;
 import slash.navigation.catalog.domain.RouteService;
 

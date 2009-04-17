@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationFormat;
@@ -33,7 +33,7 @@ import java.io.File;
  * @author Christian Pesch
  */
 
-class NavigationFormatFileFilter extends FileFilter {
+public class NavigationFormatFileFilter extends FileFilter {
     private NavigationFormat format;
 
     public NavigationFormatFileFilter(NavigationFormat format) {

@@ -18,112 +18,74 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.dialogs;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.helper.FrameAction;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.navigation.util.Conversion;
+import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog to add url to RouteService
+ * Dialog to rename position list
  *
  * @author Christian Pesch
  */
 
-public class AddUrlDialog extends JDialog {
-    private RouteServiceOperator operator;
-    private CategoryTreeNode categoryTreeNode;
+public class RenameDialog extends JDialog {
     private JPanel contentPane;
-    private JLabel labelLabel;
-    private JTextField textFieldDescription;
-    private JTextField textFieldUrl;
-    private JButton buttonAdd;
+    private JButton buttonRename;
     private JButton buttonCancel;
-    private JLabel labelResult;
+    private JTextField textFieldName;
 
-    public AddUrlDialog(RouteServiceOperator operator,
-                        CategoryTreeNode categoryTreeNode, String description, String url) {
+    public RenameDialog() {
         super(RouteConverter.getInstance().getFrame());
-        this.operator = operator;
-        this.categoryTreeNode = categoryTreeNode;
-        setTitle(RouteConverter.getBundle().getString("add-url-title"));
+        setTitle(RouteConverter.getBundle().getString("rename-title"));
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonAdd);
+        getRootPane().setDefaultButton(buttonRename);
 
-        labelLabel.setText(MessageFormat.format(RouteConverter.getBundle().getString("add-url-label"), categoryTreeNode.getName()));
-        textFieldDescription.setText(description);
-        textFieldUrl.setText(url);
+        textFieldName.setText(RouteConverter.getInstance().getPositionsModel().getRoute().getName());
 
-        buttonAdd.addActionListener(new FrameAction() {
+        buttonRename.addActionListener(new FrameAction() {
             public void run() {
-                addUrl();
+                onRename();
             }
         });
 
         buttonCancel.addActionListener(new FrameAction() {
             public void run() {
-                cancel();
+                onCancel();
             }
         });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                cancel();
+                onCancel();
             }
         });
 
         contentPane.registerKeyboardAction(new FrameAction() {
             public void run() {
-                cancel();
+                onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    void addRoute(final CategoryTreeNode category, final String description, final String url) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                category.addRoute(description, url);
-            }
-        });
-    }
-
-    private void addUrl() {
-        String url = textFieldUrl.getText();
-        if (Conversion.trim(url) == null) {
-            labelResult.setText("No url given!"); // TODO make nicer
-            pack();
-            return;
-        }
-
-        String description = textFieldDescription.getText();
-        if (Conversion.trim(description) == null) {
-            labelResult.setText("No description given!"); // TODO make nicer
-            pack();
-            return;
-        }
-
-        addRoute(categoryTreeNode, description, url);
-        labelResult.setText("Successfully added url!"); // TODO make nicer
-        pack();
+    private void onRename() {
+        RouteConverter.getInstance().getFormatAndRoutesModel().renameRoute(textFieldName.getText());
         dispose();
     }
 
-    private void cancel() {
+    private void onCancel() {
         dispose();
     }
 
@@ -143,16 +105,16 @@ public class AddUrlDialog extends JDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonAdd = new JButton();
-        this.$$$loadButtonText$$$(buttonAdd, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add"));
-        panel2.add(buttonAdd, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonRename = new JButton();
+        this.$$$loadButtonText$$$(buttonRename, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("ok"));
+        panel2.add(buttonRename, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCancel = new JButton();
         this.$$$loadButtonText$$$(buttonCancel, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("cancel"));
         panel2.add(buttonCancel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -160,29 +122,18 @@ public class AddUrlDialog extends JDialog {
         panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("description-colon"));
-        panel4.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textFieldDescription = new JTextField();
-        panel4.add(textFieldDescription, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, -1), null, 0, false));
-        final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("url-colon"));
-        panel4.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textFieldUrl = new JTextField();
-        panel4.add(textFieldUrl, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("name"));
+        panel4.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        textFieldName = new JTextField();
+        panel4.add(textFieldName, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, -1), null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        labelLabel = new JLabel();
-        labelLabel.setText("");
-        contentPane.add(labelLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelResult = new JLabel();
-        labelResult.setText("");
-        contentPane.add(labelResult, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
