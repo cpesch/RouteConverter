@@ -66,7 +66,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
             return trimLineFeeds(name);
         if (name == null || description.startsWith(name))
             return trimLineFeeds(description);
-        if (name.startsWith(description))
+        if (name.startsWith(description) || name.endsWith(description))
             return name;
         return trimLineFeeds(name + "; " + description);
     }

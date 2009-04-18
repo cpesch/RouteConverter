@@ -80,7 +80,7 @@ public class Gpx10Format extends GpxFormat {
             String desc = rte.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractRoute(rte);
-            result.add(new GpxRoute(this, RouteCharacteristics.Route, name, descriptions, positions));
+            result.add(new GpxRoute(this, RouteCharacteristics.Route, name, descriptions, positions, gpx, rte));
         }
 
         return result;
@@ -90,7 +90,7 @@ public class Gpx10Format extends GpxFormat {
         String name = gpx.getName();
         List<String> descriptions = asDescription(gpx.getDesc());
         List<GpxPosition> positions = extractWayPoints(gpx.getWpt());
-        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Waypoints, name, descriptions, positions);
+        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Waypoints, name, descriptions, positions, gpx);
     }
 
     boolean isTripmasterTrack(List<GpxPosition> positions) {
@@ -110,7 +110,7 @@ public class Gpx10Format extends GpxFormat {
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractTrack(trk);
             if (positions.size() > 0)
-                result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions));
+                result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions, gpx, trk));
         }
 
         return result;
@@ -121,7 +121,7 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), null, parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc())));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), null, parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept));
             }
         }
         return positions;
@@ -130,7 +130,7 @@ public class Gpx10Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), null, parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc())));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), null, parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt));
         }
         return positions;
     }
@@ -139,8 +139,8 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
-                for (Gpx.Trk.Trkseg.Trkpt trkPtr : trkSeg.getTrkpt()) {
-                    positions.add(new GpxPosition(trkPtr.getLon(), trkPtr.getLat(), trkPtr.getEle(), trkPtr.getSpeed(), parseTime(trkPtr.getTime()), asComment(trkPtr.getName(), trkPtr.getDesc())));
+                for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), trkPt.getSpeed(), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
                 }
             }
         }
@@ -154,7 +154,9 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            Gpx.Wpt wpt = objectFactory.createGpxWpt();
+            Gpx.Wpt wpt = position.getOrigin(Gpx.Wpt.class);
+            if (wpt == null)
+                wpt = objectFactory.createGpxWpt();
             wpt.setLat(Conversion.formatDouble(position.getLatitude()));
             wpt.setLon(Conversion.formatDouble(position.getLongitude()));
             if (isWriteTime())
@@ -171,7 +173,13 @@ public class Gpx10Format extends GpxFormat {
     private List<Gpx.Rte> createRoute(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         List<Gpx.Rte> rtes = new ArrayList<Gpx.Rte>();
-        Gpx.Rte rte = objectFactory.createGpxRte();
+
+        Gpx.Rte rte = route.getOrigin(Gpx.Rte.class);
+        if (rte != null)
+            rte.getRtept().clear();
+        else
+            rte = objectFactory.createGpxRte();
+
         if (isWriteName()) {
             rte.setName(route.getName());
             rte.setDesc(asDescription(route.getDescription()));
@@ -180,7 +188,9 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            Gpx.Rte.Rtept rtept = objectFactory.createGpxRteRtept();
+            Gpx.Rte.Rtept rtept = position.getOrigin(Gpx.Rte.Rtept.class);
+            if (rtept == null)
+                rtept = objectFactory.createGpxRteRtept();
             rtept.setLat(Conversion.formatDouble(position.getLatitude()));
             rtept.setLon(Conversion.formatDouble(position.getLongitude()));
             if (isWriteTime())
@@ -197,7 +207,13 @@ public class Gpx10Format extends GpxFormat {
     private List<Gpx.Trk> createTrack(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         List<Gpx.Trk> trks = new ArrayList<Gpx.Trk>();
-        Gpx.Trk trk = objectFactory.createGpxTrk();
+
+        Gpx.Trk trk = route.getOrigin(Gpx.Trk.class);
+        if (trk != null)
+            trk.getTrkseg().clear();
+        else
+            trk = objectFactory.createGpxTrk();
+
         if (isWriteName()) {
             trk.setName(route.getName());
             trk.setDesc(asDescription(route.getDescription()));
@@ -207,7 +223,9 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            Gpx.Trk.Trkseg.Trkpt trkpt = objectFactory.createGpxTrkTrksegTrkpt();
+            Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
+            if (trkpt == null)
+                trkpt = objectFactory.createGpxTrkTrksegTrkpt();
             trkpt.setLat(Conversion.formatDouble(position.getLatitude()));
             trkpt.setLon(Conversion.formatDouble(position.getLongitude()));
             if (isWriteTime())
@@ -222,9 +240,21 @@ public class Gpx10Format extends GpxFormat {
         return trks;
     }
 
+    private Gpx recycleGpx(GpxRoute route) {
+        Gpx gpx = route.getOrigin(Gpx.class);
+        if (gpx != null) {
+            gpx.getRte().clear();
+            gpx.getTrk().clear();
+            gpx.getWpt().clear();
+        }
+        return gpx;
+    }
+
     private Gpx createGpx(GpxRoute route, int startIndex, int endIndex) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        Gpx gpx = objectFactory.createGpx();
+        Gpx gpx = recycleGpx(route);
+        if (gpx == null)
+            gpx = new ObjectFactory().createGpx();
+
         gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpx.setVersion(VERSION);
         gpx.setName(route.getName());
@@ -237,7 +267,15 @@ public class Gpx10Format extends GpxFormat {
 
     private Gpx createGpx(List<GpxRoute> routes) {
         ObjectFactory objectFactory = new ObjectFactory();
-        Gpx gpx = objectFactory.createGpx();
+        Gpx gpx = null;
+        for(GpxRoute route : routes) {
+            gpx = recycleGpx(route);
+            if(gpx != null)
+                break;
+        }
+        if (gpx == null)
+            gpx = objectFactory.createGpx();
+
         gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpx.setVersion(VERSION);
         for (GpxRoute route : routes) {

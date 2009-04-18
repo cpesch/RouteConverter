@@ -36,14 +36,16 @@ import java.util.regex.Matcher;
 
 public class GpxPosition extends Wgs84Position {
     private String reason;
+    private Object origin;
 
     public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, BigDecimal speed, Calendar time, String comment) {
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, BigDecimal speed, Calendar time, String comment, Object origin) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
                 Conversion.formatDouble(elevation), Conversion.formatDouble(speed), time, comment);
+        this.origin = origin;
     }
 
     public void setComment(String comment) {
@@ -71,6 +73,18 @@ public class GpxPosition extends Wgs84Position {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    Object getOrigin() {
+        return origin;
+    }
+
+    <T> T getOrigin(Class<T> resultClass) {
+        if (resultClass.isInstance(origin))
+            //noinspection unchecked
+            return (T) origin;
+        else
+            return null;
     }
 
     public GpxPosition asGpxPosition() {

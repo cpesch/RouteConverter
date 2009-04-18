@@ -43,6 +43,7 @@ import slash.navigation.viamichelin.ViaMichelinRoute;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * A GPS Exchange Format (.gpx) route.
@@ -54,13 +55,21 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     private String name;
     private List<String> description;
     private List<GpxPosition> positions;
+    private List<Object> origins;
 
-    public GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
-                    String name, List<String> description, List<GpxPosition> positions) {
+    GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
+             String name, List<String> description, List<GpxPosition> positions,
+             Object... origins) {
         super(format, characteristics);
         this.name = name;
         this.description = description;
         this.positions = positions;
+        this.origins = Arrays.asList(origins);
+    }
+
+    public GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
+                    String name, List<String> description, List<GpxPosition> positions) {
+        this(format, characteristics, name, description, positions, new Object[0]);
     }
 
     public GpxRoute(GpxFormat format) {
@@ -84,6 +93,19 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return positions;
     }
 
+    List<Object> getOrigins() {
+        return origins;
+    }
+
+    <T> T getOrigin(Class<T> resultClass) {
+        for (Object origin : origins) {
+            if (resultClass.isInstance(origin))
+                //noinspection unchecked
+                return (T) origin;
+        }
+        return null;
+    }
+
     public int getPositionCount() {
         return positions.size();
     }
@@ -92,10 +114,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         positions.add(index, position);
     }
 
-
     public GpxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
         return new GpxPosition(longitude, latitude, null, null, time, comment);
     }
+
 
     private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
