@@ -195,7 +195,7 @@ public abstract class RouteComments {
                     "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
 
     /**
-     * pilog/logpos encoding of the comment:
+     * logpos encoding of the comment:
      * + looks like a planned position with a verbose comment
      * + Rottstücker (Wiesloch); K4174 Horrenberger Straße @166.6m (s=60 d=34)
      * - looks like a tracked position with a verbose comment
@@ -206,10 +206,10 @@ public abstract class RouteComments {
      * = 1000466:4889529 (@365.8m 090314 07:36:52 - 090314 08:02:04)
      */
     private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
-    private static final SimpleDateFormat PILOG_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
-    private static final Pattern PILOG_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
+    private static final SimpleDateFormat LOGPOS_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
+    private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+))?.+)\\)");
-    private static final Pattern LOGPOS_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
+    private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\((s=(\\d+).+)\\)");
 
 
@@ -243,8 +243,8 @@ public abstract class RouteComments {
         return parse(string, TRIPMASTER_DATE);
     }
 
-    private static Calendar parsePilogDate(String string) {
-        return parse(string, PILOG_DATE);
+    private static Calendar parseLogposDate(String string) {
+        return parse(string, LOGPOS_DATE);
     }
 
     private static Calendar parseTTTracklogTime(String string) {
@@ -331,9 +331,9 @@ public abstract class RouteComments {
             }
         }
 
-        matcher = LOGPOS_PATTERN.matcher(comment);
+        matcher = LOGPOS_2_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parsePilogDate(matcher.group(1)));
+            position.setTime(parseLogposDate(matcher.group(1)));
             position.setSpeed(Conversion.parseDouble(matcher.group(5)));
 
             if (position instanceof TomTomPosition) {
@@ -343,9 +343,9 @@ public abstract class RouteComments {
             }
         }
 
-        matcher = PILOG_PATTERN.matcher(comment);
+        matcher = LOGPOS_1_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parsePilogDate(matcher.group(1)));
+            position.setTime(parseLogposDate(matcher.group(1)));
             Double elevation;
             try {
                 elevation = Conversion.parseDouble(matcher.group(4));
