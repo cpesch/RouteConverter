@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.panels.ConvertPanel">
+              <grid id="4972b" binding="convertPanel" layout-manager="GridLayoutManager" row-count="12" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="3" left="3" bottom="0" right="3"/>
+                <constraints>
+                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="convert-tab"/>
+                </constraints>
+                <properties>
+                  <minimumSize width="-1" height="-1"/>
+                  <preferredSize width="560" height="560"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="44b66" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="source"/>
+                    </properties>
+                  </component>
+                  <component id="f2430" class="javax.swing.JTextField" binding="textFieldSource">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <dragEnabled value="true"/>
+                      <text value=""/>
+                    </properties>
+                  </component>
+                  <component id="f62da" class="javax.swing.JButton" binding="buttonOpenFile">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <icon value="slash/navigation/converter/gui/open.png"/>
+                      <inheritsPopupMenu value="false"/>
+                      <text value=""/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="open-tooltip"/>
+                    </properties>
+                  </component>
+                  <scrollpane id="fff6d">
+                    <constraints>
+                      <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="394b2" class="javax.swing.JTable" binding="tablePositions">
+                        <constraints/>
+                        <properties>
+                          <autoCreateColumnsFromModel value="false"/>
+                          <showHorizontalLines value="false"/>
+                          <showVerticalLines value="false"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <component id="e7465" class="javax.swing.JButton" binding="buttonSaveFile">
+                    <constraints>
+                      <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <icon value="slash/navigation/converter/gui/save.png"/>
+                      <text value=""/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-tooltip"/>
+                    </properties>
+                  </component>
+                  <grid id="479f3" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="fb2bf" class="javax.swing.JButton" binding="buttonRevertPositionList">
+                        <constraints>
+                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/revert.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="revert-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="4ba64" class="javax.swing.JButton" binding="buttonMovePositionUp">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/up.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-up-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="7c7e4" class="javax.swing.JButton" binding="buttonMovePositionDown">
+                        <constraints>
+                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/down.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-down-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="f418b" class="javax.swing.JButton" binding="buttonMovePositionToTop">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/top.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-top-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="82808" class="javax.swing.JButton" binding="buttonMovePositionToBottom">
+                        <constraints>
+                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/bottom.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-bottom-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="c1bcd" class="javax.swing.JButton" binding="buttonRemovePosition">
+                        <constraints>
+                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/remove-position.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="remove-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="cc095" class="javax.swing.JButton" binding="buttonFilterPositionList">
+                        <constraints>
+                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/filter.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="filter-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="97f2e" class="javax.swing.JButton" binding="buttonAddPosition">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/add-position.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-tooltip"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <component id="3c7ec" class="javax.swing.JCheckBox" binding="checkboxStartGoogleEarth">
+                    <constraints>
+                      <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="start-google-earth-after-save"/>
+                    </properties>
+                  </component>
+                  <component id="31feb" class="javax.swing.JCheckBox" binding="checkboxDuplicateFirstPosition">
+                    <constraints>
+                      <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="duplicate-first-position"/>
+                    </properties>
+                  </component>
+                  <component id="d1541" class="javax.swing.JCheckBox" binding="checkboxNumberPositionNames" default-binding="true">
+                    <constraints>
+                      <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="number-positions"/>
+                    </properties>
+                  </component>
+                  <grid id="e97b7" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <grid id="ce305" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="8d193" class="javax.swing.JComboBox" binding="comboBoxChooseFormat">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                          <component id="dafa0" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <horizontalAlignment value="4"/>
+                              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="target-format"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <hspacer id="15cf0">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                    </children>
+                  </grid>
+                  <grid id="1e157" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="19fb" class="javax.swing.JLabel" binding="labelFormat">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <horizontalAlignment value="2"/>
+                          <horizontalTextPosition value="2"/>
+                          <text value="-"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <xy id="e4126" layout-manager="XYLayout" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <minimum-size width="-1" height="4"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children/>
+                  </xy>
+                  <component id="89738" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="content"/>
+                    </properties>
+                  </component>
+                  <component id="41e59" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <horizontalAlignment value="10"/>
+                      <horizontalTextPosition value="11"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="format"/>
+                    </properties>
+                  </component>
+                  <grid id="16b0b" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="9ec01" class="javax.swing.JButton" binding="buttonRemovePositionList">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/remove-route.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="remove-position-list-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="5723f" class="javax.swing.JButton" binding="buttonAppendFileToPositionList">
+                        <constraints>
+                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/append-route.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="append-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="72618" class="javax.swing.JButton" binding="buttonRenamePositionList" default-binding="true">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/rename-route.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-position-list-tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="fa815" class="javax.swing.JLabel" binding="labelPositions">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <horizontalAlignment value="2"/>
+                          <horizontalTextPosition value="2"/>
+                          <text value="-"/>
+                        </properties>
+                      </component>
+                      <component id="732dd" class="javax.swing.JButton" binding="buttonAddPositionList">
+                        <constraints>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/add-route.png"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-position-list-tooltip"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <component id="c33f8" class="javax.swing.JLabel" binding="labelPositionLists">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <horizontalAlignment value="2"/>
+                      <horizontalTextPosition value="2"/>
+                      <text value="-"/>
+                    </properties>
+                  </component>
+                  <component id="45d1f" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="positions"/>
+                    </properties>
+                  </component>
+                  <grid id="bb0f4" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="1" column="2" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="7eac7" class="javax.swing.JButton" binding="buttonNewFile">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="slash/navigation/converter/gui/new.png"/>
+                          <inheritsPopupMenu value="false"/>
+                          <text value=""/>
+                          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-tooltip"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <component id="c1eb2" class="javax.swing.JCheckBox" binding="checkBoxSaveAsRouteTrackWaypoints">
+                    <constraints>
+                      <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <selected value="false"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-as-route-track-waypoints"/>
+                    </properties>
+                  </component>
+                  <grid id="710a3" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="124cd" class="javax.swing.JComboBox" binding="comboBoxChoosePositionList">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <visible value="true"/>
+                        </properties>
+                      </component>
+                      <component id="24f55" class="javax.swing.JComboBox" binding="comboBoxChoosePositionListCharacteristics">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="7b0cc" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="characteristics"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <component id="b138f" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="position-list"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+</form>

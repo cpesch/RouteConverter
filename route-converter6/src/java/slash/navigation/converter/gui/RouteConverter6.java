@@ -21,14 +21,7 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.panels.BrowsePanel;
-
-import javax.swing.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 
 /**
  * A small graphical user interface for the route conversion
@@ -39,10 +32,6 @@ import java.util.List;
 
 public class RouteConverter6 extends RouteConverter {
 
-    protected void addDragAndDropToConvertPane() {
-        frame.setTransferHandler(new FrameDropHandler());
-    }
-
     public ExternalPrograms createExternalPrograms() {
         return new ExternalPrograms6();
     }
@@ -51,39 +40,8 @@ public class RouteConverter6 extends RouteConverter {
         return new BrowsePanel6();
     }
 
-    private class FrameDropHandler extends TransferHandler {
-        public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                    support.isDataFlavorSupported(DataFlavor.stringFlavor);
-        }
-
-        public boolean importData(TransferSupport support) {
-            Transferable t = support.getTransferable();
-            try {
-                if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
-                    if (data != null) {
-                        List<File> files = (List<File>) data;
-                        onDrop(files);
-                        return true;
-                    }
-                }
-
-                if (support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.stringFlavor);
-                    if (data != null) {
-                        String url = (String) data;
-                        onDrop(url);
-                        return true;
-                    }
-                }
-            } catch (UnsupportedFlavorException e) {
-                // intentionally left empty
-            } catch (IOException e) {
-                // intentionally left empty
-            }
-            return false;
-        }
+    protected ConvertPanel createConvertPanel() {
+        return new ConvertPanel6();
     }
 
     public static void main(String[] args) {

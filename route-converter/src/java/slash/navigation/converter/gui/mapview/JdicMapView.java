@@ -97,7 +97,6 @@ public class JdicMapView implements MapView {
     private WebBrowser webBrowser;
     private ServerSocket dragListenerServerSocket;
     private PositionsModel positionsModel;
-    private CharacteristicsModel characteristicsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
     private boolean debug, initialized = false, running = true,
@@ -120,7 +119,6 @@ public class JdicMapView implements MapView {
 
     private void setModel(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
         this.positionsModel = positionsModel;
-        this.characteristicsModel = characteristicsModel;
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -192,6 +190,8 @@ public class JdicMapView implements MapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.setURL(html.toURI().toURL());
+            if (debug)
+            System.out.println(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             initializationCause = t;
@@ -213,20 +213,30 @@ public class JdicMapView implements MapView {
 
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void downloadStarted(WebBrowserEvent event) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " downloadStarted " + event + " thread " + Thread.currentThread());
             }
 
             public void downloadCompleted(WebBrowserEvent event) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " downloadCompleted " + event + " thread " + Thread.currentThread());
                 if (Platform.isMac())
                     documentCompleted(event);
             }
 
             public void downloadProgress(WebBrowserEvent event) {
-            }
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " downloadProgress " + event + " thread " + Thread.currentThread());
+           }
 
             public void downloadError(WebBrowserEvent event) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " downloadError " + event + " thread " + Thread.currentThread());
             }
 
             public void documentCompleted(WebBrowserEvent event) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " documentCompleted " + event + " thread " + Thread.currentThread());
                 synchronized (notificationMutex) {
                     initialized = getCanvas() != null && isCompatible();
                 }

@@ -330,6 +330,7 @@
       <module fileurl="file://$PROJECT_DIR$/../common-gui/common-gui5.iml" filepath="$PROJECT_DIR$/../common-gui/common-gui5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../common/common5.iml" filepath="$PROJECT_DIR$/../common/common5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../geonames/geonames5.iml" filepath="$PROJECT_DIR$/../geonames/geonames5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../googlemaps/googlemaps5.iml" filepath="$PROJECT_DIR$/../googlemaps/googlemaps5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxb5/jaxb5.iml" filepath="$PROJECT_DIR$/../jaxb5/jaxb5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.35.iml" filepath="$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.35.iml" />
       <module fileurl="file://$PROJECT_DIR$/../navigation-formats/navigation-formats5.iml" filepath="$PROJECT_DIR$/../navigation-formats/navigation-formats5.iml" />
@@ -361,6 +362,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../googlemaps" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../jdic-0.9.3" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../jdic-0.9.5" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../rest" vcs="svn" />

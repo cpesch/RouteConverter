@@ -51,7 +51,7 @@ public class FilterDialog extends JDialog {
     private JButton buttonSelectByDistance;
     private JButton buttonSelectByOrder;
     private JButton buttonSelectBySignificance;
-    private JButton buttonDeletePositions;
+    private JButton buttonRemovePositions;
     private JButton buttonClearSelection;
     private JLabel labelResult;
     private NumberDocument duplicate;
@@ -66,50 +66,50 @@ public class FilterDialog extends JDialog {
 
         buttonSelectDuplicates.addActionListener(new FrameAction() {
             public void run() {
-                onSelectDuplicates();
+                selectDuplicates();
             }
         });
 
         buttonSelectByDistance.addActionListener(new FrameAction() {
             public void run() {
-                onSelectByDistance();
+                selectByDistance();
             }
         });
 
         buttonSelectByOrder.addActionListener(new FrameAction() {
             public void run() {
-                onSelectByOrder();
+                selectByOrder();
             }
         });
 
         buttonSelectBySignificance.addActionListener(new FrameAction() {
             public void run() {
-                onSelectBySignificance();
+                selectBySignificance();
             }
         });
 
-        buttonDeletePositions.addActionListener(new FrameAction() {
+        buttonRemovePositions.addActionListener(new FrameAction() {
             public void run() {
-                onDeletePositions();
+                removePositions();
             }
         });
 
         buttonClearSelection.addActionListener(new FrameAction() {
             public void run() {
-                onRemoveSelection();
+                clearSelection();
             }
         });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onClose();
+                close();
             }
         });
 
         contentPane.registerKeyboardAction(new FrameAction() {
             public void run() {
-                onClose();
+                close();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -132,7 +132,7 @@ public class FilterDialog extends JDialog {
         r.setSelectBySignificancePreference(significance.getNumber());
     }
 
-    private void onSelectDuplicates() {
+    private void selectDuplicates() {
         int duplicate = this.duplicate.getNumber();
         if (duplicate >= 0) {
             int selectedRowCount = RouteConverter.getInstance().selectDuplicatesWithinDistance(duplicate);
@@ -141,7 +141,7 @@ public class FilterDialog extends JDialog {
         }
     }
 
-    private void onSelectByDistance() {
+    private void selectByDistance() {
         int distance = this.distance.getNumber();
         if (distance >= 0) {
             int selectedRowCount = RouteConverter.getInstance().selectPositionsThatRemainingHaveDistance(distance);
@@ -150,17 +150,16 @@ public class FilterDialog extends JDialog {
         }
     }
 
-    private void onSelectByOrder() {
+    private void selectByOrder() {
         int order = this.order.getNumber();
         if (order >= 0) {
-            int selectedRowCount = RouteConverter.getInstance().selectAllButEveryNthPosition(order);
-            int unselectedRowCount = RouteConverter.getInstance().getPositionsModel().getRowCount() - selectedRowCount;
-            labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-order-result"), selectedRowCount, unselectedRowCount));
+            int[] selectedRowCount = RouteConverter.getInstance().selectAllButEveryNthPosition(order);
+            labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("filter-select-by-order-result"), selectedRowCount[0], selectedRowCount[1]));
             savePreferences();
         }
     }
 
-    private void onSelectBySignificance() {
+    private void selectBySignificance() {
         int significance = this.significance.getNumber();
         if (significance >= 0) {
             int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(significance);
@@ -169,17 +168,17 @@ public class FilterDialog extends JDialog {
         }
     }
 
-    private void onDeletePositions() {
-        RouteConverter.getInstance().onRemovePosition();
-        onClose();
+    private void removePositions() {
+        RouteConverter.getInstance().removePositions();
+        close();
     }
 
-    private void onRemoveSelection() {
-        RouteConverter.getInstance().clearPositionSelection();
+    private void clearSelection() {
+        RouteConverter.getInstance().clearSelection();
         labelResult.setText(RouteConverter.getBundle().getString("filter-remove-selection-result"));
     }
 
-    private void onClose() {
+    private void close() {
         savePreferences();
         dispose();
     }
@@ -219,9 +218,9 @@ public class FilterDialog extends JDialog {
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
-        buttonDeletePositions = new JButton();
-        this.$$$loadButtonText$$$(buttonDeletePositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positions"));
-        panel3.add(buttonDeletePositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonRemovePositions = new JButton();
+        this.$$$loadButtonText$$$(buttonRemovePositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positions"));
+        panel3.add(buttonRemovePositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel3.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();

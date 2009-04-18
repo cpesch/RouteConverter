@@ -45,47 +45,47 @@ public class RenameDialog extends JDialog {
     private JButton buttonCancel;
     private JTextField textFieldName;
 
-    public RenameDialog() {
+    public RenameDialog(String routeName) {
         super(RouteConverter.getInstance().getFrame());
         setTitle(RouteConverter.getBundle().getString("rename-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonRename);
 
-        textFieldName.setText(RouteConverter.getInstance().getPositionsModel().getRoute().getName());
+        textFieldName.setText(routeName);
 
         buttonRename.addActionListener(new FrameAction() {
             public void run() {
-                onRename();
+                rename();
             }
         });
 
         buttonCancel.addActionListener(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onCancel();
+                cancel();
             }
         });
 
         contentPane.registerKeyboardAction(new FrameAction() {
             public void run() {
-                onCancel();
+                cancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onRename() {
-        RouteConverter.getInstance().getFormatAndRoutesModel().renameRoute(textFieldName.getText());
+    private void rename() {
+        RouteConverter.getInstance().renameRoute(textFieldName.getText());
         dispose();
     }
 
-    private void onCancel() {
+    private void cancel() {
         dispose();
     }
 

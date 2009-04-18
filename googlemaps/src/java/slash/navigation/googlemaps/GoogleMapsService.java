@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -42,7 +42,7 @@ import java.util.prefs.Preferences;
 public class GoogleMapsService {
     protected static Logger log = Logger.getLogger(GoogleMapsService.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsService.class);
-    private static final String GOOGLE_MAPS_URL_PREFERENCE = "googlemapsUrl";
+    private static final String GOOGLE_MAPS_URL_PREFERENCE = "googleMapsUrl";
 
     private static String getGoogleMapsUrlPreference() {
         return preferences.get(GOOGLE_MAPS_URL_PREFERENCE, "http://maps.google.com/");
@@ -71,10 +71,12 @@ public class GoogleMapsService {
     <T> T find(List elements, Class<T> resultClass) {
         for (Object element : elements) {
             if (resultClass.isInstance(element))
+                //noinspection unchecked
                 return (T) element;
             if (element instanceof JAXBElement) {
                 JAXBElement jaxbElement = (JAXBElement) element;
                 if (resultClass.isInstance(jaxbElement.getValue()))
+                    //noinspection unchecked
                     return (T) jaxbElement.getValue();
             }
         }
@@ -98,6 +100,7 @@ public class GoogleMapsService {
         List<T> result = new ArrayList<T>();
         for (Object element : elements) {
             if (resultClass.isInstance(element))
+                //noinspection unchecked
                 result.add((T) element);
         }
         return result.size() > 0 ? result : null;

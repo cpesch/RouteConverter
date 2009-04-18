@@ -20,51 +20,52 @@
 
 package slash.navigation.converter.gui.panels;
 
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.dialogs.AddUrlDialog;
-import slash.navigation.converter.gui.dialogs.AddFileDialog;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.dnd.DnDHelper;
-import slash.navigation.converter.gui.helper.FrameAction;
-import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
-import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
-import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
-import slash.navigation.gui.Constants;
-import slash.navigation.catalog.domain.RouteService;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.BaseNavigationFormat;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.BaseRoute;
+import slash.navigation.NavigationFileParser;
 import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.domain.RouteService;
 import slash.navigation.catalog.model.CategoryTreeModel;
+import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.dialogs.AddFileDialog;
+import slash.navigation.converter.gui.dialogs.AddUrlDialog;
+import slash.navigation.converter.gui.dnd.DnDHelper;
+import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
+import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
+import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
+import slash.navigation.gui.Constants;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
 import slash.navigation.util.RouteComments;
-import slash.navigation.NavigationFileParser;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.BaseRoute;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableColumn;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.event.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Logger;
-import java.text.MessageFormat;
 import java.net.URL;
-
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.Spacer;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 /**
  * The browse panel of the route converter user interface.
@@ -98,55 +99,19 @@ public abstract class BrowsePanel {
 
         buttonAddCategory.addActionListener(new FrameAction() {
             public void run() {
-                final CategoryTreeNode selected = getSelectedTreeNode();
-                final String name = JOptionPane.showInputDialog(r.getFrame(),
-                        MessageFormat.format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
-                        r.getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE);
-                if (Conversion.trim(name) == null)
-                    return;
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        final CategoryTreeNode subCategory = selected.addSubCategory(name);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                treeCategories.expandPath(new TreePath(selected.getPath()));
-                                treeCategories.scrollPathToVisible(new TreePath(subCategory.getPath()));
-                            }
-                        });
-                    }
-                });
+                addCategory();
             }
         });
 
         buttonRenameCategory.addActionListener(new FrameAction() {
             public void run() {
-                final CategoryTreeNode selected = getSelectedTreeNode();
-                final String name = (String) JOptionPane.showInputDialog(r.getFrame(),
-                        MessageFormat.format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
-                        r.getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
-                if (Conversion.trim(name) == null)
-                    return;
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        selected.renameCategory(name);
-                    }
-                });
+                renameCategory();
             }
         });
 
         buttonDeleteCategory.addActionListener(new FrameAction() {
             public void run() {
-                final List<CategoryTreeNode> categories = getSelectedTreeNodes();
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        for (CategoryTreeNode category : categories) {
-                            category.delete();
-                        }
-                    }
-                });
+                deleteCategory();
             }
         });
 
@@ -164,55 +129,13 @@ public abstract class BrowsePanel {
 
         buttonRenameRoute.addActionListener(new FrameAction() {
             public void run() {
-                int selectedRow = tableRoutes.getSelectedRow();
-                if (selectedRow == -1)
-                    return;
-
-                final CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
-                if (categoryTreeNode == null)
-                    return;
-
-                final Route selected = getRoutesListModel().getRoute(selectedRow);
-                String description = null;
-                try {
-                    description = (String) JOptionPane.showInputDialog(r.getFrame(),
-                            MessageFormat.format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
-                            r.getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getDescription());
-                } catch (IOException e) {
-                    operator.handleServiceError(e);
-                }
-                if (Conversion.trim(description) == null)
-                    return;
-
-                final String theDescription = description;
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        // strange way to handle cache invalidations
-                        categoryTreeNode.renameRoute(selected, theDescription);
-                    }
-                });
+                renameRoute();
             }
         });
 
         buttonDeleteRoute.addActionListener(new FrameAction() {
             public void run() {
-                final int[] selectedRows = tableRoutes.getSelectedRows();
-                if (selectedRows.length == 0)
-                    return;
-
-                final CategoryTreeNode category = getSelectedTreeNode();
-                if (category == null)
-                    return;
-
-                operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-                    public void run() throws IOException {
-                        for (int selectedRow : selectedRows) {
-                            Route route = getRoutesListModel().getRoute(selectedRow);
-                            // strange way to handle cache invalidations
-                            category.deleteRoute(route);
-                        }
-                    }
-                });
+                deleteRoute();
             }
         });
 
@@ -317,6 +240,10 @@ public abstract class BrowsePanel {
         return browsePanel;
     }
 
+    public JButton getDefaultButton() {
+        return buttonAddFile;
+    }
+
     protected CategoryTreeNode getSelectedTreeNode() {
         TreePath treePath = treeCategories.getSelectionPath();
         return (CategoryTreeNode) (treePath != null ?
@@ -355,6 +282,55 @@ public abstract class BrowsePanel {
 
     private RoutesListModel getRoutesListModel() {
         return (RoutesListModel) tableRoutes.getModel();
+    }
+
+
+    private void addCategory() {
+        final CategoryTreeNode selected = getSelectedTreeNode();
+        final String name = JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
+                MessageFormat.format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
+                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE);
+        if (Conversion.trim(name) == null)
+            return;
+
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                final CategoryTreeNode subCategory = selected.addSubCategory(name);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        treeCategories.expandPath(new TreePath(selected.getPath()));
+                        treeCategories.scrollPathToVisible(new TreePath(subCategory.getPath()));
+                    }
+                });
+            }
+        });
+    }
+
+    private void renameCategory() {
+        final CategoryTreeNode selected = getSelectedTreeNode();
+        final String name = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
+                MessageFormat.format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
+                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
+        if (Conversion.trim(name) == null)
+            return;
+
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                selected.renameCategory(name);
+            }
+        });
+    }
+
+    private void deleteCategory() {
+        final List<CategoryTreeNode> categories = getSelectedTreeNodes();
+
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                for (CategoryTreeNode category : categories) {
+                    category.delete();
+                }
+            }
+        });
     }
 
 
@@ -431,10 +407,6 @@ public abstract class BrowsePanel {
         showAddUrlToCatalog(category, DnDHelper.extractDescription(url), DnDHelper.extractUrl(url));
     }
 
-    private void handleRootWarning() {
-
-    }
-
     private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
         AddUrlDialog addUrlDialog = new AddUrlDialog(operator, categoryTreeNode, description, url);
         addUrlDialog.pack();
@@ -448,6 +420,58 @@ public abstract class BrowsePanel {
         addFileDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
         addFileDialog.setVisible(true);
     }
+
+
+    private void renameRoute() {
+        int selectedRow = tableRoutes.getSelectedRow();
+        if (selectedRow == -1)
+            return;
+
+        final CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
+        if (categoryTreeNode == null)
+            return;
+
+        final Route selected = getRoutesListModel().getRoute(selectedRow);
+        String description = null;
+        try {
+            description = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
+                    MessageFormat.format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
+                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getDescription());
+        } catch (IOException e) {
+            operator.handleServiceError(e);
+        }
+        if (Conversion.trim(description) == null)
+            return;
+
+        final String theDescription = description;
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                // strange way to handle cache invalidations
+                categoryTreeNode.renameRoute(selected, theDescription);
+            }
+        });
+    }
+
+    private void deleteRoute() {
+        final int[] selectedRows = tableRoutes.getSelectedRows();
+        if (selectedRows.length == 0)
+            return;
+
+        final CategoryTreeNode category = getSelectedTreeNode();
+        if (category == null)
+            return;
+
+        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                for (int selectedRow : selectedRows) {
+                    Route route = getRoutesListModel().getRoute(selectedRow);
+                    // strange way to handle cache invalidations
+                    category.deleteRoute(route);
+                }
+            }
+        });
+    }
+
 
     protected void moveCategory(final List<CategoryTreeNode> categories, final CategoryTreeNode parent) {
         operator.executeOnRouteService(new RouteServiceOperator.Operation() {
