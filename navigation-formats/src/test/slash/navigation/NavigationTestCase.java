@@ -184,6 +184,7 @@ public abstract class NavigationTestCase extends TestCase {
 
         compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
+        compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, numberPositionNames, commentPositionNames, targetCharacteristics);
     }
@@ -215,7 +216,7 @@ public abstract class NavigationTestCase extends TestCase {
                 if (targetPosition.getElevation() != -0.09)
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof GarminPcx5Format) {
-                assertEquals(new Double(Math.round(sourcePosition.getElevation())), targetPosition.getElevation());
+                assertEquals((double) Math.round(sourcePosition.getElevation()), targetPosition.getElevation());
             } else if (targetFormat instanceof OziExplorerReadFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else
@@ -315,6 +316,12 @@ public abstract class NavigationTestCase extends TestCase {
                 } else
                     assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), targetPosition.getComment());
             }
+        }
+    }
+
+    private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+        if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
+            assertEquals(sourcePosition.getTime(), targetPosition.getTime());
         }
     }
 

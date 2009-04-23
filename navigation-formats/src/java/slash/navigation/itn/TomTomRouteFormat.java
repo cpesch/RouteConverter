@@ -162,13 +162,15 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 firstOrLast + " : " +
                 (position.getTime() != null ? RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " : "") +
                 position.getComment() +
-                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6" : "");
+                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - " +
+                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - 6" : "");
     }
 
     String formatIntermediateName(TomTomPosition position) {
         return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
                 position.getComment() +
-                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - 0 Km/h - 6" : "");
+                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - " +
+                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - 6" : "");
     }
 
     public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {

@@ -41,6 +41,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "large.itn");
     }
 
+    public void testTomTomTrackReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(SAMPLE_PATH + "tripmaster3.itn");
+    }
+
     public void testKmlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from20.kml");
         readWriteRoundtrip(TEST_PATH + "from21.kml");
