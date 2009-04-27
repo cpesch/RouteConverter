@@ -24,10 +24,12 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.XmlNavigationFormat;
+import slash.navigation.util.Conversion;
 
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * The base of all GPS Exchange formats.
@@ -37,7 +39,8 @@ import java.util.regex.Pattern;
 
 public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements MultipleRoutesFormat<GpxRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GpxFormat.class);
-    static final Pattern TRIPMASTER_PATTERN = Pattern.compile("(Punkt|Richtung \\d+|Abstand \\d+|Dur. \\d+:\\d+:\\d+|Course \\d+|Dist. \\d+) (-|:) (.+)");
+    static final Pattern TRIPMASTER_REASON_PATTERN = Pattern.compile("(Punkt|Richtung \\d+|Abstand \\d+|Dur. \\d+:\\d+:\\d+|Course \\d+|Dist. \\d+) (-|:) (.+)");
+    static final Pattern TRIPMASTER_SPEED_PATTERN = Pattern.compile("\\s*([-\\d\\.]+)\\s*(K|k)m/h\\s*");
 
     public String getExtension() {
         return ".gpx";
@@ -69,6 +72,13 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
 
     protected String asWayPointComment(String name, String description) {
         return asComment(name, description);
+    }
+
+    protected Double extractSpeed(String comment) {
+        Matcher matcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
+        if (matcher.matches())
+            return Conversion.parseDouble(matcher.group(1));
+        return null;
     }
 
     protected boolean isWriteElevation() {

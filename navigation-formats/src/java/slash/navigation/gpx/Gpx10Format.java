@@ -30,6 +30,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -140,7 +141,13 @@ public class Gpx10Format extends GpxFormat {
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), trkPt.getSpeed(), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
+                    BigDecimal speed = trkPt.getSpeed();
+                    if(speed == null) {
+                        Double speedFromComment = extractSpeed(trkPt.getCmt());
+                        if (speedFromComment != null)
+                            speed = new BigDecimal(speedFromComment);
+                    }
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
                 }
             }
         }

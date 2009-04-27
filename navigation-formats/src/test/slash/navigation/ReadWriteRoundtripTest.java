@@ -63,7 +63,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.tour");
     }
 
-    public void testGeocachingDotDomReadWriteRoundtrip() throws IOException {
+    public void testGeocachingDotComReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.loc");
     }
 

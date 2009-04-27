@@ -321,7 +321,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
-            assertEquals(sourcePosition.getTime(), targetPosition.getTime());
+            assertEquals(sourcePosition.getSpeed(), targetPosition.getSpeed());
         }
     }
 

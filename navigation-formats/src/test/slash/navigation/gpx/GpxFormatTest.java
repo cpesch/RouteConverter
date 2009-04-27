@@ -145,4 +145,11 @@ public class GpxFormatTest extends NavigationTestCase {
         assertTrue(string.contains("<gpx creator=\"CREATOR\""));
         assertTrue(string.contains("<rcxx:firstname>FIRST</rcxx:firstname>"));
     }
+
+    public void extractSpeed() {
+        Gpx10Format format = new Gpx10Format();
+        assertEquals(9.0, format.extractSpeed(" 9 Km/h "));
+        assertEquals(99.0, format.extractSpeed(" 99 Km/h "));
+        assertNull(format.extractSpeed("egal"));
+    }
 }

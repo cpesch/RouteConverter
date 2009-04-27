@@ -56,7 +56,7 @@ public class GpxPosition extends Wgs84Position {
 
         RouteComments.parseComment(this, comment);
         // TODO move this logic up
-        Matcher matcher = GpxFormat.TRIPMASTER_PATTERN.matcher(comment);
+        Matcher matcher = GpxFormat.TRIPMASTER_REASON_PATTERN.matcher(comment);
         if (matcher.matches()) {
             this.reason = Conversion.trim(matcher.group(1));
             this.comment = Conversion.trim(matcher.group(3));
