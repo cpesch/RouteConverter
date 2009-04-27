@@ -82,12 +82,12 @@ public class Gpx11Format extends GpxFormat {
             String desc = rteType.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractRoute(rteType);
-            result.add(new GpxRoute(this, RouteCharacteristics.Route, name, descriptions, positions));
+            result.add(new GpxRoute(this, RouteCharacteristics.Route, name, descriptions, positions, gpxType, rteType));
 
             // Garmin Extensions v3
             if (rteType.getExtensions() != null && rteType.getExtensions().getAny().size() > 0) {
                 List<GpxPosition> extendedPositions = extractRouteWithGarminExtensions(rteType);
-                result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, extendedPositions));
+                result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, extendedPositions, gpxType, rteType));
             }
         }
 
@@ -99,7 +99,7 @@ public class Gpx11Format extends GpxFormat {
         String desc = gpxType.getMetadata() != null ? gpxType.getMetadata().getDesc() : null;
         List<String> descriptions = asDescription(desc);
         List<GpxPosition> positions = extractWayPoints(gpxType.getWpt());
-        return positions.size() == 0 ? null : new GpxRoute(this, RouteCharacteristics.Waypoints, name, descriptions, positions);
+        return positions.size() == 0 ? null : new GpxRoute(this, RouteCharacteristics.Waypoints, name, descriptions, positions, gpxType);
     }
 
     private List<GpxRoute> extractTracks(GpxType gpxType) {
@@ -110,7 +110,7 @@ public class Gpx11Format extends GpxFormat {
             String desc = trkType.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractTrack(trkType);
-            result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions));
+            result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions, gpxType, trkType));
         }
 
         return result;
@@ -173,7 +173,9 @@ public class Gpx11Format extends GpxFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         List<WptType> wptTypes = new ArrayList<WptType>();
         for (GpxPosition position : route.getPositions()) {
-            WptType wptType = objectFactory.createWptType();
+            WptType wptType = position.getOrigin(WptType.class);
+            if (wptType == null)
+                wptType = objectFactory.createWptType();
             wptType.setLat(Conversion.formatDouble(position.getLatitude()));
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
             if (isWriteTime())
@@ -190,14 +192,20 @@ public class Gpx11Format extends GpxFormat {
     private List<RteType> createRoute(GpxRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         List<RteType> rteTypes = new ArrayList<RteType>();
-        RteType rteType = objectFactory.createRteType();
+        RteType rteType = route.getOrigin(RteType.class);
+        if (rteType != null)
+            rteType.getRtept().clear();
+        else
+            rteType = objectFactory.createRteType();
         if (isWriteName()) {
             rteType.setName(route.getName());
             rteType.setDesc(asDescription(route.getDescription()));
         }
         rteTypes.add(rteType);
         for (GpxPosition position : route.getPositions()) {
-            WptType wptType = objectFactory.createWptType();
+            WptType wptType = position.getOrigin(WptType.class);
+            if (wptType == null)
+                wptType = objectFactory.createWptType();
             wptType.setLat(Conversion.formatDouble(position.getLatitude()));
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
             if (isWriteTime())
@@ -214,7 +222,11 @@ public class Gpx11Format extends GpxFormat {
     private List<TrkType> createTrack(GpxRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         List<TrkType> trkTypes = new ArrayList<TrkType>();
-        TrkType trkType = objectFactory.createTrkType();
+        TrkType trkType = route.getOrigin(TrkType.class);
+        if (trkType != null)
+            trkType.getTrkseg().clear();
+        else
+            trkType = objectFactory.createTrkType();
         if (isWriteName()) {
             trkType.setName(route.getName());
             trkType.setDesc(asDescription(route.getDescription()));
@@ -222,7 +234,9 @@ public class Gpx11Format extends GpxFormat {
         trkTypes.add(trkType);
         TrksegType trksegType = objectFactory.createTrksegType();
         for (GpxPosition position : route.getPositions()) {
-            WptType wptType = objectFactory.createWptType();
+            WptType wptType = position.getOrigin(WptType.class);
+            if (wptType == null)
+                wptType = objectFactory.createWptType();
             wptType.setLat(Conversion.formatDouble(position.getLatitude()));
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
             if (isWriteTime())
@@ -237,17 +251,35 @@ public class Gpx11Format extends GpxFormat {
         return trkTypes;
     }
 
+    private GpxType recycleGpxType(GpxRoute route) {
+        GpxType gpxType = route.getOrigin(GpxType.class);
+        if (gpxType != null) {
+            gpxType.getRte().clear();
+            gpxType.getTrk().clear();
+            gpxType.getWpt().clear();
+        }
+        return gpxType;
+    }
+
     private GpxType createGpxType(GpxRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
-        GpxType gpxType = objectFactory.createGpxType();
+
+        GpxType gpxType = recycleGpxType(route);
+        if (gpxType == null)
+            gpxType = objectFactory.createGpxType();
         gpxType.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpxType.setVersion(VERSION);
-        MetadataType metadataType = objectFactory.createMetadataType();
-        gpxType.setMetadata(metadataType);
+
+        MetadataType metadataType = gpxType.getMetadata();
+        if(metadataType == null) {
+            metadataType = objectFactory.createMetadataType();
+            gpxType.setMetadata(metadataType);
+        }
         if (isWriteName()) {
             metadataType.setName(route.getName());
             metadataType.setDesc(asDescription(route.getDescription()));
         }
+
         gpxType.getWpt().addAll(createWayPoints(route));
         gpxType.getRte().addAll(createRoute(route));
         gpxType.getTrk().addAll(createTrack(route));
@@ -256,9 +288,17 @@ public class Gpx11Format extends GpxFormat {
 
     private GpxType createGpxType(List<GpxRoute> routes) {
         ObjectFactory objectFactory = new ObjectFactory();
-        GpxType gpxType = objectFactory.createGpxType();
+        GpxType gpxType = null;
+        for(GpxRoute route : routes) {
+            gpxType = recycleGpxType(route);
+            if(gpxType != null)
+                break;
+        }
+        if (gpxType == null)
+            gpxType = objectFactory.createGpxType();
         gpxType.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpxType.setVersion(VERSION);
+
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:

@@ -24,6 +24,10 @@ import slash.navigation.NavigationFileParser;
 import slash.navigation.ReadWriteBase;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.WptType;
+import slash.navigation.gpx.binding11.RteType;
+import slash.navigation.gpx.binding11.TrkType;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -182,6 +186,50 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         });
     }
 
+    private void checkUnprocessed(GpxType gpxType) {
+        assertNotNull(gpxType);
+        assertEquals("Name", gpxType.getMetadata().getName());
+        assertEquals("Description", gpxType.getMetadata().getDesc());
+        assertEquals("Author", gpxType.getMetadata().getAuthor().getName());
+        assertEquals("http://author", gpxType.getMetadata().getAuthor().getLink().getHref());
+        assertEquals("Id", gpxType.getMetadata().getAuthor().getEmail().getId());
+        assertEquals("Domain", gpxType.getMetadata().getAuthor().getEmail().getDomain());
+        assertEquals("http://metadata", gpxType.getMetadata().getLink().get(0).getHref());
+        assertEquals("Keywords", gpxType.getMetadata().getKeywords());
+    }
+
+    private void checkUnprocessed(RteType rteType) {
+        assertNotNull(rteType);
+        assertEquals("Route1 Name", rteType.getName());
+        assertEquals("Comment", rteType.getCmt());
+        assertEquals("Description", rteType.getDesc());
+        assertEquals("Source", rteType.getSrc());
+        assertEquals("http://rte", rteType.getLink().get(0).getHref());
+        assertEquals(new BigInteger("1"), rteType.getNumber());
+    }
+
+    private void checkUnprocessed(TrkType trkType) {
+        assertNotNull(trkType);
+        assertEquals("Track1 Name", trkType.getName());
+        assertEquals("Comment", trkType.getCmt());
+        assertEquals("Description", trkType.getDesc());
+        assertEquals("Source", trkType.getSrc());
+        assertEquals("http://trk", trkType.getLink().get(0).getHref());
+        assertEquals(new BigInteger("1"), trkType.getNumber());
+    }
+
+    private void checkUnprocessed(WptType wptType) {
+        assertNotNull(wptType);
+        if (wptType.getName().endsWith(wptType.getDesc()))
+            assertEquals("Waypoint1 Name; Description", wptType.getName());
+        else
+            assertEquals("Waypoint1 Name", wptType.getName());
+        assertEquals("Comment", wptType.getCmt());
+        assertEquals("Description", wptType.getDesc());
+        assertEquals("Source", wptType.getSrc());
+        assertEquals("http://wpt", wptType.getLink().get(0).getHref());
+    }
+
     public void testGpx11ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
@@ -189,39 +237,39 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
                 assertEquals(RouteCharacteristics.Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());
-                checkUnprocessed(sourceWaypoints.getOrigin(Gpx.class));
+                checkUnprocessed(sourceWaypoints.getOrigin(GpxType.class));
                 GpxPosition sourceWaypoint = sourceWaypoints.getPosition(0);
                 assertNotNull(sourceWaypoint.getOrigin());
-                checkUnprocessed(sourceWaypoint.getOrigin(Gpx.Wpt.class));
+                checkUnprocessed(sourceWaypoint.getOrigin(WptType.class));
 
                 GpxRoute sourceRoute = (GpxRoute) source.getAllRoutes().get(1);
                 assertEquals(RouteCharacteristics.Route, sourceRoute.getCharacteristics());
                 assertNotNull(sourceRoute.getOrigins());
                 assertEquals(2, sourceRoute.getOrigins().size());
-                checkUnprocessed(sourceRoute.getOrigin(Gpx.class));
-                checkUnprocessed(sourceRoute.getOrigin(Gpx.Rte.class));
+                checkUnprocessed(sourceRoute.getOrigin(GpxType.class));
+                checkUnprocessed(sourceRoute.getOrigin(RteType.class));
                 GpxPosition sourceRoutePoint = sourceRoute.getPosition(0);
                 assertNotNull(sourceRoutePoint.getOrigin());
-                checkUnprocessed(sourceRoutePoint.getOrigin(Gpx.Rte.Rtept.class));
+                checkUnprocessed(sourceRoutePoint.getOrigin(WptType.class));
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertEquals(RouteCharacteristics.Waypoints, targetWaypoints.getCharacteristics());
                 assertNotNull(targetWaypoints.getOrigins());
                 assertEquals(1, targetWaypoints.getOrigins().size());
-                checkUnprocessed(targetWaypoints.getOrigin(Gpx.class));
+                checkUnprocessed(targetWaypoints.getOrigin(GpxType.class));
                 GpxPosition targetWaypoint = targetWaypoints.getPosition(0);
                 assertNotNull(targetWaypoint.getOrigin());
-                checkUnprocessed(targetWaypoint.getOrigin(Gpx.Wpt.class));
+                checkUnprocessed(targetWaypoint.getOrigin(WptType.class));
 
                 GpxRoute targetRoute = (GpxRoute) target.getAllRoutes().get(1);
                 assertEquals(RouteCharacteristics.Route, targetRoute.getCharacteristics());
                 assertNotNull(targetRoute.getOrigins());
                 assertEquals(2, targetRoute.getOrigins().size());
-                checkUnprocessed(targetRoute.getOrigin(Gpx.class));
-                checkUnprocessed(targetRoute.getOrigin(Gpx.Rte.class));
+                checkUnprocessed(targetRoute.getOrigin(GpxType.class));
+                checkUnprocessed(targetRoute.getOrigin(RteType.class));
                 GpxPosition targetRoutePoint = targetRoute.getPosition(0);
                 assertNotNull(targetRoutePoint.getOrigin());
-                checkUnprocessed(targetRoutePoint.getOrigin(Gpx.Rte.Rtept.class));
+                checkUnprocessed(targetRoutePoint.getOrigin(WptType.class));
             }
         });
     }
@@ -232,36 +280,36 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());
-                checkUnprocessed(sourceWaypoints.getOrigin(Gpx.class));
+                checkUnprocessed(sourceWaypoints.getOrigin(GpxType.class));
                 GpxPosition sourceWaypoint = sourceWaypoints.getPosition(0);
                 assertNotNull(sourceWaypoint.getOrigin());
-                checkUnprocessed(sourceWaypoint.getOrigin(Gpx.Wpt.class));
+                checkUnprocessed(sourceWaypoint.getOrigin(WptType.class));
 
                 GpxRoute sourceTrack = (GpxRoute) source.getAllRoutes().get(1);
                 assertNotNull(sourceTrack.getOrigins());
                 assertEquals(2, sourceTrack.getOrigins().size());
-                checkUnprocessed(sourceTrack.getOrigin(Gpx.class));
-                checkUnprocessed(sourceTrack.getOrigin(Gpx.Trk.class));
+                checkUnprocessed(sourceTrack.getOrigin(GpxType.class));
+                checkUnprocessed(sourceTrack.getOrigin(TrkType.class));
                 GpxPosition sourceTrackPoint = sourceTrack.getPosition(0);
                 assertNotNull(sourceTrackPoint.getOrigin());
-                checkUnprocessed(sourceTrackPoint.getOrigin(Gpx.Trk.Trkseg.Trkpt.class));
+                checkUnprocessed(sourceTrackPoint.getOrigin(WptType.class));
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(targetWaypoints.getOrigins());
                 assertEquals(1, targetWaypoints.getOrigins().size());
-                checkUnprocessed(targetWaypoints.getOrigin(Gpx.class));
+                checkUnprocessed(targetWaypoints.getOrigin(GpxType.class));
                 GpxPosition targetWaypoint = targetWaypoints.getPosition(0);
                 assertNotNull(targetWaypoint.getOrigin());
-                checkUnprocessed(targetWaypoint.getOrigin(Gpx.Wpt.class));
+                checkUnprocessed(targetWaypoint.getOrigin(WptType.class));
 
                 GpxRoute targetTrack = (GpxRoute) target.getAllRoutes().get(1);
                 assertNotNull(targetTrack.getOrigins());
                 assertEquals(2, targetTrack.getOrigins().size());
-                checkUnprocessed(targetTrack.getOrigin(Gpx.class));
-                checkUnprocessed(targetTrack.getOrigin(Gpx.Trk.class));
+                checkUnprocessed(targetTrack.getOrigin(GpxType.class));
+                checkUnprocessed(targetTrack.getOrigin(TrkType.class));
                 GpxPosition targetTrackPoint = targetTrack.getPosition(0);
                 assertNotNull(targetTrackPoint.getOrigin());
-                checkUnprocessed(targetTrackPoint.getOrigin(Gpx.Trk.Trkseg.Trkpt.class));
+                checkUnprocessed(targetTrackPoint.getOrigin(WptType.class));
             }
         });
     }

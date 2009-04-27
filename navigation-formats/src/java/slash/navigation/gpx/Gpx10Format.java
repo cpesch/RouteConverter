@@ -261,11 +261,11 @@ public class Gpx10Format extends GpxFormat {
         Gpx gpx = recycleGpx(route);
         if (gpx == null)
             gpx = new ObjectFactory().createGpx();
-
         gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpx.setVersion(VERSION);
         gpx.setName(route.getName());
         gpx.setDesc(asDescription(route.getDescription()));
+
         gpx.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
         gpx.getRte().addAll(createRoute(route, startIndex, endIndex));
         gpx.getTrk().addAll(createTrack(route, startIndex, endIndex));
@@ -282,9 +282,9 @@ public class Gpx10Format extends GpxFormat {
         }
         if (gpx == null)
             gpx = objectFactory.createGpx();
-
         gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpx.setVersion(VERSION);
+
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
