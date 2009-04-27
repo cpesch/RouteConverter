@@ -22,6 +22,7 @@ package slash.navigation.babel;
 
 import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.gpx.Gpx10Format;
 
 /**
  * Reads and writes Alan Map 500 Waypoints and Routes (.wpr) files.
@@ -56,5 +57,14 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
 
     protected boolean isStreamingCapable() {
         return true;
+    }
+
+    protected Gpx10Format createGpxFormat() {
+        return new Gpx10Format() {
+            protected String asWayPointComment(String name, String description) {
+                // ignore <description> from waypoints since <name> is crippled to 8 characters by GPSBabel
+                return asComment(name, null);
+            }
+        };
     }
 }

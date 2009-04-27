@@ -123,8 +123,6 @@ public final class NavigationFormats {
         addFormat(OziExplorerRouteFormat.class);
         addFormat(OziExplorerTrackFormat.class);
         addFormat(OziExplorerWaypointFormat.class);      
-        // TODO 1.27
-        addFormat(Igo8TrackFormat.class);
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
@@ -144,6 +142,8 @@ public final class NavigationFormats {
 
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
+        // TODO 1.27
+        addFormat(Igo8TrackFormat.class);
     }
 
     public static void addFormat(Class<? extends NavigationFormat> format) {

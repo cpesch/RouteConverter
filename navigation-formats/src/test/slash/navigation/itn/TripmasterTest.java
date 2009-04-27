@@ -246,8 +246,8 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(10.36535, position1.getLongitude());
         assertEquals(17.9, position1.getElevation());
         assertEquals(13.0, position1.getSpeed());
-        assertEquals("Bad Oldesloe", position1.getComment());
-        assertEquals("Bad Oldesloe", position1.getCity());
+        assertEquals("Bad Oldesloe; 170.1 Km", position1.getComment());
+        assertEquals("Bad Oldesloe; 170.1 Km", position1.getCity());
         assertEquals("Course 184", position1.getReason());
         Calendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
@@ -262,16 +262,16 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(10.35700, position2.getLongitude());
         assertEquals(3.9, position2.getElevation());
         assertEquals(13.0, position1.getSpeed());
-        assertEquals("Bad Oldesloe", position2.getComment());
-        assertEquals("Bad Oldesloe", position2.getCity());
+        assertEquals("Bad Oldesloe; 170.9 Km", position2.getComment());
+        assertEquals("Bad Oldesloe; 170.9 Km", position2.getCity());
         assertEquals("Dist. 171", position2.getReason());
 
         GpxPosition position3 = route.getPositions().get(443);
         assertEquals(53.79446, position3.getLatitude());
         assertEquals(10.35603, position3.getLongitude());
         assertEquals(5.6, position3.getElevation());
-        assertEquals("Bad Oldesloe", position3.getComment());
-        assertEquals("Bad Oldesloe", position3.getCity());
+        assertEquals("Bad Oldesloe; 171.0 Km", position3.getComment());
+        assertEquals("Bad Oldesloe; 171.0 Km", position3.getCity());
         assertEquals("Dur. 3:49:31", position3.getReason());
     }
 

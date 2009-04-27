@@ -40,6 +40,7 @@ import java.util.regex.Matcher;
 public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements MultipleRoutesFormat<GpxRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GpxFormat.class);
     static final Pattern TRIPMASTER_REASON_PATTERN = Pattern.compile("(Punkt|Richtung \\d+|Abstand \\d+|Dur. \\d+:\\d+:\\d+|Course \\d+|Dist. \\d+) (-|:) (.+)");
+    static final Pattern TRIPMASTER_DESCRIPTION_PATTERN = Pattern.compile("(.+); (.+)");
     static final Pattern TRIPMASTER_SPEED_PATTERN = Pattern.compile("\\s*([-\\d\\.]+)\\s*(K|k)m/h\\s*");
 
     public String getExtension() {

@@ -56,7 +56,7 @@ public class MagellanMapSendFormat extends BabelFormat {
     protected Gpx10Format createGpxFormat() {
         return new Gpx10Format() {
             protected String asWayPointComment(String name, String description) {
-                // ignore <name> from Waypoints which is crippled to 7 or 8 characters by GPSBabel
+                // ignore <name> from waypoints which is crippled to 7 or 8 characters by GPSBabel
                 return asComment(null, description);
             }
         };

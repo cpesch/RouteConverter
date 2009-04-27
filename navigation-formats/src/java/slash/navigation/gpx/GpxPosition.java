@@ -55,12 +55,20 @@ public class GpxPosition extends Wgs84Position {
             return;
 
         RouteComments.parseComment(this, comment);
+
         // TODO move this logic up
-        Matcher matcher = GpxFormat.TRIPMASTER_REASON_PATTERN.matcher(comment);
+        Matcher matcher = GpxFormat.TRIPMASTER_REASON_PATTERN.matcher(this.comment);
         if (matcher.matches()) {
             this.reason = Conversion.trim(matcher.group(1));
             this.comment = Conversion.trim(matcher.group(3));
-        }
+        } /* TODO think about how to solve this with that much errors
+          else {
+            matcher = GpxFormat.TRIPMASTER_DESCRIPTION_PATTERN.matcher(comment);
+            if (matcher.matches()) {
+                this.comment = Conversion.trim(matcher.group(1));
+                this.reason = Conversion.trim(matcher.group(2));
+            }
+        } */
     }
 
     public String getCity() {

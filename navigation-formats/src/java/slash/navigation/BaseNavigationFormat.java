@@ -71,6 +71,16 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return trimLineFeeds(name + "; " + description);
     }
 
+    protected String asName(String comment, String description) {
+        if(comment == null || description == null)
+            return comment;
+        description = trimLineFeeds(description);
+        if (comment.endsWith(description))
+            comment = comment.substring(0, comment.length() - description.length());
+        if (comment.endsWith("; "))
+            comment = comment.substring(0, comment.length() - 2);
+        return comment;
+    }
 
     public boolean isSupportsReading() {
         return true;

@@ -142,7 +142,7 @@ public class Gpx10Format extends GpxFormat {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
                     BigDecimal speed = trkPt.getSpeed();
-                    if(speed == null) {
+                    if(speed == null && trkPt.getCmt() != null) {
                         Double speedFromComment = extractSpeed(trkPt.getCmt());
                         if (speedFromComment != null)
                             speed = new BigDecimal(speedFromComment);
@@ -171,7 +171,7 @@ public class Gpx10Format extends GpxFormat {
             if (isWriteElevation())
                 wpt.setEle(Conversion.formatDouble(position.getElevation()));
             if (isWriteName())
-                wpt.setName(position.getComment());
+                wpt.setName(asName(position.getComment(), wpt.getDesc()));
             wpts.add(wpt);
         }
         return wpts;
@@ -205,7 +205,7 @@ public class Gpx10Format extends GpxFormat {
             if (isWriteElevation()) 
                 rtept.setEle(Conversion.formatDouble(position.getElevation()));
             if (isWriteName())
-                rtept.setName(position.getComment());
+                rtept.setName(asName(position.getComment(), rtept.getDesc()));
             rte.getRtept().add(rtept);
         }
         return rtes;
@@ -240,7 +240,7 @@ public class Gpx10Format extends GpxFormat {
             if (isWriteElevation())
                 trkpt.setEle(Conversion.formatDouble(position.getElevation()));
             if (isWriteName())
-                trkpt.setName(position.getComment());
+                trkpt.setName(asName(position.getComment(), trkpt.getDesc()));
             trkseg.getTrkpt().add(trkpt);
         }
         trk.getTrkseg().add(trkseg);

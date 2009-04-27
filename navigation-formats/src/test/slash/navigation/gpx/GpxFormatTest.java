@@ -146,10 +146,37 @@ public class GpxFormatTest extends NavigationTestCase {
         assertTrue(string.contains("<rcxx:firstname>FIRST</rcxx:firstname>"));
     }
 
-    public void extractSpeed() {
+    public void testExtractSpeed() {
         Gpx10Format format = new Gpx10Format();
         assertEquals(9.0, format.extractSpeed(" 9 Km/h "));
         assertEquals(99.0, format.extractSpeed(" 99 Km/h "));
         assertNull(format.extractSpeed("egal"));
+    }
+
+    public void testExtractReason() {
+        GpxPosition position = new GpxPosition(null, null, null, null, null, null);
+        assertNull(position.getComment());
+        assertNull(position.getCity());
+        assertNull(position.getReason());
+        position.setComment("Course 97 : Barmbek-Nord");
+        assertEquals("Barmbek-Nord", position.getComment());
+        assertEquals("Barmbek-Nord", position.getCity());
+        assertEquals("Course 97", position.getReason());
+        position.setComment("Course 97 : Barmbek-Nord; 14.2 Km");
+        assertEquals("Barmbek-Nord; 14.2 Km", position.getComment());
+        assertEquals("Barmbek-Nord; 14.2 Km", position.getCity());
+        assertEquals("Course 97", position.getReason());
+    }
+
+    public void testExtractDescription() {
+        GpxPosition position = new GpxPosition(null, null, null, null, null, null);
+        assertNull(position.getComment());
+        assertNull(position.getCity());
+        assertNull(position.getReason());
+        position.setComment("Bad Oldesloe; 58.0 Km");
+        // TODO think about how to solve this with that much errors
+        // assertEquals("Bad Oldesloe", position.getComment());
+        // assertEquals("Bad Oldesloe", position.getCity());
+        // assertEquals("58.0 Km", position.getReason());
     }
 }
