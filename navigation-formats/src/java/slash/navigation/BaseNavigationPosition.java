@@ -54,7 +54,6 @@ public abstract class BaseNavigationPosition {
      * @return the longitude in the WGS84 coordinate system
      */
     public abstract Double getLongitude();
-
     public abstract void setLongitude(Double longitude);
 
     /**
@@ -63,7 +62,6 @@ public abstract class BaseNavigationPosition {
      * @return the latitude in the WGS84 coordinate system
      */
     public abstract Double getLatitude();
-
     public abstract void setLatitude(Double latitude);
 
     public boolean hasCoordinates() {
@@ -121,7 +119,6 @@ public abstract class BaseNavigationPosition {
             time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
         }
     }
-
 
     public abstract String getComment();
     public abstract void setComment(String comment);

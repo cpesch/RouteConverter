@@ -102,8 +102,20 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "\\d*" +
                     END_OF_LINE);
 
+    // $GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37
     // $GPVTG,138.7,T,,M,014.2,N,026.3,K,A*00
-    // 26.3 = km/h
+    private static final Pattern VTG_PATTERN = Pattern.
+            compile(BEGIN_OF_LINE + "VTG" + SEPARATOR +
+                    "[\\d\\.]*" + SEPARATOR +    // Track degrees
+                    "T" + SEPARATOR +
+                    "[\\d\\.]*" + SEPARATOR +    // Track degrees
+                    "M" + SEPARATOR +     
+                    "([\\d\\.]*)" + SEPARATOR +
+                    "N" + SEPARATOR +
+                    "([\\d\\.]*)" + SEPARATOR +
+                    "K" + SEPARATOR +
+                    "A" +
+                    END_OF_LINE);
 
     // Unbekannte Herkunft: GLL - Geographic position, latitude / longitude
     // http://www.gpsinformation.org/dale/nmea.htm#GLL
@@ -142,7 +154,11 @@ public class NmeaFormat extends BaseNmeaFormat {
             return hasValidChecksum(line);
 
         Matcher zdaMatcher = NmeaFormat.ZDA_PATTERN.matcher(line);
-        return zdaMatcher.matches() && hasValidChecksum(line);
+        if (zdaMatcher.matches())
+            return hasValidChecksum(line);
+
+        Matcher vtgMatcher = NmeaFormat.VTG_PATTERN.matcher(line);
+        return vtgMatcher.matches() && hasValidChecksum(line);
     }
 
     protected NmeaPosition parsePosition(String line) {
@@ -198,6 +214,22 @@ public class NmeaFormat extends BaseNmeaFormat {
             return new NmeaPosition(null, null, null, null, null, null, parseDateAndTime(date, time), null);
         }
 
+        Matcher vtgMatcher = VTG_PATTERN.matcher(line);
+        if (vtgMatcher.matches()) {
+            Double speed = null;
+            boolean knots = false;
+            String speedStr = Conversion.trim(vtgMatcher.group(2));
+            if (speedStr == null) {
+                speedStr = Conversion.trim(vtgMatcher.group(1));
+                knots = true;
+            }
+            speed = Conversion.parseDouble(speedStr);
+            if (knots && speed != null)
+                speed = Conversion.knotsToKilometers(speed);
+
+            return new NmeaPosition(null, null, null, null, null, speed, null, null);
+        }
+
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
@@ -228,7 +260,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = Conversion.formatDoubleAsString(position.getElevation(), "");
-        String speed = position.getSpeed() != null ? Conversion.formatDoubleAsString(Conversion.kilometerToKnots(position.getSpeed()), "") : "";
+        String speedKnots = position.getSpeed() != null ? Conversion.formatDoubleAsString(Conversion.kilometerToKnots(position.getSpeed()), "") : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +
@@ -246,7 +278,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76
         String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                speed + SEPARATOR + SEPARATOR +
+                speedKnots + SEPARATOR + SEPARATOR +
                 date + SEPARATOR + SEPARATOR + "A";
         writeSentence(writer, rmc);
 
@@ -257,6 +289,14 @@ public class NmeaFormat extends BaseNmeaFormat {
             String year = formatYear(position.getTime());
             String zda = "GPZDA" + SEPARATOR + time + SEPARATOR + day + SEPARATOR + month + SEPARATOR + year + SEPARATOR + SEPARATOR;
             writeSentence(writer, zda);
+        }
+
+        if(position.getSpeed() != null) {
+            String speed = Conversion.formatDoubleAsString(position.getSpeed());
+            // $GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37
+            String vtg = "GPVTG" + SEPARATOR + SEPARATOR + "T" + SEPARATOR + SEPARATOR + "M" + SEPARATOR +
+                    speedKnots + SEPARATOR + "N" + SEPARATOR + speed + "K" + SEPARATOR + "A";
+            writeSentence(writer, vtg);
         }
     }
 }

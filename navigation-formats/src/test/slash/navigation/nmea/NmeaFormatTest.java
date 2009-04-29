@@ -23,6 +23,7 @@ package slash.navigation.nmea;
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.SimpleRoute;
+import slash.navigation.util.Conversion;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -48,6 +49,8 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("$GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,,A*76"));
         assertTrue(format.isValidLine("$GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,,A*76"));
         assertTrue(format.isValidLine("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
+        assertTrue(format.isValidLine("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
+
         assertTrue(format.isValidLine("$GPZDA,032910,07,08,2004,00,00*48"));
         assertTrue(format.isValidLine("$GPWPL,5334.169,N,01001.920,E,STATN1*22"));
         assertTrue(format.isValidLine("$GPGGA,123613.957,,,,,0,00,,,M,0.0,M,,0000*59"));
@@ -91,13 +94,14 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("$GPRMC,175947.000,A,4812.0597,N,01136.4663,E,0.0,163.8,010907,,,A*62"));
         assertTrue(format.isPosition("$GPZDA,032910,07,08,2004,00,00*48"));
         assertTrue(format.isPosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22"));
+        assertTrue(format.isPosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
+        assertTrue(format.isPosition("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
 
         assertFalse(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertFalse(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
 
         assertFalse(format.isPosition("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
         assertFalse(format.isPosition("$GPGSV,2,1,08,05,40,250,50,09,85,036,51,22,16,285,36,17,,,00*4F"));
-        assertFalse(format.isPosition("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
         assertFalse(format.isPosition("@Sonygps/ver1.0/wgs-84"));
         assertFalse(format.isPosition("$GPGGA,123613.957,,,,,0,00,,,M,0.0,M,,0000*59"));
         assertFalse(format.isPosition("$GPRMC,123613.957,V,,,,,,,170807,,*29"));
@@ -170,12 +174,13 @@ public class NmeaFormatTest extends NavigationTestCase {
     }
 
     public void testParseRMC() {
-        NmeaPosition position = format.parsePosition("$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160607,,,A*76");
+        NmeaPosition position = format.parsePosition("$GPRMC,180114,A,4837.4374,N,00903.4036,E,14.32,000.0,160607,,,A*76");
         assertEquals(9.0567266, position.getLongitude());
         assertEquals(48.6239566, position.getLatitude());
         assertEquals(calendar(2007, 6, 16, 18, 1, 14), position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
+        assertEquals(Conversion.knotsToKilometers(14.32), position.getSpeed());
     }
 
     public void testParseWPL() {
@@ -198,13 +203,23 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
+        assertNull(position.getSpeed());
+    }
+
+    public void testParseVTG() {
+        NmeaPosition position = format.parsePosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37");
+        assertEquals(2.835, position.getSpeed());
+        assertNull(position.getTime());
+        assertNull(position.getElevation());
+        assertNull(position.getComment());
     }
 
     public void testMerging() throws IOException {
         StringReader reader = new StringReader(
                 "$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D\n" +
-                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,034.5,000.0,160600,,,A*79\n" +
-                        "$GPZDA,032910,07,08,2004,00,00*48"
+                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160600,,,A*79\n" +
+                        "$GPZDA,032910,07,08,2004,00,00*48\n" +
+                        "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );
         List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
         assertEquals(1, routes.size());
@@ -213,7 +228,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         NmeaPosition position = (NmeaPosition) route.getPositions().get(0);
         assertEquals(9.0567266, position.getLongitude());
         assertEquals(48.6239566, position.getLatitude());
-        assertEquals(63.894148349999995, position.getSpeed());
+        assertEquals(2.835, position.getSpeed());
         assertEquals(16.76, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         Calendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
