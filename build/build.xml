@@ -249,7 +249,7 @@
         <property name="rest.output.classes5" location="${rest.output}/classes5"/>
         <property name="rest.output.testclasses5" location="${rest.output}/testclasses5"/>
         <property name="route-converter.output.classes5" location="${route-converter.output}/classes5"/>
-        <property name="route-converter5.java" location="route-converter5/src/java"/>
+        <property name="route-converter5.src.java" location="route-converter5/src/java"/>
         <property name="route-converter5.output" location="route-converter5/output"/>
         <property name="route-converter5.output.classes5" location="${route-converter5.output}/classes5"/>
         <property name="route-converter-cmdline.output.classes5" location="${route-converter-cmdline.output}/classes5"/>
@@ -431,7 +431,7 @@
         </copy>
     </target>
 
-    <target name="copy-resources" depends="init, copy-native">
+    <target name="copy-resources" depends="init,copy-native">
         <mkdir dir="${common.output.classes}"/>
         <copy todir="${common.output.classes}">
             <fileset dir="${common.resources}">
@@ -535,10 +535,12 @@
             <classpath refid="common-gui.classpath"/>
         </javac>
 
+        <mkdir dir="${route-converter.output.classes}"/>
         <javac destdir="${route-converter.output.classes}" debug="${javac.debug}">
             <src location="${route-converter.src.java}"/>
             <classpath refid="route-converter.classpath"/>
         </javac>
+
         <mkdir dir="${route-converter6.output.classes}"/>
         <javac destdir="${route-converter6.output.classes}" debug="${javac.debug}">
             <src location="${route-converter6.src.java}"/>
@@ -649,6 +651,12 @@
         <mkdir dir="${route-converter.output.classes5}"/>
         <javac destdir="${route-converter.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${route-converter.src.java}"/>
+            <classpath refid="route-converter.classpath5"/>
+        </javac>
+
+        <mkdir dir="${route-converter5.output.classes5}"/>
+        <javac destdir="${route-converter5.output.classes5}" debug="${javac.debug}">
+            <src location="${route-converter5.src.java}"/>
             <classpath refid="route-converter.classpath5"/>
         </javac>
 
