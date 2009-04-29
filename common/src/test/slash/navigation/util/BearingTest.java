@@ -53,7 +53,7 @@ public class BearingTest extends TestCase {
             cosSqAlpha = 1 - sinAlpha * sinAlpha;
             cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha;
             if (Double.isNaN(cos2SigmaM))
-                cos2SigmaM = 0.0;  // equatorial line: cosSqAlpha=0 (§6)
+                cos2SigmaM = 0.0;  // equatorial line: cosSqAlpha=0
             double C = f / 16.0 * cosSqAlpha * (4.0 + f * (4.0 - 3.0 * cosSqAlpha));
             lambdaP = lambda;
             lambda = L + (1.0 - C) * f * sinAlpha *
