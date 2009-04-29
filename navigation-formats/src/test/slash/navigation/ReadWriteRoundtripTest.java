@@ -91,7 +91,7 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
     }
 
-    public void testGpiReadWriteRoundtrip() throws IOException {
+    public void testGarminPoiReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.gpi");
     }
 
