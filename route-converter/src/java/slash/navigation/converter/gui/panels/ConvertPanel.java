@@ -79,6 +79,7 @@ public abstract class ConvertPanel {
     private JLabel labelPositions;
     private JLabel labelFormat;
     protected JTable tablePositions;
+    private TablePopupMenu popupTable;
     private JButton buttonOpenFile;
     private JButton buttonNewFile;
     private JButton buttonAppendFileToPositionList;
@@ -269,7 +270,7 @@ public abstract class ConvertPanel {
         });
 
         new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
-        new TablePopupMenu();
+        popupTable = new TablePopupMenu();
 
         NavigationFormat[] formats = NavigationFormats.getWriteFormatsSortedByName();
         comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formats));
@@ -753,13 +754,13 @@ public abstract class ConvertPanel {
             selectPositions(minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
     }
 
-    // TODO notifications...
+    // handle notifications
 
     private void handleFormatUpdate() {
         boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
         boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
+        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
         // TODO nobody seems to use this checkboxStartGoogleEarth.setVisible(getFormat() instanceof KmlFormat);
         checkboxStartGoogleEarth.setVisible(false);
@@ -768,11 +769,9 @@ public abstract class ConvertPanel {
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
-        // TODO check this later
-        // TODO buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
-        // TODO forward to TableMenu
+        popupTable.handleFormatUpdate(supportsMultipleRoutes, existsMoreThanOnePosition);
 
         RouteConverter.getInstance().setTargetFormatPreference(getFormat().getClass().getName());
     }
@@ -782,18 +781,17 @@ public abstract class ConvertPanel {
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
         boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
+        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
         buttonRenamePositionList.setEnabled(existsARoute);
         buttonAddPositionList.setEnabled(supportsMultipleRoutes);
-        // TODO check this later
-        // TODO buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsARoute);
         buttonAppendFileToPositionList.setEnabled(existsARoute);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
-        // TODO forward to TableMenu
+        popupTable.handleRoutesUpdate(supportsMultipleRoutes, existsARoute, existsMoreThanOnePosition);
     }
 
     private void handlePositionsUpdate() {
@@ -809,10 +807,7 @@ public abstract class ConvertPanel {
         buttonFilterPositionList.setEnabled(existsMoreThanOnePosition);
         buttonRevertPositionList.setEnabled(existsMoreThanOnePosition);
 
-        // TODO check this later
-        // TODO buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-
-        // TODO forward to TableMenu
+        popupTable.handlePositionsUpdate(supportsMultipleRoutes, existsMoreThanOnePosition);
     }
 
     // helpers
@@ -889,11 +884,11 @@ public abstract class ConvertPanel {
         return files;
     }
 
-    private  NavigationFormat getFormat() {
+    private NavigationFormat getFormat() {
         return (NavigationFormat) comboBoxChooseFormat.getSelectedItem();
     }
 
-    // TODO helpers for MapView
+    // map view related helpers
 
     public PositionsModel getPositionsModel() {
         return formatAndRoutesModel.getPositionsModel();
@@ -1210,8 +1205,9 @@ public abstract class ConvertPanel {
     }
 
     public class TablePopupMenu {
-        private JPopupMenu popupMenu = new JPopupMenu();
         private PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
+        private JPopupMenu popupMenu = new JPopupMenu();
+        private JMenuItem buttonSplitPositionlist;
 
         public TablePopupMenu() {
             initialize();
@@ -1236,7 +1232,7 @@ public abstract class ConvertPanel {
 
             popupMenu.addSeparator();
 
-            JMenuItem buttonSplitPositionlist = new JMenuItem(new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, comboBoxChooseFormat, getPositionsModel(), formatAndRoutesModel));
+            buttonSplitPositionlist = new JMenuItem(new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, comboBoxChooseFormat, getPositionsModel(), formatAndRoutesModel));
             buttonSplitPositionlist.setText(RouteConverter.getBundle().getString("split-positionlist"));
             popupMenu.add(buttonSplitPositionlist);
 
@@ -1317,6 +1313,18 @@ public abstract class ConvertPanel {
                             e.getClickCount(), false));
                 }
             }
+        }
+
+        void handleFormatUpdate(boolean supportsMultipleRoutes, boolean existsMoreThanOnePosition) {
+            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
+        }
+
+        void handleRoutesUpdate(boolean supportsMultipleRoutes, boolean existsARoute, boolean existsMoreThanOnePosition) {
+            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
+        }
+
+        void handlePositionsUpdate(boolean supportsMultipleRoutes, boolean existsMoreThanOnePosition) {
+            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
         }
     }
 }
