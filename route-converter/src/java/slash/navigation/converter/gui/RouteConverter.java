@@ -23,6 +23,8 @@ package slash.navigation.converter.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.navigation.NavigationFormat;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.Wgs84Position;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.JdicMapView;
 import slash.navigation.converter.gui.mapview.MapView;
@@ -277,23 +279,17 @@ public abstract class RouteConverter extends SingleFrameApplication {
         preferences.put(RouteConverter.TARGET_PREFERENCE + format.getName(), parent);
     }
 
-
-    public Double getAddPositionLongitude() {
-        return preferences.getDouble(ADD_POSITION_LONGITUDE_PREFERENCE, -41.0);
+    private BaseNavigationPosition getLastMapCenter() {
+        double longitude = preferences.getDouble(ADD_POSITION_LONGITUDE_PREFERENCE, -41.0);
+        double latitude = preferences.getDouble(ADD_POSITION_LATITUDE_PREFERENCE, 41.0);
+        return new Wgs84Position(longitude, latitude, null, null, null, null);
     }
 
-    public void setAddPositionLongitude(double longitude) {
-        preferences.putDouble(ADD_POSITION_LONGITUDE_PREFERENCE, longitude);
+    public void setLastMapCenter(BaseNavigationPosition position) {
+        preferences.putDouble(ADD_POSITION_LONGITUDE_PREFERENCE, position.getLongitude());
+        preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, position.getLatitude());
     }
-
-    public Double getAddPositionLatitude() {
-        return preferences.getDouble(ADD_POSITION_LATITUDE_PREFERENCE, 41.0);
-    }
-
-    public void setAddPositionLatitude(double latitude) {
-        preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, latitude);
-    }
-
+    
     boolean isAutomaticUpdateCheck() {
         return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
     }
@@ -464,6 +460,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public boolean isMapViewAvailable() {
         return mapView != null && mapView.isInitialized();
+    }
+
+    public BaseNavigationPosition getMapCenter() {
+        return isMapViewAvailable() ? mapView.getCenter() : getLastMapCenter();
     }
 
     // tab related helpers

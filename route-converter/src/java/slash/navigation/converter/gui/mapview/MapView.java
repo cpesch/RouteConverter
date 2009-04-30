@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import slash.navigation.BaseNavigationPosition;
+
 import java.awt.*;
 
 /**
@@ -37,6 +39,7 @@ public interface MapView {
 
     void resize();
     void setSelectedPositions(int[] selectedPositions);
+    BaseNavigationPosition getCenter();
     void print();
     
     void addMapViewListener(MapViewListener listener);

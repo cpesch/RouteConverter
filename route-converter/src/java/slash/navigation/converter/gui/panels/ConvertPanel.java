@@ -230,13 +230,13 @@ public abstract class ConvertPanel {
             }
         });
 
-        tablePositions.registerKeyboardAction(new FrameAction() {
+        convertPanel.registerKeyboardAction(new FrameAction() {
             public void run() {
                 addPosition();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        tablePositions.registerKeyboardAction(new FrameAction() {
+        convertPanel.registerKeyboardAction(new FrameAction() {
             public void run() {
                 removePositions();
             }
@@ -692,13 +692,12 @@ public abstract class ConvertPanel {
         final int insertRow = row > getPositionsModel().getRowCount() - 1 ? row : row + 1;
 
         RouteConverter r = RouteConverter.getInstance();
-        Double longitude = center != null ? center.getLongitude() : r.getAddPositionLongitude();
-        r.setAddPositionLongitude(longitude);
-        Double latitude = center != null ? center.getLatitude() : r.getAddPositionLatitude();
-        r.setAddPositionLatitude(latitude);
+        if (center == null)
+            center = r.getMapCenter();
+        r.setLastMapCenter(center);
 
-        getPositionsModel().add(insertRow, longitude, latitude,
-                center != null && center.getTime() != null ? center.getTime() : Calendar.getInstance(),
+        getPositionsModel().add(insertRow, center.getLongitude(), center.getLatitude(),
+                center.getTime() != null ? center.getTime() : Calendar.getInstance(),
                 RouteConverter.getBundle().getString("add-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

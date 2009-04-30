@@ -825,6 +825,12 @@ public class JdicMapView implements MapView {
         return getBounds("getSouthWestBounds();");
     }
 
+    public BaseNavigationPosition getCenter() {
+        BaseNavigationPosition northEast = getNorthEastBounds();
+        BaseNavigationPosition southWest = getSouthWestBounds();
+        return northEast != null && southWest != null ? Calculation.center(Arrays.asList(northEast, southWest)) : null;
+    }
+
     private void update(boolean haveToReplaceRoute) {
         if (!isInitialized() || !getCanvas().isShowing())
             return;
