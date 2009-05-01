@@ -125,6 +125,12 @@ public abstract class ConvertPanel {
             }
         });
 
+        textFieldSource.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                openPositionList(Files.toUrls(textFieldSource.getText()));
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
         buttonAppendFileToPositionList.addActionListener(new FrameAction() {
             public void run() {
                 appendToPositionList();
