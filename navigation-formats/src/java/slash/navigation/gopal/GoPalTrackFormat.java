@@ -48,7 +48,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + POSITION + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + POSITION + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + POSITION + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE +
@@ -85,7 +85,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (!matcher.matches())
             return false;
-        Integer satellites = Conversion.parseInt(matcher.group(4));
+        Integer satellites = Conversion.parseInt(matcher.group(5));
         return satellites != null && satellites > 0;
     }
 
@@ -120,8 +120,9 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String time = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
+        String speed = lineMatcher.group(4);
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, null, parseTime(time, startDate), null);
+                null, Conversion.parseDouble(speed), parseTime(time, startDate), null);
     }
 
     private String formatNumber(int number) {
@@ -146,9 +147,10 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = Conversion.formatDoubleAsString(position.getLongitude());
         String latitude = Conversion.formatDoubleAsString(position.getLatitude());
         String time = formatTime(position.getTime());
+        String speed = Conversion.formatDoubleAsString(position.getSpeed());
         writer.println("0" + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
                 longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                "0.0" + SEPARATOR_CHAR + "0.0" + SEPARATOR_CHAR +
+                "0.0" + SEPARATOR_CHAR + speed + SEPARATOR_CHAR +
                 "1" + SEPARATOR_CHAR + "0.0" + SEPARATOR_CHAR + "1");
     }
 }

@@ -54,6 +54,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertEquals(8.016903, position.getLongitude());
         assertEquals(52.34555, position.getLatitude());
         assertNull(position.getElevation());
+        assertEquals(30.0394, position.getSpeed());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         Calendar expectedCal = Calendar.getInstance();
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());

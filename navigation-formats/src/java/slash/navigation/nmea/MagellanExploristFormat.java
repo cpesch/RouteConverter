@@ -29,7 +29,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
             compile("^\\$PMGNTRK" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "(-?[\\d\\.]+)" + SEPARATOR +     // Elevation
+                    "(-?[\\d\\.]+)" + SEPARATOR +   
                     "M" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time, hhmmss
                     "[A]" + SEPARATOR +
