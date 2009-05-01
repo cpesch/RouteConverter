@@ -196,19 +196,13 @@ public class Kml20Format extends KmlFormat {
         for (Placemark placemark : placemarks) {
             String placemarkName = asComment(extractName(placemark.getDescriptionOrNameOrSnippet()),
                     extractDescription(placemark.getDescriptionOrNameOrSnippet()));
-            Calendar placemarkTime = extractTime(placemark.getDescriptionOrNameOrSnippet());
-            if(placemarkTime == null)
-                placemarkTime = parseTime(extractDescription(placemark.getDescriptionOrNameOrSnippet()));
-            List<KmlPosition> positions = extractPositions(placemark.getDescriptionOrNameOrSnippet());
 
+            List<KmlPosition> positions = extractPositions(placemark.getDescriptionOrNameOrSnippet());
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
-                if (wayPoint.getTime() == null)
-                    wayPoint.setTime(placemarkTime);
-                if (wayPoint.getComment() == null)
-                    wayPoint.setComment(placemarkName);
-                wayPoints.add(positions.get(0));
+                enrichPosition(wayPoint, extractTime(placemark.getDescriptionOrNameOrSnippet()), placemarkName, extractDescription(placemark.getDescriptionOrNameOrSnippet()));
+                wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
                 String routeName = concatPath(name, placemarkName);

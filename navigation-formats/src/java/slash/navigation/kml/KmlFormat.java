@@ -147,16 +147,34 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return result;
     }
 
-    static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    static final Pattern TAVELLOG_PATTERN = Pattern.compile(".*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
+    protected void enrichPosition(KmlPosition position, Calendar time, String comment, String travellogDescription) {
+        if (position.getTime() != null)
+            position.setTime(time);
+        if (position.getComment() != null)
+            position.setComment(comment);
 
-    // TODO move this to RouteComments
+        if (travellogDescription == null)
+            return;
 
-    protected Calendar parseTime(String description) {
-        // <description><![CDATA[<html><body>Time: 2009/02/07 21:45:55<BR>Altitude: 62.20<BR>Speed: 15.37<BR></body></html>]]></description>
-        // TODO could extract speed as well
+        Calendar logTime = parseTime(travellogDescription);
+        if (position.getTime() == null)
+            position.setTime(logTime);
+
+        Double elevation = parseElevation(travellogDescription);
+        if (position.getElevation() == null)
+            position.setElevation(elevation);
+
+        Double speed = parseSpeed(travellogDescription);
+        if (position.getSpeed() == null)
+            position.setSpeed(speed);
+    }
+
+    private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
+
+    Calendar parseTime(String description) {
         if (description != null) {
-            Matcher matcher = TAVELLOG_PATTERN.matcher(description);
+            Matcher matcher = TAVELLOG_DATE_PATTERN.matcher(description);
             if (matcher.matches()) {
                 String timeString = matcher.group(1);
                 try {
@@ -169,7 +187,30 @@ public abstract class KmlFormat extends BaseKmlFormat {
                     // intentionally left empty;
                 }
             }
+        }
+        return null;
+    }
 
+    private static final Pattern TAVELLOG_SPEED_PATTERN = Pattern.compile(".*Speed:\\s*(\\d+\\.\\d+).*");
+
+    Double parseSpeed(String description) {
+        if (description != null) {
+            Matcher matcher = TAVELLOG_SPEED_PATTERN.matcher(description);
+            if (matcher.matches()) {
+                return Conversion.parseDouble(matcher.group(1));
+            }
+        }
+        return null;
+    }
+
+    private static final Pattern TAVELLOG_ELEVATION_PATTERN = Pattern.compile(".*Altitude:\\s*(\\d+\\.\\d+).*");
+
+    Double parseElevation(String description) {
+        if (description != null) {
+            Matcher matcher = TAVELLOG_ELEVATION_PATTERN.matcher(description);
+            if (matcher.matches()) {
+                return Conversion.parseDouble(matcher.group(1));
+            }
         }
         return null;
     }

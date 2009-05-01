@@ -98,16 +98,10 @@ public class Kml21Format extends KmlFormat {
             PlacemarkType placemarkType = (PlacemarkType) feature;
             String placemarkName = asComment(Conversion.trim(placemarkType.getName()),
                     Conversion.trim(placemarkType.getDescription()));
-            Calendar placemarkTime = extractTime(placemarkType.getTimePrimitive());
-            if(placemarkTime == null)
-                placemarkTime = parseTime(placemarkType.getDescription());
 
             List<KmlPosition> positions = extractPositions(placemarkType.getGeometry());
             for (KmlPosition position : positions) {
-                if (position.getTime() == null)
-                    position.setTime(placemarkTime);
-                if (position.getComment() == null)
-                    position.setComment(placemarkName);
+                enrichPosition(position, extractTime(placemarkType.getTimePrimitive()), placemarkName, placemarkType.getDescription());
             }
             routes = Arrays.asList(new KmlRoute(this, RouteCharacteristics.Waypoints, placemarkName, null, positions));
         }
@@ -150,18 +144,12 @@ public class Kml21Format extends KmlFormat {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asComment(Conversion.trim(placemarkTypeValue.getName()),
                     Conversion.trim(placemarkTypeValue.getDescription()));
-            Calendar placemarkTime = extractTime(placemarkTypeValue.getTimePrimitive());
-            if(placemarkTime == null)
-                placemarkTime = parseTime(placemarkTypeValue.getDescription());
 
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getGeometry());
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
-                if (wayPoint.getComment() == null)
-                    wayPoint.setComment(placemarkName);
-                if (wayPoint.getTime() == null)
-                    wayPoint.setTime(placemarkTime);
+                enrichPosition(wayPoint, extractTime(placemarkTypeValue.getTimePrimitive()), placemarkName, placemarkTypeValue.getDescription());
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
