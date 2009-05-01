@@ -295,7 +295,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String speed = Conversion.formatDoubleAsString(position.getSpeed());
             // $GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37
             String vtg = "GPVTG" + SEPARATOR + SEPARATOR + "T" + SEPARATOR + SEPARATOR + "M" + SEPARATOR +
-                    speedKnots + SEPARATOR + "N" + SEPARATOR + speed + "K" + SEPARATOR + "A";
+                    speedKnots + SEPARATOR + "N" + SEPARATOR + speed + SEPARATOR + "K" + SEPARATOR + "A";
             writeSentence(writer, vtg);
         }
     }

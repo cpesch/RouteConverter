@@ -265,7 +265,8 @@ public class NmeaFormatTest extends NavigationTestCase {
         String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,,,-48.0,M,,M,,*7F" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
                 "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
-                "$GPZDA,134012.000,26,07,07,,*57" + eol;
+                "$GPZDA,134012.000,26,07,07,,*57" + eol +
+                "$GPVTG,,T,,M,3.0,N,5.5560129,K,A*29" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
         List<NmeaRoute> routes2 = format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, BaseNavigationFormat.DEFAULT_ENCODING);
