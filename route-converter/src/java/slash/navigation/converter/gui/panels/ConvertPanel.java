@@ -237,7 +237,7 @@ public abstract class ConvertPanel {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        convertPanel.registerKeyboardAction(new FrameAction() {
+        tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
                 removePositions();
             }
