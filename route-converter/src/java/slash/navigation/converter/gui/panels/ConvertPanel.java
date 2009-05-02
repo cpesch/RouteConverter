@@ -131,6 +131,12 @@ public abstract class ConvertPanel {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        textFieldSource.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                textFieldSource.selectAll();
+            }
+        });
+
         buttonAppendFileToPositionList.addActionListener(new FrameAction() {
             public void run() {
                 appendToPositionList();
@@ -704,6 +710,7 @@ public abstract class ConvertPanel {
         r.setLastMapCenter(center);
 
         getPositionsModel().add(insertRow, center.getLongitude(), center.getLatitude(),
+                center.getElevation(), center.getSpeed(),
                 center.getTime() != null ? center.getTime() : Calendar.getInstance(),
                 RouteConverter.getBundle().getString("add-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
