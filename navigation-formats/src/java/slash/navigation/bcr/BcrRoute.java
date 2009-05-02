@@ -145,8 +145,8 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
 
-    public BcrPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new BcrPosition(longitude, latitude, null, comment);
+    public BcrPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new BcrPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

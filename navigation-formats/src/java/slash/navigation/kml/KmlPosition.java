@@ -32,8 +32,8 @@ import java.util.Calendar;
 
 public class KmlPosition extends Wgs84Position {
 
-    public KmlPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, null, time, comment);
+    public KmlPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(longitude, latitude, elevation, speed, time, comment);
     }
 
     public KmlPosition asKmlPosition() {

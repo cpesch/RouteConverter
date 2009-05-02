@@ -54,7 +54,7 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
         List<BaseNavigationPosition> positions = route.getPositions();
         BaseNavigationPosition first = positions.get(0);
         return new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
-                first.getLatitude() + DUPLICATE_OFFSET, null, null, "Start:" + first.getComment());
+                first.getLatitude() + DUPLICATE_OFFSET, (Double)null, null, null, "Start:" + first.getComment());
     }
 
     static String escapeSeparator(String string) {

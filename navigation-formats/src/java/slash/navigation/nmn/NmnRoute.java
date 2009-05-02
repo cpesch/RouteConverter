@@ -91,7 +91,7 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
     }
 
 
-    public NmnPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new NmnPosition(longitude, latitude, null, time, comment);
+    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new NmnPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

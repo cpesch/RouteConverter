@@ -88,8 +88,8 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     }
 
 
-    public KmlPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new KmlPosition(longitude, latitude, null, time, comment);
+    public KmlPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new KmlPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

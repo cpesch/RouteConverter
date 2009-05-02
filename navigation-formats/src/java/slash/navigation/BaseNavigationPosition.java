@@ -215,7 +215,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public GkPosition asGkPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asGlopusPosition() {
@@ -227,7 +227,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public GoPalPosition asGoPalRoutePosition() {
-        return new GoPalPosition(getLongitude(), getLatitude(), getComment());
+        return new GoPalPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asGoPalTrackPosition() {
@@ -251,7 +251,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public TomTomPosition asTomTomRoutePosition() {
-        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asKlickTelRoutePosition() {
@@ -271,7 +271,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public KmlPosition asKmlPosition() {
-        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new KmlPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public KmlPosition asKmlBetaPosition() {
@@ -295,7 +295,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public BcrPosition asMTPPosition() {
-        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+        return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public NmeaPosition asMagellanExploristPosition() {
@@ -307,7 +307,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public GkPosition asMagicMapsPthPosition() {
-        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asNavigatingPoiWarnerPosition() {
@@ -323,7 +323,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public NmnPosition asNmnPosition() {
-        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getTime(), getComment());
+        return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asOvlPosition() {
@@ -335,7 +335,7 @@ public abstract class BaseNavigationPosition {
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getLongitude(), getLatitude(), getComment());
+        return new TourPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asWgs84Position() {

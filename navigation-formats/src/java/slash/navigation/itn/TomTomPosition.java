@@ -44,8 +44,8 @@ public class TomTomPosition extends BaseNavigationPosition {
         setComment(comment);
     }
 
-    public TomTomPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(elevation, null, time);
+    public TomTomPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(elevation, speed, time);
         setLongitude(longitude);
         setLatitude(latitude);
         setComment(comment);

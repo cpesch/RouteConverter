@@ -89,8 +89,8 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
 
-    public TomTomPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new TomTomPosition(longitude, latitude, null, time, comment);
+    public TomTomPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new TomTomPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

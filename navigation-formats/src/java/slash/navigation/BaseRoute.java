@@ -223,7 +223,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             down(index++);
     }
 
-    public abstract P createPosition(Double longitude, Double latitude, Calendar time, String comment);
+    public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment);
 
     public abstract SimpleRoute asCoPilot6Format();
 

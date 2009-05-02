@@ -82,12 +82,16 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return null;
     }
 
+    protected boolean isWriteName() {
+        return preferences.getBoolean("writeName", true);
+    }
+
     protected boolean isWriteElevation() {
         return preferences.getBoolean("writeElevation", true);
     }
 
-    protected boolean isWriteName() {
-        return preferences.getBoolean("writeName", true);
+    protected boolean isWriteSpeed() {
+        return preferences.getBoolean("writeSpeed", true);
     }
 
     protected boolean isWriteTime() {

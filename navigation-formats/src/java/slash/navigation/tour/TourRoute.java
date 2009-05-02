@@ -89,8 +89,8 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
     }
 
 
-    public TourPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new TourPosition(longitude, latitude, comment);
+    public TourPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new TourPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

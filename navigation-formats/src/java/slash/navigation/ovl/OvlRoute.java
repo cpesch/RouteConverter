@@ -112,8 +112,8 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
     }
 
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, null, null, time, comment);
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

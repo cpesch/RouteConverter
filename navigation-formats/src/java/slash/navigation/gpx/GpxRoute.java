@@ -114,8 +114,8 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         positions.add(index, position);
     }
 
-    public GpxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new GpxPosition(longitude, latitude, null, null, time, comment);
+    public GpxPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new GpxPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
 

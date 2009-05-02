@@ -197,8 +197,8 @@ public class PositionsModel extends AbstractTableModel {
         fireTableRowsInserted(row, row + positions.size());
     }
 
-    public void add(int row, Double longitude, Double latitude, Calendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, time, comment);
+    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
         add(row, position);
     }
 

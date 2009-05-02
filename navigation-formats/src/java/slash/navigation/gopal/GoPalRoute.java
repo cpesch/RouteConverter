@@ -122,8 +122,8 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
     }
 
 
-    public GoPalPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new GoPalPosition(longitude, latitude, comment);
+    public GoPalPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new GoPalPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

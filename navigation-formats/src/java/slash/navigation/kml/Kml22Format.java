@@ -464,7 +464,7 @@ public class Kml22Format extends KmlFormat {
                 // calculate the point at the Kilometermark that's between the current position and the
                 // previous one. It is possible, that there's more than one point to create
                 // See: http://www.movable-type.co.uk/scripts/latlong.html and http://williams.best.vwh.net/avform.htm#LL
-                KmlPosition lastPosition = new KmlPosition(previousPosition.getLongitude(), previousPosition.getLatitude(), 0d, null, null);
+                KmlPosition lastPosition = new KmlPosition(previousPosition.getLongitude(), previousPosition.getLatitude(), 0d, null, null, null);
 
                 // remaining distance between the last point and the mark
                 double remaining = 1000 - (previousDistance % (1000));

@@ -55,7 +55,7 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
     }
 
 
-    public GkPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new GkPosition(longitude, latitude, null, time, comment);
+    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new GkPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

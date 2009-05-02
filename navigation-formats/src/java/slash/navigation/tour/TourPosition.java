@@ -27,6 +27,7 @@ import slash.navigation.gopal.GoPalPosition;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Calendar;
 
 /**
  * Represents a position in a Falk Navigator (.tour) file.
@@ -39,12 +40,12 @@ public class TourPosition extends MercatorPosition {
     private String name, zipCode, street, houseNo; // comment = city
     private Map<String, String> nameValues = new HashMap<String, String>();
 
-    public TourPosition(Double longitude, Double latitude, String comment) {
-        super(longitude, latitude, null, null, comment);
+    public TourPosition(Double longitude, Double latitude,  Double elevation, Double speed, Calendar time, String comment) {
+        super(longitude, latitude, elevation, speed, time, comment);
     }
 
     public TourPosition(Long x, Long y, String zipCode, String city, String street, String houseNo, String name, boolean home, Map<String, String> nameValues) {
-        super(x, y, null, null, city);
+        super(x, y, null, null, null, city);
         this.name = name;
         this.zipCode = zipCode;
         this.street = street;

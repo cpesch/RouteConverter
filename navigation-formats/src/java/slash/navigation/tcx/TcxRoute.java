@@ -87,8 +87,8 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
     }
 
 
-    public TcxPosition createPosition(Double longitude, Double latitude, Calendar time, String comment) {
-        return new TcxPosition(longitude, latitude, null, time, comment);
+    public TcxPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        return new TcxPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {

@@ -34,8 +34,8 @@ public class GkPosition extends BaseNavigationPosition {
     protected double right, height;
     protected String comment;
 
-    public GkPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(elevation, null, time);
+    public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(elevation, speed, time);
         if (longitude != null && latitude != null) {
             double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, latitude);
             setRight(gk[0]);

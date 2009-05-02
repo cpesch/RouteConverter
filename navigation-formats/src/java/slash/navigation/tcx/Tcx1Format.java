@@ -57,7 +57,12 @@ public class Tcx1Format extends TcxFormat {
     private TcxRoute processTrack(String name, TrackT trackT) {
         List<TcxPosition> positions = new ArrayList<TcxPosition>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
-            positions.add(new TcxPosition(convertLongitude(trackpointT.getPosition()), convertLatitude(trackpointT.getPosition()), trackpointT.getAltitudeMeters(), parseTime(trackpointT.getTime()), null));
+            positions.add(new TcxPosition(convertLongitude(trackpointT.getPosition()),
+                    convertLatitude(trackpointT.getPosition()),
+                    trackpointT.getAltitudeMeters(),
+                    null,
+                    parseTime(trackpointT.getTime()),
+                    null));
         }
         return new TcxRoute(this, RouteCharacteristics.Track, name, positions);
     }
@@ -68,6 +73,7 @@ public class Tcx1Format extends TcxFormat {
             positions.add(new TcxPosition(convertLongitude(coursePointT.getPosition()),
                     convertLatitude(coursePointT.getPosition()),
                     coursePointT.getAltitudeMeters(),
+                    null,
                     parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
@@ -80,10 +86,12 @@ public class Tcx1Format extends TcxFormat {
                 convertLatitude(courseLapT.getBeginPosition()),
                 courseLapT.getBeginAltitudeMeters(),
                 null,
+                null,
                 "0 seconds"));
         positions.add(new TcxPosition(convertLongitude(courseLapT.getEndPosition()),
                 convertLatitude(courseLapT.getEndPosition()),
                 courseLapT.getEndAltitudeMeters(),
+                null,
                 null,
                 courseLapT.getTotalTimeSeconds() + " seconds"));
         return new TcxRoute(this, RouteCharacteristics.Track, name, positions);

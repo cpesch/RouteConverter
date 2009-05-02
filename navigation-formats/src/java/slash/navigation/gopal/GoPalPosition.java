@@ -25,6 +25,7 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.tour.TourPosition;
 
 import java.util.HashMap;
+import java.util.Calendar;
 
 /**
  * Represents a position in a GoPal Route (.xml) file.
@@ -36,12 +37,12 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
     private Short country, houseNo;
     private String zipCode, street; // comment = city
 
-    public GoPalPosition(Double longitude, Double latitude, String comment) {
-        super(longitude, latitude, null, null, comment);
+    public GoPalPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(longitude, latitude, elevation, speed, time, comment);
     }
 
     public GoPalPosition(Long x, Long y, Short country, String zipCode, String city, String street, Short houseNo) {
-        super(x, y, null, null, city);
+        super(x, y, null, null, null, city);
         this.country = country;
         this.zipCode = zipCode;
         this.street = street;

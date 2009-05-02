@@ -78,7 +78,7 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         String comment = city != null ? city + " " : "" + street != null ? street : "";
         if (comment != null && comment.toUpperCase().equals(comment))
             comment = Conversion.toMixedCase(comment);
-        return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double) null, null, Conversion.trim(comment));
+        return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double) null, null, null, Conversion.trim(comment));
     }
 
     private static String formatForNmnFavorites(String string) {

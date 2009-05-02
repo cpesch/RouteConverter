@@ -43,8 +43,8 @@ public class NmnPosition extends Wgs84Position {
         this.number = number;
     }
 
-    public NmnPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, null, time, comment);
+    public NmnPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(longitude, latitude, elevation, speed, time, comment);
     }
 
     public boolean isUnstructured() {

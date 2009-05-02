@@ -65,7 +65,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     protected Gpx10Format createGpxFormat() {
-        return new Gpx10Format();
+        return new Gpx10Format(false);
     }
 
     public static String getBabelPathPreference() {

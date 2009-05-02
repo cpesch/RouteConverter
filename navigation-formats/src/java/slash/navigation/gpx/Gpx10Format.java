@@ -45,6 +45,15 @@ import java.util.logging.Logger;
 public class Gpx10Format extends GpxFormat {
     private static final Logger log = Logger.getLogger(Gpx10Format.class.getName());
     protected static final String VERSION = "1.0";
+    private boolean reuseReadObjectsForWriting;
+
+    public Gpx10Format(boolean reuseReadObjectsForWriting) {
+        this.reuseReadObjectsForWriting = reuseReadObjectsForWriting;
+    }
+
+    public Gpx10Format() {
+        this(true);
+    }
 
     public String getName() {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
@@ -162,7 +171,7 @@ public class Gpx10Format extends GpxFormat {
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             Gpx.Wpt wpt = position.getOrigin(Gpx.Wpt.class);
-            if (wpt == null)
+            if (wpt == null || !reuseReadObjectsForWriting)
                 wpt = objectFactory.createGpxWpt();
             wpt.setLat(Conversion.formatDouble(position.getLatitude()));
             wpt.setLon(Conversion.formatDouble(position.getLongitude()));
@@ -182,7 +191,7 @@ public class Gpx10Format extends GpxFormat {
         List<Gpx.Rte> rtes = new ArrayList<Gpx.Rte>();
 
         Gpx.Rte rte = route.getOrigin(Gpx.Rte.class);
-        if (rte != null)
+        if (rte != null && reuseReadObjectsForWriting)
             rte.getRtept().clear();
         else
             rte = objectFactory.createGpxRte();
@@ -196,7 +205,7 @@ public class Gpx10Format extends GpxFormat {
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             Gpx.Rte.Rtept rtept = position.getOrigin(Gpx.Rte.Rtept.class);
-            if (rtept == null)
+            if (rtept == null || !reuseReadObjectsForWriting)
                 rtept = objectFactory.createGpxRteRtept();
             rtept.setLat(Conversion.formatDouble(position.getLatitude()));
             rtept.setLon(Conversion.formatDouble(position.getLongitude()));
@@ -216,7 +225,7 @@ public class Gpx10Format extends GpxFormat {
         List<Gpx.Trk> trks = new ArrayList<Gpx.Trk>();
 
         Gpx.Trk trk = route.getOrigin(Gpx.Trk.class);
-        if (trk != null)
+        if (trk != null && reuseReadObjectsForWriting)
             trk.getTrkseg().clear();
         else
             trk = objectFactory.createGpxTrk();
@@ -231,7 +240,7 @@ public class Gpx10Format extends GpxFormat {
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
-            if (trkpt == null)
+            if (trkpt == null || !reuseReadObjectsForWriting)
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
             trkpt.setLat(Conversion.formatDouble(position.getLatitude()));
             trkpt.setLon(Conversion.formatDouble(position.getLongitude()));
@@ -239,6 +248,8 @@ public class Gpx10Format extends GpxFormat {
                 trkpt.setTime(formatTime(position.getTime()));
             if (isWriteElevation())
                 trkpt.setEle(Conversion.formatDouble(position.getElevation()));
+            if (isWriteSpeed())
+                trkpt.setSpeed(Conversion.formatDouble(position.getSpeed()));
             if (isWriteName())
                 trkpt.setName(asName(position.getComment(), trkpt.getDesc()));
             trkseg.getTrkpt().add(trkpt);
@@ -259,7 +270,7 @@ public class Gpx10Format extends GpxFormat {
 
     private Gpx createGpx(GpxRoute route, int startIndex, int endIndex) {
         Gpx gpx = recycleGpx(route);
-        if (gpx == null)
+        if (gpx == null || !reuseReadObjectsForWriting)
             gpx = new ObjectFactory().createGpx();
         gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpx.setVersion(VERSION);
@@ -280,7 +291,7 @@ public class Gpx10Format extends GpxFormat {
             if(gpx != null)
                 break;
         }
-        if (gpx == null)
+        if (gpx == null || !reuseReadObjectsForWriting)
             gpx = objectFactory.createGpx();
         gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
         gpx.setVersion(VERSION);

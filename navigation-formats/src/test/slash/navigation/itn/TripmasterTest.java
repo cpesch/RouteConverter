@@ -47,7 +47,7 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmaster1dot4PositionByConvertingFromOtherFormat() {
-        TomTomPosition position = new TomTomPosition(null, null, null, null, "Abstand 6 - 11:32:26 - 34 m - Bahrenfeld");
+        TomTomPosition position = new TomTomPosition(null, null, null, null, null, "Abstand 6 - 11:32:26 - 34 m - Bahrenfeld");
         checkTripmaster1dot4Position(position);
     }
 
@@ -129,7 +129,7 @@ public class TripmasterTest extends NavigationTestCase {
 
 
     private void checkTripmasterComment(String expectedComment, String expectedReason, String comment) {
-        TomTomPosition position = new TomTomPosition(0.0, 0.0, 0.0, null, comment);
+        TomTomPosition position = new TomTomPosition(0.0, 0.0, 0.0, null, null, comment);
         assertEquals(expectedReason, position.getReason());
         assertEquals(expectedComment, position.getCity());
         assertEquals(expectedComment, position.getComment());

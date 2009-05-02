@@ -34,13 +34,13 @@ import java.util.Calendar;
 
 public class TcxPosition extends Wgs84Position { // TODO same as GpxPosition
 
-    public TcxPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        super(longitude, latitude, elevation, null, time, comment);
+    public TcxPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        super(longitude, latitude, elevation, speed, time, comment);
     }
 
     public TcxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Calendar time, String comment) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
-                Conversion.formatDouble(elevation), time, comment);
+                Conversion.formatDouble(elevation), null, time, comment);
     }
 
     public TcxPosition asTcxPosition() {

@@ -72,7 +72,7 @@ public class Nmn6Format extends NmnFormat {
         String comment = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
-        return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double)null, null, Conversion.trim(comment));
+        return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double)null, null, null, Conversion.trim(comment));
     }
 
     private static String formatForNmn6(String string) {

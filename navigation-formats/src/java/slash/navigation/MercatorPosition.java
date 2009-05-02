@@ -34,12 +34,12 @@ public class MercatorPosition extends BaseNavigationPosition {
     protected Long x, y;
     protected String comment;
 
-    public MercatorPosition(Double longitude, Double latitude, Double elevation, Calendar time, String comment) {
-        this(asX(longitude), asY(latitude), elevation, time, comment);
+    public MercatorPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        this(asX(longitude), asY(latitude), elevation, speed, time, comment);
     }
 
-    public MercatorPosition(Long x, Long y, Double elevation, Calendar time, String comment) {
-        super(elevation, null, time);
+    public MercatorPosition(Long x, Long y, Double elevation, Double speed, Calendar time, String comment) {
+        super(elevation, speed, time);
         this.x = x;
         this.y = y;
         setComment(comment);
