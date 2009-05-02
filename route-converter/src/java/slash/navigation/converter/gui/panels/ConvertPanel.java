@@ -133,7 +133,8 @@ public abstract class ConvertPanel {
 
         textFieldSource.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                textFieldSource.selectAll();
+                if (!textFieldSource.hasFocus())
+                    textFieldSource.selectAll();
             }
         });
 
