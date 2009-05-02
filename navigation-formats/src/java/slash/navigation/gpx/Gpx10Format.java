@@ -30,7 +30,6 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -131,7 +130,7 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), null, parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), parseSpeed(rtept.getCmt()), parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept));
             }
         }
         return positions;
@@ -140,7 +139,7 @@ public class Gpx10Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), null, parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), parseSpeed(wpt.getCmt()), parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt));
         }
         return positions;
     }
@@ -150,12 +149,9 @@ public class Gpx10Format extends GpxFormat {
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    BigDecimal speed = trkPt.getSpeed();
-                    if(speed == null && trkPt.getCmt() != null) {
-                        Double speedFromComment = extractSpeed(trkPt.getCmt());
-                        if (speedFromComment != null)
-                            speed = new BigDecimal(speedFromComment);
-                    }
+                    Double speed = Conversion.formatDouble(trkPt.getSpeed());
+                    if((speed == null || speed == 0.0) && trkPt.getCmt() != null)
+                        speed = parseSpeed(trkPt.getCmt());
                     positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
                 }
             }
@@ -175,10 +171,12 @@ public class Gpx10Format extends GpxFormat {
                 wpt = objectFactory.createGpxWpt();
             wpt.setLat(Conversion.formatDouble(position.getLatitude()));
             wpt.setLon(Conversion.formatDouble(position.getLongitude()));
-            if (isWriteTime())
-                wpt.setTime(formatTime(position.getTime()));
             if (isWriteElevation())
                 wpt.setEle(Conversion.formatDouble(position.getElevation()));
+            if (isWriteSpeed())
+                wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
+            if (isWriteTime())
+                wpt.setTime(formatTime(position.getTime()));
             if (isWriteName())
                 wpt.setName(asName(position.getComment(), wpt.getDesc()));
             wpts.add(wpt);
@@ -209,10 +207,12 @@ public class Gpx10Format extends GpxFormat {
                 rtept = objectFactory.createGpxRteRtept();
             rtept.setLat(Conversion.formatDouble(position.getLatitude()));
             rtept.setLon(Conversion.formatDouble(position.getLongitude()));
+            if (isWriteElevation())
+                rtept.setEle(Conversion.formatDouble(position.getElevation()));
+            if (isWriteSpeed())
+                rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             if (isWriteTime())
                 rtept.setTime(formatTime(position.getTime()));
-            if (isWriteElevation()) 
-                rtept.setEle(Conversion.formatDouble(position.getElevation()));
             if (isWriteName())
                 rtept.setName(asName(position.getComment(), rtept.getDesc()));
             rte.getRtept().add(rtept);

@@ -42,9 +42,9 @@ public class GpxPosition extends Wgs84Position {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, BigDecimal speed, Calendar time, String comment, Object origin) {
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, Calendar time, String comment, Object origin) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
-                Conversion.formatDouble(elevation), Conversion.formatDouble(speed), time, comment);
+                Conversion.formatDouble(elevation), speed, time, comment);
         this.origin = origin;
     }
 

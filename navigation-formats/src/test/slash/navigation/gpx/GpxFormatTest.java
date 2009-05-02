@@ -148,9 +148,9 @@ public class GpxFormatTest extends NavigationTestCase {
 
     public void testExtractSpeed() {
         Gpx10Format format = new Gpx10Format();
-        assertEquals(9.0, format.extractSpeed(" 9 Km/h "));
-        assertEquals(99.0, format.extractSpeed(" 99 Km/h "));
-        assertNull(format.extractSpeed("egal"));
+        assertEquals(9.0, format.parseSpeed(" 9 Km/h "));
+        assertEquals(99.0, format.parseSpeed(" 99 Km/h "));
+        assertNull(format.parseSpeed("egal"));
     }
 
     public void testExtractReason() {

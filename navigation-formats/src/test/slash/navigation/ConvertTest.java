@@ -594,6 +594,7 @@ public class ConvertTest extends NavigationTestCase {
 
 
     public void testConvertGoPalTrackToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new Gpx11Format());
     }
 

@@ -75,11 +75,20 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return asComment(name, description);
     }
 
-    protected Double extractSpeed(String comment) {
-        Matcher matcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
-        if (matcher.matches())
-            return Conversion.parseDouble(matcher.group(1));
+    protected Double parseSpeed(String comment) {
+        if (comment != null) {
+            Matcher matcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
+            if (matcher.matches())
+                return Conversion.parseDouble(matcher.group(1));
+        }
         return null;
+    }
+
+    protected String formatSpeed(String comment, Double speed) {
+        if (speed == null || speed == 0.0)
+            return comment;
+        return (comment != null ? comment + " " : "") +
+                "Speed: " + Conversion.formatDoubleAsString(speed) + " Km/h";
     }
 
     protected boolean isWriteName() {
