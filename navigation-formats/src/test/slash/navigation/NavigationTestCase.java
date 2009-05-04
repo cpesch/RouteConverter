@@ -293,7 +293,7 @@ public abstract class NavigationTestCase extends TestCase {
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 45), trim(targetPosition.getComment(), 45));
                 else if (targetFormat instanceof GarminPoiDbFormat ||
                         (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Waypoints)))
-                    assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(targetPosition.getComment(), 50));
+                    assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(trimSpeedComment(targetPosition.getComment()), 50));
                 else if (targetFormat instanceof TomTomRouteFormat)
                     assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetPosition.getComment());
                 else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof NmeaFormat)
