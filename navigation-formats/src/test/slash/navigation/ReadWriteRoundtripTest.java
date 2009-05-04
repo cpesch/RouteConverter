@@ -75,11 +75,6 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-gopal.trk");
     }
 
-    public void testGpx10ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from10.gpx");
-        readWriteRoundtrip(TEST_PATH + "from10trk.gpx");
-    }
-
     public void testGpx11ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx");
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx");

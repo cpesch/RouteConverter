@@ -21,6 +21,7 @@
 package slash.navigation.babel;
 
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.gpx.GpxPosition;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +60,15 @@ public class GarminPcx5Format extends BabelFormat {
         return true;
     }
 
+    private boolean isNonsenseRoute(List<GpxPosition> positions) {
+        int count = 0;
+        for (GpxPosition position : positions) {
+            if (position.getLongitude() == 0.0 && position.getElevation() != null && position.getElevation() > 100000.0)
+                count++;
+        }
+        return count == positions.size();
+    }
+
     public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
         List<GpxRoute> routes = super.read(source, startDate);
         if (routes == null)
@@ -67,7 +77,7 @@ public class GarminPcx5Format extends BabelFormat {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (GpxRoute route : routes) {
             // clashes with some TomTom POI .ov2 files
-            if (route.getPositionCount() > 0)
+            if (route.getPositionCount() > 0 && !isNonsenseRoute(route.getPositions()))
                 result.add(route);
         }
         return result.size() > 0 ? result : null;

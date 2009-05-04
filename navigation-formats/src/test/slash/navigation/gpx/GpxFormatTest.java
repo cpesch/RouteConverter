@@ -26,6 +26,7 @@ import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
+import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -127,7 +128,7 @@ public class GpxFormatTest extends NavigationTestCase {
         assertFalse(string.contains("ns4"));
     }
 
-    public void testWritingExtensions() throws IOException, JAXBException {
+    public void testWritingRouteConverterExtensions() throws IOException, JAXBException {
         slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();
         UserextensionType userExtensionType = rcFactory.createUserextensionType();
         userExtensionType.setFirstname("FIRST");
@@ -143,6 +144,20 @@ public class GpxFormatTest extends NavigationTestCase {
         String string = writer.toString();
         assertTrue(string.contains("<gpx creator=\"CREATOR\""));
         assertTrue(string.contains("<rcxx:firstname>FIRST</rcxx:firstname>"));
+    }
+
+    public void testWritingTrekBuddyExtensions() throws IOException, JAXBException {
+        ObjectFactory gpxFactory = new ObjectFactory();
+        slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
+        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
+        extensionsType.getAny().add(tbFactory.createSpeed(Conversion.formatDouble(123.45)));
+        GpxType gpx = gpxFactory.createGpxType();
+        gpx.setExtensions(extensionsType);
+        assertNotNull(gpx);
+        StringWriter writer = new StringWriter();
+        GpxUtil.marshal11(gpx, writer);
+        String string = writer.toString();
+        assertTrue(string.contains("<nmea:speed>123.45</nmea:speed>"));
     }
 
     public void testExtractSpeed() {

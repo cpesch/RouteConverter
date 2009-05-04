@@ -38,6 +38,7 @@ public class GpxUtil {
     public static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
     public static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
     public static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
+    public static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
 
     public static Unmarshaller newUnmarshaller10() {
         return JaxbUtils.newUnmarshaller(CONTEXT_10);
@@ -54,7 +55,8 @@ public class GpxUtil {
     public static Marshaller newMarshaller11() {
         return JaxbUtils.newMarshaller(CONTEXT_11,
                 GARMIN_EXTENSIONS_3_NAMESPACE_URI, "gpxx",
-                ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI, "rcxx"
+                ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI, "rcxx",
+                TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI, "nmea"
         );
     }
 

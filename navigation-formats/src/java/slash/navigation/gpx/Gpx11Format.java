@@ -20,6 +20,7 @@
 
 package slash.navigation.gpx;
 
+import org.w3c.dom.Element;
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.binding11.*;
@@ -36,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.w3c.dom.Element;
 
 /**
  * Reads and writes GPS Exchange Format 1.1 (.gpx) files.
@@ -163,16 +162,7 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    Double speed = null;
-                    if (wptType.getExtensions() != null) {
-                        for (Object any : wptType.getExtensions().getAny()) {
-                            if (any instanceof Element) {
-                                Element element = (Element) any;
-                                if ("speed".equals(element.getLocalName()))
-                                    speed = Conversion.parseDouble(element.getTextContent());
-                            }
-                        }
-                    }
+                    Double speed = getSpeed(wptType);
                     if (speed == null)
                         speed = parseSpeed(wptType.getCmt());
                     positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), speed, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType));
@@ -182,6 +172,51 @@ public class Gpx11Format extends GpxFormat {
         return positions;
     }
 
+    private Double getSpeed(WptType wptType) {
+        Double speed = null;
+        if (wptType.getExtensions() != null) {
+            for (Object any : wptType.getExtensions().getAny()) {
+                if (any instanceof Element) {
+                    Element element = (Element) any;
+                    if ("speed".equals(element.getLocalName()))
+                        speed = Conversion.parseDouble(element.getTextContent());
+                }
+            }
+        }
+        return speed;
+    }
+
+    private void setSpeed(WptType wptType, Double speed) {
+        if (wptType.getExtensions() == null)
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        List<Object> anys = wptType.getExtensions().getAny();
+        boolean foundSpeed = false;
+        for (Object any : anys) {
+            if (any instanceof Element) {
+                Element element = (Element) any;
+                if ("speed".equals(element.getLocalName())) {
+                    element.setTextContent(Conversion.formatDoubleAsString(speed));
+                    foundSpeed = true;
+                    break;
+                }
+            }
+        }
+        if (!foundSpeed) {
+            slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
+            anys.add(tbFactory.createSpeed(Conversion.formatDouble(speed)));
+        }
+    }
+
+    private void clearWptType(WptType wptType) {
+        if (!isWriteElevation())
+            wptType.setEle(null);
+        if (!isWriteSpeed())
+            setSpeed(wptType, null);
+        if (!isWriteTime())
+            wptType.setTime(null);
+        if (!isWriteName())
+            wptType.setName(null);
+    }
 
     private List<WptType> createWayPoints(GpxRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
@@ -192,14 +227,11 @@ public class Gpx11Format extends GpxFormat {
                 wptType = objectFactory.createWptType();
             wptType.setLat(Conversion.formatDouble(position.getLatitude()));
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
-            if (isWriteElevation())
-                wptType.setEle(Conversion.formatDouble(position.getElevation()));
-            if (isWriteSpeed())
-                wptType.setCmt(formatSpeed(wptType.getCmt(), position.getSpeed()));
-            if (isWriteTime())
-                wptType.setTime(formatTime(position.getTime()));
-            if (isWriteName())
-                wptType.setName(position.getComment());
+            wptType.setEle(Conversion.formatDouble(position.getElevation()));
+            setSpeed(wptType, position.getSpeed());
+            wptType.setTime(formatTime(position.getTime()));
+            wptType.setName(position.getComment());
+            clearWptType(wptType);
             wptTypes.add(wptType);
         }
         return wptTypes;
@@ -224,14 +256,11 @@ public class Gpx11Format extends GpxFormat {
                 wptType = objectFactory.createWptType();
             wptType.setLat(Conversion.formatDouble(position.getLatitude()));
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
-            if (isWriteElevation())
-                wptType.setEle(Conversion.formatDouble(position.getElevation()));
-            if (isWriteSpeed())
-                wptType.setCmt(formatSpeed(wptType.getCmt(), position.getSpeed()));
-            if (isWriteTime())
-                wptType.setTime(formatTime(position.getTime()));
-            if (isWriteName())
-                wptType.setName(position.getComment());
+            wptType.setEle(Conversion.formatDouble(position.getElevation()));
+            setSpeed(wptType, position.getSpeed());
+            wptType.setTime(formatTime(position.getTime()));
+            wptType.setName(position.getComment());
+            clearWptType(wptType);
             rteType.getRtept().add(wptType);
         }
         return rteTypes;
@@ -257,14 +286,11 @@ public class Gpx11Format extends GpxFormat {
                 wptType = objectFactory.createWptType();
             wptType.setLat(Conversion.formatDouble(position.getLatitude()));
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
-            if (isWriteElevation())
-                wptType.setEle(Conversion.formatDouble(position.getElevation()));
-            if (isWriteSpeed())
-                wptType.setCmt(formatSpeed(wptType.getCmt(), position.getSpeed()));
-            if (isWriteTime())
-                wptType.setTime(formatTime(position.getTime()));
-            if (isWriteName())
-                wptType.setName(position.getComment());
+            wptType.setEle(Conversion.formatDouble(position.getElevation()));
+            setSpeed(wptType, position.getSpeed());
+            wptType.setTime(formatTime(position.getTime()));
+            wptType.setName(position.getComment());
+            clearWptType(wptType);
             trksegType.getTrkpt().add(wptType);
         }
         trkType.getTrkseg().add(trksegType);
