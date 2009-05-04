@@ -40,7 +40,6 @@ public class TimeZoneTest extends NavigationTestCase {
         String localTime = DateFormat.getInstance().format(local.getTime().getTime());
         String utcTime = DateFormat.getInstance().format(utc.getTime().getTime());
         assertEquals(localTime, utcTime);
-        assertNotEquals(local, utc);
 
         local.setTimeZone(TimeZone.getTimeZone("GMT"));
         assertCalendarEquals(local, utc);
@@ -70,7 +69,6 @@ public class TimeZoneTest extends NavigationTestCase {
         long now = System.currentTimeMillis();
         Calendar local = calendar(now);
         Calendar utc = utcCalendar(now);
-        assertNotEquals(local, utc);
 
         GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, local, "gpx");
         assertCalendarEquals(utc, gpxPosition.getTime());
