@@ -68,7 +68,8 @@ public class OziExplorerReadFormat extends BabelFormat implements MultipleRoutes
     private boolean isNonsenseRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
-            if (position.getLongitude() == 0.0 && position.getLatitude() == 0.0 && position.getElevation() == 0.0)
+            if ((!position.hasCoordinates() || (position.getLongitude() == 0.0 && position.getLatitude() == 0.0)) &&
+                    (position.getElevation() == null || position.getElevation() == 0.0))
                 count++;
         }
         return count == positions.size();
