@@ -59,7 +59,7 @@ public class AppendTest extends NavigationTestCase {
         assertTrue(appendPositionCount > 0);
 
         File testFile = new File(testFileName);
-        parser.read(testFile);
+        assertTrue(parser.read(testFile));
         BaseRoute testRoute = parser.getTheRoute();
         assertNotNull(testRoute);
         NavigationFormat testFormat = parser.getFormat();

@@ -173,7 +173,7 @@ public class Gpx10Format extends GpxFormat {
             wpt.setLon(Conversion.formatDouble(position.getLongitude()));
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             wpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
-            if (isWriteSpeed())
+            if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             wpt.setName(isWriteName() ? asName(position.getComment(), wpt.getDesc()) : null);
             wpts.add(wpt);
@@ -206,7 +206,7 @@ public class Gpx10Format extends GpxFormat {
             rtept.setLon(Conversion.formatDouble(position.getLongitude()));
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             rtept.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
-            if (isWriteSpeed())
+            if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             rtept.setName(isWriteName() ? asName(position.getComment(), rtept.getDesc()) : null);
             rte.getRtept().add(rtept);
