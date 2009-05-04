@@ -37,6 +37,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.w3c.dom.Element;
+
 /**
  * Reads and writes GPS Exchange Format 1.1 (.gpx) files.
  *
@@ -161,7 +163,19 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), parseSpeed(wptType.getCmt()), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType));
+                    Double speed = null;
+                    if (wptType.getExtensions() != null) {
+                        for (Object any : wptType.getExtensions().getAny()) {
+                            if (any instanceof Element) {
+                                Element element = (Element) any;
+                                if ("speed".equals(element.getLocalName()))
+                                    speed = Conversion.parseDouble(element.getTextContent());
+                            }
+                        }
+                    }
+                    if (speed == null)
+                        speed = parseSpeed(wptType.getCmt());
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), speed, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType));
                 }
             }
         }

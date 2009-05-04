@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:tns="urn:net:trekbuddy:1.0:nmea:rmc" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:net:trekbuddy:1.0:nmea:rmc" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="course" type="xs:decimal" />
+  <xs:element name="speed" type="xs:decimal" />
+</xs:schema>
