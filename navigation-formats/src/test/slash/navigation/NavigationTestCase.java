@@ -151,9 +151,9 @@ public abstract class NavigationTestCase extends TestCase {
             String targetName = getKmlRouteName(targetRoute);
             assertEquals(sourceName, targetName);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
-                sourceRoute.getName().contains(" to ") && sourceRoute.getName().contains("/;") &&
+                sourceRoute.getName().contains(" to ") && sourceRoute.getName().endsWith("/") &&
                 targetRoute.getName().endsWith("/")) {
-            // if AlanWaypointsAndRoutesFormat is converted to AlanWaypointsAndRoutesFormat "EARTH_RADIUS/; Orte to B/; Orte" becomes "EARTH_RADIUS/"
+            // if AlanWaypointsAndRoutesFormat is converted to AlanWaypointsAndRoutesFormat "EARTH_RADIUS/ to B/" becomes "EARTH_RADIUS/"
             String sourcePrefix = getKmlRouteName(sourceRoute);
             String targetPrefix = getKmlRouteName(targetRoute);
             assertEquals(sourcePrefix, targetPrefix);
@@ -257,6 +257,11 @@ public abstract class NavigationTestCase extends TestCase {
         return comment;
     }
 
+    private static String getAlanWaypointsAndRoutesPositionComment(BaseNavigationPosition position, RouteCharacteristics characteristics) {
+        String comment = trimAfterSemicolon(position.getComment());
+        return trim(comment, characteristics == RouteCharacteristics.Route ? 12 : 8);
+    }
+
     private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, boolean numberPositionNames, boolean commentPositionNames, RouteCharacteristics targetCharacteristics) {
         // special case numbered positions
         if (numberPositionNames) {
@@ -277,8 +282,10 @@ public abstract class NavigationTestCase extends TestCase {
                         (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
                     assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
+                else if (sourceFormat instanceof AlanTrackLogFormat)
+                    assertEquals("Comment " + index + " does not match", trimAfterSemicolon(sourcePosition.getComment()), trimAfterSemicolon(targetPosition.getComment()));
                 else if (targetFormat instanceof AlanWaypointsAndRoutesFormat)
-                    assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 12), trim(targetPosition.getComment(), 12));
+                    assertEquals("Comment " + index + " does not match", getAlanWaypointsAndRoutesPositionComment(sourcePosition, targetCharacteristics), getAlanWaypointsAndRoutesPositionComment(targetPosition, targetCharacteristics));
                 else if (sourceFormat instanceof BcrFormat && targetFormat instanceof TomTomRouteFormat) {
                     BcrPosition bcrPosition = (BcrPosition) sourcePosition;
                     assertEquals("Comment " + index + " does not match", escapeBcr(bcrPosition.getCity() + (bcrPosition.getStreet() != null ? "," + bcrPosition.getStreet() : "")), targetPosition.getComment());
@@ -302,7 +309,7 @@ public abstract class NavigationTestCase extends TestCase {
                 else if (targetFormat instanceof MagellanMapSendFormat)
                     assertEquals("Comment " + index + " does not match", trim(sourcePosition.getComment(), 30), trim(targetPosition.getComment(), 30));
                 else if (targetFormat instanceof GarminPcx5Format)
-                    assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment(), 39)), trim(targetPosition.getComment(), 39));
+                    assertEquals("Comment " + index + " does not match", garminUmlauts(trim(trimAfterSemicolon(sourcePosition.getComment()), 39)), trim(trimAfterSemicolon(targetPosition.getComment()), 39));
                 else if (targetFormat instanceof Route66Format)
                     assertEquals("Comment " + index + " does not match", Conversion.toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
                 else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format) {
@@ -385,6 +392,10 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static String trimSpaces(String str) {
         return str != null ? str.replaceAll(" ", "") : null;
+    }
+
+    private static String trimAfterSemicolon(String str) {
+        return str != null && str.indexOf(';') != -1 ? str.substring(0, str.indexOf(';')) : str;
     }
 
     public static void comparePositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute, NavigationFormat sourceFormat,

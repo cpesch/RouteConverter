@@ -141,7 +141,6 @@ public class GpxFormatTest extends NavigationTestCase {
         StringWriter writer = new StringWriter();
         GpxUtil.marshal11(gpx, writer);
         String string = writer.toString();
-        System.out.println(string);
         assertTrue(string.contains("<gpx creator=\"CREATOR\""));
         assertTrue(string.contains("<rcxx:firstname>FIRST</rcxx:firstname>"));
     }
@@ -150,6 +149,10 @@ public class GpxFormatTest extends NavigationTestCase {
         Gpx10Format format = new Gpx10Format();
         assertEquals(9.0, format.parseSpeed(" 9 Km/h "));
         assertEquals(99.0, format.parseSpeed(" 99 Km/h "));
+        assertEquals(99.9, format.parseSpeed(" 99.9 km/h "));
+        assertEquals(99.99999, format.parseSpeed(" 99.99999 Km/h "));
+        assertEquals(9.0, format.parseSpeed("Speed: 9 Km/h "));
+        assertEquals(9.0, format.parseSpeed("Geschwindigkeit: 9 Km/h "));
         assertNull(format.parseSpeed("egal"));
     }
 

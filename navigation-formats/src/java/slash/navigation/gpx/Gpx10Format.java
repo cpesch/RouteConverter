@@ -150,7 +150,7 @@ public class Gpx10Format extends GpxFormat {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
                     Double speed = Conversion.formatDouble(trkPt.getSpeed());
-                    if((speed == null || speed == 0.0) && trkPt.getCmt() != null)
+                    if(speed == null && trkPt.getCmt() != null)
                         speed = parseSpeed(trkPt.getCmt());
                     positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
                 }

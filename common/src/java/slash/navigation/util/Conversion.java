@@ -371,8 +371,8 @@ public class Conversion {
         return aDouble != null ? BigDecimal.valueOf(aDouble) : null;
     }
 
-    public static double formatDouble(BigDecimal aBigDecimal) {
-        return aBigDecimal != null ? aBigDecimal.doubleValue() : 0.0;
+    public static Double formatDouble(BigDecimal aBigDecimal) {
+        return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
     }
 
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
