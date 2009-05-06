@@ -58,13 +58,4 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
     protected boolean isStreamingCapable() {
         return true;
     }
-
-    protected Gpx10Format createGpxFormat() {
-        return new Gpx10Format() {
-            protected String asWayPointComment(String name, String description) {
-                // ignore <description> from waypoints since <name> is crippled to 8 characters by GPSBabel
-                return asComment(name, null);
-            }
-        };
-    }
 }

@@ -144,6 +144,15 @@ public abstract class NavigationTestCase extends TestCase {
             return name;
     }
 
+    private static String getAlanWaypointsAndRoutesName(BaseRoute route) {
+        String name = route.getName();
+        int index = name.indexOf(';');
+        if (index != -1)
+            return name.substring(0, index);
+        else
+            return name;
+    }
+
     public static void compareRouteMetaData(BaseRoute sourceRoute, BaseRoute targetRoute) {
         if (targetRoute instanceof KmlRoute && targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
             String sourceName = getKmlRouteName(sourceRoute);
@@ -152,9 +161,15 @@ public abstract class NavigationTestCase extends TestCase {
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 sourceRoute.getName().contains(" to ") && sourceRoute.getName().endsWith("/") &&
                 targetRoute.getName().endsWith("/")) {
-            // if AlanWaypointsAndRoutesFormat is converted to AlanWaypointsAndRoutesFormat "EARTH_RADIUS/ to B/" becomes "EARTH_RADIUS/"
             String sourcePrefix = getKmlRouteName(sourceRoute);
             String targetPrefix = getKmlRouteName(targetRoute);
+            assertEquals(sourcePrefix, targetPrefix);
+        } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
+                sourceRoute.getName().contains(" to ") && sourceRoute.getName().contains("/;") &&
+                targetRoute.getName().endsWith("/")) {
+            // if AlanWaypointsAndRoutesFormat is converted to AlanWaypointsAndRoutesFormat "EARTH_RADIUS/; Orte to B/; Orte" becomes "EARTH_RADIUS/"
+            String sourcePrefix = getAlanWaypointsAndRoutesName(sourceRoute);
+            String targetPrefix = getAlanWaypointsAndRoutesName(targetRoute);
             assertEquals(sourcePrefix, targetPrefix);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
