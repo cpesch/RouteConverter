@@ -82,10 +82,9 @@ public abstract class ConvertPanel {
     private TablePopupMenu popupTable;
     private JButton buttonOpenFile;
     private JButton buttonNewFile;
-    private JButton buttonAppendFileToPositionList;
     private JComboBox comboBoxChoosePositionList;
     private JComboBox comboBoxChoosePositionListCharacteristics;
-    private JButton buttonAddPositionList;
+    private JButton buttonNewPositionList;
     private JButton buttonRenamePositionList;
     private JButton buttonRemovePositionList;
     private JButton buttonMovePositionToTop;
@@ -115,13 +114,13 @@ public abstract class ConvertPanel {
 
         buttonOpenFile.addActionListener(new FrameAction() {
             public void run() {
-                openPositionList();
+                openFile();
             }
         });
 
         buttonNewFile.addActionListener(new FrameAction() {
             public void run() {
-                newPositionList();
+                newFile();
             }
         });
 
@@ -131,21 +130,15 @@ public abstract class ConvertPanel {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        buttonAppendFileToPositionList.addActionListener(new FrameAction() {
+        buttonNewPositionList.addActionListener(new FrameAction() {
             public void run() {
-                appendToPositionList();
+                newPositionList();
             }
         });
 
         buttonRenamePositionList.addActionListener(new FrameAction() {
             public void run() {
                 renamePositionList();
-            }
-        });
-
-        buttonAddPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                addPositionList();
             }
         });
 
@@ -365,7 +358,7 @@ public abstract class ConvertPanel {
 
         // start with a non-existant file
         if (copy.size() == 0) {
-            newPositionList();
+            newFile();
             return;
         }
 
@@ -374,7 +367,7 @@ public abstract class ConvertPanel {
         }
     }
 
-    private void openPositionList() {
+    private void openFile() {
         if (!confirmDiscard())
             return;
 
@@ -430,7 +423,7 @@ public abstract class ConvertPanel {
                             List<URL> append = new ArrayList<URL>(urls);
                             append.remove(0);
                             // this way the route is always marked as modified :-(
-                            appendToPositionList(append);
+                            appendPositionList(append);
                         }
 
                     } else
@@ -443,47 +436,11 @@ public abstract class ConvertPanel {
                     r.handleOpenError(e, path);
                 }
             }
-        }, "Open").start();
-    }
-
-    public void newPositionList() {
-        if (!confirmDiscard())
-            return;
-
-        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
-        try {
-            textFieldSource.setText(RouteConverter.getBundle().getString("new-route"));
-            Gpx11Format gpxFormat = new Gpx11Format();
-            GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(RouteConverter.getBundle().getString("new-route"));
-            //noinspection unchecked
-            formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
-        }
-        finally {
-            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
-        }
-    }
-
-    private void appendToPositionList() {
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("append-source"));
-        setReadFormatFileFilters(getChooser());
-        getChooser().setSelectedFile(createSelectedSource());
-        getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-        getChooser().setMultiSelectionEnabled(true);
-        int open = getChooser().showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != JFileChooser.APPROVE_OPTION)
-            return;
-
-        File[] selected = getChooser().getSelectedFiles();
-        if (selected == null || selected.length == 0)
-            return;
-
-        setReadFormatFileFilterPreference(getChooser());
-        appendToPositionList(Files.toUrls(selected));
+        }, "UrlOpener").start();
     }
 
 
-    private void appendToPositionList(final List<URL> urls) {
+    private void appendPositionList(final List<URL> urls) {
         final RouteConverter r = RouteConverter.getInstance();
 
         new Thread(new Runnable() {
@@ -494,7 +451,7 @@ public abstract class ConvertPanel {
 
                         final NavigationFileParser parser = new NavigationFileParser();
                         if (parser.read(url)) {
-                            log.info("Appended: " + path);
+                            log.info("Imported: " + path);
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -506,7 +463,7 @@ public abstract class ConvertPanel {
                                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
                                             comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                         } else {
-                                            getPositionsModel().append(parser.getTheRoute());
+                                            getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
                                         }
                                     } catch (IOException e) {
                                         log.severe("Open error: " + e.getMessage());
@@ -525,7 +482,43 @@ public abstract class ConvertPanel {
                     r.handleOpenError(e, urls);
                 }
             }
-        }, "FileAppender").start();
+        }, "UrlAppender").start();
+    }
+
+    public void newFile() {
+        if (!confirmDiscard())
+            return;
+
+        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        try {
+            textFieldSource.setText(RouteConverter.getBundle().getString("new-route"));
+            Gpx11Format gpxFormat = new Gpx11Format();
+            GpxRoute gpxRoute = new GpxRoute(gpxFormat);
+            gpxRoute.setName(RouteConverter.getBundle().getString("new-route"));
+            //noinspection unchecked
+            formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
+        }
+        finally {
+            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        }
+    }
+
+    public File[] selectFilesToImport() {
+        getChooser().setDialogTitle(RouteConverter.getBundle().getString("import-source"));
+        setReadFormatFileFilters(getChooser());
+        getChooser().setSelectedFile(createSelectedSource());
+        getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
+        getChooser().setMultiSelectionEnabled(true);
+        int open = getChooser().showOpenDialog(RouteConverter.getInstance().getFrame());
+        if (open != JFileChooser.APPROVE_OPTION)
+            return null;
+
+        File[] selected = getChooser().getSelectedFiles();
+        if (selected == null || selected.length == 0)
+            return null;
+
+        setReadFormatFileFilterPreference(getChooser());
+        return selected;
     }
 
     private void renamePositionList() {
@@ -535,59 +528,12 @@ public abstract class ConvertPanel {
         renameDialog.setVisible(true);
     }
 
-    private void addPositionList() {
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("add-position-list-source"));
-        setReadFormatFileFilters(getChooser());
-        getChooser().setSelectedFile(createSelectedSource());
-        getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-        getChooser().setMultiSelectionEnabled(true);
-        int open = getChooser().showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != JFileChooser.APPROVE_OPTION)
-            return;
-
-        File[] selected = getChooser().getSelectedFiles();
-        if (selected == null || selected.length == 0)
-            return;
-
-        setReadFormatFileFilterPreference(getChooser());
-        addPositionList(Files.toUrls(selected));
-    }
-
-    private void addPositionList(final List<URL> urls) {
-        final RouteConverter r = RouteConverter.getInstance();
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    for (URL url : urls) {
-                        final String path = Files.createReadablePath(url);
-
-                        final NavigationFileParser parser = new NavigationFileParser();
-                        if (parser.read(url)) {
-                            log.info("Added route: " + path);
-
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    try {
-                                        formatAndRoutesModel.addRoutes(parser.getAllRoutes());
-                                    } catch (IOException e) {
-                                        log.severe("Open error: " + e.getMessage());
-                                        r.handleOpenError(e, path);
-                                    }
-                                }
-                            });
-
-                        } else {
-                            log.severe("Unsupported format: " + path);
-                            r.handleUnsupportedFormat(path);
-                        }
-                    }
-                } catch (Exception e) {
-                    log.severe("Add route error: " + e.getMessage());
-                    r.handleOpenError(e, urls);
-                }
-            }
-        }, "AddRoute").start();
+    private void newPositionList() {
+        Gpx11Format gpxFormat = new Gpx11Format();
+        GpxRoute gpxRoute = new GpxRoute(gpxFormat);
+        gpxRoute.setName(RouteConverter.getBundle().getString("new-route"));
+        formatAndRoutesModel.addRoute(formatAndRoutesModel.getSize(), gpxRoute);
+        formatAndRoutesModel.setSelectedItem(gpxRoute);
     }
 
     private void saveFile(File file, NavigationFormat format) {
@@ -775,7 +721,7 @@ public abstract class ConvertPanel {
         checkboxNumberPositionNames.setVisible(getFormat() instanceof TomTomRouteFormat);
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
-        buttonAddPositionList.setEnabled(supportsMultipleRoutes);
+        buttonNewPositionList.setEnabled(supportsMultipleRoutes);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
         popupTable.handleFormatUpdate(supportsMultipleRoutes, existsMoreThanOnePosition);
@@ -793,9 +739,8 @@ public abstract class ConvertPanel {
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
+        buttonNewPositionList.setEnabled(supportsMultipleRoutes);
         buttonRenamePositionList.setEnabled(existsARoute);
-        buttonAddPositionList.setEnabled(supportsMultipleRoutes);
-        buttonAppendFileToPositionList.setEnabled(existsARoute);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
         popupTable.handleRoutesUpdate(supportsMultipleRoutes, existsARoute, existsMoreThanOnePosition);
@@ -1085,33 +1030,28 @@ public abstract class ConvertPanel {
         this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("format"));
         convertPanel.add(label4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel6, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonRemovePositionList = new JButton();
-        buttonRemovePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/remove-route.png")));
-        buttonRemovePositionList.setText("");
-        buttonRemovePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("remove-position-list-tooltip"));
-        panel6.add(buttonRemovePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonAppendFileToPositionList = new JButton();
-        buttonAppendFileToPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/append-route.png")));
-        buttonAppendFileToPositionList.setText("");
-        buttonAppendFileToPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("append-tooltip"));
-        panel6.add(buttonAppendFileToPositionList, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRenamePositionList = new JButton();
-        buttonRenamePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/rename-route.png")));
-        buttonRenamePositionList.setText("");
-        buttonRenamePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-position-list-tooltip"));
-        panel6.add(buttonRenamePositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositions = new JLabel();
         labelPositions.setHorizontalAlignment(2);
         labelPositions.setHorizontalTextPosition(2);
         labelPositions.setText("-");
         panel6.add(labelPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonAddPositionList = new JButton();
-        buttonAddPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/add-route.png")));
-        buttonAddPositionList.setText("");
-        buttonAddPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-position-list-tooltip"));
-        panel6.add(buttonAddPositionList, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonRenamePositionList = new JButton();
+        buttonRenamePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/rename-route.png")));
+        buttonRenamePositionList.setText("");
+        buttonRenamePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-positionlist-tooltip"));
+        panel6.add(buttonRenamePositionList, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonNewPositionList = new JButton();
+        buttonNewPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-route.png")));
+        buttonNewPositionList.setText("");
+        buttonNewPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-tooltip"));
+        panel6.add(buttonNewPositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonRemovePositionList = new JButton();
+        buttonRemovePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/remove-route.png")));
+        buttonRemovePositionList.setText("");
+        buttonRemovePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("remove-position-list-tooltip"));
+        panel6.add(buttonRemovePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositionLists = new JLabel();
         labelPositionLists.setHorizontalAlignment(2);
         labelPositionLists.setHorizontalTextPosition(2);
@@ -1124,7 +1064,7 @@ public abstract class ConvertPanel {
         panel7.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel7, new GridConstraints(1, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonNewFile = new JButton();
-        buttonNewFile.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new.png")));
+        buttonNewFile.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-position.png")));
         buttonNewFile.setInheritsPopupMenu(false);
         buttonNewFile.setText("");
         buttonNewFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-tooltip"));
@@ -1239,8 +1179,8 @@ public abstract class ConvertPanel {
 
             popupMenu.addSeparator();
 
-            buttonSplitPositionlist = new JMenuItem(new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, comboBoxChooseFormat, getPositionsModel(), formatAndRoutesModel));
-            buttonSplitPositionlist.setText(RouteConverter.getBundle().getString("split-positionlist"));
+            buttonSplitPositionlist = new JMenuItem(RouteConverter.getBundle().getString("split-positionlist"));
+            buttonSplitPositionlist.addActionListener(new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, getPositionsModel(), formatAndRoutesModel));
             popupMenu.add(buttonSplitPositionlist);
 
             final JMenu menuMergePositionlist = new JMenu(RouteConverter.getBundle().getString("merge-positionlist"));
@@ -1273,6 +1213,12 @@ public abstract class ConvertPanel {
                     }
                 }
             });
+
+            popupMenu.addSeparator();
+
+            JMenuItem buttonImportPositionlist = new JMenuItem(RouteConverter.getBundle().getString("import-positionlist"));
+            buttonImportPositionlist.addActionListener(new ImportPositionList(RouteConverter.getInstance().getFrame(), ConvertPanel.this, tablePositions, getPositionsModel()));
+            popupMenu.add(buttonImportPositionlist);
 
             // cannot use tablePositions.setComponentPopupMenu(popupMenu); since it does ensure a selection
             tablePositions.addMouseListener(new MouseAdapter() {

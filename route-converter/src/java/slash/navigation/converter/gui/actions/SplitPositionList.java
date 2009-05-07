@@ -41,52 +41,17 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class SplitPositionList extends AbstractAction {
+public class SplitPositionList implements ActionListener {
     private JFrame frame;
     private JTable table;
-    private JComboBox combobox;
     private PositionsModel positionsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
 
-    public SplitPositionList(JFrame frame, JTable table, JComboBox combobox, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
+    public SplitPositionList(JFrame frame, JTable table, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
         this.frame = frame;
         this.table = table;
-        this.combobox = combobox;
         this.positionsModel = positionsModel;
         this.formatAndRoutesModel = formatAndRoutesModel;
-        initialize();
-    }
-
-    protected void initialize() {
-        /*
-        boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-        boolean existsARoute = getFormatAndRoutesModel().getSize() > 0;
-        boolean existsOneRoute = getFormatAndRoutesModel().getSize() == 1;
-        boolean existsMoreThanOneRoute = getFormatAndRoutesModel().getSize() > 1;
-        */
-
-        // private void handleFormatUpdate() {
-        // TODO check this later buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-
-        // private void handleRoutesUpdate() {
-        // TODO check this later buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsARoute);
-
-        // private void handlePositionsUpdate() {
-        // TODO check this later buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-
-        /*
-        combobox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-                boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
-                buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-            }
-        });
-        */
-    }
-
-    public boolean isEnabled() {
-        return true;
     }
 
     public void actionPerformed(ActionEvent e) {

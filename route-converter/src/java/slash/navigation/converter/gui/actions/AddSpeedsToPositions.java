@@ -43,8 +43,6 @@ public class AddSpeedsToPositions implements ActionListener {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;
-
-        // TODO disable if not coordinates / no time available
     }
 
     public void actionPerformed(ActionEvent e) {

@@ -231,7 +231,7 @@ public abstract class BrowsePanel {
                     }
                 });
             }
-        }, "CategoryTreeCreator").start();
+        }, "CategoryTreeInitializer").start();
     }
 
     protected abstract void addDragAndDrop();

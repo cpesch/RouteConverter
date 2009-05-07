@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -31,8 +30,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link ActionListener} that inserts the position list of a {@link PositionsModel} at
@@ -60,25 +57,6 @@ public class MergePositionList extends AbstractAction {
     }
 
     protected void initialize() {
-        // TODO disable same menu item (cannot merge me into myself)
-        // TODO enable if existsMoreThanOnePosition
-
-        // private void handleRoutesUpdate() {
-        // TODO check this later buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsARoute);
-
-        // private void handlePositionsUpdate() {
-        // TODO check this later buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-
-        /*
-        combobox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-                boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
-                buttonSplitPositionList.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-            }
-        });
-        */
-
         setEnabled(!sourceRoute.equals(combobox.getSelectedItem()));
         combobox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {

@@ -137,7 +137,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         } else if (getStartWithLastFilePreference()) {
             getConvertPanel().openUrls(Files.toUrls(getSourcePreference()));
         } else {
-            getConvertPanel().newPositionList();
+            getConvertPanel().newFile();
         }
     }
 

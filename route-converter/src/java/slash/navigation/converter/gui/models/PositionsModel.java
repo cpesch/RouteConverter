@@ -184,6 +184,11 @@ public class PositionsModel extends AbstractTableModel {
         }
     }
 
+    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
+        add(row, position);
+    }
+
     public void add(int row, BaseNavigationPosition position) {
         getRoute().add(row, position);
         fireTableRowsInserted(row, row);
@@ -197,9 +202,14 @@ public class PositionsModel extends AbstractTableModel {
         fireTableRowsInserted(row, row + positions.size());
     }
 
-    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
-        add(row, position);
+    public void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+        BaseNavigationFormat targetFormat = getRoute().getFormat();
+        List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
+        for (BaseNavigationPosition sourcePosition : route.getPositions()) {
+            BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetFormat);
+            positions.add(targetPosition);
+        }
+        add(row, positions);
     }
 
     public List<BaseNavigationPosition> remove(int from, int to) {
@@ -258,16 +268,6 @@ public class PositionsModel extends AbstractTableModel {
         for (int i = 0; i < reverted.length; i++) {
             getRoute().bottom(reverted[i], i);
             fireTableRowsUpdated(reverted[i], getRowCount() - 1 - i);
-        }
-    }
-
-    public void append(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = getRoute();
-        for (BaseNavigationPosition sourcePosition : route.getPositions()) {
-            BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetRoute.getFormat());
-            int index = targetRoute.getPositionCount();
-            targetRoute.add(index, targetPosition);
-            fireTableRowsInserted(index, index);
         }
     }
 }
