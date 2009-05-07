@@ -30,16 +30,18 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Navigon Mobile Navigator 4 (.rte) files.
+ * <p/>
+ * Format: -|-|-|-|-|-|-|-|-|-|-|6.42323|51.84617|-|-|<br/>
+ *         -|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|<br/>
+ *         -|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|<br/>
+ *         -|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|<br/>
+ *         -|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|
  *
  * @author Christian Pesch
  */
 
 public class Nmn4Format extends NmnFormat {
-    // -|-|-|-|-|-|-|-|-|-|-|6.42323|51.84617|-|-|
-    // -|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|
-    // -|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|
-    // -|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|
-    // -|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|
+
     private static final Pattern LINE_PATTERN = Pattern.
             compile(WILDCARD + SEPARATOR +
                     WILDCARD + SEPARATOR +

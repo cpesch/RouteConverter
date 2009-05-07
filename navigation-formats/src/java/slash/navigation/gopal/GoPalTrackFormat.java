@@ -31,6 +31,10 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes GoPal Track (.trk) files.
+ * <p/>
+ * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, Länge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten<br/>
+ * Format: 6661343, 180817, 8.016822, 52.345300, 10.78, 38.1142, 2, 3.000000, 3<br/>
+ *         6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0
  *
  * @author Christian Pesch
  */
@@ -38,9 +42,6 @@ import java.util.regex.Pattern;
 public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ',';
 
-    // fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, Länge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten
-    // 6661343, 180817, 8.016822, 52.345300, 10.78, 38.1142, 2, 3.000000, 3
-    // 6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +

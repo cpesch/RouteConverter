@@ -31,6 +31,9 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes GPS Tuner (.trk) files.
+ * <p/>
+ * Header: Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)<br/>
+ * Format: 50.3965966666667;7.53247333333333;74.4000015258789;77.56176;1172932595;1;279
  *
  * @author Christian Pesch
  */
@@ -40,8 +43,6 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final String SECOND_HEADER_LINE = "Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)";
     private static final char SEPARATOR_CHAR = ';';
 
-    // Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)
-    // 50.3965966666667;7.53247333333333;74.4000015258789;77.56176;1172932595;1;279
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +

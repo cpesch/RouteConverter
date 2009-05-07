@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Magellan Explorist (.log) files.
+ * <p/>
+ * Format: $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
  *
  * @author Christian Pesch
  */
@@ -24,7 +26,6 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         log = Logger.getLogger(MagellanExploristFormat.class.getName());
     }
 
-    // $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
     private static final Pattern PMGNTRK_PATTERN = Pattern.
             compile("^\\$PMGNTRK" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +

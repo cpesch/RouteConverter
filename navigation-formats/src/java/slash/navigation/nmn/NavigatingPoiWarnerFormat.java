@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Navigating POI-Warner (.asc) files.
+ * <p/>
+ * Format: 8.6180900,50.2175100,"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]"
  *
  * @author Christian Pesch
  */
@@ -38,7 +40,6 @@ import java.util.regex.Pattern;
 public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ',';
 
-    // 8.6180900,50.2175100,"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]"
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +

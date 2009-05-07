@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.
- *
+ * <p/>
  * See http://aprs.gids.nl/nmea and http://www.kh-gps.de/nmea-faq.htm
  *
  * @author Christian Pesch

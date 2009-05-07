@@ -34,6 +34,9 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Kienzle GPS (.txt) files.
+ * <p/>
+ * Head: Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos<br/>
+ * Format: 118;7.0591660000;50.7527770000;PHE II;;53117;Bonn;Christian-Lassen-Str.;9;17:02;
  *
  * @author Christian Pesch
  */
@@ -43,8 +46,6 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ';';
     private static final SimpleDateFormat TIME = new SimpleDateFormat("HH:mm");
 
-    // Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos
-    // 118;7.0591660000;50.7527770000;PHE II;;53117;Bonn;Christian-Lassen-Str.;9;17:02;
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +

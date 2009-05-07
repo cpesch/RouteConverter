@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Navigon Mobile Navigator 6 (.rte) files.
+ * <p/>
+ * Format: [D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949
  *
  * @author Christian Pesch
  */
@@ -40,7 +42,6 @@ public class Nmn6Format extends NmnFormat {
             compile("\\" + LEFT_BRACE + ".*" + "\\" + RIGHT_BRACE +
                     "\\" + LEFT_BRACE + ".*" + RIGHT_BRACE);
 
-    // [D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949
     private static final Pattern POSITION_PATTERN = Pattern.
             compile("\\" + LEFT_BRACE + "(" + WILDCARD + ")" + SEPARATOR + "{1,2}" + "\\" + RIGHT_BRACE +
                     "\\" + LEFT_BRACE + "\\d+\\" + RIGHT_BRACE +

@@ -35,6 +35,10 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Haicom Logger (.csv) files.
+ * <p/>
+ * Format: 1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h<br/>
+ *         1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,,0km/h<br/>
+ *         1,T,,,36.87722,N,111.51194,W,0m,0km/h<br/>
  *
  * @author Christian Pesch
  */
@@ -61,9 +65,6 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
     }
 
-    // 1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h
-    // 1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,,0km/h
-    // 1,T,,,36.87722,N,111.51194,W,0m,0km/h
     private static final Pattern LINE_PATTERN = Pattern.
             compile("^" +
                     "\\d+" + SEPARATOR +

@@ -30,12 +30,14 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Navigon Mobile Navigator 5 (.rte) files.
+ * <p/>
+ * Format: -|-|17|4353|72574|BAD URACH|72574|SHELL|-|-|-|9.38107|48.49711|617|-|9.39698|48.49193|
  *
  * @author Christian Pesch
  */
 
 public class Nmn5Format extends NmnFormat {
-    // -|-|17|4353|72574|BAD URACH|72574|SHELL|-|-|-|9.38107|48.49711|617|-|9.39698|48.49193|
+
     private static final Pattern LINE_PATTERN = Pattern.
             compile(WILDCARD + SEPARATOR + WILDCARD + SEPARATOR +
                     WILDCARD + SEPARATOR + WILDCARD + SEPARATOR + WILDCARD + SEPARATOR +

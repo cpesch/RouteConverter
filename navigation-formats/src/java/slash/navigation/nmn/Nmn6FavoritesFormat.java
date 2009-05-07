@@ -30,6 +30,11 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Navigon Mobile Navigator 6 Favorites (.storage) files.
+ * <p/>
+ * Format: [P HALLENEU CINEMAXX||][0][10]|11.92417,51.47978|06122|11.92417|51.47978[8]|NEUSTÄDTER PASSAGE|06122|11.92678|51.48087[7]|NEUSTADT|[6]|HALLE (SAALE)|06108|11.97546|51.48129[3]|HALLE (SAALE)|[2]|Sachsen-Anhalt||4366[0]|Deutschland||17<br/>
+ *         [P SCHIERKE         ||][0][15]|AM THÄLCHEN      |38879|10.66664|51.76459|633,0|1[14]|Alle Kategorien||196658,0[13]|Parken||3,0[6]|SCHIERKE|38879|10.65527|51.76586[3]|WERNIGERODE|[2]|Sachsen-Anhalt||4366[0]|Deutschland||17<br/>
+ *         [HYGIENE4YOU        ||][0][10]|15.43511,47.07848     ||15.43511|47.07848[8]|WICKENBURGGASSE   |8010 |15.43655|47.07876[6]|GRAZ    |8010|15.44273|47.06833[3]|GRAZ|[2]|Steiermark||1030[0]|Österreich||4<br/>
+ *         [HYGIENE4YOU|UserWords3|][0][10]|15.43511,47.07848||15.43511|47.07848[8]|WICKENBURGGASSE|8010|15.43655|47.07876[6]|GRAZ|8010|15.44273|47.06833[3]|GRAZ|[2]|Steiermark||1030[0]|Österreich||4
  *
  * @author Christian Pesch
  */
