@@ -40,7 +40,7 @@ import java.text.ParseException;
  */
 
 public class PositionsModel extends AbstractTableModel {
-    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance();
+    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
