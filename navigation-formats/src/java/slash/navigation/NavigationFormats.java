@@ -107,7 +107,6 @@ public final class NavigationFormats {
         addFormat(KienzleGpsFormat.class);
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
-        // TODO 1.27
         addFormat(KlickTelRouteFormat.class);
 
         // BabelFormats
@@ -127,7 +126,6 @@ public final class NavigationFormats {
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
         addFormat(TomTomPoiFormat.class);
-        // TODO 1.27
         addFormat(HoluxM241BinaryFormat.class);
 
         addFormat(BrokenNmeaFormat.class);
@@ -142,7 +140,6 @@ public final class NavigationFormats {
 
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
-        // TODO 1.27
         addFormat(Igo8TrackFormat.class);
     }
 
