@@ -223,32 +223,6 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return new OvlRoute(this, estimateCharacteristics(positions.size()), mapLage.getTitle(), symbol, overlay, mapLage, positions);
     }
 
-    static RouteCharacteristics getCharacteristics(int typ) {
-        switch (typ) {
-            case 1:
-                return RouteCharacteristics.Waypoints;
-            case 2:
-                return RouteCharacteristics.Track;
-            case 3:
-                return RouteCharacteristics.Route;
-            default:
-                return null;
-        }
-    }
-
-    static int getTyp(RouteCharacteristics characteristics) {
-        switch (characteristics) {
-            case Waypoints:
-                return 1;
-            case Track:
-                return 2;
-            case Route:
-                return 3;
-            default:
-                throw new IllegalArgumentException("Unknown RouteCharacteristics " + characteristics);
-        }
-    }
-
 
     private void writeSection(OvlSection section, PrintWriter writer, Collection<String> ignoreNames) {
         for (String name : section.keySet()) {
