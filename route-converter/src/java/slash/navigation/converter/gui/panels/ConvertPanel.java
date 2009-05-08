@@ -371,7 +371,7 @@ public abstract class ConvertPanel {
         if (!confirmDiscard())
             return;
 
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("open-source"));
+        getChooser().setDialogTitle(RouteConverter.getBundle().getString("open-file-source"));
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -491,10 +491,10 @@ public abstract class ConvertPanel {
 
         Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         try {
-            textFieldSource.setText(RouteConverter.getBundle().getString("new-route"));
+            textFieldSource.setText(RouteConverter.getBundle().getString("new-route-name"));
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(RouteConverter.getBundle().getString("new-route"));
+            gpxRoute.setName(RouteConverter.getBundle().getString("new-route-name"));
             //noinspection unchecked
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
         }
@@ -504,7 +504,7 @@ public abstract class ConvertPanel {
     }
 
     public File[] selectFilesToImport() {
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("import-source"));
+        getChooser().setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -531,7 +531,7 @@ public abstract class ConvertPanel {
     private void newPositionList() {
         Gpx11Format gpxFormat = new Gpx11Format();
         GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-        gpxRoute.setName(RouteConverter.getBundle().getString("new-route"));
+        gpxRoute.setName(RouteConverter.getBundle().getString("new-route-name"));
         formatAndRoutesModel.addRoute(formatAndRoutesModel.getSize(), gpxRoute);
         formatAndRoutesModel.setSelectedItem(gpxRoute);
     }
@@ -931,7 +931,7 @@ public abstract class ConvertPanel {
         buttonOpenFile.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/open.png")));
         buttonOpenFile.setInheritsPopupMenu(false);
         buttonOpenFile.setText("");
-        buttonOpenFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("open-tooltip"));
+        buttonOpenFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("open-file-tooltip"));
         convertPanel.add(buttonOpenFile, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         convertPanel.add(scrollPane1, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -943,7 +943,7 @@ public abstract class ConvertPanel {
         buttonSaveFile = new JButton();
         buttonSaveFile.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/save.png")));
         buttonSaveFile.setText("");
-        buttonSaveFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-tooltip"));
+        buttonSaveFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-file-tooltip"));
         convertPanel.add(buttonSaveFile, new GridConstraints(7, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -1045,7 +1045,7 @@ public abstract class ConvertPanel {
         buttonNewPositionList = new JButton();
         buttonNewPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-route.png")));
         buttonNewPositionList.setText("");
-        buttonNewPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-tooltip"));
+        buttonNewPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-file-tooltip"));
         panel6.add(buttonNewPositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRemovePositionList = new JButton();
         buttonRemovePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/remove-route.png")));
@@ -1067,7 +1067,7 @@ public abstract class ConvertPanel {
         buttonNewFile.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-position.png")));
         buttonNewFile.setInheritsPopupMenu(false);
         buttonNewFile.setText("");
-        buttonNewFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-tooltip"));
+        buttonNewFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-file-tooltip"));
         panel7.add(buttonNewFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxSaveAsRouteTrackWaypoints = new JCheckBox();
         checkBoxSaveAsRouteTrackWaypoints.setSelected(false);

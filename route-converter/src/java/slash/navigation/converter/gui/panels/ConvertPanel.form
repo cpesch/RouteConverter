@@ -36,7 +36,7 @@
           <icon value="slash/navigation/converter/gui/open.png"/>
           <inheritsPopupMenu value="false"/>
           <text value=""/>
-          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="open-tooltip"/>
+          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="open-file-tooltip"/>
         </properties>
       </component>
       <scrollpane id="fff6d">
@@ -63,7 +63,7 @@
         <properties>
           <icon value="slash/navigation/converter/gui/save.png"/>
           <text value=""/>
-          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-tooltip"/>
+          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-file-tooltip"/>
         </properties>
       </component>
       <grid id="479f3" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -304,7 +304,7 @@
             <properties>
               <icon value="slash/navigation/converter/gui/new-route.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-positionlist-tooltip"/>
             </properties>
           </component>
           <component id="9ec01" class="javax.swing.JButton" binding="buttonRemovePositionList">
@@ -353,7 +353,7 @@
               <icon value="slash/navigation/converter/gui/new-position.png"/>
               <inheritsPopupMenu value="false"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-file-tooltip"/>
             </properties>
           </component>
         </children>
