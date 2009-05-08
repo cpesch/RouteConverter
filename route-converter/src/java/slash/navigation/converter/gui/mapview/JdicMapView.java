@@ -934,21 +934,36 @@ public class JdicMapView implements MapView {
             public void run() {
                 calculatedDistance(0, 0);
 
-                int distanceSum = 0;
-                int timeSum = 0;
+                int meters = 0;
+                long delta = 0;
+                Calendar minimum = null, maximum = null;
                 BaseNavigationPosition previous = null;
-                for (BaseNavigationPosition next : JdicMapView.this.positions) {
+                for (int i = 0; i < JdicMapView.this.positions.size(); i++) {
+                    BaseNavigationPosition next = JdicMapView.this.positions.get(i);
                     if (previous != null) {
                         Double distance = previous.calculateDistance(next);
                         if (distance != null)
-                            distanceSum += distance;
+                            meters += distance;
                         Long time = previous.calculateTime(next);
                         if (time != null)
-                            timeSum += time;
+                            delta += time;
                     }
+
+                    Calendar time = next.getTime();
+                    if (minimum == null || time.before(minimum))
+                        minimum = time;
+                    if (maximum == null || time.after(maximum))
+                        maximum = time;
+
+                    if (i % 100 == 0)
+                        calculatedDistance(meters, delta > 0 ? (int) delta / 1000 : 0);
+
                     previous = next;
-                    calculatedDistance(distanceSum, timeSum);
                 }
+
+                int summedUp = delta > 0 ? (int) delta / 1000 : 0;
+                int maxMinusMin = minimum != null ? (int) ((maximum.getTimeInMillis() - minimum.getTimeInMillis()) / 1000) : 0;
+                calculatedDistance(meters, Math.max(maxMinusMin, summedUp));
             }
         }, "PolylineDistanceCalculator").start();
     }

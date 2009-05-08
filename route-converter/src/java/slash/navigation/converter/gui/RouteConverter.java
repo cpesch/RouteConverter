@@ -28,6 +28,7 @@ import slash.navigation.Wgs84Position;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.JdicMapView;
 import slash.navigation.converter.gui.mapview.MapView;
+import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
@@ -185,6 +186,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 mapView = new JdicMapView(getConvertPanel().getPositionsModel(),
                         getConvertPanel().getCharacteristicsModel());
 
+                for (MapViewListener mapViewListener : mapViewListeners)
+                    mapView.addMapViewListener(mapViewListener);
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -289,7 +293,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         preferences.putDouble(ADD_POSITION_LONGITUDE_PREFERENCE, position.getLongitude());
         preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, position.getLatitude());
     }
-    
+
     boolean isAutomaticUpdateCheck() {
         return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
     }
@@ -464,6 +468,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public BaseNavigationPosition getMapCenter() {
         return isMapViewAvailable() ? mapView.getCenter() : getLastMapCenter();
+    }
+
+    private List<MapViewListener> mapViewListeners = new ArrayList<MapViewListener>();
+
+    public void addMapViewListener(MapViewListener listener) {
+        mapViewListeners.add(listener);
     }
 
     // tab related helpers

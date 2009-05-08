@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -28,23 +28,20 @@ import javax.swing.*;
 import java.text.MessageFormat;
 
 /**
- * A bidirectional adapter that extracts the route format name and the number
- * of position lists per route characteristics of a {@link FormatAndRoutesModel} for display.
+ * A bidirectional adapter that extracts the number of position lists
+ * per route characteristics of a {@link FormatAndRoutesModel} for display.
  *
  * @author Christian Pesch
  */
 
-public class RouteFormatToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
-    private JLabel labelFormat, labelPositionLists;
+public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
+    private JLabel label;
 
-    public RouteFormatToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
-                                      JLabel labelFormat,
-                                      JLabel labelPositionLists) {
+    public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
+                                        JLabel label) {
         super(formatAndRoutesModel);
-        this.labelFormat = labelFormat;
-        this.labelPositionLists = labelPositionLists;
+        this.label = label;
     }
-
 
     protected String getDelegateValue() {
         throw new UnsupportedOperationException();
@@ -62,15 +59,13 @@ public class RouteFormatToJLabelAdapter extends FormatAndRoutesListModelToDocume
     protected void updateAdapterFromDelegate() {
         BaseRoute route = getDelegate().getSelectedRoute();
         if (route != null) {
-            labelFormat.setText(getDelegate().getFormat().getName());
-            labelPositionLists.setText(MessageFormat.format(RouteConverter.getBundle().getString("position-lists"),
+            label.setText(MessageFormat.format(RouteConverter.getBundle().getString("position-lists"),
                     count(RouteCharacteristics.Route),
                     count(RouteCharacteristics.Track),
                     count(RouteCharacteristics.Waypoints)
             ));
         } else {
-            labelFormat.setText("-");
-            labelPositionLists.setText("-");
+            label.setText("-");
         }
     }
 }

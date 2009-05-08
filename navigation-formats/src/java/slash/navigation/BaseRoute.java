@@ -196,6 +196,33 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public long getDuration() {
+        Calendar minimum = null, maximum = null;
+        long delta = 0;
+        List<P> positions = getPositions();
+        P previous = null;
+        for (P next : positions) {
+            if (previous != null) {
+                Long time = previous.calculateTime(next);
+                if (time != null)
+                    delta += time;
+            }
+
+            Calendar time = next.getTime();
+            if (time == null)
+                continue;
+            if (minimum == null || time.before(minimum))
+                minimum = time;
+            if (maximum == null || time.after(maximum))
+                maximum = time;
+
+            previous = next;
+        }
+
+        long maxMinusMin = minimum != null ? maximum.getTimeInMillis() - minimum.getTimeInMillis() : 0;
+        return Math.max(maxMinusMin, delta);
+    }
+
     public void revert() {
         List<P> positions = getPositions();
         List<P> reverted = new ArrayList<P>();
