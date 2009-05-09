@@ -102,9 +102,16 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(62.0, position4.getElevation());
         assertNull(position4.getSpeed());
         assertEquals(calendar(1970, 1, 1, 9, 1, 31), position4.getTime());
+
+        TomTomPosition position5 = new TomTomPosition(0, 0, "18:51:45 - Hohenfelde (Hamburg) - 42.0 m - 0.2 Km - 2 Km/h - 5");
+        assertEquals("Hohenfelde (Hamburg)", position5.getReason());
+        assertEquals("Hohenfelde (Hamburg)", position5.getCity());
+        assertEquals(42.0, position5.getElevation());
+        assertEquals(2.0, position5.getSpeed());
+        assertEquals(calendar(1970, 1, 1, 18, 51, 45), position5.getTime());
     }
 
-    public void testTripmasterLongPosition() {
+    public void testTripmasterLongIntermediatePosition() {
         TomTomPosition position1 = new TomTomPosition(0, 0, "18:51:59 - Dur. 0:05:55 : Hohenfelde (Hamburg) - 41.0 m - 0.2 Km - 5 Km/h - 6");
         assertEquals("Dur. 0:05:55", position1.getReason());
         assertEquals("Hohenfelde (Hamburg)", position1.getCity());
@@ -112,21 +119,31 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(5.0, position1.getSpeed());
         assertEquals(calendar(1970, 1, 1, 18, 51, 59), position1.getTime());
 
-        TomTomPosition position2 = new TomTomPosition(0, 0, "18:51:36 - Start : 21/07/2007 18:51:36 : Hohenfelde (Hamburg) - 1241.231 m - 0.2 Km - 12 Km/h - 6");
-        assertEquals("Start : 21/07/2007 18:51:36", position2.getReason());
-        assertEquals("Hohenfelde (Hamburg)", position2.getCity());
-        assertEquals(1241.231, position2.getElevation());
-        assertEquals(12.0, position2.getSpeed());
-        assertEquals(calendar(2007, 7, 21, 18, 51, 36), position2.getTime());
-
-        TomTomPosition position3 = new TomTomPosition(0, 0, "08:51:25 - Km 1.4: Acigné - 26.5 m - 1.4 km - 69 Km/h");
-        assertEquals("Km 1.4", position3.getReason());
-        assertEquals("Acigné", position3.getCity());
-        assertEquals(26.5, position3.getElevation());
-        assertEquals(69.0, position3.getSpeed());
-        assertEquals(calendar(1970, 1, 1, 8, 51, 25), position3.getTime());
+        TomTomPosition position2 = new TomTomPosition(0, 0, "08:51:25 - Km 1.4: Acigné - 26.5 m - 1.4 km - 69 Km/h");
+        assertEquals("Km 1.4", position2.getReason());
+        assertEquals("Acigné", position2.getCity());
+        assertEquals(26.5, position2.getElevation());
+        assertEquals(69.0, position2.getSpeed());
+        assertEquals(calendar(1970, 1, 1, 8, 51, 25), position2.getTime());
     }
 
+    public void testTripmaster18LongStartPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "18:51:36 - Start : 21/07/2007 18:51:36 : Hohenfelde (Hamburg) - 1241.231 m - 0.2 Km - 12 Km/h - 6");
+        assertEquals("Start : 21/07/2007 18:51:36", position.getReason());
+        assertEquals("Hohenfelde (Hamburg)", position.getCity());
+        assertEquals(1241.231, position.getElevation());
+        assertEquals(12.0, position.getSpeed());
+        assertEquals(calendar(2007, 7, 21, 18, 51, 36), position.getTime());
+    }
+
+    public void testTripmaster22LongStartPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "08:45:54 - Start : 04/04/2009 08:45:54 - 12.7 m - 0.0 Km - 5 Km/h - 11");
+        assertEquals("Start : 04/04/2009 08:45:54", position.getReason());
+        assertEquals("Start : 04/04/2009 08:45:54", position.getCity());
+        assertEquals(12.7, position.getElevation());
+        assertEquals(5.0, position.getSpeed());
+        assertEquals(calendar(2009, 4, 4, 8, 45, 54), position.getTime());
+    }
 
     private void checkTripmasterComment(String expectedComment, String expectedReason, String comment) {
         TomTomPosition position = new TomTomPosition(0.0, 0.0, 0.0, null, null, comment);
@@ -350,7 +367,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(42.0, position2.getElevation());
         assertEquals("Hohenfelde (Hamburg)", position2.getComment());
         assertEquals("Hohenfelde (Hamburg)", position2.getCity());
-        assertNull(position2.getReason());
+        assertEquals("Hohenfelde (Hamburg)", position2.getReason());
 
         TomTomPosition position3 = route.getPositions().get(2);
         assertEquals(53.56963, position3.getLatitude());

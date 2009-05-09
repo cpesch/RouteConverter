@@ -188,11 +188,13 @@ public abstract class RouteComments {
     private static final Pattern TRIPMASTER_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
     private static final Pattern TRIPMASTER_SHORT_WAYPOINT_PATTERN = Pattern.compile("(" + TIME + ") - (" + DOUBLE + ") m");
-    private static final Pattern TRIPMASTER_MIDDLE_WAYPOINT_PATTERN = Pattern.compile(
-            "(\\d+:\\d+:\\d+) - (" + TRIPMASTER_REASONS + ")\\s*:\\s*(.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
+    private static final Pattern TRIPMASTER_MIDDLE_PATTERN = Pattern.compile(
+            "(" + TIME + ") - (" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
+    private static final Pattern TRIPMASTER_LONG_NO_REASON_PATTERN = Pattern.compile(
+            "(" + TIME + ") - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
     private static final Pattern TRIPMASTER_LONG_PATTERN = Pattern.compile(
-            "(" + TIME + ") - ((Start : (.*)|Finish : (.*)|" + TRIPMASTER_REASONS + ")\\s*:\\s*)?(.+) - " +
-                    "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
+            "(" + TIME + ") - (Start : (.*?)|Finish : (.*?)|" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - " +
+            "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
 
     /**
      * logpos encoding of the comment:
@@ -219,7 +221,6 @@ public abstract class RouteComments {
             "v=(" + TTTRACKLOG_NUMBER + ") alt=(" + TTTRACKLOG_NUMBER + ")";
     private static final Pattern TTTRACKLOG_PATTERN = Pattern.compile("(\\d{2}:\\d{2}:?\\d{0,2}) " +
             "(" + TTTRACKLOG_REASONS + ") .*");
-//    "(" + TTTRACKLOG_REASONS + ") \\(\\#\\d+\\)");
 
 
     private static Calendar parse(String string, DateFormat dateFormat) {
@@ -301,33 +302,58 @@ public abstract class RouteComments {
 
         }
 
-        matcher = TRIPMASTER_MIDDLE_WAYPOINT_PATTERN.matcher(comment);
+        matcher = TRIPMASTER_MIDDLE_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster1dot4Time(Conversion.trim(matcher.group(1))));
             position.setElevation(Conversion.parseDouble(matcher.group(4)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                tomTomPosition.setReason(Conversion.trim(matcher.group(2)));
-                tomTomPosition.setCity(Conversion.trim(matcher.group(3)));
+                String city = Conversion.trim(matcher.group(3));
+                if (city != null && city.startsWith(": "))
+                    city = Conversion.trim(city.substring(2, city.length()));
+                String reason = Conversion.trim(matcher.group(2));
+                if (reason == null)
+                    reason = city;
+                tomTomPosition.setCity(city);
+                tomTomPosition.setReason(reason);
+            }
+        }
+
+        matcher = TRIPMASTER_LONG_NO_REASON_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            position.setTime(parseTripmaster1dot4Time(Conversion.trim(matcher.group(1))));
+            position.setSpeed(Conversion.parseDouble(matcher.group(6)));
+            position.setElevation(Conversion.parseDouble(matcher.group(3)));
+
+            if (position instanceof TomTomPosition) {
+                TomTomPosition tomTomPosition = (TomTomPosition) position;
+                String city = Conversion.trim(matcher.group(2));
+                if (city != null && city.startsWith(": "))
+                    city = Conversion.trim(city.substring(2, city.length()));
+                tomTomPosition.setCity(city);
+                tomTomPosition.setReason(city);
             }
         }
 
         matcher = TRIPMASTER_LONG_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot8Date(matcher.group(4)));
+            position.setTime(parseTripmaster1dot8Date(matcher.group(3)));
             if (position.getTime() == null)
                 position.setTime(parseTripmaster1dot4Time(matcher.group(1)));
-            position.setSpeed(Conversion.parseDouble(matcher.group(10)));
-            position.setElevation(Conversion.parseDouble(matcher.group(7)));
+            position.setSpeed(Conversion.parseDouble(matcher.group(9)));
+            position.setElevation(Conversion.parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
+                String city = Conversion.trim(matcher.group(5));
+                if (city != null && city.startsWith(": "))
+                    city = Conversion.trim(city.substring(2, city.length()));
                 String reason = Conversion.trim(matcher.group(2));
-                if (reason != null && reason.endsWith(":"))
-                    reason = Conversion.trim(reason.substring(0, reason.length() - 1));
+                if (city == null)
+                    city = reason;
+                tomTomPosition.setCity(city);
                 tomTomPosition.setReason(reason);
-                tomTomPosition.setCity(Conversion.trim(matcher.group(6)));
             }
         }
 
