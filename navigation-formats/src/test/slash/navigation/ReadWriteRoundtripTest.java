@@ -32,35 +32,9 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.wpr");
     }
 
-    public void testMTP0607ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "large.bcr");
-    }
-
-    public void testTomTomRouteReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.itn");
-        readWriteRoundtrip(TEST_PATH + "large.itn");
-    }
-
-    public void testTomTomTrackReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(SAMPLE_PATH + "tripmaster3.itn");
-    }
-
-    public void testKmlReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from20.kml");
-        readWriteRoundtrip(TEST_PATH + "from21.kml");
-        readWriteRoundtrip(TEST_PATH + "from22beta.kml");
-        readWriteRoundtrip(TEST_PATH + "from22.kml");
-    }
-
-    public void testKmzReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from20.kmz");
-        readWriteRoundtrip(TEST_PATH + "from21.kmz");
-        readWriteRoundtrip(TEST_PATH + "from22beta.kmz");
-        readWriteRoundtrip(TEST_PATH + "from22.kmz");
-    }
-
-    public void testTourReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.tour");
+    public void testCoPilotReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from6.trp");
+        readWriteRoundtrip(TEST_PATH + "from7.trp");
     }
 
     public void testGeocachingDotComReadWriteRoundtrip() throws IOException {
@@ -80,24 +54,58 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx");
     }
 
+    public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.mps");
+        readWriteRoundtrip(TEST_PATH + "from10.mps");
+        readWriteRoundtrip(TEST_PATH + "from10trk.mps");
+    }
+
     public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.gdb");
         readWriteRoundtrip(TEST_PATH + "from10.gdb");
         readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
     }
 
+    public void testGarminPcx5ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
+    }
+
     public void testGarminPoiReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.gpi");
     }
 
-    /*
     public void testHaicomLoggerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-haicomlogger.csv");
     }
-    */
 
     public void testKlickTelRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.krt");
+    }
+
+    public void testKmlReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from20.kml");
+        readWriteRoundtrip(TEST_PATH + "from21.kml");
+        readWriteRoundtrip(TEST_PATH + "from22beta.kml");
+        readWriteRoundtrip(TEST_PATH + "from22.kml");
+    }
+
+    public void testKmzReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from20.kmz");
+        readWriteRoundtrip(TEST_PATH + "from21.kmz");
+        readWriteRoundtrip(TEST_PATH + "from22beta.kmz");
+        readWriteRoundtrip(TEST_PATH + "from22.kmz");
+    }
+
+    public void testMagicMapsIktReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.ikt");
+    }
+
+    public void testMagicMapsPthReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.pth");
+    }
+
+    public void testMTP0607ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "large.bcr");
     }
 
     public void testNavigatingPOIWarnerReadWriteRoundtrip() throws IOException {
@@ -132,35 +140,24 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-nmn7.freshroute");
     }
 
+    public void testNokiaLandmarkExhangeReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.lmx");
+    }
+
     public void testMagellanExploristReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.log");
-    }
-
-    public void testMagicMapsIktReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.ikt");
-    }
-
-    public void testMagicMapsPthReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.pth");
-    }
-
-    public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.mps");
-        readWriteRoundtrip(TEST_PATH + "from10.mps");
-        readWriteRoundtrip(TEST_PATH + "from10trk.mps");
-    }
-
-    public void testTop50OvlReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.ovl");
     }
 
     public void testRoute66ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-route66poi.csv");
     }
 
-    public void testCoPilotReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from6.trp");
-        readWriteRoundtrip(TEST_PATH + "from7.trp");
+    public void testTop50OvlReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.ovl");
+    }
+
+    public void testTourReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.tour");
     }
 
     public void testTkReadWriteRoundtrip() throws IOException {
@@ -171,8 +168,13 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-gpstuner.trk");
     }
 
-    public void testGarminPcx5ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
+    public void testTomTomRouteReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.itn");
+        readWriteRoundtrip(TEST_PATH + "large.itn");
+    }
+
+    public void testTomTomTrackReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(SAMPLE_PATH + "tripmaster3.itn");
     }
 
     public void testViaMichelinReadWriteRoundtrip() throws IOException {

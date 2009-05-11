@@ -100,6 +100,10 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".gdb");
     }
 
+    public void testGeoCachingFilesAreValid() throws IOException {
+        readFiles(".loc");
+    }
+
     public void testGpxFilesAreValid() throws IOException {
         readFiles(".gpx");
     }
@@ -132,8 +136,8 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".ikt");
     }
 
-    public void testLocFilesAreValid() throws IOException {
-        readFiles(".loc");
+    public void testNokiaLandmarkExchangeFilesAreValid() throws IOException {
+        readFiles(".lmx");
     }
 
     public void testNmeaFilesAreValid() throws IOException {
