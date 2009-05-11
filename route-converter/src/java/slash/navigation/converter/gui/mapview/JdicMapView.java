@@ -122,11 +122,12 @@ public class JdicMapView implements MapView {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.DELETE && e.getFirstRow() == e.getLastRow())
+                if (e.getFirstRow() == e.getLastRow() &&
+                        (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE))
                     updateButDontRecenter();
                 else
                     update((e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE) ||
-                            (e.getType() == TableModelEvent.DELETE));
+                            e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE);
             }
         });
         characteristicsModel.addListDataListener(new ListDataListener() {
@@ -329,7 +330,7 @@ public class JdicMapView implements MapView {
                            - user has zoomed map
                              - repaint if zooming into the map as it reveals more details
                            - user has moved map
-                             - repaint if m
+                             - repaint if moved
                          */
                         long currentTime = System.currentTimeMillis();
                         if (haveToRepaintImmediately ||

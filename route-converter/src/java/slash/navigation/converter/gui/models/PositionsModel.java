@@ -199,7 +199,7 @@ public class PositionsModel extends AbstractTableModel {
             BaseNavigationPosition position = positions.get(i);
             getRoute().add(row, position);
         }
-        fireTableRowsInserted(row, row + positions.size());
+        fireTableRowsInserted(row, row - 1 + positions.size());
     }
 
     public void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
