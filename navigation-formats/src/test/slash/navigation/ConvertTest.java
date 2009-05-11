@@ -200,8 +200,8 @@ public class ConvertTest extends NavigationTestCase {
         }
     }
 
-    public void testConvertMTP0607ToMTP0607() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new MTP0607Format());
+    public void testConvertMTP0607ToMTP0809() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new MTP0809Format());
     }
 
     public void testConvertMTP0809ToMTP0809() throws IOException {
@@ -235,8 +235,8 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertCoPilot6ToCoPilot6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new CoPilot6Format());
+    public void testConvertCoPilot6ToCoPilot7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new CoPilot7Format());
     }
 
     public void testConvertCoPilot6ToGpx() throws IOException {
@@ -244,8 +244,8 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx11Format());
     }
 
-    public void testConvertCoPilot7ToCoPilot7() throws IOException {
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new CoPilot7Format());
+    public void testConvertCoPilot7ToCoPilot6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new CoPilot6Format());
     }
 
     public void testConvertCoPilot7ToGpx() throws IOException {
@@ -291,9 +291,9 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertGarminMapSource6ToGarminMapSource6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource6Format());
-        convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource6Format());
+    public void testConvertGarminMapSource6ToGarminMapSource5() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
+        convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
     }
 
     public void testConvertGarminMapSource6ToKml() throws IOException {
@@ -655,9 +655,9 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertNmn5ToNmn5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-nmn5.rte", new Nmn5Format(), new Nmn5Format());
-        convertRoundtrip(TEST_PATH + "large-nmn5.rte", new Nmn5Format(), new Nmn5Format());
+    public void testConvertNmn5ToNmn6() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-nmn5.rte", new Nmn5Format(), new Nmn6Format());
+        convertRoundtrip(TEST_PATH + "large-nmn5.rte", new Nmn5Format(), new Nmn6Format());
     }
 
     public void testConvertGpx10ToNmn5() throws IOException {
@@ -745,8 +745,8 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertRoute66ToRoute66() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new Route66Format());
+    public void testConvertRoute66ToTomTomPoi() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new TomTomPoiFormat());
     }
 
     public void testConvertRoute66ToKml() throws IOException {
@@ -832,6 +832,15 @@ public class ConvertTest extends NavigationTestCase {
 
     public void testConvertTomTomPoiToTomTomPoi() throws IOException {
         convertRoundtrip(TEST_PATH + "from.ov2", new TomTomPoiFormat(), new TomTomPoiFormat());
+    }
+
+
+    public void testConvertNokiaLandmarkExchangeToNavigatingPoiWarner() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.lmx", new NokiaLandmarkExchangeFormat(), new NavigatingPoiWarnerFormat());
+    }
+
+    public void testConvertOvlToNokiaLandmarkExchange() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.ovl", new OvlFormat(), new NokiaLandmarkExchangeFormat());
     }
 
 
