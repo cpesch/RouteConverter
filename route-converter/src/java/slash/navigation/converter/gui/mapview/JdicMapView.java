@@ -891,6 +891,13 @@ public class JdicMapView implements MapView {
 
         meters = 0;
         seconds = 0;
+
+        // avoid throwing javascript exceptions if there is nothing to direct
+        if(positions.size() < 2) {
+            addMarkersToMap(positions);
+            return;
+        }
+
         lastDirectionsCount = Conversion.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
         for (int j = 0; j < lastDirectionsCount; j++) {
             StringBuffer buffer = new StringBuffer();
@@ -1067,7 +1074,7 @@ public class JdicMapView implements MapView {
     private synchronized String executeScript(String string) {
         String result = webBrowser.executeScript(string);
         String output = System.currentTimeMillis() + " executing script '" + string + "' with result '" + result + "'";
-        if(debug) {
+        if(true) {
             System.out.println(output);
             log.info(output);
         } else
