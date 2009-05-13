@@ -65,14 +65,14 @@ public class Calculation {
 
     /**
      * Search the significant positions with Douglas-Peucker-algorithm.
-     * 
+     * <p/>
      * http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus
      *
      * @param positions the original list of positions
      * @param threshold determines the threshold for significance in meter
      * @return an array of indices to the original list of positions with the significant positions
      */
-    public static int[] getSignificantPositions(List<? extends BaseNavigationPosition> positions, double threshold){
+    public static int[] getSignificantPositions(List<? extends BaseNavigationPosition> positions, double threshold) {
         return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
     }
 
@@ -106,9 +106,9 @@ public class Calculation {
             if (latitude < minimumLatitude)
                 minimumLatitude = latitude;
             Calendar time = position.getTime();
-            if(time == null)
+            if (time == null)
                 continue;
-            if(minimumTime == null || time.before(minimumTime))
+            if (minimumTime == null || time.before(minimumTime))
                 minimumTime = time;
         }
         return new Wgs84Position(minimumLongitude, minimumLatitude, null, null, minimumTime, null);
@@ -129,17 +129,17 @@ public class Calculation {
             if (latitude > maximumLatitude)
                 maximumLatitude = latitude;
             Calendar time = position.getTime();
-            if(time == null)
+            if (time == null)
                 continue;
-            if(maximumTime == null || time.after(maximumTime))
+            if (maximumTime == null || time.after(maximumTime))
                 maximumTime = time;
         }
         return new Wgs84Position(maximumLongitude, maximumLatitude, null, null, maximumTime, null);
     }
 
-    public static  boolean containsPosition(BaseNavigationPosition northEastCorner,
-                                            BaseNavigationPosition southWestCorner,
-                                            BaseNavigationPosition position){
+    public static boolean containsPosition(BaseNavigationPosition northEastCorner,
+                                           BaseNavigationPosition southWestCorner,
+                                           BaseNavigationPosition position) {
         boolean result = position.getLongitude() > southWestCorner.getLongitude();
         result = result && (position.getLongitude() < northEastCorner.getLongitude());
         result = result && (position.getLatitude() > southWestCorner.getLatitude());
