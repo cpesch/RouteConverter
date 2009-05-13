@@ -625,12 +625,10 @@ public abstract class ConvertPanel {
 
     private BaseNavigationPosition calculateCenter(int row) {
         BaseNavigationPosition position = getPositionsModel().getPosition(row);
-        // if there is only one position or it is the first row,, create the new position close to it
-        // if (row == 0 || getPositionsModel().getRowCount() == 1)
+        // if there is only one position or it is the first row, choose the map center
         if (row >= getPositionsModel().getRowCount() - 1)
-            return Calculation.duplicateALittleNorth(position);
+            return null;
         // otherwhise center between given positions
-        // BaseNavigationPosition second = getPositionsModel().getPosition(row - 1);
         BaseNavigationPosition second = getPositionsModel().getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
@@ -639,12 +637,9 @@ public abstract class ConvertPanel {
 
     private void addPosition() {
         int[] selectedRows = tablePositions.getSelectedRows();
-        // final int row = selectedRows.length > 0 ? selectedRows[0] : 0;
         int row = selectedRows.length > 0 ? selectedRows[0] : tablePositions.getRowCount();
         BaseNavigationPosition center = selectedRows.length > 0 ? calculateCenter(row) :
-                // getPositionsModel().getRowCount() > 0 ? calculateCenter(0) : null;
                 getPositionsModel().getRowCount() > 0 ? calculateCenter(getPositionsModel().getRowCount() - 1) : null;
-        // getPositionsModel().add(row,
         final int insertRow = row > getPositionsModel().getRowCount() - 1 ? row : row + 1;
 
         RouteConverter r = RouteConverter.getInstance();

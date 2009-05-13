@@ -137,14 +137,6 @@ public class Calculation {
         return new Wgs84Position(maximumLongitude, maximumLatitude, null, null, maximumTime, null);
     }
 
-    public static Wgs84Position duplicateALittleNorth(BaseNavigationPosition position) {
-        Double latitude = position.getLatitude();
-        if (latitude != null)
-            latitude += 0.001;
-        return new Wgs84Position(position.getLongitude(), latitude,
-                position.getElevation(), position.getSpeed(), position.getTime(), position.getComment());
-    }
-
     public static  boolean containsPosition(BaseNavigationPosition northEastCorner,
                                             BaseNavigationPosition southWestCorner,
                                             BaseNavigationPosition position){
