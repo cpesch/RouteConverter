@@ -110,6 +110,7 @@ public final class NavigationFormats {
         addFormat(KlickTelRouteFormat.class);
 
         // BabelFormats
+        // TODO addFormat(NokiaLandmarkExchangeFormat.class);
         addFormat(GarminMapSource6Format.class);
         addFormat(GarminMapSource5Format.class);
         addFormat(MicrosoftAutoRouteFormat.class);
