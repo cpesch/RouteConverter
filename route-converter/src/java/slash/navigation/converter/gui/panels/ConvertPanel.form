@@ -315,7 +315,7 @@
               <horizontalAlignment value="2"/>
               <horizontalTextPosition value="2"/>
               <text value="-"/>
-              <visible value="false"/>
+              <visible value="true"/>
             </properties>
           </component>
           <component id="a650f" class="javax.swing.JButton" binding="buttonNewPositionList">
@@ -336,7 +336,7 @@
               <horizontalAlignment value="4"/>
               <horizontalTextPosition value="4"/>
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="length"/>
-              <visible value="false"/>
+              <visible value="true"/>
             </properties>
           </component>
         </children>

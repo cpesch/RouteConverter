@@ -1049,7 +1049,7 @@ public abstract class ConvertPanel {
         labelLength.setHorizontalAlignment(2);
         labelLength.setHorizontalTextPosition(2);
         labelLength.setText("-");
-        labelLength.setVisible(false);
+        labelLength.setVisible(true);
         panel6.add(labelLength, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonNewPositionList = new JButton();
         buttonNewPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-route.png")));
@@ -1060,7 +1060,7 @@ public abstract class ConvertPanel {
         label5.setHorizontalAlignment(4);
         label5.setHorizontalTextPosition(4);
         this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("length"));
-        label5.setVisible(false);
+        label5.setVisible(true);
         panel6.add(label5, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositionLists = new JLabel();
         labelPositionLists.setHorizontalAlignment(2);
