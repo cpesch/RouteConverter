@@ -203,7 +203,7 @@ public class Gpx11Format extends GpxFormat {
         }
         if (!foundSpeed) {
             slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createSpeed(Conversion.formatDouble(speed)));
+            anys.add(tbFactory.createSpeed(Conversion.formatDouble(speed != null ? speed : 0.0)));
         }
     }
 
