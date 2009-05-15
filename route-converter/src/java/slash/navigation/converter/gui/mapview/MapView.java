@@ -39,6 +39,7 @@ public interface MapView {
 
     void resize();
     void setSelectedPositions(int[] selectedPositions);
+    void setAvoidHighways(boolean avoidHighways);
     BaseNavigationPosition getCenter();
     void print();
     

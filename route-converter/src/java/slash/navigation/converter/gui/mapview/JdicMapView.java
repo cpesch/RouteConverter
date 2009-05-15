@@ -26,6 +26,7 @@ import org.jdesktop.jdic.browser.WebBrowserListener;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
+import slash.navigation.RouteCharacteristics;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Calculation;
@@ -99,7 +100,7 @@ public class JdicMapView implements MapView {
     private PositionsModel positionsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
-    private boolean debug, initialized = false, running = true,
+    private boolean debug, initialized = false, running = true, avoidHighways,
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
@@ -111,10 +112,12 @@ public class JdicMapView implements MapView {
         return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
     }
 
-    public JdicMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
+    public JdicMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+                       boolean avoidHighways) {
         debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
         initialize();
         setModel(positionsModel, characteristicsModel);
+        this.avoidHighways = avoidHighways;
     }
 
     private void setModel(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
@@ -122,12 +125,13 @@ public class JdicMapView implements MapView {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                if (e.getFirstRow() == e.getLastRow() &&
-                        (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE))
+                boolean insertOrDelete = e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE;
+                if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                     updateButDontRecenter();
-                else
-                    update((e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE) ||
-                            e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE);
+                else {
+                    boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
+                    update(allRowsChanged || insertOrDelete);
+                }
             }
         });
         characteristicsModel.addListDataListener(new ListDataListener() {
@@ -911,9 +915,9 @@ public class JdicMapView implements MapView {
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("directions").append(j).append(".loadFromWaypoints(latlngs, " +
-                    "{ preserveViewport: true, getPolyline: true });");
-            // TODO add avoidHighways: true as an "shortest route" option
+            buffer.append("directions").append(j).append(".loadFromWaypoints(latlngs, ").
+                   append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
+                   append(avoidHighways).append(" });");
             executeScript(buffer);
         }
     }
@@ -1074,7 +1078,7 @@ public class JdicMapView implements MapView {
     private synchronized String executeScript(String string) {
         String result = webBrowser.executeScript(string);
         String output = System.currentTimeMillis() + " executing script '" + string + "' with result '" + result + "'";
-        if(true) {
+        if(debug) {
             System.out.println(output);
             log.info(output);
         } else
@@ -1102,6 +1106,12 @@ public class JdicMapView implements MapView {
             haveToUpdatePosition = true;
             notificationMutex.notifyAll();
         }
+    }
+
+    public void setAvoidHighways(boolean avoidHighways) {
+        this.avoidHighways = avoidHighways;
+        if(positionsModel.getRoute().getCharacteristics() == RouteCharacteristics.Route)
+            update(false);
     }
 
     public void print() {

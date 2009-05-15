@@ -34,6 +34,8 @@ import slash.navigation.gui.Constants;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -60,9 +62,10 @@ public class MiscPanel {
     private JButton buttonChooseGPSBabel;
     private JCheckBox checkBoxAutomaticUpdateCheck;
     private JCheckBox checkBoxStartWithLastFile;
+    private JButton buttonCheckForUpdate;
+    private JCheckBox checkBoxAvoidHighways;
     private JButton buttonPrintMap;
     private JButton buttonRenumberPositions;
-    private JButton buttonCheckForUpdate;
 
     public MiscPanel() {
         initialize();
@@ -134,6 +137,13 @@ public class MiscPanel {
         buttonCheckForUpdate.addActionListener(new FrameAction() {
             public void run() {
                 new Updater().explicitCheck(r.getFrame());
+            }
+        });
+
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, r.getPreferences(), RouteConverter.AVOID_HIGHWAYS_PREFERENCE, false);
+        checkBoxAvoidHighways.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                r.setAvoidHighways(checkBoxAvoidHighways.isSelected());
             }
         });
 
@@ -255,14 +265,21 @@ public class MiscPanel {
         final JPanel panel6 = new JPanel();
         miscPanel.add(panel6, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
-        panel7.setLayout(new GridLayoutManager(2, 1, new Insets(3, 3, 3, 3), -1, -1));
+        panel7.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
         miscPanel.add(panel7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenumberPositions = new JButton();
         this.$$$loadButtonText$$$(buttonRenumberPositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("renumber-positions"));
-        panel7.add(buttonRenumberPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel7.add(buttonRenumberPositions, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonPrintMap = new JButton();
         this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
-        panel7.add(buttonPrintMap, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel7.add(buttonPrintMap, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
+        panel7.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxAvoidHighways = new JCheckBox();
+        checkBoxAvoidHighways.setSelected(false);
+        checkBoxAvoidHighways.setText("");
+        panel7.add(checkBoxAvoidHighways, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

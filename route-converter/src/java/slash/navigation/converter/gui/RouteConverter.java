@@ -94,6 +94,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
+    public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     private static final String SELECT_DUPLICATE_PREFERENCE = "selectDuplicate";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
@@ -184,7 +185,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
             public void run() {
                 // can do this outside of Swing
                 mapView = new JdicMapView(getConvertPanel().getPositionsModel(),
-                        getConvertPanel().getCharacteristicsModel());
+                        getConvertPanel().getCharacteristicsModel(),
+                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, false));
 
                 for (MapViewListener mapViewListener : mapViewListeners)
                     mapView.addMapViewListener(mapViewListener);
@@ -474,6 +476,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void addMapViewListener(MapViewListener listener) {
         mapViewListeners.add(listener);
+    }
+
+    public void setAvoidHighways(boolean avoidHighways) {
+        if (mapView != null)
+            mapView.setAvoidHighways(avoidHighways);
     }
 
     // tab related helpers
