@@ -302,6 +302,10 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return new Wgs84Route(format, getCharacteristics(), gopalPositions);
     }
 
+    public SimpleRoute asColumbusV900Format() {
+        return asSimpleFormat(new ColumbusV900Format());
+    }
+
     public SimpleRoute asCoPilot6Format() {
         return asSimpleFormat(new CoPilot6Format());
     }

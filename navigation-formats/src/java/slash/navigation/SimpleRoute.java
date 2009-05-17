@@ -189,6 +189,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
 
+    public SimpleRoute asColumbusV900Format() {
+        if (getFormat() instanceof ColumbusV900Format)
+            return this;
+        return asSimpleFormat(new ColumbusV900Format());
+    }
+
     public SimpleRoute asCoPilot6Format() {
         if (getFormat() instanceof CoPilot6Format)
             return this;

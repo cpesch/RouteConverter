@@ -252,6 +252,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment);
 
+    public abstract SimpleRoute asColumbusV900Format();
+
     public abstract SimpleRoute asCoPilot6Format();
 
     public abstract SimpleRoute asCoPilot7Format();

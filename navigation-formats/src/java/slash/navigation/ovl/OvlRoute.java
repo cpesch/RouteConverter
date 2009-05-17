@@ -287,6 +287,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return new Wgs84Route(format, getCharacteristics(), positions);
     }
 
+    public SimpleRoute asColumbusV900Format() {
+        return asSimpleFormat(new ColumbusV900Format());
+    }
+
     public SimpleRoute asCoPilot6Format() {
         return asSimpleFormat(new CoPilot6Format());
     }

@@ -277,6 +277,10 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return new Wgs84Route(format, getCharacteristics(), Wgs84Positions);
     }
 
+    public SimpleRoute asColumbusV900Format() {
+        return asSimpleFormat(new ColumbusV900Format());
+    }
+
     public SimpleRoute asCoPilot6Format() {
         return asSimpleFormat(new CoPilot6Format());
     }

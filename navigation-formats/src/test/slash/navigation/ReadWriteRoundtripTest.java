@@ -32,6 +32,11 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.wpr");
     }
 
+    public void testColumbusV900ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-columbusv900-standard.csv");
+        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv");
+    }
+
     public void testCoPilotReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from6.trp");
         readWriteRoundtrip(TEST_PATH + "from7.trp");

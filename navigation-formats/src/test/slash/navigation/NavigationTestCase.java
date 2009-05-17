@@ -43,10 +43,7 @@ import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.GlopusFormat;
-import slash.navigation.simple.GpsTunerFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
-import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.*;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
@@ -301,7 +298,7 @@ public abstract class NavigationTestCase extends TestCase {
         } else {
             // Test only if a position has not been commented by us
             if (!(sourcePosition.getComment() == null && targetPosition.getComment().startsWith("Position"))) {
-                if (targetFormat instanceof AlanTrackLogFormat ||
+                if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof ColumbusV900Format ||
                         (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                         targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||

@@ -97,6 +97,7 @@ public final class NavigationFormats {
         addFormat(Route66Format.class);
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(GlopusFormat.class);
+        addFormat(ColumbusV900Format.class);
         addFormat(MagicMapsPthFormat.class);
         addFormat(GoPalRouteFormat.class);
         addFormat(OvlFormat.class);
@@ -110,7 +111,7 @@ public final class NavigationFormats {
         addFormat(KlickTelRouteFormat.class);
 
         // BabelFormats
-        // TODO addFormat(NokiaLandmarkExchangeFormat.class);
+        addFormat(NokiaLandmarkExchangeFormat.class);
         addFormat(GarminMapSource6Format.class);
         addFormat(GarminMapSource5Format.class);
         addFormat(MicrosoftAutoRouteFormat.class);
