@@ -32,6 +32,7 @@ import slash.navigation.util.RouteComments;
 import javax.swing.*;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.awt.*;
 
 /**
  * Helps to augment positions with elevation, postal address and populated place information.
@@ -91,7 +92,8 @@ public class PositionAugmenter {
         String getErrorMessage();
     }
 
-    private void executeOperation(final PositionsModel positionsModel,
+    private void executeOperation(final JTable positionsTable,
+                                  final PositionsModel positionsModel,
                                   final int[] rows,
                                   final OverwritePredicate predicate,
                                   final Operation operation) {
@@ -109,6 +111,9 @@ public class PositionAugmenter {
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run() {
                                             positionsModel.fireTableRowsUpdated(row, row);
+
+                                            Rectangle rectangle = positionsTable.getCellRect(Math.min(row + 10, positionsModel.getRowCount()), 1, true);
+                                            positionsTable.scrollRectToVisible(rectangle);
                                         }
                                     });
                                 }
@@ -141,10 +146,11 @@ public class PositionAugmenter {
         return elevation != null;
     }
 
-    private void processElevations(final PositionsModel positionsModel,
+    private void processElevations(final JTable positionsTable,
+                                   final PositionsModel positionsModel,
                                    final int[] rows,
                                    final OverwritePredicate predicate) {
-        executeOperation(positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, predicate,
                 new Operation() {
                     private GeoNamesService service = new GeoNamesService();
 
@@ -163,12 +169,12 @@ public class PositionAugmenter {
         );
     }
 
-    public void addElevations(PositionsModel positionsModel, int[] selectedRows) {
-        processElevations(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addElevations(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        processElevations(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
-    public void complementElevations(PositionsModel positionsModel) {
-        processElevations(positionsModel, selectAllRows(positionsModel), NO_ELEVATION_PREDICATE);
+    public void complementElevations(JTable positionsTable, PositionsModel positionsModel) {
+        processElevations(positionsTable, positionsModel, selectAllRows(positionsModel), NO_ELEVATION_PREDICATE);
     }
 
 
@@ -179,10 +185,11 @@ public class PositionAugmenter {
         return comment != null;
     }
 
-    private void addPopulatedPlaces(final PositionsModel positionsModel,
+    private void addPopulatedPlaces(final JTable positionsTable,
+                                    final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, predicate,
                 new Operation() {
                     private GeoNamesService service = new GeoNamesService();
 
@@ -201,12 +208,12 @@ public class PositionAugmenter {
         );
     }
 
-    public void addPopulatedPlaces(PositionsModel positionsModel, int[] selectedRows) {
-        addPopulatedPlaces(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        addPopulatedPlaces(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
-    public void complementPopulatedPlaces(PositionsModel positionsModel) {
-        addPopulatedPlaces(positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
+    public void complementPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel) {
+        addPopulatedPlaces(positionsTable, positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
     }
 
 
@@ -217,10 +224,11 @@ public class PositionAugmenter {
         return comment != null;
     }
 
-    private void addPostalAddresses(final PositionsModel positionsModel,
+    private void addPostalAddresses(final JTable positionsTable,
+                                    final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, predicate,
                 new Operation() {
                     private GoogleMapsService service = new GoogleMapsService();
 
@@ -239,19 +247,20 @@ public class PositionAugmenter {
         );
     }
 
-    public void addPostalAddresses(PositionsModel positionsModel, int[] selectedRows) {
-        addPostalAddresses(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addPostalAddresses(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        addPostalAddresses(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
-    public void complementPostalAddresses(PositionsModel positionsModel) {
-        addPostalAddresses(positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
+    public void complementPostalAddresses(JTable positionsTable, PositionsModel positionsModel) {
+        addPostalAddresses(positionsTable, positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
     }
 
 
-    private void processSpeeds(final PositionsModel positionsModel,
+    private void processSpeeds(final JTable positionsTable,
+                               final PositionsModel positionsModel,
                                final int[] rows,
                                final OverwritePredicate predicate) {
-        executeOperation(positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, predicate,
                 new Operation() {
                     public String getName() {
                         return "SpeedPositionAugmenter";
@@ -274,11 +283,11 @@ public class PositionAugmenter {
         );
     }
 
-    public void addSpeeds(PositionsModel positionsModel, int[] selectedRows) {
-        processSpeeds(positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addSpeeds(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        processSpeeds(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
-    public void complementSpeeds(PositionsModel positionsModel) {
-        processSpeeds(positionsModel, selectAllRows(positionsModel), NO_SPEED_PREDICATE);
+    public void complementSpeeds(JTable positionsTable, PositionsModel positionsModel) {
+        processSpeeds(positionsTable, positionsModel, selectAllRows(positionsModel), NO_SPEED_PREDICATE);
     }
 }

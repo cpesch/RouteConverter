@@ -48,7 +48,7 @@ public class AddSpeedsToPositions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addSpeeds(positionsModel, selectedRows);
+            augmenter.addSpeeds(table, positionsModel, selectedRows);
         }
     }
 }
