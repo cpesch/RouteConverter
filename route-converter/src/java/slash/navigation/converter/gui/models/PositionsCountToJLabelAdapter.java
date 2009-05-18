@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -33,11 +33,11 @@ import javax.swing.event.TableModelListener;
 
 public class PositionsCountToJLabelAdapter {
     private PositionsModel delegate;
-    private JLabel labelPositions;
+    private JLabel label;
 
-    public PositionsCountToJLabelAdapter(PositionsModel positionsModel, JLabel labelPositions) {
+    public PositionsCountToJLabelAdapter(PositionsModel positionsModel, JLabel label) {
         setDelegate(positionsModel);
-        this.labelPositions = labelPositions;
+        this.label = label;
     }
 
     protected PositionsModel getDelegate() {
@@ -55,6 +55,6 @@ public class PositionsCountToJLabelAdapter {
     }
 
     protected void updateAdapterFromDelegate() {
-        labelPositions.setText(Integer.toString(getDelegate().getRowCount()));
+        label.setText(Integer.toString(getDelegate().getRowCount()));
     }
 }

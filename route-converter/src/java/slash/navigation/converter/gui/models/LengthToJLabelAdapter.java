@@ -27,24 +27,25 @@ import slash.navigation.converter.gui.mapview.MapViewListener;
 
 import javax.swing.*;
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * A bidirectional adapter that extracts the route length
+ * A bidirectional adapter that extracts the route length and duration
  * of a {@link FormatAndRoutesModel} for display.
  *
  * @author Christian Pesch
  */
 
 public class LengthToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
-    private JLabel label;
+    private JLabel labelLength, labelDuration;
 
     public LengthToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
-                                 JLabel label) {
+                                 JLabel labelLength, JLabel labelDuration) {
         super(formatAndRoutesModel);
-        this.label = label;
+        this.labelLength = labelLength;
+        this.labelDuration = labelDuration;
 
         RouteConverter r = RouteConverter.getInstance();
         r.addMapViewListener(new MapViewListener() {
@@ -63,18 +64,18 @@ public class LengthToJLabelAdapter extends FormatAndRoutesListModelToDocumentAda
     }
 
     private void updateLabel(int meters, long milliSeconds) {
-        label.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0 ) : "-");
+        labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         calendar.setTimeInMillis(milliSeconds);
         calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - 1);
         Date date = calendar.getTime();
-        label.setToolTipText(MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date));
+        labelDuration.setText(MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date));
     }
 
     protected void updateAdapterFromDelegate() {
         BaseRoute route = getDelegate().getSelectedRoute();
         if (route != null && route.getCharacteristics() != RouteCharacteristics.Waypoints) {
-            updateLabel((int)route.getLength(), route.getDuration());
+            updateLabel((int) route.getLength(), route.getDuration());
         } else {
             updateLabel(0, 0);
         }
