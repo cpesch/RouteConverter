@@ -63,7 +63,8 @@ public class GarminPcx5Format extends BabelFormat {
     private boolean isNonsenseRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
-            if (position.getLongitude() == 0.0 && position.getElevation() != null && position.getElevation() > 100000.0)
+            if ((position.getLongitude() == 0.0 && position.getElevation() != null && position.getElevation() > 100000.0) ||
+                (position.getLongitude() == 0.0 && position.getLatitude() == 0.0))
                 count++;
         }
         return count == positions.size();
