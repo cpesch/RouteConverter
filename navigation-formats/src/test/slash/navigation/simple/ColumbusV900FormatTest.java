@@ -59,13 +59,19 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
     }
 
     public void testParseSouthWestPosition() {
-        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
+        Wgs84Position position = format.parsePosition("6     ,V,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
         assertEquals(-13.049739, position.getLongitude());
         assertEquals(-47.797278, position.getLatitude());
+        assertNull(position.getComment());
+    }
+
+    public void testParsePOIPosition() {
+        Wgs84Position position = format.parsePosition("6     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
+        assertEquals("POI 6", position.getComment());
     }
 
     public void testParseProfessionalModePosition() {
-        Wgs84Position position = format.parsePosition("2971  ,T,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", null);
+        Wgs84Position position = format.parsePosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", null);
         assertEquals(16.321871, position.getLongitude());
         assertEquals(48.132451, position.getLatitude());
         assertEquals(319.0, position.getElevation());

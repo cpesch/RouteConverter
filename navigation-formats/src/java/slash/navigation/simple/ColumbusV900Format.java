@@ -54,11 +54,14 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyMMdd HHmmss");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
+    private static final String WAYPOINT_POSITION = "T";
+    private static final String VOICE_POSITION = "V";
+    private static final String POI_POSITION = "C";
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    SPACE_OR_ZERO + "\\d+" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "[TV]" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(\\d{6})" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(\\d{6})" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
@@ -68,7 +71,6 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE_OR_ZERO + "\\d+" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(.*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
-
 
     public String getExtension() {
         return ".csv";
@@ -110,27 +112,37 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return null;
     }
 
+    private String removeZeros(String string) {
+        return string != null ? string.replace('\u0000', ' ') : "";
+    }
+
     protected Wgs84Position parsePosition(String line, Calendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        String date = lineMatcher.group(1);
-        String time = lineMatcher.group(2);
-        Double latitude = Conversion.parseDouble(lineMatcher.group(3));
-        String northOrSouth = lineMatcher.group(4);
-        if("S".equals(northOrSouth) && latitude != null)
+        String date = lineMatcher.group(3);
+        String time = lineMatcher.group(4);
+        Double latitude = Conversion.parseDouble(lineMatcher.group(5));
+        String northOrSouth = lineMatcher.group(6);
+        if ("S".equals(northOrSouth) && latitude != null)
             latitude = -latitude;
-        Double longitude = Conversion.parseDouble(lineMatcher.group(5));
-        String westOrEasth = lineMatcher.group(6);
-        if("W".equals(westOrEasth) && longitude != null)
+        Double longitude = Conversion.parseDouble(lineMatcher.group(7));
+        String westOrEasth = lineMatcher.group(8);
+        if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
-        String height = lineMatcher.group(7);
-        String speed = lineMatcher.group(8);
-        String comment = Conversion.trim(lineMatcher.group(9));
-        if(comment != null) {
-            int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
-            if (commentSeparatorIndex != -1)
-                comment = comment.substring(commentSeparatorIndex + 1);
+        String height = lineMatcher.group(9);
+        String speed = lineMatcher.group(10);
+
+        String comment = removeZeros(lineMatcher.group(11));
+        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
+        if (commentSeparatorIndex != -1)
+            comment = comment.substring(commentSeparatorIndex + 1);
+        comment = Conversion.trim(comment);
+
+        String lineType = Conversion.trim(lineMatcher.group(2));
+        if (comment == null && POI_POSITION.equals(lineType)) {
+            String lineNumber = lineMatcher.group(1);
+            comment = "POI " + Conversion.trim(removeZeros(lineNumber));
         }
         return new Wgs84Position(longitude, latitude, Conversion.parseDouble(height), Conversion.parseDouble(speed),
                 parseDateAndTime(date, time), comment);
@@ -143,22 +155,33 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
 
     private String fillWithZeros(String string, int length) {
         StringBuffer buffer = new StringBuffer(string != null ? string : "");
-        while(buffer.length() < length) {
+        while (buffer.length() < length) {
             buffer.append('\u0000');
         }
         return buffer.toString();
     }
 
     private String formatDate(Calendar date) {
-        if(date == null)
+        if (date == null)
             return "";
         return DATE_FORMAT.format(date.getTime());
     }
 
     private String formatTime(Calendar time) {
-        if(time == null)
+        if (time == null)
             return "";
         return TIME_FORMAT.format(time.getTime());
+    }
+
+    private String formatLineType(String comment) {
+        if (comment != null) {
+            if (comment.startsWith("VOX"))
+                return VOICE_POSITION;
+            if (comment.startsWith("POI")) {
+                return POI_POSITION;
+            }
+        }
+        return WAYPOINT_POSITION;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
@@ -170,9 +193,9 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? Conversion.formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? Conversion.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
-        String comment =  fillWithZeros(position.getComment() != null ? position.getComment() : "", 8);
+        String comment = fillWithZeros(position.getComment() != null ? position.getComment() : "", 8);
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
-                (position.getComment() != null ? "V" : "T") + SEPARATOR_CHAR +
+                formatLineType(position.getComment()) + SEPARATOR_CHAR +
                 date + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
                 latitude + northOrSouth + SEPARATOR_CHAR +
                 longitude + westOrEast + SEPARATOR_CHAR +
