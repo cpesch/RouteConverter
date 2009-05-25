@@ -175,7 +175,8 @@ public class Gpx10Format extends GpxFormat {
             wpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
-            wpt.setName(isWriteName() ? asName(position.getComment(), wpt.getDesc()) : null);
+            wpt.setName(isWriteName() ? asName(position.getComment()) : null);
+            wpt.setDesc(isWriteName() ? asDesc(position.getComment(), wpt.getDesc()) : null);
             wpts.add(wpt);
         }
         return wpts;
@@ -208,7 +209,8 @@ public class Gpx10Format extends GpxFormat {
             rtept.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
-            rtept.setName(isWriteName() ? asName(position.getComment(), rtept.getDesc()) : null);
+            rtept.setName(isWriteName() ? asName(position.getComment()) : null);
+            rtept.setDesc(isWriteName() ? asDesc(position.getComment(), rtept.getDesc()) : null);
             rte.getRtept().add(rtept);
         }
         return rtes;
@@ -241,7 +243,8 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
             trkpt.setSpeed(isWriteSpeed() ? Conversion.formatDouble(position.getSpeed()) : null);
-            trkpt.setName(isWriteName() ? asName(position.getComment(), trkpt.getDesc()) : null);
+            trkpt.setName(isWriteName() ? asName(position.getComment()) : null);
+            trkpt.setDesc(isWriteName() ? asDesc(position.getComment(), trkpt.getDesc()) : null);
             trkseg.getTrkpt().add(trkpt);
         }
         trk.getTrkseg().add(trkseg);

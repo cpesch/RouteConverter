@@ -23,14 +23,34 @@ package slash.navigation;
 import slash.navigation.gpx.Gpx10Format;
 
 public class BaseNavigationFormatTest extends NavigationTestCase {
-    private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
+    Gpx10Format format = new Gpx10Format();
 
-    public void testAsCommentAsNameRoundtrip() {
-        Gpx10Format format = new Gpx10Format();
-        String comment = format.asComment(NAME, DESCRIPTION);
-        assertEquals(NAME + "; " + DESCRIPTION, comment);
-        String name = format.asName(comment, DESCRIPTION);
-        assertEquals(NAME, name);
+    private void check(String name, String desc, String expectedComment, String expectedName, String expectedDesc) {
+        String comment = format.asComment(name, desc);
+        assertEquals(expectedComment, comment);
+        String actualName = format.asName(comment);
+        assertEquals(expectedName, actualName);
+        String actualDesc = format.asDesc(comment, desc);
+        assertEquals(expectedDesc, actualDesc);
+    }
+
+    private void check(String name, String desc, String expectedComment) {
+        check(name, desc, expectedComment, name, desc);
+    }
+
+    public void testNameAndDescRoundtrip() {
+        check("name", "description", "name; description");
+    }
+
+    public void testNameRoundtrip() {
+        check("name", null, "name");
+    }
+
+    public void testDescRoundtrip() {
+        check(null, "description", "description", "description", null);
+    }
+
+    public void testNameWithSemicolonRoundtrip() {
+        check("name; description", null, "name; description", "name", "description");
     }
 }

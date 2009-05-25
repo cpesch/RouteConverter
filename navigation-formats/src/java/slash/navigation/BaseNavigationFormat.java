@@ -20,6 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.Conversion;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -71,15 +73,26 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return trimLineFeeds(name + "; " + description);
     }
 
-    protected String asName(String comment, String description) {
-        if(comment == null || description == null)
-            return comment;
-        description = trimLineFeeds(description);
-        if (comment.endsWith(description))
-            comment = comment.substring(0, comment.length() - description.length());
-        if (comment.endsWith("; "))
-            comment = comment.substring(0, comment.length() - 2);
-        return comment;
+    protected String asName(String comment) {
+        if(comment == null)
+            return null;
+        int index = comment.indexOf(';');
+        if (index != -1) 
+            comment = comment.substring(0, index);
+        return Conversion.trim(comment);
+    }
+
+    protected String asDesc(String comment, String description) {
+        if (comment != null) {
+            int index = comment.indexOf(';');
+            if (index != -1) {
+                description = comment.substring(index);
+                if (description.startsWith("; "))
+                    description = description.substring(2);
+            } else if (comment.equals(description))
+                return null;
+        }
+        return Conversion.trim(description);
     }
 
     public boolean isSupportsReading() {

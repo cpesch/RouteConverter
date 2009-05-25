@@ -214,8 +214,10 @@ public class Gpx11Format extends GpxFormat {
             setSpeed(wptType, null);
         if (!isWriteTime())
             wptType.setTime(null);
-        if (!isWriteName())
+        if (!isWriteName()) {
             wptType.setName(null);
+            wptType.setDesc(null);
+        }
     }
 
     private List<WptType> createWayPoints(GpxRoute route) {
@@ -230,7 +232,8 @@ public class Gpx11Format extends GpxFormat {
             wptType.setEle(Conversion.formatDouble(position.getElevation()));
             setSpeed(wptType, position.getSpeed());
             wptType.setTime(formatTime(position.getTime()));
-            wptType.setName(position.getComment());
+            wptType.setName(asName(position.getComment()));
+            wptType.setDesc(asDesc(position.getComment(), wptType.getDesc()));
             clearWptType(wptType);
             wptTypes.add(wptType);
         }
@@ -258,8 +261,9 @@ public class Gpx11Format extends GpxFormat {
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
             wptType.setEle(Conversion.formatDouble(position.getElevation()));
             setSpeed(wptType, position.getSpeed());
+            wptType.setName(asName(position.getComment()));
+            wptType.setDesc(asDesc(position.getComment(), wptType.getDesc()));
             wptType.setTime(formatTime(position.getTime()));
-            wptType.setName(position.getComment());
             clearWptType(wptType);
             rteType.getRtept().add(wptType);
         }
@@ -288,8 +292,9 @@ public class Gpx11Format extends GpxFormat {
             wptType.setLon(Conversion.formatDouble(position.getLongitude()));
             wptType.setEle(Conversion.formatDouble(position.getElevation()));
             setSpeed(wptType, position.getSpeed());
+            wptType.setName(asName(position.getComment()));
+            wptType.setDesc(asDesc(position.getComment(), wptType.getDesc()));
             wptType.setTime(formatTime(position.getTime()));
-            wptType.setName(position.getComment());
             clearWptType(wptType);
             trksegType.getTrkpt().add(wptType);
         }
