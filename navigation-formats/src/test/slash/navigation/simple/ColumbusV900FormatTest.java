@@ -33,6 +33,7 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
         assertTrue(format.isValidLine("4     ,T,090421,061054,47.797283N,013.049748E,519  ,5   ,206,         "));
+        assertTrue(format.isValidLine("1150  ,T,090522,150532,48.206931N,016.372713E,-5   ,0   ,0  ,3D,SPS ,2.3  ,2.1  ,1.0  ,"));
         assertTrue(format.isValidLine("7\u0000\u0000\u0000\u0000\u0000,V,090421,061109,47.797191N,013.049593E,500\u0000\u0000,0\u0000\u0000\u0000,206,VOX00014 "));
     }
 
@@ -59,9 +60,10 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
     }
 
     public void testParseSouthWestPosition() {
-        Wgs84Position position = format.parsePosition("6     ,V,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
+        Wgs84Position position = format.parsePosition("6     ,V,090421,061058,47.797278S,013.049739W,-102  ,8   ,206,", null);
         assertEquals(-13.049739, position.getLongitude());
         assertEquals(-47.797278, position.getLatitude());
+        assertEquals(-102.0, position.getElevation());
         assertNull(position.getComment());
     }
 

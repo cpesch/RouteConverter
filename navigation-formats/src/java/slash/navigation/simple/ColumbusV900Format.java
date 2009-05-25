@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * Standard Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX<br/>
  * Standard Format: 1     ,T,090421,061051,47.797120N,013.049595E,524  ,33  ,0  ,<br/>
  * Professional Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX<br/>
- * Professional Format: 8     ,T,090508,075646,48.174411N,016.284588E,235  ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,
+ * Professional Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,
  *
  * @author Christian Pesch
  */
@@ -66,7 +66,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE_OR_ZERO + "(\\d{6})" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "\\d+" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(.*)" + SPACE_OR_ZERO +
