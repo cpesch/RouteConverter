@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Columbus V900 (.csv) files.
- * <p/>
+ * 
  * Standard Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX<br/>
  * Standard Format: 1     ,T,090421,061051,47.797120N,013.049595E,524  ,33  ,0  ,<br/>
  * Professional Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX<br/>
