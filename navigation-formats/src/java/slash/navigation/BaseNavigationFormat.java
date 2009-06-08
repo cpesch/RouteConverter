@@ -89,7 +89,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
                 description = comment.substring(index);
                 if (description.startsWith("; "))
                     description = description.substring(2);
-            } else if (comment.equals(description))
+            } else 
                 return null;
         }
         return Conversion.trim(description);

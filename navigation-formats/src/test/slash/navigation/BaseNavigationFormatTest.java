@@ -53,4 +53,8 @@ public class BaseNavigationFormatTest extends NavigationTestCase {
     public void testNameWithSemicolonRoundtrip() {
         check("name; description", null, "name; description", "name", "description");
     }
+
+    public void testNameWithoutSemicolonAndDescription() {
+        assertEquals(null, format.asDesc("name", "desc"));
+    }
 }

@@ -49,6 +49,8 @@ import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.simple.*;
+import slash.navigation.wbt.WintecWbt201Tk2Format;
+import slash.navigation.wbt.WintecWbt201Tk1Format;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -109,6 +111,8 @@ public final class NavigationFormats {
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
         addFormat(KlickTelRouteFormat.class);
+        addFormat(WintecWbt201Tk1Format.class);
+        addFormat(WintecWbt201Tk2Format.class);
 
         // BabelFormats
         addFormat(NokiaLandmarkExchangeFormat.class);
