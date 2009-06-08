@@ -22,9 +22,9 @@ package slash.navigation.simple;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 
 public class KienzleGpsFormatTest extends NavigationTestCase {
     KienzleGpsFormat format = new KienzleGpsFormat();
@@ -48,8 +48,7 @@ public class KienzleGpsFormatTest extends NavigationTestCase {
         assertEquals(50.7500000000, position.getLatitude());
         assertNull(position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(1970, 1, 1, 16, 49, 0);
-        expectedCal.setLenient(true);
+        CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 49, 0);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
         assertEquals(expectedCal, position.getTime());

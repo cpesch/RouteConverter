@@ -91,4 +91,20 @@ public class CompactCalendar {
         }
         return result;
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CompactCalendar that = (CompactCalendar) o;
+
+        return timeInMillis == that.timeInMillis && !(timeZoneId != null ?
+                !timeZoneId.equals(that.timeZoneId) : that.timeZoneId != null);        
+    }
+
+    public int hashCode() {
+        int result = (int) (timeInMillis ^ (timeInMillis >>> 32));
+        result = 31 * result + (timeZoneId != null ? timeZoneId.hashCode() : 0);
+        return result;
+    }
 }

@@ -27,14 +27,14 @@ import java.util.Calendar;
 public class ISO8601Test extends TestCase {
     public void testParse() {
         Calendar actual = ISO8601.parse("2007-03-04T14:49:05Z");
-        Calendar expected = calendar(2007, 3, 4, 14, 49, 5);
+        Calendar expected = calendar(2007, 3, 4, 14, 49, 5).getCalendar();
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
         assertEquals(expected.getTime(), actual.getTime());
     }
 
     public void testFormat() {
         Calendar actual = ISO8601.parse("2007-03-04T14:49:05Z");
-        Calendar expected = calendar(2007, 3, 4, 14, 49, 5);
+        Calendar expected = calendar(2007, 3, 4, 14, 49, 5).getCalendar();
         assertEquals(ISO8601.format(expected), ISO8601.format(actual));
     }
 }

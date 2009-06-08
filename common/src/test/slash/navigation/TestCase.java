@@ -86,33 +86,33 @@ public abstract class TestCase extends junit.framework.TestCase {
         assertEquals(expectedString, actualString);
     }
 
-    public static Calendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+    public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond) {
         Calendar result = Calendar.getInstance();
         result.set(year, month - 1, day, hour, minute, second);
         result.set(Calendar.MILLISECOND, millisecond);
-        return result;
+        return CompactCalendar.fromCalendar(result);
     }
 
-    public static Calendar calendar(int year, int month, int day, int hour, int minute, int second) {
+    public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second) {
         return calendar(year, month, day, hour, minute, second, 0);
     }
 
-    public static Calendar calendar(long millisecond) {
+    public static CompactCalendar calendar(long millisecond) {
         return calendar(millisecond, TimeZone.getDefault());
     }
 
-    public static Calendar utcCalendar(long millisecond) {
+    public static CompactCalendar utcCalendar(long millisecond) {
         return calendar(millisecond, "GMT");
     }
 
-    private static Calendar calendar(long millisecond, String timeZone) {
+    private static CompactCalendar calendar(long millisecond, String timeZone) {
         return calendar(millisecond, TimeZone.getTimeZone(timeZone));
     }
 
-    private static Calendar calendar(long millisecond, TimeZone zone) {
+    private static CompactCalendar calendar(long millisecond, TimeZone zone) {
         Calendar result = Calendar.getInstance(zone);
         result.setTimeInMillis(millisecond);
         result.setLenient(false);
-        return result;
+        return CompactCalendar.fromCalendar(result);
     }
 }

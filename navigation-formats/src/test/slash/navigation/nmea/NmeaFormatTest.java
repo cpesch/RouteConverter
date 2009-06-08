@@ -24,6 +24,7 @@ import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.SimpleRoute;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -149,7 +150,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(48.6239566, position.getLatitude());
         assertEquals(16.76, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(1970, 1, 1, 13, 4, 41, 89);
+        CompactCalendar expectedCal = calendar(1970, 1, 1, 13, 4, 41, 89);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
@@ -166,7 +167,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(35.9039449, position.getLatitude());
         assertEquals(2300.3, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(1970, 1, 1, 16, 26, 11);
+        CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 26, 11);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
@@ -197,7 +198,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
+        CompactCalendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
@@ -231,7 +232,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(2.835, position.getSpeed());
         assertEquals(16.76, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
+        CompactCalendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
@@ -253,7 +254,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(5.5560129, position.getSpeed());
         assertEquals(-48.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2007, 7, 26, 13, 40, 12);
+        CompactCalendar expectedCal = calendar(2007, 7, 26, 13, 40, 12);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());

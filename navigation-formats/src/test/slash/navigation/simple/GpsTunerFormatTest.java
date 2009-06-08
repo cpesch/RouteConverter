@@ -22,9 +22,9 @@ package slash.navigation.simple;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 
 public class GpsTunerFormatTest extends NavigationTestCase {
     GpsTunerFormat format = new GpsTunerFormat();
@@ -49,8 +49,7 @@ public class GpsTunerFormatTest extends NavigationTestCase {
         assertEquals(50.3965966666667, position.getLatitude());
         assertEquals(74.4000015258789, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(1172932595000L);
-        expectedCal.setLenient(true);
+        CompactCalendar expectedCal = calendar(1172932595000L);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
         assertEquals(77.56176, position.getSpeed());

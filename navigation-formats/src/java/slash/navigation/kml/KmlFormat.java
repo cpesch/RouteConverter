@@ -149,7 +149,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     protected void enrichPosition(KmlPosition position, Calendar time, String comment, String travellogDescription) {
-        if (position.getTime() == null)
+        if (position.getTime() == null && time != null)
             position.setTime(CompactCalendar.fromCalendar(time));
         if (position.getComment() == null)
             position.setComment(comment);
@@ -158,7 +158,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             return;
 
         Calendar logTime = parseTime(travellogDescription);
-        if (position.getTime() == null)
+        if (position.getTime() == null && logTime != null)
             position.setTime(CompactCalendar.fromCalendar(logTime));
 
         Double elevation = parseElevation(travellogDescription);

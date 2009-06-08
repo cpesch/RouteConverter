@@ -22,9 +22,9 @@ package slash.navigation.simple;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 
 public class HaicomLoggerFormatTest extends NavigationTestCase {
     HaicomLoggerFormat format = new HaicomLoggerFormat();
@@ -51,7 +51,7 @@ public class HaicomLoggerFormatTest extends NavigationTestCase {
         assertEquals(106.90109, position.getLongitude());
         assertEquals(1308.4, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2008, 12, 2, 5, 40, 15);
+        CompactCalendar expectedCal = calendar(2008, 12, 2, 5, 40, 15);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());

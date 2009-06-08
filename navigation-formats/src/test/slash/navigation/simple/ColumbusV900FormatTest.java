@@ -22,9 +22,9 @@ package slash.navigation.simple;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 
 public class ColumbusV900FormatTest extends NavigationTestCase {
     ColumbusV900Format format = new ColumbusV900Format();
@@ -50,8 +50,7 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
         assertEquals(47.797278, position.getLatitude());
         assertEquals(502.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2009, 4, 21, 6, 10, 58);
-        expectedCal.setLenient(true);
+        CompactCalendar expectedCal = calendar(2009, 4, 21, 6, 10, 58);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(8.0, position.getSpeed());
@@ -78,8 +77,7 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
         assertEquals(48.132451, position.getLatitude());
         assertEquals(319.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2009, 5, 8, 8, 48, 15);
-        expectedCal.setLenient(true);
+        CompactCalendar expectedCal = calendar(2009, 5, 8, 8, 48, 15);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(12.0, position.getSpeed());

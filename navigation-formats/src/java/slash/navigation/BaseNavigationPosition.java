@@ -116,7 +116,7 @@ public abstract class BaseNavigationPosition {
      * @param startDate the day/month/year-offset
      */
     public void setStartDate(CompactCalendar startDate) {
-        if (time != null) {
+        if (time != null && startDate != null) {
             Calendar calendar = time.getCalendar();
             Calendar startDateCalendar = startDate.getCalendar();
             calendar.set(Calendar.YEAR, startDateCalendar.get(Calendar.YEAR));

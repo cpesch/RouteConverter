@@ -141,8 +141,9 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             position.setLatitude(toBeMergedInto.getLatitude());
         if (position.getLongitude() == null)
             position.setLongitude(toBeMergedInto.getLongitude());
-        if (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
-                position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar()))
+        if ((toBeMergedInto.getTime() != null) &&
+                (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
+                 position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
     }
 

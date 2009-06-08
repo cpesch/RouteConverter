@@ -35,8 +35,8 @@ public class TimeZoneTest extends NavigationTestCase {
 
     public void testGMTAndLocalTimeZone() {
         long now = System.currentTimeMillis();
-        Calendar local = calendar(now);
-        Calendar utc = utcCalendar(now);
+        Calendar local = calendar(now).getCalendar();
+        Calendar utc = utcCalendar(now).getCalendar();
 
         String localTime = DateFormat.getInstance().format(local.getTime().getTime());
         String utcTime = DateFormat.getInstance().format(utc.getTime().getTime());
@@ -68,9 +68,9 @@ public class TimeZoneTest extends NavigationTestCase {
 
     public void testTimeZone() {
         long now = System.currentTimeMillis();
-        Calendar local = calendar(now);
+        Calendar local = calendar(now).getCalendar();
         CompactCalendar compactLocal = CompactCalendar.fromCalendar(local);
-        Calendar utc = utcCalendar(now);
+        Calendar utc = utcCalendar(now).getCalendar();
         CompactCalendar compactUtc = CompactCalendar.fromCalendar(utc);
 
         GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, compactLocal, "gpx");

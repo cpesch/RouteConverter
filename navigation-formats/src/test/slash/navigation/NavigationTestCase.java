@@ -504,7 +504,7 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    public static Calendar calendar(File file, int hour, int minute, int second) {
+    public static CompactCalendar calendar(File file, int hour, int minute, int second) {
         Calendar fileDate = Calendar.getInstance();
         fileDate.setTimeInMillis(file.lastModified());
         return calendar(fileDate.get(Calendar.YEAR), fileDate.get(Calendar.MONTH) + 1, fileDate.get(Calendar.DAY_OF_MONTH),

@@ -36,7 +36,7 @@ import java.util.List;
 
 public class StartDateTest extends NavigationTestCase {
 
-    private void checkPosition(BaseNavigationPosition position, Calendar expectedDate) {
+    private void checkPosition(BaseNavigationPosition position, CompactCalendar expectedDate) {
         CompactCalendar actual = position.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
         String cal2 = DateFormat.getDateTimeInstance().format(expectedDate.getTime());

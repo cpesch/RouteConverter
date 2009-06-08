@@ -22,10 +22,10 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 public class MagellanExploristFormatTest extends NavigationTestCase {
@@ -79,7 +79,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertEquals(49.2494499, position.getLatitude());
         assertEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
+        CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
@@ -103,7 +103,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertEquals(49.2494533, position.getLatitude());
         assertEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
+        CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());

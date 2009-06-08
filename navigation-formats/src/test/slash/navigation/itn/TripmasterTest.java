@@ -22,15 +22,14 @@ package slash.navigation.itn;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.CompactCalendar;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 public class TripmasterTest extends NavigationTestCase {
@@ -73,7 +72,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(51.9, position2a.getElevation());
         assertNull(position2a.getSpeed());
         String actualStr = DateFormat.getDateTimeInstance().format(position2a.getTime().getTime());
-        Calendar expected = calendar(1970, 1, 1, 9, 3, 23);
+        CompactCalendar expected = calendar(1970, 1, 1, 9, 3, 23);
         String expectedStr = DateFormat.getDateTimeInstance().format(expected.getTime());
         assertEquals(expectedStr, actualStr);
         assertEquals(calendar(1970, 1, 1, 9, 3, 23), position2a.getTime());
@@ -236,7 +235,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Richtung 248", position1.getReason());
         CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
-        Calendar expected = calendar(2007, 6, 23, 14, 57, 14);
+        CompactCalendar expected = calendar(2007, 6, 23, 14, 57, 14);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
         assertEquals(cal2, cal1);
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
@@ -276,7 +275,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Course 184", position1.getReason());
         CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
-        Calendar expected = calendar(2007, 7, 15, 15, 2, 53);
+        CompactCalendar expected = calendar(2007, 7, 15, 15, 2, 53);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
         assertEquals(cal2, cal1);
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
@@ -317,7 +316,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Richtung 248", position1.getReason());
         CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
-        Calendar expected = calendar(file, 12, 12, 27);
+        CompactCalendar expected = calendar(file, 12, 12, 27);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
         assertEquals(cal2, cal1);
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
@@ -356,7 +355,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Start : 21/07/2007 18:51:36", position1.getReason());
         CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
-        Calendar expected = calendar(2007, 7, 21, 18, 51, 36);
+        CompactCalendar expected = calendar(2007, 7, 21, 18, 51, 36);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
         assertEquals(cal2, cal1);
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
