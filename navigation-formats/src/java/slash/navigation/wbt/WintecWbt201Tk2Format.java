@@ -21,11 +21,11 @@
 package slash.navigation.wbt;
 
 import slash.navigation.Wgs84Route;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -45,19 +45,17 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
         return ".tk2";
     }
 
-    protected boolean checkHeader(ByteBuffer sourceHeader) throws IOException {
+    protected boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException {
         sourceHeader.position(0);
 
-        String formatDescriptor;
-        byte[] byteArray = new byte[12];
-
-        sourceHeader.get(byteArray, 0, 12);
-        formatDescriptor = new String(byteArray, DEFAULT_ENCODING);
+        byte[] bytes = new byte[12];
+        sourceHeader.get(bytes, 0, 12);
+        String formatDescriptor = new String(bytes, DEFAULT_ENCODING);
 
         return formatDescriptor.equals("WintecLogTk2");
     }
 
-    protected List<Wgs84Route> read(ByteBuffer source, Calendar startDate) throws IOException {
+    protected List<Wgs84Route> read(ByteBuffer source, CompactCalendar startDate) throws IOException {
         /*
            char pHeader[16];//="WintecLogTk2";   //16
            float f32LogVersion;                  //20
@@ -106,6 +104,6 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
         if (!formatDescriptor.equals("WintecLogTk2"))
             return null;
 
-        return readPositions(source, logVersion, swVersion, hwVersion, startTrackInfoStruct);
+        return readPositions(source, startTrackInfoStruct);
     }
 }

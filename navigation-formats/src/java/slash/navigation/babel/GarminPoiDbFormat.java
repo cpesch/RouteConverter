@@ -22,11 +22,11 @@ package slash.navigation.babel;
 
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -66,7 +66,7 @@ public class GarminPoiDbFormat extends BabelFormat {
         return count == positions.size();
     }
 
-    public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         List<GpxRoute> routes = super.read(source, startDate);
         if (routes == null)
             return null;

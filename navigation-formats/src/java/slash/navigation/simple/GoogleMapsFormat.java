@@ -20,8 +20,9 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.*;
+import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
 import java.net.URL;
@@ -61,16 +62,17 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         return 15;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(InputStream source, Calendar startDate) throws IOException {
+    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         // used to be a UTF-8 then ISO-8859-1 fallback style
         return read(source, startDate, UTF8_ENCODING);
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         StringBuffer buffer = new StringBuffer();
 
         while (buffer.length() < READ_BUFFER_SIZE) {

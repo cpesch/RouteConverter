@@ -26,6 +26,7 @@ import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -149,7 +150,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     protected void enrichPosition(KmlPosition position, Calendar time, String comment, String travellogDescription) {
         if (position.getTime() == null)
-            position.setTime(time);
+            position.setTime(CompactCalendar.fromCalendar(time));
         if (position.getComment() == null)
             position.setComment(comment);
 
@@ -158,7 +159,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
         Calendar logTime = parseTime(travellogDescription);
         if (position.getTime() == null)
-            position.setTime(logTime);
+            position.setTime(CompactCalendar.fromCalendar(logTime));
 
         Double elevation = parseElevation(travellogDescription);
         if (position.getElevation() == null)

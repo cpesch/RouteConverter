@@ -21,6 +21,7 @@
 package slash.navigation.simple;
 
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.*;
 
 import java.io.PrintWriter;
@@ -106,20 +107,20 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Calendar parseDateAndTime(String date, String time) {
+    protected CompactCalendar parseDateAndTime(String date, String time) {
         String dateAndTime = Conversion.trim(date) + " " + Conversion.trim(time);
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(parsed);
-            return calendar;
+            return CompactCalendar.fromCalendar(calendar);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
         return null;
     }
 
-    protected Wgs84Position parsePosition(String line, Calendar startDate) {
+    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (matcher.matches()) {
             String date = matcher.group(1);
@@ -152,13 +153,13 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return LATITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    protected String formatTime(Calendar time) {
+    protected String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
         return TIME_FORMAT.format(time.getTime());
     }
 
-    protected String formatDate(Calendar date) {
+    protected String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
         return DATE_FORMAT.format(date.getTime());

@@ -23,12 +23,12 @@ package slash.navigation.copilot;
 import slash.navigation.Wgs84Position;
 import slash.navigation.Wgs84Route;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -43,7 +43,7 @@ public class CoPilot7Format extends CoPilotFormat {
         return "CoPilot 7 (*" + getExtension() + ")";
     }
 
-    public List<Wgs84Route> read(InputStream source, Calendar startDate) throws IOException {
+    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         return read(source, startDate, UTF16_ENCODING);
     }
 

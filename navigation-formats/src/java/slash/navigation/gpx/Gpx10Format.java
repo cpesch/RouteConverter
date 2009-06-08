@@ -25,13 +25,13 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -71,7 +71,7 @@ public class Gpx10Format extends GpxFormat {
         return result;
     }
 
-    public List<GpxRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             Gpx gpx = GpxUtil.unmarshal10(source);
             return process(gpx);

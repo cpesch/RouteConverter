@@ -20,6 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.CompactCalendar;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.text.DateFormat;
@@ -73,6 +75,12 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static void assertCalendarEquals(Calendar expected, Calendar actual) {
+        String expectedString = LONG_DATE_TIME_FORMAT.format(expected.getTime());
+        String actualString = LONG_DATE_TIME_FORMAT.format(actual.getTime());
+        assertEquals(expectedString, actualString);
+    }
+
+    public static void assertCalendarEquals(CompactCalendar expected, CompactCalendar actual) {
         String expectedString = LONG_DATE_TIME_FORMAT.format(expected.getTime());
         String actualString = LONG_DATE_TIME_FORMAT.format(actual.getTime());
         assertEquals(expectedString, actualString);

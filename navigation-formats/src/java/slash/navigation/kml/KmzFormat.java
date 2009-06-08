@@ -24,11 +24,11 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.InputOutput;
 import slash.navigation.util.NotClosingUnderlyingInputStream;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.*;
@@ -63,7 +63,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.createRoute(characteristics, name, positions);
     }
 
-    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
         ZipInputStream zip = new ZipInputStream(source);
         try {

@@ -21,9 +21,9 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -55,7 +55,7 @@ public class MagicMapsPthRoute extends SimpleRoute<GkPosition, MagicMapsPthForma
     }
 
 
-    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public GkPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new GkPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

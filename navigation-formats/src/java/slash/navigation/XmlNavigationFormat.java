@@ -20,6 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.CompactCalendar;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -45,27 +47,34 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         return buffer.toString();
     }
 
-    public static Calendar parseTime(XMLGregorianCalendar calendar) {
+    public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
         if (calendar == null)
             return null;
         // by using TimeZone default, the original hours are not corrupted
-        return calendar.toGregorianCalendar(TimeZone.getDefault(), null, null);
+        return CompactCalendar.fromCalendar(calendar.toGregorianCalendar(TimeZone.getDefault(), null, null));
     }
 
-    public static XMLGregorianCalendar formatTime(Calendar calendar) {
-        if (calendar == null)
+    private static DatatypeFactory datatypeFactory = null;
+
+    private static synchronized DatatypeFactory getDataTypeFactory() throws DatatypeConfigurationException {
+        if (datatypeFactory == null) {
+            datatypeFactory = DatatypeFactory.newInstance();
+        }
+        return datatypeFactory;
+    }
+
+    public static XMLGregorianCalendar formatTime(CompactCalendar compactCalendar) {
+        if (compactCalendar == null)
             return null;
         try {
             // by using GMT no timezone is written
-            TimeZone tz = TimeZone.getTimeZone("GMT");
-            Locale locale = Locale.getDefault();
-            GregorianCalendar gregorianCalendar = new GregorianCalendar(tz, locale);
+            GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.GMT, Locale.getDefault());
             gregorianCalendar.clear();
+            Calendar calendar = compactCalendar.getCalendar();
             gregorianCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),
                     calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
             gregorianCalendar.set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND));
-            DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-            return datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
+            return getDataTypeFactory().newXMLGregorianCalendar(gregorianCalendar);
         } catch (DatatypeConfigurationException e) {
             return null;
         }

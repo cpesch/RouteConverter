@@ -21,12 +21,9 @@
 package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.RouteComments;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.kml.binding22beta.*;
-import slash.navigation.util.Bearing;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.ISO8601;
+import slash.navigation.util.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -52,7 +49,7 @@ public class Kml22BetaFormat extends KmlFormat {
         return "Google Earth 4.2 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             return internalRead(source);
         } catch (JAXBException e) {

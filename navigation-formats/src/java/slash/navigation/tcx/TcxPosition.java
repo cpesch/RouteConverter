@@ -21,10 +21,10 @@
 package slash.navigation.tcx;
 
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 
 /**
  * Represents a position in a Training Center Database (.tcx) file.
@@ -34,11 +34,11 @@ import java.util.Calendar;
 
 public class TcxPosition extends Wgs84Position { // TODO same as GpxPosition
 
-    public TcxPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public TcxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public TcxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Calendar time, String comment) {
+    public TcxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, CompactCalendar time, String comment) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
                 Conversion.formatDouble(elevation), null, time, comment);
     }

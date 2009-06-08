@@ -21,9 +21,9 @@
 package slash.navigation.nmn;
 
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
-import java.util.Calendar;
 import java.util.regex.Matcher;
 
 /**
@@ -43,7 +43,7 @@ public class NmnPosition extends Wgs84Position {
         this.number = number;
     }
 
-    public NmnPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public NmnPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 

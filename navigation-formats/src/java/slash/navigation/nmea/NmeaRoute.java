@@ -21,9 +21,9 @@
 package slash.navigation.nmea;
 
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -65,7 +65,7 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         return asNmeaFormat(new NmeaFormat());
     }
 
-    public NmeaPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public NmeaPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new NmeaPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

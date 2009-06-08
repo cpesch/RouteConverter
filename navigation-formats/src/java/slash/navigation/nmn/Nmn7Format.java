@@ -25,6 +25,7 @@ import slash.navigation.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -33,7 +34,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -59,7 +59,7 @@ public class Nmn7Format extends NmnFormat {
         throw new UnsupportedOperationException();
     }
 
-    protected Wgs84Position parsePosition(String line, Calendar startDate) {
+    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
         throw new UnsupportedOperationException();
     }
 
@@ -71,7 +71,7 @@ public class Nmn7Format extends NmnFormat {
         return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
     }
 
-    public List<NmnRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<NmnRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             Route route = Nmn7Util.unmarshal(source);
             return Arrays.asList(process(route));

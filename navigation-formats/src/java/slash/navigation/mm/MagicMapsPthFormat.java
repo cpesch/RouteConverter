@@ -25,13 +25,13 @@ import slash.navigation.GkPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.SimpleFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,7 +62,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }
 
-    public List<MagicMapsPthRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<MagicMapsPthRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<GkPosition> positions = new ArrayList<GkPosition>();
 
         while (true) {

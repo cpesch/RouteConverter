@@ -25,13 +25,13 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.TextNavigationFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,7 +78,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     protected abstract boolean isIso885915ButReadWithUtf8(String string);
 
-    public List<TomTomRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<TomTomRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<TomTomPosition> positions = new ArrayList<TomTomPosition>();
 
         String name = null;

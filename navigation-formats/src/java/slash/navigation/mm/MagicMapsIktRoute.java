@@ -21,6 +21,7 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.simple.*;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
@@ -40,7 +41,6 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -91,7 +91,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
     }
 
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
     }
 

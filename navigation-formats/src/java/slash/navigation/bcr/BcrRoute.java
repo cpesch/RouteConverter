@@ -21,6 +21,7 @@
 package slash.navigation.bcr;
 
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.simple.*;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.copilot.CoPilot6Format;
@@ -145,7 +146,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
 
-    public BcrPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public BcrPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new BcrPosition(longitude, latitude, elevation, speed, time, comment);
     }
 

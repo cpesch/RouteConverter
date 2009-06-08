@@ -19,12 +19,13 @@
 */
 package slash.navigation;
 
+import slash.navigation.util.CompactCalendar;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
-    public List<R> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
 
         int lineCount = 0;
@@ -87,7 +88,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return isPosition(line);
     }
     protected abstract boolean isPosition(String line);
-    protected abstract Wgs84Position parsePosition(String line, Calendar startDate);
+    protected abstract Wgs84Position parsePosition(String line, CompactCalendar startDate);
 
 
     public void write(R route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {

@@ -20,8 +20,9 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -91,25 +92,20 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    private Calendar parseTime(String string, Calendar startDate) {
+    private CompactCalendar parseTime(String string, CompactCalendar startDate) {
         if (string == null)
             return null;
         try {
             Date date = TIME.parse(string);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            if (startDate != null) {
-                calendar.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
-                calendar.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
-                calendar.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
-            }
-            return calendar;
+            return CompactCalendar.fromCalendar(calendar);
         } catch (ParseException e) {
             return null;
         }
     }
 
-    protected Wgs84Position parsePosition(String line, Calendar startDate) {
+    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -126,8 +122,12 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 (city != null ? city + ", " : "") +
                 (street != null ? street + " " : "") +
                 (houseNo != null ? houseNo : "");
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, null, parseTime(time, startDate), comment);
+
+        CompactCalendar calendar = parseTime(time, startDate);
+        Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+                null, null, calendar, comment);
+        position.setStartDate(startDate);
+        return position;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

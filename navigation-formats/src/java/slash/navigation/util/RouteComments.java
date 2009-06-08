@@ -223,32 +223,32 @@ public abstract class RouteComments {
             "(" + TTTRACKLOG_REASONS + ") .*");
 
 
-    private static Calendar parse(String string, DateFormat dateFormat) {
+    private static CompactCalendar parse(String string, DateFormat dateFormat) {
         if (string == null)
             return null;
         try {
             Date date = dateFormat.parse(string);
             Calendar time = Calendar.getInstance();
             time.setTime(date);
-            return time;
+            return CompactCalendar.fromCalendar(time);
         } catch (ParseException e) {
             return null;
         }
     }
 
-    private static Calendar parseTripmaster1dot4Time(String string) {
+    private static CompactCalendar parseTripmaster1dot4Time(String string) {
         return parse(string, TRIPMASTER_TIME);
     }
 
-    private static Calendar parseTripmaster1dot8Date(String string) {
+    private static CompactCalendar parseTripmaster1dot8Date(String string) {
         return parse(string, TRIPMASTER_DATE);
     }
 
-    private static Calendar parseLogposDate(String string) {
+    private static CompactCalendar parseLogposDate(String string) {
         return parse(string, LOGPOS_DATE);
     }
 
-    private static Calendar parseTTTracklogTime(String string) {
+    private static CompactCalendar parseTTTracklogTime(String string) {
         if (string.length() == 5)
             string += ":00";
         return parseTripmaster1dot4Time(string);

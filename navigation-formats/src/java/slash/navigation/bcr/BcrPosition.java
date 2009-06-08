@@ -23,12 +23,12 @@ package slash.navigation.bcr;
 import slash.navigation.MercatorPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.tour.TourPosition;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Calendar;
 import java.util.regex.Matcher;
 
 /**
@@ -53,7 +53,7 @@ public class BcrPosition extends MercatorPosition {
     private long altitude;
     private String zipCode, street, type; // comment = city
 
-    public BcrPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public BcrPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
         this.altitude = asAltitude(elevation);
     }

@@ -29,10 +29,7 @@ import slash.navigation.Wgs84Position;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.util.Calculation;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.Externalization;
-import slash.navigation.util.Platform;
+import slash.navigation.util.*;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -169,7 +166,7 @@ public class JdicMapView implements MapView {
             if (debug)
                 WebBrowserUtil.enableDebugMessages(true);
 
-            /* for JDIC from CVS
+            /* for JDIC fromCalendar CVS
             BrowserEngineManager browserEngineManager = BrowserEngineManager.instance();
             if (Platform.isLinux())
                 browserEngineManager.setActiveEngine(BrowserEngineManager.MOZILLA);
@@ -948,7 +945,7 @@ public class JdicMapView implements MapView {
 
                 int meters = 0;
                 long delta = 0;
-                Calendar minimum = null, maximum = null;
+                Calendar minimumTime = null, maximumTime = null;
                 BaseNavigationPosition previous = null;
                 for (int i = 0; i < JdicMapView.this.positions.size(); i++) {
                     BaseNavigationPosition next = JdicMapView.this.positions.get(i);
@@ -961,20 +958,21 @@ public class JdicMapView implements MapView {
                             delta += time;
                     }
 
-                    Calendar time = next.getTime();
-                    if (minimum == null || time.before(minimum))
-                        minimum = time;
-                    if (maximum == null || time.after(maximum))
-                        maximum = time;
+                    CompactCalendar time = next.getTime();
+                    Calendar calendar = time.getCalendar();
+                    if (minimumTime == null || calendar.before(minimumTime))
+                        minimumTime = calendar;
+                    if (maximumTime == null || calendar.after(maximumTime))
+                        maximumTime = calendar;
 
                     if (i % 100 == 0)
-                        calculatedDistance(meters, delta > 0 ? (int) delta / 1000 : 0);
+                        calculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
 
                     previous = next;
                 }
 
                 int summedUp = delta > 0 ? (int) delta / 1000 : 0;
-                int maxMinusMin = minimum != null ? (int) ((maximum.getTimeInMillis() - minimum.getTimeInMillis()) / 1000) : 0;
+                int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
                 calculatedDistance(meters, Math.max(maxMinusMin, summedUp));
             }
         }, "PolylineDistanceCalculator").start();

@@ -47,6 +47,7 @@ import slash.navigation.simple.*;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -534,7 +535,7 @@ public abstract class NavigationTestCase extends TestCase {
                 if (expectTime) {
                     assertTrue("Position " + j + " has no time", position.getTime() != null);
                     if (previous != null)
-                        assertTrue(!position.getTime().before(previous.getTime()));
+                        assertTrue(!position.getTime().getCalendar().before(previous.getTime().getCalendar()));
                 }
                 previous = position;
             }
@@ -556,30 +557,33 @@ public abstract class NavigationTestCase extends TestCase {
 
     protected List<TomTomRoute> readSampleTomTomRouteFile(String fileName, boolean setStartDateFromFile) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        Calendar startDate = null;
+        CompactCalendar startDate = null;
         if (setStartDateFromFile) {
-            startDate = Calendar.getInstance();
-            startDate.setTimeInMillis(source.lastModified());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(source.lastModified());
+            startDate = CompactCalendar.fromCalendar(calendar);
         }
         return new TomTom5RouteFormat().read(new FileInputStream(source), startDate);
     }
 
     protected List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        Calendar startDate = null;
+        CompactCalendar startDate = null;
         if (setStartDateFromFile) {
-            startDate = Calendar.getInstance();
-            startDate.setTimeInMillis(source.lastModified());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(source.lastModified());
+            startDate = CompactCalendar.fromCalendar(calendar);
         }
         return new NmeaFormat().read(new FileInputStream(source), startDate);
     }
 
     protected List<SimpleRoute> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        Calendar startDate = null;
+        CompactCalendar startDate = null;
         if (setStartDateFromFile) {
-            startDate = Calendar.getInstance();
-            startDate.setTimeInMillis(source.lastModified());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(source.lastModified());
+            startDate = CompactCalendar.fromCalendar(calendar);
         }
         return new GoPalTrackFormat().read(new FileInputStream(source), startDate);
     }

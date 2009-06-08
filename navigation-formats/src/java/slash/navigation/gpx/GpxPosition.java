@@ -21,11 +21,11 @@
 package slash.navigation.gpx;
 
 import slash.navigation.Wgs84Position;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.regex.Matcher;
 
 /**
@@ -38,11 +38,11 @@ public class GpxPosition extends Wgs84Position {
     private String reason;
     private Object origin;
 
-    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, Calendar time, String comment, Object origin) {
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, CompactCalendar time, String comment, Object origin) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
                 Conversion.formatDouble(elevation), speed, time, comment);
         this.origin = origin;

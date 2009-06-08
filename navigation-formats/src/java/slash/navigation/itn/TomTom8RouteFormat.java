@@ -20,10 +20,11 @@
 
 package slash.navigation.itn;
 
+import slash.navigation.util.CompactCalendar;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         return "Tom Tom 8 Route (*" + getExtension() + ")";
     }
 
-    public List<TomTomRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<TomTomRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         return read(source, startDate, UTF8_ENCODING);
     }
 

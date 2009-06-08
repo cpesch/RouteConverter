@@ -27,6 +27,7 @@ import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.NotClosingUnderlyingInputStream;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.simple.GoogleMapsFormat;
 
 import java.io.*;
@@ -96,9 +97,9 @@ public class NavigationFileParser {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
             buffer.mark(readBufferSize + 1);
-
+            CompactCalendar compactStartDate = CompactCalendar.fromCalendar(startDate);
             for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
-                List<BaseRoute> routes = format.read(buffer, startDate);
+                List<BaseRoute> routes = format.read(buffer, compactStartDate);
                 if (routes != null && routes.size() > 0) {
                     log.info("Detected '" + format.getName() + "' file with " + routes.size() + " route(s) and " +
                             getPositionCounts(routes) + " positions");

@@ -24,6 +24,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
 import java.util.*;
@@ -74,11 +75,11 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return new TourRoute(name, (List<TourPosition>) positions);        
     }
 
-    public List<TourRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<TourRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         return read(source, startDate, UTF8_ENCODING);
     }
 
-    public List<TourRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<TourRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<TourPosition> positions = new ArrayList<TourPosition>();
         Map<String, String> map = new HashMap<String, String>();
         String sectionTitle = null, routeName = null;

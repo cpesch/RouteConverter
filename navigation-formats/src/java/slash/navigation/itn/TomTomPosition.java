@@ -21,9 +21,8 @@
 package slash.navigation.itn;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
-
-import java.util.Calendar;
 
 /**
  * Represents a position in a Tom Tom Route (.itn) file.
@@ -44,7 +43,7 @@ public class TomTomPosition extends BaseNavigationPosition {
         setComment(comment);
     }
 
-    public TomTomPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public TomTomPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         setLongitude(longitude);
         setLatitude(latitude);

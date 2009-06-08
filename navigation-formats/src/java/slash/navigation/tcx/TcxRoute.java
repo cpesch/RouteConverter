@@ -23,6 +23,7 @@ package slash.navigation.tcx;
 import slash.navigation.*;
 import slash.navigation.simple.*;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
@@ -43,7 +44,6 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -87,7 +87,7 @@ public class TcxRoute extends BaseRoute<TcxPosition, TcxFormat> {
     }
 
 
-    public TcxPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public TcxPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new TcxPosition(longitude, latitude, elevation, speed, time, comment);
     }
 

@@ -21,10 +21,10 @@
 package slash.navigation.nmn;
 
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.ovl.OvlRoute;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -91,7 +91,7 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
     }
 
 
-    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public NmnPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new NmnPosition(longitude, latitude, elevation, speed, time, comment);
     }
 }

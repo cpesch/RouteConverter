@@ -21,6 +21,7 @@
 package slash.navigation.tcx;
 
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.tcx.binding2.*;
 
 import javax.xml.bind.JAXBException;
@@ -28,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -162,7 +162,7 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    public List<TcxRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<TcxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal2(source);
             List<TcxRoute> result = process(trainingCenterDatabase);

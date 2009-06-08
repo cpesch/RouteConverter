@@ -180,21 +180,34 @@ public final class ISO8601 {
     }
 
     /**
-     * Formats a <code>Calendar</code> value into an ISO8601-compliant
-     * date/time string.
+     * Formats a {@link CompactCalendar} value into an ISO8601-compliant date/time string.
      *
-     * @param cal the time value to be formatted into a date/time string.
-     * @return the formatted date/time string.
+     * @param calendar the time value to be formatted into a date/time string
+     * @return the formatted date/time string
      * @throws IllegalArgumentException if a <code>null</code> argument is passed
      */
-    public static String format(Calendar cal) {
-        if (cal == null) {
+    public static String format(CompactCalendar calendar) {
+        if (calendar == null) {
+            throw new IllegalArgumentException("argument can not be null");
+        }
+        return format(calendar.getCalendar());
+    }
+
+    /**
+     * Formats a {@link Calendar} value into an ISO8601-compliant date/time string.
+     *
+     * @param calendar the time value to be formatted into a date/time string
+     * @return the formatted date/time string
+     * @throws IllegalArgumentException if a <code>null</code> argument is passed
+     */
+    public static String format(Calendar calendar) {
+        if (calendar == null) {
             throw new IllegalArgumentException("argument can not be null");
         }
 
         // determine era and adjust year if necessary
-        int year = cal.get(Calendar.YEAR);
-        if (cal.isSet(Calendar.ERA) && cal.get(Calendar.ERA) == GregorianCalendar.BC) {
+        int year = calendar.get(Calendar.YEAR);
+        if (calendar.isSet(Calendar.ERA) && calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
             /**
              * calculate year using astronomical system:
              * year n BCE => astronomical year -n + 1
@@ -214,19 +227,19 @@ public final class ISO8601 {
         buf.append(XXXX_FORMAT.format(year));
         buf.append('-');
         // month (MM)
-        buf.append(XX_FORMAT.format(cal.get(Calendar.MONTH) + 1));
+        buf.append(XX_FORMAT.format(calendar.get(Calendar.MONTH) + 1));
         buf.append('-');
         // day (DD)
-        buf.append(XX_FORMAT.format(cal.get(Calendar.DAY_OF_MONTH)));
+        buf.append(XX_FORMAT.format(calendar.get(Calendar.DAY_OF_MONTH)));
         buf.append('T');
         // hour (hh)
-        buf.append(XX_FORMAT.format(cal.get(Calendar.HOUR_OF_DAY)));
+        buf.append(XX_FORMAT.format(calendar.get(Calendar.HOUR_OF_DAY)));
         buf.append(':');
         // minute (mm)
-        buf.append(XX_FORMAT.format(cal.get(Calendar.MINUTE)));
+        buf.append(XX_FORMAT.format(calendar.get(Calendar.MINUTE)));
         buf.append(':');
         // second (ss)
-        buf.append(XX_FORMAT.format(cal.get(Calendar.SECOND)));
+        buf.append(XX_FORMAT.format(calendar.get(Calendar.SECOND)));
         return buf.toString();
     }
 }

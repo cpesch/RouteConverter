@@ -22,6 +22,7 @@ package slash.navigation.itn;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -233,7 +234,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Klütz", position1.getComment());
         assertEquals("Klütz", position1.getCity());
         assertEquals("Richtung 248", position1.getReason());
-        Calendar actual = position1.getTime();
+        CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
         Calendar expected = calendar(2007, 6, 23, 14, 57, 14);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
@@ -273,7 +274,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Bad Oldesloe; 170.1 Km", position1.getComment());
         assertEquals("Bad Oldesloe; 170.1 Km", position1.getCity());
         assertEquals("Course 184", position1.getReason());
-        Calendar actual = position1.getTime();
+        CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
         Calendar expected = calendar(2007, 7, 15, 15, 2, 53);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
@@ -314,7 +315,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Hohenhorst (Haselau)", position1.getComment());
         assertEquals("Hohenhorst (Haselau)", position1.getCity());
         assertEquals("Richtung 248", position1.getReason());
-        Calendar actual = position1.getTime();
+        CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
         Calendar expected = calendar(file, 12, 12, 27);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());
@@ -353,7 +354,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Hohenfelde (Hamburg)", position1.getComment());
         assertEquals("Hohenfelde (Hamburg)", position1.getCity());
         assertEquals("Start : 21/07/2007 18:51:36", position1.getReason());
-        Calendar actual = position1.getTime();
+        CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
         Calendar expected = calendar(2007, 7, 21, 18, 51, 36);
         String cal2 = DateFormat.getDateTimeInstance().format(expected.getTime());

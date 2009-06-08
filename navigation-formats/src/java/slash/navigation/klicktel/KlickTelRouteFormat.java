@@ -25,6 +25,7 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.XmlNavigationFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
@@ -34,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -80,7 +80,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
 
-    public List<KlickTelRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<KlickTelRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             KDRoute KDRoute = KlickTelUtil.unmarshal(source);
             return Arrays.asList(process(KDRoute));

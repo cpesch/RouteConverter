@@ -23,6 +23,7 @@ package slash.navigation.viamichelin;
 import slash.navigation.*;
 import slash.navigation.simple.*;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
@@ -42,7 +43,6 @@ import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -87,7 +87,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
     }
 
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
     }
 

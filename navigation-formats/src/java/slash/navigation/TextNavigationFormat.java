@@ -20,6 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.CompactCalendar;
+
 import java.io.*;
 import java.util.Calendar;
 import java.util.List;
@@ -32,15 +34,18 @@ import java.util.List;
 
 public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
 
-    protected boolean isValidStartDate(Calendar calendar) {
-        return calendar != null && (!(calendar.get(Calendar.YEAR) == 1970 && calendar.get(Calendar.DAY_OF_YEAR) == 1));
+    protected boolean isValidStartDate(CompactCalendar calendar) {
+        if(calendar == null)
+            return false;
+        Calendar c = calendar.getCalendar();
+        return !(c.get(Calendar.YEAR) == 1970 && c.get(Calendar.DAY_OF_YEAR) == 1);
     }
 
-    public List<R> read(InputStream source, Calendar startDate) throws IOException {
+    public List<R> read(InputStream source, CompactCalendar startDate) throws IOException {
         return read(source, startDate, DEFAULT_ENCODING);
     }
 
-    protected List<R> read(InputStream source, Calendar startDate, String encoding) throws IOException {
+    protected List<R> read(InputStream source, CompactCalendar startDate, String encoding) throws IOException {
         Reader reader = new InputStreamReader(source, encoding);
         BufferedReader bufferedReader = new BufferedReader(reader);
         try {
@@ -52,7 +57,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     }
 
     // encoding currently only used in GoogleMapsFormat
-    public abstract List<R> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException;
+    public abstract List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException;
 
     protected void write(R route, File target, String encoding, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
         PrintWriter writer = new PrintWriter(target, encoding);

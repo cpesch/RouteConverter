@@ -33,6 +33,7 @@ import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Calculation;
 import slash.navigation.util.Range;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.klicktel.KlickTelRoute;
 
@@ -208,7 +209,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     delta += time;
             }
 
-            Calendar time = next.getTime();
+            Calendar time = next.getTime().getCalendar();
             if (time == null)
                 continue;
             if (minimum == null || time.before(minimum))
@@ -250,7 +251,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             down(index++);
     }
 
-    public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment);
+    public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     public abstract SimpleRoute asColumbusV900Format();
 

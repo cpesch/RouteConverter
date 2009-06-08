@@ -21,6 +21,7 @@
 package slash.navigation.simple;
 
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.*;
 
 import java.io.PrintWriter;
@@ -63,6 +64,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return "GPS Tuner (*" + getExtension() + ")";
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
@@ -80,16 +82,16 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    private Calendar parseTime(String time) {
+    private CompactCalendar parseTime(String time) {
         Long milliseconds = Conversion.parseLong(time);
         if (milliseconds == null || milliseconds == 0)
             return null;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds * 1000);
-        return calendar;
+        return CompactCalendar.fromCalendar(calendar);
     }
 
-    protected Wgs84Position parsePosition(String line, Calendar startDate) {
+    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -108,7 +110,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         writer.println(SECOND_HEADER_LINE);
     }
 
-    private String formatTime(Calendar time) {
+    private String formatTime(CompactCalendar time) {
         if (time == null)
             return "0";
         return Long.toString(time.getTimeInMillis() / 1000);

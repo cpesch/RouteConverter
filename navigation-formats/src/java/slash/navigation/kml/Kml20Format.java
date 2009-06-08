@@ -25,6 +25,7 @@ import slash.navigation.util.RouteComments;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.ISO8601;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -50,7 +51,7 @@ public class Kml20Format extends KmlFormat {
         return "Google Earth 3 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             return internalRead(source);
         } catch (JAXBException e) {

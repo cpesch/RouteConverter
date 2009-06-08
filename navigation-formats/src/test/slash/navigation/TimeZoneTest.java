@@ -21,6 +21,7 @@
 package slash.navigation;
 
 import slash.navigation.gpx.GpxPosition;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -51,8 +52,8 @@ public class TimeZoneTest extends NavigationTestCase {
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
         String javaTime = DateFormat.getInstance().format(java.getTime().getTime());
         assertEquals("07.06.07 14:04", javaTime);
-        Calendar parsed = XmlNavigationFormat.parseTime(xml);
-        assertEquals(parsed, java);
+        CompactCalendar parsed = XmlNavigationFormat.parseTime(xml);
+        assertEquals(parsed.getCalendar(), java);
     }
 
     public void testXMLGregorianCalendarWithZasTimeZone() throws DatatypeConfigurationException {
@@ -61,16 +62,18 @@ public class TimeZoneTest extends NavigationTestCase {
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
         assertEquals("2007-06-07T14:04:42Z", xml.toXMLFormat());
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        XMLGregorianCalendar formatted = XmlNavigationFormat.formatTime(java);
+        XMLGregorianCalendar formatted = XmlNavigationFormat.formatTime(CompactCalendar.fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
     }
 
     public void testTimeZone() {
         long now = System.currentTimeMillis();
         Calendar local = calendar(now);
+        CompactCalendar compactLocal = CompactCalendar.fromCalendar(local);
         Calendar utc = utcCalendar(now);
+        CompactCalendar compactUtc = CompactCalendar.fromCalendar(utc);
 
-        GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, local, "gpx");
-        assertCalendarEquals(utc, gpxPosition.getTime());
+        GpxPosition gpxPosition = new GpxPosition(3.0, 2.0, 1.0, null, compactLocal, "gpx");
+        assertCalendarEquals(compactUtc, gpxPosition.getTime());
     }
 }

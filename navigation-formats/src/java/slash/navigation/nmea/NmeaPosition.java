@@ -21,9 +21,8 @@
 package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
-
-import java.util.Calendar;
 
 /**
  * Represents a position in a NMEA 0183 Sentences (.nmea) file.
@@ -36,7 +35,7 @@ public class NmeaPosition extends BaseNavigationPosition {
     private String northOrSouth /*latitude*/, westOrEast /*longitude*/;
     private String comment;
 
-    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, Calendar time, String comment) {
+    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         this.longitude = longitude;
         this.westOrEast = westOrEast;
@@ -45,7 +44,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         this.comment = comment;
     }
 
-    public NmeaPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public NmeaPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         setLongitude(longitude);
         setLatitude(latitude);

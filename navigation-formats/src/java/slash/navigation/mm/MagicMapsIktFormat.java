@@ -22,6 +22,7 @@ package slash.navigation.mm;
 
 import slash.navigation.*;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -30,7 +31,6 @@ import javax.xml.stream.events.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -174,7 +174,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         }
     }
 
-    public List<MagicMapsIktRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<MagicMapsIktRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
             List<MagicMapsIktRoute> routes = unmarshal(source);
             if (routes != null && routes.size() > 0)

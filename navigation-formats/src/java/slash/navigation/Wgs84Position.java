@@ -20,9 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
-
-import java.util.Calendar;
 
 /**
  * Represents a WGS84 position in a route.
@@ -35,7 +34,7 @@ public class Wgs84Position extends BaseNavigationPosition {
     protected String comment;
 
 
-    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         this.longitude = longitude;
         this.latitude = latitude;

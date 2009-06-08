@@ -22,6 +22,7 @@ package slash.navigation.simple;
 
 import slash.navigation.*;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -97,7 +98,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    private Calendar parseDateAndTime(String date, String time) {
+    private CompactCalendar parseDateAndTime(String date, String time) {
         time = Conversion.trim(time);
         date = Conversion.trim(date);
         String dateAndTime = date + " " + time;
@@ -105,7 +106,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(parsed);
-            return calendar;
+            return CompactCalendar.fromCalendar(calendar);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -116,7 +117,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return string != null ? string.replace('\u0000', ' ') : "";
     }
 
-    protected Wgs84Position parsePosition(String line, Calendar startDate) {
+    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -161,13 +162,13 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return buffer.toString();
     }
 
-    private String formatDate(Calendar date) {
+    private String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
         return DATE_FORMAT.format(date.getTime());
     }
 
-    private String formatTime(Calendar time) {
+    private String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
         return TIME_FORMAT.format(time.getTime());

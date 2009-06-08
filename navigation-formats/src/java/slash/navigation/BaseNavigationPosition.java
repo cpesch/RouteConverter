@@ -29,6 +29,7 @@ import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.util.Bearing;
+import slash.navigation.util.CompactCalendar;
 
 import java.util.Calendar;
 
@@ -40,9 +41,9 @@ import java.util.Calendar;
 
 public abstract class BaseNavigationPosition {
     protected Double elevation, speed;
-    protected Calendar time;
+    protected CompactCalendar time;
 
-    protected BaseNavigationPosition(Double elevation, Double speed, Calendar time) {
+    protected BaseNavigationPosition(Double elevation, Double speed, CompactCalendar time) {
         setElevation(elevation);
         setSpeed(speed);
         setTime(time);
@@ -54,6 +55,7 @@ public abstract class BaseNavigationPosition {
      * @return the longitude in the WGS84 coordinate system
      */
     public abstract Double getLongitude();
+
     public abstract void setLongitude(Double longitude);
 
     /**
@@ -62,6 +64,7 @@ public abstract class BaseNavigationPosition {
      * @return the latitude in the WGS84 coordinate system
      */
     public abstract Double getLatitude();
+
     public abstract void setLatitude(Double latitude);
 
     public boolean hasCoordinates() {
@@ -86,11 +89,11 @@ public abstract class BaseNavigationPosition {
      *
      * @return the date and time in UTC time zone
      */
-    public Calendar getTime() {
+    public CompactCalendar getTime() {
         return time;
     }
 
-    public void setTime(Calendar time) {
+    public void setTime(CompactCalendar time) {
         this.time = time;
     }
 
@@ -112,15 +115,19 @@ public abstract class BaseNavigationPosition {
      *
      * @param startDate the day/month/year-offset
      */
-    public void setStartDate(Calendar startDate) {
+    public void setStartDate(CompactCalendar startDate) {
         if (time != null) {
-            time.set(Calendar.YEAR, startDate.get(Calendar.YEAR));
-            time.set(Calendar.MONTH, startDate.get(Calendar.MONTH));
-            time.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH));
+            Calendar calendar = time.getCalendar();
+            Calendar startDateCalendar = startDate.getCalendar();
+            calendar.set(Calendar.YEAR, startDateCalendar.get(Calendar.YEAR));
+            calendar.set(Calendar.MONTH, startDateCalendar.get(Calendar.MONTH));
+            calendar.set(Calendar.DAY_OF_MONTH, startDateCalendar.get(Calendar.DAY_OF_MONTH));
+            time = CompactCalendar.fromCalendar(calendar);
         }
     }
 
     public abstract String getComment();
+
     public abstract void setComment(String comment);
 
     /**

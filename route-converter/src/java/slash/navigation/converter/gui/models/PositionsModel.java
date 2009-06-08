@@ -21,10 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.*;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.Range;
-import slash.navigation.util.ContinousRange;
-import slash.navigation.util.RouteComments;
+import slash.navigation.util.*;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -66,8 +63,8 @@ public class PositionsModel extends AbstractTableModel {
             case PositionsTableColumnModel.DESCRIPTION_COLUMN_INDEX:
                 return position.getComment();
             case PositionsTableColumnModel.TIME_COLUMN_INDEX:
-                Calendar calendar = position.getTime();
-                return calendar != null ? TIME_FORMAT.format(calendar.getTime()) : "";
+                CompactCalendar time = position.getTime();
+                return time != null ? TIME_FORMAT.format(time.getTime()) : "";
             case PositionsTableColumnModel.LONGITUDE_COLUMN_INDEX:
                 return formatLongitudeOrLatitude(position.getLongitude());
             case PositionsTableColumnModel.LATITUDE_COLUMN_INDEX:
@@ -109,7 +106,7 @@ public class PositionsModel extends AbstractTableModel {
                     Date date = TIME_FORMAT.parse(value);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
-                    position.setTime(calendar);
+                    position.setTime(CompactCalendar.fromCalendar(calendar));
                 }
                 catch(ParseException e) {
                     // intentionally left empty
@@ -184,7 +181,7 @@ public class PositionsModel extends AbstractTableModel {
         }
     }
 
-    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
         add(row, position);
     }

@@ -21,8 +21,7 @@
 package slash.navigation.kml;
 
 import slash.navigation.Wgs84Position;
-
-import java.util.Calendar;
+import slash.navigation.util.CompactCalendar;
 
 /**
  * Represents a position in a Google Earth (.kml) file.
@@ -32,7 +31,7 @@ import java.util.Calendar;
 
 public class KmlPosition extends Wgs84Position {
 
-    public KmlPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public KmlPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 

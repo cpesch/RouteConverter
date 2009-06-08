@@ -20,9 +20,8 @@
 
 package slash.navigation;
 
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
-
-import java.util.Calendar;
 
 /**
  * Represents a Gauß Krüger position in a route.
@@ -34,7 +33,7 @@ public class GkPosition extends BaseNavigationPosition {
     protected double right, height;
     protected String comment;
 
-    public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         if (longitude != null && latitude != null) {
             double[] gk = Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(longitude, latitude);

@@ -29,7 +29,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -44,6 +43,7 @@ import slash.navigation.gpx.GpxRoute;
 import slash.navigation.util.Externalization;
 import slash.navigation.util.InputOutput;
 import slash.navigation.util.Platform;
+import slash.navigation.util.CompactCalendar;
 
 /**
  * The base of all GPSBabel based formats.
@@ -311,7 +311,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return exitValue;
     }
 
-    public List<GpxRoute> read(InputStream in, Calendar startDate) throws IOException {
+    public List<GpxRoute> read(InputStream in, CompactCalendar startDate) throws IOException {
         if (isStreamingCapable()) {
             InputStream target = startBabel(in, getBabelFormatName(), BABEL_INTERFACE_FORMAT_NAME, "-r -w -t");
             List<GpxRoute> result = getGpxFormat().read(target, startDate);

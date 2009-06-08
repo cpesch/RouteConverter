@@ -21,6 +21,7 @@
 package slash.navigation.wbt;
 
 import slash.navigation.*;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -38,6 +39,7 @@ import java.util.List;
 
 public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     private static final int HEADER_SIZE = 1024;
+    private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public String getName() {
         return "Wintec Wbt-201 (*" + getExtension() + ")";
@@ -59,11 +61,12 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return true;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -74,11 +77,11 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     }
 
 
-    protected abstract boolean checkHeader(ByteBuffer sourceHeader) throws IOException;
+    protected abstract boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException;
 
-    protected abstract List<Wgs84Route> read(ByteBuffer source, Calendar startDate) throws IOException;
+    protected abstract List<Wgs84Route> read(ByteBuffer source, CompactCalendar startDate) throws IOException;
 
-    public List<Wgs84Route> read(InputStream source, Calendar startDate) throws IOException {
+    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         List<Wgs84Route> result = null;
 
         byte[] header = new byte[HEADER_SIZE];
@@ -89,7 +92,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             headerBuffer.position(0);
             headerBuffer.put(header);
 
-            if (checkHeader(headerBuffer)) {
+            if (checkFormatDescriptor(headerBuffer)) {
                 // read whole file in ByteBuffer. Max. size ca. 2 MB
                 ByteBuffer sourceData = ByteBuffer.allocate(header.length + source.available());
                 int available = source.available();
@@ -107,32 +110,30 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
-    protected List<Wgs84Route> readPositions(ByteBuffer source, float logVersion, float swVersion,
-                                             float hwVersion, long trackInfoAddress) throws IOException {
+    protected List<Wgs84Route> readPositions(ByteBuffer source, long trackInfoAddress) throws IOException {
+        /* http://forum.pocketnavigation.de/attachment.php?attachmentid=1082953
+           2 byte Trackflag
+               00001 = 1 --> That point is the start point of a trajectory
+               00010 = 2 --> That point is push to log
+               00100 = 4 --> That point is over speed point
+               * The flag of one point may be combination with two or three flags
 
-        /*http://forum.pocketnavigation.de/attachment.php?attachmentid=1082953
-        *  2 byte Trackflag
-        *      00001 = 1 --> That point is the start point of a trajectory
-        *      00010 = 2 --> That point is push to log
-        *      00100 = 4 --> That point is over speed point
-        *      * The flag of one point may be combination with two or three flags
-        *
-        *  4 byte Date & Time (UTC)
-        *      6 bits year (+ 2000)
-        *      4 bits month
-        *      5 bits day
-        *      5 bits hour
-        *      6 bits minute
-        *      6 bits second
-        *
-        *  4 byte Latitude
-        *      integer / 10000000 (degree)
-        *
-        *  4 byte Longitude
-        *      integer / 10000000 (degree)
-        *
-        *  2 byte Altitude
-        *      short in meters
+           4 byte Date & Time (UTC)
+               6 bits year (+ 2000)
+               4 bits month
+               5 bits day
+               5 bits hour
+               6 bits minute
+               6 bits second
+
+           4 byte Latitude
+               integer / 10000000 (degree)
+
+           4 byte Longitude
+               integer / 10000000 (degree)
+
+           2 byte Altitude
+               short in meters
         */
 
         // seek to begin of trackpoints
@@ -168,9 +169,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 trackPoints.add(newPoint);
 
                 // trackname = time of first point
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String TrackName = dateFormatter.format(newPoint.getTime().getTime());
-                track.setName(TrackName);
+                track.setName(TRACK_NAME_DATE_FORMAT.format(newPoint.getTime().getTime()));
             }
 
             if ((trackFlag & 2) == 2) {
@@ -209,13 +208,13 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         int minute = (int) ((time & MINUTE_MASK) >> 6);
         int second = (int) ((time & SECOND_MASK));
 
-        Calendar trackPointTime = Calendar.getInstance();
-        trackPointTime.set(Calendar.YEAR, 2000 + year);
-        trackPointTime.set(Calendar.MONTH, month - 1); // Java month starts with 0
-        trackPointTime.set(Calendar.DAY_OF_MONTH, day);
-        trackPointTime.set(Calendar.HOUR_OF_DAY, hour);
-        trackPointTime.set(Calendar.MINUTE, minute);
-        trackPointTime.set(Calendar.SECOND, second);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2000 + year);
+        calendar.set(Calendar.MONTH, month - 1); // Java month starts with 0
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
 
         String comment;
         if (isTrackpoint)
@@ -223,7 +222,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         else
             comment = "Pushpoint " + String.valueOf(pointNo);
 
-        return new Wgs84Position(longitude / FACTOR, latitude / FACTOR, (double) altitude, null, trackPointTime, comment);
+        return new Wgs84Position(longitude / FACTOR, latitude / FACTOR, (double) altitude, null,
+                CompactCalendar.fromCalendar(calendar), comment);
     }
 
     public void write(Wgs84Route route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {

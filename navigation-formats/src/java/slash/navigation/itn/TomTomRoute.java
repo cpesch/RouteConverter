@@ -22,6 +22,7 @@ package slash.navigation.itn;
 import slash.navigation.*;
 import slash.navigation.simple.*;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
@@ -41,7 +42,6 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -89,7 +89,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     }
 
 
-    public TomTomPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, Calendar time, String comment) {
+    public TomTomPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         return new TomTomPosition(longitude, latitude, elevation, speed, time, comment);
     }
 

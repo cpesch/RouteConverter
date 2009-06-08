@@ -22,9 +22,9 @@ package slash.navigation.nmn;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.PrintWriter;
-import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,7 +72,7 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         return matcher.matches();
     }
 
-    protected NmnPosition parsePosition(String line, Calendar startDate) {
+    protected NmnPosition parsePosition(String line, CompactCalendar startDate) {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

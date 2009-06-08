@@ -24,13 +24,13 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -80,7 +80,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 
-    public List<BcrRoute> read(BufferedReader reader, Calendar startDate, String encoding) throws IOException {
+    public List<BcrRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<BcrSection> sections = new ArrayList<BcrSection>();
         List<BcrPosition> positions = new ArrayList<BcrPosition>();
         BcrSection current = null;

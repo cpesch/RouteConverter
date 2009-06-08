@@ -22,12 +22,12 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -233,19 +233,19 @@ public class NmeaFormat extends BaseNmeaFormat {
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
-    private String formatDay(Calendar date) {
+    private String formatDay(CompactCalendar date) {
         if (date == null)
             return "";
         return DAY_FORMAT.format(date.getTime());
     }
 
-    private String formatMonth(Calendar date) {
+    private String formatMonth(CompactCalendar date) {
         if (date == null)
             return "";
         return MONTH_FORMAT.format(date.getTime());
     }
 
-    private String formatYear(Calendar date) {
+    private String formatYear(CompactCalendar date) {
         if (date == null)
             return "";
         return YEAR_FORMAT.format(date.getTime());

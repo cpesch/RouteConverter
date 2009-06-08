@@ -25,13 +25,13 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.XmlNavigationFormat;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -100,7 +100,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public List<ViaMichelinRoute> read(InputStream source, Calendar startDate) throws IOException {
+    public List<ViaMichelinRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         InputStreamReader reader = new InputStreamReader(source);
         try {
             PoiList poiList = ViaMichelinUtil.unmarshal(reader);
