@@ -43,10 +43,7 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.util.Calculation;
-import slash.navigation.util.Files;
-import slash.navigation.util.Range;
-import slash.navigation.util.RouteComments;
+import slash.navigation.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -434,10 +431,9 @@ public abstract class ConvertPanel {
                         r.handleUnsupportedFormat(path);
                 } catch (BabelException e) {
                     r.handleBabelError(e);
-                } catch (Exception e) {
-                    log.severe("Open error: " + e.getMessage());
-                    e.printStackTrace();
-                    r.handleOpenError(e, path);
+                } catch (Throwable t) {
+                    log.severe("Open error: " + t.getMessage());
+                    r.handleOpenError(t, path);
                 }
             }
         }, "UrlOpener").start();
@@ -481,9 +477,9 @@ public abstract class ConvertPanel {
                             r.handleUnsupportedFormat(path);
                         }
                     }
-                } catch (Exception e) {
-                    log.severe("Append error: " + e.getMessage());
-                    r.handleOpenError(e, urls);
+                } catch (Throwable t) {
+                    log.severe("Append error: " + t.getMessage());
+                    r.handleOpenError(t, urls);
                 }
             }
         }, "UrlAppender").start();
@@ -594,12 +590,11 @@ public abstract class ConvertPanel {
             if (format instanceof KmlFormat && checkboxStartGoogleEarth.isSelected()) {
                 r.createExternalPrograms().startGoogleEarth(r.getFrame(), targets);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.severe("Save error " + file + "," + format + ": " + e.getMessage());
+        } catch (Throwable t) {
+            log.severe("Save error " + file + "," + format + ": " + t.getMessage());
 
             JOptionPane.showMessageDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), Files.shortenPath(getSourceFileName()), targetsAsString, e.getMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), Files.shortenPath(getSourceFileName()), targetsAsString, t.getMessage()),
                     r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -650,7 +645,7 @@ public abstract class ConvertPanel {
 
         getPositionsModel().add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(),
-                center.getTime() != null ? center.getTime() : Calendar.getInstance(),
+                center.getTime() != null ? center.getTime() : CompactCalendar.getInstance(),
                 RouteConverter.getBundle().getString("add-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

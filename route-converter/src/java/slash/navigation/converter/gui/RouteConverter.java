@@ -368,10 +368,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    public void handleOpenError(final Exception e, final String path) {
+    public void handleOpenError(final Throwable throwable, final String path) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path), e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -382,10 +382,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    public void handleOpenError(final Exception e, final List<URL> urls) {
+    public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), e.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
