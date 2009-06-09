@@ -52,8 +52,8 @@ public class TimeZoneTest extends NavigationTestCase {
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
         String javaTime = DateFormat.getInstance().format(java.getTime().getTime());
         assertEquals("07.06.07 14:04", javaTime);
-        CompactCalendar parsed = XmlNavigationFormat.parseTime(xml);
-        assertEquals(parsed.getCalendar(), java);
+        Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
+        assertCalendarEquals(parsed, java);
     }
 
     public void testXMLGregorianCalendarWithZasTimeZone() throws DatatypeConfigurationException {

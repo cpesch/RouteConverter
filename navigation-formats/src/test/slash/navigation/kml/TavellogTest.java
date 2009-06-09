@@ -27,7 +27,7 @@ public class TavellogTest extends NavigationTestCase {
     private static final String TAVELLOG_DESCRIPTION = "<description><![CDATA[<html><body>Time: 2009/02/07 21:45:55<BR>Altitude: 62.20<BR>Speed: 15.37<BR></body></html>]]></description>";
 
     public void testParseTime() {
-        assertEquals(calendar(2009, 2, 7, 21, 45, 55), format.parseTime(TAVELLOG_DESCRIPTION));
+        assertEquals(calendar(2009, 2, 7, 21, 45, 55).getCalendar(), format.parseTime(TAVELLOG_DESCRIPTION));
     }
 
     public void testParseSpeed() {

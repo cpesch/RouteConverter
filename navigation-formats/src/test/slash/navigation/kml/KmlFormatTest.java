@@ -168,8 +168,8 @@ public class KmlFormatTest extends NavigationTestCase {
         for (KmlRoute route : routes) {
             assertTrue(route.getPositionCount() > 0);
         }
-        assertEquals(18723, routes.get(1).getPositionCount());
-        assertEquals(2657, routes.get(4).getPositionCount());
+        assertEquals(18724, routes.get(1).getPositionCount());
+        assertEquals(2658, routes.get(4).getPositionCount());
     }
 
     public void testItnConvKml() throws IOException {
@@ -189,8 +189,8 @@ public class KmlFormatTest extends NavigationTestCase {
         for (KmlRoute route : routes) {
             assertTrue(route.getPositionCount() > 0);
         }
-        assertEquals(18723, routes.get(1).getPositionCount());
-        assertEquals(2657, routes.get(4).getPositionCount());
+        assertEquals(18724, routes.get(1).getPositionCount());
+        assertEquals(2658, routes.get(4).getPositionCount());
     }
 
     public void testOnlyPlacemark() throws IOException {

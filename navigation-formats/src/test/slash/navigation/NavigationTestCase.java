@@ -349,7 +349,7 @@ public abstract class NavigationTestCase extends TestCase {
                     String targetName = getMicrosoftAutoroutePositionComment(targetPosition);
                     assertEquals(sourceName, targetName);
                 } else if (sourceFormat instanceof GpxFormat)
-                    assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), trimSpeedComment(targetPosition.getComment()));
+                    assertEquals("Comment " + index + " does not match", sourcePosition.getComment().trim(), trimSpeedComment(targetPosition.getComment()));
                 else
                     assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), targetPosition.getComment());
             }

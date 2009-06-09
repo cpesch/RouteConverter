@@ -63,7 +63,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         expectedCal.set(Calendar.SECOND, 20);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
-        assertEquals(expectedCal, position.getTime());
+        assertEquals(expectedCal, position.getTime().getCalendar());
         assertNull(position.getComment());
     }
 
@@ -80,7 +80,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         expectedCal.set(Calendar.SECOND, 20);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
-        assertEquals(expectedCal, position.getTime());
+        assertEquals(expectedCal, position.getTime().getCalendar());
         assertNull(position.getComment());
     }
 

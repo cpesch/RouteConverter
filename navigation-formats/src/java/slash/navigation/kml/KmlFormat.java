@@ -242,6 +242,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.fine("Error reading " + url + ": " + e.getMessage());
         }
         return result;

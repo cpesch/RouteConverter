@@ -97,7 +97,7 @@ public class NavigationFileParser {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
             buffer.mark(readBufferSize + 1);
-            CompactCalendar compactStartDate = CompactCalendar.fromCalendar(startDate);
+            CompactCalendar compactStartDate = startDate != null ? CompactCalendar.fromCalendar(startDate) : null;
             for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
                 List<BaseRoute> routes = format.read(buffer, compactStartDate);
                 if (routes != null && routes.size() > 0) {
