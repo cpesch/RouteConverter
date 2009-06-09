@@ -34,11 +34,11 @@ import java.util.List;
 
 public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
 
-    protected boolean isValidStartDate(CompactCalendar calendar) {
-        if(calendar == null)
+    protected boolean isValidStartDate(CompactCalendar startDate) {
+        if(startDate == null)
             return false;
-        Calendar c = calendar.getCalendar();
-        return !(c.get(Calendar.YEAR) == 1970 && c.get(Calendar.DAY_OF_YEAR) == 1);
+        Calendar calendar = startDate.getCalendar();
+        return !(calendar.get(Calendar.YEAR) == 1970 && calendar.get(Calendar.DAY_OF_YEAR) == 1);
     }
 
     public List<R> read(InputStream source, CompactCalendar startDate) throws IOException {

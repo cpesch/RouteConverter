@@ -63,14 +63,14 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         return datatypeFactory;
     }
 
-    public static XMLGregorianCalendar formatTime(CompactCalendar compactCalendar) {
-        if (compactCalendar == null)
+    public static XMLGregorianCalendar formatTime(CompactCalendar time) {
+        if (time == null)
             return null;
         try {
             // by using GMT no timezone is written
             GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.GMT, Locale.getDefault());
             gregorianCalendar.clear();
-            Calendar calendar = compactCalendar.getCalendar();
+            Calendar calendar = time.getCalendar();
             gregorianCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),
                     calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
             gregorianCalendar.set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND));

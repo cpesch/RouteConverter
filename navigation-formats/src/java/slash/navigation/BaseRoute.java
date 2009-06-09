@@ -209,13 +209,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     delta += time;
             }
 
-            Calendar time = next.getTime().getCalendar();
-            if (time == null)
+            Calendar calendar = next.getTime() != null ? next.getTime().getCalendar() : null;
+            if (calendar == null)
                 continue;
-            if (minimum == null || time.before(minimum))
-                minimum = time;
-            if (maximum == null || time.after(maximum))
-                maximum = time;
+            if (minimum == null || calendar.before(minimum))
+                minimum = calendar;
+            if (maximum == null || calendar.after(maximum))
+                maximum = calendar;
 
             previous = next;
         }

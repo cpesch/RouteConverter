@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 /**
  * Reads and writes Kienzle GPS (.txt) files.
  * <p/>
- * Head: Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos<br/>
+ * Head: Position;X;Y;Empf&auml;nger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos<br/>
  * Format: 118;7.0591660000;50.7527770000;PHE II;;53117;Bonn;Christian-Lassen-Str.;9;17:02;
  *
  * @author Christian Pesch
@@ -75,6 +75,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return false;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }

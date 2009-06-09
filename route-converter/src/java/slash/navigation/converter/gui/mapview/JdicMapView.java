@@ -959,11 +959,13 @@ public class JdicMapView implements MapView {
                     }
 
                     CompactCalendar time = next.getTime();
-                    Calendar calendar = time.getCalendar();
-                    if (minimumTime == null || calendar.before(minimumTime))
-                        minimumTime = calendar;
-                    if (maximumTime == null || calendar.after(maximumTime))
-                        maximumTime = calendar;
+                    if (time != null) {
+                        Calendar calendar = time.getCalendar();
+                        if (minimumTime == null || calendar.before(minimumTime))
+                            minimumTime = calendar;
+                        if (maximumTime == null || calendar.after(maximumTime))
+                            maximumTime = calendar;
+                    }
 
                     if (i % 100 == 0)
                         calculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);

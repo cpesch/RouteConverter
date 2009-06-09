@@ -199,9 +199,9 @@ public abstract class RouteComments {
     /**
      * logpos encoding of the comment:
      * + looks like a planned position with a verbose comment
-     * + Rottstücker (Wiesloch); K4174 Horrenberger Straße @166.6m (s=60 d=34)
+     * + Rottstuecker (Wiesloch); K4174 Horrenberger Strasse @166.6m (s=60 d=34)
      * - looks like a tracked position with a verbose comment
-     * - Rottstücker (Wiesloch); K4174 Horrenberger Straße @162.6m (s=66 d=6)
+     * - Rottstuecker (Wiesloch); K4174 Horrenberger Strasse @162.6m (s=66 d=6)
      * * is a coordinate comment
      * * 1000462:4889518 @365.8m (s=1 d=193)
      * = seems to be written if the position does not change for a time period
@@ -394,7 +394,7 @@ public abstract class RouteComments {
             position.setSpeed(Conversion.parseDouble(matcher.group(5)));
             Double elevation = Conversion.parseDouble(matcher.group(6));
             if(elevation == null)
-                elevation = Conversion.parseDouble(matcher.group(4)); // Pause with Elevation
+                elevation = Conversion.parseDouble(matcher.group(4)); // pause with elevation
             position.setElevation(elevation);
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
