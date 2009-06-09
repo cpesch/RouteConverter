@@ -68,7 +68,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "\\d+" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(.*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
@@ -132,7 +132,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
         String height = lineMatcher.group(9);
-        String speed = lineMatcher.group(10);
+        String speed = lineMatcher.group(10).replaceAll(SPACE_OR_ZERO, "");
 
         String comment = removeZeros(lineMatcher.group(11));
         int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);

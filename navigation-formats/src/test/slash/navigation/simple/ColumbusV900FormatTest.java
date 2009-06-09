@@ -45,7 +45,7 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,8   ,206,VOX00006 ", null);
+        Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,0 8 ,206,VOX00006 ", null);
         assertEquals(13.049739, position.getLongitude());
         assertEquals(47.797278, position.getLatitude());
         assertEquals(502.0, position.getElevation());
