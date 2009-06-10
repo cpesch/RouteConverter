@@ -68,6 +68,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return true;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> OvlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);
     }
@@ -141,11 +142,12 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         if (symbolCount == 0)
             return false;
 
+        int sectionCount = 0;
         for (int i = 0; i < symbolCount; i++) {
-            if (!existsSection(sections, SYMBOL_TITLE + " " + (i + 1)))
-                return false;
+            if (existsSection(sections, SYMBOL_TITLE + " " + (i + 1)))
+                sectionCount++;
         }
-        return true;
+        return sectionCount > 0;
     }
 
     private int getSymbolCount(OvlSection overlay) {

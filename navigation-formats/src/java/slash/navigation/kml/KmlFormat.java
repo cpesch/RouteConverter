@@ -157,9 +157,9 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (travellogDescription == null)
             return;
 
-        Calendar logTime = parseTime(travellogDescription);
-        if (position.getTime() == null && logTime != null)
-            position.setTime(CompactCalendar.fromCalendar(logTime));
+        CompactCalendar logTime = parseTime(travellogDescription);
+        if (position.getTime() == null)
+            position.setTime(logTime);
 
         Double elevation = parseElevation(travellogDescription);
         if (position.getElevation() == null)
@@ -173,7 +173,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
 
-    Calendar parseTime(String description) {
+    CompactCalendar parseTime(String description) {
         if (description != null) {
             Matcher matcher = TAVELLOG_DATE_PATTERN.matcher(description);
             if (matcher.matches()) {
@@ -182,7 +182,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                     Date date = TAVELLOG_DATE.parse(timeString);
                     Calendar time = Calendar.getInstance();
                     time.setTime(date);
-                    return time;
+                    return CompactCalendar.fromCalendar(time);
                 }
                 catch (ParseException e) {
                     // intentionally left empty;
