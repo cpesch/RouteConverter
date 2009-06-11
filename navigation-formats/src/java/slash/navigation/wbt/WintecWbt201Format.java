@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * The base of all Wintec Wbt-201 formats.
+ * The base of all Wintec WBT-201 formats.
  *
  * @author Malte Neumann
  */
@@ -42,7 +42,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public String getName() {
-        return "Wintec Wbt-201 (*" + getExtension() + ")";
+        return "Wintec WBT-201 (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

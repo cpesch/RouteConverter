@@ -29,7 +29,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 /**
- * Reads and writes Wintec Wbt-201 (.tk2) files.
+ * Reads and writes Wintec WBT-201 (.tk2) files.
  * <p/>
  * Format is documented at:
  * http://forum.pocketnavigation.de/attachment.php?attachmentid=1082952
