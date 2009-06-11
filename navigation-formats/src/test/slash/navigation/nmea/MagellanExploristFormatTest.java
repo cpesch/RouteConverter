@@ -110,7 +110,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertEquals("Kllertal-Radweg", position.getComment());
 
         StringWriter writer = new StringWriter();
-        format.write(route, new PrintWriter(writer), 0, 1, false);
+        format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
         String expectedLines = "$PMGNTRK,4914.9672,N,00651.2081,E,000199,M,152224.000,A,Kllertal-Radweg,210307*55" + eol +
                 "$PMGNCMD,END*3D" + eol;

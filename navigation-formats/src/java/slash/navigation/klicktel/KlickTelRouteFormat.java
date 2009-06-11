@@ -125,7 +125,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return kdRoute;
     }
 
-    public void write(KlickTelRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(KlickTelRoute route, File target, int startIndex, int endIndex) throws IOException {
         try {
             KlickTelUtil.marshal(createKlicktel(route), target);
         } catch (JAXBException e) {

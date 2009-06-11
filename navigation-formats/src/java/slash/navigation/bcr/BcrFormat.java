@@ -198,7 +198,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
 
     protected abstract void writePosition(BcrPosition position, PrintWriter writer, int index);
 
-    public void write(BcrRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(BcrRoute route, PrintWriter writer, int startIndex, int endIndex) {
         List<BcrPosition> positions = route.getPositions();
         for (BcrSection section : route.getSections()) {
             writer.println(SECTION_PREFIX + section.getTitle() + SECTION_POSTFIX);

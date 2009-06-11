@@ -47,11 +47,11 @@ public class CoPilot7Format extends CoPilotFormat {
         return read(source, startDate, UTF16_ENCODING);
     }
 
-    public void write(Wgs84Route route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        write(route, target, UTF16LE_ENCODING, startIndex, endIndex, numberPositionNames);
+    public void write(Wgs84Route route, File target, int startIndex, int endIndex) throws IOException {
+        write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
 
-    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
         // with UTF-16LE no BOM is written, UnicodeLittle would write one by is not supported
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me

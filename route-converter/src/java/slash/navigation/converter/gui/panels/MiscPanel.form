@@ -189,7 +189,7 @@
         <border type="none"/>
         <children/>
       </xy>
-      <grid id="6ed1d" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="6ed1d" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="3" left="3" bottom="3" right="3"/>
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -197,22 +197,6 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="21000" class="javax.swing.JButton" binding="buttonRenumberPositions">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="renumber-positions"/>
-            </properties>
-          </component>
-          <component id="9ebbd" class="javax.swing.JButton" binding="buttonPrintMap" default-binding="true">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="print-map"/>
-            </properties>
-          </component>
           <component id="3ee98" class="javax.swing.JLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -228,6 +212,14 @@
             <properties>
               <selected value="false"/>
               <text value=""/>
+            </properties>
+          </component>
+          <component id="9ebbd" class="javax.swing.JButton" binding="buttonPrintMap" default-binding="true">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="print-map"/>
             </properties>
           </component>
         </children>

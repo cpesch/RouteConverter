@@ -104,7 +104,7 @@ public class GoPalRouteFormat extends XmlNavigationFormat<GoPalRoute> {
         return tour;
     }
 
-    public void write(GoPalRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(GoPalRoute route, File target, int startIndex, int endIndex) throws IOException {
         try {
             GoPalUtil.marshal(createGoPal(route), target);
         } catch (JAXBException e) {

@@ -132,7 +132,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return poiList;
     }
 
-    public void write(ViaMichelinRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(ViaMichelinRoute route, File target, int startIndex, int endIndex) throws IOException {
         try {
             ViaMichelinUtil.marshal(createPoiList(route), target);
         } catch (JAXBException e) {

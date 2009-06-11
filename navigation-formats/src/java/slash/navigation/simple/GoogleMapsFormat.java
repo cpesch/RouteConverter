@@ -311,7 +311,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         return buffer.toString();
     }
 
-    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
         List<Wgs84Position> positions = route.getPositions();
         writer.println("[InternetShortcut]");
         // idea from forum: add start point from previous route section since your not at the

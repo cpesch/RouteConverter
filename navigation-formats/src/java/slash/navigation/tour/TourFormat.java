@@ -164,13 +164,13 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
 
-    public void write(TourRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        write(route, target, UTF8_ENCODING, startIndex, endIndex, numberPositionNames);
+    public void write(TourRoute route, File target, int startIndex, int endIndex) throws IOException {
+        write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 
     private static final String TOUR_FORMAT_NAME_VALUE_SEPARATOR = " " + NAME_VALUE_SEPARATOR + " ";
 
-    public void write(TourRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(TourRoute route, PrintWriter writer, int startIndex, int endIndex) {
         writer.println(SECTION_PREFIX + TOUR_TITLE + SECTION_POSTFIX);
         writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + route.getName());
         writer.println(CREATOR + TOUR_FORMAT_NAME_VALUE_SEPARATOR + GENERATED_BY);

@@ -87,6 +87,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GpxRoute(new Gpx11Format(), characteristics, name, null, (List<GpxPosition>) positions);
     }
@@ -338,9 +339,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
     }
 
-    public void write(GpxRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(GpxRoute route, File target, int startIndex, int endIndex) throws IOException {
         File source = File.createTempFile(target.getName(), "." + BABEL_INTERFACE_FORMAT_NAME);
-        getGpxFormat().write(route, source, startIndex, endIndex, numberPositionNames);
+        getGpxFormat().write(route, source, startIndex, endIndex);
         boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, target, getBabelFormatName(), getBabelOptions());
         if (successful)
             log.fine("Successfully converted " + source + " to " + target);

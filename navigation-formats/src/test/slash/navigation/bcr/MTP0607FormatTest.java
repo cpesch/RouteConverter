@@ -170,7 +170,7 @@ public class MTP0607FormatTest extends NavigationTestCase {
 
     public void testReadComment() throws IOException {
         StringWriter writer = new StringWriter();
-        format.write(route, new PrintWriter(writer), 0, 2, false);
+        format.write(route, new PrintWriter(writer), 0, 2);
         List<BcrRoute> routes = format.read(new BufferedReader(new StringReader(writer.toString())), null, BcrFormat.DEFAULT_ENCODING);
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);
@@ -184,7 +184,7 @@ public class MTP0607FormatTest extends NavigationTestCase {
     
     public void testWriteComment() {
         StringWriter writer = new StringWriter();
-        format.write(route, new PrintWriter(writer), 0, 2, false);
+        format.write(route, new PrintWriter(writer), 0, 2);
         assertTrue(writer.toString().contains("STATION1=Start"));
         assertTrue(writer.toString().contains("STATION2=End"));
     }

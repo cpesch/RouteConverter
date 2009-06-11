@@ -47,5 +47,5 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     List<R> read(InputStream source) throws IOException;
     List<R> read(InputStream source, CompactCalendar startDate) throws IOException;
-    void write(R route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException;
+    void write(R route, File target, int startIndex, int endIndex) throws IOException;
 }

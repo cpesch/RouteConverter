@@ -307,7 +307,7 @@ public class Gpx10Format extends GpxFormat {
         return gpx;
     }
 
-    public void write(GpxRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(GpxRoute route, File target, int startIndex, int endIndex) {
         try {
             GpxUtil.marshal10(createGpx(route, startIndex, endIndex), target);
         } catch (JAXBException e) {

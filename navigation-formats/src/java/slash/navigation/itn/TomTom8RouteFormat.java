@@ -54,7 +54,7 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         return false;
     }
 
-    public void write(TomTomRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        write(route, target, UTF8_ENCODING, startIndex, endIndex, numberPositionNames);
+    public void write(TomTomRoute route, File target, int startIndex, int endIndex) throws IOException {
+        write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 }

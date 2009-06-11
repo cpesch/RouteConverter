@@ -592,7 +592,7 @@ public class Kml22BetaFormat extends KmlFormat {
         return kmlType;
     }
 
-    public void write(KmlRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(KmlRoute route, File target, int startIndex, int endIndex) {
         try {
             KmlUtil.marshal22Beta(createKmlType(route), target);
         } catch (JAXBException e) {

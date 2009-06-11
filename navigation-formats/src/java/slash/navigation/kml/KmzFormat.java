@@ -109,11 +109,11 @@ public abstract class KmzFormat extends BaseKmlFormat {
         }
     }
 
-    public void write(KmlRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(KmlRoute route, File target, int startIndex, int endIndex) throws IOException {
         File intermediate = File.createTempFile("rckml", ".kml");
 
         try {
-            delegate.write(route, intermediate, startIndex, endIndex, numberPositionNames);
+            delegate.write(route, intermediate, startIndex, endIndex);
             byte[] bytes = InputOutput.readBytes(new FileInputStream(intermediate));
             writeIntermediate(target, bytes);
         }

@@ -91,7 +91,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     protected abstract Wgs84Position parsePosition(String line, CompactCalendar startDate);
 
 
-    public void write(R route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(R route, PrintWriter writer, int startIndex, int endIndex) {
         List<Wgs84Position> positions = route.getPositions();
         writeHeader(writer);
         for (int i = startIndex; i < endIndex; i++) {

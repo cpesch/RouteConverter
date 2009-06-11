@@ -253,7 +253,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         writer.add(eventFactory.createEndDocument());
     }
 
-    public void write(MagicMapsIktRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(MagicMapsIktRoute route, File target, int startIndex, int endIndex) throws IOException {
         write(Arrays.asList(route), target);
     }
 

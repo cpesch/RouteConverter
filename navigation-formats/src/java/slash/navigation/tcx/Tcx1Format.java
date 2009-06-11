@@ -222,7 +222,7 @@ public class Tcx1Format extends TcxFormat {
         }
     }
 
-    public void write(TcxRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(TcxRoute route, File target, int startIndex, int endIndex) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

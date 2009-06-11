@@ -594,7 +594,7 @@ public class Kml22Format extends KmlFormat {
         return kmlType;
     }
 
-    public void write(KmlRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(KmlRoute route, File target, int startIndex, int endIndex) {
         try {
             KmlUtil.marshal22(createKmlType(route), target);
         } catch (JAXBException e) {

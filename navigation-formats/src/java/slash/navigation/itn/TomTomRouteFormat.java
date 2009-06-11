@@ -72,6 +72,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         return false;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> TomTomRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new TomTomRoute(characteristics, name, (List<TomTomPosition>) positions);
     }
@@ -173,7 +174,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - 6" : "");
     }
 
-    public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex) {
         List<TomTomPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             TomTomPosition position = positions.get(i);
@@ -197,8 +198,6 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 else
                     comment = formatIntermediateName(position);
             }
-            if (comment != null)
-                comment = numberPositionNames ? RouteComments.numberPosition(comment, i + 1) : comment;
             if (comment != null)
                 comment = comment.replaceAll(SEPARATOR, ";").replaceAll("€", "\u0080");
             writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + comment + SEPARATOR_CHAR + type + SEPARATOR_CHAR);

@@ -42,7 +42,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         if (parser.getFormat().isSupportsMultipleRoutes())
             parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) parser.getFormat(), target);
         else
-            parser.write(parser.getTheRoute(), parser.getFormat(), false, false, true, target);
+            parser.write(parser.getTheRoute(), parser.getFormat(), false, true, target);
 
         // NOT possible to determine if I add description lines while writing
         // assertEquals(source.length(), target.length());
@@ -109,7 +109,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
             File[] targets = new File[fileCount];
             for (int i = 0; i < targets.length; i++)
                 targets[i] = File.createTempFile("target", ".test");
-            parser.write(sourceRoute, parser.getFormat(), duplicateFirstPosition, numberPositionNames, false, targets);
+            parser.write(sourceRoute, parser.getFormat(), duplicateFirstPosition, false, targets);
 
             NavigationFileParser sourceParser = new NavigationFileParser();
             sourceParser.read(source);

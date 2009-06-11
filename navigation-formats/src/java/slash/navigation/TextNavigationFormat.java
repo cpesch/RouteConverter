@@ -59,10 +59,10 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     // encoding currently only used in GoogleMapsFormat
     public abstract List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException;
 
-    protected void write(R route, File target, String encoding, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    protected void write(R route, File target, String encoding, int startIndex, int endIndex) throws IOException {
         PrintWriter writer = new PrintWriter(target, encoding);
         try {
-            write(route, writer, startIndex, endIndex, numberPositionNames);
+            write(route, writer, startIndex, endIndex);
         }
         finally {
             writer.flush();
@@ -70,10 +70,10 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         }
     }
 
-    public void write(R route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
-        write(route, target, DEFAULT_ENCODING, startIndex, endIndex, numberPositionNames);
+    public void write(R route, File target, int startIndex, int endIndex) throws IOException {
+        write(route, target, DEFAULT_ENCODING, startIndex, endIndex);
     }
 
-    public abstract void write(R route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames);
+    public abstract void write(R route, PrintWriter writer, int startIndex, int endIndex);
 
 }

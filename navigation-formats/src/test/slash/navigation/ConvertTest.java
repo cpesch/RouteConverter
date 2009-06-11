@@ -81,7 +81,7 @@ public class ConvertTest extends NavigationTestCase {
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
         File target = File.createTempFile("singletarget", targetFormat.getExtension());
         try {
-            parser.write(sourceRoute, targetFormat, false, false, false, target);
+            parser.write(sourceRoute, targetFormat, false, false, target);
             assertTrue(target.exists());
 
             NavigationFileParser sourceParser = new NavigationFileParser();
@@ -169,7 +169,7 @@ public class ConvertTest extends NavigationTestCase {
         for (int i = 0; i < targets.length; i++)
             targets[i] = File.createTempFile("splittarget", targetFormat.getExtension());
         try {
-            parser.write(sourceRoute, targetFormat, false, false, false, targets);
+            parser.write(sourceRoute, targetFormat, false, false, targets);
 
             NavigationFileParser sourceParser = new NavigationFileParser();
             sourceParser.read(source);

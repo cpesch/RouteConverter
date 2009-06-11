@@ -108,7 +108,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         return new GkPosition(right, height, comment);
     }
 
-    public void write(MagicMapsPthRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(MagicMapsPthRoute route, PrintWriter writer, int startIndex, int endIndex) {
         List<GkPosition> positions = route.getPositions();
         writer.println("# Path2D file format V1.0 - MagicMaps");
         writer.println("Pathsize: " + positions.size());

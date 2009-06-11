@@ -28,7 +28,6 @@ import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 public class NmeaFormatTest extends NavigationTestCase {
@@ -261,7 +260,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
 
         StringWriter writer = new StringWriter();
-        format.write(route, new PrintWriter(writer), 0, 1, false);
+        format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
         String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,,,-48.0,M,,M,,*7F" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +

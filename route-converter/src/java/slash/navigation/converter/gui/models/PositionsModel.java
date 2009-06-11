@@ -244,11 +244,6 @@ public class PositionsModel extends AbstractTableModel {
         return getRoute().getInsignificantPositions(threshold);
     }
 
-    public void renumberPositions() {
-        RouteComments.commentPositions(getRoute().getPositions());
-        fireTableRowsUpdated(0, getRowCount() - 1);
-    }
-
     public void revert() {
         getRoute().revert();
         fireTableDataChanged();

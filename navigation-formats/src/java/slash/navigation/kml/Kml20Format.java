@@ -401,7 +401,7 @@ public class Kml20Format extends KmlFormat {
         return kml;
     }
 
-    public void write(KmlRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(KmlRoute route, File target, int startIndex, int endIndex) throws IOException {
         try {
             KmlUtil.marshal20(createKml(route), target);
         } catch (JAXBException e) {

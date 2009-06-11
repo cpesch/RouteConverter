@@ -285,7 +285,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     protected void writeFooter(PrintWriter writer) {
     }
 
-    public void write(NmeaRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(NmeaRoute route, PrintWriter writer, int startIndex, int endIndex) {
         writeHeader(writer);
 
         List<NmeaPosition> positions = route.getPositions();

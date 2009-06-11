@@ -100,7 +100,7 @@ public class Nmn7Format extends NmnFormat {
         return result;
     }
 
-    public void write(NmnRoute route, File target, int startIndex, int endIndex, boolean numberPositionNames) throws IOException {
+    public void write(NmnRoute route, File target, int startIndex, int endIndex) throws IOException {
         try {
             Nmn7Util.marshal(createNmn(route), target);
         } catch (JAXBException e) {

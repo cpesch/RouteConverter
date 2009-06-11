@@ -90,7 +90,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String ADD_POSITION_LATITUDE_PREFERENCE = "addPositionLatitude";
     public static final String START_GOOGLE_EARTH_PREFERENCE = "startGoogleEarth";
     public static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
-    public static final String NUMBER_POSITION_NAMES_PREFERENCE = "numberPositionNames";
     public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
@@ -457,11 +456,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().renameRoute(name);
     }
 
-    public void renumberPositions() {
-        setSelectedPanel(convertPanel);
-        getConvertPanel().renumberPositions();
-    }
-
     // map view related helpers
 
     public boolean isMapViewAvailable() {
@@ -499,10 +493,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private ConvertPanel getConvertPanel() {
         return tabInitializer.getConvertPanel();
-    }
-
-    private void setSelectedPanel(JPanel panel) {
-        tabbedPane.setSelectedComponent(panel);
     }
 
     {

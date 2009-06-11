@@ -203,7 +203,6 @@ public class NavigationFileParser {
 
     public void write(BaseRoute route, NavigationFormat format,
                       boolean duplicateFirstPosition,
-                      boolean numberPositionNames,
                       boolean ignoreMaximumPositionCount,
                       File... targets) throws IOException {
         log.info("Writing '" + format.getName() + "' file(s) with 1 route and " + route.getPositionCount() + " positions");
@@ -228,7 +227,7 @@ public class NavigationFileParser {
             File target = targets[i];
             int endIndex = Math.min(startIndex + writeInOneChunk, positionsToWrite);
             renameRoute(route, routeToWrite, startIndex, endIndex, i, targets);
-            format.write(routeToWrite, target, startIndex, endIndex, numberPositionNames);
+            format.write(routeToWrite, target, startIndex, endIndex);
             log.info("Wrote '" + target.getAbsoluteFile() + "'");
             startIndex += writeInOneChunk;
         }

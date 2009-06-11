@@ -285,7 +285,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
     }
 
-    public void write(OvlRoute route, PrintWriter writer, int startIndex, int endIndex, boolean numberPositionNames) {
+    public void write(OvlRoute route, PrintWriter writer, int startIndex, int endIndex) {
         writeSymbol(route, writer, startIndex, endIndex, 1);
         writeOverlay(route, writer, 1);
         writeMapLage(route, writer);
