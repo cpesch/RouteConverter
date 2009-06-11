@@ -86,6 +86,10 @@ public class PositionsModel extends AbstractTableModel {
         return getRoute().getPosition(rowIndex);
     }
 
+    public int getIndex(BaseNavigationPosition position) {
+        return getRoute().getIndex(position);
+    }
+
     public BaseNavigationPosition getSuccessor(BaseNavigationPosition position) {
         return getRoute().getSuccessor(position);
     }

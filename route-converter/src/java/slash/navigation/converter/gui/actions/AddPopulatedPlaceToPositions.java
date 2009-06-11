@@ -28,18 +28,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * {@link ActionListener} that adds elevations to the selected rows of a {@link JTable}
- * with the help of a {@link PositionAugmenter}.
+ * {@link ActionListener} that adds populated places from geonames.org as comments to
+ * the selected rows of a {@link JTable} with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class AddElevationsToPositions implements ActionListener {
+public class AddPopulatedPlaceToPositions implements ActionListener {
     private JTable table;
     private PositionsModel positionsModel;
     private PositionAugmenter augmenter;
 
-    public AddElevationsToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddPopulatedPlaceToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;
@@ -48,7 +48,7 @@ public class AddElevationsToPositions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addElevations(table, positionsModel, selectedRows);
+            augmenter.addPopulatedPlaces(table, positionsModel, selectedRows);
         }
     }
 }

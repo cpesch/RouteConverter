@@ -1184,20 +1184,24 @@ public abstract class ConvertPanel {
 
         protected void initialize() {
             JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.getBundle().getString("add-elevation"));
-            buttonAddElevation.addActionListener(new AddElevationsToPositions(tablePositions, getPositionsModel(), augmenter));
+            buttonAddElevation.addActionListener(new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddElevation);
 
             JMenuItem buttonAddPostalAddress = new JMenuItem(RouteConverter.getBundle().getString("add-postal-address"));
-            buttonAddPostalAddress.addActionListener(new AddPostalAddressesToPositions(tablePositions, getPositionsModel(), augmenter));
+            buttonAddPostalAddress.addActionListener(new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddPostalAddress);
 
             JMenuItem buttonAddPopulatedPlace = new JMenuItem(RouteConverter.getBundle().getString("add-populated-place"));
-            buttonAddPopulatedPlace.addActionListener(new AddPopulatedPlacesToPositions(tablePositions, getPositionsModel(), augmenter));
+            buttonAddPopulatedPlace.addActionListener(new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddPopulatedPlace);
 
             JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.getBundle().getString("add-speed"));
-            buttonAddSpeed.addActionListener(new AddSpeedsToPositions(tablePositions, getPositionsModel(), augmenter));
+            buttonAddSpeed.addActionListener(new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddSpeed);
+
+            JMenuItem buttonAddIndex = new JMenuItem(RouteConverter.getBundle().getString("add-index"));
+            buttonAddIndex.addActionListener(new AddIndicesToPositions(tablePositions, getPositionsModel(), augmenter));
+            popupMenu.add(buttonAddIndex);
 
             popupMenu.addSeparator();
 

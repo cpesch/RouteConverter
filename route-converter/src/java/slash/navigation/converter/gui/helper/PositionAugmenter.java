@@ -290,4 +290,38 @@ public class PositionAugmenter {
     public void complementSpeeds(JTable positionsTable, PositionsModel positionsModel) {
         processSpeeds(positionsTable, positionsModel, selectAllRows(positionsModel), NO_SPEED_PREDICATE);
     }
+
+
+    private void processIndices(final JTable positionsTable,
+                                final PositionsModel positionsModel,
+                                final int[] rows,
+                                final OverwritePredicate predicate) {
+        executeOperation(positionsTable, positionsModel, rows, predicate,
+                new Operation() {
+                    public String getName() {
+                        return "IndexPositionAugmenter";
+                    }
+
+                    public boolean run(BaseNavigationPosition position) throws Exception {
+                        int index = positionsModel.getIndex(position);
+                        String comment = position.getComment();
+                        if (comment == null || comment.length() == 0) {
+                            RouteComments.commentPosition(position, index + 1);
+                            comment = position.getComment();
+                        }
+                        position.setComment(RouteComments.numberPosition(comment, index + 1));
+                        return true;
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.getBundle().getString("add-speed-error");
+                    }
+                }
+        );
+    }
+
+    public void addIndices(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        processIndices(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
 }

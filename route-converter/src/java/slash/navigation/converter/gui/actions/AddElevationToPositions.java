@@ -28,18 +28,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * {@link ActionListener} that adds speeds to the selected rows of a {@link JTable}
+ * {@link ActionListener} that adds elevations to the selected rows of a {@link JTable}
  * with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class AddSpeedsToPositions implements ActionListener {
+public class AddElevationToPositions implements ActionListener {
     private JTable table;
     private PositionsModel positionsModel;
     private PositionAugmenter augmenter;
 
-    public AddSpeedsToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddElevationToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;
@@ -48,7 +48,7 @@ public class AddSpeedsToPositions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addSpeeds(table, positionsModel, selectedRows);
+            augmenter.addElevations(table, positionsModel, selectedRows);
         }
     }
 }

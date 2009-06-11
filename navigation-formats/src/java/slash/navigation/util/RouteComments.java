@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,7 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 public abstract class RouteComments {
+    private static final Preferences preferences = Preferences.userNodeForPackage(RouteComments.class);
     private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
 
     private static final String POSITION = "Position";
@@ -93,21 +95,26 @@ public abstract class RouteComments {
     public static void commentPositions(List<? extends BaseNavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
             BaseNavigationPosition position = positions.get(i);
-            if (position.getComment() == null || "(null)".equals(position.getComment()))
-                position.setComment(getPositionComment(i));
-            else {
-                Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
-                if (matcher.matches()) {
-                    String prefix = matcher.group(1);
-                    String postfix = matcher.group(3);
-                    position.setComment(prefix + getPositionComment(i) + postfix);
-                }
+            commentPosition(position, i);
+        }
+    }
+
+    public static void commentPosition(BaseNavigationPosition position, int index) {
+        if (position.getComment() == null || "(null)".equals(position.getComment()))
+            position.setComment(getPositionComment(index));
+        else {
+            Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
+            if (matcher.matches()) {
+                String prefix = matcher.group(1);
+                String postfix = matcher.group(3);
+                position.setComment(prefix + getPositionComment(index) + postfix);
             }
         }
     }
 
     public static String numberPosition(String comment, int number) {
-        return number + comment;
+        boolean spaceBetweenNumberAndComment = preferences.getBoolean("spaceBetweenNumberAndComment", false);
+        return number + (spaceBetweenNumberAndComment ? " " : "") + comment;
     }
 
     public static void commentRoutePositions(List<? extends BaseRoute> routes) {

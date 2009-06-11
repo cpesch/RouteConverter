@@ -176,6 +176,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return getPositions().get(index);
     }
 
+    public int getIndex(P position) {
+        return getPositions().indexOf(position);
+    }
+
     public P getSuccessor(P position) {
         List<P> positions = getPositions();
         int index = positions.indexOf(position);

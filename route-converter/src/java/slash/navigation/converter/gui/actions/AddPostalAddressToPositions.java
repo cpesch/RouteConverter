@@ -34,12 +34,12 @@ import java.awt.event.ActionEvent;
  * @author Christian Pesch
  */
 
-public class AddPostalAddressesToPositions implements ActionListener {
+public class AddPostalAddressToPositions implements ActionListener {
     private JTable table;
     private PositionsModel positionsModel;
     private PositionAugmenter augmenter;
 
-    public AddPostalAddressesToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddPostalAddressToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;

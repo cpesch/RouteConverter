@@ -106,7 +106,7 @@ public class JdicMapView implements MapView {
     private Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
     public static boolean isSupportedPlatform() {
-        return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
+        return Platform.isLinux() || Platform.isWindows();
     }
 
     public JdicMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
@@ -166,7 +166,7 @@ public class JdicMapView implements MapView {
             if (debug)
                 WebBrowserUtil.enableDebugMessages(true);
 
-            /* for JDIC fromCalendar CVS
+            /* for JDIC from CVS
             BrowserEngineManager browserEngineManager = BrowserEngineManager.instance();
             if (Platform.isLinux())
                 browserEngineManager.setActiveEngine(BrowserEngineManager.MOZILLA);
