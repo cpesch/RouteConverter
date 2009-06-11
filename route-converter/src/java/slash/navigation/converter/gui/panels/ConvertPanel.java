@@ -1219,9 +1219,8 @@ public abstract class ConvertPanel {
                 }
 
                 public void intervalRemoved(ListDataEvent e) {
-                    for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                        if (i >= 0 && i < menuMergePositionlist.getMenuComponentCount())
-                            menuMergePositionlist.remove(i);
+                    for (int i = e.getIndex1(); i >= e.getIndex0(); i--) {
+                        menuMergePositionlist.remove(i);
                     }
                 }
 
