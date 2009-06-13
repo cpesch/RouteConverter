@@ -111,6 +111,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.pth");
     }
 
+    public void testMagicMaps2GoReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-magicmaps2go.txt");
+    }
+
     public void testMTP0607ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "large.bcr");
     }

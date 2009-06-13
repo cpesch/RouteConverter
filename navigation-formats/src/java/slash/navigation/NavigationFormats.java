@@ -37,6 +37,7 @@ import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
+import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.BrokenNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
@@ -111,6 +112,7 @@ public final class NavigationFormats {
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
         addFormat(KlickTelRouteFormat.class);
+        addFormat(MagicMaps2GoFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
 

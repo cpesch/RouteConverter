@@ -34,6 +34,7 @@ import slash.navigation.itn.*;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
+import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
@@ -336,6 +337,10 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
 
     public SimpleRoute asHaicomLoggerFormat() {
         return asSimpleFormat(new HaicomLoggerFormat());
+    }
+
+    public SimpleRoute asMagicMaps2GoFormat() {
+        return asSimpleFormat(new MagicMaps2GoFormat());
     }
 
     public SimpleRoute asNavigatingPoiWarnerFormat() {

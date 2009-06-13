@@ -277,6 +277,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract GpxRoute asGpx11Format();
 
+    public abstract SimpleRoute asHaicomLoggerFormat();
+
+    public abstract SimpleRoute asMagicMaps2GoFormat();
+
     public abstract TomTomRoute asTomTom5RouteFormat();
 
     public abstract TomTomRoute asTomTom8RouteFormat();

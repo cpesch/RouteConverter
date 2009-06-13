@@ -206,7 +206,7 @@ public class ReadTest extends NavigationTestCase {
     }
 
     public void testTextFilesAreValid() throws IOException {
-        // KienzleGps
+        // KienzleGps MagicMaps2Go
         readFiles(".txt");
     }
 

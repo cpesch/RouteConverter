@@ -91,7 +91,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return satellites != null && satellites > 0;
     }
 
-    private CompactCalendar parseTime(String time, CompactCalendar startDate) {
+    private CompactCalendar parseTime(String time) {
         time = Conversion.trim(time);
         if (time == null || time.length() != 6)
             return null;
@@ -119,7 +119,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = lineMatcher.group(3);
         String speed = lineMatcher.group(4);
 
-        CompactCalendar calendar = parseTime(time, startDate);
+        CompactCalendar calendar = parseTime(time);
         Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
                 null, Conversion.parseDouble(speed), calendar, null);
         position.setStartDate(startDate);
