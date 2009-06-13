@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -35,11 +36,13 @@ import java.awt.event.ActionEvent;
  */
 
 public class AddIndicesToPositions implements ActionListener {
+    private RouteConverter routeConverter;
     private JTable table;
     private PositionsModel positionsModel;
     private PositionAugmenter augmenter;
 
-    public AddIndicesToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddIndicesToPositions(RouteConverter routeConverter, JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+        this.routeConverter = routeConverter;
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;
@@ -48,7 +51,7 @@ public class AddIndicesToPositions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addIndices(table, positionsModel, selectedRows);
+            augmenter.addIndices(table, positionsModel, selectedRows, routeConverter.getSpaceBetweenNumberAndCommentPreference());
         }
     }
 }

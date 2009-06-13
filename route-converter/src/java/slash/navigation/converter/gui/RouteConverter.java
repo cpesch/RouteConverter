@@ -93,6 +93,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
+    public static final String SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE = "spaceBetweenNumberAndComment";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     private static final String SELECT_DUPLICATE_PREFERENCE = "selectDuplicate";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -301,6 +302,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     boolean getStartWithLastFilePreference() {
         return preferences.getBoolean(START_WITH_LAST_FILE_PREFERENCE, true);
+    }
+
+    public boolean getSpaceBetweenNumberAndCommentPreference() {
+        return preferences.getBoolean(SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE, false);
     }
 
     public int getSelectDuplicatePreference() {

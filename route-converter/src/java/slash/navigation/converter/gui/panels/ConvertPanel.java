@@ -1189,7 +1189,7 @@ public abstract class ConvertPanel {
             popupMenu.add(buttonAddSpeed);
 
             JMenuItem buttonAddIndex = new JMenuItem(RouteConverter.getBundle().getString("add-index"));
-            buttonAddIndex.addActionListener(new AddIndicesToPositions(tablePositions, getPositionsModel(), augmenter));
+            buttonAddIndex.addActionListener(new AddIndicesToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddIndex);
 
             popupMenu.addSeparator();

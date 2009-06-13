@@ -295,6 +295,7 @@ public class PositionAugmenter {
     private void processIndices(final JTable positionsTable,
                                 final PositionsModel positionsModel,
                                 final int[] rows,
+                                final boolean spaceBetweenNumberAndComment,
                                 final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, predicate,
                 new Operation() {
@@ -309,7 +310,7 @@ public class PositionAugmenter {
                             RouteComments.commentPosition(position, index + 1);
                             comment = position.getComment();
                         }
-                        position.setComment(RouteComments.numberPosition(comment, index + 1));
+                        position.setComment(RouteComments.numberPosition(comment, index + 1, spaceBetweenNumberAndComment));
                         return true;
                     }
 
@@ -320,8 +321,8 @@ public class PositionAugmenter {
         );
     }
 
-    public void addIndices(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processIndices(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    public void addIndices(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows, boolean spaceBetweenNumberAndComment) {
+        processIndices(positionsTable, positionsModel, selectedRows, spaceBetweenNumberAndComment, TAUTOLOGY_PREDICATE);
     }
 
 }

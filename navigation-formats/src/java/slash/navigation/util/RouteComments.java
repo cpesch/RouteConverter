@@ -29,7 +29,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +38,6 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 public abstract class RouteComments {
-    private static final Preferences preferences = Preferences.userNodeForPackage(RouteComments.class);
     private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
 
     private static final String POSITION = "Position";
@@ -112,8 +110,7 @@ public abstract class RouteComments {
         }
     }
 
-    public static String numberPosition(String comment, int number) {
-        boolean spaceBetweenNumberAndComment = preferences.getBoolean("spaceBetweenNumberAndComment", false);
+    public static String numberPosition(String comment, int number, boolean spaceBetweenNumberAndComment) {
         return number + (spaceBetweenNumberAndComment ? " " : "") + comment;
     }
 
