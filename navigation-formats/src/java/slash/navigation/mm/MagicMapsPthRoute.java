@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Magic Maps (.pth) route.
+ * A MagicMaps (.pth) route.
  *
  * @author Christian Pesch
  */

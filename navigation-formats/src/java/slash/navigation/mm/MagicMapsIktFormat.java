@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes Magic Maps Project (.ikt) files.
+ * Reads and writes MagicMaps Project (.ikt) files.
  *
  * @author Christian Pesch
  */
@@ -67,7 +67,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public String getName() {
-        return "Magic Maps Project (*" + getExtension() + ")";
+        return "MagicMaps Project (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

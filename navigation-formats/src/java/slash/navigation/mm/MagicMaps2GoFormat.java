@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Magic Maps 2 Go (.txt) files.
+ * Reads and writes MagicMaps2Go (.txt) files.
  * <p/>
  * Format: 52.4135141 13.3115464 40.8000000 31.05.09 07:05:58
  *
@@ -63,7 +63,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     public String getName() {
-        return "Magic Maps 2 Go (*" + getExtension() + ")";
+        return "MagicMaps2Go (*" + getExtension() + ")";
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {

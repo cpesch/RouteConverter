@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 /**
  * Reads and writes Magellan Explorist (.log) files.
  * <p/>
+ * Header: $PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII<br/>
  * Format: $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
  *
  * @author Christian Pesch
@@ -26,6 +27,8 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         log = Logger.getLogger(MagellanExploristFormat.class.getName());
     }
 
+    private static final String HEADER = "$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII";
+    
     private static final Pattern TRK_PATTERN = Pattern.
             compile("^\\$PMGNTRK" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
@@ -83,6 +86,10 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
+    }
+
+    protected void writeHeader(PrintWriter writer) {
+        writer.println(HEADER);
     }
 
     private String formatAltitude(Double aDouble) {

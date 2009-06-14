@@ -50,6 +50,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         return RouteCharacteristics.Route;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmeaRoute(this, characteristics, (List<NmeaPosition>) positions);
     }

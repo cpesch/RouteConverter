@@ -37,7 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Magic Maps Tour (.pth) files.
+ * Reads and writes MagicMaps Tour (.pth) files.
  *
  * @author Christian Pesch
  */
@@ -51,7 +51,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
     }
 
     public String getName() {
-        return "Magic Maps Tour (*" + getExtension() + ")";
+        return "MagicMaps Tour (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

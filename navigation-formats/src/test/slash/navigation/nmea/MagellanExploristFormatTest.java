@@ -32,6 +32,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
     MagellanExploristFormat format = new MagellanExploristFormat();
 
     public void testIsValidLine() {
+        assertTrue(format.isValidLine("$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII"));
         assertTrue(format.isValidLine("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertTrue(format.isValidLine("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
 
@@ -112,7 +113,8 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
-        String expectedLines = "$PMGNTRK,4914.9672,N,00651.2081,E,000199,M,152224.000,A,Kllertal-Radweg,210307*55" + eol +
+        String expectedLines = "$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII" + eol +
+                "$PMGNTRK,4914.9672,N,00651.2081,E,000199,M,152224.000,A,Kllertal-Radweg,210307*55" + eol +
                 "$PMGNCMD,END*3D" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
     }

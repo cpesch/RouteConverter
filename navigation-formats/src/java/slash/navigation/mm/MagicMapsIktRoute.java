@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Magic Maps (.ikt) route.
+ * A MagicMaps (.ikt) route.
  *
  * @author Christian Pesch
  */
