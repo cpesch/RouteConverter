@@ -252,6 +252,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asNmeaFormat(new MagellanExploristFormat());
     }
 
+    public NmeaRoute asMagellanRouteFormat() {
+        return asNmeaFormat(new MagellanRouteFormat());
+    }
+
     public NmeaRoute asNmeaFormat() {
         return asNmeaFormat(new NmeaFormat());
     }

@@ -59,6 +59,12 @@ public class NmeaRoute extends SimpleRoute<NmeaPosition, BaseNmeaFormat> {
         return asNmeaFormat(new MagellanExploristFormat());
     }
 
+    public NmeaRoute asMagellanRouteFormat() {
+        if (getFormat() instanceof MagellanRouteFormat)
+            return this;
+        return asNmeaFormat(new MagellanRouteFormat());
+    }
+
     public NmeaRoute asNmeaFormat() {
         if (getFormat() instanceof NmeaFormat)
             return this;

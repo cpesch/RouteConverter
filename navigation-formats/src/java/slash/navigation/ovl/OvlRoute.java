@@ -242,6 +242,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asNmeaFormat(new MagellanExploristFormat());
     }
 
+    public NmeaRoute asMagellanRouteFormat() {
+        return asNmeaFormat(new MagellanRouteFormat());
+    }
+
     public NmeaRoute asNmeaFormat() {
         return asNmeaFormat(new NmeaFormat());
     }

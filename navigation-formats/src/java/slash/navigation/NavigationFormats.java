@@ -41,6 +41,7 @@ import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.BrokenNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.tcx.Tcx1Format;
@@ -107,14 +108,15 @@ public final class NavigationFormats {
         addFormat(TourFormat.class);
         addFormat(ViaMichelinFormat.class);
         addFormat(MagicMapsIktFormat.class);
+        addFormat(MagicMaps2GoFormat.class);
         addFormat(MagellanExploristFormat.class);
-        addFormat(KienzleGpsFormat.class);
+        addFormat(MagellanRouteFormat.class);
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
         addFormat(KlickTelRouteFormat.class);
-        addFormat(MagicMaps2GoFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
+        addFormat(KienzleGpsFormat.class);
 
         // BabelFormats
         addFormat(NokiaLandmarkExchangeFormat.class);

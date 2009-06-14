@@ -170,6 +170,7 @@ public class ReadTest extends NavigationTestCase {
     }
 
     public void testRteFilesAreValid() throws IOException {
+        // Magellan Route
         // Navigon Mobile Navigator
         // OziExplorerRoute
         readFiles(".rte");

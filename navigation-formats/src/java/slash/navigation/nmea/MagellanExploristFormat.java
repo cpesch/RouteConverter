@@ -26,11 +26,11 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         log = Logger.getLogger(MagellanExploristFormat.class.getName());
     }
 
-    private static final Pattern PMGNTRK_PATTERN = Pattern.
+    private static final Pattern TRK_PATTERN = Pattern.
             compile("^\\$PMGNTRK" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "(-?[\\d\\.]+)" + SEPARATOR +   
+                    "(-?[\\d\\.]+)" + SEPARATOR +
                     "M" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time, hhmmss
                     "[A]" + SEPARATOR +
@@ -61,23 +61,23 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
     }
 
     protected boolean isPosition(String line) {
-        Matcher trkMatcher = PMGNTRK_PATTERN.matcher(line);
-        return trkMatcher.matches() && hasValidChecksum(line);
+        Matcher matcher = TRK_PATTERN.matcher(line);
+        return matcher.matches() && hasValidChecksum(line);
     }
 
     protected NmeaPosition parsePosition(String line) {
-        Matcher trkMatcher = PMGNTRK_PATTERN.matcher(line);
-        if (trkMatcher.matches()) {
-            String latitude = trkMatcher.group(1);
-            String northOrSouth = trkMatcher.group(2);
-            String longitude = trkMatcher.group(3);
-            String westOrEast = trkMatcher.group(4);
-            String altitude = trkMatcher.group(5);
-            String time = trkMatcher.group(6);
-            String comment = trkMatcher.group(7);
+        Matcher matcher = TRK_PATTERN.matcher(line);
+        if (matcher.matches()) {
+            String latitude = matcher.group(1);
+            String northOrSouth = matcher.group(2);
+            String longitude = matcher.group(3);
+            String westOrEast = matcher.group(4);
+            String altitude = matcher.group(5);
+            String time = matcher.group(6);
+            String comment = matcher.group(7);
             if (comment != null && comment.toUpperCase().equals(comment))
                 comment = Conversion.toMixedCase(comment);
-            String date = trkMatcher.group(8);
+            String date = matcher.group(8);
             return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
                     Double.parseDouble(altitude), null, parseDateAndTime(date, time), Conversion.trim(comment));
         }
@@ -101,7 +101,6 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
 
-        // $PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48
         String trk = "PMGNTRK" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
                 altitude + SEPARATOR + "M" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
@@ -110,7 +109,6 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
     }
 
     protected void writeFooter(PrintWriter writer) {
-        // $PMGNCMD,END*3D 
         writeSentence(writer, "PMGNCMD,END");
     }
 }

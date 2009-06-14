@@ -35,8 +35,7 @@ import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.MagellanExploristFormat;
-import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.GlopusFormat;
@@ -622,15 +621,24 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertGpxToMagellanExplorist() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MagellanExploristFormat());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new MagellanExploristFormat());
+    }
+
+    public void testConvertGpxToMagellanRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MagellanRouteFormat());
     }
 
     public void testConvertMagellanExploristToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.log", new MagellanExploristFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-magellan.log", new MagellanExploristFormat(), new Gpx10Format());
     }
 
-    public void testConvertMagellanExploristToMagellanExplorist() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.log", new MagellanExploristFormat(), new MagellanExploristFormat());
+    public void testConvertMagellanRouteToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-magellan.rte", new MagellanRouteFormat(), new Gpx10Format());
+    }
+
+    public void testConvertMagellanToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-magellan.log", new MagellanExploristFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-magellan.rte", new MagellanRouteFormat(), new Gpx10Format());
     }
 
     public void testConvertNmn4ToNmn4() throws IOException {

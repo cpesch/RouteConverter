@@ -309,6 +309,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract NmeaRoute asMagellanExploristFormat();
 
+    public abstract NmeaRoute asMagellanRouteFormat();
+
     public abstract BcrRoute asMTP0607Format();
 
     public abstract BcrRoute asMTP0809Format();

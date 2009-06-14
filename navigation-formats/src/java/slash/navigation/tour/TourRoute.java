@@ -219,6 +219,10 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asNmeaFormat(new MagellanExploristFormat());
     }
 
+    public NmeaRoute asMagellanRouteFormat() {
+        return asNmeaFormat(new MagellanRouteFormat());
+    }
+
     public NmeaRoute asNmeaFormat() {
         return asNmeaFormat(new NmeaFormat());
     }

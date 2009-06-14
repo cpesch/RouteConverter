@@ -156,7 +156,11 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
     }
 
     public void testMagellanExploristReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.log");
+        readWriteRoundtrip(TEST_PATH + "from-magellan.log");
+    }
+
+    public void testMagellanRouteReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-magellan.rte");
     }
 
     public void testRoute66ReadWriteRoundtrip() throws IOException {

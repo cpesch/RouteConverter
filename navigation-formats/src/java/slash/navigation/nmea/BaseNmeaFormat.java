@@ -82,6 +82,10 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return 0;
     }
 
+    protected RouteCharacteristics getCharacteristics() {
+        return RouteCharacteristics.Track;
+    }
+
     public List<NmeaRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<NmeaPosition> positions = new ArrayList<NmeaPosition>();
 
@@ -118,7 +122,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new NmeaRoute(this, RouteCharacteristics.Track, positions));
+            return Arrays.asList(new NmeaRoute(this, getCharacteristics(), positions));
         else
             return null;
     }
