@@ -1,0 +1,22 @@
+Field name    - length   - notes
+-----------------------------------
+
+INDEX         - 6 chars  - record number, no leading zeros and spaces
+TAG           - 1 char   - T-trackpoing, C-waypoint, V-voicetagged point
+
+DATE          - 6 chars  - YYMMDD
+TIME          - 6 chars  - HHMMSS
+LATITUDE N/S  - 10 chars - DD.DDDDDDN (last char: N or S)
+LONGITUDE E/W - 11 chars - DDD.DDDDDDE (E or W; degree is leftpadded to DDD by zero)
+
+HEIGHT        - 5 chars  - in meters
+SPEED         - 4 chars  - in km/h, no decimals :-(
+HEADING       - 3 chars  - degrees
+FIX MODE      - 2 chars  - 3D (I've never seen smth else)
+VALID         - 4 chars  - SPS or DGPS (SPS is
+ padded with space)
+PDOP          - 5 chars  - XX.XX (no leading zeros if above 1)
+HDOP          - 5 chars  - XX.XX (no leading zeros if above 1)
+VDOP          - 5 chars  - XX.XX (no leading zeros if above 1)
+
+VOX           - 9 chars  - VOX00001 etc. - filename when TAG=V
