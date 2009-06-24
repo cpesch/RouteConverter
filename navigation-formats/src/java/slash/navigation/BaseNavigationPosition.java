@@ -253,6 +253,10 @@ public abstract class BaseNavigationPosition {
         return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    public GpxPosition asTcxPosition() {
+        return asGpxPosition();
+    }
+
     public Wgs84Position asHaicomLoggerPosition() {
         return asWgs84Position();
     }

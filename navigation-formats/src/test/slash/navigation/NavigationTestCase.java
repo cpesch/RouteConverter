@@ -48,6 +48,7 @@ import slash.navigation.tour.TourFormat;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
+import slash.navigation.tcx.TcxFormat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -335,6 +336,7 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                         targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||
                         targetFormat instanceof MagicMapsPthFormat || targetFormat instanceof OvlFormat ||
+                        targetFormat instanceof TcxFormat ||
                         (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                         ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))

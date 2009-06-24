@@ -260,7 +260,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asColumbusV900Format();
 
     public abstract SimpleRoute asCoPilot6Format();
-
     public abstract SimpleRoute asCoPilot7Format();
 
     public abstract SimpleRoute asGlopusFormat();
@@ -268,51 +267,40 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asGoogleMapsFormat();
 
     public abstract GoPalRoute asGoPalRouteFormat();
-
     public abstract SimpleRoute asGoPalTrackFormat();
 
     public abstract SimpleRoute asGpsTunerFormat();
 
     public abstract GpxRoute asGpx10Format();
-
     public abstract GpxRoute asGpx11Format();
+    public abstract GpxRoute asTcx1Format();
+    public abstract GpxRoute asTcx2Format();
 
     public abstract SimpleRoute asHaicomLoggerFormat();
 
     public abstract SimpleRoute asMagicMaps2GoFormat();
 
     public abstract TomTomRoute asTomTom5RouteFormat();
-
     public abstract TomTomRoute asTomTom8RouteFormat();
 
     public abstract KlickTelRoute asKlickTelRouteFormat();
 
     public abstract KmlRoute asKml20Format();
-
     public abstract KmlRoute asKml21Format();
-
     public abstract KmlRoute asKml22BetaFormat();
-
     public abstract KmlRoute asKml22Format();
-
     public abstract KmlRoute asKmz20Format();
-
     public abstract KmlRoute asKmz21Format();
-
     public abstract KmlRoute asKmz22BetaFormat();
-
     public abstract KmlRoute asKmz22Format();
 
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
-
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
 
     public abstract NmeaRoute asMagellanExploristFormat();
-
     public abstract NmeaRoute asMagellanRouteFormat();
 
     public abstract BcrRoute asMTP0607Format();
-
     public abstract BcrRoute asMTP0809Format();
 
     public abstract SimpleRoute asNavigatingPoiWarnerFormat();
@@ -320,13 +308,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract NmeaRoute asNmeaFormat();
 
     public abstract NmnRoute asNmn4Format();
-
     public abstract NmnRoute asNmn5Format();
-
     public abstract NmnRoute asNmn6Format();
-
     public abstract NmnRoute asNmn6FavoritesFormat();
-
     public abstract NmnRoute asNmn7Format();
 
     public abstract OvlRoute asOvlFormat();

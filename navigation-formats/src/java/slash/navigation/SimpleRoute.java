@@ -41,6 +41,7 @@ import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.util.RouteComments;
 import slash.navigation.simple.*;
+import slash.navigation.tcx.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -264,7 +265,6 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new Route66Format());
     }
 
-
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
         for (P position : positions) {
@@ -279,6 +279,14 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     public GpxRoute asGpx11Format() {
         return asGpxFormat(new Gpx11Format());
+    }
+
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
+    }
+
+    public GpxRoute asTcx2Format() {
+        return asGpxFormat(new Tcx2Format());
     }
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {

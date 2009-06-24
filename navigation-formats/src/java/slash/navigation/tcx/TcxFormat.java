@@ -20,11 +20,7 @@
 
 package slash.navigation.tcx;
 
-import slash.navigation.XmlNavigationFormat;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.RouteCharacteristics;
-
-import java.util.List;
+import slash.navigation.gpx.GpxFormat;
 
 /**
  * The base of all Training Center Database formats.
@@ -32,25 +28,9 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> {
+public abstract class TcxFormat extends GpxFormat {
 
     public String getExtension() {
         return ".tcx";
-    }
-
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
-    public boolean isSupportsWriting() {
-        return false;
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return true;
-    }
-
-    public <P extends BaseNavigationPosition> TcxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new TcxRoute(this, characteristics, name, (List<TcxPosition>) positions);
     }
 }

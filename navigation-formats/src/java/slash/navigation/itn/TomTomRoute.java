@@ -20,6 +20,8 @@
 package slash.navigation.itn;
 
 import slash.navigation.*;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.simple.*;
 import slash.navigation.util.RouteComments;
 import slash.navigation.util.CompactCalendar;
@@ -200,6 +202,13 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
+    }
+
+    public GpxRoute asTcx2Format() {
+        return asGpxFormat(new Tcx2Format());
+    }
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();

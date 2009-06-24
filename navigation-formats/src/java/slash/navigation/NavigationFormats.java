@@ -138,6 +138,7 @@ public final class NavigationFormats {
         addFormat(TomTomPoiFormat.class);
         addFormat(HoluxM241BinaryFormat.class);
 
+        // second try for broken files 
         addFormat(BrokenNmeaFormat.class);
         // TODO later... addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(BrokenGpx10Format.class);
@@ -148,6 +149,7 @@ public final class NavigationFormats {
         addFormat(BrokenKmz21LittleEndianFormat.class);
         addFormat(BrokenKml22BetaFormat.class);
 
+        // greedy BabelFormats
         addFormat(GarminPoiFormat.class);
         addFormat(GarminPoiDbFormat.class);
         addFormat(Igo8TrackFormat.class);

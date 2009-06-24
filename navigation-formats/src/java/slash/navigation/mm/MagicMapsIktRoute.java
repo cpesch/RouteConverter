@@ -21,6 +21,8 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.simple.*;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -151,6 +153,13 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return asGpxFormat(new Gpx11Format());
     }
 
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
+    }
+
+    public GpxRoute asTcx2Format() {
+        return asGpxFormat(new Tcx2Format());
+    }
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();

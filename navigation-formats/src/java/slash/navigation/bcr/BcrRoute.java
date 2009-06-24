@@ -21,6 +21,8 @@
 package slash.navigation.bcr;
 
 import slash.navigation.*;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.simple.*;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -255,6 +257,13 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
+    }
+
+    public GpxRoute asTcx2Format() {
+        return asGpxFormat(new Tcx2Format());
+    }
 
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();

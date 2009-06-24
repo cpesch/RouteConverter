@@ -44,6 +44,8 @@ import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.Route66Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 
 import java.io.File;
 import java.io.IOException;
@@ -947,6 +949,15 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new TourFormat());
     }
 
+    public void testConvertGpx10ToTrainingCenterRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Tcx1Format());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Tcx2Format());
+    }
+
+    public void testConvertGpx11ToTrainingCenterRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Tcx1Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Tcx2Format());
+    }
 
     public void testConvertViaMichelinToGoPal() throws IOException {
         convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new GoPalRouteFormat());

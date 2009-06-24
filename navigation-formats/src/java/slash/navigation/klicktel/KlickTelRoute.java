@@ -21,6 +21,8 @@
 package slash.navigation.klicktel;
 
 import slash.navigation.*;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.simple.*;
 import slash.navigation.util.RouteComments;
 import slash.navigation.util.CompactCalendar;
@@ -137,6 +139,14 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
 
     public GpxRoute asGpx11Format() {
         return asGpxFormat(new Gpx11Format());
+    }
+
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
+    }
+
+    public GpxRoute asTcx2Format() {
+        return asGpxFormat(new Tcx2Format());
     }
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
