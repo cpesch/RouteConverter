@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +44,7 @@ import java.util.regex.Pattern;
  */
 
 public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
     private static final int MAXIMUM_POSITION_COUNT = 48;
     private static final char SEPARATOR_CHAR = '|';
     private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
@@ -61,7 +63,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     public int getMaximumFileNameLength() {
-        return 18;
+        return preferences.getInt("maximumFileNameLength", 18);
     }
 
     public int getMaximumPositionCount() {

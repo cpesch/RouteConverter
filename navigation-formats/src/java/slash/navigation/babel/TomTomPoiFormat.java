@@ -20,6 +20,8 @@
 
 package slash.navigation.babel;
 
+import java.util.prefs.Preferences;
+
 /**
  * Reads Tom Tom POI (.ov2) files.
  *
@@ -27,6 +29,7 @@ package slash.navigation.babel;
  */
 
 public class TomTomPoiFormat extends BabelFormat {
+    private static final Preferences preferences = Preferences.userNodeForPackage(TomTomPoiFormat.class);
 
     public String getName() {
         return "Tom Tom POI (*" + getExtension() + ")";
@@ -37,7 +40,7 @@ public class TomTomPoiFormat extends BabelFormat {
     }
 
     public int getMaximumFileNameLength() {
-        return 18;
+        return preferences.getInt("maximumFileNameLength", 64);
     }
 
     protected String getBabelFormatName() {
