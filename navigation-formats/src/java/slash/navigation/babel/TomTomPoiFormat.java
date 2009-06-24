@@ -20,6 +20,8 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.itn.TomTomRouteFormat;
+
 import java.util.prefs.Preferences;
 
 /**
@@ -29,7 +31,7 @@ import java.util.prefs.Preferences;
  */
 
 public class TomTomPoiFormat extends BabelFormat {
-    private static final Preferences preferences = Preferences.userNodeForPackage(TomTomPoiFormat.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
 
     public String getName() {
         return "Tom Tom POI (*" + getExtension() + ")";
@@ -40,7 +42,7 @@ public class TomTomPoiFormat extends BabelFormat {
     }
 
     public int getMaximumFileNameLength() {
-        return preferences.getInt("maximumFileNameLength", 64);
+        return preferences.getInt("maximumFileNameLength", 18);
     }
 
     protected String getBabelFormatName() {
