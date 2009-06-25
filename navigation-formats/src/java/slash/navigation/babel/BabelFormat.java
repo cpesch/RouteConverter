@@ -180,7 +180,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                                File target, String targetFormat,
                                String commandLineFlags) throws IOException {
         String babel = findBabel();
-        String command = babel + " -D9 " + commandLineFlags +
+        String command = babel + " " + commandLineFlags +
                 " -i " + sourceFormat + " -f \"" + source.getAbsolutePath() + "\"" +
                 " -o " + targetFormat + " -F \"" + target.getAbsolutePath() + "\"";
         log.info("Executing '" + command + "'");
