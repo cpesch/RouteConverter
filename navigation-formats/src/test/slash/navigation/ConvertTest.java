@@ -186,7 +186,7 @@ public class ConvertTest extends NavigationTestCase {
                         targetParser.getTheRoute().getPositionCount());
 
                 compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
-                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false, false, targetParser.getTheRoute().getCharacteristics());
+                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false, targetParser.getTheRoute().getCharacteristics());
             }
 
             for (File target : targets) {

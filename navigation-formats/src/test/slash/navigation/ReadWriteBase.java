@@ -85,10 +85,10 @@ public abstract class ReadWriteBase extends NavigationTestCase {
     }
 
     void splitReadWriteRoundtrip(String testFileName) throws IOException {
-        splitReadWriteRoundtrip(testFileName, false, false);
+        splitReadWriteRoundtrip(testFileName, false);
     }
 
-    void splitReadWriteRoundtrip(String testFileName, boolean duplicateFirstPosition, boolean numberPositionNames) throws IOException {
+    void splitReadWriteRoundtrip(String testFileName, boolean duplicateFirstPosition) throws IOException {
         File source = new File(testFileName);
         assertTrue(parser.read(source));
         assertNotNull(parser.getFormat());
@@ -129,7 +129,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
 
                 compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
                         targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount,
-                        duplicateFirstPosition, numberPositionNames, false, targetParser.getTheRoute().getCharacteristics());
+                        duplicateFirstPosition, false, targetParser.getTheRoute().getCharacteristics());
             }
             assertEquals(sourcePositionCount + (duplicateFirstPosition ? 1 : 0), targetPositionCount);
             assertEquals(positionCount, targetPositionCount);

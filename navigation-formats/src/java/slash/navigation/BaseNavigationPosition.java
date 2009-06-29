@@ -313,6 +313,10 @@ public abstract class BaseNavigationPosition {
         return asNmeaPosition();
     }
 
+    public NmeaPosition asMagellanRoutePosition() {
+        return asNmeaPosition();
+    }
+
     public Wgs84Position asMagicMapsIktPosition() {
         return asWgs84Position();
     }

@@ -240,7 +240,7 @@ public class NmeaFormatTest extends NavigationTestCase {
 
     public void testGGAAndRMCDateProblem() throws IOException {
         StringReader reader = new StringReader(
-                "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.0,M,00.0,M,,*77\n" +
+                "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.7654,M,00.0,M,,*47\n" +
                         "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.00,0.00,260707,,*06"
         );
         List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
@@ -251,7 +251,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(9.0567266, position.getLongitude());
         assertEquals(48.6239566, position.getLatitude());
         assertEquals(5.5560129, position.getSpeed());
-        assertEquals(-48.0, position.getElevation());
+        assertEquals(-48.7654, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 7, 26, 13, 40, 12);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -262,11 +262,11 @@ public class NmeaFormatTest extends NavigationTestCase {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
-        String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,,,-48.0,M,,M,,*7F" + eol +
+        String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,,,-48.8,M,,M,,*77" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
                 "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
                 "$GPZDA,134012.000,26,07,07,,*57" + eol +
-                "$GPVTG,,T,,M,3.0,N,5.5560129,K,A*29" + eol;
+                "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
         List<NmeaRoute> routes2 = format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, BaseNavigationFormat.DEFAULT_ENCODING);
@@ -276,7 +276,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         NmeaPosition position2 = route2.getPositions().get(0);
         assertEquals(9.0567266, position2.getLongitude());
         assertEquals(48.6239566, position2.getLatitude());
-        assertEquals(-48.0, position2.getElevation());
+        assertEquals(-48.8, position2.getElevation());
         String actual2 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
         assertEquals(expected, actual2);
         assertEquals(expectedCal, position2.getTime());

@@ -31,8 +31,8 @@ public class SplitTest extends ReadWriteBase {
     }
 
     public void testSplitTomTomRouteReadWriteRoundtrip() throws IOException {
-        splitReadWriteRoundtrip(TEST_PATH + "large.itn", false, false);
-        splitReadWriteRoundtrip(TEST_PATH + "large.itn", false, true);
+        splitReadWriteRoundtrip(TEST_PATH + "large.itn", false);
+        splitReadWriteRoundtrip(TEST_PATH + "large.itn", false);
     }
 
     public void testSplitGarminMapSource6ReadWriteRoundtrip() throws IOException {
@@ -64,10 +64,10 @@ public class SplitTest extends ReadWriteBase {
     }
 
     public void testSplitNmn6ReadWriteRoundtrip() throws IOException {
-        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", false, false);
-        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", false, true);
-        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", true, false);
-        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", true, true);
+        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", false);
+        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", false);
+        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", true);
+        splitReadWriteRoundtrip(TEST_PATH + "large-nmn6.rte", true);
     }
 
     public void testSplitGarminPcx5ReadWriteRoundtrip() throws IOException {
