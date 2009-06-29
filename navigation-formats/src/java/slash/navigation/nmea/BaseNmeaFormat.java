@@ -147,7 +147,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             position.setLongitude(toBeMergedInto.getLongitude());
         if ((toBeMergedInto.getTime() != null) &&
                 (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
-                 position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
+                        position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
     }
 
@@ -256,18 +256,17 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return DATE_FORMAT.format(date.getTime());
     }
 
-    protected String formatLongitude(Double aDouble) {
-        if (aDouble == null)
+    protected String formatLongitude(Double longitude) {
+        if (longitude == null)
             return "";
-        return LONGITUDE_NUMBER_FORMAT.format(aDouble);
+        return LONGITUDE_NUMBER_FORMAT.format(longitude);
     }
 
-    protected String formatLatititude(Double aDouble) {
-        if (aDouble == null)
+    protected String formatLatititude(Double latitude) {
+        if (latitude == null)
             return "";
-        return LATITUDE_NUMBER_FORMAT.format(aDouble);
+        return LATITUDE_NUMBER_FORMAT.format(latitude);
     }
-
 
     protected String formatComment(String comment) {
         comment = Conversion.trim(comment);

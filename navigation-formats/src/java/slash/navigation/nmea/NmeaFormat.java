@@ -28,7 +28,10 @@ import slash.navigation.util.Conversion;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.NumberFormat;
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,9 +49,18 @@ public class NmeaFormat extends BaseNmeaFormat {
         log = Logger.getLogger(NmeaFormat.class.getName());
     }
 
+    private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     private static final DateFormat DAY_FORMAT = new SimpleDateFormat("dd");
     private static final DateFormat MONTH_FORMAT = new SimpleDateFormat("MM");
     private static final DateFormat YEAR_FORMAT = new SimpleDateFormat("yy");
+
+    static {
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setGroupingUsed(false);
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumFractionDigits(1);
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumFractionDigits(1);
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumIntegerDigits(1);
+        ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumIntegerDigits(6);
+    }
 
     // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
     // $GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F
@@ -136,6 +148,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         return "NMEA 0183 Sentences (*" + getExtension() + ")";
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmeaRoute(this, characteristics, (List<NmeaPosition>) positions);
     }
@@ -216,23 +229,22 @@ public class NmeaFormat extends BaseNmeaFormat {
 
         Matcher vtgMatcher = VTG_PATTERN.matcher(line);
         if (vtgMatcher.matches()) {
-            Double speed = null;
             boolean knots = false;
             String speedStr = Conversion.trim(vtgMatcher.group(2));
             if (speedStr == null) {
                 speedStr = Conversion.trim(vtgMatcher.group(1));
                 knots = true;
             }
-            speed = Conversion.parseDouble(speedStr);
+            Double speed = Conversion.parseDouble(speedStr);
             if (knots && speed != null)
                 speed = Conversion.knotsToKilometers(speed);
-
             return new NmeaPosition(null, null, null, null, null, speed, null, null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
+    
     private String formatDay(CompactCalendar date) {
         if (date == null)
             return "";
@@ -251,6 +263,18 @@ public class NmeaFormat extends BaseNmeaFormat {
         return YEAR_FORMAT.format(date.getTime());
     }
 
+    private String formatAltitude(Double altitude) {
+        if (altitude == null)
+            return "";
+        return ALTITUDE_AND_SPEED_NUMBER_FORMAT.format(altitude);
+    }
+
+    private String formatSpeed(Double speed) {
+        if (speed == null)
+            return "";
+        return ALTITUDE_AND_SPEED_NUMBER_FORMAT.format(speed);
+    }
+
     protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
         String longitude = formatLongitude(position.getLongitudeAsDdmm());
         String westOrEast = position.getWestOrEast();
@@ -259,8 +283,8 @@ public class NmeaFormat extends BaseNmeaFormat {
         String comment = formatComment(position.getComment());
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
-        String altitude = Conversion.formatDoubleAsString(position.getElevation(), "");
-        String speedKnots = position.getSpeed() != null ? Conversion.formatDoubleAsString(Conversion.kilometerToKnots(position.getSpeed()), "") : "";
+        String altitude = formatAltitude(position.getElevation());
+        String speedKnots = position.getSpeed() != null ? formatSpeed(Conversion.kilometerToKnots(position.getSpeed())) : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +
@@ -292,10 +316,10 @@ public class NmeaFormat extends BaseNmeaFormat {
         }
 
         if(position.getSpeed() != null) {
-            String speed = Conversion.formatDoubleAsString(position.getSpeed());
+            String speedKm = formatSpeed(position.getSpeed());
             // $GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37
             String vtg = "GPVTG" + SEPARATOR + SEPARATOR + "T" + SEPARATOR + SEPARATOR + "M" + SEPARATOR +
-                    speedKnots + SEPARATOR + "N" + SEPARATOR + speed + SEPARATOR + "K" + SEPARATOR + "A";
+                    speedKnots + SEPARATOR + "N" + SEPARATOR + speedKm + SEPARATOR + "K" + SEPARATOR + "A";
             writeSentence(writer, vtg);
         }
     }
