@@ -37,10 +37,7 @@ import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.BaseNmeaFormat;
-import slash.navigation.nmea.MagellanExploristFormat;
-import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
@@ -357,7 +354,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 8)), trim(trimSpeedComment(targetPosition.getComment()), 8));
             else if (targetFormat instanceof TomTomRouteFormat)
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetPosition.getComment());
-            else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof NmeaFormat)
+            else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll(",", ";"), targetPosition.getComment());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
                 assertEquals("Comment " + index + " does not match", escapeNmn4and5(sourcePosition.getComment()), targetPosition.getComment());
@@ -424,9 +421,10 @@ public abstract class NavigationTestCase extends TestCase {
                 // assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
             }
         } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof BcrFormat ||
-                targetFormat instanceof TomTomRouteFormat || targetFormat instanceof NmnFormat ||
                 targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminPcx5Format ||
-                targetFormat instanceof GlopusFormat || targetFormat instanceof TourFormat) {
+                targetFormat instanceof GlopusFormat || targetFormat instanceof MagellanRouteFormat ||
+                targetFormat instanceof NmnFormat || targetFormat instanceof TomTomRouteFormat ||
+                targetFormat instanceof TourFormat) {
             assertNull(targetPosition.getTime());
         } else if (targetFormat instanceof GoPalTrackFormat) {
             assertNull(sourcePosition.getTime());
