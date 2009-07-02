@@ -85,13 +85,6 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return null;
     }
 
-    protected String formatSpeed(String comment, Double speed) {
-        if (speed == null || speed == 0.0)
-            return comment;
-        return (comment != null ? comment + " " : "") +
-                "Speed: " + Conversion.formatDoubleAsString(speed) + " Km/h";
-    }
-
     protected boolean isWriteName() {
         return preferences.getBoolean("writeName", true);
     }

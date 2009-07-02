@@ -27,6 +27,11 @@ public class ConversionTest extends TestCase {
         assertEquals(4.572, Conversion.feetToMeters(15));
     }
 
+    public void testMetersPerSecondToKilometersPerHour() {
+        assertEquals(3.6, Conversion.msToKmh(1.0));
+        assertEquals(20.0, Conversion.kmhToMs(72.0));
+    }
+
     public void testMercatorToWgs84() {
         assertEquals(10.03200, Conversion.mercatorXToWgs84Longitude(1115508));
         assertEquals(53.56948, Conversion.mercatorYToWgs84Latitude(7081108));

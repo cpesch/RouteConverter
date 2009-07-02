@@ -125,12 +125,17 @@ public class Gpx10Format extends GpxFormat {
         return result;
     }
 
+    private Double asKmh(Double metersPerSecond) {
+        if (metersPerSecond == null)
+            return null;
+        return Conversion.msToKmh(metersPerSecond);
+    }
 
     private List<GpxPosition> extractRoute(Gpx.Rte rte) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), parseSpeed(rtept.getCmt()), parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), asKmh(parseSpeed(rtept.getCmt())), parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept));
             }
         }
         return positions;
@@ -139,7 +144,7 @@ public class Gpx10Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), parseSpeed(wpt.getCmt()), parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), asKmh(parseSpeed(wpt.getCmt())), parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt));
         }
         return positions;
     }
@@ -152,13 +157,19 @@ public class Gpx10Format extends GpxFormat {
                     Double speed = Conversion.formatDouble(trkPt.getSpeed());
                     if(speed == null && trkPt.getCmt() != null)
                         speed = parseSpeed(trkPt.getCmt());
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), asKmh(speed), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
                 }
             }
         }
         return positions;
     }
 
+    private String formatSpeed(String comment, Double speed) {
+        if (speed == null || speed == 0.0)
+            return comment;
+        return (comment != null ? comment + " " : "") +
+                "Speed: " + Conversion.formatDoubleAsString(Conversion.kmhToMs(speed)) + " m/s";
+    }
 
     private List<Gpx.Wpt> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
@@ -242,7 +253,8 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setLon(Conversion.formatDouble(position.getLongitude()));
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
-            trkpt.setSpeed(isWriteSpeed() ? Conversion.formatDouble(position.getSpeed()) : null);
+            trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
+                    Conversion.formatDouble(Conversion.kmhToMs(position.getSpeed())) : null);
             trkpt.setName(isWriteName() ? asName(position.getComment()) : null);
             trkpt.setDesc(isWriteName() ? asDesc(position.getComment(), trkpt.getDesc()) : null);
             trkseg.getTrkpt().add(trkpt);
