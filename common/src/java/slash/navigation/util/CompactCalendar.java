@@ -66,7 +66,7 @@ public class CompactCalendar {
         return getCalendar().getTime();
     }
 
-    private static volatile Map<String, TimeZone> timeZones = Collections.EMPTY_MAP;
+    private static volatile Map<String, TimeZone> timeZones = Collections.emptyMap();
 
     private TimeZone getTimeZone() {
         if ("GMT".equals(timeZoneId))

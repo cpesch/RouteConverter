@@ -35,14 +35,14 @@ public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
     private static File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
 
-    public synchronized static File getTempDirectory() throws IOException {
+    public synchronized static File getTempDirectory() {
         if (!tempDirectory.exists())
             if(!tempDirectory.mkdir())
                 log.severe("Could not create temp directory " + tempDirectory);
         return tempDirectory;
     }
 
-    private static File getTempFile(String fileName) throws IOException {
+    private static File getTempFile(String fileName) {
         int index = fileName.lastIndexOf('/');
         if (index != -1)
             fileName = fileName.substring(index);
