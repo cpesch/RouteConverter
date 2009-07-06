@@ -22,10 +22,8 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
-import slash.navigation.util.CompactCalendar;
 
 import java.io.*;
-import java.text.DateFormat;
 import java.util.List;
 
 public class MagellanRouteFormatTest extends NavigationTestCase {
@@ -42,6 +40,8 @@ public class MagellanRouteFormatTest extends NavigationTestCase {
 
     public void testIsPosition() {
         assertTrue(format.isPosition("$PMGNWPL,4808.98261,N,01135.84141,E,0,M,Ifflandstrasse,,a*65"));
+        assertTrue(format.isPosition("$PMGNWPL,4816.4647,N,01133.7043,E,0,M,1-startpunkt,Startpunkt Kreuzung,a*6D"));
+        assertTrue(format.isPosition("$PMGNWPL,4816.4527,N,01133.6998,E,0,M,17-zielpunkt,Zielpunkt Kreuzung,a*51"));
 
         assertFalse(format.isPosition("$PMGNRTE,3,2,c,1,Muenchen_Route,Engl-Garten-2,a,Ifflandstrasse,a*1B"));
 
@@ -83,5 +83,39 @@ public class MagellanRouteFormatTest extends NavigationTestCase {
         assertEquals(54.5, position.getElevation());
         assertNull(position.getTime());
         assertEquals("Ifflandstrasse", position.getComment());
+    }
+
+    public void testFormatName() {
+        assertEquals("A;Cool;Tour", format.formatName("A,Cool,Tour"));
+    }
+
+    public void testRTECreation() throws IOException {
+        StringReader reader = new StringReader(
+                "$PMGNWPL,4816.46463,N,01133.70422,E,0,M,1-startpunkt,,a*57\n" +
+                        "$PMGNWPL,4816.58588,N,01133.75379,E,0,M,2-geradeaus,,a*30\n" +
+                        "$PMGNWPL,4816.68827,N,01133.85421,E,0,M,3-rechtsab,,a*50\n"
+        );
+        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
+        assertEquals(1, routes.size());
+        NmeaRoute route = routes.get(0);
+        assertEquals(3, route.getPositionCount());
+        NmeaPosition position = route.getPositions().get(0);
+        assertEquals(11.561737, position.getLongitude());
+        assertEquals(48.2744105, position.getLatitude());
+        assertEquals("1-startpunkt", position.getComment());
+
+        route.setName("ush-rte");
+
+        StringWriter writer = new StringWriter();
+        format.write(route, new PrintWriter(writer), 0, 3);
+        String eol = System.getProperty("line.separator");
+        String expectedLines = "$PMGNFMT,%RTE,NUM_MSG,ID,FLAG,NUM,NAME,WPT_NAME1,ICON1,WPT_NAME2,ICON2,CHKSUM ?%WPL,LAT,HEMI,LON,HEMI,ALT,UNIT,NAME,MSG,ICON,CHKSUM,%META,ASCII" + eol + 
+                "$PMGNWPL,4816.46463,N,01133.70422,E,0,M,1-startpunkt,,a*57" + eol +
+                "$PMGNWPL,4816.58588,N,01133.75379,E,0,M,2-geradeaus,,a*30" + eol +
+                "$PMGNWPL,4816.68827,N,01133.85421,E,0,M,3-rechtsab,,a*50" + eol +
+                "$PMGNRTE,2,1,c,01,ush-rte,1-startpunkt,a,2-geradeaus,a*5A" + eol +
+                "$PMGNRTE,2,2,c,01,ush-rte,3-rechtsab,a*5E" + eol +
+                "$PMGNCMD,END*3D" + eol;
+        assertEquals(expectedLines, writer.getBuffer().toString());
     }
 }
