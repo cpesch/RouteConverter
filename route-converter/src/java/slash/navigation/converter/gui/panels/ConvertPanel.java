@@ -430,6 +430,7 @@ public abstract class ConvertPanel {
                 } catch (BabelException e) {
                     r.handleBabelError(e);
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     log.severe("Open error: " + t.getMessage());
                     r.handleOpenError(t, path);
                 }
@@ -464,6 +465,7 @@ public abstract class ConvertPanel {
                                             getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
                                         }
                                     } catch (IOException e) {
+                                        e.printStackTrace();
                                         log.severe("Open error: " + e.getMessage());
                                         r.handleOpenError(e, path);
                                     }
