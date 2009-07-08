@@ -21,6 +21,7 @@
 package slash.navigation.tcx;
 
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.tcx.binding2.*;
@@ -35,21 +36,26 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes Training Center Database 2 (.tcx) files.
+ * Reads Training Center Database 2 (.tcx) files.
  *
  * @author Christian Pesch
  */
 
-public class Tcx2Format extends TcxFormat {
+public class Tcx2Format extends GpxFormat {
     private static final Logger log = Logger.getLogger(Tcx2Format.class.getName());
 
     public String getName() {
         return "Training Center Database 2 (*" + getExtension() + ")";
     }
 
+    public String getExtension() {
+        return ".tcx";
+    }
+
     public boolean isSupportsWriting() {
         return false;
     }
+
 
     private Double convertLongitude(PositionT positionT) {
         return positionT != null ? positionT.getLongitudeDegrees() : null;
@@ -185,5 +191,4 @@ public class Tcx2Format extends TcxFormat {
     public void write(List<GpxRoute> routes, File target) throws IOException {
         throw new UnsupportedOperationException();
     }
-
 }
