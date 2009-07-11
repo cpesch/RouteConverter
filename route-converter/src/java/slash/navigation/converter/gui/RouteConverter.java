@@ -94,6 +94,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
     public static final String SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE = "spaceBetweenNumberAndComment";
+    public static final String DRIVING_PREFERENCE = "driving";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     private static final String SELECT_DUPLICATE_PREFERENCE = "selectDuplicate";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -186,7 +187,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 // can do this outside of Swing
                 mapView = new JdicMapView(getConvertPanel().getPositionsModel(),
                         getConvertPanel().getCharacteristicsModel(),
-                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, false));
+                        preferences.getBoolean(DRIVING_PREFERENCE, true),
+                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
+                );
 
                 for (MapViewListener mapViewListener : mapViewListeners)
                     mapView.addMapViewListener(mapViewListener);
@@ -475,6 +478,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void addMapViewListener(MapViewListener listener) {
         mapViewListeners.add(listener);
+    }
+
+    public void setDriving(boolean driving) {
+        if (mapView != null)
+            mapView.setDriving(driving);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {

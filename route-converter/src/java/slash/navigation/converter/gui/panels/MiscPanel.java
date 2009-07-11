@@ -138,6 +138,8 @@ public class MiscPanel {
             }
         });
 
+        // TODO add driving
+
         new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, r.getPreferences(), RouteConverter.AVOID_HIGHWAYS_PREFERENCE, false);
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {

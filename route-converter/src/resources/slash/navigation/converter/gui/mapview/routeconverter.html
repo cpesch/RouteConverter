@@ -14,6 +14,7 @@
       ondragenter="return false" ondragover="return false"
       ondrop="return false">
 <div id="error"></div>
+<div id="walking"></div>
 <div id="map"></div>
 
 <script type="text/javascript">
@@ -98,7 +99,7 @@
    }
 
    function createDirections() {
-       var directions = new GDirections();
+       var directions = new GDirections(document.getElementById("map"), document.getElementById("walking"));
        GEvent.addListener(directions, "load", function() {
            callJava("load/" + directions.getDistance().meters + "/" + directions.getDuration().seconds);
 
@@ -118,20 +119,20 @@
        return map.getBounds().getSouthWest().toUrlValue(6);
    }
 
-   var debug = document.createElement('div');
+   var debug = document.createElement("div");
 
    function addDebug(text) {
-       var element = document.createElement('p');
+       var element = document.createElement("p");
        var node = document.createTextNode(text);
        element.appendChild(node);
        debug.appendChild(element);
    }
 
    function setError(text) {
-       var element = document.createElement('div');
+       var element = document.createElement("div");
        element.innerHTML = text;
-       var error = document.getElementById('error');
-       error.style.padding = '20pt';
+       var error = document.getElementById("error");
+       error.style.padding = "20pt";
        error.appendChild(element);
        error.appendChild(debug);
    }
@@ -144,7 +145,7 @@
                addDebug("3. isCompatible():" + isCompatible());
 
                var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "(CC-by-sa)");
-               var copyrightCollection = new GCopyrightCollection('&copy; OpenStreetMap');
+               var copyrightCollection = new GCopyrightCollection("&copy; OpenStreetMap");
                copyrightCollection.addCopyright(copyright);
                var tilelayers_mapnik = new Array();
                tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
@@ -164,9 +165,9 @@
                tilelayers_cyc[0].getOpacity = function () {
                    return 1.0;
                };
-               mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: 'Mapnik rendering of OpenStreetMap data' });
-               tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: 'Tiles@Home (Osmarender) rendering of OpenStreetMap data' });
-               cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: 'OSM Cycle Map rendering of OpenStreetMap data' });
+               mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data" });
+               tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data" });
+               cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data" });
                addDebug("4. added OSM tile layers");
 
                var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap] });
