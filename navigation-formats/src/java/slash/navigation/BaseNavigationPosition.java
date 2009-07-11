@@ -221,6 +221,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public GpxPosition asCrsPosition() {
+        return asGpxPosition();
+    }
+    
     public GkPosition asGkPosition() {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }

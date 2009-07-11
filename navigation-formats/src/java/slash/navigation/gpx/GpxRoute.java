@@ -21,11 +21,6 @@
 package slash.navigation.gpx;
 
 import slash.navigation.*;
-import slash.navigation.tcx.Tcx1Format;
-import slash.navigation.tcx.Tcx2Format;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.simple.*;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -33,20 +28,25 @@ import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.*;
+import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.*;
+import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.simple.*;
+import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A GPS Exchange Format (.gpx) route.
@@ -100,10 +100,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return origins;
     }
 
+    @SuppressWarnings({"unchecked"})
     <T> T getOrigin(Class<T> resultClass) {
         for (Object origin : origins) {
             if (resultClass.isInstance(origin))
-                //noinspection unchecked
                 return (T) origin;
         }
         return null;
@@ -225,10 +225,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    public GpxRoute asTcx1Format() {
-        if (getFormat() instanceof Tcx1Format)
+    public GpxRoute asCrs1Format() {
+        if (getFormat() instanceof Crs1Format)
             return this;
-        return asGpxFormat(new Tcx1Format());
+        return asGpxFormat(new Crs1Format());
     }
 
     public GpxRoute asTcx2Format() {

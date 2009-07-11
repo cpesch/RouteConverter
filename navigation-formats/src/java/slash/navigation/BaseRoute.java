@@ -273,7 +273,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract GpxRoute asGpx10Format();
     public abstract GpxRoute asGpx11Format();
-    public abstract GpxRoute asTcx1Format();
+    public abstract GpxRoute asCrs1Format();
     public abstract GpxRoute asTcx2Format();
 
     public abstract SimpleRoute asHaicomLoggerFormat();

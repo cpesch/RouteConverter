@@ -35,17 +35,19 @@ import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.*;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.GlopusFormat;
 import slash.navigation.simple.GoogleMapsFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.Route66Format;
+import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
-import slash.navigation.tcx.Tcx1Format;
-import slash.navigation.tcx.Tcx2Format;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +61,9 @@ public class ConvertTest extends NavigationTestCase {
     void convertRoundtrip(String testFileName,
                           BaseNavigationFormat sourceFormat,
                           BaseNavigationFormat targetFormat) throws IOException {
+        assertTrue(sourceFormat.isSupportsReading());
+        assertTrue(targetFormat.isSupportsWriting());
+
         File source = new File(testFileName);
         assertTrue("Cannot read route from " + source, parser.read(source));
         assertNotNull(parser.getFormat());
@@ -79,6 +84,14 @@ public class ConvertTest extends NavigationTestCase {
         }
     }
 
+    private BaseNavigationFormat handleWriteOnlyFormats(BaseNavigationFormat targetFormat) {
+        if (targetFormat instanceof OziExplorerWriteFormat)
+            targetFormat = new OziExplorerReadFormat();
+        if (targetFormat instanceof Crs1Format)
+            targetFormat = new Tcx1Format();
+        return targetFormat;
+    }
+
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
         File target = File.createTempFile("singletarget", targetFormat.getExtension());
         try {
@@ -90,8 +103,7 @@ public class ConvertTest extends NavigationTestCase {
             NavigationFileParser targetParser = new NavigationFileParser();
             assertTrue(targetParser.read(target));
 
-            if (targetFormat instanceof OziExplorerWriteFormat)
-                targetFormat = new OziExplorerReadFormat();
+            targetFormat = handleWriteOnlyFormats(targetFormat);
 
             assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
             assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
@@ -126,8 +138,7 @@ public class ConvertTest extends NavigationTestCase {
             NavigationFileParser targetParser = new NavigationFileParser();
             assertTrue(targetParser.read(target));
 
-            if (targetFormat instanceof OziExplorerWriteFormat)
-                targetFormat = new OziExplorerReadFormat();
+            targetFormat = handleWriteOnlyFormats(targetFormat);
 
             assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
             assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
@@ -950,13 +961,13 @@ public class ConvertTest extends NavigationTestCase {
     }
 
     public void testConvertGpx10ToTrainingCenterRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Tcx1Format());
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Tcx2Format());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Crs1Format());
+        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new Crs1Format());
     }
 
     public void testConvertGpx11ToTrainingCenterRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Tcx1Format());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Tcx2Format());
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new Crs1Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new Crs1Format());
     }
 
     public void testConvertViaMichelinToGoPal() throws IOException {

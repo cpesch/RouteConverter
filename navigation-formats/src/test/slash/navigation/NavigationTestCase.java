@@ -27,6 +27,8 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTom5RouteFormat;
@@ -41,12 +43,12 @@ import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
-import slash.navigation.tcx.Tcx1Format;
-import slash.navigation.tcx.Tcx2Format;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -168,6 +170,9 @@ public abstract class NavigationTestCase extends TestCase {
             String sourcePrefix = getAlanWaypointsAndRoutesName(sourceRoute);
             String targetPrefix = getAlanWaypointsAndRoutesName(targetRoute);
             assertEquals(sourcePrefix, targetPrefix);
+        } else if (targetRoute.getFormat() instanceof Tcx1Format) {
+            // Crs1Format makes route names unique by prefixing "Name" with "1: "
+            assertEquals(sourceRoute.getName(), targetRoute.getName().replaceAll("\\d+: ", ""));
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
                 !targetRoute.getName().contains("Track: ") && !targetRoute.getName().equals("MapLage"))
@@ -194,7 +199,7 @@ public abstract class NavigationTestCase extends TestCase {
 
         compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
-        compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
     }
@@ -396,10 +401,12 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+    private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
             if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
+            } else if (targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track)) {
+                assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.01);
             } else {
                 assertEquals(sourcePosition.getSpeed(), targetPosition.getSpeed());
             }
@@ -434,8 +441,11 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof OziExplorerReadFormat) {
             assertNotNull(sourcePosition.getTime());
             assertNull(targetPosition.getTime());
+        } else if (sourceFormat instanceof Gpx11Format && targetFormat instanceof Tcx1Format) {
+            assertNull(sourcePosition.getTime());
+            assertNotNull(targetPosition.getTime());
         } else
-            assertEquals(sourcePosition.getTime(), targetPosition.getTime());
+            assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
     }
 
     private static String trim(String str, int maximum) {

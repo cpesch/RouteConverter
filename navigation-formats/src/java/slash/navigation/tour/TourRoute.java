@@ -21,12 +21,6 @@
 package slash.navigation.tour;
 
 import slash.navigation.*;
-import slash.navigation.tcx.Tcx1Format;
-import slash.navigation.tcx.Tcx2Format;
-import slash.navigation.simple.*;
-import slash.navigation.util.RouteComments;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
@@ -35,13 +29,19 @@ import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
+import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.*;
+import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.simple.*;
+import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx2Format;
+import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
@@ -128,8 +128,8 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    public GpxRoute asTcx1Format() {
-        return asGpxFormat(new Tcx1Format());
+    public GpxRoute asCrs1Format() {
+        return asGpxFormat(new Crs1Format());
     }
 
     public GpxRoute asTcx2Format() {
