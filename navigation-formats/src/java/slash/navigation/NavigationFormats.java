@@ -113,8 +113,7 @@ public final class NavigationFormats {
         addFormat(MagellanRouteFormat.class);
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
-        // TODO remove me for 1.28
-        addFormat(Crs1Format.class);
+        // addFormat(Crs1Format.class);
         addFormat(KlickTelRouteFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);

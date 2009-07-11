@@ -152,6 +152,12 @@ public abstract class NavigationTestCase extends TestCase {
             return name;
     }
 
+    private static String getTrainingCenterRouteName(BaseRoute route) {
+        String name = route.getName();
+        name = name.replaceAll("\\d+: ", "");
+        return name.substring(0, Math.min(15-3, name.length()));
+    }
+
     public static void compareRouteMetaData(BaseRoute sourceRoute, BaseRoute targetRoute) {
         if (targetRoute instanceof KmlRoute && targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
             String sourceName = getKmlRouteName(sourceRoute);
@@ -172,7 +178,9 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals(sourcePrefix, targetPrefix);
         } else if (targetRoute.getFormat() instanceof Tcx1Format) {
             // Crs1Format makes route names unique by prefixing "Name" with "1: "
-            assertEquals(sourceRoute.getName(), targetRoute.getName().replaceAll("\\d+: ", ""));
+            String sourceName = getTrainingCenterRouteName(sourceRoute);
+            String targetName = getTrainingCenterRouteName(targetRoute);
+            assertEquals(sourceName, targetName);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
                 !targetRoute.getName().contains("Track: ") && !targetRoute.getName().equals("MapLage"))

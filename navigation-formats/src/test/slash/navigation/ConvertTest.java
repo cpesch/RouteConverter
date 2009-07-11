@@ -44,8 +44,7 @@ import slash.navigation.simple.GlopusFormat;
 import slash.navigation.simple.GoogleMapsFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.Route66Format;
-import slash.navigation.tcx.Crs1Format;
-import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.*;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 
@@ -958,6 +957,11 @@ public class ConvertTest extends NavigationTestCase {
 
     public void testConvertTourExchangeToTour() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new TourFormat());
+    }
+
+    public void testConvertTrainingCenterDatabaseToTrainingCenterRoute() throws IOException {
+        convertRoundtrip(TEST_PATH + "from1.crs", new Tcx1Format(), new Crs1Format());
+        convertRoundtrip(TEST_PATH + "from2.tcx", new Tcx2Format(), new Crs1Format());
     }
 
     public void testConvertGpx10ToTrainingCenterRoute() throws IOException {

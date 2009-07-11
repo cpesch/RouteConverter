@@ -192,11 +192,6 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(SAMPLE_PATH + "tripmaster3.itn");
     }
 
-    public void testTrainingCenterReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from1.crs");
-        readWriteRoundtrip(TEST_PATH + "from2.tcx");
-    }
-
     public void testViaMichelinReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-poi.xvm");
         readWriteRoundtrip(TEST_PATH + "from-itinerary.xvm");
