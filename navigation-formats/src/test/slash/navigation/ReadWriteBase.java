@@ -129,7 +129,8 @@ public abstract class ReadWriteBase extends NavigationTestCase {
 
                 compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
                         targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount,
-                        duplicateFirstPosition, false, targetParser.getTheRoute().getCharacteristics());
+                        duplicateFirstPosition, false, sourceParser.getTheRoute().getCharacteristics(),
+                        targetParser.getTheRoute().getCharacteristics());
             }
             assertEquals(sourcePositionCount + (duplicateFirstPosition ? 1 : 0), targetPositionCount);
             assertEquals(positionCount, targetPositionCount);

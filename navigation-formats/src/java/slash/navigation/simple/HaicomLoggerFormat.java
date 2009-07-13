@@ -90,6 +90,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return "Haicom Logger (*" + getExtension() + ")";
     }
 
+    @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }

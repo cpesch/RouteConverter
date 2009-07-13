@@ -43,6 +43,7 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.GlopusFormat;
 import slash.navigation.simple.GoogleMapsFormat;
 import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
 import slash.navigation.simple.Route66Format;
 import slash.navigation.tcx.*;
 import slash.navigation.tour.TourFormat;
@@ -196,7 +197,8 @@ public class ConvertTest extends NavigationTestCase {
                         targetParser.getTheRoute().getPositionCount());
 
                 compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
-                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false, targetParser.getTheRoute().getCharacteristics());
+                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false,
+                        sourceParser.getTheRoute().getCharacteristics(), targetParser.getTheRoute().getCharacteristics());
             }
 
             for (File target : targets) {
@@ -913,7 +915,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new AlanWaypointsAndRoutesFormat());
     }
 
-    /*
+
     public void testConvertHaicomLoggerToHaicomLogger() throws IOException {
         convertRoundtrip(TEST_PATH + "from-haicomlogger.csv", new HaicomLoggerFormat(), new HaicomLoggerFormat());
     }
@@ -926,7 +928,6 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertNationalGeographicToHaicomLogger() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tpo", new NationalGeographicTopo3Format(), new HaicomLoggerFormat());
     }
-    */
 
 
     public void testConvertTourToTour() throws IOException {

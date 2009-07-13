@@ -199,6 +199,7 @@ public abstract class NavigationTestCase extends TestCase {
                                         BaseNavigationPosition sourcePosition,
                                         BaseNavigationPosition targetPosition,
                                         boolean commentPositionNames,
+                                        RouteCharacteristics sourceCharacteristics,
                                         RouteCharacteristics targetCharacteristics) {
         assertNotNull("Source longitude " + index + " does not exist", sourcePosition.getLongitude());
         assertNotNull("Source latitude " + index + " does not exist", sourcePosition.getLatitude());
@@ -207,7 +208,7 @@ public abstract class NavigationTestCase extends TestCase {
 
         compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
-        compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
+        compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
     }
@@ -409,11 +410,11 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
+    private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
             if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
-            } else if (targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track)) {
+            } else if (sourceFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track) || targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track)) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.01);
             } else {
                 assertEquals(sourcePosition.getSpeed(), targetPosition.getSpeed());
@@ -522,28 +523,28 @@ public abstract class NavigationTestCase extends TestCase {
         if (targetFormat instanceof GarminPoiDbFormat) {
             int targetPositionCount = targetRoute.getPositionCount() / 3;
             assertEquals(sourceRoute.getPositionCount(), targetPositionCount);
-            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions().subList(0, targetPositionCount), targetFormat, commentPositionNames, false, targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions().subList(0, targetPositionCount), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
             // both formats support no ordering
         } else if (targetFormat instanceof TomTomPoiFormat) {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, 1), sourceFormat, targetRoute.getPositions().subList(0, 1), targetFormat, commentPositionNames, false, targetRoute.getCharacteristics());
-            comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, commentPositionNames, false, targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(0, 1), sourceFormat, targetRoute.getPositions().subList(0, 1), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
             // TomTomPoiFormat has no order of the positions except for first and second
             // comparePositions(sourceRoute.getPositions().subList(1, sourceRoute.getPositionCount() - 1), sourceFormat, targetRoute.getPositions().subList(2, targetRoute.getPositionCount() - 2), targetFormat, false, targetRoute.getCharacteristics());
         } else if (sourceFormat instanceof GarminPoiDbFormat) {
             int sourcePositionCount = targetRoute.getPositionCount(); // sourceRoute.getPositionCount() / 3;
             assertEquals(sourcePositionCount, targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else if (sourceFormat instanceof MicrosoftAutoRouteFormat &&
                 (targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format || targetFormat instanceof KmlFormat) &&
                 targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
             int sourcePositionCount = sourceRoute.getPositionCount() - 1;
             assertEquals(sourcePositionCount, targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, targetRoute.getCharacteristics());
+            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         }
     }
 
@@ -553,11 +554,12 @@ public abstract class NavigationTestCase extends TestCase {
                                         NavigationFormat targetFormat,
                                         boolean commentPositionNames,
                                         boolean compareByEquals,
+                                        RouteCharacteristics sourceCharacteristics,
                                         RouteCharacteristics targetCharacteristics) {
         for (int i = 0; i < sourcePositions.size(); i++) {
             BaseNavigationPosition sourcePosition = sourcePositions.get(i);
             BaseNavigationPosition targetPosition = targetPositions.get(i);
-            comparePosition(sourceFormat, targetFormat, i, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
+            comparePosition(sourceFormat, targetFormat, i, sourcePosition, targetPosition, commentPositionNames, sourceCharacteristics, targetCharacteristics);
         }
         if (!compareByEquals)
             return;
@@ -580,13 +582,14 @@ public abstract class NavigationTestCase extends TestCase {
                                              int positionsPerFile,
                                              boolean duplicateFirstPosition,
                                              boolean commentPositionNames,
+                                             RouteCharacteristics sourceCharacteristics,
                                              RouteCharacteristics targetCharacteristics) {
         int count = duplicateFirstPosition ? sourcePositions.size() : targetPositions.size();
         for (int i = 0; i < count; i++) {
             int index = i + positionsPerFile * fileNumber;
             BaseNavigationPosition sourcePosition = sourcePositions.get(index);
             BaseNavigationPosition targetPosition = targetPositions.get(i + (duplicateFirstPosition ? 1 : 0));
-            comparePosition(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
+            comparePosition(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, sourceCharacteristics, targetCharacteristics);
         }
     }
 
