@@ -97,7 +97,7 @@ public class JdicMapView implements MapView {
     private PositionsModel positionsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
-    private boolean debug, initialized = false, running = true, driving, avoidHighways,
+    private boolean debug, initialized = false, running = true, pedestrians, avoidHighways,
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
@@ -110,12 +110,12 @@ public class JdicMapView implements MapView {
     }
 
     public JdicMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
-                       boolean driving, boolean avoidHighways) {
+                       boolean pedestrians, boolean avoidHighways) {
         debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
         initialize();
         setModel(positionsModel, characteristicsModel);
+        this.pedestrians = pedestrians;
         this.avoidHighways = avoidHighways;
-        this.driving = driving;
     }
 
     private void setModel(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
@@ -916,7 +916,7 @@ public class JdicMapView implements MapView {
             buffer.append("directions").append(j).append(".loadFromWaypoints(latlngs, ").
                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
                    append(avoidHighways).append(", travelMode: ").
-                   append(driving ? "G_TRAVEL_MODE_DRIVING" : "G_TRAVEL_MODE_WALKING").
+                   append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
                    append(" });");
             executeScript(buffer);
         }
@@ -1111,8 +1111,8 @@ public class JdicMapView implements MapView {
         }
     }
 
-    public void setDriving(boolean driving) {
-        this.driving = driving;
+    public void setPedestrians(boolean pedestrians) {
+        this.pedestrians = pedestrians;
         if(positionsModel.getRoute().getCharacteristics() == RouteCharacteristics.Route)
             update(false);
     }
