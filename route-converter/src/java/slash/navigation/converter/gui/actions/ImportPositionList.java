@@ -49,20 +49,20 @@ public class ImportPositionList implements ActionListener {
 
     private JFrame frame;
     private ConvertPanel panel;
-    private JTable tablePositions;
-    private PositionsModel positionsModel;
+    private JTable table;
+    private PositionsModel model;
 
-    public ImportPositionList(JFrame frame, ConvertPanel panel, JTable tablePositions, PositionsModel positionsModel) {
+    public ImportPositionList(JFrame frame, ConvertPanel panel, JTable table, PositionsModel model) {
         this.frame = frame;
         this.panel = panel;
-        this.tablePositions = tablePositions;
-        this.positionsModel = positionsModel;
+        this.table = table;
+        this.model = model;
     }
 
     public void actionPerformed(ActionEvent e) {
-        int selectedRow = tablePositions.getSelectedRow() + 1;
-        Constants.startWaitCursor(frame.getRootPane());
+        int selectedRow = table.getSelectedRow() + 1;
 
+        Constants.startWaitCursor(frame.getRootPane());
         try {
             File[] files = panel.selectFilesToImport();
             if (files == null)
@@ -98,7 +98,7 @@ public class ImportPositionList implements ActionListener {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     try {
-                                        positionsModel.add(row, parser.getTheRoute());
+                                        model.add(row, parser.getTheRoute());
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                         log.severe("Open error: " + e.getMessage());

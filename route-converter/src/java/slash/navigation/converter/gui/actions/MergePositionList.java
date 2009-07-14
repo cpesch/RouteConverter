@@ -67,18 +67,15 @@ public class MergePositionList extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow != -1) {
-            Constants.startWaitCursor(frame.getRootPane());
+        int selectedRow = table.getSelectedRow() + 1;
 
-            try {
-                int insertRow = Math.min(selectedRow + 1, table.getRowCount());
-                positionsModel.add(insertRow, sourceRoute.getPositions());
-                formatAndRoutesModel.removeRoute(sourceRoute);
-            }
-            finally {
-                Constants.stopWaitCursor(frame.getRootPane());
-            }
+        Constants.startWaitCursor(frame.getRootPane());
+        try {
+            positionsModel.add(selectedRow, sourceRoute.getPositions());
+            formatAndRoutesModel.removeRoute(sourceRoute);
+        }
+        finally {
+            Constants.stopWaitCursor(frame.getRootPane());
         }
     }
 }

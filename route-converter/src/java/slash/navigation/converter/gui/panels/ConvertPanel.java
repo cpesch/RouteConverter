@@ -39,7 +39,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
-import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
@@ -78,7 +77,7 @@ public abstract class ConvertPanel {
     private JLabel labelDuration;
     private JLabel labelFormat;
     protected JTable tablePositions;
-    private TablePopupMenu popupTable;
+    private PositionTablePopupMenu popupTable;
     private JButton buttonOpenFile;
     private JButton buttonNewFile;
     private JComboBox comboBoxChoosePositionList;
@@ -244,17 +243,9 @@ public abstract class ConvertPanel {
 
         tablePositions.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                int[] selectedRows = tablePositions.getSelectedRows();
-                if (e.getValueIsAdjusting() || selectedRows.length == 0)
+                if (e.getValueIsAdjusting())
                     return;
-                boolean firstRowNotSelected = selectedRows[0] != 0;
-                buttonMovePositionToTop.setEnabled(firstRowNotSelected);
-                buttonMovePositionUp.setEnabled(firstRowNotSelected);
-                boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
-                buttonMovePositionDown.setEnabled(lastRowNotSelected);
-                buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
-                if (RouteConverter.getInstance().isMapViewAvailable())
-                    RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
+                handleSelectionUpdate();
             }
         });
 
@@ -269,7 +260,7 @@ public abstract class ConvertPanel {
         });
 
         new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
-        popupTable = new TablePopupMenu();
+        popupTable = new PositionTablePopupMenu();
 
         NavigationFormat[] formats = NavigationFormats.getWriteFormatsSortedByName();
         comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formats));
@@ -292,6 +283,7 @@ public abstract class ConvertPanel {
         handleFormatUpdate();
         handleRoutesUpdate();
         handlePositionsUpdate();
+        handleSelectionUpdate();
 
         comboBoxChoosePositionList.setModel(formatAndRoutesModel);
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
@@ -705,6 +697,7 @@ public abstract class ConvertPanel {
     private void handleFormatUpdate() {
         boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
         boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
+        boolean existsASelectedPosition = tablePositions.getSelectedRowCount() > 0;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
@@ -739,7 +732,7 @@ public abstract class ConvertPanel {
     }
 
     private void handlePositionsUpdate() {
-        boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
+        final boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
@@ -751,7 +744,28 @@ public abstract class ConvertPanel {
         buttonFilterPositionList.setEnabled(existsMoreThanOnePosition);
         buttonRevertPositionList.setEnabled(existsMoreThanOnePosition);
 
-        popupTable.handlePositionsUpdate(supportsMultipleRoutes, existsMoreThanOnePosition);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                popupTable.handlePositionsUpdate(supportsMultipleRoutes, tablePositions.getSelectedRowCount() > 0);
+            }
+        });
+    }
+
+    private void handleSelectionUpdate() {
+        int[] selectedRows = tablePositions.getSelectedRows();
+        if (selectedRows.length == 0)
+            return;
+        boolean firstRowNotSelected = selectedRows[0] != 0;
+        buttonMovePositionToTop.setEnabled(firstRowNotSelected);
+        buttonMovePositionUp.setEnabled(firstRowNotSelected);
+        boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
+        buttonMovePositionDown.setEnabled(lastRowNotSelected);
+        buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
+        if (RouteConverter.getInstance().isMapViewAvailable())
+            RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
+
+        final boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
+        popupTable.handlePositionsUpdate(supportsMultipleRoutes, selectedRows.length > 0);
     }
 
     // helpers
@@ -1164,33 +1178,35 @@ public abstract class ConvertPanel {
         return convertPanel;
     }
 
-    public class TablePopupMenu {
-        private PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
-        private JPopupMenu popupMenu = new JPopupMenu();
-        private JMenuItem buttonSplitPositionlist;
+    public class PositionTablePopupMenu extends TablePopupMenu {
+        private JMenuItem buttonAddElevation, buttonAddPostalAddress, buttonAddPopulatedPlace, buttonAddSpeed,
+                buttonAddIndex, buttonSplitPositionlist;
 
-        public TablePopupMenu() {
-            initialize();
+        public PositionTablePopupMenu() {
+            super(tablePositions);
         }
 
-        protected void initialize() {
-            JMenuItem buttonAddElevation = new JMenuItem(RouteConverter.getBundle().getString("add-elevation"));
+        protected JPopupMenu createPopupMenu() {
+            JPopupMenu popupMenu = new JPopupMenu();
+            PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
+
+            buttonAddElevation = new JMenuItem(RouteConverter.getBundle().getString("add-elevation"));
             buttonAddElevation.addActionListener(new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddElevation);
 
-            JMenuItem buttonAddPostalAddress = new JMenuItem(RouteConverter.getBundle().getString("add-postal-address"));
+            buttonAddPostalAddress = new JMenuItem(RouteConverter.getBundle().getString("add-postal-address"));
             buttonAddPostalAddress.addActionListener(new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddPostalAddress);
 
-            JMenuItem buttonAddPopulatedPlace = new JMenuItem(RouteConverter.getBundle().getString("add-populated-place"));
+            buttonAddPopulatedPlace = new JMenuItem(RouteConverter.getBundle().getString("add-populated-place"));
             buttonAddPopulatedPlace.addActionListener(new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddPopulatedPlace);
 
-            JMenuItem buttonAddSpeed = new JMenuItem(RouteConverter.getBundle().getString("add-speed"));
+            buttonAddSpeed = new JMenuItem(RouteConverter.getBundle().getString("add-speed"));
             buttonAddSpeed.addActionListener(new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddSpeed);
 
-            JMenuItem buttonAddIndex = new JMenuItem(RouteConverter.getBundle().getString("add-index"));
+            buttonAddIndex = new JMenuItem(RouteConverter.getBundle().getString("add-index"));
             buttonAddIndex.addActionListener(new AddIndicesToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddIndex);
 
@@ -1236,52 +1252,7 @@ public abstract class ConvertPanel {
             buttonImportPositionlist.addActionListener(new ImportPositionList(RouteConverter.getInstance().getFrame(), ConvertPanel.this, tablePositions, getPositionsModel()));
             popupMenu.add(buttonImportPositionlist);
 
-            // cannot use tablePositions.setComponentPopupMenu(popupMenu); since it does ensure a selection
-            tablePositions.addMouseListener(new MouseAdapter() {
-                public void mousePressed(MouseEvent e) {
-                    ensureSelection(e);
-                    showPopup(e);
-                }
-
-                public void mouseReleased(MouseEvent e) {
-                    ensureSelection(e);
-                    showPopup(e);
-                }
-            });
-        }
-
-        public JPopupMenu getPopupMenu() {
             return popupMenu;
-        }
-
-        private void showPopup(final MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        popupMenu.show(e.getComponent(), e.getX(), e.getY());
-                    }
-                });
-            }
-        }
-
-        private void ensureSelection(MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                if (!tablePositions.hasFocus())
-                    tablePositions.requestFocus();
-                if (tablePositions.getSelectedRowCount() == 0) {
-                    // dispatch event again as a left mouse click for selections
-                    // (do not try to spare one of the three events)
-                    tablePositions.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(),
-                            InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
-                            e.getClickCount(), false));
-                    tablePositions.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(),
-                            InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
-                            e.getClickCount(), false));
-                    tablePositions.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_CLICKED, e.getWhen(),
-                            InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
-                            e.getClickCount(), false));
-                }
-            }
         }
 
         void handleFormatUpdate(boolean supportsMultipleRoutes, boolean existsMoreThanOnePosition) {
@@ -1292,8 +1263,13 @@ public abstract class ConvertPanel {
             buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
         }
 
-        void handlePositionsUpdate(boolean supportsMultipleRoutes, boolean existsMoreThanOnePosition) {
-            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
+        void handlePositionsUpdate(final boolean supportsMultipleRoutes, boolean existsASelectedPosition) {
+            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsASelectedPosition);
+            buttonAddElevation.setEnabled(existsASelectedPosition);
+            buttonAddPostalAddress.setEnabled(existsASelectedPosition);
+            buttonAddPopulatedPlace.setEnabled(existsASelectedPosition);
+            buttonAddSpeed.setEnabled(existsASelectedPosition);
+            buttonAddIndex.setEnabled(existsASelectedPosition);
         }
     }
 }
