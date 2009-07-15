@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
@@ -190,21 +191,30 @@ public class Gpx11Format extends GpxFormat {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
         List<Object> anys = wptType.getExtensions().getAny();
+
         boolean foundSpeed = false;
-        for (Object any : anys) {
+        Iterator<Object> iterator = anys.iterator();
+        while (iterator.hasNext()) {
+            Object any = iterator.next();
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("speed".equals(element.getLocalName())) {
-                    element.setTextContent(Conversion.formatDoubleAsString(speed));
-                    foundSpeed = true;
-                    break;
+                    if(foundSpeed || speed == null)
+                        iterator.remove();
+                    else {
+                        element.setTextContent(Conversion.formatDoubleAsString(speed));
+                        foundSpeed = true;
+                    }
                 }
             }
         }
-        if (!foundSpeed) {
+        if (!foundSpeed && speed != null) {
             slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createSpeed(Conversion.formatDouble(speed != null ? speed : 0.0)));
+            anys.add(tbFactory.createSpeed(Conversion.formatDouble(speed)));
         }
+
+        if(anys.size() == 0)
+            wptType.setExtensions(null);
     }
 
     private void clearWptType(WptType wptType) {
