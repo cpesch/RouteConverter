@@ -31,6 +31,7 @@ import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -196,6 +197,8 @@ public class Gpx11Format extends GpxFormat {
         Iterator<Object> iterator = anys.iterator();
         while (iterator.hasNext()) {
             Object any = iterator.next();
+
+            // this is parsed
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("speed".equals(element.getLocalName())) {
@@ -203,6 +206,19 @@ public class Gpx11Format extends GpxFormat {
                         iterator.remove();
                     else {
                         element.setTextContent(Conversion.formatDoubleAsString(speed));
+                        foundSpeed = true;
+                    }
+                }
+            }
+
+            // this is if I create the extensions with JAXB
+            if (any instanceof JAXBElement) {
+                JAXBElement element = (JAXBElement) any;
+                if ("speed".equals(element.getName().getLocalPart())) {
+                    if(foundSpeed || speed == null)
+                        iterator.remove();
+                    else {
+                        element.setValue(Conversion.formatDoubleAsString(speed));
                         foundSpeed = true;
                     }
                 }
