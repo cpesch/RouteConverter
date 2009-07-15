@@ -183,8 +183,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 pushPoints.add(createWaypoint(time, latitude, longitude, altitude, pushPointNo++, false));
             }
 
-            // single trackpoint
-            if (trackFlag == 0)
+            // single trackpoint. over speed point is also a trackpoint
+            if ((trackFlag == 0) || ((trackFlag & 4) == 4))
                 trackPoints.add(createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true));
 
         }
