@@ -7,6 +7,7 @@
     <style type="text/css">
         .nomargin { margin: 0; padding: 0 }
         #map { width: 100%; height: 100% }
+        #directions { display: none }
     </style>
 </head>
 <body onunload="unload()" class="nomargin"
@@ -14,8 +15,8 @@
       ondragenter="return false" ondragover="return false"
       ondrop="return false">
 <div id="error"></div>
-<div id="walking"></div>
 <div id="map"></div>
+<div id="directions"></div>
 
 <script type="text/javascript">
    <!--
@@ -99,7 +100,7 @@
    }
 
    function createDirections() {
-       var directions = new GDirections(document.getElementById("map"), document.getElementById("walking"));
+       var directions = new GDirections(map, document.getElementById("directions"));
        GEvent.addListener(directions, "load", function() {
            callJava("load/" + directions.getDistance().meters + "/" + directions.getDuration().seconds);
 

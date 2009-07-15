@@ -917,6 +917,7 @@ public class JdicMapView implements MapView {
                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
                    append(avoidHighways).append(", travelMode: ").
                    append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
+                   append(", locale: '").append(Locale.getDefault()).append("'").
                    append(" });");
             executeScript(buffer);
         }
