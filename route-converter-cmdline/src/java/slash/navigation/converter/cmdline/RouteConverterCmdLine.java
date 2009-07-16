@@ -111,7 +111,7 @@ public class RouteConverterCmdLine {
         if (format.isSupportsMultipleRoutes()) {
             parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) format, target);
         } else {
-            parser.write(parser.getTheRoute(), format, false, false, true, target);
+            parser.write(parser.getTheRoute(), format, false, true, target);
         }
     }
 
