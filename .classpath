@@ -12,6 +12,8 @@
 	<classpathentry kind="src" path="catalog/src/test"/>
 	<classpathentry kind="src" path="geonames/src/java"/>
 	<classpathentry kind="src" path="geonames/src/test"/>
+	<classpathentry kind="src" path="googlemaps/src/java"/>
+	<classpathentry kind="src" path="googlemaps/src/test"/>
 	<classpathentry kind="src" path="common-gui/src/java"/>
 	<classpathentry kind="src" path="jdic-0.9.3/src/java"/>
 	<classpathentry kind="src" path="jdic-0.9.3/output/classes"/>
