@@ -24,7 +24,7 @@ import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
 /**
- * Represents a Gauß Krüger position in a route.
+ * Represents a Gauss Krueger position in a route.
  *
  * @author Christian Pesch
  */

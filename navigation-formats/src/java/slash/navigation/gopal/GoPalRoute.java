@@ -66,10 +66,10 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
     private static Tour.Options defaultOptions() {
         Tour.Options options = new Tour.Options();
         /*
-            Fahrzeugtype:       Type="3"        => 0=PKW	1=Fußgänger 2=Fahrrad   3=Motorrad
-            Art der Route:		Mode="2"        => 0=kurz   1=schnell   2=Ökonomisch
+            Fahrzeugtype:       Type="3"        => 0=PKW	1=Fussgaenger 2=Fahrrad   3=Motorrad
+            Art der Route:		Mode="2"        => 0=kurz   1=schnell   2=Oekonomisch
             Mautstrassen:		TollRoad="1"    => 0= meiden    1=verwenden
-            Fähren:				Ferries="1"     => 0= meiden    1=verwenden
+            Faehren:			Ferries="1"     => 0= meiden    1=verwenden
             Tunnel:				Tunnels="1"     => 0= meiden    1=verwenden
             Stauumfahrung:		TTIMode="0"     => 0= automatisch 1= manuell 2=keine
             Autobahn:			MotorWays="0"   => 0= meiden    1=verwenden
