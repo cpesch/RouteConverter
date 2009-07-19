@@ -47,6 +47,10 @@ public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,
         return format;
     }
 
+    public void setFormat(NavigationFormat<R> format) {
+        this.format = format;
+    }
+
     public BaseRoute<P,F> getRoute() {
        return getRoutes().size() > 0 ? getRoutes().get(0) : null;
     }

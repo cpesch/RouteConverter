@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -49,8 +50,16 @@ public class NavigationFileParser {
     private static final Logger log = Logger.getLogger(NavigationFileParser.class.getName());
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
+    private final List<NavigationFileParserListener> navigationFileParserListeners = new CopyOnWriteArrayList<NavigationFileParserListener>();
     private FormatAndRoutes formatAndRoutes;
 
+    public void addNavigationFileParserListener(NavigationFileParserListener listener) {
+        navigationFileParserListeners.add(listener);
+    }
+
+    public void removeNavigationFileParserListener(NavigationFileParserListener listener) {
+        navigationFileParserListeners.remove(listener);
+    }
 
     public NavigationFormat getFormat() {
         return formatAndRoutes.getFormat();
@@ -93,20 +102,25 @@ public class NavigationFileParser {
         return positionCounts;
     }
 
+    private void notifyReading(NavigationFormat format) {
+        for (NavigationFileParserListener listener : navigationFileParserListeners) {
+            listener.reading(format);
+        }
+    }
+
     private FormatAndRoutes internalRead(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
             buffer.mark(readBufferSize + 1);
             CompactCalendar compactStartDate = startDate != null ? CompactCalendar.fromCalendar(startDate) : null;
             for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
+                notifyReading(format);
+
                 List<BaseRoute> routes = format.read(buffer, compactStartDate);
                 if (routes != null && routes.size() > 0) {
                     log.info("Detected '" + format.getName() + "' file with " + routes.size() + " route(s) and " +
                             getPositionCounts(routes) + " positions");
-                    for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-                        RouteComments.commentPositions(route.getPositions());
-                        RouteComments.commentRouteName(route);
-                    }
+                    commentRoutes(routes);
                     return new FormatAndRoutes(format, routes);
                 }
 
@@ -115,7 +129,7 @@ public class NavigationFileParser {
                 } catch (IOException e) {
                     // Resetting to invalid mark - if the read buffer is not large enough
                     log.severe("No known format found within " + readBufferSize + " bytes; increase the read buffer");
-                    return null;
+                    break;
                 }
             }
         }
@@ -123,6 +137,13 @@ public class NavigationFileParser {
             buffer.close();
         }
         return null;
+    }
+
+    private void commentRoutes(List<BaseRoute> routes) {
+        for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+            RouteComments.commentPositions(route.getPositions());
+            RouteComments.commentRouteName(route);
+        }
     }
 
     public boolean read(File source) throws IOException {
