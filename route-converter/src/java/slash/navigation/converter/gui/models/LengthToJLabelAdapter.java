@@ -27,7 +27,11 @@ import slash.navigation.converter.gui.mapview.MapViewListener;
 
 import javax.swing.*;
 import java.text.MessageFormat;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -63,7 +67,10 @@ public class LengthToJLabelAdapter extends FormatAndRoutesListModelToDocumentAda
 
     private void updateLabel(int meters, long milliSeconds) {
         labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
-        Date date = new Date(milliSeconds - 60 * 60 * 1000);
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.add(Calendar.MILLISECOND, (int)milliSeconds);
+        Date date = calendar.getTime();
         labelDuration.setText(MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date));
     }
 
