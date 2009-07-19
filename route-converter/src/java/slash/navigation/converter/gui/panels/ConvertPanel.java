@@ -39,7 +39,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.renderer.NavigationFormatListCellRenderer;
-import slash.navigation.kml.KmlFormat;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.*;
@@ -93,7 +92,6 @@ public abstract class ConvertPanel {
     private JButton buttonRevertPositionList;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
-    private JCheckBox checkboxStartGoogleEarth;
     private JCheckBox checkboxDuplicateFirstPosition;
     private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
     private JComboBox comboBoxChooseFormat;
@@ -276,7 +274,6 @@ public abstract class ConvertPanel {
             }
         });
 
-        new CheckBoxPreferencesSynchronizer(checkboxStartGoogleEarth, r.getPreferences(), RouteConverter.START_GOOGLE_EARTH_PREFERENCE, false);
         new CheckBoxPreferencesSynchronizer(checkboxDuplicateFirstPosition, r.getPreferences(), RouteConverter.DUPLICATE_FIRST_POSITION_PREFERENCE, false);
         new CheckBoxPreferencesSynchronizer(checkBoxSaveAsRouteTrackWaypoints, r.getPreferences(), RouteConverter.SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE, true);
 
@@ -387,10 +384,11 @@ public abstract class ConvertPanel {
         textFieldSource.setText(path);
         r.setSourcePreference(path);
 
+        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    SwingUtilities.invokeLater(new Runnable() {
+                    SwingUtilities.invokeAndWait(new Runnable() {
                         public void run() {
                             Gpx11Format gpxFormat = new Gpx11Format();
                             //noinspection unchecked
@@ -399,6 +397,15 @@ public abstract class ConvertPanel {
                     });
 
                     final NavigationFileParser parser = new NavigationFileParser();
+                    parser.addNavigationFileParserListener(new NavigationFileParserListener() {
+                        public void reading(final NavigationFormat format) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    formatAndRoutesModel.setFormat(format);
+                                }
+                            });
+                        }
+                    });
                     if (parser.read(url)) {
                         log.info("Opened: " + path);
 
@@ -417,14 +424,26 @@ public abstract class ConvertPanel {
                             appendPositionList(append);
                         }
 
-                    } else
+                    } else {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                Gpx11Format gpxFormat = new Gpx11Format();
+                                //noinspection unchecked
+                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
+                            }
+                        });
                         r.handleUnsupportedFormat(path);
+                    }
                 } catch (BabelException e) {
                     r.handleBabelError(e);
                 } catch (Throwable t) {
-                    t.printStackTrace();
-                    log.severe("Open error: " + t.getMessage());
                     r.handleOpenError(t, path);
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                        }
+                    });
                 }
             }
         }, "UrlOpener").start();
@@ -434,6 +453,7 @@ public abstract class ConvertPanel {
     private void appendPositionList(final List<URL> urls) {
         final RouteConverter r = RouteConverter.getInstance();
 
+        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -457,21 +477,24 @@ public abstract class ConvertPanel {
                                             getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
                                         }
                                     } catch (IOException e) {
-                                        e.printStackTrace();
-                                        log.severe("Open error: " + e.getMessage());
                                         r.handleOpenError(e, path);
                                     }
                                 }
                             });
 
                         } else {
-                            log.severe("Unsupported format: " + path);
                             r.handleUnsupportedFormat(path);
                         }
                     }
                 } catch (Throwable t) {
                     log.severe("Append error: " + t.getMessage());
                     r.handleOpenError(t, urls);
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                        }
+                    });
                 }
             }
         }, "UrlAppender").start();
@@ -568,6 +591,7 @@ public abstract class ConvertPanel {
         }
 
         String targetsAsString = Files.printArrayToDialogString(targets);
+        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         try {
             boolean saveAsRouteTrackWaypoints = checkBoxSaveAsRouteTrackWaypoints.isSelected();
             if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
@@ -577,16 +601,14 @@ public abstract class ConvertPanel {
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
-
-            if (format instanceof KmlFormat && checkboxStartGoogleEarth.isSelected()) {
-                r.createExternalPrograms().startGoogleEarth(r.getFrame(), targets);
-            }
         } catch (Throwable t) {
             log.severe("Save error " + file + "," + format + ": " + t.getMessage());
 
             JOptionPane.showMessageDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-error"), Files.shortenPath(getSourceFileName()), targetsAsString, t.getMessage()),
                     r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+        } finally {
+            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         }
     }
 
@@ -697,12 +719,9 @@ public abstract class ConvertPanel {
     private void handleFormatUpdate() {
         boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
         boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
-        boolean existsASelectedPosition = tablePositions.getSelectedRowCount() > 0;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
-        // TODO nobody seems to use this checkboxStartGoogleEarth.setVisible(getFormat() instanceof KmlFormat);
-        checkboxStartGoogleEarth.setVisible(false);
         checkboxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
@@ -919,7 +938,7 @@ public abstract class ConvertPanel {
      */
     private void $$$setupUI$$$() {
         convertPanel = new JPanel();
-        convertPanel.setLayout(new GridLayoutManager(12, 3, new Insets(3, 3, 0, 3), -1, -1));
+        convertPanel.setLayout(new GridLayoutManager(11, 3, new Insets(3, 3, 0, 3), -1, -1));
         convertPanel.setMinimumSize(new Dimension(-1, -1));
         convertPanel.setPreferredSize(new Dimension(560, 560));
         final JLabel label1 = new JLabel();
@@ -990,12 +1009,9 @@ public abstract class ConvertPanel {
         buttonAddPosition.setText("");
         buttonAddPosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-tooltip"));
         panel1.add(buttonAddPosition, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkboxStartGoogleEarth = new JCheckBox();
-        this.$$$loadButtonText$$$(checkboxStartGoogleEarth, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("start-google-earth-after-save"));
-        convertPanel.add(checkboxStartGoogleEarth, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkboxDuplicateFirstPosition = new JCheckBox();
         this.$$$loadButtonText$$$(checkboxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
-        convertPanel.add(checkboxDuplicateFirstPosition, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        convertPanel.add(checkboxDuplicateFirstPosition, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel2, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

@@ -100,15 +100,12 @@ public class ImportPositionList implements ActionListener {
                                     try {
                                         model.add(row, parser.getTheRoute());
                                     } catch (IOException e) {
-                                        e.printStackTrace();
-                                        log.severe("Open error: " + e.getMessage());
                                         r.handleOpenError(e, path);
                                     }
                                 }
                             });
 
                         } else {
-                            log.severe("Unsupported format: " + path);
                             r.handleUnsupportedFormat(path);
                         }
                     }

@@ -95,6 +95,11 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
         return formatAndRoutes.getFormat();
     }
 
+    public void setFormat(NavigationFormat format) {
+        formatAndRoutes.setFormat(format);
+        fireContentsChanged(this, -1, -1);
+    }
+
     public void addRoute(int index, BaseRoute route) {
         getRoutes().add(index, route);
         fireIntervalAdded(this, index, index);

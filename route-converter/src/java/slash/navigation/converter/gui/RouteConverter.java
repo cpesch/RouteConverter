@@ -88,7 +88,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String TARGET_FORMAT_PREFERENCE = "targetFormat";
     private static final String ADD_POSITION_LONGITUDE_PREFERENCE = "addPositionLongitude";
     private static final String ADD_POSITION_LATITUDE_PREFERENCE = "addPositionLatitude";
-    public static final String START_GOOGLE_EARTH_PREFERENCE = "startGoogleEarth";
     public static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
     public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
@@ -378,6 +377,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final String path) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                throwable.printStackTrace();
+                log.severe("Open error: " + throwable.getMessage());
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
