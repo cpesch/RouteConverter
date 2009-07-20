@@ -425,7 +425,13 @@ public class Conversion {
         String trimmed = trim(string);
         if (trimmed != null) {
             trimmed = trimmed.replaceAll(",", ".");
-            return Double.parseDouble(trimmed);
+            try {
+                return Double.parseDouble(trimmed);
+            } catch (NumberFormatException e) {
+                if(trimmed.equals("\u221e"))
+                    return Double.POSITIVE_INFINITY;
+                throw e;
+            }
         } else
             return null;
     }
