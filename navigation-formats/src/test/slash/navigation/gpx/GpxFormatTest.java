@@ -150,7 +150,7 @@ public class GpxFormatTest extends NavigationTestCase {
         ObjectFactory gpxFactory = new ObjectFactory();
         slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
         ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(tbFactory.createSpeed(Conversion.formatDouble(123.45)));
+        extensionsType.getAny().add(tbFactory.createSpeed(Conversion.formatDouble(123.45, 2)));
         GpxType gpx = gpxFactory.createGpxType();
         gpx.setExtensions(extensionsType);
         assertNotNull(gpx);

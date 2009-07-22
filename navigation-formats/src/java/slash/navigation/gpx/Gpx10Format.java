@@ -180,10 +180,10 @@ public class Gpx10Format extends GpxFormat {
             Gpx.Wpt wpt = position.getOrigin(Gpx.Wpt.class);
             if (wpt == null || !reuseReadObjectsForWriting)
                 wpt = objectFactory.createGpxWpt();
-            wpt.setLat(Conversion.formatDouble(position.getLatitude()));
-            wpt.setLon(Conversion.formatDouble(position.getLongitude()));
+            wpt.setLat(Conversion.formatDouble(position.getLatitude(), 7));
+            wpt.setLon(Conversion.formatDouble(position.getLongitude(), 7));
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            wpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
+            wpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation(), 2) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             wpt.setName(isWriteName() ? asName(position.getComment()) : null);
@@ -214,10 +214,10 @@ public class Gpx10Format extends GpxFormat {
             Gpx.Rte.Rtept rtept = position.getOrigin(Gpx.Rte.Rtept.class);
             if (rtept == null || !reuseReadObjectsForWriting)
                 rtept = objectFactory.createGpxRteRtept();
-            rtept.setLat(Conversion.formatDouble(position.getLatitude()));
-            rtept.setLon(Conversion.formatDouble(position.getLongitude()));
+            rtept.setLat(Conversion.formatDouble(position.getLatitude(), 7));
+            rtept.setLon(Conversion.formatDouble(position.getLongitude(), 7));
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            rtept.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
+            rtept.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation(), 2) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             rtept.setName(isWriteName() ? asName(position.getComment()) : null);
@@ -249,12 +249,12 @@ public class Gpx10Format extends GpxFormat {
             Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
             if (trkpt == null || !reuseReadObjectsForWriting)
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
-            trkpt.setLat(Conversion.formatDouble(position.getLatitude()));
-            trkpt.setLon(Conversion.formatDouble(position.getLongitude()));
+            trkpt.setLat(Conversion.formatDouble(position.getLatitude(), 7));
+            trkpt.setLon(Conversion.formatDouble(position.getLongitude(), 7));
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            trkpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation()) : null);
+            trkpt.setEle(isWriteElevation() ? Conversion.formatDouble(position.getElevation(), 2) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
-                    Conversion.formatDouble(Conversion.kmhToMs(position.getSpeed())) : null);
+                    Conversion.formatDouble(Conversion.kmhToMs(position.getSpeed()), 3) : null);
             trkpt.setName(isWriteName() ? asName(position.getComment()) : null);
             trkpt.setDesc(isWriteName() ? asDesc(position.getComment(), trkpt.getDesc()) : null);
             trkseg.getTrkpt().add(trkpt);

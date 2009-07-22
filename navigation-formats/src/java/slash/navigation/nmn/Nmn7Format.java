@@ -92,8 +92,8 @@ public class Nmn7Format extends NmnFormat {
         result.setName(route.getName());
         for (NmnPosition position : route.getPositions()) {
             Route.Point point = objectFactory.createRoutePoint();
-            point.setX(Conversion.formatDouble(position.getLongitude()));
-            point.setY(Conversion.formatDouble(position.getLatitude()));
+            point.setX(Conversion.formatDouble(position.getLongitude(), 7));
+            point.setY(Conversion.formatDouble(position.getLatitude(), 7));
             point.setName(position.getComment());
             result.getPoint().add(point);
         }

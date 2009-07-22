@@ -22,6 +22,8 @@ package slash.navigation.util;
 
 import slash.navigation.TestCase;
 
+import java.math.BigDecimal;
+
 public class ConversionTest extends TestCase {
     public void testFeetToMeters() {
         assertEquals(4.572, Conversion.feetToMeters(15));
@@ -118,6 +120,13 @@ public class ConversionTest extends TestCase {
         assertEquals(1, Conversion.ceiling(1, 20, false));
     }
 
+    public void testRoundFraction() {
+        assertEquals(1.004, Conversion.roundFraction(1.004, 3));
+        assertEquals(1.004, Conversion.roundFraction(1.0044, 3));
+        assertEquals(1.005, Conversion.roundFraction(1.0045, 3));
+        assertEquals(1.005, Conversion.roundFraction(1.005, 3));
+    }
+
     public void testFormatDoubleAsString() {
         assertEquals("0.001", Conversion.formatDoubleAsString(0.001));
         assertEquals("0.0001", Conversion.formatDoubleAsString(0.0001));
@@ -143,4 +152,18 @@ public class ConversionTest extends TestCase {
         assertEquals(0.00001, Conversion.parseDouble("0.1E-4"));
         assertEquals(0.000001, Conversion.parseDouble("0.1E-5"));
     }
+
+    public void testFormatDoubleAsBigDecimal() {
+        assertEquals(new BigDecimal("1.0"), Conversion.formatDouble(1.0, 5));
+        assertEquals(new BigDecimal("1.5"), Conversion.formatDouble(1.5, 5));
+        assertEquals(new BigDecimal("1.05"), Conversion.formatDouble(1.05, 5));
+        assertEquals(new BigDecimal("1.005"), Conversion.formatDouble(1.005, 5));
+        assertEquals(new BigDecimal("1.00004"), Conversion.formatDouble(1.00004, 5));
+        assertEquals(new BigDecimal("1.00004"), Conversion.formatDouble(1.000044, 5));
+        assertEquals(new BigDecimal("1.00005"), Conversion.formatDouble(1.000045, 5));
+        assertEquals(new BigDecimal("1.00005"), Conversion.formatDouble(1.00005, 5));
+        assertEquals(new BigDecimal("1.0"), Conversion.formatDouble(1.000004, 5));
+        assertEquals(new BigDecimal("1.00001"), Conversion.formatDouble(1.000005, 5));
+    }
+
 }

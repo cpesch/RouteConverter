@@ -277,7 +277,7 @@ public class Conversion {
         double feet = (altitude - ALTITUDE_6m) *
                 (meterToFeets(ELEVATION_146m - ELEVATION_6m) / (ALTITUDE_146m - ALTITUDE_6m));
         double meters = feetToMeters(feet) + ELEVATION_6m;
-        return roundCeil2(meters);
+        return ceilFraction(meters, 2);
     }
 
     public static long elevationMetersToBcrAltitude(double elevation) {
@@ -291,33 +291,31 @@ public class Conversion {
     public static double ddmm2degrees(double ddmm) {
         double decimal = ddmm / 100.0;
         int asInt = (int) decimal;
-        double behindDot = roundFloor7(((decimal - asInt) * 100.0) / 60.0);
+        double behindDot = floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
         return asInt + behindDot;
     }
 
     public static double degrees2ddmm(double decimal) {
         int asInt = (int) decimal;
-        double behindDot = roundCeil7(decimal - asInt);
-        double behindDdMm = roundCeil4(behindDot * 60.0);
+        double behindDot = ceilFraction(decimal - asInt, 7);
+        double behindDdMm = ceilFraction(behindDot * 60.0, 4);
         return asInt * 100.0 + behindDdMm;
     }
 
-    private static double roundCeil2(double number) {
-        return Math.ceil(number * 100.0) / 100.0;
+    static double roundFraction(double number, int fractionCount) {
+        double factor = Math.pow(10, fractionCount);
+        return Math.round(number * factor) / factor;
     }
 
-    private static double roundCeil4(double number) {
-        return Math.ceil(number * 10000.0) / 10000.0;
+    private static double ceilFraction(double number, int fractionCount) {
+        double factor = Math.pow(10, fractionCount);
+        return Math.ceil(number * factor) / factor;
     }
 
-    private static double roundCeil7(double number) {
-        return Math.ceil(number * 10000000.0) / 10000000.0;
+    private static double floorFraction(double number, int fractionCount) {
+        double factor = Math.pow(10, fractionCount);
+        return Math.floor(number * factor) / factor;
     }
-
-    private static double roundFloor7(double number) {
-        return Math.floor(number * 10000000.0) / 10000000.0;
-    }
-
 
     public static double feetToMeters(double feet) {
         return feet * METER_OF_A_FEET;
@@ -377,8 +375,8 @@ public class Conversion {
         return buffer.toString();
     }
 
-    public static BigDecimal formatDouble(Double aDouble) {
-        return aDouble != null ? BigDecimal.valueOf(aDouble) : null;
+    public static BigDecimal formatDouble(Double aDouble, int fractionCount) {
+        return aDouble != null ? BigDecimal.valueOf(roundFraction(aDouble, fractionCount)) : null;
     }
 
     public static Double formatDouble(BigDecimal aBigDecimal) {
@@ -392,7 +390,7 @@ public class Conversion {
         DECIMAL_NUMBER_FORMAT.setMaximumFractionDigits(20);
     }
 
-    public static String formatDoubleAsString(Double aDouble, String nullValue) {
+    private static String formatDoubleAsString(Double aDouble, String nullValue) {
         if (aDouble == null)
             return nullValue;
         return DECIMAL_NUMBER_FORMAT.format(aDouble);
