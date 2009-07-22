@@ -121,6 +121,10 @@ public class ConversionTest extends TestCase {
     }
 
     public void testRoundFraction() {
+        assertEquals(1.0, Conversion.roundFraction(1.1, 0));
+        assertEquals(1.1, Conversion.roundFraction(1.1, 1));
+        assertEquals(11.0, Conversion.roundFraction(11.1, 0));
+        assertEquals(11.1, Conversion.roundFraction(11.1, 1));
         assertEquals(1.004, Conversion.roundFraction(1.004, 3));
         assertEquals(1.004, Conversion.roundFraction(1.0044, 3));
         assertEquals(1.005, Conversion.roundFraction(1.0045, 3));

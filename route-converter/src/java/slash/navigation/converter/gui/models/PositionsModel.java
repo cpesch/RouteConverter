@@ -152,7 +152,14 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     private String formatSpeed(Double speed) {
-        return speed != null ? Math.round(speed) + " km/h" : "";
+        if (speed == null)
+            return "";
+        String speedStr;
+        if(Math.abs(speed) < 10.0)
+            speedStr = Double.toString(Conversion.roundFraction(speed, 1));
+        else
+            speedStr = Long.toString(Math.round(speed));
+        return speedStr + " Km/h";
     }
 
     private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {

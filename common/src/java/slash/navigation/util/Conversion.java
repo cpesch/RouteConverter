@@ -302,7 +302,7 @@ public class Conversion {
         return asInt * 100.0 + behindDdMm;
     }
 
-    static double roundFraction(double number, int fractionCount) {
+    public static double roundFraction(double number, int fractionCount) {
         double factor = Math.pow(10, fractionCount);
         return Math.round(number * factor) / factor;
     }
