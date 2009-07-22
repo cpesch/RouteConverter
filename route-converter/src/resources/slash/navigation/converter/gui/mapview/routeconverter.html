@@ -100,7 +100,7 @@
    }
 
    function createDirections() {
-       var directions = new GDirections(map, document.getElementById("directions"));
+       var directions = new GDirections(null, document.getElementById("directions"));
        GEvent.addListener(directions, "load", function() {
            callJava("load/" + directions.getDistance().meters + "/" + directions.getDuration().seconds);
 
