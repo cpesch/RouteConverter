@@ -210,7 +210,7 @@ public abstract class BaseNavigationPosition {
             double interval = Math.abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
 
             Double distance = calculateDistance(other);
-            if (distance != null)
+            if (distance != null && interval > 0.0)
                 return distance / interval * 3.6;
         }
         return null;
