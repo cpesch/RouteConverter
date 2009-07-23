@@ -21,18 +21,18 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.awt.*;
 
 /**
  * Helps to augment positions with elevation, postal address and populated place information.

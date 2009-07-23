@@ -26,7 +26,6 @@ import slash.navigation.NavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
 import slash.navigation.babel.BabelException;
-import slash.navigation.converter.gui.mapview.JdicMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.EclipseSWTMapView;
@@ -161,7 +160,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        if (JdicMapView.isSupportedPlatform()) {
+        if (EclipseSWTMapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
         } else {
@@ -182,10 +181,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        // not possible with Eclipse SWT
-        // new Thread(new Runnable() {
-        //    public void run() {
-        //        // can do this outside of Swing
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
                 mapView = new EclipseSWTMapView(getConvertPanel().getPositionsModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
@@ -195,42 +192,40 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 for (MapViewListener mapViewListener : mapViewListeners)
                     mapView.addMapViewListener(mapViewListener);
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-                        Throwable cause = mapView.getInitializationCause();
-                        if (mapView.getComponent() == null || cause != null) {
-                            StringWriter stackTrace = new StringWriter();
-                            cause.printStackTrace(new PrintWriter(stackTrace));
-                            mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
-                        } else {
-                            mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
-                        }
+                @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+                Throwable cause = mapView.getInitializationCause();
+                if (mapView.getComponent() == null || cause != null) {
+                    StringWriter stackTrace = new StringWriter();
+                    cause.printStackTrace(new PrintWriter(stackTrace));
+                    mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                } else {
+                    mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
+                }
 
-                        int location = preferences.getInt(DIVIDER_LOCATION_PREFERENCE, -1);
-                        if (location > 0)
-                            splitPane.setDividerLocation(location);
-                        else
-                            splitPane.setDividerLocation(300);
+                int location = preferences.getInt(DIVIDER_LOCATION_PREFERENCE, -1);
+                if (location > 0)
+                    splitPane.setDividerLocation(location);
+                else
+                    splitPane.setDividerLocation(300);
 
-                        splitPane.addPropertyChangeListener(new PropertyChangeListener() {
-                            private int location = 0;
+                splitPane.addPropertyChangeListener(new PropertyChangeListener() {
+                    private int location = 0;
 
-                            public void propertyChange(PropertyChangeEvent e) {
-                                if (!isMapViewAvailable())
-                                    return;
+                    public void propertyChange(PropertyChangeEvent e) {
+                        if (!isMapViewAvailable())
+                            return;
 
-                                if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
-                                    if (splitPane.getDividerLocation() != location) {
-                                        location = splitPane.getDividerLocation();
-                                        mapView.resize();
-                                        preferences.putInt(DIVIDER_LOCATION_PREFERENCE, splitPane.getDividerLocation());
-                                    }
-                                }
+                        if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+                            if (splitPane.getDividerLocation() != location) {
+                                location = splitPane.getDividerLocation();
+                                mapView.resize();
+                                preferences.putInt(DIVIDER_LOCATION_PREFERENCE, splitPane.getDividerLocation());
                             }
-                        });
+                        }
                     }
                 });
+            }
+        });
     }
 
     protected void shutdown() {
