@@ -21,6 +21,8 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
 
 import java.awt.*;
 
@@ -31,11 +33,14 @@ import java.awt.*;
  */
 
 public interface MapView {
-    Component getComponent();
-
+    void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+                    boolean pedestrians, boolean avoidHighways);
+    boolean isSupportedPlatform();
     boolean isInitialized();
     Throwable getInitializationCause();
     void dispose();
+
+    Component getComponent();
 
     void resize();
     void setSelectedPositions(int[] selectedPositions);

@@ -102,16 +102,16 @@ public class JdicMapView implements MapView {
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
+    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
     private int scrollBarSize = 0;
     private Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
-    public static boolean isSupportedPlatform() {
+    public boolean isSupportedPlatform() {
         return Platform.isLinux() || Platform.isWindows();
     }
 
-    public JdicMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
-                       boolean pedestrians, boolean avoidHighways) {
-        debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
+    public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+                           boolean pedestrians, boolean avoidHighways) {
         initialize();
         setModel(positionsModel, characteristicsModel);
         this.pedestrians = pedestrians;

@@ -95,20 +95,20 @@ public class EclipseSWTMapView implements MapView {
     private PositionsModel positionsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
-    private boolean debug, initialized = false, running = true, pedestrians, avoidHighways,
+    private boolean initialized = false, running = true, pedestrians, avoidHighways,
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
+    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
     private Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
-    public static boolean isSupportedPlatform() {
+    public boolean isSupportedPlatform() {
         return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
     }
 
-    public EclipseSWTMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
-                             boolean pedestrians, boolean avoidHighways) {
-        debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
+    public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+                           boolean pedestrians, boolean avoidHighways) {
         initialize();
         setModel(positionsModel, characteristicsModel);
         this.pedestrians = pedestrians;

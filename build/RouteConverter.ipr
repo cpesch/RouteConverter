@@ -329,7 +329,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
-    <option name="state" value="http://www.routeconverter.de/subversion/RouteConverter/branches/eclipseswt-djnative/build/RouteConverter.ipr" />
+    <option name="state" value="http://www.routeconverter.de/subversion/RouteConverter/trunk/build/RouteConverter.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>

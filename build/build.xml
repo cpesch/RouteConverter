@@ -27,12 +27,20 @@
         <property name="javac.debug" value="false"/>
         <property file="build/build.properties"/>
         <property name="build.output" location="build/output"/>
-        <property name="build.output.tmp" location="${build.output}/tmp"/>
-        <property name="build.output.tmp5" location="${build.output}/tmp5"/>
-        <property name="build.output.tmp5-gui" location="${build.output}/tmp5-gui"/>
         <property name="build.output.tmp-linux" location="${build.output}/tmp-linux"/>
         <property name="build.output.tmp-mac" location="${build.output}/tmp-mac"/>
         <property name="build.output.tmp-windows" location="${build.output}/tmp-windows"/>
+        <property name="build.output.tmp-thirdparty" location="${build.output}/tmp-thirdparty"/>
+        <property name="build.output.tmp-thirdparty5" location="${build.output}/tmp-thirdparty5"/>
+        <property name="build.output.tmp-jdic" location="${build.output}/tmp-jdic"/>
+        <property name="build.output.tmp-jdic-linux" location="${build.output}/tmp-jdic-linux"/>
+        <property name="build.output.tmp-jdic-mac" location="${build.output}/tmp-jdic-mac"/>
+        <property name="build.output.tmp-jdic-windows" location="${build.output}/tmp-jdic-windows"/>
+        <property name="build.output.tmp-djproject" location="${build.output}/tmp-djproject"/>
+        <property name="build.output.tmp-jna" location="${build.output}/tmp-jna"/>
+        <property name="build.output.tmp-swt-mac" location="${build.output}/tmp-swt-mac"/>
+        <property name="build.output.tmp-swt-linux" location="${build.output}/tmp-swt-linux"/>
+        <property name="build.output.tmp-swt-windows" location="${build.output}/tmp-swt-windows"/>
         <property name="build.output.src" location="${build.output}/src"/>
         <property name="build.output.javadoc" location="${build.output}/javadoc"/>
         <property name="build.test.dir" location="${build.output}/test"/>
@@ -128,15 +136,15 @@
         <property name="eclipse.swt.win32.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86.jar"/>
         <property name="intellij.forms.lib" location="thirdparty/intellij/forms-rt/lib/forms-rt-6.0.5-stripped.jar"/>
         <property name="junit.junit.lib" location="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
-        <property name="sun.javaws.lib" location="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
         <property name="sun.activation.lib" location="thirdparty/sun/activation/lib/activation-1.1.jar"/>
+        <property name="sun.javaws.lib" location="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
         <property name="sun.jaxb.api.lib" location="thirdparty/sun/jaxb-api/lib/jaxb-api-2.0.5.jar"/>
-	<property name="sun.jna.lib" location="thirdparty/sun/jna/lib/jna-3.0.7.jar"/>
-        <property name="sun.jsr173.api.lib" location="thirdparty/sun/jsr173-api/lib/jsr173-api-1.0.jar"/>
-        <property name="sun.jsr173.impl.lib" location="thirdparty/sun/jsr173-impl/lib/jsr173-impl-1.0.jar"/>
         <property name="sun.jaxb.impl.lib" location="thirdparty/sun/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar"/>
         <property name="sun.jaxb.jdk6.impl.lib" location="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
         <property name="sun.jdic.lib" location="thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar"/>
+        <property name="sun.jna.lib" location="thirdparty/sun/jna/lib/jna-3.0.7.jar"/>
+        <property name="sun.jsr173.api.lib" location="thirdparty/sun/jsr173-api/lib/jsr173-api-1.0.jar"/>
+        <property name="sun.jsr173.impl.lib" location="thirdparty/sun/jsr173-impl/lib/jsr173-impl-1.0.jar"/>
 
         <property name="gpsbabel.bin" location="thirdparty/gpsbabel/gpsbabel/bin-1.3.6"/>
         <property name="sun.jdic.bin" location="thirdparty/sun/jdic/bin-0.9.3"/>
@@ -411,9 +419,6 @@
     <target name="copy-native" depends="init">
         <mkdir dir="${build.output.tmp-linux}/bin"/>
         <copy todir="${build.output.tmp-linux}/bin">
-            <fileset dir="${sun.jdic.bin}">
-                <include name="linux/**"/>
-            </fileset>
             <fileset dir="${gpsbabel.bin}">
                 <include name="linux/**"/>
             </fileset>
@@ -421,9 +426,6 @@
 
         <mkdir dir="${build.output.tmp-mac}/bin"/>
         <copy todir="${build.output.tmp-mac}/bin">
-            <fileset dir="${sun.jdic.bin}">
-                <include name="mac_os_x/**"/>
-            </fileset>
             <fileset dir="${gpsbabel.bin}">
                 <include name="mac_os_x/**"/>
             </fileset>
@@ -431,13 +433,140 @@
 
         <mkdir dir="${build.output.tmp-windows}/bin"/>
         <copy todir="${build.output.tmp-windows}/bin">
-            <fileset dir="${sun.jdic.bin}">
-                <include name="windows/**"/>
-            </fileset>
             <fileset dir="${gpsbabel.bin}">
                 <include name="windows/**"/>
             </fileset>
         </copy>
+
+        <mkdir dir="${build.output.tmp-jdic-linux}/bin"/>
+        <copy todir="${build.output.tmp-jdic.linux}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="linux/**"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${build.output.tmp-jdic-mac}/bin"/>
+        <copy todir="${build.output.tmp-jdic-mac}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="mac_os_x/**"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${build.output.tmp-jdic-windows}/bin"/>
+        <copy todir="${build.output.tmp-jdic-windows}/bin">
+            <fileset dir="${sun.jdic.bin}">
+                <include name="windows/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="unjar-jars" depends="init">
+        <mkdir dir="${build.output.tmp-thirdparty}"/>
+        <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp-thirdparty}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${apache.commons-httpclient.lib}" dest="${build.output.tmp-thirdparty}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp-thirdparty}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${intellij.forms.lib}" dest="${build.output.tmp-thirdparty}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-jdic}"/>
+        <unjar src="${sun.jdic.lib}" dest="${build.output.tmp-jdic}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-swt-windows}"/>
+        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.dll"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-swt-linux}"/>
+        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}">
+            <patternset>
+                <include name="**/*.class"/>
+		<include name="**/*.properties"/>
+                <include name="**/*.so"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-swt-mac}"/>
+        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.output.tmp-swt-mac}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.jnilib"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-djproject}"/>
+        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp-djproject}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp-djproject}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.gif"/>
+                <include name="**/WebBrowser.properties"/>
+            </patternset>
+        </unjar>
+    </target>
+
+    <target name="unjar-jars5" depends="init">
+        <mkdir dir="${build.output.tmp-thirdparty5}"/>
+        <unjar src="${sun.activation.lib}" dest="${build.output.tmp-thirdparty5}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jaxb.api.lib}" dest="${build.output.tmp-thirdparty5}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.properties"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jaxb.impl.lib}" dest="${build.output.tmp-thirdparty5}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.properties"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jsr173.api.lib}" dest="${build.output.tmp-thirdparty5}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jsr173.impl.lib}" dest="${build.output.tmp-thirdparty5}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-jna}"/>
+        <unjar src="${sun.jna.lib}" dest="${build.output.tmp-jna}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.so"/>
+            </patternset>
+        </unjar>
     </target>
 
     <target name="idea" depends="idea6,idea5"/>
@@ -472,7 +601,7 @@
         </copy>
     </target>
 
-    <target name="copy-resources" depends="init,copy-native">
+    <target name="copy-resources" depends="init,copy-native,unjar-jars">
         <mkdir dir="${common.output.classes}"/>
         <copy todir="${common.output.classes}">
             <fileset dir="${common.resources}">
@@ -489,7 +618,7 @@
         </copy>
     </target>
 
-    <target name="copy-resources5" depends="init5,copy-native">
+    <target name="copy-resources5" depends="init5,copy-native,unjar-jars,unjar-jars5">
         <mkdir dir="${common.output.classes5}"/>
         <copy todir="${common.output.classes5}">
             <fileset dir="${common.resources}">
@@ -955,71 +1084,50 @@
 
     <!-- Jars all classes and resources -->
     <target name="jar" depends="init,compile,prepare-jar">
-        <delete dir="${build.output.tmp}"/>
-        <mkdir dir="${build.output.tmp}"/>
-
-        <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${apache.commons-httpclient.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${intellij.forms.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <!--
-        <unjar src="${sun.jdic.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        -->
-        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.gif"/>
-                <include name="**/WebBrowser.properties"/>
-            </patternset>
-        </unjar>
-
-        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-windows}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.dll"/>
-            </patternset>
-        </unjar>
-
         <jar destfile="${build.output}/RouteConverter.jar">
-            <fileset dir="${build.output.tmp}"/>
+            <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-windows}"/>
+            <fileset dir="${build.output.tmp-jdic-windows}"/>
             <fileset dir="${catalog.output.classes}"/>
             <fileset dir="${common.output.classes}"/>
             <fileset dir="${common-gui.output.classes}"/>
             <fileset dir="${geonames.output.classes}"/>
             <fileset dir="${googlemaps.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
-            <!--
             <fileset dir="${jdic-mapview.output.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
-            -->
+            <fileset dir="${mapview.output.classes}"/>
+            <fileset dir="${navigation-formats.output.classes}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${rest.output.classes}"/>
+            <fileset dir="${route-converter.output.classes}"/>
+            <fileset dir="${route-converter6.output.classes}"/>
+            <fileset file="${license}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter6"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${build.output}/RouteConverterSWT.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-windows}"/>
+            <fileset dir="${build.output.tmp-djproject}"/>
+            <fileset dir="${build.output.tmp-swt-windows}"/>
+            <fileset dir="${catalog.output.classes}"/>
+            <fileset dir="${common.output.classes}"/>
+            <fileset dir="${common-gui.output.classes}"/>
+            <fileset dir="${geonames.output.classes}"/>
+            <fileset dir="${googlemaps.output.classes}"/>
+            <fileset dir="${jaxb6.output.classes}"/>
             <fileset dir="${mapview.output.classes}"/>
             <fileset dir="${navigation-formats.output.classes}">
                 <exclude name="**/*.dll"/>
@@ -1042,122 +1150,22 @@
     </target>
 
     <target name="jar5" depends="init5,compile5,prepare-jar">
-        <delete dir="${build.output.tmp5}"/>
-        <mkdir dir="${build.output.tmp5}"/>
-        <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp5}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.activation.lib}" dest="${build.output.tmp5}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jaxb.api.lib}" dest="${build.output.tmp5}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.properties"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jaxb.impl.lib}" dest="${build.output.tmp5}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.properties"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jsr173.api.lib}" dest="${build.output.tmp5}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jsr173.impl.lib}" dest="${build.output.tmp5}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-
-        <delete dir="${build.output.tmp5-gui}"/> 
-        <mkdir dir="${build.output.tmp5-gui}"/>
-        <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${apache.commons-httpclient.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${intellij.forms.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <!--
-        <unjar src="${sun.jdic.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        -->
-        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-            </patternset>
-        </unjar>
-        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.gif"/>
-                <include name="**/WebBrowser.properties"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jna.lib}" dest="${build.output.tmp5-gui}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.so"/>
-            </patternset>
-        </unjar>
-
-        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-linux}">
-            <patternset>
-                <include name="**/*.class"/>
-		<include name="**/*.properties"/>
-                <include name="**/*.so"/>
-            </patternset>
-        </unjar>
-        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.output.tmp-mac}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.jnilib"/>
-            </patternset>
-        </unjar>
-        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-windows}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.dll"/>
-            </patternset>
-        </unjar>
-
-        <jar destfile="${build.output}/RouteConverterJava5.jar">
-            <fileset dir="${build.output.tmp5}"/>
-            <fileset dir="${build.output.tmp5-gui}"/>
+        <jar destfile="${build.output}/RouteConverterLinux.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-linux}"/>
-            <fileset dir="${build.output.tmp-mac}"/>
-            <fileset dir="${build.output.tmp-windows}"/>
+            <fileset dir="${build.output.tmp-jdic}"/>
+            <fileset dir="${build.output.tmp-jdic-linux}"/>
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <!--
             <fileset dir="${jdic-mapview.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
-            -->
             <fileset dir="${mapview.output.classes5}"/>
             <fileset dir="${navigation-formats.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -1166,7 +1174,6 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
-            <fileset dir="${swt-mapview.output.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1178,22 +1185,19 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterLinux.jar">
-            <fileset dir="${build.output.tmp5}"/>
-            <fileset dir="${build.output.tmp5-gui}"/>
+        <jar destfile="${build.output}/RouteConverterLinuxSWT.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-linux}"/>
+            <fileset dir="${build.output.tmp-djproject}"/>
+            <fileset dir="${build.output.tmp-jna}"/>
+            <fileset dir="${build.output.tmp-swt-linux}"/>
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <!--
-            <fileset dir="${jdic-mapview.output.classes5}">
-                <exclude name="**/*.dll"/>
-                <exclude name="**/*.exe"/>
-            </fileset>
-            -->
             <fileset dir="${mapview.output.classes5}"/>
             <fileset dir="${navigation-formats.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -1215,21 +1219,53 @@
         </jar>
 
         <jar destfile="${build.output}/RouteConverterMac.jar">
-            <fileset dir="${build.output.tmp5}"/>
-            <fileset dir="${build.output.tmp5-gui}"/>
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-mac}"/>
+            <fileset dir="${build.output.tmp-jdic}"/>
+            <fileset dir="${build.output.tmp-jdic-mac}"/>
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <!--
             <fileset dir="${jdic-mapview.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
-            -->
+            <fileset dir="${mapview.output.classes5}"/>
+            <fileset dir="${navigation-formats.output.classes5}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${rest.output.classes5}"/>
+            <fileset dir="${route-converter.output.classes5}"/>
+            <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset file="${license}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${build.output}/RouteConverterMacSWT.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-thirdparty5}"/>
+            <fileset dir="${build.output.tmp-mac}"/>
+            <fileset dir="${build.output.tmp-djproject}"/>
+            <fileset dir="${build.output.tmp-jna}"/>
+            <fileset dir="${build.output.tmp-swt-mac}"/>
+            <fileset dir="${catalog.output.classes5}"/>
+            <fileset dir="${common.output.classes5}"/>
+            <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${googlemaps.output.classes5}"/>
+            <fileset dir="${jaxb5.output.classes5}"/>
             <fileset dir="${mapview.output.classes5}"/>
             <fileset dir="${navigation-formats.output.classes5}">
                 <exclude name="**/*.dll"/>
@@ -1251,7 +1287,8 @@
         </jar>
 
         <jar destfile="${build.output}/RouteConverterCmdLine.jar">
-            <fileset dir="${build.output.tmp5}"/>
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${common.output.classes5}">
                 <exclude name="**/*.properties"/>
             </fileset>

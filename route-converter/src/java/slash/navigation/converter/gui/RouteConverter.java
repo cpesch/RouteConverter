@@ -22,13 +22,12 @@ package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.navigation.NavigationFormat;
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.NavigationFormat;
 import slash.navigation.Wgs84Position;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
-import slash.navigation.converter.gui.mapview.EclipseSWTMapView;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
@@ -160,7 +159,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        if (EclipseSWTMapView.isSupportedPlatform()) {
+        mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
+        if(mapView == null)
+            mapView = createMapView("slash.navigation.converter.gui.mapview.JdicMapView");
+        if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
         } else {
@@ -180,10 +182,20 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }, "FrameOpener").start();
     }
 
+    private MapView createMapView(String className) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            return (MapView) clazz.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private void openMapView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                mapView = new EclipseSWTMapView(getConvertPanel().getPositionsModel(),
+                mapView.initialize(getConvertPanel().getPositionsModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
