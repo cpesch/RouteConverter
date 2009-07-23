@@ -32,7 +32,6 @@
         <property name="build.output.tmp5-gui" location="${build.output}/tmp5-gui"/>
         <property name="build.output.tmp-linux" location="${build.output}/tmp-linux"/>
         <property name="build.output.tmp-mac" location="${build.output}/tmp-mac"/>
-        <property name="build.output.tmp-solaris" location="${build.output}/tmp-solaris"/>
         <property name="build.output.tmp-windows" location="${build.output}/tmp-windows"/>
         <property name="build.output.src" location="${build.output}/src"/>
         <property name="build.output.javadoc" location="${build.output}/javadoc"/>
@@ -78,10 +77,15 @@
         <property name="jaxb6.output" location="jaxb6/output"/>
         <property name="jaxb6.output.classes" location="${jaxb6.output}/classes"/>
 
-        <property name="jdic-0.9.3.src" location="jdic-0.9.3/src"/>
-        <property name="jdic-0.9.3.src.java" location="${jdic-0.9.3.src}/java"/>
-        <property name="jdic-0.9.3.output" location="jdic-0.9.3/output"/>
-        <property name="jdic-0.9.3.output.classes" location="${jdic-0.9.3.output}/classes"/>
+        <property name="jdic-mapview.src" location="jdic-mapview/src"/>
+        <property name="jdic-mapview.src.java" location="${jdic-mapview.src}/java"/>
+        <property name="jdic-mapview.output" location="jdic-mapview/output"/>
+        <property name="jdic-mapview.output.classes" location="${jdic-mapview.output}/classes"/>
+
+        <property name="mapview.src" location="mapview/src"/>
+        <property name="mapview.src.java" location="${mapview.src}/java"/>
+        <property name="mapview.output" location="mapview/output"/>
+        <property name="mapview.output.classes" location="${mapview.output}/classes"/>
 
         <property name="navigation-formats.src" location="navigation-formats/src"/>
         <property name="navigation-formats.src.java" location="${navigation-formats.src}/java"/>
@@ -109,14 +113,25 @@
         <property name="route-converter-cmdline.resources" location="${route-converter-cmdline.src}/resources"/>
         <property name="route-converter-cmdline.output" location="route-converter-cmdline/output"/>
 
+        <property name="swt-mapview.src" location="swt-mapview/src"/>
+        <property name="swt-mapview.src.java" location="${swt-mapview.src}/java"/>
+        <property name="swt-mapview.output" location="swt-mapview/output"/>
+        <property name="swt-mapview.output.classes" location="${swt-mapview.output}/classes"/>
+
         <property name="apache.commons-codec.lib" location="thirdparty/apache/commons-codec/lib/commons-codec-1.3-stripped.jar"/>
         <property name="apache.commons-httpclient.lib" location="thirdparty/apache/commons-httpclient/lib/commons-httpclient-3.1-stripped.jar"/>
         <property name="apache.commons-logging.lib" location="thirdparty/apache/commons-logging/lib/commons-logging-1.1-stripped.jar"/>
+        <property name="djproject.nativeswing.lib" location="thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar"/>
+        <property name="djproject.nativeswing-swt.lib" location="thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8.jar"/>
+        <property name="eclipse.swt.linux.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-gtk-linux-x86.jar"/>
+        <property name="eclipse.swt.mac.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-cocoa-macosx.jar"/>
+        <property name="eclipse.swt.win32.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86.jar"/>
         <property name="intellij.forms.lib" location="thirdparty/intellij/forms-rt/lib/forms-rt-6.0.5-stripped.jar"/>
         <property name="junit.junit.lib" location="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
         <property name="sun.javaws.lib" location="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
         <property name="sun.activation.lib" location="thirdparty/sun/activation/lib/activation-1.1.jar"/>
         <property name="sun.jaxb.api.lib" location="thirdparty/sun/jaxb-api/lib/jaxb-api-2.0.5.jar"/>
+	<property name="sun.jna.lib" location="thirdparty/sun/jna/lib/jna-3.0.7.jar"/>
         <property name="sun.jsr173.api.lib" location="thirdparty/sun/jsr173-api/lib/jsr173-api-1.0.jar"/>
         <property name="sun.jsr173.impl.lib" location="thirdparty/sun/jsr173-impl/lib/jsr173-impl-1.0.jar"/>
         <property name="sun.jaxb.impl.lib" location="thirdparty/sun/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar"/>
@@ -183,11 +198,18 @@
             <path location="${jaxb6.output.classes}"/>
         </path>
 
-        <path id="jdic-0.9.3.classpath">
+        <path id="jdic-mapview.classpath">
             <path location="${sun.javaws.lib}"/>
             <path location="${sun.jdic.lib}"/>
             <path refid="common.classpath"/>
-            <path location="${jdic-0.9.3.output.classes}"/>
+            <path refid="mapview.classpath"/>
+            <path location="${jdic-mapview.output.classes}"/>
+        </path>
+
+        <path id="mapview.classpath">
+            <path refid="common.classpath"/>
+            <path refid="navigation-formats.classpath"/>
+            <path location="${mapview.output.classes}"/>
         </path>
 
         <path id="navigation-formats.classpath">
@@ -218,8 +240,18 @@
             <path refid="geonames.classpath"/>
             <path refid="googlemaps.classpath"/>
             <path refid="navigation-formats.classpath"/>
-            <path refid="jdic-0.9.3.classpath"/>
+            <path refid="mapview.classpath"/>
+            <path refid="jdic-mapview.classpath"/>
+            <path refid="swt-mapview.classpath"/>
             <path location="${route-converter.output.classes}"/>
+        </path>
+
+        <path id="swt-mapview.classpath">
+            <path location="${djproject.nativeswing.lib}"/>
+            <path location="${djproject.nativeswing-swt.lib}"/>
+            <path refid="common.classpath"/>
+            <path refid="mapview.classpath"/>
+            <path location="${swt-mapview.output.classes}"/>
         </path>
 
         <condition property="java5">
@@ -243,7 +275,8 @@
         <property name="jaxb5.src.java" location="jaxb5/src/java"/>
         <property name="jaxb5.output" location="jaxb5/output"/>
         <property name="jaxb5.output.classes5" location="${jaxb5.output}/classes5"/>
-        <property name="jdic-0.9.3.output.classes5" location="${jdic-0.9.3.output}/classes5"/>
+        <property name="jdic-mapview.output.classes5" location="${jdic-mapview.output}/classes5"/>
+        <property name="mapview.output.classes5" location="${mapview.output}/classes5"/>
         <property name="navigation-formats.output.classes5" location="${navigation-formats.output}/classes5"/>
         <property name="navigation-formats.output.testclasses5" location="${navigation-formats.output}/testclasses5"/>
         <property name="rest.output.classes5" location="${rest.output}/classes5"/>
@@ -253,6 +286,7 @@
         <property name="route-converter5.output" location="route-converter5/output"/>
         <property name="route-converter5.output.classes5" location="${route-converter5.output}/classes5"/>
         <property name="route-converter-cmdline.output.classes5" location="${route-converter-cmdline.output}/classes5"/>
+        <property name="swt-mapview.output.classes5" location="${swt-mapview.output}/classes5"/>
 
         <path id="catalog.classpath5">
             <path refid="navigation-formats.classpath5"/>
@@ -310,11 +344,18 @@
             <path location="${jaxb5.output.classes5}"/>
         </path>
 
-        <path id="jdic-0.9.3.classpath5">
+        <path id="jdic-mapview.classpath5">
             <path location="${sun.javaws.lib}"/>
             <path location="${sun.jdic.lib}"/>
             <path refid="common.classpath5"/>
-            <path location="${jdic-0.9.3.output.classes5}"/>
+            <path refid="mapview.classpath5"/>
+            <path location="${jdic-mapview.output.classes5}"/>
+        </path>
+
+        <path id="mapview.classpath5">
+            <path refid="common.classpath5"/>
+            <path refid="navigation-formats.classpath5"/>
+            <path location="${mapview.output.classes5}"/>
         </path>
 
         <path id="navigation-formats.classpath5">
@@ -346,7 +387,9 @@
             <path refid="geonames.classpath5"/>
             <path refid="googlemaps.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
-            <path refid="jdic-0.9.3.classpath5"/>
+            <path refid="mapview.classpath5"/>
+            <path refid="jdic-mapview.classpath5"/>
+            <path refid="swt-mapview.classpath5"/>
             <path location="${route-converter.output.classes5}"/>
         </path>
 
@@ -354,6 +397,14 @@
             <path refid="common.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
             <path location="${route-converter-cmdline.output.classes5}"/>
+        </path>
+
+        <path id="swt-mapview.classpath5">
+            <path location="${djproject.nativeswing.lib}"/>
+            <path location="${djproject.nativeswing-swt.lib}"/>
+            <path refid="common.classpath5"/>
+            <path refid="mapview.classpath5"/>
+            <path location="${swt-mapview.output.classes5}"/>
         </path>
     </target>
 
@@ -378,16 +429,6 @@
             </fileset>
         </copy>
 
-        <mkdir dir="${build.output.tmp-solaris}/bin"/>
-        <copy todir="${build.output.tmp-solaris}/bin">
-            <fileset dir="${sun.jdic.bin}">
-                <include name="sunos/**"/>
-            </fileset>
-            <fileset dir="${gpsbabel.bin}">
-                <include name="sunos/**"/>
-            </fileset>
-        </copy>
-
         <mkdir dir="${build.output.tmp-windows}/bin"/>
         <copy todir="${build.output.tmp-windows}/bin">
             <fileset dir="${sun.jdic.bin}">
@@ -408,8 +449,8 @@
                 <include name="windows/**"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-0.9.3.output.classes}/bin"/>
-        <copy todir="${jdic-0.9.3.output.classes}/bin">
+        <mkdir dir="${jdic-mapview.output.classes}/bin"/>
+        <copy todir="${jdic-mapview.output.classes}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>
@@ -423,8 +464,8 @@
                 <include name="windows/**"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-0.9.3.output.classes5}/bin"/>
-        <copy todir="${jdic-0.9.3.output.classes5}/bin">
+        <mkdir dir="${jdic-mapview.output.classes5}/bin"/>
+        <copy todir="${jdic-mapview.output.classes5}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>
@@ -493,16 +534,28 @@
             <classpath refid="jaxb6.classpath"/>
         </javac>
 
-        <mkdir dir="${jdic-0.9.3.output.classes}"/>
-        <javac destdir="${jdic-0.9.3.output.classes}" debug="${javac.debug}">
-            <src location="${jdic-0.9.3.src.java}"/>
-            <classpath refid="jdic-0.9.3.classpath"/>
-        </javac>
-
         <mkdir dir="${navigation-formats.output.classes}"/>
         <javac destdir="${navigation-formats.output.classes}" debug="${javac.debug}">
             <src location="${navigation-formats.src.java}"/>
             <classpath refid="navigation-formats.classpath"/>
+        </javac>
+
+        <mkdir dir="${mapview.output.classes}"/>
+        <javac destdir="${mapview.output.classes}" debug="${javac.debug}">
+            <src location="${mapview.src.java}"/>
+            <classpath refid="mapview.classpath"/>
+        </javac>
+
+        <mkdir dir="${jdic-mapview.output.classes}"/>
+        <javac destdir="${jdic-mapview.output.classes}" debug="${javac.debug}">
+            <src location="${jdic-mapview.src.java}"/>
+            <classpath refid="jdic-mapview.classpath"/>
+        </javac>
+
+        <mkdir dir="${swt-mapview.output.classes}"/>
+        <javac destdir="${swt-mapview.output.classes}" debug="${javac.debug}">
+            <src location="${swt-mapview.src.java}"/>
+            <classpath refid="swt-mapview.classpath"/>
         </javac>
 
         <mkdir dir="${rest.output.classes}"/>
@@ -606,16 +659,28 @@
             <classpath refid="jaxb5.classpath"/>
         </javac>
 
-        <mkdir dir="${jdic-0.9.3.output.classes5}"/>
-        <javac destdir="${jdic-0.9.3.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
-            <src location="${jdic-0.9.3.src.java}"/>
-            <classpath refid="jdic-0.9.3.classpath5"/>
-        </javac>
-
         <mkdir dir="${navigation-formats.output.classes5}"/>
         <javac destdir="${navigation-formats.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${navigation-formats.src.java}"/>
             <classpath refid="navigation-formats.classpath5"/>
+        </javac>
+
+        <mkdir dir="${mapview.output.classes5}"/>
+        <javac destdir="${mapview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${mapview.src.java}"/>
+            <classpath refid="mapview.classpath5"/>
+        </javac>
+
+        <mkdir dir="${jdic-mapview.output.classes5}"/>
+        <javac destdir="${jdic-mapview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${jdic-mapview.src.java}"/>
+            <classpath refid="jdic-mapview.classpath5"/>
+        </javac>
+
+        <mkdir dir="${swt-mapview.output.classes5}"/>
+        <javac destdir="${swt-mapview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${swt-mapview.src.java}"/>
+            <classpath refid="swt-mapview.classpath5"/>
         </javac>
 
         <mkdir dir="${rest.output.classes5}"/>
@@ -861,15 +926,26 @@
             <fileset dir="${geonames.src.java}"/>
             <fileset dir="${googlemaps.src.java}"/>
             <fileset dir="${jaxb6.src.java}"/>
+            <fileset dir="${jdic-mapview.src.java}"/>
+            <fileset dir="${mapview.src.java}"/>
             <fileset dir="${navigation-formats.src.java}"/>
             <fileset dir="${rest.src.java}"/>
             <fileset dir="${route-converter.src.java}"/>
             <fileset dir="${route-converter6.src.java}"/>
+            <fileset dir="${swt-mapview.src.java}"/>
             <fileset file="${license}"/>
         </copy>
     </target>
 
     <target name="prepare-jar">
+        <mkdir dir="${build.output}"/>
+        <buildnumber file="build/build.number"/>
+        <tstamp>
+            <format property="today" pattern="dd-MM-yyyy HH:mm:ss"/>
+        </tstamp>
+    </target>
+
+    <target name="prepare-tmp">
         <mkdir dir="${build.output}"/>
         <buildnumber file="build/build.number"/>
         <tstamp>
@@ -902,9 +978,30 @@
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
+        <!--
         <unjar src="${sun.jdic.lib}" dest="${build.output.tmp}">
             <patternset>
                 <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        -->
+        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.gif"/>
+                <include name="**/WebBrowser.properties"/>
+            </patternset>
+        </unjar>
+
+        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-windows}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.dll"/>
             </patternset>
         </unjar>
 
@@ -917,10 +1014,13 @@
             <fileset dir="${geonames.output.classes}"/>
             <fileset dir="${googlemaps.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
-            <fileset dir="${jdic-0.9.3.output.classes}">
+            <!--
+            <fileset dir="${jdic-mapview.output.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
+            -->
+            <fileset dir="${mapview.output.classes}"/>
             <fileset dir="${navigation-formats.output.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
@@ -928,6 +1028,7 @@
             <fileset dir="${rest.output.classes}"/>
             <fileset dir="${route-converter.output.classes}"/>
             <fileset dir="${route-converter6.output.classes}"/>
+            <fileset dir="${swt-mapview.output.classes}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -976,7 +1077,7 @@
             </patternset>
         </unjar>
 
-        <delete dir="${build.output.tmp5-gui}"/>
+        <delete dir="${build.output.tmp5-gui}"/> 
         <mkdir dir="${build.output.tmp5-gui}"/>
         <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp5-gui}">
             <patternset>
@@ -993,9 +1094,49 @@
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
+        <!--
         <unjar src="${sun.jdic.lib}" dest="${build.output.tmp5-gui}">
             <patternset>
                 <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        -->
+        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp5-gui}">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp5-gui}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.gif"/>
+                <include name="**/WebBrowser.properties"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jna.lib}" dest="${build.output.tmp5-gui}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.so"/>
+            </patternset>
+        </unjar>
+
+        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-linux}">
+            <patternset>
+                <include name="**/*.class"/>
+		<include name="**/*.properties"/>
+                <include name="**/*.so"/>
+            </patternset>
+        </unjar>
+        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.output.tmp-mac}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.jnilib"/>
+            </patternset>
+        </unjar>
+        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-windows}">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.dll"/>
             </patternset>
         </unjar>
 
@@ -1011,10 +1152,13 @@
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
+            <!--
+            <fileset dir="${jdic-mapview.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
+            -->
+            <fileset dir="${mapview.output.classes5}"/>
             <fileset dir="${navigation-formats.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
@@ -1022,6 +1166,7 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset dir="${swt-mapview.output.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1043,10 +1188,13 @@
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
+            <!--
+            <fileset dir="${jdic-mapview.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
+            -->
+            <fileset dir="${mapview.output.classes5}"/>
             <fileset dir="${navigation-formats.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
@@ -1054,6 +1202,7 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset dir="${swt-mapview.output.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1075,10 +1224,13 @@
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
+            <!--
+            <fileset dir="${jdic-mapview.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
+            -->
+            <fileset dir="${mapview.output.classes5}"/>
             <fileset dir="${navigation-formats.output.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
@@ -1086,38 +1238,7 @@
             <fileset dir="${rest.output.classes5}"/>
             <fileset dir="${route-converter.output.classes5}"/>
             <fileset dir="${route-converter5.output.classes5}"/>
-            <fileset file="${license}"/>
-            <manifest>
-                <attribute name="Created-By" value="Christian Pesch"/>
-                <attribute name="Download-At" value="http://www.routeconverter.de"/>
-                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
-                <attribute name="Version" value="${build.version}"/>
-                <attribute name="Build-Number" value="${build.number}"/>
-                <attribute name="Build-Date" value="${today}"/>
-            </manifest>
-        </jar>
-
-        <jar destfile="${build.output}/RouteConverterSolaris.jar">
-            <fileset dir="${build.output.tmp5}"/>
-            <fileset dir="${build.output.tmp5-gui}"/>
-            <fileset dir="${build.output.tmp-solaris}"/>
-            <fileset dir="${catalog.output.classes5}"/>
-            <fileset dir="${common.output.classes5}"/>
-            <fileset dir="${common-gui.output.classes5}"/>
-            <fileset dir="${geonames.output.classes5}"/>
-            <fileset dir="${googlemaps.output.classes5}"/>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-0.9.3.output.classes5}">
-                <exclude name="**/*.dll"/>
-                <exclude name="**/*.exe"/>
-            </fileset>
-            <fileset dir="${navigation-formats.output.classes5}">
-                <exclude name="**/*.dll"/>
-                <exclude name="**/*.exe"/>
-            </fileset>
-            <fileset dir="${rest.output.classes5}"/>
-            <fileset dir="${route-converter.output.classes5}"/>
-            <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset dir="${swt-mapview.output.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1201,12 +1322,14 @@
         <delete dir="${googlemaps.output}"/>
         <delete dir="${jaxb5.output}"/>
         <delete dir="${jaxb6.output}"/>
-        <delete dir="${jdic-0.9.3.output}"/>
+        <delete dir="${jdic-mapview.output}"/>
+        <delete dir="${mapview.output}"/>
         <delete dir="${navigation-formats.output}"/>
         <delete dir="${rest.output}"/>
         <delete dir="${route-converter.output}"/>
         <delete dir="${route-converter5.output}"/>
         <delete dir="${route-converter6.output}"/>
+        <delete dir="${swt-mapview.output}"/>
         <delete dir="${build.output}"/>
     </target>
 </project>

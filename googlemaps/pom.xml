@@ -3,7 +3,7 @@
   <groupId>slash.navigation</groupId>
   <artifactId>gmapgeocode</artifactId>
   <packaging>jar</packaging>
-  <name>Access to the Google Maps API Geocoding Service</name>
+  <name>Access to the Google Maps API Geocoding service</name>
   <parent>
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>

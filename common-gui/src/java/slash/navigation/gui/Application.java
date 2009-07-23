@@ -20,10 +20,9 @@
 
 package slash.navigation.gui;
 
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-
 import javax.swing.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -75,10 +74,27 @@ public abstract class Application {
         Locale.setDefault(new Locale(language, country));
     }
 
+    private static void invokeNativeInterfaceMethod(String name) {
+        try {
+            Class clazz = Class.forName("chrriis.dj.nativeswing.swtimpl.NativeInterface");
+            Method method = clazz.getMethod(name);
+            method.invoke(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void openNativeInterface() {
+        invokeNativeInterfaceMethod("open");
+    }
+
+    private static void runNativeInterfaceEventPump() {
+        invokeNativeInterfaceMethod("runEventPump");
+    }
 
     public static synchronized <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
         Constants.setLookAndFeel();
-        NativeInterface.open(); // TODO move to a better place later
+        openNativeInterface();
         setDefaultLocale(Preferences.userNodeForPackage(applicationClass));
 
         Runnable doCreateAndShowGUI = new Runnable() {
@@ -97,7 +113,7 @@ public abstract class Application {
             }
         };
         SwingUtilities.invokeLater(doCreateAndShowGUI);
-        NativeInterface.runEventPump(); // TODO move to a better place later
+        runNativeInterfaceEventPump();
     }
 
     static <T extends Application> T create(Class<T> applicationClass) throws Exception {

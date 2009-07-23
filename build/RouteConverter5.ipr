@@ -332,13 +332,15 @@
       <module fileurl="file://$PROJECT_DIR$/../geonames/geonames5.iml" filepath="$PROJECT_DIR$/../geonames/geonames5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../googlemaps/googlemaps5.iml" filepath="$PROJECT_DIR$/../googlemaps/googlemaps5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxb5/jaxb5.iml" filepath="$PROJECT_DIR$/../jaxb5/jaxb5.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.35.iml" filepath="$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.35.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../jdic-mapview/jdic-mapview5.iml" filepath="$PROJECT_DIR$/../jdic-mapview/jdic-mapview5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../mapview/mapview5.iml" filepath="$PROJECT_DIR$/../mapview/mapview5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../navigation-formats/navigation-formats5.iml" filepath="$PROJECT_DIR$/../navigation-formats/navigation-formats5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../rest/rest5.iml" filepath="$PROJECT_DIR$/../rest/rest5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter-cmdline/route-converter-cmdline.iml" filepath="$PROJECT_DIR$/../route-converter-cmdline/route-converter-cmdline.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter/route-converter5.iml" filepath="$PROJECT_DIR$/../route-converter/route-converter5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter5/route-converter55.iml" filepath="$PROJECT_DIR$/../route-converter5/route-converter55.iml" />
       <module fileurl="file://$PROJECT_DIR$/../routes/routes.iml" filepath="$PROJECT_DIR$/../routes/routes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../swt-mapview/swt-mapview5.iml" filepath="$PROJECT_DIR$/../swt-mapview/swt-mapview5.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK" />
@@ -366,6 +368,7 @@
     <mapping directory="$PROJECT_DIR$/../jdic-0.9.3" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../jdic-0.9.5" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../rest" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../swt-mapview" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
@@ -412,7 +415,7 @@
         <root url="jar://$PROJECT_DIR$/../thirdparty/intellij/forms-rt/forms-rt-6.0.5_src.zip!/" />
       </SOURCES>
     </library>
-    <library name="sun/jdic-0.9.3">
+    <library name="sun/jdic">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar!/" />
       </CLASSES>
@@ -471,13 +474,29 @@
         <root url="jar://$PROJECT_DIR$/../thirdparty/apache/commons-logging/commons-logging-1.1-src.zip!/" />
       </SOURCES>
     </library>
-    <library name="sun/jdic-0.9.5">
+    <library name="eclipse/swt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/lib-0.9.5/jdic-0.9.5-stripped.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="djproject/nativeswing">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/jdic-0.9.5-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/djnativeswing-0.9.8-src.zip!/" />
+      </SOURCES>
+    </library>
+    <library name="djproject/nativeswing-swt">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/djnativeswing-swt-0.9.8-src.zip!/" />
       </SOURCES>
     </library>
   </component>

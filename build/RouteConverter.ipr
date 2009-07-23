@@ -156,7 +156,7 @@
     <option name="DEBUGGING_INFO" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="false" />
     <option name="DEPRECATION" value="true" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.6" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="JavadocGenerationManager">
@@ -329,7 +329,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
-    <option name="state" value="http://www.routeconverter.de/subversion/RouteConverter/branches/eclipseswt-djnative/build/RouteConverter-eclipseswt-djnative.ipr" />
+    <option name="state" value="http://www.routeconverter.de/subversion/RouteConverter/branches/eclipseswt-djnative/build/RouteConverter.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -339,12 +339,14 @@
       <module fileurl="file://$PROJECT_DIR$/../geonames/geonames.iml" filepath="$PROJECT_DIR$/../geonames/geonames.iml" />
       <module fileurl="file://$PROJECT_DIR$/../googlemaps/googlemaps.iml" filepath="$PROJECT_DIR$/../googlemaps/googlemaps.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxb6/jaxb6.iml" filepath="$PROJECT_DIR$/../jaxb6/jaxb6.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.3.iml" filepath="$PROJECT_DIR$/../jdic-0.9.3/jdic-0.9.3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../jdic-mapview/jdic-mapview.iml" filepath="$PROJECT_DIR$/../jdic-mapview/jdic-mapview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../mapview/mapview.iml" filepath="$PROJECT_DIR$/../mapview/mapview.iml" />
       <module fileurl="file://$PROJECT_DIR$/../navigation-formats/navigation-formats.iml" filepath="$PROJECT_DIR$/../navigation-formats/navigation-formats.iml" />
       <module fileurl="file://$PROJECT_DIR$/../rest/rest.iml" filepath="$PROJECT_DIR$/../rest/rest.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter/route-converter.iml" filepath="$PROJECT_DIR$/../route-converter/route-converter.iml" />
       <module fileurl="file://$PROJECT_DIR$/../route-converter6/route-converter6.iml" filepath="$PROJECT_DIR$/../route-converter6/route-converter6.iml" />
       <module fileurl="file://$PROJECT_DIR$/../routes/routes.iml" filepath="$PROJECT_DIR$/../routes/routes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../swt-mapview/swt-mapview.iml" filepath="$PROJECT_DIR$/../swt-mapview/swt-mapview.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK" />
@@ -414,7 +416,7 @@
         <root url="jar://$PROJECT_DIR$/../thirdparty/intellij/forms-rt/forms-rt-6.0.5_src.zip!/" />
       </SOURCES>
     </library>
-    <library name="sun/jdic-0.9.3">
+    <library name="sun/jdic">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar!/" />
       </CLASSES>
@@ -457,27 +459,27 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="djnative/nativeswing-swt">
+    <library name="djproject/nativeswing-swt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/djnativeswing-swt-0.9.8.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/djnativeswing-swt-0.9.8-src.zip!/" />
       </SOURCES>
     </library>
-    <library name="djnative/nativeswing">
+    <library name="djproject/nativeswing">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/djnativeswing-0.9.8.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/djnativeswing-0.9.8-src.zip!/" />
       </SOURCES>
     </library>
     <library name="eclipse/swt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/eclipse/swt/lib/swt-3.5M6-win32-win32-x86.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
