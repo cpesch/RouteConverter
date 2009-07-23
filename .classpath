@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="common/src/java"/>
+	<classpathentry kind="src" path="swt-mapview/src/java"/>
 	<classpathentry kind="src" path="common/src/resources"/>
 	<classpathentry kind="src" path="common/src/test"/>
 	<classpathentry kind="src" path="rest/src/java"/>
@@ -15,8 +16,8 @@
 	<classpathentry kind="src" path="googlemaps/src/java"/>
 	<classpathentry kind="src" path="googlemaps/src/test"/>
 	<classpathentry kind="src" path="common-gui/src/java"/>
-	<classpathentry kind="src" path="jdic-0.9.3/src/java"/>
-	<classpathentry kind="src" path="jdic-0.9.3/output/classes"/>
+	<classpathentry kind="src" path="mapview/src/java"/>
+	<classpathentry kind="src" path="jdic-mapview/src/java"/>
 	<classpathentry kind="src" path="route-converter/src/java"/>
 	<classpathentry kind="src" path="route-converter/src/resources"/>
 	<classpathentry kind="src" path="route-converter6/src/java"/>
@@ -30,9 +31,9 @@
 	<classpathentry kind="lib" path="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
 	<classpathentry kind="lib" path="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
 	<classpathentry kind="lib" path="thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="thirdparty/eclipse/swt/lib/swt-3.5M6-win32-win32-x86.jar"/>
-	<classpathentry kind="lib" path="thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT.jar"/>
 	<classpathentry kind="lib" path="thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar"/>
+	<classpathentry kind="lib" path="thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8.jar"/>
+	<classpathentry kind="lib" path="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/output/tmp"/>
 </classpath>
