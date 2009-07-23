@@ -13,6 +13,7 @@
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="navigation-formats" />
     <orderEntry type="library" name="junit/junit" level="project" />
+    <orderEntry type="library" name="djnative/nativeswing-swt" level="project" />
   </component>
 </module>
 

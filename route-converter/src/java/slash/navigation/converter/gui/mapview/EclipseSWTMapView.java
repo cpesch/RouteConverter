@@ -20,13 +20,10 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import org.jdesktop.jdic.browser.WebBrowser;
-import org.jdesktop.jdic.browser.WebBrowserEvent;
-import org.jdesktop.jdic.browser.WebBrowserListener;
-import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.Wgs84Position;
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.Wgs84Position;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.*;
@@ -50,6 +47,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Displays the positions of a route.
@@ -57,9 +55,9 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 
-public class JdicMapView implements MapView {
-    private static final Preferences preferences = Preferences.userNodeForPackage(JdicMapView.class);
-    private static final Logger log = Logger.getLogger(JdicMapView.class.getName());
+public class EclipseSWTMapView implements MapView {
+    private static final Preferences preferences = Preferences.userNodeForPackage(EclipseSWTMapView.class);
+    private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
     private static final String DEBUG_PREFERENCE = "debug";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
@@ -92,7 +90,7 @@ public class JdicMapView implements MapView {
     private static final int MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION = 16;
 
     private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<MapViewListener>();
-    private WebBrowser webBrowser;
+    private JWebBrowser webBrowser;
     private ServerSocket dragListenerServerSocket;
     private PositionsModel positionsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
@@ -109,9 +107,9 @@ public class JdicMapView implements MapView {
         return Platform.isLinux() || Platform.isWindows();
     }
 
-    public JdicMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
-                       boolean pedestrians, boolean avoidHighways) {
-        debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
+    public EclipseSWTMapView(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+                             boolean pedestrians, boolean avoidHighways) {
+        debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         initialize();
         setModel(positionsModel, characteristicsModel);
         this.pedestrians = pedestrians;
@@ -147,39 +145,11 @@ public class JdicMapView implements MapView {
         return webBrowser;
     }
 
-    private WebBrowser createWebBrowser() {
+    private JWebBrowser createWebBrowser() {
         try {
-            /* for JDIC 0.9.3 */
-            String path = "bin/" + Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/";
-            if (Platform.isLinux()) {
-                Externalization.extractFile(path + "libmozembed-linux-gtk1.2.so");
-                Externalization.extractFile(path + "libmozembed-linux-gtk2.so");
-                Externalization.extractFile(path + "mozembed-linux-gtk1.2");
-                Externalization.extractFile(path + "mozembed-linux-gtk2");
-            }
-            if (Platform.isMac())
-                Externalization.extractFile(path + "libjdic.jnilib");
-            if (Platform.isWindows()) {
-                Externalization.extractFile(path + "IeEmbed.exe");
-                scrollBarSize = 20;
-            }
-
-            if (debug)
-                WebBrowserUtil.enableDebugMessages(true);
-
-            /* for JDIC from CVS
-            BrowserEngineManager browserEngineManager = BrowserEngineManager.instance();
-            if (Platform.isLinux())
-                browserEngineManager.setActiveEngine(BrowserEngineManager.MOZILLA);
-            if (Platform.isMac())
-                browserEngineManager.setActiveEngine(BrowserEngineManager.WEBKIT);
-            if (Platform.isWindows())
-                browserEngineManager.setActiveEngine(BrowserEngineManager.IE);
-
-            IWebBrowser webBrowser = browserEngineManager.getActiveEngine().getWebBrowser();
-            webBrowser.setAutoDispose(false);
-            */
-            return new WebBrowser(false);
+            JWebBrowser browser = new JWebBrowser();
+            browser.setBarsVisible(false);
+            return browser;
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             initializationCause = t;
@@ -187,12 +157,12 @@ public class JdicMapView implements MapView {
         }
     }
 
-    private boolean loadWebPage(WebBrowser webBrowser) {
+    private boolean loadWebPage(JWebBrowser webBrowser) {
         try {
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html");
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
-            webBrowser.setURL(html.toURI().toURL());
+            webBrowser.navigate(html.toURI().toURL().toExternalForm());
             if (debug)
             System.out.println(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
@@ -215,31 +185,29 @@ public class JdicMapView implements MapView {
             return;
 
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
-            public void downloadStarted(WebBrowserEvent event) {
+            public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadStarted " + event + " thread " + Thread.currentThread());
+                System.out.println(System.currentTimeMillis() + " windowWillOpen " + e + " thread " + Thread.currentThread());
             }
 
-            public void downloadCompleted(WebBrowserEvent event) {
+            public void windowOpening(WebBrowserWindowOpeningEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadCompleted " + event + " thread " + Thread.currentThread());
-                if (Platform.isMac())
-                    documentCompleted(event);
+                System.out.println(System.currentTimeMillis() + " windowOpening " + e + " thread " + Thread.currentThread());
             }
 
-            public void downloadProgress(WebBrowserEvent event) {
+            public void windowClosing(WebBrowserEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadProgress " + event + " thread " + Thread.currentThread());
-           }
-
-            public void downloadError(WebBrowserEvent event) {
-                if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadError " + event + " thread " + Thread.currentThread());
+                System.out.println(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
             }
 
-            public void documentCompleted(WebBrowserEvent event) {
+            public void locationChanging(WebBrowserNavigationEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " documentCompleted " + event + " thread " + Thread.currentThread());
+                System.out.println(System.currentTimeMillis() + " locationChanging " + e + " thread " + Thread.currentThread());
+            }
+
+            public void locationChanged(WebBrowserNavigationEvent e) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " locationChanged " + e + " thread " + Thread.currentThread());
                 synchronized (notificationMutex) {
                     initialized = getComponent() != null && isCompatible();
                 }
@@ -255,16 +223,29 @@ public class JdicMapView implements MapView {
                 }
             }
 
-            public void titleChange(WebBrowserEvent event) {
+            public void locationChangeCanceled(WebBrowserNavigationEvent e) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " locationChangeCanceled " + e + " thread " + Thread.currentThread());
             }
 
-            public void statusTextChange(WebBrowserEvent event) {
+            public void loadingProgressChanged(WebBrowserEvent e) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " loadingProgressChanged " + e + " thread " + Thread.currentThread());
             }
 
-            public void initializationCompleted(WebBrowserEvent event) {
+            public void titleChanged(WebBrowserEvent e) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " titleChanged " + e + " thread " + Thread.currentThread());
             }
 
-            public void windowClose(WebBrowserEvent event) {
+            public void statusChanged(WebBrowserEvent e) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " statusChanged " + e + " thread " + Thread.currentThread());
+            }
+
+            public void commandReceived(WebBrowserEvent e, String command, String[] args) {
+                if (debug)
+                System.out.println(System.currentTimeMillis() + " commandReceived " + e + " thread " + Thread.currentThread());
             }
         });
 
@@ -495,11 +476,12 @@ public class JdicMapView implements MapView {
     }
 
     private void initializeAfterLoading() {
+        // TODO disabled, maybe it works without
         // workaround for Linux and Mac versions where the window has to be resized to show a complete map
-        if (Platform.isLinux() || Platform.isMac()) {
-            forceResize();
-        } else
-            resize();
+        // if (Platform.isLinux() || Platform.isMac()) {
+        //    forceResize();
+        // } else
+        resize();
         update(true);
     }
 
@@ -654,12 +636,12 @@ public class JdicMapView implements MapView {
         }
 
         if (webBrowser != null) {
-            webBrowser.dispose();
+            // TODO maybe not required? webBrowser.dispose();
 
             start = System.currentTimeMillis();
             while (true) {
                 long end = System.currentTimeMillis();
-                if (end - start > 5000 || !webBrowser.isInitialized()) {
+                if (end - start > 5000 /* TODO maybe not required? || !webBrowser.isisInitialized()*/) {
                     log.info("MapView dispose stopped after " + (end - start) + " ms");
                     break;
                 }
@@ -697,8 +679,11 @@ public class JdicMapView implements MapView {
     private boolean isCompatible() {
         String result;
         synchronized (notificationMutex) {
-            result = executeScript("window.isCompatible && isCompatible()");
+            result = executeScriptWithResult("window.isCompatible && isCompatible()");
         }
+        // TODO fix me
+        if(result == null)
+            result = "true";
         return Boolean.parseBoolean(result);
     }
 
@@ -797,17 +782,23 @@ public class JdicMapView implements MapView {
                 append("new GLatLng(").append(southWest.getLatitude()).append(",").
                 append(southWest.getLongitude()).append(")").append("));\n");
 
-        String zoomLevel = executeScript(buffer);
+        String zoomLevel = executeScriptWithResult(buffer.toString());
+        // TODO fix this
+        if(zoomLevel == null)
+            zoomLevel = "10";
         return Conversion.parseInt(zoomLevel);
     }
 
     private int getCurrentZoomLevel() {
-        String zoomLevel = executeScript("map.getZoom();");
+        String zoomLevel = executeScriptWithResult("map.getZoom();");
+        // TODO fix this
+        if(zoomLevel == null)
+            zoomLevel = "10";
         return Conversion.parseInt(zoomLevel);
     }
 
     private BaseNavigationPosition getBounds(String script) {
-        String result = executeScript(script);
+        String result = executeScriptWithResult(script);
         if (result == null)
             return null;
 
@@ -860,7 +851,7 @@ public class JdicMapView implements MapView {
                 int maximum = Math.min(lastDirectionsCount, (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH);
                 for (int i = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH; i < maximum; i++)
                     buffer.append("map.removeOverlay(directions").append(i).append(".getPolyline());");
-                executeScript(buffer);
+                executeScript(buffer.toString());
             }
             lastDirectionsCount = -1;
         }
@@ -871,7 +862,7 @@ public class JdicMapView implements MapView {
                 int maximum = Math.min(lastPolylinesCount, (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH);
                 for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++)
                     buffer.append("map.removeOverlay(line").append(i).append(");");
-                executeScript(buffer);
+                executeScript(buffer.toString());
             }
             lastPolylinesCount = -1;
         }
@@ -882,7 +873,7 @@ public class JdicMapView implements MapView {
                 int maximum = Math.min(lastMarkersCount, (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
                 for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++)
                     buffer.append("map.removeOverlay(marker").append(i).append(");");
-                executeScript(buffer);
+                executeScript(buffer.toString());
             }
             lastMarkersCount = -1;
         }
@@ -915,15 +906,15 @@ public class JdicMapView implements MapView {
             buffer.append("];\n");
             buffer.append("directions").append(j).append(".loadFromWaypoints(latlngs, ").
                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
-                   append(avoidHighways).append(", travelMode: ").
-                   append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
-                   append(", locale: '").append(Locale.getDefault()).append("'").
-                   append(" });");
-            executeScript(buffer);
+                    append(avoidHighways).append(", travelMode: ").
+                    append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
+                    append(", locale: '").append(Locale.getDefault()).append("'").
+                    append(" });");
+            executeScript(buffer.toString());
         }
     }
 
-    private void addPolylinesToMap(List<BaseNavigationPosition> positions) {
+    private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
         removeOverlays();
 
         lastPolylinesCount = Conversion.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
@@ -940,7 +931,7 @@ public class JdicMapView implements MapView {
             buffer.append("];\n");
             buffer.append("var line").append(j).append(" = new GPolyline(latlngs,\"#0033FF\",2,1);\n");
             buffer.append("map.addOverlay(line").append(j).append(");");
-            executeScript(buffer);
+            executeScript(buffer.toString());
         }
 
         new Thread(new Runnable() {
@@ -951,8 +942,8 @@ public class JdicMapView implements MapView {
                 long delta = 0;
                 Calendar minimumTime = null, maximumTime = null;
                 BaseNavigationPosition previous = null;
-                for (int i = 0; i < JdicMapView.this.positions.size(); i++) {
-                    BaseNavigationPosition next = JdicMapView.this.positions.get(i);
+                for (int i = 0; i < positions.size(); i++) {
+                    BaseNavigationPosition next = positions.get(i);
                     if (previous != null) {
                         Double distance = previous.calculateDistance(next);
                         if (distance != null)
@@ -1000,7 +991,7 @@ public class JdicMapView implements MapView {
                         append("clickable: false, icon: markerIcon });\n");
                 buffer.append("map.addOverlay(marker").append(i).append(");\n");
             }
-            executeScript(buffer);
+            executeScript(buffer.toString());
         }
     }
 
@@ -1024,7 +1015,7 @@ public class JdicMapView implements MapView {
             buffer.append("map.setCenter(new GLatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("), zoomLevel);");
         }
-        executeScript(buffer);
+        executeScript(buffer.toString());
         haveToInitializeMapOnFirstStart = false;
     }
 
@@ -1042,7 +1033,7 @@ public class JdicMapView implements MapView {
             for (int i = 0; i < lastSelectedPositionCount; i++) {
                 buffer.append("map.removeOverlay(selected").append(i).append(");\n");
             }
-            executeScript(buffer);
+            executeScript(buffer.toString());
         }
 
         // build up new
@@ -1064,30 +1055,60 @@ public class JdicMapView implements MapView {
             buffer.append("centerMap(new GLatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("));");
         }
-        executeScript(buffer);
+        executeScript(buffer.toString());
     }
 
-    private String executeScript(StringBuffer buffer) {
-        if (buffer.length() == 0)
-            return null;
+    private synchronized void executeScript(final String string) {
+        if(string.length() == 0)
+            return;
 
-        if ((1000 <= buffer.length() % 1024) && (buffer.length() % 1024) <= 1018) {
-            for (int i = 0; i < 20; i++) {
-                buffer.append(';');
+        if (!SwingUtilities.isEventDispatchThread()) {
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        webBrowser.executeJavascript(string);
+                    }
+                });
+            } catch (InterruptedException e) {
+                log.severe("Cannot execute script: " + e.getMessage());
+            } catch (InvocationTargetException e) {
+                log.severe("Cannot execute script: " + e.getMessage());
             }
-        }
-        return executeScript(buffer.toString());
-    }
+        } else
+            webBrowser.executeJavascript(string);
 
-    private synchronized String executeScript(String string) {
-        String result = webBrowser.executeScript(string);
-        String output = System.currentTimeMillis() + " executing script '" + string + "' with result '" + result + "'";
+        String output = System.currentTimeMillis() + " executing script '" + string + "'";
         if(debug) {
             System.out.println(output);
             log.info(output);
         } else
             log.fine(output);
-        return result;
+    }
+
+    private synchronized String executeScriptWithResult(final String string) {
+        final Object[] result = new Object[1];
+        if (!SwingUtilities.isEventDispatchThread()) {
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        result[0] = webBrowser.executeJavascriptWithResult(string);
+                    }
+                });
+            } catch (InterruptedException e) {
+                log.severe("Cannot execute script with result: " + e.getMessage());
+            } catch (InvocationTargetException e) {
+                log.severe("Cannot execute script with result: " + e.getMessage());
+            }
+        } else
+            result[0] = webBrowser.executeJavascriptWithResult(string);
+
+        String output = System.currentTimeMillis() + " executing script '" + string + "' with result '" + result[0] + "'";
+        if(debug) {
+            System.out.println(output);
+            log.info(output);
+        } else
+            log.fine(output);
+        return result[0] != null ? result[0].toString() : null;
     }
 
     private String escape(String string) {

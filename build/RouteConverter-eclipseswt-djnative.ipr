@@ -329,7 +329,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
-    <option name="state" value="http://www.routeconverter.de/subversion/RouteConverter/trunk/build/RouteConverter.ipr" />
+    <option name="state" value="http://www.routeconverter.de/subversion/RouteConverter/branches/eclipseswt-djnative/build/RouteConverter-eclipseswt-djnative.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -457,14 +457,30 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="sun/jdic-0.9.5">
+    <library name="djnative/nativeswing-swt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/lib-0.9.5/jdic-0.9.5-stripped.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/sun/jdic/jdic-0.9.5-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/djnativeswing-swt-0.9.8.zip!/" />
       </SOURCES>
+    </library>
+    <library name="djnative/nativeswing">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/djnativeswing-0.9.8.zip!/" />
+      </SOURCES>
+    </library>
+    <library name="eclipse/swt">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/eclipse/swt/lib/swt-3.5M6-win32-win32-x86.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
     </library>
   </component>
   <component name="uidesigner-configuration">

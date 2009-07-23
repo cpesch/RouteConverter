@@ -31,5 +31,8 @@
 	<classpathentry kind="lib" path="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
 	<classpathentry kind="lib" path="thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="thirdparty/eclipse/swt/lib/swt-3.5M6-win32-win32-x86.jar"/>
+	<classpathentry kind="lib" path="thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT.jar"/>
+	<classpathentry kind="lib" path="thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar"/>
 	<classpathentry kind="output" path="build/output/tmp"/>
 </classpath>

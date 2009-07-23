@@ -31,7 +31,7 @@ import java.awt.*;
  */
 
 public interface MapView {
-    Canvas getCanvas();
+    Component getComponent();
 
     boolean isInitialized();
     Throwable getInitializationCause();

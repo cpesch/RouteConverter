@@ -29,6 +29,7 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.JdicMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
+import slash.navigation.converter.gui.mapview.EclipseSWTMapView;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
@@ -181,10 +182,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        new Thread(new Runnable() {
-            public void run() {
-                // can do this outside of Swing
-                mapView = new JdicMapView(getConvertPanel().getPositionsModel(),
+        // not possible with Eclipse SWT
+        // new Thread(new Runnable() {
+        //    public void run() {
+        //        // can do this outside of Swing
+                mapView = new EclipseSWTMapView(getConvertPanel().getPositionsModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
@@ -197,12 +199,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     public void run() {
                         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                         Throwable cause = mapView.getInitializationCause();
-                        if (mapView.getCanvas() == null || cause != null) {
+                        if (mapView.getComponent() == null || cause != null) {
                             StringWriter stackTrace = new StringWriter();
                             cause.printStackTrace(new PrintWriter(stackTrace));
                             mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                         } else {
-                            mapPanel.add(mapView.getCanvas(), MAP_PANEL_CONSTRAINTS);
+                            mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
                         }
 
                         int location = preferences.getInt(DIVIDER_LOCATION_PREFERENCE, -1);
@@ -229,8 +231,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
                         });
                     }
                 });
-            }
-        }, "MapViewOpener").start();
     }
 
     protected void shutdown() {

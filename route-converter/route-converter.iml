@@ -22,6 +22,9 @@
     <orderEntry type="library" name="intellij/forms-rt" level="project" />
     <orderEntry type="library" name="junit/junit" level="project" />
     <orderEntry type="library" name="sun/jdic-0.9.3" level="project" />
+    <orderEntry type="library" name="djnative/nativeswing" level="project" />
+    <orderEntry type="library" name="djnative/nativeswing-swt" level="project" />
+    <orderEntry type="library" name="eclipse/swt" level="project" />
   </component>
 </module>
 

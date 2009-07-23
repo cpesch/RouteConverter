@@ -20,6 +20,8 @@
 
 package slash.navigation.gui;
 
+import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+
 import javax.swing.*;
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -76,6 +78,7 @@ public abstract class Application {
 
     public static synchronized <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
         Constants.setLookAndFeel();
+        NativeInterface.open(); // TODO move to a better place later
         setDefaultLocale(Preferences.userNodeForPackage(applicationClass));
 
         Runnable doCreateAndShowGUI = new Runnable() {
@@ -94,6 +97,7 @@ public abstract class Application {
             }
         };
         SwingUtilities.invokeLater(doCreateAndShowGUI);
+        NativeInterface.runEventPump(); // TODO move to a better place later
     }
 
     static <T extends Application> T create(Class<T> applicationClass) throws Exception {
