@@ -54,6 +54,9 @@ public class Nmn7Format extends NmnFormat {
         return "Navigon Mobile Navigator 7 (*" + getExtension() + ")";
     }
 
+    public int getMaximumPositionCount() {
+        return 48; /* ApplicationSettings.xml: <RouteTargets>50</RouteTargets> */
+    }
 
     protected boolean isPosition(String line) {
         throw new UnsupportedOperationException();
