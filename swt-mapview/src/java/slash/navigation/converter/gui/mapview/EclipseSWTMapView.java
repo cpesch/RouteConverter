@@ -261,10 +261,11 @@ public class EclipseSWTMapView implements MapView {
     }
 
     private void tryToInitialize(int counter) {
+        boolean existsCompatibleBrowser = getComponent() != null && isCompatible();
         synchronized (this) {
-            initialized = getComponent() != null && isCompatible();
+            initialized = existsCompatibleBrowser;
         }
-    
+
         if (isInitialized()) {
             if (debug)
             System.out.println(System.currentTimeMillis() + " compatible, further initializing map");
@@ -272,7 +273,7 @@ public class EclipseSWTMapView implements MapView {
             initializeAfterLoading();
             checkCallback();
         } else {
-            System.out.println("WAITING "+ counter*1000 + " seconds"); // TODO remove me later 
+            System.out.println("WAITING "+ counter*1000 + " seconds"); // TODO remove me later
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -682,8 +683,10 @@ public class EclipseSWTMapView implements MapView {
         return Boolean.parseBoolean(result);
     }
 
-    public synchronized boolean isInitialized() {
-        return initialized;
+    public boolean isInitialized() {
+        synchronized (this) {
+            return initialized;
+        }
     }
 
     private boolean isVisible() {

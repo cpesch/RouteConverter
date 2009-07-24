@@ -55,7 +55,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         PositionsTableCellRenderer rightAligned = new PositionsTableCellRenderer(SwingConstants.RIGHT);
         PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
-        predefineColumn(TIME_COLUMN_INDEX, "time", 96, false, rightAligned, headerRenderer);
+        predefineColumn(TIME_COLUMN_INDEX, "time", 108, false, rightAligned, headerRenderer);
         predefineColumn(SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
         predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);

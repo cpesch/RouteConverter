@@ -160,7 +160,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         openFrame();
 
         mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if(mapView == null)
+        if (mapView == null)
             mapView = createMapView("slash.navigation.converter.gui.mapview.JdicMapView");
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
@@ -187,7 +187,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             Class<?> clazz = Class.forName(className);
             return (MapView) clazz.newInstance();
         } catch (Exception e) {
-            log.info("Cannot instantiate " + className +": " + e.getMessage());
+            log.info("Cannot instantiate " + className + ": " + e.getMessage());
         }
         return null;
     }

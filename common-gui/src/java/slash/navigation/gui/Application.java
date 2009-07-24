@@ -54,6 +54,10 @@ public abstract class Application {
         return application;
     }
 
+    private static synchronized void setInstance(Application theApplication) {
+        application = theApplication;
+    }
+
     public final ApplicationContext getContext() {
         return context;
     }
@@ -92,7 +96,7 @@ public abstract class Application {
         invokeNativeInterfaceMethod("runEventPump");
     }
 
-    public static synchronized <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
+    public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
         Constants.setLookAndFeel();
         openNativeInterface();
         setDefaultLocale(Preferences.userNodeForPackage(applicationClass));
@@ -100,7 +104,8 @@ public abstract class Application {
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
                 try {
-                    application = create(applicationClass);
+                    Application application = create(applicationClass);
+                    setInstance(application);
                     application.initialize(args);
                     application.startup();
                     application.waitForReady();

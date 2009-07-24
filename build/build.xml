@@ -502,7 +502,7 @@
         <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
-		<include name="**/*.properties"/>
+                <include name="**/*.properties"/>
                 <include name="**/*.so"/>
             </patternset>
         </unjar>
