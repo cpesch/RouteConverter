@@ -439,7 +439,7 @@
         </copy>
 
         <mkdir dir="${build.output.tmp-jdic-linux}/bin"/>
-        <copy todir="${build.output.tmp-jdic.linux}/bin">
+        <copy todir="${build.output.tmp-jdic-linux}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="linux/**"/>
             </fileset>
@@ -462,36 +462,36 @@
 
     <target name="unjar-jars" depends="init">
         <mkdir dir="${build.output.tmp-thirdparty}"/>
-        <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp-thirdparty}">
+        <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${apache.commons-httpclient.lib}" dest="${build.output.tmp-thirdparty}">
+        <unjar src="${apache.commons-httpclient.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp-thirdparty}">
+        <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${intellij.forms.lib}" dest="${build.output.tmp-thirdparty}">
+        <unjar src="${intellij.forms.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
 
         <mkdir dir="${build.output.tmp-jdic}"/>
-        <unjar src="${sun.jdic.lib}" dest="${build.output.tmp-jdic}">
+        <unjar src="${sun.jdic.lib}" dest="${build.output.tmp-jdic}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
 
         <mkdir dir="${build.output.tmp-swt-windows}"/>
-        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}">
+        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.dll"/>
@@ -499,7 +499,7 @@
         </unjar>
 
         <mkdir dir="${build.output.tmp-swt-linux}"/>
-        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}">
+        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
 		<include name="**/*.properties"/>
@@ -508,7 +508,7 @@
         </unjar>
 
         <mkdir dir="${build.output.tmp-swt-mac}"/>
-        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.output.tmp-swt-mac}">
+        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.output.tmp-swt-mac}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.jnilib"/>
@@ -516,12 +516,12 @@
         </unjar>
 
         <mkdir dir="${build.output.tmp-djproject}"/>
-        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp-djproject}">
+        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp-djproject}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp-djproject}">
+        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp-djproject}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.gif"/>
@@ -532,36 +532,36 @@
 
     <target name="unjar-jars5" depends="init">
         <mkdir dir="${build.output.tmp-thirdparty5}"/>
-        <unjar src="${sun.activation.lib}" dest="${build.output.tmp-thirdparty5}">
+        <unjar src="${sun.activation.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${sun.jaxb.api.lib}" dest="${build.output.tmp-thirdparty5}">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.properties"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jaxb.impl.lib}" dest="${build.output.tmp-thirdparty5}">
+        <unjar src="${sun.jaxb.api.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.properties"/>
             </patternset>
         </unjar>
-        <unjar src="${sun.jsr173.api.lib}" dest="${build.output.tmp-thirdparty5}">
+        <unjar src="${sun.jaxb.impl.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.properties"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jsr173.api.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${sun.jsr173.impl.lib}" dest="${build.output.tmp-thirdparty5}">
+        <unjar src="${sun.jsr173.impl.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
 
         <mkdir dir="${build.output.tmp-jna}"/>
-        <unjar src="${sun.jna.lib}" dest="${build.output.tmp-jna}">
+        <unjar src="${sun.jna.lib}" dest="${build.output.tmp-jna}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.so"/>
@@ -1087,6 +1087,7 @@
         <jar destfile="${build.output}/RouteConverter.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-windows}"/>
+            <fileset dir="${build.output.tmp-jdic}"/>
             <fileset dir="${build.output.tmp-jdic-windows}"/>
             <fileset dir="${catalog.output.classes}"/>
             <fileset dir="${common.output.classes}"/>

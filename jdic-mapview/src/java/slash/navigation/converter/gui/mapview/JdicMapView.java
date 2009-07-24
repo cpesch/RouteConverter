@@ -97,7 +97,7 @@ public class JdicMapView implements MapView {
     private PositionsModel positionsModel;
     private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
     private final Object notificationMutex = new Object();
-    private boolean debug, initialized = false, running = true, pedestrians, avoidHighways,
+    private boolean initialized = false, running = true, pedestrians, avoidHighways,
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,

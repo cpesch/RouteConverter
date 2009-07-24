@@ -187,7 +187,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             Class<?> clazz = Class.forName(className);
             return (MapView) clazz.newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("Cannot instantiate " + className +": " + e.getMessage());
         }
         return null;
     }
