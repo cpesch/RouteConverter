@@ -305,12 +305,7 @@ public class PositionAugmenter {
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
                         int index = positionsModel.getIndex(position);
-                        String comment = position.getComment();
-                        if (comment == null || comment.length() == 0) {
-                            RouteComments.commentPosition(position, index + 1);
-                            comment = position.getComment();
-                        }
-                        position.setComment(RouteComments.numberPosition(comment, index + 1, spaceBetweenNumberAndComment));
+                        RouteComments.numberPosition(position, index, spaceBetweenNumberAndComment);
                         return true;
                     }
 

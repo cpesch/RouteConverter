@@ -291,7 +291,7 @@ public class BcrRouteTest extends NavigationTestCase {
         }
     }
 
-    public void testRenumberPositions() {
+    public void testCommentAndRenumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
             positions.add(new BcrPosition(i, i, i, null));
@@ -315,6 +315,45 @@ public class BcrRouteTest extends NavigationTestCase {
         assertEquals("Position 3", positions.get(2).getComment());
         assertEquals("Hamburg (Position 4)", positions.get(3).getComment());
         assertEquals("Position 5: Hamburg", positions.get(4).getComment());
+    }
+
+    public void testNumberPositions() {
+        List<BcrPosition> positions = route.getPositions();
+        for (int i = 0; i < 10; i++) {
+            positions.add(new BcrPosition(i, i, i, "Comment"));
+        }
+
+        for (int i = 0; i < positions.size(); i++) {
+            RouteComments.numberPosition(positions.get(i), i, false);
+        }
+
+        for (int i = 0; i < positions.size(); i++) {
+            assertEquals((i + 1 ) + "Comment", positions.get(i).getComment());
+        }
+
+        positions.remove(8);
+        positions.remove(0);
+
+        // check renumbering, add space
+        for (int i = 0; i < positions.size(); i++) {
+            RouteComments.numberPosition(positions.get(i), i, true);
+        }
+
+        for (int i = 0; i < positions.size(); i++) {
+            assertEquals((i + 1 ) + " Comment", positions.get(i).getComment());
+        }
+
+        positions.remove(5);
+        positions.remove(0);
+
+        // check renumbering, check remove space again
+        for (int i = 0; i < positions.size(); i++) {
+            RouteComments.numberPosition(positions.get(i), i, false);
+        }
+
+        for (int i = 0; i < positions.size(); i++) {
+            assertEquals((i + 1 ) + "Comment", positions.get(i).getComment());
+        }
     }
 
     public void testSuccessor() {

@@ -42,6 +42,7 @@ public abstract class RouteComments {
 
     private static final String POSITION = "Position";
     private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + " (\\d+)(.*)");
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d*)(.*)");
 
     public static String shortenRouteName(BaseRoute route) {
         String result = "?";
@@ -110,8 +111,15 @@ public abstract class RouteComments {
         }
     }
 
-    public static String numberPosition(String comment, int number, boolean spaceBetweenNumberAndComment) {
-        return number + (spaceBetweenNumberAndComment ? " " : "") + comment;
+    public static void numberPosition(BaseNavigationPosition position, int index, boolean spaceBetweenNumberAndComment) {
+        commentPosition(position, index);
+        Matcher matcher = NUMBER_PATTERN.matcher(position.getComment());
+        if (matcher.matches()) {
+            String postfix = matcher.group(2);
+            if (!spaceBetweenNumberAndComment)
+                postfix = postfix.trim();
+            position.setComment((index + 1) + (spaceBetweenNumberAndComment ? " " : "") + postfix);
+        }
     }
 
     public static void commentRoutePositions(List<? extends BaseRoute> routes) {
