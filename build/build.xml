@@ -40,7 +40,9 @@
         <property name="build.output.tmp-jna" location="${build.output}/tmp-jna"/>
         <property name="build.output.tmp-swt-mac" location="${build.output}/tmp-swt-mac"/>
         <property name="build.output.tmp-swt-linux" location="${build.output}/tmp-swt-linux"/>
+        <property name="build.output.tmp-swt-linux64" location="${build.output}/tmp-swt-linux64"/>
         <property name="build.output.tmp-swt-windows" location="${build.output}/tmp-swt-windows"/>
+        <property name="build.output.tmp-swt-windows64" location="${build.output}/tmp-swt-windows64"/>
         <property name="build.output.src" location="${build.output}/src"/>
         <property name="build.output.javadoc" location="${build.output}/javadoc"/>
         <property name="build.test.dir" location="${build.output}/test"/>
@@ -132,8 +134,10 @@
         <property name="djproject.nativeswing.lib" location="thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar"/>
         <property name="djproject.nativeswing-swt.lib" location="thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8.jar"/>
         <property name="eclipse.swt.linux.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-gtk-linux-x86.jar"/>
+        <property name="eclipse.swt.linux.x86_64.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-gtk-linux-x86_64.jar"/>
         <property name="eclipse.swt.mac.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-cocoa-macosx.jar"/>
         <property name="eclipse.swt.win32.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86.jar"/>
+        <property name="eclipse.swt.win32.x86_64.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86_64.jar"/>
         <property name="intellij.forms.lib" location="thirdparty/intellij/forms-rt/lib/forms-rt-6.0.5-stripped.jar"/>
         <property name="junit.junit.lib" location="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
         <property name="sun.activation.lib" location="thirdparty/sun/activation/lib/activation-1.1.jar"/>
@@ -490,16 +494,17 @@
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-swt-windows}"/>
-        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}" overwrite="false">
+        <mkdir dir="${build.output.tmp-swt-linux}"/>
+        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
-                <include name="**/*.dll"/>
+                <include name="**/*.properties"/>
+                <include name="**/*.so"/>
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-swt-linux}"/>
-        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}" overwrite="false">
+        <mkdir dir="${build.output.tmp-swt-linux64}"/>
+        <unjar src="${eclipse.swt.linux.x86_64.lib}" dest="${build.output.tmp-swt-linux64}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.properties"/>
@@ -512,6 +517,22 @@
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.jnilib"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-swt-windows}"/>
+        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.dll"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.output.tmp-swt-windows64}"/>
+        <unjar src="${eclipse.swt.win32.x86_64.lib}" dest="${build.output.tmp-swt-windows64}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.dll"/>
             </patternset>
         </unjar>
 
@@ -1084,7 +1105,7 @@
 
     <!-- Jars all classes and resources -->
     <target name="jar" depends="init,compile,prepare-jar">
-        <jar destfile="${build.output}/RouteConverter.jar">
+        <jar destfile="${build.output}/RouteConverterJDIC.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-windows}"/>
             <fileset dir="${build.output.tmp-jdic}"/>
@@ -1118,7 +1139,7 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterSWT.jar">
+        <jar destfile="${build.output}/RouteConverterSWT32.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-windows}"/>
             <fileset dir="${build.output.tmp-djproject}"/>
@@ -1148,10 +1169,41 @@
                 <attribute name="Build-Date" value="${today}"/>
             </manifest>
         </jar>
+
+        <jar destfile="${build.output}/RouteConverterSWT64.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-windows}"/>
+            <fileset dir="${build.output.tmp-djproject}"/>
+            <fileset dir="${build.output.tmp-swt-windows64}"/>
+            <fileset dir="${catalog.output.classes}"/>
+            <fileset dir="${common.output.classes}"/>
+            <fileset dir="${common-gui.output.classes}"/>
+            <fileset dir="${geonames.output.classes}"/>
+            <fileset dir="${googlemaps.output.classes}"/>
+            <fileset dir="${jaxb6.output.classes}"/>
+            <fileset dir="${mapview.output.classes}"/>
+            <fileset dir="${navigation-formats.output.classes}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${rest.output.classes}"/>
+            <fileset dir="${route-converter.output.classes}"/>
+            <fileset dir="${route-converter6.output.classes}"/>
+            <fileset dir="${swt-mapview.output.classes}"/>
+            <fileset file="${license}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter6"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="jar5" depends="init5,compile5,prepare-jar">
-        <jar destfile="${build.output}/RouteConverterLinux.jar">
+        <jar destfile="${build.output}/RouteConverterLinuxJDIC.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-linux}"/>
@@ -1186,7 +1238,7 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterLinuxSWT.jar">
+        <jar destfile="${build.output}/RouteConverterLinuxSWT32.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-linux}"/>
@@ -1219,7 +1271,40 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterMac.jar">
+        <jar destfile="${build.output}/RouteConverterLinuxSWT64.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-thirdparty5}"/>
+            <fileset dir="${build.output.tmp-linux}"/>
+            <fileset dir="${build.output.tmp-djproject}"/>
+            <fileset dir="${build.output.tmp-jna}"/>
+            <fileset dir="${build.output.tmp-swt-linux64}"/>
+            <fileset dir="${catalog.output.classes5}"/>
+            <fileset dir="${common.output.classes5}"/>
+            <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${geonames.output.classes5}"/>
+            <fileset dir="${googlemaps.output.classes5}"/>
+            <fileset dir="${jaxb5.output.classes5}"/>
+            <fileset dir="${mapview.output.classes5}"/>
+            <fileset dir="${navigation-formats.output.classes5}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+            </fileset>
+            <fileset dir="${rest.output.classes5}"/>
+            <fileset dir="${route-converter.output.classes5}"/>
+            <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset dir="${swt-mapview.output.classes5}"/>
+            <fileset file="${license}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter5"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${build.output}/RouteConverterMacJDIC.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-mac}"/>
@@ -1329,6 +1414,8 @@
                  classname="net.charabia.jsmoothgen.ant.JSmoothGen"
                  classpathref="jsmoothgen.classpath"/>
         <jsmoothgen project="build/RouteConverter.jsmooth"
+                    skeletonroot="thirdparty/jsmooth/jsmooth/skeletons"/>
+        <jsmoothgen project="build/RouteConverter64.jsmooth"
                     skeletonroot="thirdparty/jsmooth/jsmooth/skeletons"/>
     </target>
 
