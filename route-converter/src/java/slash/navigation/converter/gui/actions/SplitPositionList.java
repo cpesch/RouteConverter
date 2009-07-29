@@ -42,10 +42,10 @@ import java.util.List;
  */
 
 public class SplitPositionList implements ActionListener {
-    private JFrame frame;
-    private JTable table;
-    private PositionsModel positionsModel;
-    private FormatAndRoutesModel formatAndRoutesModel;
+    private final JFrame frame;
+    private final JTable table;
+    private final PositionsModel positionsModel;
+    private final FormatAndRoutesModel formatAndRoutesModel;
 
     public SplitPositionList(JFrame frame, JTable table, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
         this.frame = frame;

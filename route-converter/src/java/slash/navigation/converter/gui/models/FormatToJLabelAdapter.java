@@ -33,7 +33,7 @@ import javax.swing.*;
  */
 
 public class FormatToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
-    private JLabel label;
+    private final JLabel label;
 
     public FormatToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
                                  JLabel label) {

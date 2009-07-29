@@ -37,7 +37,7 @@ import java.util.List;
 public class RouteSelection implements Transferable {
     public static final DataFlavor routeFlavor = new DataFlavor(RouteSelection.class, "List of Routes");
 
-    private List<Route> routes;
+    private final List<Route> routes;
 
     public RouteSelection(List<Route> routes) {
         this.routes = routes;

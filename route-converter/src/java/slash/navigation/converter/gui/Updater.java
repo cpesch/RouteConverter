@@ -20,10 +20,9 @@
 
 package slash.navigation.converter.gui;
 
+import slash.navigation.util.Conversion;
 import slash.navigation.util.InputOutput;
 import slash.navigation.util.Version;
-import slash.navigation.util.Conversion;
-import slash.navigation.gui.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,9 +30,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import java.util.Locale;
 
 /**
  * Knows how to retrieve the information which is the latest version.

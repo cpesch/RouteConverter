@@ -34,7 +34,7 @@ import java.io.File;
  */
 
 public class NavigationFormatFileFilter extends FileFilter {
-    private NavigationFormat format;
+    private final NavigationFormat format;
 
     public NavigationFormatFileFilter(NavigationFormat format) {
         this.format = format;

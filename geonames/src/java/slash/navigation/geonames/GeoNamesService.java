@@ -20,13 +20,12 @@
 
 package slash.navigation.geonames;
 
-import slash.navigation.rest.Get;
 import slash.navigation.geonames.binding.Geonames;
+import slash.navigation.rest.Get;
 import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**

@@ -41,7 +41,7 @@ import java.text.MessageFormat;
  */
 
 public class PositionAugmenter {
-    private JFrame frame;
+    private final JFrame frame;
 
     public PositionAugmenter(JFrame frame) {
         this.frame = frame;

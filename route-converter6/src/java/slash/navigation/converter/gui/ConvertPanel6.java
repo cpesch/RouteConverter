@@ -37,7 +37,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class ConvertPanel6 extends ConvertPanel {
+class ConvertPanel6 extends ConvertPanel {
 
     protected void addDragAndDrop() {
         convertPanel.setTransferHandler(new PanelDropHandler());

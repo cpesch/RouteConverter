@@ -41,14 +41,14 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(PositionsTableColumnModel.class);
     private static final String VISIBLE_PREFERENCE = "visible";
 
-    public static final int DESCRIPTION_COLUMN_INDEX = 0;
-    public static final int TIME_COLUMN_INDEX = 1;
-    public static final int LONGITUDE_COLUMN_INDEX = 2;
-    public static final int LATITUDE_COLUMN_INDEX = 3;
-    public static final int ELEVATION_COLUMN_INDEX = 4;
-    public static final int SPEED_COLUMN_INDEX = 5;
+    private static final int DESCRIPTION_COLUMN_INDEX = 0;
+    private static final int TIME_COLUMN_INDEX = 1;
+    private static final int LONGITUDE_COLUMN_INDEX = 2;
+    private static final int LATITUDE_COLUMN_INDEX = 3;
+    private static final int ELEVATION_COLUMN_INDEX = 4;
+    private static final int SPEED_COLUMN_INDEX = 5;
 
-    private List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
+    private final List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
 
     public PositionsTableColumnModel() {
         PositionsTableCellRenderer leftAligned = new PositionsTableCellRenderer(SwingConstants.LEFT);

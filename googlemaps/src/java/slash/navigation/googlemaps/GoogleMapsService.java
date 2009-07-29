@@ -29,8 +29,10 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -40,7 +42,6 @@ import java.util.prefs.Preferences;
  */
 
 public class GoogleMapsService {
-    protected static Logger log = Logger.getLogger(GoogleMapsService.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsService.class);
     private static final String GOOGLE_MAPS_URL_PREFERENCE = "googleMapsUrl";
 

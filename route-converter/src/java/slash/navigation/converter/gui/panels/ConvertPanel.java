@@ -66,7 +66,7 @@ import java.util.logging.Logger;
 public abstract class ConvertPanel {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
 
-    private FormatAndRoutesModel formatAndRoutesModel = new FormatAndRoutesModel();
+    private final FormatAndRoutesModel formatAndRoutesModel = new FormatAndRoutesModel();
 
     protected JPanel convertPanel;
     protected JTextField textFieldSource;

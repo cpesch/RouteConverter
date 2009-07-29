@@ -47,9 +47,9 @@ import java.util.ResourceBundle;
  */
 
 public class AddFileDialog extends JDialog {
-    private RouteServiceOperator operator;
-    private CategoryTreeNode categoryTreeNode;
-    private File file;
+    private final RouteServiceOperator operator;
+    private final CategoryTreeNode categoryTreeNode;
+    private final File file;
     private JPanel contentPane;
     private JLabel labelLabel;
     private JTextField textFieldFile;

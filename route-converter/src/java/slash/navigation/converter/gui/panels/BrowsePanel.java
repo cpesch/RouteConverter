@@ -75,8 +75,8 @@ import java.util.logging.Logger;
 
 public abstract class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
-    private RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeService);
+    private final RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+    private final RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeService);
 
     private JPanel browsePanel;
     protected JTree treeCategories;

@@ -33,13 +33,13 @@ import java.util.logging.Logger;
  */
 
 public abstract class HttpRequest {
-    protected static Logger log = Logger.getLogger(HttpRequest.class.getName());
+    private static Logger log = Logger.getLogger(HttpRequest.class.getName());
 
-    protected HttpClient client;
-    protected HttpMethod method;
+    private final HttpClient client;
+    final HttpMethod method;
     private Integer statusCode;
 
-    protected HttpRequest(HttpMethod method) {
+    HttpRequest(HttpMethod method) {
         log = Logger.getLogger(getClass().getName());
         this.client = new HttpClient();
         client.getParams().setIntParameter("http.connection.timeout", 15 * 1000);
@@ -68,7 +68,7 @@ public abstract class HttpRequest {
         return method.getResponseBodyAsStream();
     }
 
-    public void release() {
+    void release() {
         method.releaseConnection();
     }
 

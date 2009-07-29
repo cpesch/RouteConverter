@@ -45,8 +45,8 @@ import java.util.ResourceBundle;
  */
 
 public class AddUrlDialog extends JDialog {
-    private RouteServiceOperator operator;
-    private CategoryTreeNode categoryTreeNode;
+    private final RouteServiceOperator operator;
+    private final CategoryTreeNode categoryTreeNode;
     private JPanel contentPane;
     private JLabel labelLabel;
     private JTextField textFieldDescription;

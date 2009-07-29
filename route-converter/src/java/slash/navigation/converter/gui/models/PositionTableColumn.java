@@ -34,7 +34,7 @@ import javax.swing.table.TableCellEditor;
 
 public class PositionTableColumn extends TableColumn {
     private boolean visible;
-    private String name;
+    private final String name;
 
     public PositionTableColumn(int modelIndex, String name, boolean visible,
                                TableCellRenderer cellRenderer, TableCellEditor cellEditor) {

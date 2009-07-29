@@ -37,11 +37,11 @@ public abstract class FormatAndRoutesListModelToDocumentAdapter extends PlainDoc
     private static final Logger log = Logger.getLogger(FormatAndRoutesListModelToDocumentAdapter.class.getName());
     private FormatAndRoutesModel delegate;
 
-    protected FormatAndRoutesListModelToDocumentAdapter(FormatAndRoutesModel delegate) {
+    FormatAndRoutesListModelToDocumentAdapter(FormatAndRoutesModel delegate) {
         setDelegate(delegate);
     }
 
-    protected FormatAndRoutesModel getDelegate() {
+    FormatAndRoutesModel getDelegate() {
         return delegate;
     }
 

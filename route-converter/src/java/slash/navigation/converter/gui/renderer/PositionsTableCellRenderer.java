@@ -30,7 +30,7 @@ import java.awt.*;
  */
 
 public class PositionsTableCellRenderer extends AlternatingColorTableCellRenderer {
-    private int alignment;
+    private final int alignment;
 
     public PositionsTableCellRenderer(int alignment) {
         this.alignment = alignment;

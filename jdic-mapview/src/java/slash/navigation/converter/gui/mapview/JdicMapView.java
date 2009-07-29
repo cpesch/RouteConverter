@@ -102,9 +102,9 @@ public class JdicMapView implements MapView {
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
-    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
+    private final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
     private int scrollBarSize = 0;
-    private Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
+    private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
     public boolean isSupportedPlatform() {
         return Platform.isLinux() || Platform.isWindows();

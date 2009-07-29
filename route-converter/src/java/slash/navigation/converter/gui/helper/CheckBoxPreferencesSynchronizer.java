@@ -32,9 +32,9 @@ import java.util.prefs.Preferences;
  */
 
 public class CheckBoxPreferencesSynchronizer implements ChangeListener {
-    private JCheckBox checkBox;
-    private Preferences preferences;
-    private String keyName;
+    private final JCheckBox checkBox;
+    private final Preferences preferences;
+    private final String keyName;
 
     public CheckBoxPreferencesSynchronizer(JCheckBox checkBox, Preferences preferences, String keyName, boolean defaultValue) {
         this.checkBox = checkBox;

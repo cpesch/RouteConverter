@@ -35,9 +35,9 @@ import java.awt.event.ActionEvent;
  */
 
 public class AddPostalAddressToPositions implements ActionListener {
-    private JTable table;
-    private PositionsModel positionsModel;
-    private PositionAugmenter augmenter;
+    private final JTable table;
+    private final PositionsModel positionsModel;
+    private final PositionAugmenter augmenter;
 
     public AddPostalAddressToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.table = table;

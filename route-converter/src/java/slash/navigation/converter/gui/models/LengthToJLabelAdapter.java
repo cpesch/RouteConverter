@@ -41,7 +41,8 @@ import java.util.TimeZone;
  */
 
 public class LengthToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
-    private JLabel labelLength, labelDuration;
+    private final JLabel labelLength;
+    private final JLabel labelDuration;
 
     public LengthToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
                                  JLabel labelLength, JLabel labelDuration) {

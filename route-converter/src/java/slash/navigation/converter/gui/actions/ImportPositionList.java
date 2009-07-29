@@ -47,10 +47,10 @@ import java.util.logging.Logger;
 public class ImportPositionList implements ActionListener {
     private static final Logger log = Logger.getLogger(ImportPositionList.class.getName());
 
-    private JFrame frame;
-    private ConvertPanel panel;
-    private JTable table;
-    private PositionsModel model;
+    private final JFrame frame;
+    private final ConvertPanel panel;
+    private final JTable table;
+    private final PositionsModel model;
 
     public ImportPositionList(JFrame frame, ConvertPanel panel, JTable table, PositionsModel model) {
         this.frame = frame;

@@ -26,7 +26,7 @@ package slash.navigation.converter.gui.models;
  * @author Christian Pesch
  */
 
-public interface PositionColumns {
+interface PositionColumns {
     int DESCRIPTION_COLUMN_INDEX = 0;
     int TIME_COLUMN_INDEX = 1;
     int LONGITUDE_COLUMN_INDEX = 2;

@@ -33,7 +33,7 @@ import javax.swing.event.TableModelListener;
 
 public class PositionsCountToJLabelAdapter {
     private PositionsModel delegate;
-    private JLabel label;
+    private final JLabel label;
 
     public PositionsCountToJLabelAdapter(PositionsModel positionsModel, JLabel label) {
         setDelegate(positionsModel);

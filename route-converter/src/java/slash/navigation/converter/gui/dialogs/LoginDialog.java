@@ -47,7 +47,7 @@ import java.io.IOException;
 public class LoginDialog extends JDialog {
     private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
 
-    private RouteService routeService;
+    private final RouteService routeService;
     private JPanel contentPane;
     private JTabbedPane tabbedPane;
 

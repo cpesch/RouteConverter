@@ -37,7 +37,7 @@ import java.util.List;
 public class CategorySelection implements Transferable {
     public static final DataFlavor categoryFlavor = new DataFlavor(CategorySelection.class, "Category");
 
-    private List<CategoryTreeNode> categories;
+    private final List<CategoryTreeNode> categories;
 
     public CategorySelection(List<CategoryTreeNode> categories) {
         this.categories = categories;

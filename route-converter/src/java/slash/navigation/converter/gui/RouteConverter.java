@@ -66,7 +66,7 @@ import java.util.prefs.Preferences;
 
 public abstract class RouteConverter extends SingleFrameApplication {
     private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
-    private Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
 
     public static RouteConverter getInstance() {
         return (RouteConverter) Application.getInstance();

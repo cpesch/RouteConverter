@@ -34,7 +34,7 @@ import java.text.MessageFormat;
  * @author Christian Pesch
  */
 
-public class ExternalPrograms6 extends ExternalPrograms {
+class ExternalPrograms6 extends ExternalPrograms {
     protected void startBrowser(Window window, String uri) {
         if (Desktop.isDesktopSupported())
             try {

@@ -39,8 +39,8 @@ import java.util.List;
  */
 
 public class TableHeaderPopupMenu {
-    private List<JCheckBoxMenuItem> menuItems = new ArrayList<JCheckBoxMenuItem>();
-    private JPopupMenu popupMenu = new JPopupMenu();
+    private final List<JCheckBoxMenuItem> menuItems = new ArrayList<JCheckBoxMenuItem>();
+    private final JPopupMenu popupMenu = new JPopupMenu();
 
     public TableHeaderPopupMenu(JTableHeader tableHeader, final PositionsTableColumnModel tableColumnModel) {
         for (final PositionTableColumn column : tableColumnModel.getPreparedColumns()) {

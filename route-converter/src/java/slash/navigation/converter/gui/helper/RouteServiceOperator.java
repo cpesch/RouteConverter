@@ -39,8 +39,8 @@ import java.util.logging.Logger;
 
 public class RouteServiceOperator {
     private static final Logger log = Logger.getLogger(RouteServiceOperator.class.getName());
-    private RouteService routeService;
-    private JFrame frame;
+    private final RouteService routeService;
+    private final JFrame frame;
 
     public RouteServiceOperator(JFrame frame, RouteService routeService) {
         this.frame = frame;

@@ -36,10 +36,10 @@ import java.awt.event.ActionEvent;
  */
 
 public class AddIndicesToPositions implements ActionListener {
-    private RouteConverter routeConverter;
-    private JTable table;
-    private PositionsModel positionsModel;
-    private PositionAugmenter augmenter;
+    private final RouteConverter routeConverter;
+    private final JTable table;
+    private final PositionsModel positionsModel;
+    private final PositionAugmenter augmenter;
 
     public AddIndicesToPositions(RouteConverter routeConverter, JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.routeConverter = routeConverter;

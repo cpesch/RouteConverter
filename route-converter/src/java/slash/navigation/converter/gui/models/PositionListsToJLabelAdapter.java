@@ -35,7 +35,7 @@ import java.text.MessageFormat;
  */
 
 public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
-    private JLabel label;
+    private final JLabel label;
 
     public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
                                         JLabel label) {

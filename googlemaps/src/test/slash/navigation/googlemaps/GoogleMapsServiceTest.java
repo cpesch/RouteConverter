@@ -29,9 +29,9 @@ import slash.navigation.kml.binding20.Kml;
 import javax.xml.bind.JAXBException;
 
 public class GoogleMapsServiceTest extends TestCase {
-    private GoogleMapsService service = new GoogleMapsService();
+    private final GoogleMapsService service = new GoogleMapsService();
 
-    private String result = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
+    private final String result = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
             "<kml xmlns=\"http://earth.google.com/kml/2.0\"><Response>\n" +
             "  <name>47.3,9.0</name>\n" +
             "  <Status>\n" +

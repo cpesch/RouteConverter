@@ -37,7 +37,7 @@ import java.io.IOException;
 
 abstract class MultipartRequest extends HttpRequest {
 
-    public MultipartRequest(HttpMethod method) {
+    MultipartRequest(HttpMethod method) {
         super(method);
     }
 

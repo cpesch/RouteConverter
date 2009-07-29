@@ -39,12 +39,12 @@ import java.awt.event.ItemListener;
  */
 
 public class MergePositionList extends AbstractAction {
-    private JFrame frame;
-    private JTable table;
-    private JComboBox combobox;
-    private BaseRoute sourceRoute;
-    private PositionsModel positionsModel;
-    private FormatAndRoutesModel formatAndRoutesModel;
+    private final JFrame frame;
+    private final JTable table;
+    private final JComboBox combobox;
+    private final BaseRoute sourceRoute;
+    private final PositionsModel positionsModel;
+    private final FormatAndRoutesModel formatAndRoutesModel;
 
     public MergePositionList(JFrame frame, JTable table, JComboBox combobox, BaseRoute sourceRoute, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
         this.frame = frame;
