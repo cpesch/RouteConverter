@@ -33,7 +33,7 @@ public abstract class TestCase extends junit.framework.TestCase {
         assertTrue("expected:<" + expected + "> but was:<" + was + ">", !expected.equals(was));
     }
 
-    public static void assertByteArrayEquals(byte[] expected, byte[] was) {
+    protected static void assertByteArrayEquals(byte[] expected, byte[] was) {
         assertEquals(expected.length, was.length);
         for (int i = 0; i < expected.length; i++) {
             byte e = expected[i];

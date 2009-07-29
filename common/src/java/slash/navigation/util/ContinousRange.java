@@ -31,8 +31,8 @@ import java.util.List;
  */
 
 public class ContinousRange {
-    private int[] indices;
-    private RangeOperation operation;
+    private final int[] indices;
+    private final RangeOperation operation;
 
     public ContinousRange(int[] indices, RangeOperation operation) {
         this.indices = indices;

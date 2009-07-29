@@ -33,9 +33,9 @@ import java.io.Writer;
  */
 
 public class HexEncoder extends OutputStream {
-    private Writer writer;
+    private final Writer writer;
 
-    public HexEncoder(Writer writer) {
+    private HexEncoder(Writer writer) {
         this.writer = writer;
     }
 
@@ -88,7 +88,7 @@ public class HexEncoder extends OutputStream {
         return new String(chars);
     }
 
-    public static String encodeBytes(byte[] bytes) {
+    private static String encodeBytes(byte[] bytes) {
         StringWriter writer = new StringWriter(2 * bytes.length);
         HexEncoder encoder = new HexEncoder(writer);
         try {
@@ -100,17 +100,17 @@ public class HexEncoder extends OutputStream {
         return writer.toString();
     }
 
-    public static String encodeShort(short aShort) {
+    private static String encodeShort(short aShort) {
         return encodeByte((byte) ((aShort >> 8) & 0x00ff)) +
                 encodeByte((byte) (aShort & 0x00ff));
     }
 
-    public static String encodeInt(int anInt) {
+    private static String encodeInt(int anInt) {
         return encodeShort((short) ((anInt >> 16) & 0x0000ffff)) +
                 encodeShort((short) (anInt & 0x0000ffff));
     }
 
-    public static String encodeLong(long aLong) {
+    private static String encodeLong(long aLong) {
         return encodeInt((int) ((aLong >> 32))) +
                 encodeInt((int) (aLong));
     }

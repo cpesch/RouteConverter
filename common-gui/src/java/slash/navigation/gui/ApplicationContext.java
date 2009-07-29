@@ -29,23 +29,13 @@ import java.util.ResourceBundle;
  */
 
 public class ApplicationContext {
-    private Application application = null;
-    private Class applicationClass = null;
     private ResourceBundle bundle = null;
 
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
-    public void setApplicationClass(Class applicationClass) {
-        this.applicationClass = applicationClass;
+    public ResourceBundle getBundle() {
+        return bundle;
     }
 
     public void setBundle(ResourceBundle bundle) {
         this.bundle = bundle;
-    }
-
-    public ResourceBundle getBundle() {
-        return bundle;
     }
 }

@@ -36,7 +36,6 @@ import java.util.prefs.Preferences;
  */
 
 public class GeoNamesService {
-    protected static Logger log = Logger.getLogger(GeoNamesService.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
 

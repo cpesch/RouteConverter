@@ -34,7 +34,7 @@ import java.util.prefs.Preferences;
 
 public abstract class SingleFrameApplication extends Application {
     private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
-    private Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
 
     private static final String X_PREFERENCE = "x";
     private static final String Y_PREFERENCE = "y";
@@ -129,7 +129,7 @@ public abstract class SingleFrameApplication extends Application {
         return result;
     }
 
-    protected void closeFrame() {
+    void closeFrame() {
         log.info("Storing frame location as " + frame.getLocation());
         log.info("Storing frame size as " + frame.getSize());
         preferences.putInt(X_PREFERENCE, frame.getLocation().x);

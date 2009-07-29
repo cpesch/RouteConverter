@@ -36,7 +36,7 @@ public class Conversion {
 
     /* 6371014 would be a better value, but this seems to be used by
       Map&Guide Tourenplaner when exporting to XML. */
-    static final double EARTH_RADIUS = 6371000.0;
+    private static final double EARTH_RADIUS = 6371000.0;
 
     private static final double METER_OF_A_FEET = 0.3048;
     private static final double KILOMETER_OF_A_KNOT = 1.8520043;
@@ -321,7 +321,7 @@ public class Conversion {
         return feet * METER_OF_A_FEET;
     }
 
-    public static double meterToFeets(double meter) {
+    private static double meterToFeets(double meter) {
         return meter / METER_OF_A_FEET;
     }
 
@@ -390,14 +390,10 @@ public class Conversion {
         DECIMAL_NUMBER_FORMAT.setMaximumFractionDigits(20);
     }
 
-    private static String formatDoubleAsString(Double aDouble, String nullValue) {
-        if (aDouble == null)
-            return nullValue;
-        return DECIMAL_NUMBER_FORMAT.format(aDouble);
-    }
-
     public static String formatDoubleAsString(Double aDouble) {
-        return formatDoubleAsString(aDouble, "0.0");
+        if (aDouble == null)
+            return "0.0";
+        return DECIMAL_NUMBER_FORMAT.format(aDouble);
     }
 
     public static String formatDoubleAsString(Double aDouble, int fractionCount) {

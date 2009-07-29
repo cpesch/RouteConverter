@@ -218,16 +218,10 @@ public abstract class BrowsePanel {
                     public void run() {
                         treeCategories.setModel(categoryTreeModel);
                         selectTreeNode(root);
-                        /* TODO select path from previous start
+                        // TODO select path from previous start
                         CategoryTreeNode m = root.getSubCategory("Motorradfahren");
                         treeCategories.expandPath(new TreePath(new Object[]{m}));
                         treeCategories.setSelectionPath(new TreePath(new Object[]{m}));
-                        CategoryTreeNode d = m.getSubCategory("Deutschland");
-                        treeCategories.expandPath(new TreePath(new Object[]{m, d}));
-                        CategoryTreeNode s = d.getSubCategory("Schleswig-Holstein");
-                        treeCategories.expandPath(new TreePath(new Object[]{m, d, s}));
-                        treeCategories.setSelectionPath(new TreePath(new Object[]{m, d, s}));
-                        */
                     }
                 });
             }

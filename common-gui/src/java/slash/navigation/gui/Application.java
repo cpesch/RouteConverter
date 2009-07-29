@@ -45,7 +45,7 @@ public abstract class Application {
     private static final String PREFERRED_LANGUAGE_PREFERENCE = "preferredLanguage";
     private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
 
-    protected Application() {
+    Application() {
         exitListeners = new CopyOnWriteArrayList<ExitListener>();
         context = new ApplicationContext();
     }
@@ -72,7 +72,7 @@ public abstract class Application {
         }
     }
 
-    protected static void setDefaultLocale(Preferences preferences) {
+    private static void setDefaultLocale(Preferences preferences) {
         String language = preferences.get(PREFERRED_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
         String country = preferences.get(PREFERRED_COUNTRY_PREFERENCE, Locale.getDefault().getCountry());
         Locale.setDefault(new Locale(language, country));
@@ -121,14 +121,11 @@ public abstract class Application {
         runNativeInterfaceEventPump();
     }
 
-    static <T extends Application> T create(Class<T> applicationClass) throws Exception {
+    private static <T extends Application> T create(Class<T> applicationClass) throws Exception {
         Constructor<T> ctor = applicationClass.getDeclaredConstructor();
         T application = ctor.newInstance();
 
         ApplicationContext ctx = application.getContext();
-        ctx.setApplicationClass(applicationClass);
-        ctx.setApplication(application);
-
         /* TODO Load the application resource map, notably the Application.* properties. */
         ctx.setBundle(ResourceBundle.getBundle(applicationClass.getSuperclass().getName()));
 
@@ -140,11 +137,11 @@ public abstract class Application {
 
     protected abstract void startup();
 
-    private void waitForReady() {
+    protected void waitForReady() {
     }
 
 
-    public void exit(EventObject event) {
+    void exit(EventObject event) {
         for (ExitListener listener : exitListeners) {
             if (!listener.canExit(event)) {
                 return;
@@ -185,7 +182,7 @@ public abstract class Application {
     protected void shutdown() {
     }
 
-    protected void end() {
+    void end() {
         Runtime.getRuntime().exit(0);
     }
 }

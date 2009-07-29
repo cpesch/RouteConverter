@@ -79,6 +79,15 @@ public class Bearing {
      */
     private static final double deg = Math.toDegrees(1.0);
 
+    public Bearing() {
+    }
+
+    public Bearing(double azimuth, double backazimuth, double distance) {
+        this.azimuth = azimuth;
+        this.backazimuth = backazimuth;
+        this.distance = distance;
+    }
+
     /**
      * Get the azimuth in degrees, 0 = north, clockwise positive
      *
@@ -135,13 +144,8 @@ public class Bearing {
      */
     public static Bearing calculateBearing(double longitude1, double latitude1,
                                            double longitude2, double latitude2) {
-        Bearing result = new Bearing();
-        if ((latitude1 == latitude2) && (longitude1 == longitude2)) {
-            result.distance = 0;
-            result.azimuth = 0;
-            result.backazimuth = 0;
-            return result;
-        }
+        if ((latitude1 == latitude2) && (longitude1 == longitude2))
+            return new Bearing(0, 0, 0);
 
         // Algorithm from National Geodetic Survey, FORTRAN program "inverse,"
         // subroutine "INVER1," by L. PFEIFER and JOHN G. GERGEN.
@@ -220,13 +224,12 @@ public class Bearing {
         S = 1. - E - E;
         S = ((((SY * SY * 4. - 3.) * S * CZ * D / 6. - X) * D / 4. + CZ) * SY * D + Y) * C * EARTH_RADIUS * R;
 
-        result.distance = Conversion.roundMeterToMillimeterPrecision(S); // meters with millimeter precision
-        result.azimuth = FAZ * deg;            // radians to degrees
-        if (result.azimuth < 0.0) {
-            result.azimuth += 360.0;  // reset azs from -180 to 180 to 0 to 360
+        double azimuth = FAZ * deg;   // radians to degrees
+        if (azimuth < 0.0) {
+            azimuth += 360.0;  // reset azs from -180 to 180 to 0 to 360
         }
-        result.backazimuth = BAZ * deg;  // radians to degrees; already in 0 to 360 range
-        return result;
+        double backazimuth = BAZ * deg;  // radians to degrees; already in 0 to 360 range
+        return new Bearing(azimuth, backazimuth, Conversion.roundMeterToMillimeterPrecision(S));
     }
 }
 

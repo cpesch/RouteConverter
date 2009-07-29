@@ -32,7 +32,7 @@ import java.io.Writer;
  */
 
 public class HexDecoder extends Writer {
-    private OutputStream outputStream;
+    private final OutputStream outputStream;
 
     public HexDecoder(OutputStream stream) {
         this.outputStream = stream;
@@ -83,7 +83,7 @@ public class HexDecoder extends Writer {
     }
 
 
-    private static byte[] decoding = new byte['g'];
+    private static final byte[] decoding = new byte['g'];
     static {
         decoding['0'] = 0;
         decoding['1'] = 1;
@@ -109,16 +109,16 @@ public class HexDecoder extends Writer {
         decoding['F'] = 15;
     }
 
-    public static byte decodeByte(String string, int pos) throws IndexOutOfBoundsException {
+    private static byte decodeByte(String string, int pos) throws IndexOutOfBoundsException {
         return (byte) ((decoding[string.charAt(pos)] << 4) + decoding[string.charAt(pos + 1)]);
     }
 
-    public static short decodeShort(String string, int pos) throws IndexOutOfBoundsException {
+    private static short decodeShort(String string, int pos) throws IndexOutOfBoundsException {
         return (short) ((decoding[string.charAt(pos)] << 12) + (decoding[string.charAt(pos + 1)] << 8) +
                 (decoding[string.charAt(pos + 2)] << 4) + decoding[string.charAt(pos + 3)]);
     }
 
-    public static int decodeInt(String string, int pos) throws IndexOutOfBoundsException {
+    private static int decodeInt(String string, int pos) throws IndexOutOfBoundsException {
         return ((decoding[string.charAt(pos)] << 28) + (decoding[string.charAt(pos + 1)] << 24) +
                 (decoding[string.charAt(pos + 2)] << 20) + (decoding[string.charAt(pos + 3)] << 16) +
                 (decoding[string.charAt(pos) + 4] << 12) + (decoding[string.charAt(pos + 5)] << 8) +

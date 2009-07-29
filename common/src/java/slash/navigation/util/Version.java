@@ -40,8 +40,8 @@ import java.util.jar.Manifest;
  */
 
 public class Version {
-    public static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
-    public static final String ROUTECONVERTER_IS_LATEST_KEY = "routeconverter.islatest";
+    private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
+    private static final String ROUTECONVERTER_IS_LATEST_KEY = "routeconverter.islatest";
 
     public static String getSystemProperty(String propertyName) {
         String propertyValue = propertyName;

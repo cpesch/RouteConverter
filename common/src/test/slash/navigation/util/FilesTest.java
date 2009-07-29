@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FilesTest extends TestCase {
-    File file;
+    private File file;
 
     protected void setUp() throws Exception {
         super.setUp();

@@ -64,7 +64,7 @@ public class Constants {
         root.getGlassPane().setVisible(true);
     }
 
-    public static void startWaitCursor(Component component) {
+    private static void startWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     }
 
@@ -74,7 +74,7 @@ public class Constants {
         root.getGlassPane().setVisible(false);
     }
 
-    public static void stopWaitCursor(Component component) {
+    private static void stopWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 

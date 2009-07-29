@@ -32,8 +32,8 @@ import java.util.*;
 public class CompactCalendar {
     public static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
-    private long timeInMillis;
-    private String timeZoneId;
+    private final long timeInMillis;
+    private final String timeZoneId;
 
     public static CompactCalendar fromCalendar(Calendar calendar) {
         return new CompactCalendar(calendar.getTimeInMillis(), calendar.getTimeZone().getID());
@@ -69,23 +69,23 @@ public class CompactCalendar {
     private static volatile Map<String, TimeZone> timeZones = Collections.emptyMap();
 
     private TimeZone getTimeZone() {
-        if ("GMT".equals(timeZoneId))
+        if ("GMT".equals(getTimeZoneId()))
             return GMT;
         // try global read-only map. No synchronization necessary because the field is volatile.
         // (this is only *guaranteed* to work with the Java 5 revised memory model, but works on older JVMs anyway)
-        TimeZone result = timeZones.get(timeZoneId);
+        TimeZone result = timeZones.get(getTimeZoneId());
         if (result != null)
             return result;
         synchronized (CompactCalendar.class) {
             // the time zone might have been added while we waited for monitor entry
-            result = timeZones.get(timeZoneId);
+            result = timeZones.get(getTimeZoneId());
             if (result != null)
                 return result;
             // add new timezone to new version of global map.
             // The following call is allegedly expensive (that's why we go through all this trouble)
-            result = TimeZone.getTimeZone(timeZoneId);
+            result = TimeZone.getTimeZone(getTimeZoneId());
             Map<String, TimeZone> newTimeZones = new HashMap<String, TimeZone>(timeZones);
-            newTimeZones.put(timeZoneId, result);
+            newTimeZones.put(getTimeZoneId(), result);
             newTimeZones = Collections.unmodifiableMap(newTimeZones); // paranoia
             timeZones = newTimeZones;
         }

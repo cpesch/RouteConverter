@@ -29,16 +29,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
-public class GeoNamesUtil {
-    public static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+class GeoNamesUtil {
+    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
 
-    public static final String GEONAMES_NAMESPACE_URI = "";
-
-    public static Unmarshaller newUnmarshaller() {
+    private static Unmarshaller newUnmarshaller() {
         return JaxbUtils.newUnmarshaller(CONTEXT);
     }
 
-    public static Geonames unmarshal(StringReader reader) throws JAXBException {
+    private static Geonames unmarshal(StringReader reader) throws JAXBException {
         Geonames result = null;
         try {
             result = (Geonames) newUnmarshaller().unmarshal(reader);

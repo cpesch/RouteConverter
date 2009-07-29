@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
-    private static File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
+    private static final File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
 
     public synchronized static File getTempDirectory() {
         if (!tempDirectory.exists())

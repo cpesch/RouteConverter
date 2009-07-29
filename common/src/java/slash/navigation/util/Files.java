@@ -77,7 +77,7 @@ public class Files {
      * @param extension the new extension for the file name
      * @return the file name with the given extension
      */
-    public static String setExtension(String name, String extension) {
+    private static String setExtension(String name, String extension) {
         name = removeExtension(name);
         name += extension;
         return name;

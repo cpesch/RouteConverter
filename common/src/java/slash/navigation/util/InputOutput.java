@@ -36,11 +36,11 @@ import java.net.URL;
  */
 
 public class InputOutput {
-    public static final int CHUNK_SIZE = (4 * 1024);
+    private static final int CHUNK_SIZE = (4 * 1024);
 
     private int chunkSize = CHUNK_SIZE;
-    private InputStream input;
-    private OutputStream output;
+    private final InputStream input;
+    private final OutputStream output;
 
     public InputOutput(InputStream input, OutputStream output) {
         this.input = input;

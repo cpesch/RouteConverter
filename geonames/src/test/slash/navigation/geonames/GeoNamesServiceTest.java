@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import java.io.IOException;
 
 public class GeoNamesServiceTest extends TestCase {
-    private GeoNamesService service = new GeoNamesService();
+    private final GeoNamesService service = new GeoNamesService();
 
     public void testSrtm3ElevationLookup() throws IOException {
         assertEquals(209, (int) service.getSrtm3ElevationFor(10.2, 50.001));
@@ -71,12 +71,15 @@ public class GeoNamesServiceTest extends TestCase {
     }
 
     public void testNearByLookup() throws IOException {
-        assertEquals("Kreuzegg", service.getNearByFor(9.0, 47.3));
+        // was: assertEquals("Kreuzegg", service.getNearByFor(9.0, 47.3));
+        assertEquals("Atzmännig", service.getNearByFor(9.0, 47.3));
         assertEquals("Grafenrheinfeld", service.getNearByFor(10.2, 50.001));
-        assertEquals("Hoher Gaif", service.getNearByFor(11.06561, 47.42428));
+        // was: assertEquals("Hoher Gaif", service.getNearByFor(11.06561, 47.42428));
+        assertEquals("Hammersbach", service.getNearByFor(11.06561, 47.42428));
         assertEquals("Earth", service.getNearByFor(0.0, 0.0));
-        assertEquals("Antarctica (general)", service.getNearByFor(0.0, -90.0));
-        assertEquals(null, service.getNearByFor(0.0, 90.0));
+        // was: assertEquals("Antarctica (general)", service.getNearByFor(0.0, -90.0));
+        assertEquals("Amundsen-Scott /USA/", service.getNearByFor(0.0, -90.0));
+        assertEquals("North Pole", service.getNearByFor(0.0, 90.0));
         assertEquals(null, service.getNearByFor(90.0, 90.0));
         assertEquals(null, service.getNearByFor(-90.0, -90.0));
     }
