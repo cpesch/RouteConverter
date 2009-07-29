@@ -32,7 +32,7 @@ import java.text.Collator;
  * @author Christian Pesch
  */
 
-public class RouteComparator implements Comparator<Route> {
+class RouteComparator implements Comparator<Route> {
     private String getDescription(Route route) {
         try {
             return route.getDescription();

@@ -31,7 +31,7 @@ import java.util.Comparator;
  *
  * @author Christian Pesch
  */
-public class CategoryComparator implements Comparator<Category> {
+class CategoryComparator implements Comparator<Category> {
     private String getName(Category category) {
         try {
             return category.getName();

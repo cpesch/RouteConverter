@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 
 public class CategoryTreeNode extends DefaultMutableTreeNode {
-    protected static Logger log = Logger.getLogger(CategoryTreeNode.class.getName());
+    private static final Logger log = Logger.getLogger(CategoryTreeNode.class.getName());
     private static final RouteComparator routeComparator = new RouteComparator();
     private static final CategoryComparator categoryComparator = new CategoryComparator();
 
@@ -68,7 +68,7 @@ public class CategoryTreeNode extends DefaultMutableTreeNode {
         return super.children();
     }
 
-    public Category getCategory() {
+    Category getCategory() {
         return (Category) getUserObject();
     }
 
@@ -90,7 +90,7 @@ public class CategoryTreeNode extends DefaultMutableTreeNode {
 
     private CategoryTreeModel treeModel;
 
-    public CategoryTreeModel getTreeModel() {
+    CategoryTreeModel getTreeModel() {
         if (treeModel == null) {
             CategoryTreeNode parent = (CategoryTreeNode) getParent();
             if (parent != null)

@@ -34,8 +34,8 @@ import java.net.URL;
  */
 
 public class Route {
-    private RouteService routeService;
-    private String url;
+    private final RouteService routeService;
+    private final String url;
     private String name, creator, description;
     private boolean fromCategory = false;
     private GpxType gpx;

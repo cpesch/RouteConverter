@@ -41,14 +41,14 @@ import java.util.logging.Logger;
  */
 
 public class RouteService {
-    protected static Logger log = Logger.getLogger(RouteService.class.getName());
+    private static final Logger log = Logger.getLogger(RouteService.class.getName());
 
-    public static final String ROOT_CATEGORY_URI = "categories/.gpx";
-    public static final String ROUTES_URI = "routes/";
-    public static final String FILES_URI = "files/";
-    public static final String USERS_URI = "users/";
+    private static final String ROOT_CATEGORY_URI = "categories/.gpx";
+    private static final String ROUTES_URI = "routes/";
+    private static final String FILES_URI = "files/";
+    private static final String USERS_URI = "users/";
 
-    private String rootUrl;
+    private final String rootUrl;
     private String userName, password;
 
     public RouteService(String rootUrl, String userName, String password) {
@@ -104,14 +104,14 @@ public class RouteService {
     private static final ObjectFactory gpxFactory = new ObjectFactory();
     private static final slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();
 
-    public static GpxType createGpxType() {
+    private static GpxType createGpxType() {
         GpxType gpxType = gpxFactory.createGpxType();
         gpxType.setCreator("RouteCatalog Client");
         gpxType.setVersion("1.1");
         return gpxType;
     }
 
-    public static String createCategoryXml(String parentUrl, String name) throws UnsupportedEncodingException {
+    private static String createCategoryXml(String parentUrl, String name) {
         MetadataType metadataType = gpxFactory.createMetadataType();
         metadataType.setName(Helper.asUtf8(name));
         if (parentUrl != null)
@@ -122,7 +122,7 @@ public class RouteService {
         return toXml(gpxType);
     }
 
-    public static String createRouteXml(String category, String description, String fileUrl) throws UnsupportedEncodingException {
+    private static String createRouteXml(String category, String description, String fileUrl) {
         MetadataType metadataType = gpxFactory.createMetadataType();
         metadataType.setDesc(Helper.asUtf8(description));
         metadataType.setKeywords(Helper.asUtf8(Helper.decodeUri(category)));
@@ -139,7 +139,7 @@ public class RouteService {
         return toXml(gpxType);
     }
 
-    public static String createUserXml(String userName, String password, String firstName, String lastName, String email) throws UnsupportedEncodingException {
+    private static String createUserXml(String userName, String password, String firstName, String lastName, String email) {
         MetadataType metadataType = gpxFactory.createMetadataType();
         metadataType.setName(Helper.asUtf8(userName));
 
@@ -159,7 +159,7 @@ public class RouteService {
         return toXml(gpxType);
     }
 
-    public static String toXml(GpxType gpxType) {
+    private static String toXml(GpxType gpxType) {
         StringWriter writer = new StringWriter();
         try {
             GpxUtil.marshal11(gpxType, writer);

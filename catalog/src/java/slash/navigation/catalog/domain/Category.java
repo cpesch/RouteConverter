@@ -37,7 +37,7 @@ import java.util.List;
  */
 
 public class Category {
-    private RouteService routeService;
+    private final RouteService routeService;
     private String url;
     private GpxType gpx;
 
