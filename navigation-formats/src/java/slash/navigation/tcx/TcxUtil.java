@@ -26,26 +26,26 @@ import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
-public class TcxUtil {
-    public static final JAXBContext CONTEXT_1 = JaxbUtils.newContext(slash.navigation.tcx.binding1.ObjectFactory.class);
-    public static final JAXBContext CONTEXT_2 = JaxbUtils.newContext(slash.navigation.tcx.binding2.ObjectFactory.class);
+class TcxUtil {
+    private static final JAXBContext CONTEXT_1 = JaxbUtils.newContext(slash.navigation.tcx.binding1.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_2 = JaxbUtils.newContext(slash.navigation.tcx.binding2.ObjectFactory.class);
 
-    public static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
-    public static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
+    private static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
+    private static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 
-    public static Unmarshaller newUnmarshaller1() {
+    private static Unmarshaller newUnmarshaller1() {
         return JaxbUtils.newUnmarshaller(CONTEXT_1);
     }
 
-    public static Marshaller newMarshaller1() {
+    private static Marshaller newMarshaller1() {
         return JaxbUtils.newMarshaller(CONTEXT_1);
     }
 
-    public static Unmarshaller newUnmarshaller2() {
+    private static Unmarshaller newUnmarshaller2() {
         return JaxbUtils.newUnmarshaller(CONTEXT_2);
     }
 
-    public static Marshaller newMarshaller2() {
+    private static Marshaller newMarshaller2() {
         return JaxbUtils.newMarshaller(CONTEXT_2);
     }
 
@@ -59,19 +59,6 @@ public class TcxUtil {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
         return result;
-    }
-
-    public static slash.navigation.tcx.binding1.TrainingCenterDatabaseT unmarshal1(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal1(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
     }
 
     public static void marshal1(slash.navigation.tcx.binding1.TrainingCenterDatabaseT trainingCenterDatabaseT, File file) throws JAXBException {
@@ -99,19 +86,6 @@ public class TcxUtil {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
         return result;
-    }
-
-    public static slash.navigation.tcx.binding2.TrainingCenterDatabaseT unmarshal2(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal2(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
     }
 
     public static void marshal2(slash.navigation.tcx.binding2.TrainingCenterDatabaseT trainingCenterDatabaseT, File file) throws JAXBException {

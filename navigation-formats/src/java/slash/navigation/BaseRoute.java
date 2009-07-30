@@ -51,7 +51,7 @@ import java.util.List;
 public abstract class BaseRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat> {
     private static final String REVERSE_ROUTE_NAME_POSTFIX = " (rev)";
 
-    private F format;
+    private final F format;
     protected RouteCharacteristics characteristics;
 
     protected BaseRoute(F format, RouteCharacteristics characteristics) {

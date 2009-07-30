@@ -43,8 +43,8 @@ import java.util.logging.Logger;
 
 public class Gpx10Format extends GpxFormat {
     private static final Logger log = Logger.getLogger(Gpx10Format.class.getName());
-    protected static final String VERSION = "1.0";
-    private boolean reuseReadObjectsForWriting;
+    static final String VERSION = "1.0";
+    private final boolean reuseReadObjectsForWriting;
 
     public Gpx10Format(boolean reuseReadObjectsForWriting) {
         this.reuseReadObjectsForWriting = reuseReadObjectsForWriting;
@@ -58,7 +58,7 @@ public class Gpx10Format extends GpxFormat {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    protected List<GpxRoute> process(Gpx gpx) {
+    List<GpxRoute> process(Gpx gpx) {
         if (gpx == null || !VERSION.equals(gpx.getVersion()))
             return null;
 

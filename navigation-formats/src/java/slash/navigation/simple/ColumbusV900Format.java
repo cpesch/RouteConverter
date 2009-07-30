@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  */
 
 public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
-    private static Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
+    private static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
     private static final String STANDARD_HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX";
     private static final String PROFESSIONAL_HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
     private static final char SEPARATOR_CHAR = ',';

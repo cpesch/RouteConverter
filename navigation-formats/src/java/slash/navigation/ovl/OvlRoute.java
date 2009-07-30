@@ -55,7 +55,7 @@ import java.util.List;
  */
 
 public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
-    private OvlSection symbol, overlay, mapLage;
+    private final OvlSection symbol, overlay, mapLage;
     private List<Wgs84Position> positions;
 
 

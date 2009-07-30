@@ -32,11 +32,11 @@ import java.util.regex.Pattern;
  */
 
 public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
-    protected static final char SEPARATOR_CHAR = '|';
-    protected static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
-    protected static final String WILDCARD = "[.[^" + SEPARATOR_CHAR + "]]*";
-    protected static final char LEFT_BRACE = '[';
-    protected static final char RIGHT_BRACE = ']';
+    static final char SEPARATOR_CHAR = '|';
+    static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
+    static final String WILDCARD = "[.[^" + SEPARATOR_CHAR + "]]*";
+    static final char LEFT_BRACE = '[';
+    static final char RIGHT_BRACE = ']';
 
     static final Pattern COMMENT_PATTERN = Pattern.compile("(\\d+ )?(.[^,;]+),(.[^ ,;]+)( .[^,;]+)?");
 

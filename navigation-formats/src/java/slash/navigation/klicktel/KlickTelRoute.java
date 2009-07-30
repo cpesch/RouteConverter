@@ -57,8 +57,8 @@ import java.util.List;
 
 public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat> {
     private String name;
-    private KDRoute.RouteOptions options;
-    private List<Wgs84Position> positions;
+    private final KDRoute.RouteOptions options;
+    private final List<Wgs84Position> positions;
 
 
     public KlickTelRoute(String name, List<Wgs84Position> positions) {

@@ -54,8 +54,8 @@ import java.util.List;
  */
 
 public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
-    private List<TomTomPosition> positions;
     private String name;
+    private final List<TomTomPosition> positions;
 
     public TomTomRoute(TomTomRouteFormat format, RouteCharacteristics characteristics, String name, List<TomTomPosition> positions) {
         super(format, characteristics);

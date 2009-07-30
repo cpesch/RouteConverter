@@ -56,14 +56,14 @@ public class GarminPoiDbFormat extends BabelFormat {
         return true;
     }
 
-    private boolean isNonsenseRoute(List<GpxPosition> positions) {
+    private boolean isValidRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
             if ((position.getLongitude() == 0.0 && position.getLatitude() == 0.0) ||
                     (position.getLatitude() == 0.0 && (position.getElevation() == null || position.getElevation() == 0.0)))
                 count++;
         }
-        return count == positions.size();
+        return count != positions.size();
     }
 
     public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
@@ -74,7 +74,7 @@ public class GarminPoiDbFormat extends BabelFormat {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (GpxRoute route : routes) {
             // is really greedy in parsing the data of various text files
-            if (!isNonsenseRoute(route.getPositions()))
+            if (isValidRoute(route.getPositions()))
                 result.add(route);
         }
         return result.size() > 0 ? result : null;

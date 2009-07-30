@@ -93,7 +93,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    private CompactCalendar parseTime(String string, CompactCalendar startDate) {
+    private CompactCalendar parseTime(String string) {
         if (string == null)
             return null;
         try {
@@ -124,7 +124,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 (street != null ? street + " " : "") +
                 (houseNo != null ? houseNo : "");
 
-        CompactCalendar calendar = parseTime(time, startDate);
+        CompactCalendar calendar = parseTime(time);
         Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
                 null, null, calendar, comment);
         position.setStartDate(startDate);

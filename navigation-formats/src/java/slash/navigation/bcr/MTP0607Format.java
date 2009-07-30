@@ -40,10 +40,6 @@ public class MTP0607Format extends BcrFormat {
     }
 
     protected void writePosition(BcrPosition position, PrintWriter writer, int index) {
-        String street = Conversion.trim(position.getStreet()) != null ? position.getStreet() : "";
-        if (BcrPosition.STREET_DEFINES_CENTER_NAME.equals(street))
-            street = BcrPosition.STREET_DEFINES_CENTER_SYMBOL;
-
         String comment = (position.getZipCode() != null ? position.getZipCode() + " " : "") +
                 (position.getCity() != null ? position.getCity() : "");
         writer.println(BcrSection.STATION_PREFIX + index + NAME_VALUE_SEPARATOR + comment);

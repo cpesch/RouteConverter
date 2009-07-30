@@ -29,16 +29,16 @@ import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
-public class KlickTelUtil {
-    public static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+class KlickTelUtil {
+    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
 
-    public static final String KLICKTEL_NAMESPACE_URI = "";
+    private static final String KLICKTEL_NAMESPACE_URI = "";
 
-    public static Unmarshaller newUnmarshaller() {
+    private static Unmarshaller newUnmarshaller() {
         return JaxbUtils.newUnmarshaller(CONTEXT);
     }
 
-    public static Marshaller newMarshaller() {
+    private static Marshaller newMarshaller() {
         Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
         try {
             marshaller.setProperty(JaxbUtils.JAXB_IMPL_HEADER, XmlNavigationFormat.HEADER);
@@ -57,20 +57,6 @@ public class KlickTelUtil {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
         return result;
-    }
-
-    public static KDRoute unmarshal(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal(in);
-            }
-            finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
     }
 
 

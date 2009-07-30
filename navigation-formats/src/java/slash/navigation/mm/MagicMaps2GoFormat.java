@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  */
 
 public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static Logger log = Logger.getLogger(MagicMaps2GoFormat.class.getName());
+    private static final Logger log = Logger.getLogger(MagicMaps2GoFormat.class.getName());
     private static final char SEPARATOR_CHAR = ' ';
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
 

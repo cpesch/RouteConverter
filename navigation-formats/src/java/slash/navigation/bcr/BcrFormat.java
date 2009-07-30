@@ -149,9 +149,8 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             BcrSection client = findSection(sections, CLIENT_TITLE);
             BcrSection coordinates = findSection(sections, COORDINATES_TITLE);
             BcrSection description = findSection(sections, DESCRIPTION_TITLE);
-            if (!isValidDescription(description))
-                return false;
-            return client.getStationCount() == coordinates.getStationCount() &&
+            return isValidDescription(description) &&
+                    client.getStationCount() == coordinates.getStationCount() &&
                     coordinates.getStationCount() == description.getStationCount();
         }
         return false;

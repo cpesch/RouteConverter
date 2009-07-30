@@ -44,9 +44,9 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     static final String OVERLAY_TITLE = "Overlay";
     static final String MAPLAGE_TITLE = "MapLage";
 
-    static final String SYMBOL_COUNT = "Symbols";
-    static final String ROUTE_NAME = "RouteName";
-    static final String CREATOR = "Creator";
+    private static final String SYMBOL_COUNT = "Symbols";
+    // static final String ROUTE_NAME = "RouteName";
+    private static final String CREATOR = "Creator";
 
     private static final Pattern SECTION_TITLE_PATTERN = Pattern.
             compile("\\" + SECTION_PREFIX + "(" + SYMBOL_TITLE + " \\d+|" + OVERLAY_TITLE + "|" +

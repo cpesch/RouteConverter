@@ -98,7 +98,7 @@ public abstract class RouteComments {
         }
     }
 
-    public static void commentPosition(BaseNavigationPosition position, int index) {
+    private static void commentPosition(BaseNavigationPosition position, int index) {
         if (position.getComment() == null || "(null)".equals(position.getComment()))
             position.setComment(getPositionComment(index));
         else {
@@ -156,7 +156,7 @@ public abstract class RouteComments {
 
 
     private static class LongitudeAndLatitude {
-        public double longitude, latitude;
+        public final double longitude, latitude;
 
         public LongitudeAndLatitude(BaseNavigationPosition position) {
             this.longitude = position.getLongitude();

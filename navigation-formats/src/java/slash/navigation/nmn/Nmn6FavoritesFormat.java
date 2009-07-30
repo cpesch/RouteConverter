@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  */
 
 public class Nmn6FavoritesFormat extends NmnFormat {
-    protected static final String WILDCARD = "[.[^" + SEPARATOR_CHAR + "\\p{Lower}]]*";
+    private static final String WILDCARD = "[.[^" + SEPARATOR_CHAR + "\\p{Lower}]]*";
 
     // [P HALLENEU CINEMAXX||][0][10]|11.92417,51.47978|06122|11.92417|51.47978[8]|NEUSTÄDTER PASSAGE|06122|11.92678|51.48087[7]|NEUSTADT|[6]|HALLE (SAALE)|06108|11.97546|51.48129[3]|HALLE (SAALE)|[2]|Sachsen-Anhalt||4366[0]|Deutschland||17
     // [P SCHIERKE         ||][0][15]|AM THÄLCHEN      |38879|10.66664|51.76459|633,0|1[14]|Alle Kategorien||196658,0[13]|Parken||3,0[6]|SCHIERKE|38879|10.65527|51.76586[3]|WERNIGERODE|[2]|Sachsen-Anhalt||4366[0]|Deutschland||17
@@ -80,8 +80,8 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
         String street = Conversion.trim(lineMatcher.group(4));
-        String comment = city != null ? city + " " : "" + street != null ? street : "";
-        if (comment != null && comment.toUpperCase().equals(comment))
+        String comment = (city != null ? city + " " : "") + (street != null ? street : "");
+        if (comment.toUpperCase().equals(comment))
             comment = Conversion.toMixedCase(comment);
         return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double) null, null, null, Conversion.trim(comment));
     }

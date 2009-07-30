@@ -30,7 +30,7 @@ import java.util.Comparator;
  * @author Christian Pesch
  */
 
-public class PositionInListComparator implements Comparator<TourPosition> {
+class PositionInListComparator implements Comparator<TourPosition> {
     private int extractPositionInList(TourPosition position) {
         Integer integer = Conversion.parseInt(position.get(TourFormat.POSITION_IN_LIST));
         return integer != null ? integer : position.hashCode();

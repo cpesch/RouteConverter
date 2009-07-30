@@ -69,7 +69,7 @@ import java.util.List;
  */
 
 public final class NavigationFormats {
-    public static final List<Class<? extends NavigationFormat>> SUPPORTED_FORMATS =
+    private static final List<Class<? extends NavigationFormat>> SUPPORTED_FORMATS =
             new ArrayList<Class<? extends NavigationFormat>>();
 
     static {

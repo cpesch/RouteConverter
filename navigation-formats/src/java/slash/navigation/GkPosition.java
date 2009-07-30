@@ -30,8 +30,8 @@ import slash.navigation.util.Conversion;
  */
 
 public class GkPosition extends BaseNavigationPosition {
-    protected double right, height;
-    protected String comment;
+    private double right, height;
+    private String comment;
 
     public GkPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(elevation, speed, time);

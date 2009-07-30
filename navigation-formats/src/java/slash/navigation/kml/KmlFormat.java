@@ -48,14 +48,14 @@ import java.text.ParseException;
 
 public abstract class KmlFormat extends BaseKmlFormat {
     private static final Logger log = Logger.getLogger(KmlFormat.class.getName());
-    protected static final Preferences preferences = Preferences.userNodeForPackage(KmlFormat.class);
+    static final Preferences preferences = Preferences.userNodeForPackage(KmlFormat.class);
 
-    protected static final String WAYPOINTS = "Waypoints";
-    protected static final String ROUTE = "Route";
-    protected static final String TRACK = "Track";
-    protected static final String ROUTE_LINE_STYLE = "routeStyle";
-    protected static final String TRACK_LINE_STYLE = "trackStyle";
-    protected static final String[] SPEED_COLORS = {
+    static final String WAYPOINTS = "Waypoints";
+    static final String ROUTE = "Route";
+    static final String TRACK = "Track";
+    static final String ROUTE_LINE_STYLE = "routeStyle";
+    static final String TRACK_LINE_STYLE = "trackStyle";
+    static final String[] SPEED_COLORS = {
             "FF00ffff",
             "FF008080",
             "FF00ff00",
@@ -70,8 +70,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
             "FF000080",
             "FF194c80",
             "FF000000"};
-    protected static final int SPEED_SCALE = 10;
-    protected static final String SPEEDBAR_URL = "http://ww.routeconverter.de/images/speedbar.png";
+    static final int SPEED_SCALE = 10;
+    static final String SPEEDBAR_URL = "http://www.routeconverter.de/images/speedbar.png";
 
     static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*[[-|+]|\\d|\\.|E]*\\s*),(\\s*[[-|+]|\\d|\\.|E]*\\s*),?,?(\\s*[[-|+]|\\d|\\.|E]+\\s*)?");
 

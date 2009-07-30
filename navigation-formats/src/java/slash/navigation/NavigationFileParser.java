@@ -269,12 +269,12 @@ public class NavigationFileParser {
     /**
      * Gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment.
      */
-    private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int j, File... targets) {
+    private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int trackIndex, File... targets) {
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
             String name = RouteComments.createRouteName(routeToWrite.getPositions().subList(startIndex, endIndex));
             if (targets.length > 1)
-                name = "Track" + (j + 1) + ": " + name;
+                name = "Track" + (trackIndex + 1) + ": " + name;
             routeToWrite.setName(name);
         }
     }

@@ -55,8 +55,8 @@ import java.util.List;
 
 public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
     private String name;
-    private Tour.Options options;
-    private List<GoPalPosition> positions;
+    private final Tour.Options options;
+    private final List<GoPalPosition> positions;
 
 
     public GoPalRoute(String name, List<GoPalPosition> positions) {

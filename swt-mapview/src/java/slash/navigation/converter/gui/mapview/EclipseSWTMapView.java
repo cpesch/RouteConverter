@@ -100,8 +100,8 @@ public class EclipseSWTMapView implements MapView {
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
-    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
-    private Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
+    private final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
+    private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
     public boolean isSupportedPlatform() {
         return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
@@ -273,14 +273,18 @@ public class EclipseSWTMapView implements MapView {
             initializeAfterLoading();
             checkCallback();
         } else {
-            System.out.println("WAITING "+ counter*1000 + " seconds"); // TODO remove me later
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // intentionally left empty
-            }
-            if(counter++ < 3)
+            if(counter++ < 3) {
+                loadWebPage(webBrowser);
+
+                System.out.println("WAITING "+ counter*1000 + " seconds"); // TODO remove me later
+                try {
+                    Thread.sleep(counter*1000);
+                } catch (InterruptedException e) {
+                    // intentionally left empty
+                }
+
                 tryToInitialize(counter);
+            }
         }
     }
 
@@ -1023,7 +1027,7 @@ public class EclipseSWTMapView implements MapView {
     }
 
     private void logExecuteScript(String script, Object result) {
-        String output = System.currentTimeMillis() + " executing script '" + script + (result != null ? "' with result '" + result + "'" : "");
+        String output = System.currentTimeMillis() + " executing script '" + script + (result != null ? "' with result '" + result : "") + "'";
         if(debug) {
             System.out.println(output);
             log.info(output);

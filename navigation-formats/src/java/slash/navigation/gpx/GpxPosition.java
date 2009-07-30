@@ -79,10 +79,6 @@ public class GpxPosition extends Wgs84Position {
         return reason;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
     Object getOrigin() {
         return origin;
     }

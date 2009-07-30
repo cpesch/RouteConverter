@@ -79,7 +79,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
     protected abstract boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException;
 
-    protected abstract List<Wgs84Route> read(ByteBuffer source, CompactCalendar startDate) throws IOException;
+    protected abstract List<Wgs84Route> read(ByteBuffer source) throws IOException;
 
     public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         List<Wgs84Route> result = null;
@@ -104,13 +104,13 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 sourceData.put(header);
                 sourceData.put(data);
 
-                result = read(sourceData, startDate);
+                result = read(sourceData);
             }
         }
         return result;
     }
 
-    protected List<Wgs84Route> readPositions(ByteBuffer source, long trackInfoAddress) throws IOException {
+    List<Wgs84Route> readPositions(ByteBuffer source, long trackInfoAddress) {
         /* http://forum.pocketnavigation.de/attachment.php?attachmentid=1082953
            2 byte Trackflag
                00001 = 1 --> That point is the start point of a trajectory
@@ -184,7 +184,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             }
 
             // single trackpoint. over speed point is also a trackpoint
-            if ((trackFlag == 0) || ((trackFlag & 4) == 4))
+            if (trackPoints != null && ((trackFlag == 0) || ((trackFlag & 4) == 4)))
                 trackPoints.add(createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true));
 
         }

@@ -54,7 +54,7 @@ import java.util.List;
 
 public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends SimpleFormat> extends BaseRoute<P, F> {
     protected String name;
-    protected List<P> positions;
+    protected final List<P> positions;
 
     public SimpleRoute(F format, RouteCharacteristics characteristics, List<P> positions) {
         this(format, characteristics, null, positions);

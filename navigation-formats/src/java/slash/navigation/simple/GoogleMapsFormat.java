@@ -47,7 +47,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
             compile("(" + WHITE_SPACE + ".*?" + WHITE_SPACE + ")" +
                     "(@?(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + ")," +
                     "(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + "))?");
-    public static final String DESTINATION_SEPARATOR = "to:";
+    private static final String DESTINATION_SEPARATOR = "to:";
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
     public String getExtension() {

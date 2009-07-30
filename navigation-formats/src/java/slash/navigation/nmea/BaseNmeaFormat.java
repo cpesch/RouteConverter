@@ -47,9 +47,9 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(BaseNmeaFormat.class);
     protected static Logger log = Logger.getLogger(BaseNmeaFormat.class.getName());
 
-    protected static final String SEPARATOR = ",";
-    protected static final String BEGIN_OF_LINE = "^\\$GP";
-    protected static final String END_OF_LINE = "\\*[0-9A-F][0-9A-F]$";
+    static final String SEPARATOR = ",";
+    static final String BEGIN_OF_LINE = "^\\$GP";
+    static final String END_OF_LINE = "\\*[0-9A-F][0-9A-F]$";
 
     private static final Pattern LINE_PATTERN = Pattern.compile("(^@.*|^\\$.*|" + BEGIN_OF_LINE + ".*" + END_OF_LINE + ")");
 

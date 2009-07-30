@@ -28,50 +28,50 @@ import javax.xml.namespace.QName;
 import java.io.*;
 
 public class KmlUtil {
-    public static final JAXBContext CONTEXT_20 = JaxbUtils.newContext(slash.navigation.kml.binding20.ObjectFactory.class);
-    public static final JAXBContext CONTEXT_21 = JaxbUtils.newContext(slash.navigation.kml.binding21.ObjectFactory.class);
-    public static final JAXBContext CONTEXT_22_BETA = JaxbUtils.newContext(slash.navigation.kml.binding22beta.ObjectFactory.class);
-    public static final JAXBContext CONTEXT_22 = JaxbUtils.newContext(slash.navigation.kml.binding22.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_20 = JaxbUtils.newContext(slash.navigation.kml.binding20.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_21 = JaxbUtils.newContext(slash.navigation.kml.binding21.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_22_BETA = JaxbUtils.newContext(slash.navigation.kml.binding22beta.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_22 = JaxbUtils.newContext(slash.navigation.kml.binding22.ObjectFactory.class);
 
-    public static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";
-    public static final String KML_21_NAMESPACE_URI = "http://earth.google.com/kml/2.1";
-    public static final String KML_22_BETA_NAMESPACE_URI = "http://earth.google.com/kml/2.2";
-    public static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
-    public static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
-    public static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
+    private static final String KML_20_NAMESPACE_URI = "http://earth.google.com/kml/2.0";
+    private static final String KML_21_NAMESPACE_URI = "http://earth.google.com/kml/2.1";
+    private static final String KML_22_BETA_NAMESPACE_URI = "http://earth.google.com/kml/2.2";
+    private static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
+    private static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
+    private static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
 
     public static Unmarshaller newUnmarshaller20() {
         return JaxbUtils.newUnmarshaller(CONTEXT_20);
     }
 
-    public static Unmarshaller newUnmarshaller21() {
+    private static Unmarshaller newUnmarshaller21() {
         return JaxbUtils.newUnmarshaller(CONTEXT_21);
     }
 
-    public static Unmarshaller newUnmarshaller22Beta() {
+    private static Unmarshaller newUnmarshaller22Beta() {
         return JaxbUtils.newUnmarshaller(CONTEXT_22_BETA);
     }
 
-    public static Unmarshaller newUnmarshaller22() {
+    private static Unmarshaller newUnmarshaller22() {
         return JaxbUtils.newUnmarshaller(CONTEXT_22);
     }
 
-    public static Marshaller newMarshaller20() {
+    private static Marshaller newMarshaller20() {
         return JaxbUtils.newMarshaller(CONTEXT_20);
     }
 
-    public static Marshaller newMarshaller21() {
+    private static Marshaller newMarshaller21() {
         return JaxbUtils.newMarshaller(CONTEXT_21);
     }
 
-    public static Marshaller newMarshaller22Beta() {
+    private static Marshaller newMarshaller22Beta() {
         return JaxbUtils.newMarshaller(CONTEXT_22_BETA,
                 ATOM_2005_NAMESPACE_URI, "atom",
                 XAL_20_NAMESPACE_URI, "xal"
         );
     }
 
-    public static Marshaller newMarshaller22() {
+    private static Marshaller newMarshaller22() {
         return JaxbUtils.newMarshaller(CONTEXT_22,
                 ATOM_2005_NAMESPACE_URI, "atom",
                 XAL_20_NAMESPACE_URI, "xal"
@@ -103,19 +103,6 @@ public class KmlUtil {
         return result;
     }
 
-    public static Object unmarshal20(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal20(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
-    }
-
     public static slash.navigation.kml.binding21.KmlType unmarshal21(Reader reader) throws JAXBException {
         slash.navigation.kml.binding21.KmlType result = null;
         try {
@@ -136,19 +123,6 @@ public class KmlUtil {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
         }
         return result;
-    }
-
-    public static slash.navigation.kml.binding21.KmlType unmarshal21(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal21(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
     }
 
     public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(Reader reader) throws JAXBException {
@@ -173,19 +147,6 @@ public class KmlUtil {
         return result;
     }
 
-    public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal22Beta(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
-    }
-
     public static slash.navigation.kml.binding22.KmlType unmarshal22(Reader reader) throws JAXBException {
         slash.navigation.kml.binding22.KmlType result = null;
         try {
@@ -208,23 +169,6 @@ public class KmlUtil {
         return result;
     }
 
-    public static slash.navigation.kml.binding22.KmlType unmarshal22(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal22(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
-    }
-
-
-    public static void marshal20(Kml kml, Writer writer) throws JAXBException {
-        newMarshaller20().marshal(new JAXBElement<Kml>(new QName(KML_20_NAMESPACE_URI, "kml"), Kml.class, kml), writer);
-    }
 
     public static void marshal20(Kml kml, File file) throws JAXBException {
         try {
@@ -239,10 +183,6 @@ public class KmlUtil {
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
         }
-    }
-
-    public static void marshal21(slash.navigation.kml.binding21.KmlType kmlType, Writer writer) throws JAXBException {
-        newMarshaller21().marshal(new JAXBElement<slash.navigation.kml.binding21.KmlType>(new QName(KML_21_NAMESPACE_URI, "kml"), slash.navigation.kml.binding21.KmlType.class, kmlType), writer);
     }
 
     public static void marshal21(slash.navigation.kml.binding21.KmlType kmlType, File file) throws JAXBException {
@@ -260,10 +200,6 @@ public class KmlUtil {
         }
     }
 
-    public static void marshal22Beta(slash.navigation.kml.binding22beta.KmlType kmlType, Writer writer) throws JAXBException {
-        newMarshaller22Beta().marshal(new JAXBElement<slash.navigation.kml.binding22beta.KmlType>(new QName(KML_22_BETA_NAMESPACE_URI, "kml"), slash.navigation.kml.binding22beta.KmlType.class, kmlType), writer);
-    }
-
     public static void marshal22Beta(slash.navigation.kml.binding22beta.KmlType kmlType, File file) throws JAXBException {
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -277,10 +213,6 @@ public class KmlUtil {
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
         }
-    }
-
-    public static void marshal22(slash.navigation.kml.binding22.KmlType kmlType, Writer writer) throws JAXBException {
-        newMarshaller22().marshal(new JAXBElement<slash.navigation.kml.binding22.KmlType>(new QName(KML_22_NAMESPACE_URI, "kml"), slash.navigation.kml.binding22.KmlType.class, kmlType), writer);
     }
 
     public static void marshal22(slash.navigation.kml.binding22.KmlType kmlType, File file) throws JAXBException {

@@ -60,14 +60,14 @@ public class GarminPcx5Format extends BabelFormat {
         return true;
     }
 
-    private boolean isNonsenseRoute(List<GpxPosition> positions) {
+    private boolean isValidRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
             if ((position.getLongitude() == 0.0 && position.getElevation() != null && position.getElevation() > 100000.0) ||
                 (position.getLongitude() == 0.0 && position.getLatitude() == 0.0))
                 count++;
         }
-        return count == positions.size();
+        return count != positions.size();
     }
 
     public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
@@ -78,7 +78,7 @@ public class GarminPcx5Format extends BabelFormat {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (GpxRoute route : routes) {
             // clashes with some TomTom POI .ov2 files
-            if (route.getPositionCount() > 0 && !isNonsenseRoute(route.getPositions()))
+            if (route.getPositionCount() > 0 && isValidRoute(route.getPositions()))
                 result.add(route);
         }
         return result.size() > 0 ? result : null;

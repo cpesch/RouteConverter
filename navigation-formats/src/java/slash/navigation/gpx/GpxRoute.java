@@ -56,9 +56,9 @@ import java.util.List;
 
 public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     private String name;
-    private List<String> description;
-    private List<GpxPosition> positions;
-    private List<Object> origins;
+    private final List<String> description;
+    private final List<GpxPosition> positions;
+    private final List<Object> origins;
 
     GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
              String name, List<String> description, List<GpxPosition> positions,

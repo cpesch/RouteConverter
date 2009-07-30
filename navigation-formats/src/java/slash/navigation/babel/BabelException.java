@@ -29,7 +29,7 @@ import java.io.IOException;
  */
 
 public class BabelException extends IOException {
-    private String babelPath;
+    private final String babelPath;
 
     public BabelException(String message, String babelPath, Throwable cause) {
         // Java6: super(message, cause);

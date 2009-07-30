@@ -32,7 +32,7 @@ import java.util.List;
 
 public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,P extends BaseNavigationPosition> {
     private NavigationFormat<R> format;
-    private List<BaseRoute<P,F>> routes;
+    private final List<BaseRoute<P,F>> routes;
 
     public FormatAndRoutes(NavigationFormat<R> format, List<BaseRoute<P,F>> routes) {
         this.format = format;

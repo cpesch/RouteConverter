@@ -29,30 +29,30 @@ import javax.xml.namespace.QName;
 import java.io.*;
 
 public class GpxUtil {
-    public static final JAXBContext CONTEXT_10 = JaxbUtils.newContext(slash.navigation.gpx.binding10.ObjectFactory.class);
-    public static final JAXBContext CONTEXT_11 = JaxbUtils.newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
+    private static final JAXBContext CONTEXT_10 = JaxbUtils.newContext(slash.navigation.gpx.binding10.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_11 = JaxbUtils.newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
             slash.navigation.gpx.garmin3.ObjectFactory.class,
             slash.navigation.gpx.routecatalog10.ObjectFactory.class);
 
-    public static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
-    public static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
-    public static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
-    public static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
-    public static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
+    private static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
+    private static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
+    private static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
+    private static final String ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI = "http://www.routeconverter.de/xmlschemas/RouteCatalogExtensions/1.0";
+    private static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
 
     public static Unmarshaller newUnmarshaller10() {
         return JaxbUtils.newUnmarshaller(CONTEXT_10);
     }
 
-    public static Marshaller newMarshaller10() {
+    private static Marshaller newMarshaller10() {
         return JaxbUtils.newMarshaller(CONTEXT_10);
     }
 
-    public static Unmarshaller newUnmarshaller11() {
+    private static Unmarshaller newUnmarshaller11() {
         return JaxbUtils.newUnmarshaller(CONTEXT_11);
     }
 
-    public static Marshaller newMarshaller11() {
+    private static Marshaller newMarshaller11() {
         return JaxbUtils.newMarshaller(CONTEXT_11,
                 GARMIN_EXTENSIONS_3_NAMESPACE_URI, "gpxx",
                 ROUTECATALOG_EXTENSIONS_1_NAMESPACE_URI, "rcxx",
@@ -79,24 +79,6 @@ public class GpxUtil {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
         }
         return result;
-    }
-
-    public static Gpx unmarshal10(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal10(in);
-            }
-            finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
-    }
-
-    public static void marshal10(Gpx gpx, Writer writer) throws JAXBException {
-        newMarshaller10().marshal(new JAXBElement<Gpx>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), writer);
     }
 
     public static void marshal10(Gpx gpx, File file) throws JAXBException {
@@ -140,20 +122,6 @@ public class GpxUtil {
         }
 
         return result;
-    }
-
-    public static GpxType unmarshal11(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal11(in);
-            }
-            finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
     }
 
     public static void marshal11(GpxType gpxType, Writer writer) throws JAXBException {

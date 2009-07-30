@@ -41,7 +41,7 @@ import java.util.zip.*;
 
 public abstract class KmzFormat extends BaseKmlFormat {
     private static final Logger log = Logger.getLogger(KmzFormat.class.getName());
-    private KmlFormat delegate;
+    private final KmlFormat delegate;
 
     protected KmzFormat(KmlFormat delegate) {
         this.delegate = delegate;
@@ -118,8 +118,10 @@ public abstract class KmzFormat extends BaseKmlFormat {
             writeIntermediate(target, bytes);
         }
         finally {
-            if (intermediate.exists())
-                intermediate.delete();
+            if (intermediate.exists()) {
+                if (!intermediate.delete())
+                    log.warning("Cannot delete intermediate file " + intermediate);
+            }
         }
     }
 
@@ -133,7 +135,8 @@ public abstract class KmzFormat extends BaseKmlFormat {
         }
         finally {
             if (intermediate.exists())
-                intermediate.delete();
+                if (!intermediate.delete())
+                    log.warning("Cannot delete intermediate file " + intermediate);
         }
     }
 }

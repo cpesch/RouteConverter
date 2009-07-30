@@ -47,13 +47,13 @@ import java.util.logging.Logger;
 
 public class Gpx11Format extends GpxFormat {
     private static final Logger log = Logger.getLogger(Gpx11Format.class.getName());
-    protected static final String VERSION = "1.1";
+    static final String VERSION = "1.1";
 
     public String getName() {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    protected List<GpxRoute> process(GpxType gpxType) {
+    List<GpxRoute> process(GpxType gpxType) {
         if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
             return null;
 

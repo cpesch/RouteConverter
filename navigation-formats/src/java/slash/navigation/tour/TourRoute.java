@@ -54,8 +54,8 @@ import java.util.List;
  */
 
 public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
-    private List<TourPosition> positions;
     private String name;
+    private final List<TourPosition> positions;
 
     public TourRoute(String name, List<TourPosition> positions) {
         this(new TourFormat(), name, positions);

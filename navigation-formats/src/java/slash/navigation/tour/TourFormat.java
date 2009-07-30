@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
  */
 
 public class TourFormat extends IniFileFormat<TourRoute> {
-    static final String TOUR_TITLE = "TOUR";
-    static final String HOME_TITLE = "HOME";
-    static final String NAME = "Name";
+    private static final String TOUR_TITLE = "TOUR";
+    private static final String HOME_TITLE = "HOME";
+    private static final String NAME = "Name";
     private static final String ZIPCODE = "ZipCode";
     private static final String CITY = "City";
     private static final String STREET = "Street";
@@ -51,7 +51,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     static final String CLASS = "Class";
     static final String ASSEMBLY = "Assembly";
     static final String VISITED = "Visited";
-    static final String CREATOR = "Creator";
+    private static final String CREATOR = "Creator";
     private static final Pattern SECTION_TITLE_PATTERN = Pattern.
             compile(".*\\" + SECTION_PREFIX + "(" + "\\d+" + "|" + TOUR_TITLE + "|" + HOME_TITLE + ")\\" + SECTION_POSTFIX + ".*");
 

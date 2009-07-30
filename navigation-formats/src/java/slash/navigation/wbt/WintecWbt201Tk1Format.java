@@ -21,7 +21,6 @@
 package slash.navigation.wbt;
 
 import slash.navigation.Wgs84Route;
-import slash.navigation.util.CompactCalendar;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -56,7 +55,7 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
         return formatDescriptor.equals("WintecLogFormat");
     }
 
-    protected List<Wgs84Route> read(ByteBuffer source, CompactCalendar startDate) throws IOException {
+    protected List<Wgs84Route> read(ByteBuffer source) throws IOException {
         /* 
            char pHeader[16];//="WintecLogFormat"; //16
            float f32LogVersion;                   //20
@@ -84,9 +83,9 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
         source.get(bytes, 0, 16);
         String formatDescriptor = new String(bytes, 0, 15, DEFAULT_ENCODING);
 
-        float logVersion = source.getFloat();
-        float swVersion = source.getFloat();
-        float hwVersion = source.getFloat();
+        /*float logVersion =*/ source.getFloat();
+        /*float swVersion =*/ source.getFloat();
+        /*float hwVersion =*/ source.getFloat();
 
         source.position(40);
         source.get(bytes);

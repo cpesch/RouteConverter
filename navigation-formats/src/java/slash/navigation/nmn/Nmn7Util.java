@@ -28,16 +28,16 @@ import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.*;
 
-public class Nmn7Util {
-    public static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+class Nmn7Util {
+    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
 
-    public static final String NMN7_NAMESPACE_URI = "";
+    private static final String NMN7_NAMESPACE_URI = "";
 
-    public static Unmarshaller newUnmarshaller() {
+    private static Unmarshaller newUnmarshaller() {
         return JaxbUtils.newUnmarshaller(CONTEXT);
     }
 
-    public static Marshaller newMarshaller() {
+    private static Marshaller newMarshaller() {
         Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
         try {
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
@@ -56,19 +56,6 @@ public class Nmn7Util {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
         return result;
-    }
-
-    public static Route unmarshal(File file) throws JAXBException {
-        try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                return unmarshal(in);
-            } finally {
-                in.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while unmarshalling from " + file + ": " + e.getMessage());
-        }
     }
 
 

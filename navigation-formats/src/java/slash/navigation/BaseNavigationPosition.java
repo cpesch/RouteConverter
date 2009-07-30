@@ -40,7 +40,8 @@ import java.util.Calendar;
  */
 
 public abstract class BaseNavigationPosition {
-    protected Double elevation, speed;
+    protected Double elevation;
+    private Double speed;
     protected CompactCalendar time;
 
     protected BaseNavigationPosition(Double elevation, Double speed, CompactCalendar time) {

@@ -108,7 +108,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected CompactCalendar parseDateAndTime(String date, String time) {
+    CompactCalendar parseDateAndTime(String date, String time) {
         String dateAndTime = Conversion.trim(date) + " " + Conversion.trim(time);
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
@@ -142,25 +142,25 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
-    protected String formatLongitude(Double aDouble) {
+    String formatLongitude(Double aDouble) {
         if (aDouble == null)
             return "";
         return LONGITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    protected String formatLatititude(Double aDouble) {
+    String formatLatititude(Double aDouble) {
         if (aDouble == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    protected String formatTime(CompactCalendar time) {
+    String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
         return TIME_FORMAT.format(time.getTime());
     }
 
-    protected String formatDate(CompactCalendar date) {
+    String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
         return DATE_FORMAT.format(date.getTime());

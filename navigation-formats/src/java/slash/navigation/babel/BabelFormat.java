@@ -331,10 +331,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                 log.fine("Successfully converted " + source + " to " + target);
                 result = getGpxFormat().read(new FileInputStream(target), startDate);
             }
-            if (source.exists())
-                source.delete();
-            if (target.exists())
-                target.delete();
+            if (source.exists()) {
+                if (!source.delete())
+                    log.warning("Cannot delete source file " + source);
+            }
+            if (target.exists()) {
+                if (!target.delete())
+                    log.warning("Cannot delete target file " + target);
+            }
             return result;
         }
     }
@@ -345,8 +349,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, target, getBabelFormatName(), getBabelOptions());
         if (successful)
             log.fine("Successfully converted " + source + " to " + target);
-        if (source.exists())
-            source.delete();
+        if (source.exists()) {
+            if (!source.delete())
+                log.warning("Cannot delete source file " + source);
+        }
     }
 
     public void write(List<GpxRoute> routes, File target) throws IOException {
@@ -355,7 +361,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, target, getBabelFormatName(), getBabelOptions());
         if (successful)
             log.fine("Successfully converted " + source + " to " + target);
-        if (source.exists())
-            source.delete();
+        if (source.exists()) {
+            if (!source.delete())
+                log.warning("Cannot delete source file " + source);
+        }
     }
 }

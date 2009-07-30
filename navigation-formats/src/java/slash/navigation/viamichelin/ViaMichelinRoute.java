@@ -56,7 +56,7 @@ import java.util.List;
 
 public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat> {
     private String name;
-    private List<Wgs84Position> positions;
+    private final List<Wgs84Position> positions;
 
 
     public ViaMichelinRoute(String name, List<Wgs84Position> positions) {

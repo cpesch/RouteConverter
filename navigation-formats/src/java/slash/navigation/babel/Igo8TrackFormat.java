@@ -55,10 +55,10 @@ public class Igo8TrackFormat extends BabelFormat {
         return false;
     }
 
-    private boolean isNonsenseRoute(GpxRoute route) {
+    private boolean isValidRoute(GpxRoute route) {
         double length = route.getLength();
         double distancePerPosition = length / route.getPositionCount();
-        return distancePerPosition > 1000000.0;
+        return distancePerPosition < 1000000.0;
     }
 
     public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
@@ -69,7 +69,7 @@ public class Igo8TrackFormat extends BabelFormat {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (GpxRoute route : routes) {
             // is really greedy in parsing the data of NetS files
-            if (!isNonsenseRoute(route))
+            if (isValidRoute(route))
                 result.add(route);
         }
         return result.size() > 0 ? result : null;
