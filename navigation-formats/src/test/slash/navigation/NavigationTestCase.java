@@ -45,6 +45,7 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
+import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
@@ -414,10 +415,10 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
             if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
-            } else if (sourceFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track) || targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track)) {
-                assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.01);
+            } else if (sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) || targetFormat instanceof Gpx10Format) {
+                assertEquals("Speed " + index + " does not match", Conversion.roundFraction(sourcePosition.getSpeed(), 1), Conversion.roundFraction(targetPosition.getSpeed(), 1));
             } else {
-                assertEquals(sourcePosition.getSpeed(), targetPosition.getSpeed());
+                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed(), targetPosition.getSpeed());
             }
         }
     }
@@ -437,6 +438,9 @@ public abstract class NavigationTestCase extends TestCase {
                 // too many reasons for an invalid time :-(
                 // assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
             }
+        } else if ((sourceFormat instanceof Gpx11Format || sourceFormat instanceof Tcx1Format) && targetFormat instanceof Tcx1Format) {
+            assertNull(sourcePosition.getTime());
+            assertNotNull(targetPosition.getTime());
         } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof BcrFormat ||
                 targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminPcx5Format ||
                 targetFormat instanceof GlopusFormat || targetFormat instanceof MagellanRouteFormat ||
@@ -450,9 +454,6 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof OziExplorerReadFormat) {
             assertNotNull(sourcePosition.getTime());
             assertNull(targetPosition.getTime());
-        } else if (sourceFormat instanceof Gpx11Format && targetFormat instanceof Tcx1Format) {
-            assertNull(sourcePosition.getTime());
-            assertNotNull(targetPosition.getTime());
         } else
             assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
     }

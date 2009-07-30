@@ -280,8 +280,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
         Wgs84Position center = Calculation.center(route.getPositions());
-        writeMissingAttribute(route.getMapLage(), writer, "CenterLat", Conversion.formatDoubleAsString(center.getLatitude()));
-        writeMissingAttribute(route.getMapLage(), writer, "CenterLong", Conversion.formatDoubleAsString(center.getLongitude()));
+        writeMissingAttribute(route.getMapLage(), writer, "CenterLat", Conversion.formatPositionAsString(center.getLatitude()));
+        writeMissingAttribute(route.getMapLage(), writer, "CenterLong", Conversion.formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
     }
 

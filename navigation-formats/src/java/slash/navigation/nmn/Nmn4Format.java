@@ -104,8 +104,8 @@ public class Nmn4Format extends NmnFormat {
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
-        String longitude = Conversion.formatDoubleAsString(nmnPosition.getLongitude());
-        String latitude = Conversion.formatDoubleAsString(nmnPosition.getLatitude());
+        String longitude = Conversion.formatPositionAsString(nmnPosition.getLongitude());
+        String latitude = Conversion.formatPositionAsString(nmnPosition.getLatitude());
         String zip = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getZip());
         String city = formatForNmn4(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
         String street = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());

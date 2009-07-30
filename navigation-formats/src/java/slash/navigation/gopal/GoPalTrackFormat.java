@@ -146,10 +146,10 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude());
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude());
+        String longitude = Conversion.formatPositionAsString(position.getLongitude());
+        String latitude = Conversion.formatPositionAsString(position.getLatitude());
         String time = formatTime(position.getTime());
-        String speed = Conversion.formatDoubleAsString(position.getSpeed());
+        String speed = Conversion.formatSpeedAsString(position.getSpeed());
         writer.println("0" + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
                 longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
                 "0.0" + SEPARATOR_CHAR + speed + SEPARATOR_CHAR +

@@ -245,9 +245,9 @@ public class Kml22BetaFormat extends KmlFormat {
             }
             PointType pointType = objectFactory.createPointType();
             placemarkType.setAbstractGeometryGroup(objectFactory.createPoint(pointType));
-            pointType.getCoordinates().add(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getElevation()));
+            pointType.getCoordinates().add(Conversion.formatPositionAsString(position.getLongitude()) + "," +
+                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
+                    Conversion.formatElevationAsString(position.getElevation()));
         }
         return folderType;
     }
@@ -263,9 +263,9 @@ public class Kml22BetaFormat extends KmlFormat {
         multiGeometryType.getAbstractGeometryGroup().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getElevation()));
+            coordinates.add(Conversion.formatPositionAsString(position.getLongitude()) + "," +
+                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
+                    Conversion.formatElevationAsString(position.getElevation()));
         }
         return placemarkType;
     }
@@ -279,9 +279,9 @@ public class Kml22BetaFormat extends KmlFormat {
         placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getElevation()));
+            coordinates.add(Conversion.formatPositionAsString(position.getLongitude()) + "," +
+                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
+                    Conversion.formatElevationAsString(position.getElevation()));
         }
         return placemarkType;
     }
@@ -393,9 +393,9 @@ public class Kml22BetaFormat extends KmlFormat {
                 previousSpeedColorCode = speedColorCode;
 
                 if (coordinates != null)
-                    coordinates.add(Conversion.formatDoubleAsString(positions.get(i).getLongitude()) + "," +
-                            Conversion.formatDoubleAsString(positions.get(i).getLatitude()) + "," +
-                            Conversion.formatDoubleAsString(positions.get(i).getElevation()));
+                    coordinates.add(Conversion.formatPositionAsString(positions.get(i).getLongitude()) + "," +
+                            Conversion.formatPositionAsString(positions.get(i).getLatitude()) + "," +
+                            Conversion.formatElevationAsString(positions.get(i).getElevation()));
 
                 PlacemarkType placemarkType = objectFactory.createPlacemarkType();
                 placemarkType.setNameElement("Segment " + (++segmentNumber));
@@ -411,16 +411,16 @@ public class Kml22BetaFormat extends KmlFormat {
             }
 
             if (coordinates != null)
-                coordinates.add(Conversion.formatDoubleAsString(positions.get(i).getLongitude()) + "," +
-                        Conversion.formatDoubleAsString(positions.get(i).getLatitude()) + "," +
-                        Conversion.formatDoubleAsString(positions.get(i).getElevation()));
+                coordinates.add(Conversion.formatPositionAsString(positions.get(i).getLongitude()) + "," +
+                        Conversion.formatPositionAsString(positions.get(i).getLatitude()) + "," +
+                        Conversion.formatElevationAsString(positions.get(i).getElevation()));
         }
 
         if (coordinates != null) {
             KmlPosition lastPosition = positions.get(positions.size() - 1);
-            coordinates.add(Conversion.formatDoubleAsString(lastPosition.getLongitude()) + "," +
-                    Conversion.formatDoubleAsString(lastPosition.getLatitude()) + "," +
-                    Conversion.formatDoubleAsString(lastPosition.getElevation()));
+            coordinates.add(Conversion.formatPositionAsString(lastPosition.getLongitude()) + "," +
+                    Conversion.formatPositionAsString(lastPosition.getLatitude()) + "," +
+                    Conversion.formatElevationAsString(lastPosition.getElevation()));
         }
 
         FolderType speed = objectFactory.createFolderType();
@@ -482,8 +482,8 @@ public class Kml22BetaFormat extends KmlFormat {
                     placeMark.setNameElement((++distPoint) + ". km");
                     placeMark.setVisibility(false);
                     PointType point = objectFactory.createPointType();
-                    point.getCoordinates().add(Conversion.formatDoubleAsString(lastPosition.getLongitude()) + "," +
-                            Conversion.formatDoubleAsString(lastPosition.getLatitude()) + "," + "0");
+                    point.getCoordinates().add(Conversion.formatPositionAsString(lastPosition.getLongitude()) + "," +
+                            Conversion.formatPositionAsString(lastPosition.getLatitude()) + "," + "0");
                     placeMark.setAbstractGeometryGroup(objectFactory.createPoint(point));
 
                     marks.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placeMark));

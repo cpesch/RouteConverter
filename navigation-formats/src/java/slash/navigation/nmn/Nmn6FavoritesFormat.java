@@ -80,7 +80,7 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
         String street = Conversion.trim(lineMatcher.group(4));
-        String comment = (city != null ? city + " " : "") + (street != null ? street : "");
+        String comment = city != null ? city + (street != null ? ", " + street : "") : "";
         if (comment.toUpperCase().equals(comment))
             comment = Conversion.toMixedCase(comment);
         return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double) null, null, null, Conversion.trim(comment));
@@ -91,8 +91,8 @@ public class Nmn6FavoritesFormat extends NmnFormat {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude());
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude());
+        String longitude = Conversion.formatPositionAsString(position.getLongitude());
+        String latitude = Conversion.formatPositionAsString(position.getLatitude());
         String comment = formatForNmnFavorites(position.getComment());
         writer.println(LEFT_BRACE + comment + SEPARATOR_CHAR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +

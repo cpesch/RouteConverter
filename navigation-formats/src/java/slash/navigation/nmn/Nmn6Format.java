@@ -81,8 +81,8 @@ public class Nmn6Format extends NmnFormat {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude());
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude());
+        String longitude = Conversion.formatPositionAsString(position.getLongitude());
+        String latitude = Conversion.formatPositionAsString(position.getLatitude());
         String comment = formatForNmn6(position.getComment());
         writer.println(LEFT_BRACE + comment + SEPARATOR_CHAR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +

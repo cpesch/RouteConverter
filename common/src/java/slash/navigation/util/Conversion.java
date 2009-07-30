@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.prefs.Preferences;
 
 /**
  * Provides conversion functionality.
@@ -33,6 +34,7 @@ import java.util.StringTokenizer;
  */
 
 public class Conversion {
+    private static final Preferences preferences = Preferences.userNodeForPackage(Conversion.class);
 
     /* 6371014 would be a better value, but this seems to be used by
       Map&Guide Tourenplaner when exporting to XML. */
@@ -312,7 +314,7 @@ public class Conversion {
         return Math.ceil(number * factor) / factor;
     }
 
-    private static double floorFraction(double number, int fractionCount) {
+    public static double floorFraction(double number, int fractionCount) {
         double factor = Math.pow(10, fractionCount);
         return Math.floor(number * factor) / factor;
     }
@@ -376,13 +378,30 @@ public class Conversion {
     }
 
     public static BigDecimal formatDouble(Double aDouble, int fractionCount) {
-        return aDouble != null ? BigDecimal.valueOf(roundFraction(aDouble, fractionCount)) : null;
+        if(aDouble == null)
+            return null;
+        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+            aDouble = roundFraction(aDouble, fractionCount);
+        return BigDecimal.valueOf(aDouble);
+    }
+
+    public static BigDecimal formatPosition(Double longitudeOrLatitude) {
+        return formatDouble(longitudeOrLatitude, 7);
+    }
+
+    public static BigDecimal formatElevation(Double elevation) {
+        return formatDouble(elevation, 2);
+    }
+
+    public static BigDecimal formatSpeed(Double speed) {
+        return formatDouble(speed, 2);
     }
 
     public static Double formatDouble(BigDecimal aBigDecimal) {
         return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
     }
 
+    
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     static {
         DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
@@ -390,13 +409,15 @@ public class Conversion {
         DECIMAL_NUMBER_FORMAT.setMaximumFractionDigits(20);
     }
 
-    public static String formatDoubleAsString(Double aDouble) {
+    static String formatDoubleAsString(Double aDouble) {
         if (aDouble == null)
             return "0.0";
         return DECIMAL_NUMBER_FORMAT.format(aDouble);
     }
 
     public static String formatDoubleAsString(Double aDouble, int fractionCount) {
+        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+            aDouble = roundFraction(aDouble, fractionCount);
         StringBuffer buffer = new StringBuffer(formatDoubleAsString(aDouble));
         int index = buffer.indexOf(".");
         if (index == -1) {
@@ -408,6 +429,19 @@ public class Conversion {
             buffer.deleteCharAt(buffer.length() - 1);
         return buffer.toString();
     }
+
+    public static String formatPositionAsString(Double longitudeOrLatitude) {
+        return formatDoubleAsString(longitudeOrLatitude, 7);
+    }
+
+    public static String formatElevationAsString(Double elevation) {
+        return formatDoubleAsString(elevation, 2);
+    }
+
+    public static String formatSpeedAsString(Double speed) {
+        return formatDoubleAsString(speed, 2);
+    }
+
 
     public static String formatIntAsString(Integer anInteger) {
         if (anInteger == null)

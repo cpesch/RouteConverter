@@ -87,8 +87,8 @@ public class Nmn5Format extends NmnFormat {
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
-        String longitude = Conversion.formatDoubleAsString(nmnPosition.getLongitude());
-        String latitude = Conversion.formatDoubleAsString(nmnPosition.getLatitude());
+        String longitude = Conversion.formatPositionAsString(nmnPosition.getLongitude());
+        String latitude = Conversion.formatPositionAsString(nmnPosition.getLatitude());
         String city = formatForNmn5(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
         String street = formatForNmn5(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
         String number = formatForNmn5(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());

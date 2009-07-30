@@ -208,8 +208,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         writer.add(eventFactory.createStartElement(new QName(POINT_ELEMENT + "_" + index), null, null));
 
         List<Attribute> attributes = new ArrayList<Attribute>();
-        attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, Conversion.formatDoubleAsString(position.getLongitude())));
-        attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, Conversion.formatDoubleAsString(position.getLatitude())));
+        attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, Conversion.formatPositionAsString(position.getLongitude())));
+        attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, Conversion.formatPositionAsString(position.getLatitude())));
         writer.add(eventFactory.createStartElement(new QName(GEO_POSITION_ELEMENT), attributes.iterator(), null));
         writer.add(eventFactory.createEndElement(new QName(GEO_POSITION_ELEMENT), null));
 

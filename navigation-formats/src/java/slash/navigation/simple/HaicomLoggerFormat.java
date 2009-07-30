@@ -177,8 +177,8 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String northOrSouth = position.getLatitude() >= 0.0 ? "N" : "S";
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
-        String altitude = Conversion.formatDoubleAsString(position.getElevation());
-        String speed = Conversion.formatDoubleAsString(position.getSpeed());
+        String altitude = Conversion.formatElevationAsString(position.getElevation());
+        String speed = Conversion.formatSpeedAsString(position.getSpeed());
         writer.println((index + 1) + SEPARATOR + "T" + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +

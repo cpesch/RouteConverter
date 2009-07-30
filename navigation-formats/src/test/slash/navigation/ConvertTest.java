@@ -123,7 +123,7 @@ public class ConvertTest extends NavigationTestCase {
             assertTrue(target.delete());
         } finally {
             // avoid to clutter the temp directory
-            target.delete();
+            assert target.delete();
         }
     }
 
@@ -159,7 +159,7 @@ public class ConvertTest extends NavigationTestCase {
             assertTrue(target.delete());
         } finally {
             // avoid to clutter the temp directory
-            target.delete();
+            assert target.delete();
         }
     }
 
@@ -175,7 +175,7 @@ public class ConvertTest extends NavigationTestCase {
         int maximumPositionCount = targetFormat.getMaximumPositionCount();
         int positionCount = parser.getTheRoute().getPositionCount();
         int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-        assertEquals(fileCount, parser.getNumberOfFilesToWriteFor(sourceRoute, targetFormat, false));
+        assertEquals(fileCount, NavigationFileParser.getNumberOfFilesToWriteFor(sourceRoute, targetFormat, false));
 
         File[] targets = new File[fileCount];
         for (int i = 0; i < targets.length; i++)
@@ -208,7 +208,7 @@ public class ConvertTest extends NavigationTestCase {
         } finally {
             // avoid to clutter the temp directory
             for (File target : targets) {
-                target.delete();
+                assert target.delete();
             }
         }
     }
@@ -752,10 +752,6 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertCoPilotToNmn7() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Nmn7Format());
         convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Nmn7Format());
-    }
-
-    public void testConvertNavigatingPoiWarnerToNmn7() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc", new NavigatingPoiWarnerFormat(), new Nmn7Format());
     }
 
 

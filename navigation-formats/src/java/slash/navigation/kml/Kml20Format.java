@@ -289,9 +289,9 @@ public class Kml20Format extends KmlFormat {
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));
             Point point = objectFactory.createPoint();
             placemarkList.add(point);
-            point.setCoordinates(Conversion.formatDoubleAsString(position.getLongitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getLatitude()) + "," +
-                    Conversion.formatDoubleAsString(position.getElevation()));
+            point.setCoordinates(Conversion.formatPositionAsString(position.getLongitude()) + "," +
+                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
+                    Conversion.formatElevationAsString(position.getElevation()));
         }
         return folder;
     }
@@ -308,9 +308,9 @@ public class Kml20Format extends KmlFormat {
         multiGeometry.getExtrudeOrTessellateOrAltitudeMode().add(lineString);
         StringBuffer coordinates = new StringBuffer();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(Conversion.formatDoubleAsString(position.getLongitude())).append(",").
-                    append(Conversion.formatDoubleAsString(position.getLatitude())).append(",").
-                    append(Conversion.formatDoubleAsString(position.getElevation())).append(" ");
+            coordinates.append(Conversion.formatPositionAsString(position.getLongitude())).append(",").
+                    append(Conversion.formatPositionAsString(position.getLatitude())).append(",").
+                    append(Conversion.formatElevationAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
@@ -326,9 +326,9 @@ public class Kml20Format extends KmlFormat {
         placemarkList.add(lineString);
         StringBuffer coordinates = new StringBuffer();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(Conversion.formatDoubleAsString(position.getLongitude())).append(",").
-                    append(Conversion.formatDoubleAsString(position.getLatitude())).append(",").
-                    append(Conversion.formatDoubleAsString(position.getElevation())).append(" ");
+            coordinates.append(Conversion.formatPositionAsString(position.getLongitude())).append(",").
+                    append(Conversion.formatPositionAsString(position.getLatitude())).append(",").
+                    append(Conversion.formatElevationAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;

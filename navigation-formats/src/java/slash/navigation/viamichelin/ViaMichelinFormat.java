@@ -124,8 +124,8 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         poiList.getItineraryOrPoi().add(itinerary);
         for (Wgs84Position position : route.getPositions()) {
             Step step = objectFactory.createStep();
-            step.setLongitude(Conversion.formatDoubleAsString(position.getLongitude()));
-            step.setLatitude(Conversion.formatDoubleAsString(position.getLatitude()));
+            step.setLongitude(Conversion.formatPositionAsString(position.getLongitude()));
+            step.setLatitude(Conversion.formatPositionAsString(position.getLatitude()));
             step.setName(position.getComment());
             itinerary.getStep().add(step);
         }

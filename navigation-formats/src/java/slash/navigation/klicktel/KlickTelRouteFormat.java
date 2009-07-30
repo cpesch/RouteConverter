@@ -89,7 +89,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         }
     }
 
-    private String formatAsDouble(Double aDouble) {
+    private String formatPosition(Double aDouble) {
         return Conversion.formatDoubleAsString(aDouble, 8).replace('.', ',');
     }
 
@@ -101,8 +101,8 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         kdRoute.setStations(stations);
         for (Wgs84Position position : route.getPositions()) {
             KDRoute.Stations.Station.Point point = objectFactory.createKDRouteStationsStationPoint();
-            point.setLongitude(formatAsDouble(position.getLongitude()));
-            point.setLatitude(formatAsDouble(position.getLatitude()));
+            point.setLongitude(formatPosition(position.getLongitude()));
+            point.setLatitude(formatPosition(position.getLatitude()));
             KDRoute.Stations.Station station = objectFactory.createKDRouteStationsStation();
             station.setCity(position.getComment());
 

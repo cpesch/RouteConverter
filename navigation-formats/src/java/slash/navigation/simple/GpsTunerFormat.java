@@ -117,10 +117,10 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude());
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude());
-        String altitude = Conversion.formatDoubleAsString(position.getElevation());
-        String speed = Conversion.formatDoubleAsString(position.getSpeed());
+        String longitude = Conversion.formatPositionAsString(position.getLongitude());
+        String latitude = Conversion.formatPositionAsString(position.getLatitude());
+        String altitude = Conversion.formatElevationAsString(position.getElevation());
+        String speed = Conversion.formatSpeedAsString(position.getSpeed());
         String time = formatTime(position.getTime());
         writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + altitude + SEPARATOR_CHAR +
                 speed + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + "0");
