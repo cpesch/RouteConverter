@@ -65,7 +65,7 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(Constants.loadIcon(this, "/slash/navigation/converter/gui/" + iconName + ".png").getImage());
+        frame.setIconImage(Constants.loadIcon(this, iconName).getImage());
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);

@@ -127,7 +127,10 @@ public abstract class Application {
 
         ApplicationContext ctx = application.getContext();
         /* TODO Load the application resource map, notably the Application.* properties. */
-        ctx.setBundle(ResourceBundle.getBundle(applicationClass.getSuperclass().getName()));
+        ResourceBundle bundle = ResourceBundle.getBundle(applicationClass.getName());
+        if (bundle == null)
+            bundle = ResourceBundle.getBundle(applicationClass.getSuperclass().getName());
+        ctx.setBundle(bundle);
 
         return application;
     }
