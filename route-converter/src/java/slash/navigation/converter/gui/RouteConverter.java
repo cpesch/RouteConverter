@@ -143,7 +143,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void show() {
-        createFrame(getTitle(), "RouteConverter", contentPane, null);
+        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null);
 
         addExitListener(new ExitListener() {
             public boolean canExit(EventObject event) {

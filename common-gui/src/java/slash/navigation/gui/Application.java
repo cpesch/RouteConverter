@@ -121,15 +121,24 @@ public abstract class Application {
         runNativeInterfaceEventPump();
     }
 
+    private static ResourceBundle tryToLoadBundleFor(Class clazz) {
+        try {
+            return ResourceBundle.getBundle(clazz.getName());
+        } catch (Exception e) {
+            log.log(Level.FINER, "Cannot load bundle for class " + clazz, e);
+            return null;
+        }
+    }
+
     private static <T extends Application> T create(Class<T> applicationClass) throws Exception {
         Constructor<T> ctor = applicationClass.getDeclaredConstructor();
         T application = ctor.newInstance();
 
         ApplicationContext ctx = application.getContext();
         /* TODO Load the application resource map, notably the Application.* properties. */
-        ResourceBundle bundle = ResourceBundle.getBundle(applicationClass.getName());
+        ResourceBundle bundle = tryToLoadBundleFor(applicationClass);
         if (bundle == null)
-            bundle = ResourceBundle.getBundle(applicationClass.getSuperclass().getName());
+            bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
         ctx.setBundle(bundle);
 
         return application;
