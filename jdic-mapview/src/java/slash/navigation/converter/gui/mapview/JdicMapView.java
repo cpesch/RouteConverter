@@ -62,6 +62,7 @@ public class JdicMapView implements MapView {
     private static final Logger log = Logger.getLogger(JdicMapView.class.getName());
     private static final String DEBUG_PREFERENCE = "debug";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
+    private static final String SCALE_CONTROL_PREFERENCE = "scaleControl";
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);
     private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength", 22);
@@ -482,6 +483,8 @@ public class JdicMapView implements MapView {
         } else
             resize();
         update(true);
+        if(preferences.getBoolean(SCALE_CONTROL_PREFERENCE, false))
+            executeScript("map.addControl(new GScaleControl());");
     }
 
     private void checkCallback() {

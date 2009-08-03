@@ -60,6 +60,7 @@ public class EclipseSWTMapView implements MapView {
     private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
     private static final String DEBUG_PREFERENCE = "debug";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
+    private static final String SCALE_CONTROL_PREFERENCE = "scaleControl";
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);
     private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength", 22);
@@ -214,23 +215,26 @@ public class EclipseSWTMapView implements MapView {
                 System.out.println(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
+            private int startCount = 0;
+
             public void loadingProgressChanged(WebBrowserEvent e) {
                 if (debug)
                 System.out.println(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
 
-                if(e.getWebBrowser().getLoadingProgress() == 100) {
+                if(e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
                     // get out of the listener callback
                     new Thread(new Runnable() {
                         public void run() {
                             if(Platform.isLinux()) {
+                                System.out.println(System.currentTimeMillis() + " started sleeping for 2s on Linux");
                                 try {
-                                    Thread.sleep(1000);
+                                    Thread.sleep(2000);
                                 } catch (InterruptedException e1) {
                                     // intentionally left empty
                                 }
-                                System.out.println(System.currentTimeMillis() + " stopped sleeping 1s on Linux");
+                                System.out.println(System.currentTimeMillis() + " stopped sleeping for 2s on Linux");
                             }
-                            tryToInitialize(1);
+                            tryToInitialize(startCount++);
                         }
                     }, "MapViewInitializer").start();
                 }
@@ -265,6 +269,7 @@ public class EclipseSWTMapView implements MapView {
         synchronized (this) {
             initialized = existsCompatibleBrowser;
         }
+        System.out.println(System.currentTimeMillis() + " initialized map: "+ initialized); // TODO remove me later
 
         if (isInitialized()) {
             if (debug)
@@ -273,17 +278,16 @@ public class EclipseSWTMapView implements MapView {
             initializeAfterLoading();
             checkCallback();
         } else {
-            if(counter++ < 3) {
-                loadWebPage(webBrowser);
-
-                System.out.println("WAITING "+ counter*1000 + " seconds"); // TODO remove me later
+            if(counter++ < 2) {
+                System.out.println(System.currentTimeMillis() + " WAITING "+ counter*2000 + " seconds"); // TODO remove me later
                 try {
-                    Thread.sleep(counter*1000);
+                    Thread.sleep(counter*2000);
                 } catch (InterruptedException e) {
                     // intentionally left empty
                 }
 
-                tryToInitialize(counter);
+                System.out.println(System.currentTimeMillis() + " LOADING page again");
+                loadWebPage(webBrowser);
             }
         }
     }
@@ -509,6 +513,8 @@ public class EclipseSWTMapView implements MapView {
     private void initializeAfterLoading() {
         resize();
         update(true);
+        if(preferences.getBoolean(SCALE_CONTROL_PREFERENCE, false))
+            executeScript("map.addControl(new GScaleControl());");
     }
 
     private void checkCallback() {
