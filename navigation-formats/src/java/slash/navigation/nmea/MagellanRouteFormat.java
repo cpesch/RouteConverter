@@ -5,20 +5,20 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
 
 /**
  * Reads and writes Magellan Route (.rte) files.
  * <p/>
  * Header: $PMGNFMT,%RTE,NUM_MSG,ID,FLAG,NUM,NAME,WPT_NAME1,ICON1,WPT_NAME2,ICON2,CHKSUM ?%WPL,LAT,HEMI,LON,HEMI,ALT,UNIT,NAME,MSG,ICON,CHKSUM,%META,ASCII<br/>
  * Format: $PMGNWPL,4809.43440,N,01135.06121,E,0,M,Muenchner-Freiheit,,a*10<br/>
- *         $PMGNRTE,3,1,c,1,Muenchen_Route,Muenchner-Freiheit,a,Engl-Garten-1,a*60
+ * $PMGNRTE,3,1,c,1,Muenchen_Route,Muenchner-Freiheit,a,Engl-Garten-1,a*60
  *
  * @author Christian Pesch
  */
@@ -69,6 +69,10 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         return RouteCharacteristics.Route;
     }
 
+    public int getMaximumPositionCount() {
+        return 49;
+    }
+
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> NmeaRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmeaRoute(this, characteristics, (List<NmeaPosition>) positions);
@@ -110,23 +114,19 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         return LATITUDE_NUMBER_FORMAT.format(latitude);
     }
 
-    String formatName(String name) {
+    String formatRouteName(String name) {
         if (name != null) {
-            /* TODO really encode route and waypoint names?
             StringBuffer buffer = new StringBuffer(name.toLowerCase().trim().replaceAll(" ", "-"));
-            /*
             int i = 0;
             while (i < buffer.length()) {
                 char c = buffer.charAt(i);
-                if ((c < 'a' || c > 'z') && c != '-') {
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-')
+                    i++;
+                else
                     buffer.deleteCharAt(i);
-                }
-                i++;
             }
             if (buffer.length() > 0)
-                return buffer.toString().substring(0, Math.min(buffer.length(), 8));
-            */
-            return formatComment(name);
+                return buffer.toString().substring(0, Math.min(buffer.length(), 20));
         }
         return "route01";
     }
@@ -140,11 +140,11 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             writePosition(position, writer, i);
         }
 
-        String routeName = formatName(route.getName());
+        String routeName = formatRouteName(route.getName());
         int count = Conversion.ceiling(endIndex - startIndex, 2, true);
-        for (int i = startIndex; i < endIndex; i+=2) {
+        for (int i = startIndex; i < endIndex; i += 2) {
             NmeaPosition start = positions.get(i);
-            NmeaPosition end = positions.size() > i+1 ? positions.get(i+1) : null;
+            NmeaPosition end = positions.size() > i + 1 ? positions.get(i + 1) : null;
             writeRte(start, end, writer, count, i / 2, routeName);
         }
 
@@ -160,7 +160,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String westOrEast = position.getWestOrEast();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
-        String comment = formatName(position.getComment());
+        String comment = formatComment(position.getComment());
         String altitude = Conversion.formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
 
         String wpl = "PMGNWPL" + SEPARATOR +
@@ -170,12 +170,12 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
     }
 
     private void writeRte(NmeaPosition start, NmeaPosition end, PrintWriter writer, int count, int index, String routeName) {
-        String startName = formatName(start.getComment());
+        String startName = formatComment(start.getComment());
 
-        String rte = "PMGNRTE" + SEPARATOR + count + SEPARATOR + (index+1) + SEPARATOR +
+        String rte = "PMGNRTE" + SEPARATOR + count + SEPARATOR + (index + 1) + SEPARATOR +
                 "c" + SEPARATOR + "01" + SEPARATOR + routeName + SEPARATOR + startName + SEPARATOR + "a";
-        if(end != null) {
-            String endName = formatName(end.getComment());
+        if (end != null) {
+            String endName = formatComment(end.getComment());
             rte += SEPARATOR + endName + SEPARATOR + "a";
         }
         writeSentence(writer, rte);
