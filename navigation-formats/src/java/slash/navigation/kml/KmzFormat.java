@@ -80,6 +80,10 @@ public abstract class KmzFormat extends BaseKmlFormat {
             }
             return result.size() > 0 ? result : null;
         }
+        catch (IllegalArgumentException e) {
+            log.fine("Error reading invalid zip entry names from " + source + ": " + e.getMessage());
+            return null;
+        }
         catch (ZipException e) {
             log.fine("Error reading zip entries from " + source + ": " + e.getMessage());
             return null;
