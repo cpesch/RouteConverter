@@ -45,7 +45,6 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
-import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
@@ -415,7 +414,8 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
             if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
-            } else if (sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) || targetFormat instanceof Gpx10Format) {
+            } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
+                    targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
                 assertEquals("Speed " + index + " does not match", Conversion.roundFraction(sourcePosition.getSpeed(), 1), Conversion.roundFraction(targetPosition.getSpeed(), 1));
             } else {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed(), targetPosition.getSpeed());

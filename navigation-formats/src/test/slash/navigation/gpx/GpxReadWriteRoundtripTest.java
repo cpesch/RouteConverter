@@ -240,7 +240,7 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals("86.8", course.getTextContent());
         Element speed = (Element)wptType.getExtensions().getAny().get(1);
         assertEquals("speed", speed.getLocalName());
-        assertEquals("22.7", speed.getTextContent());
+        assertEquals("22.75", speed.getTextContent());
     }
 
     public void testGpx11ReadWriteRoundtrip() throws IOException {
