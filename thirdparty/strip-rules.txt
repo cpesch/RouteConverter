@@ -1,0 +1,11 @@
+keep chrriis.common.ObjectRegistry
+keep chrriis.dj.nativeswing.NativeSwing
+keep chrriis.dj.nativeswing.swtimpl.NativeInterface
+keep chrriis.dj.nativeswing.swtimpl.components.JWebBrowser
+keep chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener
+keep chrriis.dj.nativeswing.swtimpl.components.WebBrowserEvent
+keep org.eclipse.swt.browser.WebBrowser
+keep org.eclipse.swt.awt.SWT_AWT
+keep org.eclipse.swt.events.ControlAdapter
+keep org.eclipse.swt.events.MouseAdapter
+keep org.eclipse.swt.widgets.Display

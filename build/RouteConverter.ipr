@@ -461,7 +461,7 @@
     </library>
     <library name="djproject/nativeswing-swt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8-stripped.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -470,7 +470,7 @@
     </library>
     <library name="djproject/nativeswing">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8-stripped.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
