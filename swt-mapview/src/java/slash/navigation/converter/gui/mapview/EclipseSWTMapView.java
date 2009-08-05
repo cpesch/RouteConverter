@@ -122,12 +122,12 @@ public class EclipseSWTMapView implements MapView {
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 boolean insertOrDelete = e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE;
+                boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
+                // TODO if we had all the data if (!allRowsChanged && insertOrDelete)
                 if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                     updateButDontRecenter();
-                else {
-                    boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
+                else
                     update(allRowsChanged || insertOrDelete);
-                }
             }
         });
         characteristicsModel.addListDataListener(new ListDataListener() {
