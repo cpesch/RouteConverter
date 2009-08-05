@@ -8,7 +8,7 @@
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
 <embeddedJar>true</embeddedJar>
-<executableName>output\RouteConverterSWT64.exe</executableName>
+<executableName>output\RouteConverter64.exe</executableName>
 <iconLocation>..\route-converter\src\resources\slash\navigation\converter\gui\RouteConverter.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>output\RouteConverter.jar</jarLocation>

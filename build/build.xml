@@ -1338,7 +1338,7 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterMac.jar">
+        <jar destfile="${build.output}/RouteConverterMacSWT.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-thirdparty5}"/>
             <fileset dir="${build.output.tmp-mac}"/>
