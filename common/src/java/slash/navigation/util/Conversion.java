@@ -377,11 +377,11 @@ public class Conversion {
         return buffer.toString();
     }
 
-    public static BigDecimal formatDouble(Double aDouble, int fractionCount) {
+    public static BigDecimal formatDouble(Double aDouble, int maximumFractionCount) {
         if(aDouble == null)
             return null;
         if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
-            aDouble = roundFraction(aDouble, fractionCount);
+            aDouble = roundFraction(aDouble, maximumFractionCount);
         return BigDecimal.valueOf(aDouble);
     }
 
@@ -415,31 +415,35 @@ public class Conversion {
         return DECIMAL_NUMBER_FORMAT.format(aDouble);
     }
 
-    public static String formatDoubleAsString(Double aDouble, int fractionCount) {
-        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
-            aDouble = roundFraction(aDouble, fractionCount);
+    public static String formatDoubleAsString(Double aDouble, int exactFractionCount) {
         StringBuffer buffer = new StringBuffer(formatDoubleAsString(aDouble));
         int index = buffer.indexOf(".");
         if (index == -1) {
             buffer.append(".");
         }
-        while (buffer.length() - index <= fractionCount)
+        while (buffer.length() - index <= exactFractionCount)
             buffer.append("0");
-        while (buffer.length() - index > fractionCount + 1)
+        while (buffer.length() - index > exactFractionCount + 1)
             buffer.deleteCharAt(buffer.length() - 1);
         return buffer.toString();
     }
 
+    private static String formatDoubleAsStringWithMaximumFractionCount(Double aDouble, int maximumFractionCount) {
+        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+            aDouble = roundFraction(aDouble, maximumFractionCount);
+        return formatDoubleAsString(aDouble);
+    }
+
     public static String formatPositionAsString(Double longitudeOrLatitude) {
-        return formatDoubleAsString(longitudeOrLatitude, 7);
+        return formatDoubleAsStringWithMaximumFractionCount(longitudeOrLatitude, 7);
     }
 
     public static String formatElevationAsString(Double elevation) {
-        return formatDoubleAsString(elevation, 2);
+        return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
     }
 
     public static String formatSpeedAsString(Double speed) {
-        return formatDoubleAsString(speed, 2);
+        return formatDoubleAsStringWithMaximumFractionCount(speed, 2);
     }
 
 
