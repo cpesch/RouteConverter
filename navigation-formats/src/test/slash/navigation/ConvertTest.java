@@ -877,7 +877,8 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
-    public void testConvertAlanTrackLogToAlanTrackLog() throws IOException {
+    public void testConvertAlanTrackLogToAlanTrackLog() throws Exception {
+        Thread.sleep(5000); // TODO maybe this helps against the errors that only show up on complete runs
         convertRoundtrip(TEST_PATH + "from.trl", new AlanTrackLogFormat(), new AlanTrackLogFormat());
     }
 

@@ -410,9 +410,11 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
-            if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat) {
+            if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
+                    (sourceFormat instanceof Gpx10Format && targetFormat instanceof AlanTrackLogFormat)) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
