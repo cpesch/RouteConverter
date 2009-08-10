@@ -40,11 +40,7 @@ import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.GlopusFormat;
-import slash.navigation.simple.GoogleMapsFormat;
-import slash.navigation.simple.GpsTunerFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
-import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.*;
 import slash.navigation.tcx.*;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
@@ -248,6 +244,11 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
+    public void testConvertColumbusV900ToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900Format(), new CoPilot6Format());
+    }
+
+
     public void testConvertCoPilot6ToCoPilot7() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new CoPilot7Format());
     }
@@ -255,6 +256,10 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertCoPilot6ToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx11Format());
+    }
+
+    public void testConvertCoPilot6ToColumbusV900() throws IOException {
+        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900Format());
     }
 
     public void testConvertCoPilot7ToCoPilot6() throws IOException {

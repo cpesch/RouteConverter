@@ -63,8 +63,8 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d{6})" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d{6})" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
@@ -99,8 +99,10 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
-        time = Conversion.trim(time);
         date = Conversion.trim(date);
+        time = Conversion.trim(time);
+        if(date == null || time == null)
+            return null;
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
@@ -186,15 +188,15 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String date = formatDate(position.getTime());
-        String time = formatTime(position.getTime());
+        String date = fillWithZeros(formatDate(position.getTime()), 6);
+        String time = fillWithZeros(formatTime(position.getTime()), 6);
         String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
         String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? Conversion.formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? Conversion.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
-        String comment = fillWithZeros(position.getComment() != null ? position.getComment() : "", 8);
+        String comment = fillWithZeros(position.getComment() != null ? position.getComment().replaceAll(",", ";") : "", 8);
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
                 formatLineType(position.getComment()) + SEPARATOR_CHAR +
                 date + SEPARATOR_CHAR + time + SEPARATOR_CHAR +

@@ -218,6 +218,10 @@ public abstract class BaseNavigationPosition {
     }
 
 
+    public Wgs84Position asColumbusVPosition() {
+        return asWgs84Position();
+    }
+
     public Wgs84Position asCoPilotPosition() {
         return asWgs84Position();
     }

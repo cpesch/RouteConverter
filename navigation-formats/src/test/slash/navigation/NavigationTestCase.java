@@ -114,6 +114,8 @@ public abstract class NavigationTestCase extends TestCase {
                         (second instanceof GarminPcx5Format)) ||
                 ((first instanceof KmlFormat) &&
                         (second instanceof BcrFormat)) ||
+                ((first instanceof ColumbusV900Format) &&
+                        (second instanceof CoPilotFormat)) ||
                 ((first instanceof MagicMapsIktFormat) &&
                         (second instanceof CoPilotFormat));
     }
@@ -334,7 +336,7 @@ public abstract class NavigationTestCase extends TestCase {
     private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, boolean commentPositionNames, RouteCharacteristics targetCharacteristics) {
         // Test only if a position has not been commented by us
         if (!(sourcePosition.getComment() == null && targetPosition.getComment().startsWith("Position"))) {
-            if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof ColumbusV900Format ||
+            if (targetFormat instanceof AlanTrackLogFormat || 
                     (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                     targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||
@@ -369,7 +371,8 @@ public abstract class NavigationTestCase extends TestCase {
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 8)), trim(trimSpeedComment(targetPosition.getComment()), 8));
             else if (targetFormat instanceof TomTomRouteFormat)
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetPosition.getComment());
-            else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
+            else if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof MagellanExploristFormat || 
+                    targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll(",", ";"), targetPosition.getComment());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
                 assertEquals("Comment " + index + " does not match", escapeNmn4and5(sourcePosition.getComment()), targetPosition.getComment());
@@ -453,7 +456,8 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull(sourcePosition.getTime());
             assertNotNull(targetPosition.getTime());
         } else if (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof KmlFormat ||
-                sourceFormat instanceof OziExplorerReadFormat) {
+                sourceFormat instanceof OziExplorerReadFormat ||
+                targetFormat instanceof CoPilotFormat) {
             assertNotNull(sourcePosition.getTime());
             assertNull(targetPosition.getTime());
         } else
