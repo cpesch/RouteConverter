@@ -164,7 +164,7 @@ public class EclipseSWTMapView implements MapView {
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.navigate(html.toURI().toURL().toExternalForm());
             if (debug)
-            System.out.println(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
+            log.info(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             initializationCause = t;
@@ -187,52 +187,52 @@ public class EclipseSWTMapView implements MapView {
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
             }
 
             public void windowOpening(WebBrowserWindowOpeningEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
             }
 
             public void windowClosing(WebBrowserEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
             }
 
             public void locationChanging(WebBrowserNavigationEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChanged(WebBrowserNavigationEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChangeCanceled(WebBrowserNavigationEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             private int startCount = 0;
 
             public void loadingProgressChanged(WebBrowserEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
 
                 if(e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
                     // get out of the listener callback
                     new Thread(new Runnable() {
                         public void run() {
                             if(Platform.isLinux()) {
-                                System.out.println(System.currentTimeMillis() + " started sleeping for 2s on Linux");
+                                log.info(System.currentTimeMillis() + " started sleeping for 2s on Linux");
                                 try {
                                     Thread.sleep(2000);
                                 } catch (InterruptedException e1) {
                                     // intentionally left empty
                                 }
-                                System.out.println(System.currentTimeMillis() + " stopped sleeping for 2s on Linux");
+                                log.info(System.currentTimeMillis() + " stopped sleeping for 2s on Linux");
                             }
                             tryToInitialize(startCount++);
                         }
@@ -242,17 +242,17 @@ public class EclipseSWTMapView implements MapView {
 
             public void titleChanged(WebBrowserEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
             }
 
             public void statusChanged(WebBrowserEvent e) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
             }
 
             public void commandReceived(WebBrowserEvent e, String command, String[] args) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " commandReceived " + command + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " commandReceived " + command + " thread " + Thread.currentThread());
             }
         });
 
@@ -269,25 +269,29 @@ public class EclipseSWTMapView implements MapView {
         synchronized (this) {
             initialized = existsCompatibleBrowser;
         }
-        System.out.println(System.currentTimeMillis() + " initialized map: "+ initialized); // TODO remove me later
+        log.info(System.currentTimeMillis() + " initialized map: "+ initialized);
 
         if (isInitialized()) {
             if (debug)
-            System.out.println(System.currentTimeMillis() + " compatible, further initializing map");
+            log.info(System.currentTimeMillis() + " compatible, further initializing map");
             initializeDragListener();
             initializeAfterLoading();
             checkCallback();
         } else {
             if(counter++ < 2) {
-                System.out.println(System.currentTimeMillis() + " WAITING "+ counter*2000 + " seconds"); // TODO remove me later
+                log.info(System.currentTimeMillis() + " WAITING "+ counter*2000 + " seconds"); 
                 try {
                     Thread.sleep(counter*2000);
                 } catch (InterruptedException e) {
                     // intentionally left empty
                 }
 
-                System.out.println(System.currentTimeMillis() + " LOADING page again");
-                loadWebPage(webBrowser);
+                log.info(System.currentTimeMillis() + " LOADING page again");
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        loadWebPage(webBrowser);
+                    }
+                });
             }
         }
     }
