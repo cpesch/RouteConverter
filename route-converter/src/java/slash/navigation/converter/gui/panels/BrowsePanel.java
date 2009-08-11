@@ -219,7 +219,7 @@ public abstract class BrowsePanel {
                         treeCategories.setModel(categoryTreeModel);
                         selectTreeNode(root);
                         // TODO select path from previous start
-                        CategoryTreeNode m = root.getSubCategory("Motorradfahren");
+                        CategoryTreeNode m = root.getSubCategory("Ski");
                         treeCategories.expandPath(new TreePath(new Object[]{m}));
                         treeCategories.setSelectionPath(new TreePath(new Object[]{m}));
                     }
