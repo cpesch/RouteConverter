@@ -92,7 +92,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         aColumn.addPropertyChangeListener(this);
         recalcWidthCache();
 
-        // Post columnAdded event notification
+        // post columnAdded event notification
         fireColumnAdded(new TableColumnModelEvent(this, columnIndex, columnIndex));
     }
 

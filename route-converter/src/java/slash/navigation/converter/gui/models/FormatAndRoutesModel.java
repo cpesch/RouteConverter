@@ -91,11 +91,11 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
         setModified(false);
     }
 
-    public NavigationFormat getFormat() {
+    public NavigationFormat<BaseRoute> getFormat() {
         return formatAndRoutes.getFormat();
     }
 
-    public void setFormat(NavigationFormat format) {
+    public void setFormat(NavigationFormat<BaseRoute> format) {
         formatAndRoutes.setFormat(format);
         fireContentsChanged(this, -1, -1);
     }
@@ -174,7 +174,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     public void setSelectedItem(Object anItem) {
         if ((getSelectedItem() != null && !getSelectedItem().equals(anItem)) ||
                 getSelectedItem() == null && anItem != null) {
-            BaseRoute route = (BaseRoute) anItem;
+            BaseRoute<BaseNavigationPosition,BaseNavigationFormat> route = (BaseRoute<BaseNavigationPosition,BaseNavigationFormat>) anItem;
             getPositionsModel().setRoute(route);
             getCharacteristicsModel().setRoute(route);
             fireContentsChanged(this, -1, -1);

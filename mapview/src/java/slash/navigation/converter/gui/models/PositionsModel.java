@@ -152,7 +152,7 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     private String formatSpeed(Double speed) {
-        if (speed == null)
+        if (speed == null || speed == 0.0)
             return "";
         String speedStr;
         if (Math.abs(speed) < 10.0)
