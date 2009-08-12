@@ -84,6 +84,7 @@ public abstract class Application {
             Method method = clazz.getMethod(name);
             method.invoke(null);
         } catch (Exception e) {
+            e.printStackTrace();
             log.fine("Cannot invoke NativeInterface#" + name + "(): " + e.getMessage());
         }
     }

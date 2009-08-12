@@ -47,6 +47,15 @@
            GUnload();
    }
 
+   function printMap(withDirections) {
+       var div = document.getElementById("directions");
+       if (withDirections)
+           div.style.display = "block";
+       window.print();
+       if (withDirections)
+           div.style.display = "none";
+   }
+
    function resize(x, y) {
        var div = document.getElementById("map");
        div.style.width = x + "px";

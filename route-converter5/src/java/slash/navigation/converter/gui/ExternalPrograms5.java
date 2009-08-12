@@ -69,15 +69,19 @@ public class ExternalPrograms5 extends ExternalPrograms {
         }
     }
 
-    protected void startBrowser(Window window, String uri) {
+    private void internalStartBrowser(Window window, String uri) {
         if (Platform.isWindows())
             startIE(window, uri);
         else
             startFirefox(window, uri);
     }
 
+    protected void startBrowser(Window window, String uri) {
+        internalStartBrowser(window, "http://" + uri);
+    }
+
     protected void startMail(Window window, String uri) {
-        startBrowser(window, uri);
+        internalStartBrowser(window, uri);
     }
 
     private void openFileByCmd(File file, Window window) {
