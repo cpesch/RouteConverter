@@ -27,11 +27,8 @@ import slash.navigation.converter.gui.mapview.MapViewListener;
 
 import javax.swing.*;
 import java.text.MessageFormat;
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * A bidirectional adapter that extracts the route length and duration

@@ -916,19 +916,20 @@ public class EclipseSWTMapView implements MapView {
             public void run() {
                 calculatedDistance(0, 0);
 
-                int meters = 0;
-                long delta = 0;
+                double length = 0;
+                long duration = 0;
                 Calendar minimumTime = null, maximumTime = null;
                 BaseNavigationPosition previous = null;
-                for (int i = 0; i < positions.size(); i++) {
-                    BaseNavigationPosition next = positions.get(i);
+                // does not use the positions passed to this method but all for same answer as BaseRoute#getLength()
+                for (int i = 0; i < EclipseSWTMapView.this.positions.size(); i++) {
+                    BaseNavigationPosition next = EclipseSWTMapView.this.positions.get(i);
                     if (previous != null) {
                         Double distance = previous.calculateDistance(next);
                         if (distance != null)
-                            meters += distance;
+                            length += distance;
                         Long time = previous.calculateTime(next);
                         if (time != null)
-                            delta += time;
+                            duration += time;
                     }
 
                     CompactCalendar time = next.getTime();
@@ -941,14 +942,14 @@ public class EclipseSWTMapView implements MapView {
                     }
 
                     if (i % 100 == 0)
-                        calculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
+                        calculatedDistance((int) length, duration > 0 ? (int) (duration / 1000) : 0);
 
                     previous = next;
                 }
 
-                int summedUp = delta > 0 ? (int) delta / 1000 : 0;
+                int summedUp = duration > 0 ? (int) duration / 1000 : 0;
                 int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-                calculatedDistance(meters, Math.max(maxMinusMin, summedUp));
+                calculatedDistance((int) length, Math.max(maxMinusMin, summedUp));
             }
         }, "PolylineDistanceCalculator").start();
     }
