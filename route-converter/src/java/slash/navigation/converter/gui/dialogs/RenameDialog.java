@@ -23,8 +23,8 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.helper.FrameAction;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helper.DialogAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,13 +54,13 @@ public class RenameDialog extends JDialog {
 
         textFieldName.setText(routeName);
 
-        buttonRename.addActionListener(new FrameAction() {
+        buttonRename.addActionListener(new DialogAction(this) {
             public void run() {
                 rename();
             }
         });
 
-        buttonCancel.addActionListener(new FrameAction() {
+        buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();
             }
@@ -73,7 +73,7 @@ public class RenameDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new FrameAction() {
+        contentPane.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 cancel();
             }

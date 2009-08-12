@@ -23,16 +23,17 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.models.NumberDocument;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.ResourceBundle;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
-
-import slash.navigation.converter.gui.models.NumberDocument;
-import slash.navigation.converter.gui.helper.FrameAction;
-import slash.navigation.converter.gui.RouteConverter;
+import java.util.ResourceBundle;
 
 /**
  * Dialog for selecting filter criteria
@@ -64,37 +65,37 @@ public class FilterDialog extends JDialog {
         setTitle(RouteConverter.getBundle().getString("filter-title"));
         setContentPane(contentPane);
 
-        buttonSelectDuplicates.addActionListener(new FrameAction() {
+        buttonSelectDuplicates.addActionListener(new DialogAction(this) {
             public void run() {
                 selectDuplicates();
             }
         });
 
-        buttonSelectByDistance.addActionListener(new FrameAction() {
+        buttonSelectByDistance.addActionListener(new DialogAction(this) {
             public void run() {
                 selectByDistance();
             }
         });
 
-        buttonSelectByOrder.addActionListener(new FrameAction() {
+        buttonSelectByOrder.addActionListener(new DialogAction(this) {
             public void run() {
                 selectByOrder();
             }
         });
 
-        buttonSelectBySignificance.addActionListener(new FrameAction() {
+        buttonSelectBySignificance.addActionListener(new DialogAction(this) {
             public void run() {
                 selectBySignificance();
             }
         });
 
-        buttonRemovePositions.addActionListener(new FrameAction() {
+        buttonRemovePositions.addActionListener(new DialogAction(this) {
             public void run() {
                 removePositions();
             }
         });
 
-        buttonClearSelection.addActionListener(new FrameAction() {
+        buttonClearSelection.addActionListener(new DialogAction(this) {
             public void run() {
                 clearSelection();
             }
@@ -107,7 +108,7 @@ public class FilterDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new FrameAction() {
+        contentPane.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 close();
             }

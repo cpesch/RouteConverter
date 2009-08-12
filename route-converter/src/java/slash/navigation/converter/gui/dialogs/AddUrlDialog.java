@@ -24,9 +24,9 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.converter.gui.helper.FrameAction;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.util.Conversion;
 
 import javax.swing.*;
@@ -69,13 +69,13 @@ public class AddUrlDialog extends JDialog {
         textFieldDescription.setText(description);
         textFieldUrl.setText(url);
 
-        buttonAdd.addActionListener(new FrameAction() {
+        buttonAdd.addActionListener(new DialogAction(this) {
             public void run() {
                 addUrl();
             }
         });
 
-        buttonCancel.addActionListener(new FrameAction() {
+        buttonCancel.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();
             }
@@ -88,7 +88,7 @@ public class AddUrlDialog extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new FrameAction() {
+        contentPane.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 cancel();
             }

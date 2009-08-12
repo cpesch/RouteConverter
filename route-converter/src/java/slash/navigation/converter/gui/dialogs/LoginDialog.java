@@ -23,20 +23,20 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.helper.FrameAction;
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.ExternalPrograms;
-import slash.navigation.util.Conversion;
 import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.converter.gui.ExternalPrograms;
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.util.Conversion;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import java.io.IOException;
 
 /**
  * Dialog to login a user to the RouteService.
@@ -89,25 +89,25 @@ public class LoginDialog extends JDialog {
             }
         });
 
-        buttonLogin.addActionListener(new FrameAction() {
+        buttonLogin.addActionListener(new DialogAction(this) {
             public void run() {
                 login();
             }
         });
 
-        buttonCancel1.addActionListener(new FrameAction() {
+        buttonCancel1.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();
             }
         });
 
-        buttonRegister.addActionListener(new FrameAction() {
+        buttonRegister.addActionListener(new DialogAction(this) {
             public void run() {
                 register();
             }
         });
 
-        buttonCancel2.addActionListener(new FrameAction() {
+        buttonCancel2.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();
             }
@@ -122,7 +122,7 @@ public class LoginDialog extends JDialog {
 
         textFieldLogin.setText(RouteConverter.getInstance().getUserNamePreference());
 
-        contentPane.registerKeyboardAction(new FrameAction() {
+        contentPane.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 cancel();
             }
