@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.panels;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelFormat;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.Updater;
@@ -65,6 +66,7 @@ public class MiscPanel {
     private JCheckBox checkBoxAvoidHighways;
     private JCheckBox checkBoxSpaceBetweenNumberAndComment;
     private JButton buttonPrintMap;
+    private JButton buttonPrintMapAndRoute;
 
     public MiscPanel() {
         initialize();
@@ -158,10 +160,18 @@ public class MiscPanel {
         buttonPrintMap.addActionListener(new FrameAction() {
             public void run() {
                 if (r.isMapViewAvailable())
-                    r.printMap();
+                    r.printMap(false);
             }
         });
         buttonPrintMap.setEnabled(r.isMapViewAvailable());
+
+        buttonPrintMapAndRoute.addActionListener(new FrameAction() {
+            public void run() {
+                if (r.isMapViewAvailable())
+                    r.printMap(true);
+            }
+        });
+        buttonPrintMapAndRoute.setEnabled(r.isMapViewAvailable());
     }
 
     public Component getRootComponent() {
@@ -200,7 +210,7 @@ public class MiscPanel {
      */
     private void $$$setupUI$$$() {
         miscPanel = new JPanel();
-        miscPanel.setLayout(new GridLayoutManager(7, 1, new Insets(3, 3, 3, 3), -1, -1));
+        miscPanel.setLayout(new GridLayoutManager(9, 1, new Insets(3, 3, 3, 3), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 0, 0), -1, -1));
         miscPanel.add(panel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -265,9 +275,9 @@ public class MiscPanel {
         this.$$$loadButtonText$$$(buttonCheckForUpdate, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-check-for-update"));
         panel5.add(buttonCheckForUpdate, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        miscPanel.add(panel6, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        miscPanel.add(panel6, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
-        panel7.setLayout(new GridLayoutManager(4, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel7.setLayout(new GridLayoutManager(3, 3, new Insets(3, 3, 3, 3), -1, -1));
         miscPanel.add(panel7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
@@ -282,17 +292,31 @@ public class MiscPanel {
         checkBoxSpaceBetweenNumberAndComment = new JCheckBox();
         checkBoxSpaceBetweenNumberAndComment.setText("");
         panel7.add(checkBoxSpaceBetweenNumberAndComment, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonPrintMap = new JButton();
-        buttonPrintMap.setAlignmentY(0.0f);
-        this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
-        buttonPrintMap.setVerifyInputWhenFocusTarget(false);
-        panel7.add(buttonPrintMap, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
         this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("pedestrians"));
         panel7.add(label7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxPedestrians = new JCheckBox();
         checkBoxPedestrians.setText("");
         panel7.add(checkBoxPedestrians, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel7.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JPanel panel8 = new JPanel();
+        panel8.setLayout(new GridLayoutManager(1, 3, new Insets(3, 3, 3, 3), -1, -1));
+        miscPanel.add(panel8, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPrintMap = new JButton();
+        buttonPrintMap.setAlignmentY(0.0f);
+        this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
+        buttonPrintMap.setVerifyInputWhenFocusTarget(false);
+        panel8.add(buttonPrintMap, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPrintMapAndRoute = new JButton();
+        buttonPrintMapAndRoute.setAlignmentY(0.0f);
+        this.$$$loadButtonText$$$(buttonPrintMapAndRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map-and-route"));
+        buttonPrintMapAndRoute.setVerifyInputWhenFocusTarget(false);
+        panel8.add(buttonPrintMapAndRoute, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panel8.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JPanel panel9 = new JPanel();
+        miscPanel.add(panel9, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 20), null, null, 0, false));
     }
 
     /**

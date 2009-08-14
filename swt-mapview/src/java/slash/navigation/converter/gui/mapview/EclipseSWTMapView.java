@@ -37,9 +37,7 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -256,12 +254,8 @@ public class EclipseSWTMapView implements MapView {
             }
         });
 
-        if (!loadWebPage(webBrowser)) {
+        if (!loadWebPage(webBrowser))
             dispose();
-            return;
-        }
-
-        initializeBrowserInteraction();
     }
 
     private void tryToInitialize(int counter) {
@@ -274,8 +268,9 @@ public class EclipseSWTMapView implements MapView {
         if (isInitialized()) {
             if (debug)
             log.info(System.currentTimeMillis() + " compatible, further initializing map");
-            initializeDragListener();
             initializeAfterLoading();
+            initializeBrowserInteraction();
+            initializeDragListener();
             checkCallback();
         } else {
             if(counter++ < 2) {
@@ -516,13 +511,20 @@ public class EclipseSWTMapView implements MapView {
 
     private void initializeAfterLoading() {
         resize();
-        update(true);
         if(preferences.getBoolean(SCALE_CONTROL_PREFERENCE, false))
             executeScript("map.addControl(new GScaleControl());");
     }
 
     private void checkCallback() {
-        // TODO check localhost resolution
+        try {
+            InetAddress localhost = InetAddress.getByName("localhost");
+            log.info("localhost is resolved to: " + localhost);
+            String ip = localhost.getHostAddress();
+            log.info("IP of localhost is: " + ip);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            log.severe("Cannot resolve localhost: " + e.getMessage());
+        }
         executeScript("checkCallback();");
     }
 
@@ -815,7 +817,8 @@ public class EclipseSWTMapView implements MapView {
                 this.haveToUpdatePosition = true;
                 significantPositionCache.clear();
             }
-            log.fine(System.currentTimeMillis() + " update haveToReplaceRoute: " + haveToReplaceRoute + " positions: " + positions);
+            if(debug) log.info(System.currentTimeMillis() + " haveToUpdateRoute: " + haveToUpdateRoute +
+                    " haveToReplaceRoute: " + haveToReplaceRoute + " positions: " + positions);
             notificationMutex.notifyAll();
         }
     }
@@ -916,20 +919,19 @@ public class EclipseSWTMapView implements MapView {
             public void run() {
                 calculatedDistance(0, 0);
 
-                double length = 0;
-                long duration = 0;
+                int meters = 0;
+                long delta = 0;
                 Calendar minimumTime = null, maximumTime = null;
                 BaseNavigationPosition previous = null;
-                // does not use the positions passed to this method but all for same answer as BaseRoute#getLength()
-                for (int i = 0; i < EclipseSWTMapView.this.positions.size(); i++) {
-                    BaseNavigationPosition next = EclipseSWTMapView.this.positions.get(i);
+                for (int i = 0; i < positions.size(); i++) {
+                    BaseNavigationPosition next = positions.get(i);
                     if (previous != null) {
                         Double distance = previous.calculateDistance(next);
                         if (distance != null)
-                            length += distance;
+                            meters += distance;
                         Long time = previous.calculateTime(next);
                         if (time != null)
-                            duration += time;
+                            delta += time;
                     }
 
                     CompactCalendar time = next.getTime();
@@ -942,14 +944,14 @@ public class EclipseSWTMapView implements MapView {
                     }
 
                     if (i % 100 == 0)
-                        calculatedDistance((int) length, duration > 0 ? (int) (duration / 1000) : 0);
+                        calculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
 
                     previous = next;
                 }
 
-                int summedUp = duration > 0 ? (int) duration / 1000 : 0;
+                int summedUp = delta > 0 ? (int) delta / 1000 : 0;
                 int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-                calculatedDistance((int) length, Math.max(maxMinusMin, summedUp));
+                calculatedDistance(meters, Math.max(maxMinusMin, summedUp));
             }
         }, "PolylineDistanceCalculator").start();
     }
@@ -1122,8 +1124,8 @@ public class EclipseSWTMapView implements MapView {
             update(false);
     }
 
-    public void print() {
-        executeScript("window.print();");
+    public void print(boolean withRoute) {
+        executeScript("printMap(" + withRoute + ");");
     }
 
     private static final Pattern DRAG_END_PATTERN = Pattern.compile("^GET /dragend/(.*)/(.*)/(.*) .*$");

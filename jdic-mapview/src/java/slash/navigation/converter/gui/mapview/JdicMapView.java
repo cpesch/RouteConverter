@@ -40,9 +40,7 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -103,7 +101,7 @@ public class JdicMapView implements MapView {
             haveToRepaintImmediately = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
-    private final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, !Platform.isWindows());
+    private final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
     private int scrollBarSize = 0;
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
@@ -182,7 +180,7 @@ public class JdicMapView implements MapView {
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.setURL(html.toURI().toURL());
             if (debug)
-            System.out.println(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
+            log.info(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             initializationCause = t;
@@ -205,29 +203,29 @@ public class JdicMapView implements MapView {
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void downloadStarted(WebBrowserEvent event) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadStarted " + event + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " downloadStarted " + event + " thread " + Thread.currentThread());
             }
 
             public void downloadCompleted(WebBrowserEvent event) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadCompleted " + event + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " downloadCompleted " + event + " thread " + Thread.currentThread());
                 if (Platform.isMac())
                     documentCompleted(event);
             }
 
             public void downloadProgress(WebBrowserEvent event) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadProgress " + event + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " downloadProgress " + event + " thread " + Thread.currentThread());
            }
 
             public void downloadError(WebBrowserEvent event) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " downloadError " + event + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " downloadError " + event + " thread " + Thread.currentThread());
             }
 
             public void documentCompleted(WebBrowserEvent event) {
                 if (debug)
-                System.out.println(System.currentTimeMillis() + " documentCompleted " + event + " thread " + Thread.currentThread());
+                log.info(System.currentTimeMillis() + " documentCompleted " + event + " thread " + Thread.currentThread());
                 synchronized (notificationMutex) {
                     initialized = getComponent() != null && isCompatible();
                 }
@@ -488,8 +486,16 @@ public class JdicMapView implements MapView {
     }
 
     private void checkCallback() {
-        // TODO check localhost resolution
-        executeScript("checkCallback()");
+        try {
+            InetAddress localhost = InetAddress.getByName("localhost");
+            log.info("localhost is resolved to: " + localhost);
+            String ip = localhost.getHostAddress();
+            log.info("IP of localhost is: " + ip);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            log.severe("Cannot resolve localhost: " + e.getMessage());
+        }
+        executeScript("checkCallback();");
     }
 
     private BitSet calculateSignificantPositionsForZoomLevel(List<BaseNavigationPosition> positions, int zoomLevel) {
@@ -1109,8 +1115,8 @@ public class JdicMapView implements MapView {
             update(false);
     }
 
-    public void print() {
-        executeScript("window.print()");
+    public void print(boolean withRoute) {
+        executeScript("printMap(" + withRoute + ");");
     }
 
     private static final Pattern DRAG_END_PATTERN = Pattern.compile("^GET /dragend/(.*)/(.*)/(.*) .*$");

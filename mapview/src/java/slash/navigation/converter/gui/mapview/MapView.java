@@ -47,7 +47,7 @@ public interface MapView {
     void setPedestrians(boolean pedestrians);
     void setAvoidHighways(boolean avoidHighways);
     BaseNavigationPosition getCenter();
-    void print();
+    void print(boolean withRoute);
     
     void addMapViewListener(MapViewListener listener);
     void removeMapViewListener(MapViewListener listener);

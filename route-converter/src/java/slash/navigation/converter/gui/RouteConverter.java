@@ -440,8 +440,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         mapView.setSelectedPositions(selectPositions);
     }
 
-    public void printMap() {
-        mapView.print();
+    public void printMap(boolean withRoute) {
+        mapView.print(withRoute);
     }
 
     public int selectDuplicatesWithinDistance(int duplicate) {
