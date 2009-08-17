@@ -3,7 +3,7 @@
     <groupId>slash.navigation</groupId>
     <artifactId>jdic-mapview</artifactId>
     <packaging>jar</packaging>
-    <name>MapView based on the Java Desktop Integration Component (JDIC) 0.9.3 library</name>
+    <name>MapView based on the Java Desktop Integration Component (JDIC) library</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

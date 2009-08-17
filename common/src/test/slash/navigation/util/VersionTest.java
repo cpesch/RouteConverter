@@ -22,9 +22,7 @@ package slash.navigation.util;
 
 import junit.framework.TestCase;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.jar.JarFile;
 
 public class VersionTest extends TestCase {
 

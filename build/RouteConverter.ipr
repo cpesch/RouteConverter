@@ -409,7 +409,7 @@
     </library>
     <library name="intellij/forms-rt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/intellij/forms-rt/lib/forms-rt-6.0.5-stripped.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/intellij/forms-rt/6.0.5/forms-rt-6.0.5-stripped.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

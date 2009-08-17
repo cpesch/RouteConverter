@@ -1,20 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>slash.navigation</groupId>
-  <artifactId>geonames</artifactId>
-  <packaging>jar</packaging>
-  <name>Access to the geonames.org service</name>
-  <parent>
+    <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
-    <artifactId>RouteConverter</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <dependencies>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
+    <artifactId>geonames</artifactId>
+    <packaging>jar</packaging>
+    <name>Access to the geonames.org service</name>
+    <parent>
+        <groupId>slash.navigation</groupId>
+        <artifactId>RouteConverter</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>jaxb6</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>rest</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

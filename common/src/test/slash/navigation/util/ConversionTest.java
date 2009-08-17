@@ -163,11 +163,11 @@ public class ConversionTest extends TestCase {
         assertEquals(new BigDecimal("1.05"), Conversion.formatDouble(1.05, 5));
         assertEquals(new BigDecimal("1.005"), Conversion.formatDouble(1.005, 5));
         assertEquals(new BigDecimal("1.00004"), Conversion.formatDouble(1.00004, 5));
-        assertEquals(new BigDecimal("1.00004"), Conversion.formatDouble(1.000044, 5));
-        assertEquals(new BigDecimal("1.00005"), Conversion.formatDouble(1.000045, 5));
+        assertEquals(new BigDecimal("1.000044"), Conversion.formatDouble(1.000044, 5));
+        assertEquals(new BigDecimal("1.000045"), Conversion.formatDouble(1.000045, 5));
         assertEquals(new BigDecimal("1.00005"), Conversion.formatDouble(1.00005, 5));
-        assertEquals(new BigDecimal("1.0"), Conversion.formatDouble(1.000004, 5));
-        assertEquals(new BigDecimal("1.00001"), Conversion.formatDouble(1.000005, 5));
+        assertEquals(new BigDecimal("1.000004"), Conversion.formatDouble(1.000004, 5));
+        assertEquals(new BigDecimal("1.000005"), Conversion.formatDouble(1.000005, 5));
     }
 
 }

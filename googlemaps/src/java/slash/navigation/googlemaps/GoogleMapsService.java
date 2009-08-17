@@ -72,12 +72,10 @@ public class GoogleMapsService {
     <T> T find(List elements, Class<T> resultClass) {
         for (Object element : elements) {
             if (resultClass.isInstance(element))
-                //noinspection unchecked
                 return (T) element;
             if (element instanceof JAXBElement) {
                 JAXBElement jaxbElement = (JAXBElement) element;
                 if (resultClass.isInstance(jaxbElement.getValue()))
-                    //noinspection unchecked
                     return (T) jaxbElement.getValue();
             }
         }
@@ -101,7 +99,6 @@ public class GoogleMapsService {
         List<T> result = new ArrayList<T>();
         for (Object element : elements) {
             if (resultClass.isInstance(element))
-                //noinspection unchecked
                 result.add((T) element);
         }
         return result.size() > 0 ? result : null;
