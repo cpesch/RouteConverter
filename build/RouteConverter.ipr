@@ -413,7 +413,7 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../thirdparty/intellij/forms-rt/forms-rt-6.0.5_src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../thirdparty/intellij/forms-rt/forms-rt-6.0.5-src.zip!/" />
       </SOURCES>
     </library>
     <library name="sun/jdic">

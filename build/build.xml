@@ -525,6 +525,7 @@
         <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
+                <include name="**/*.dll"/>
             </patternset>
         </unjar>
 
