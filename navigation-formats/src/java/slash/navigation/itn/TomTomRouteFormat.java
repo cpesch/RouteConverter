@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 
 public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
-    private static final int MAXIMUM_POSITION_COUNT = 48;
     private static final char SEPARATOR_CHAR = '|';
     private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
     private static final Pattern POSITION_PATTERN = Pattern.
@@ -67,7 +66,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     public int getMaximumPositionCount() {
-        return MAXIMUM_POSITION_COUNT;
+        return preferences.getInt("maximumPositionCount", 48);
     }
 
     public boolean isSupportsMultipleRoutes() {

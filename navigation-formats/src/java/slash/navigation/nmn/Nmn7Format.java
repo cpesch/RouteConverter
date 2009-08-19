@@ -35,6 +35,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 
 /**
@@ -45,6 +46,7 @@ import java.util.logging.Logger;
 
 public class Nmn7Format extends NmnFormat {
     private static final Logger log = Logger.getLogger(Nmn7Format.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(Nmn7Format.class);
 
     public String getExtension() {
         return ".freshroute";
@@ -55,7 +57,7 @@ public class Nmn7Format extends NmnFormat {
     }
 
     public int getMaximumPositionCount() {
-        return 48; /* ApplicationSettings.xml: <RouteTargets>50</RouteTargets> */
+        return preferences.getInt("maximumNmn7PositionCount", 48 /* ApplicationSettings.xml: <RouteTargets>50</RouteTargets> */);
     }
 
     protected boolean isPosition(String line) {

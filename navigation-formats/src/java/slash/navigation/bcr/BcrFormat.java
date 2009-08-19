@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +45,8 @@ import java.util.regex.Pattern;
 
 public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     private static final Logger log = Logger.getLogger(BcrFormat.class.getName());
-    private static final int MAXIMUM_POSITION_COUNT = 1 + 99 + 1;
+    private static final Preferences preferences = Preferences.userNodeForPackage(BcrFormat.class);
+
     static final String CLIENT_TITLE = "CLIENT";
     static final String COORDINATES_TITLE = "COORDINATES";
     static final String DESCRIPTION_TITLE = "DESCRIPTION";
@@ -69,7 +71,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     }
 
     public int getMaximumPositionCount() {
-        return MAXIMUM_POSITION_COUNT;
+        return preferences.getInt("maximumPositionCount", 1 + 99 + 1);
     }
 
     public boolean isSupportsMultipleRoutes() {

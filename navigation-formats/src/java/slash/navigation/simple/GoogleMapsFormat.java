@@ -28,6 +28,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 
 public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(GoogleMapsFormat.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsFormat.class);
     private static final Pattern URL_PATTERN = Pattern.compile(".*http://maps\\.google\\..+/maps\\?([^\\s]+).*");
     private static final Pattern BOOKMARK_PATTERN = Pattern.compile(".*InternetShortcut(.+)IconFile.*");
     private static final Pattern START_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
@@ -59,7 +61,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public int getMaximumPositionCount() {
-        return 15;
+        return preferences.getInt("maximumGoogleMapsPositionCount", 15);
     }
 
     @SuppressWarnings({"unchecked"})

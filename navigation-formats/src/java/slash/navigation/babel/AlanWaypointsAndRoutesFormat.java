@@ -24,6 +24,8 @@ import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gpx.Gpx10Format;
 
+import java.util.prefs.Preferences;
+
 /**
  * Reads and writes Alan Map 500 Waypoints and Routes (.wpr) files.
  *
@@ -31,6 +33,8 @@ import slash.navigation.gpx.Gpx10Format;
  */
 
 public class AlanWaypointsAndRoutesFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(AlanWaypointsAndRoutesFormat.class);
+
     public String getExtension() {
         return ".wpr";
     }
@@ -48,7 +52,7 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
     }
 
     public int getMaximumPositionCount() {
-        return 150;
+        return preferences.getInt("maximumAlanWaypointsAndRoutesPositionCount", 150);
     }
 
     public boolean isSupportsMultipleRoutes() {

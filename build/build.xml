@@ -94,6 +94,7 @@
 
         <property name="mapview.src" location="mapview/src"/>
         <property name="mapview.src.java" location="${mapview.src}/java"/>
+        <property name="mapview.resources" location="${mapview.src}/resources"/>
         <property name="mapview.output" location="mapview/output"/>
         <property name="mapview.output.classes" location="${mapview.output}/classes"/>
 
@@ -628,10 +629,15 @@
                 <include name="**/*.properties"/>
             </fileset>
         </copy>
+        <mkdir dir="${mapview.output.classes}"/>
+        <copy todir="${mapview.output.classes}">
+            <fileset dir="${mapview.resources}">
+                <include name="**/*.html"/>
+            </fileset>
+        </copy>
         <mkdir dir="${route-converter.output.classes}"/>
         <copy todir="${route-converter.output.classes}">
             <fileset dir="${route-converter.resources}">
-                <include name="**/*.html"/>
                 <include name="**/*.png"/>
                 <include name="**/*.properties"/>
             </fileset>
@@ -645,10 +651,15 @@
                 <include name="**/*.properties"/>
             </fileset>
         </copy>
+        <mkdir dir="${mapview.output.classes5}"/>
+        <copy todir="${mapview.output.classes5}">
+            <fileset dir="${mapview.resources}">
+                <include name="**/*.html"/>
+            </fileset>
+        </copy>
         <mkdir dir="${route-converter.output.classes5}"/>
         <copy todir="${route-converter.output.classes5}">
             <fileset dir="${route-converter.resources}">
-                <include name="**/*.html"/>
                 <include name="**/*.png"/>
                 <include name="**/*.properties"/>
             </fileset>
@@ -1104,7 +1115,7 @@
 
     <!-- Jars all classes and resources -->
     <target name="jar" depends="init,compile,prepare-jar">
-        <jar destfile="${build.output}/RouteConverter.jar">
+        <jar destfile="${build.output}/RouteConverterJDIC.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-windows}"/>
             <fileset dir="${build.output.tmp-jdic}"/>
@@ -1138,7 +1149,7 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterSWT.jar">
+        <jar destfile="${build.output}/RouteConverter.jar">
             <fileset dir="${build.output.tmp-thirdparty}"/>
             <fileset dir="${build.output.tmp-windows}"/>
             <fileset dir="${build.output.tmp-djproject}"/>
