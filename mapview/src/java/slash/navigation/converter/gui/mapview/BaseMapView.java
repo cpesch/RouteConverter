@@ -581,8 +581,7 @@ public abstract class BaseMapView implements MapView {
         southWest.setLatitude(southWest.getLatitude() + height);
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        for (int i = 1; i < positions.size(); i++) {
-            BaseNavigationPosition position = positions.get(i);
+        for (BaseNavigationPosition position : positions) {
             if (Calculation.containsPosition(northEast, southWest, position)) {
                 result.add(position);
             }
