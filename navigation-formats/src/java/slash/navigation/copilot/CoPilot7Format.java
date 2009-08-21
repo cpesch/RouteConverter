@@ -83,10 +83,14 @@ public class CoPilot7Format extends CoPilotFormat {
             String comment = position.getComment();
             int index = comment.indexOf(',');
             String city = index != -1 ? comment.substring(0, index) : comment;
+            city = Conversion.trim(city);
             String address = index != -1 ? comment.substring(index + 1) : comment;
             address = Conversion.trim(address);
 
-            writer.println(ADDRESS + NAME_VALUE_SEPARATOR + address);
+            // only store address if there was a comma in the comment
+            if (index != -1)
+                writer.println(ADDRESS + NAME_VALUE_SEPARATOR + address);
+            // otherwhise store comment als city
             writer.println(CITY + NAME_VALUE_SEPARATOR + city);
             writer.println(END_STOP);
             writer.println();
