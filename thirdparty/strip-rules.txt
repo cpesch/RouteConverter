@@ -9,3 +9,4 @@ keep org.eclipse.swt.awt.SWT_AWT
 keep org.eclipse.swt.events.ControlAdapter
 keep org.eclipse.swt.events.MouseAdapter
 keep org.eclipse.swt.widgets.Display
+keep org.json.JSONStringer
