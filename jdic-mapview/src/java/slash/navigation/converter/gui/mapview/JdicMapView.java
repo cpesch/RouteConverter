@@ -142,6 +142,7 @@ public class JdicMapView extends BaseMapView {
                         public void run() {
                             initializeDragListener();
                             initializeAfterLoading();
+                            checkLocalhostResolution();
                             checkCallback();
                         }
                     }, "MapViewInitializer").start();

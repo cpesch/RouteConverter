@@ -178,6 +178,7 @@ public class EclipseSWTMapView extends BaseMapView {
             initializeAfterLoading();
             initializeBrowserInteraction();
             initializeDragListener();
+            checkLocalhostResolution();
             checkCallback();
         } else {
             if (counter++ < 2) {

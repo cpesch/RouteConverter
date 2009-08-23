@@ -20,32 +20,36 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.Wgs84Position;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.Conversion;
+import slash.navigation.Wgs84Position;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Calculation;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Conversion;
 
-import javax.swing.event.TableModelListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
-import java.util.prefs.Preferences;
-import java.util.logging.Logger;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.net.*;
-import java.awt.event.ComponentListener;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.event.ComponentEvent;
-import java.io.IOException;
+import java.awt.event.ComponentListener;
 import java.io.BufferedReader;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Interface for a component that displays the positions of a route.
@@ -366,17 +370,88 @@ public abstract class BaseMapView implements MapView {
         mapViewDragListener.start();
     }
 
-    protected void checkCallback() {
+    protected void checkLocalhostResolution() {
         try {
             InetAddress localhost = InetAddress.getByName("localhost");
             log.info("localhost is resolved to: " + localhost);
-            String ip = localhost.getHostAddress();
-            log.info("IP of localhost is: " + ip);
-        } catch (UnknownHostException e) {
+            String localhostName = localhost.getHostAddress();
+            log.info("IP of localhost is: " + localhostName);
+            if(!localhostName.equals("127.0.0.1"))
+                throw new Exception("localhost does not resolve to 127.0.0.1");
+
+            InetAddress ip = InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
+            log.info("127.0.0.1 is resolved to: " + ip);
+            String ipName = localhost.getHostName();
+            log.info("Name of 127.0.0.1 is: " + ipName);
+            if(!ipName.equals("localhost"))
+                throw new Exception("127.0.0.1 does not resolve to localhost");
+        } catch (Exception e) {
             e.printStackTrace();
-            log.severe("Cannot resolve localhost: " + e.getMessage());
+            final String message = "Probably faulty network setup: " + e.getMessage() + ".\nPlease check your network settings.";
+            log.severe(message);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    JOptionPane.showMessageDialog(getComponent(), message, "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
         }
-        executeScript("checkCallback();");
+    }
+
+    protected void checkCallback() {
+        final Boolean[] receivedCallback = new Boolean[1];
+        receivedCallback[0] = false;
+
+        final MapViewListener callbackWaiter = new MapViewListener() {
+            public void calculatedDistance(int meters, int seconds) {
+            }
+
+            public void receivedCallback(int port) {
+                synchronized (receivedCallback) {
+                    receivedCallback[0] = true;
+                    receivedCallback.notifyAll();
+                }
+            }
+        };
+
+        new Thread(new Runnable() {
+            public void run() {
+                addMapViewListener(callbackWaiter);
+                try {
+                    executeScript("checkCallback();");
+
+                    long start = System.currentTimeMillis();
+                    while(true) {
+                        synchronized (receivedCallback) {
+                            if(receivedCallback[0])
+                                break;
+                        }
+
+                        if (start + 5000 < System.currentTimeMillis())
+                            break;
+
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            // intentionally left empty
+                        }
+                    }
+
+                    synchronized (receivedCallback) {
+                        if(!receivedCallback[0])
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    String message = "Unable to call RouteConverter from Webbrowser via port " + dragListenerServerSocket.getLocalPort() + ".\nPlease check your firewall settings.";
+                                    log.severe(message);
+                                    JOptionPane.showMessageDialog(getComponent(), message, "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            });
+                    }
+                }
+                finally {
+                    removeMapViewListener(callbackWaiter);
+                }
+            }
+        } , "CallbackChecker").start();
     }
 
     // disposal
