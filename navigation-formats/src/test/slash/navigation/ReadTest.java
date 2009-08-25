@@ -149,7 +149,8 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".freshroute");
     }
 
-    public void testMagellanMapSendFilesAreValid() throws IOException {
+    public void testMagellanMapSendFilesAreValid() throws Exception {
+        Thread.sleep(5000); // this seems to help against the errors that only show up on complete runs
         readFiles(".mps");
     }
 
