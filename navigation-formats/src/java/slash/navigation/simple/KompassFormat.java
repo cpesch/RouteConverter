@@ -30,14 +30,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Glopus (.tk) files.
+ * Reads and writes Kompass (.tk) files.
  *
- * Format: 51.0450383,7.0508300,Comment
+ * Format: 51.0450383,7.0508300,50.2
  *
  * @author Christian Pesch
  */
 
-public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ',';
 
     // special position format to avoid detection of GarminPoiDbFormat where longitude and latitude are swapped
@@ -46,19 +46,18 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "([^\"]*)" + WHITE_SPACE + 
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
+                    WHITE_SPACE + "([-\\d\\.]*)" + WHITE_SPACE + 
                     END_OF_LINE);
-
 
     public String getExtension() {
         return ".tk";
     }
 
     public String getName() {
-        return "Glopus (*" + getExtension() + ")";
+        return "Kompass (*" + getExtension() + ")";
     }
-    
+
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
@@ -74,15 +73,15 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String latitude = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
-        String comment = lineMatcher.group(3);
+        String elevation = lineMatcher.group(3);
         return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, null, null, Conversion.trim(comment));
+                Conversion.parseDouble(elevation), null, null, null);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 7);
         String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 7);
-        String comment = position.getComment();
-        writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + comment);
+        String elevation = position.getElevation() != null ? Conversion.formatDoubleAsString(position.getElevation(), 1) : "0.0";
+        writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + elevation);
     }
 }

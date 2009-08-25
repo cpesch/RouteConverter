@@ -320,6 +320,10 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asKompassFormat() {
+        return asSimpleFormat(new KompassFormat());
+    }
+
     public SimpleRoute asMagicMaps2GoFormat() {
         return asSimpleFormat(new MagicMaps2GoFormat());
     }

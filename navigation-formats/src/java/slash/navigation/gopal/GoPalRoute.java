@@ -352,6 +352,10 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asKompassFormat() {
+        return asSimpleFormat(new KompassFormat());
+    }
+
     public SimpleRoute asMagicMaps2GoFormat() {
         return asSimpleFormat(new MagicMaps2GoFormat());
     }

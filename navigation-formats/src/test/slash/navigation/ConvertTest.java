@@ -801,7 +801,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml22Format());
     }
 
-    public void testConvertGpx11ToGlopus() throws IOException {
+    public void testConvertGpx10ToGlopus() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GlopusFormat());
         convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new GlopusFormat());
     }
@@ -929,6 +929,19 @@ public class ConvertTest extends NavigationTestCase {
 
     public void testConvertNationalGeographicToHaicomLogger() throws IOException {
         convertRoundtrip(TEST_PATH + "from.tpo", new NationalGeographicTopo3Format(), new HaicomLoggerFormat());
+    }
+
+
+    public void testConvertKompassToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-kompass.tk", new KompassFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-kompass.tk", new KompassFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-kompass.tk", new KompassFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-kompass.tk", new KompassFormat(), new Kml22Format());
+    }
+
+    public void testConvertGpx11ToKompass() throws IOException {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new KompassFormat());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new KompassFormat());
     }
 
 

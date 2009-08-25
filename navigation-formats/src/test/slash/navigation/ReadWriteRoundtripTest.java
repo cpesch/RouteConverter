@@ -46,6 +46,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.loc");
     }
 
+    public void testGlopusReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-glopus.tk");
+    }
+
     public void testGoPalRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-gopal.xml");
     }
@@ -99,6 +103,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from21.kmz");
         readWriteRoundtrip(TEST_PATH + "from22beta.kmz");
         readWriteRoundtrip(TEST_PATH + "from22.kmz");
+    }
+
+    public void testKompassReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-kompass.tk");
     }
 
     public void testMagicMapsIktReadWriteRoundtrip() throws IOException {
@@ -171,10 +179,6 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
 
     public void testTourReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.tour");
-    }
-
-    public void testTkReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-glopus.tk");
     }
 
     public void testTrkReadWriteRoundtrip() throws IOException {

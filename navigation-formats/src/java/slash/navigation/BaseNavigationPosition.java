@@ -262,10 +262,6 @@ public abstract class BaseNavigationPosition {
         return new GpxPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
-    public GpxPosition asTcxPosition() {
-        return asGpxPosition();
-    }
-
     public Wgs84Position asHaicomLoggerPosition() {
         return asWgs84Position();
     }
@@ -314,6 +310,10 @@ public abstract class BaseNavigationPosition {
         return asKmzPosition();
     }
 
+    public Wgs84Position asKompassPosition() {
+        return asWgs84Position();
+    }
+
     public BcrPosition asMTPPosition() {
         return new BcrPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
@@ -356,6 +356,10 @@ public abstract class BaseNavigationPosition {
 
     public Wgs84Position asRoutePosition() {
         return asWgs84Position();
+    }
+
+    public GpxPosition asTcxPosition() {
+        return asGpxPosition();
     }
 
     public TourPosition asTourPosition() {

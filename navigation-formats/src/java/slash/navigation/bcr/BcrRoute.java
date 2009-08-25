@@ -391,6 +391,10 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asKompassFormat() {
+        return asSimpleFormat(new KompassFormat());
+    }
+
     public SimpleRoute asMagicMaps2GoFormat() {
         return asSimpleFormat(new MagicMaps2GoFormat());
     }

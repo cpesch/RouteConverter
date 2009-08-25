@@ -22,28 +22,36 @@ package slash.navigation.simple;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
 
-public class GlopusFormatTest extends NavigationTestCase {
-    GlopusFormat format = new GlopusFormat();
+public class KompassFormatTest extends NavigationTestCase {
+    KompassFormat format = new KompassFormat();
 
     public void testIsPosition() {
+        assertTrue(format.isPosition("51.0450383,7.0508300"));
         assertTrue(format.isPosition("51.0450383,7.0508300,"));
-        assertTrue(format.isPosition("51.0450383,7.0508300,100"));
-        assertTrue(format.isPosition("51.0450383,7.0508300,100,"));
+        assertTrue(format.isPosition("-51.0450383,-7.0508300,0.0"));
         assertTrue(format.isPosition("51.0450383,7.0508300,100.0"));
-        assertTrue(format.isPosition("51.0450383,7.0508300,Comment"));
 
-        assertFalse(format.isPosition("51.0450383,7.0508300"));
+        assertFalse(format.isPosition("51.0450383,7.0508300,100,"));
+        assertFalse(format.isPosition("51.0450383,7.0508300,13,egal"));
         assertFalse(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\""));
         assertFalse(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));
         assertFalse(format.isPosition("11.90206,51.11136,[06618] Finke-Biodiesel;,[06618] Finke-Biodiesel; Gorschen 8 [Gorschen]"));
-        assertFalse(format.isPosition("11.10717,49.37578,HOLSTEINBRUCH BEI WORZEL,HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5"));        
+        assertFalse(format.isPosition("11.10717,49.37578,HOLSTEINBRUCH BEI WORZEL,HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5"));
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,Hofgeismar", null);
+        Wgs84Position position = format.parsePosition("51.0450383,7.0508300,124.5", null);
+        assertEquals(7.0508300, position.getLongitude());
+        assertEquals(51.0450383, position.getLatitude());
+        assertEquals(124.5, position.getElevation());
+        assertNull(position.getComment());
+    }
+
+    public void testParsePositionWithoutElevation() {
+        Wgs84Position position = format.parsePosition("51.0450383,7.0508300", null);
         assertEquals(7.0508300, position.getLongitude());
         assertEquals(51.0450383, position.getLatitude());
         assertNull(position.getElevation());
-        assertEquals("Hofgeismar", position.getComment());
+        assertNull(position.getComment());
     }
 }

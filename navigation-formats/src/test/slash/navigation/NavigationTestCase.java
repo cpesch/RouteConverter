@@ -339,9 +339,9 @@ public abstract class NavigationTestCase extends TestCase {
             if (targetFormat instanceof AlanTrackLogFormat || 
                     (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
-                    targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof MagicMapsIktFormat ||
-                    targetFormat instanceof MagicMapsPthFormat || targetFormat instanceof OvlFormat ||
-                    targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
+                    targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof KompassFormat || 
+                    targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
+                    targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
                     (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                     (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                     ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))

@@ -334,6 +334,10 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asKompassFormat() {
+        return asSimpleFormat(new KompassFormat());
+    }
+
     public SimpleRoute asMagicMaps2GoFormat() {
         return asSimpleFormat(new MagicMaps2GoFormat());
     }

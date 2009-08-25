@@ -278,11 +278,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asHaicomLoggerFormat();
 
-    public abstract SimpleRoute asMagicMaps2GoFormat();
-
-    public abstract TomTomRoute asTomTom5RouteFormat();
-    public abstract TomTomRoute asTomTom8RouteFormat();
-
     public abstract KlickTelRoute asKlickTelRouteFormat();
 
     public abstract KmlRoute asKml20Format();
@@ -294,6 +289,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract KmlRoute asKmz22BetaFormat();
     public abstract KmlRoute asKmz22Format();
 
+    public abstract SimpleRoute asKompassFormat();
+
+    public abstract SimpleRoute asMagicMaps2GoFormat();
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
 
@@ -316,6 +314,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract OvlRoute asOvlFormat();
 
     public abstract SimpleRoute asRoute66Format();
+
+    public abstract TomTomRoute asTomTom5RouteFormat();
+    public abstract TomTomRoute asTomTom8RouteFormat();
 
     public abstract TourRoute asTourFormat();
 

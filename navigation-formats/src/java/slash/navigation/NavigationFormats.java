@@ -101,6 +101,7 @@ public final class NavigationFormats {
         addFormat(CoPilot7Format.class);
         addFormat(Route66Format.class);
         addFormat(NavigatingPoiWarnerFormat.class);
+        addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);
         addFormat(ColumbusV900Format.class);
         addFormat(MagicMapsPthFormat.class);

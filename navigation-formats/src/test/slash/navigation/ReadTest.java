@@ -195,6 +195,8 @@ public class ReadTest extends NavigationTestCase {
     }
 
     public void testTkFilesAreValid() throws IOException {
+        // Glopus
+        // Kompass
         readFiles(".tk");
     }
 
