@@ -62,12 +62,14 @@ public class Gpx10Format extends GpxFormat {
         if (gpx == null || !VERSION.equals(gpx.getVersion()))
             return null;
 
+        boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond = gpx.getCreator() != null &&
+                "Mobile Action http://www.mobileaction.com/".equals(gpx.getCreator());
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute wayPointsAsRoute = extractWayPoints(gpx);
         if (wayPointsAsRoute != null)
             result.add(wayPointsAsRoute);
         result.addAll(extractRoutes(gpx));
-        result.addAll(extractTracks(gpx));
+        result.addAll(extractTracks(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
         return result;
     }
 
@@ -110,14 +112,14 @@ public class Gpx10Format extends GpxFormat {
         return true;
     }
 
-    private List<GpxRoute> extractTracks(Gpx gpx) {
+    private List<GpxRoute> extractTracks(Gpx gpx, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
 
         for (Gpx.Trk trk : gpx.getTrk()) {
             String name = trk.getName();
             String desc = trk.getDesc();
             List<String> descriptions = asDescription(desc);
-            List<GpxPosition> positions = extractTrack(trk);
+            List<GpxPosition> positions = extractTrack(trk, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
             if (positions.size() > 0)
                 result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions, gpx, trk));
         }
@@ -149,12 +151,14 @@ public class Gpx10Format extends GpxFormat {
         return positions;
     }
 
-    private List<GpxPosition> extractTrack(Gpx.Trk trk) {
+    private List<GpxPosition> extractTrack(Gpx.Trk trk, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    Double speed = asKmh(Conversion.formatDouble(trkPt.getSpeed()));
+                    Double speed = Conversion.formatDouble(trkPt.getSpeed());
+                    if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
+                        speed = asKmh(speed);
                     if(speed == null && trkPt.getCmt() != null)
                         speed = parseSpeed(trkPt.getCmt());
                     positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
