@@ -117,6 +117,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                00010 = 2 --> That point is push to log
                00100 = 4 --> That point is over speed point
                * The flag of one point may be combination with two or three flags
+               Device Wintec WSG-1000 has a lot more flags. Don't now what they mean.
 
            4 byte Date & Time (UTC)
                6 bits year (+ 2000)
@@ -165,10 +166,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 result.add(track);
                 trackPointNo = 1;
 
-                BaseNavigationPosition newPoint = createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true);
-                trackPoints.add(newPoint);
-
                 // trackname = time of first point
+                BaseNavigationPosition newPoint = createWaypoint(time, latitude, longitude, altitude, 0, true);
                 track.setName(TRACK_NAME_DATE_FORMAT.format(newPoint.getTime().getTime()));
             }
 
@@ -183,10 +182,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 pushPoints.add(createWaypoint(time, latitude, longitude, altitude, pushPointNo++, false));
             }
 
-            // single trackpoint. over speed point is also a trackpoint
-            if (trackPoints != null && ((trackFlag == 0) || ((trackFlag & 4) == 4)))
-                trackPoints.add(createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true));
-
+            // all points are included in the track
+            trackPoints.add(createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true));
         }
         return result;
     }
