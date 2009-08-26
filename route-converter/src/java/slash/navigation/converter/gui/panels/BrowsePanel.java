@@ -39,6 +39,7 @@ import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.FrameAction;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.helper.TreePathStringConversion;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
@@ -61,10 +62,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 /**
@@ -148,8 +147,7 @@ public abstract class BrowsePanel {
         treeCategories.setModel(new DefaultTreeModel(new DefaultMutableTreeNode()));
         treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                TreePath treePath = e.getPath();
-                selectTreePath(treePath);
+                selectTreePath(e.getPath());
             }
         });
         treeCategories.getModel().addTreeModelListener(new TreeModelListener() {
@@ -217,11 +215,8 @@ public abstract class BrowsePanel {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         treeCategories.setModel(categoryTreeModel);
-                        selectTreeNode(root);
-                        // TODO select path from previous start
-                        CategoryTreeNode m = root.getSubCategory("Ski");
-                        treeCategories.expandPath(new TreePath(new Object[]{m}));
-                        treeCategories.setSelectionPath(new TreePath(new Object[]{m}));
+                        String selected = RouteConverter.getInstance().getCategoryPreference();
+                        selectTreePath(TreePathStringConversion.fromString(root, selected));
                     }
                 });
             }
@@ -254,8 +249,10 @@ public abstract class BrowsePanel {
     }
 
     private void selectTreePath(TreePath treePath) {
+        treeCategories.expandPath(treePath);
         CategoryTreeNode selected = (CategoryTreeNode) treePath.getLastPathComponent();
         selectTreeNode(selected);
+        RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
     }
 
     private void selectTreeNode(CategoryTreeNode selected) {
