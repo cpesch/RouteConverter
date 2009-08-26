@@ -102,6 +102,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
+    private static final String CATEGORY_PREFERENCE = "category";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
     protected JPanel contentPane;
@@ -349,15 +350,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         preferences.putInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
     }
 
-    public File getUploadRoutePreference() {
-        File path = new File(preferences.get(UPLOAD_ROUTE_PREFERENCE, ""));
-        return Files.findExistingPath(path);
-    }
-
-    public void setUploadRoutePreference(File path) {
-        preferences.put(UPLOAD_ROUTE_PREFERENCE, path.getPath());
-    }
-
     public String getUserNamePreference() {
         return preferences.get(USERNAME_PREFERENCE, "");
     }
@@ -369,6 +361,23 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public void setUserNamePreference(String userNamePreference, String passwordPreference) {
         preferences.put(USERNAME_PREFERENCE, userNamePreference);
         preferences.putByteArray(PASSWORD_PREFERENCE, passwordPreference.getBytes());
+    }
+
+    public File getUploadRoutePreference() {
+        File path = new File(preferences.get(UPLOAD_ROUTE_PREFERENCE, ""));
+        return Files.findExistingPath(path);
+    }
+
+    public void setUploadRoutePreference(File path) {
+        preferences.put(UPLOAD_ROUTE_PREFERENCE, path.getPath());
+    }
+
+    public String getCategoryPreference() {
+        return preferences.get(CATEGORY_PREFERENCE, "");
+    }
+
+    public void setCategoryPreference(String category) {
+        preferences.put(CATEGORY_PREFERENCE, category);
     }
 
     // dialogs for external components
