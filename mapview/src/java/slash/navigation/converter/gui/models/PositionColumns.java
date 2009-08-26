@@ -33,4 +33,5 @@ interface PositionColumns {
     int LATITUDE_COLUMN_INDEX = 3;
     int ELEVATION_COLUMN_INDEX = 4;
     int SPEED_COLUMN_INDEX = 5;
+    int DISTANCE_COLUMN_INDEX = 6;
 }

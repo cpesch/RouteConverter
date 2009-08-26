@@ -186,12 +186,26 @@ public class BcrRouteTest extends NavigationTestCase {
         assertPositions();
     }
 
-    public void testPositionDistance() {
+    public void testCalculateDistance() {
         assertEquals(3.138, a.calculateDistance(b));
         assertEquals(b.calculateDistance(a), a.calculateDistance(b));
         assertEquals(3.138, b.calculateDistance(c));
         assertEquals(3.138, c.calculateDistance(d));
         assertEquals(3.138, d.calculateDistance(e));
+    }
+
+    public void testGetDistance() {
+        BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
+        List<BcrPosition> positions = route.getPositions();
+        positions.add(a);
+        assertEquals(0.0, route.getDistance(0,0));
+        positions.add(b);
+        assertEquals(0.0, route.getDistance(0,0));
+        assertEquals(3.138, route.getDistance(0,1));
+        positions.add(c);
+        assertEquals(0.0, route.getDistance(0,0));
+        assertEquals(3.138, route.getDistance(0,1));
+        assertEquals(6.276, route.getDistance(0,2));
     }
 
     public void testRouteLength() {

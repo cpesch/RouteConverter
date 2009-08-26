@@ -201,6 +201,22 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public double getDistance(int startIndex, int endIndex) {
+        double result = 0;
+        List<P> positions = getPositions();
+        BaseNavigationPosition previous = null;
+        for (int i = startIndex; i <= endIndex; i++) {
+            BaseNavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double distance = previous.calculateDistance(next);
+                if (distance != null)
+                    result += distance;
+            }
+            previous = next;
+        }
+        return result;
+    }
+
     public long getDuration() {
         Calendar minimum = null, maximum = null;
         long delta = 0;

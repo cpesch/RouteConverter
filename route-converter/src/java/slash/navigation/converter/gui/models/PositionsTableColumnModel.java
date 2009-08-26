@@ -41,25 +41,19 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(PositionsTableColumnModel.class);
     private static final String VISIBLE_PREFERENCE = "visible";
 
-    private static final int DESCRIPTION_COLUMN_INDEX = 0;
-    private static final int TIME_COLUMN_INDEX = 1;
-    private static final int LONGITUDE_COLUMN_INDEX = 2;
-    private static final int LATITUDE_COLUMN_INDEX = 3;
-    private static final int ELEVATION_COLUMN_INDEX = 4;
-    private static final int SPEED_COLUMN_INDEX = 5;
-
     private final List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
 
     public PositionsTableColumnModel() {
         PositionsTableCellRenderer leftAligned = new PositionsTableCellRenderer(SwingConstants.LEFT);
         PositionsTableCellRenderer rightAligned = new PositionsTableCellRenderer(SwingConstants.RIGHT);
         PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
-        predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
-        predefineColumn(TIME_COLUMN_INDEX, "time", 108, false, rightAligned, headerRenderer);
-        predefineColumn(SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
-        predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
-        predefineColumn(LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);
-        predefineColumn(ELEVATION_COLUMN_INDEX, "elevation", 40, true, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
+        predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", 108, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", 54, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.ELEVATION_COLUMN_INDEX, "elevation", 40, true, rightAligned, headerRenderer);
 
         for (PositionTableColumn predefinedColumn : predefinedColumns) {
             if (predefinedColumn.isVisible())

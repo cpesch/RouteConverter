@@ -1054,7 +1054,9 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
            row = positions.indexOf(modify);
         }
-        positionsModel.fireTableRowsUpdated(row, row);
+        // updating all rows behind the modified is quite expensive, but necessary due to the distance
+        // calculation - if that didn't exist the single update of row would be sufficient
+        positionsModel.fireTableRowsUpdated(row, positions.size() - 1);
 
         // give time for repainting of the route
         try {

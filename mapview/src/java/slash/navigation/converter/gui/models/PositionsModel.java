@@ -73,6 +73,8 @@ public class PositionsModel extends AbstractTableModel {
                 return formatElevation(position.getElevation());
             case PositionColumns.SPEED_COLUMN_INDEX:
                 return formatSpeed(position.getSpeed());
+            case PositionColumns.DISTANCE_COLUMN_INDEX:
+                return formatDistance(getRoute().getDistance(0, rowIndex));
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
@@ -140,6 +142,9 @@ public class PositionsModel extends AbstractTableModel {
                     // intentionally left empty
                 }
                 break;
+            case PositionColumns.DISTANCE_COLUMN_INDEX:
+                // only computed
+                break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
@@ -173,6 +178,11 @@ public class PositionsModel extends AbstractTableModel {
         if (result.length() > 12)
             result = result.substring(0, 12 - 1);
         return result;
+    }
+
+    private String formatDistance(double distance) {
+        double rounded = Conversion.roundFraction(distance / 1000.0, 1);
+        return rounded > 0.0 ? rounded + " Km" : "";
     }
 
 
