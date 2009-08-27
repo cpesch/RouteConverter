@@ -116,8 +116,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                00001 = 1 --> That point is the start point of a trajectory
                00010 = 2 --> That point is push to log
                00100 = 4 --> That point is over speed point
-               * The flag of one point may be combination with two or three flags
-               Device Wintec WSG-1000 has a lot more flags. Don't now what they mean.
+               * The flag of one point may be combination with two or three flags.
+                 The Wintec WSG-1000 has a lot more flags, don't now what they mean.
 
            4 byte Date & Time (UTC)
                6 bits year (+ 2000)
@@ -183,7 +183,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             }
 
             // all points are included in the track
-            trackPoints.add(createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true));
+            if (trackPoints != null)
+                trackPoints.add(createWaypoint(time, latitude, longitude, altitude, trackPointNo++, true));
         }
         return result;
     }
