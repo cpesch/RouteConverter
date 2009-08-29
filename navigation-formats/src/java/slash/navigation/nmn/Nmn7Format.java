@@ -91,11 +91,12 @@ public class Nmn7Format extends NmnFormat {
         throw new UnsupportedOperationException();
     }
 
-    private Route createNmn(NmnRoute route) {
+    private Route createNmn(NmnRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Route result = objectFactory.createRoute();
         result.setName(route.getName());
-        for (NmnPosition position : route.getPositions()) {
+        for (int i = startIndex; i < endIndex; i++) {
+            NmnPosition position = route.getPosition(i);
             Route.Point point = objectFactory.createRoutePoint();
             point.setX(Conversion.formatDouble(position.getLongitude(), 7));
             point.setY(Conversion.formatDouble(position.getLatitude(), 7));
@@ -107,7 +108,7 @@ public class Nmn7Format extends NmnFormat {
 
     public void write(NmnRoute route, File target, int startIndex, int endIndex) throws IOException {
         try {
-            Nmn7Util.marshal(createNmn(route), target);
+            Nmn7Util.marshal(createNmn(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
