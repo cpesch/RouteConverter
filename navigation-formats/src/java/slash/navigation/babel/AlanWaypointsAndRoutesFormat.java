@@ -56,7 +56,7 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false; // true but the then maximum position count limit is useless
     }
 
     protected boolean isStreamingCapable() {
