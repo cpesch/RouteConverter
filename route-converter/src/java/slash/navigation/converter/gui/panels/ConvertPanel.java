@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.*;
+import slash.navigation.catalog.domain.RouteService;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
@@ -96,6 +97,7 @@ public abstract class ConvertPanel {
     private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
+    private JButton buttonSaveToWeb;
 
     public ConvertPanel() {
         initialize();
@@ -149,7 +151,7 @@ public abstract class ConvertPanel {
 
         buttonSaveFile.addActionListener(new FrameAction() {
             public void run() {
-                saveFile();
+                save();
             }
         });
 
@@ -630,6 +632,36 @@ public abstract class ConvertPanel {
             return;
 
         saveFile(selected, format);
+    }
+
+    private void saveToWeb() {
+        NavigationFormat<BaseRoute> format = formatAndRoutesModel.getFormat();
+        String fileUrl = getSourceFileName();
+        // TODO getFormat(); selects web service? or URL?
+        /*
+        if(true) { // TODO if has been read by the service: PUT back
+            // TODO use file name read from server
+            File tempFile = RouteService.createTempFile(null); 
+            new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, tempFile);
+            // TODO use RouteService object from BrowsePanel
+            RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+            // TODO update description? or only file? where is description extracted from?
+            routeService.updateRoute(categoryUrl, routeUrl, description, fileUrl);
+            routeService.updateFile(fileUrl, tempFile);
+        } else {
+            // TODO store new file to service
+        }
+        */
+        formatAndRoutesModel.setModified(false);
+
+    }
+
+    private void save() {
+        // TODO if the save to web option in the format chooser was selected
+        if (false)
+            saveToWeb();
+        else
+            saveFile();
     }
 
     private BaseNavigationPosition calculateCenter(int row) {
