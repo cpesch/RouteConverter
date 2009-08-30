@@ -66,7 +66,7 @@ public class Updater {
                     Version.getSystemProperty("os.arch");
             log.fine("Payload: " + payload);
 
-            URL url = new URL("http://www.routeconverter.de/routeconverter/versioncheck.jsp");
+            URL url = new URL(System.getProperty("updater", "http://www.routeconverter.de/") + "routeconverter/versioncheck.jsp");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
