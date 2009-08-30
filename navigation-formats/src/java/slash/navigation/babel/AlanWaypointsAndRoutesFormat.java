@@ -22,7 +22,6 @@ package slash.navigation.babel;
 
 import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gpx.Gpx10Format;
 
 import java.util.prefs.Preferences;
 
@@ -56,7 +55,9 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false; // true but the then maximum position count limit is useless
+        // the format supports more than one route per file but if set to true the current multiple routes per
+        // file and splitting logic ignores the maximum position count and only one unreadable file is created
+        return false;
     }
 
     protected boolean isStreamingCapable() {
