@@ -29,6 +29,5 @@ public class FilesTest extends BaseRouteServiceTest {
 
         InputStream out = route.getUrl().openStream();
         assertEquals(inLength, out.available());
-        assertEquals(in.getName(), route.getName());
     }
 }
