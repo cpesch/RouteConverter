@@ -88,8 +88,7 @@ public class CoPilot7Format extends CoPilotFormat {
             address = Conversion.trim(address);
 
             // only store address if there was a comma in the comment
-            if (index != -1)
-                writer.println(ADDRESS + NAME_VALUE_SEPARATOR + address);
+            writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));
             // otherwhise store comment als city
             writer.println(CITY + NAME_VALUE_SEPARATOR + city);
             writer.println(END_STOP);
