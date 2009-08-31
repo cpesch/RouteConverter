@@ -39,7 +39,7 @@ public class GeoNamesService {
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
 
     private static String getGeoNamesUrlPreference() {
-        return preferences.get(GEONAMES_URL_PREFERENCE, "http://ws.geonames.org/");
+        return preferences.get(GEONAMES_URL_PREFERENCE, "http://ws5.geonames.org/");
     }
 
     private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
