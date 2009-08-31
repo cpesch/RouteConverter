@@ -24,7 +24,6 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.*;
-import slash.navigation.catalog.domain.RouteService;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
@@ -97,7 +96,6 @@ public abstract class ConvertPanel {
     private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
-    private JButton buttonSaveToWeb;
 
     public ConvertPanel() {
         initialize();
@@ -696,6 +694,7 @@ public abstract class ConvertPanel {
             public void run() {
                 Rectangle rectangle = tablePositions.getCellRect(insertRow, 1, true);
                 tablePositions.scrollRectToVisible(rectangle);
+
                 selectPositions(insertRow, insertRow);
             }
         });
@@ -705,9 +704,17 @@ public abstract class ConvertPanel {
         int[] selectedRows = tablePositions.getSelectedRows();
         if (selectedRows.length > 0) {
             getPositionsModel().remove(selectedRows);
-            final int row = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
-            if (tablePositions.getRowCount() > 0)
-                selectPositions(row, row);
+            final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
+            if (tablePositions.getRowCount() > 0) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        Rectangle rectangle = tablePositions.getCellRect(removeRow, 1, true);
+                        tablePositions.scrollRectToVisible(rectangle);
+
+                        selectPositions(removeRow, removeRow);
+                    }
+                });
+            }
         }
     }
 

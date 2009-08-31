@@ -104,7 +104,7 @@ public abstract class BaseMapView implements MapView {
     protected boolean initialized = false;
     private boolean running = true, pedestrians, avoidHighways,
             haveToInitializeMapOnFirstStart = true,
-            haveToRepaintImmediately = false,
+            haveToRepaintImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false;
     protected final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
@@ -224,8 +224,8 @@ public abstract class BaseMapView implements MapView {
                          */
                         long currentTime = System.currentTimeMillis();
                         if (haveToRepaintImmediately ||
-                                haveToReplaceRoute ||
-                                (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
+                            haveToReplaceRoute ||
+                            (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
                             copiedPositions = filterPositionsWithoutCoordinates(positions);
                             recenter = haveToReplaceRoute;
                             haveToUpdateRoute = false;
@@ -276,7 +276,9 @@ public abstract class BaseMapView implements MapView {
                             continue;
 
                         long currentTime = System.currentTimeMillis();
-                        if (haveToUpdatePosition && (currentTime - lastTime > 500)) {
+                        if (haveToRecenterMap ||
+                            (haveToUpdatePosition && (currentTime - lastTime > 500))) {
+                            haveToRecenterMap = false;
                             haveToUpdatePosition = false;
                             copiedSelectedPositions = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositions, 0, copiedSelectedPositions.length);
@@ -1021,6 +1023,7 @@ public abstract class BaseMapView implements MapView {
             if (zoomEndMatcher.matches()) {
                 synchronized (notificationMutex) {
                     haveToRepaintImmediately = true;
+                    haveToRecenterMap = true;
                     notificationMutex.notifyAll();
                 }
             }
