@@ -20,9 +20,11 @@
 
 package slash.navigation.googlemaps;
 
+import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlUtil;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.rest.Get;
+import slash.navigation.rest.Helper;
 import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBElement;
@@ -45,13 +47,14 @@ public class GoogleMapsService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsService.class);
     private static final String GOOGLE_MAPS_URL_PREFERENCE = "googleMapsUrl";
 
-    private static String getGoogleMapsUrlPreference() {
-        return preferences.get(GOOGLE_MAPS_URL_PREFERENCE, "http://maps.google.com/");
+    private static String getGoogleMapsUrl(String payload) {
+        return preferences.get(GOOGLE_MAPS_URL_PREFERENCE, "http://maps.google.com/") +
+                "maps/geo?q=" + payload + "&output=kml&oe=utf8&sensor=false&key=ABQIAAAA3C3cggohQH044oJU10p9hRSfCfkamzr65RA-A3ZfXmc8dgIhVxTusI-8RzngggpTq0xoW5B1StZwug";
     }
 
+
     public String getLocationFor(double longitude, double latitude) throws IOException {
-        Get get = new Get(getGoogleMapsUrlPreference() + "maps/geo?q=" + latitude + "," + longitude +
-                "&output=kml&oe=utf8&sensor=false&key=ABQIAAAA3C3cggohQH044oJU10p9hRSfCfkamzr65RA-A3ZfXmc8dgIhVxTusI-8RzngggpTq0xoW5B1StZwug");
+        Get get = new Get(getGoogleMapsUrl(latitude + "," + longitude));
         String result = get.execute();
         if (get.isSuccessful())
             try {
@@ -59,6 +62,25 @@ public class GoogleMapsService {
                 if (kml != null) {
                     if (extractStatusCode(kml) == 200) {
                         return extractHighestAccuracyLocation(kml);
+                    }
+                }
+            } catch (JAXBException e) {
+                IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
+                io.setStackTrace(e.getStackTrace());
+                throw io;
+            }
+        return null;
+    }
+
+    public KmlPosition getPositionFor(String address) throws IOException {
+        Get get = new Get(getGoogleMapsUrl(Helper.encodeUri(address)));
+        String result = get.execute();
+        if (get.isSuccessful())
+            try {
+                Kml kml = KmlUtil.unmarshal20(result);
+                if (kml != null) {
+                    if (extractStatusCode(kml) == 200) {
+                        return extractHighestAccuracyPosition(kml, address);
                     }
                 }
             } catch (JAXBException e) {
@@ -137,6 +159,16 @@ public class GoogleMapsService {
         Placemark placemark = extractHighestAccuracyPlacemark(kml);
         if (placemark != null) {
             return find(placemark.getDescriptionOrNameOrSnippet(), String.class);
+        }
+        return null;
+    }
+
+    KmlPosition extractHighestAccuracyPosition(Kml kml, String comment) {
+        Placemark placemark = extractHighestAccuracyPlacemark(kml);
+        if (placemark != null) {
+            Point point = find(placemark.getDescriptionOrNameOrSnippet(), Point.class);
+            if (point != null)
+                return KmlUtil.parsePosition(point.getCoordinates(), comment);
         }
         return null;
     }

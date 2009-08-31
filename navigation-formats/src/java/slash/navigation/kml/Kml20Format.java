@@ -234,7 +234,7 @@ public class Kml20Format extends KmlFormat {
 
     List<String> findPositions(String line) {
         List<String> result = new ArrayList<String>();
-        Matcher matcher = POSITION_PATTERN.matcher(line);
+        Matcher matcher = KmlUtil.POSITION_PATTERN.matcher(line);
         while (matcher.find()) {
             result.add(Conversion.trim(matcher.group(0)));
         }
@@ -244,7 +244,7 @@ public class Kml20Format extends KmlFormat {
     private List<KmlPosition> extractPositions(LineString lineString) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
         for (String string : findPositions(lineString.getCoordinates())) {
-            result.add(parsePosition(string, null));
+            result.add(KmlUtil.parsePosition(string, null));
         }
         return result;
     }
@@ -254,7 +254,7 @@ public class Kml20Format extends KmlFormat {
         for (Object element : elements) {
             if (element instanceof Point) {
                 Point point = (Point) element;
-                result.add(parsePosition(point.getCoordinates(), null));
+                result.add(KmlUtil.parsePosition(point.getCoordinates(), null));
             }
             if (element instanceof LineString) {
                 LineString lineString = (LineString) element;

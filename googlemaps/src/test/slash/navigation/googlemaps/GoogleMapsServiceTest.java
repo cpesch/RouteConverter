@@ -20,13 +20,12 @@
 package slash.navigation.googlemaps;
 
 import junit.framework.TestCase;
-
-import java.io.IOException;
-
+import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlUtil;
 import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 
 public class GoogleMapsServiceTest extends TestCase {
     private final GoogleMapsService service = new GoogleMapsService();
@@ -98,5 +97,11 @@ public class GoogleMapsServiceTest extends TestCase {
         assertNull(service.getLocationFor(0.0, -90.0));
         assertNull(service.getLocationFor(0.0, 90.0));
         assertNull(service.getLocationFor(90.0, 90.0));
+    }
+
+    public void testPositionLookup() throws IOException {
+        KmlPosition expected = new KmlPosition(10.2003632, 50.0004554, 0.0, null, null, "Bühlstraße, 97506 Grafenrheinfeld, Germany");
+        KmlPosition actual = service.getPositionFor("Bühlstraße, 97506 Grafenrheinfeld, Germany");
+        assertEquals(expected, actual);
     }
 }

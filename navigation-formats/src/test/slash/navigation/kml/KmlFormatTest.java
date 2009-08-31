@@ -53,7 +53,7 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testParseNullPosition() {
-        KmlPosition position = format.parsePosition(",,0", null);
+        KmlPosition position = KmlUtil.parsePosition(",,0", null);
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
         assertNull(position.getComment());
@@ -61,7 +61,7 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testParseNoElevationPosition() {
-        KmlPosition position = format.parsePosition("11.5709833333333,49.9467027777778", null);
+        KmlPosition position = KmlUtil.parsePosition("11.5709833333333,49.9467027777778", null);
         assertEquals(11.5709833333333, position.getLongitude());
         assertEquals(49.9467027777778, position.getLatitude());
         assertNull(position.getElevation());
@@ -69,7 +69,7 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testParseFloatElevationPosition() {
-        KmlPosition position = format.parsePosition("13.383570,54.096930,0.000000", null);
+        KmlPosition position = KmlUtil.parsePosition("13.383570,54.096930,0.000000", null);
         assertEquals(13.383570, position.getLongitude());
         assertEquals(54.096930, position.getLatitude());
         assertEquals(0.0, position.getElevation());
@@ -77,7 +77,7 @@ public class KmlFormatTest extends NavigationTestCase {
     }
 
     public void testParseScientificNumberPosition() {
-        KmlPosition position = format.parsePosition("0.1E-4,-0.2E-5,0.3E-6", null);
+        KmlPosition position = KmlUtil.parsePosition("0.1E-4,-0.2E-5,0.3E-6", null);
         assertEquals(0.00001, position.getLongitude());
         assertEquals(-0.000002, position.getLatitude());
         assertEquals(0.0000003, position.getElevation());

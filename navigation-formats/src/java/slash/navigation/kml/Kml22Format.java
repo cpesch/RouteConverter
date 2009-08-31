@@ -70,7 +70,7 @@ public class Kml22Format extends KmlFormat {
         return extractTracks(kmlType);
     }
 
-
+    @SuppressWarnings({"UnusedDeclaration"})
     private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends AbstractFeatureType>> elements, String name, Class<T> resultClass) {
         List<JAXBElement<T>> result = new ArrayList<JAXBElement<T>>();
         for (JAXBElement<? extends AbstractFeatureType> element : elements) {
@@ -198,12 +198,12 @@ public class Kml22Format extends KmlFormat {
         if (geometryTypeValue instanceof PointType) {
             PointType point = (PointType) geometryTypeValue;
             for (String coordinates : point.getCoordinates())
-                positions.add(parsePosition(coordinates, null));
+                positions.add(KmlUtil.parsePosition(coordinates, null));
         }
         if (geometryTypeValue instanceof LineStringType) {
             LineStringType lineString = (LineStringType) geometryTypeValue;
             for (String coordinates : lineString.getCoordinates())
-                positions.add(parsePosition(coordinates, null));
+                positions.add(KmlUtil.parsePosition(coordinates, null));
         }
         if (geometryTypeValue instanceof MultiGeometryType) {
             MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;

@@ -25,20 +25,20 @@ import slash.navigation.BaseRoute;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.hex.HexDecoder;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 /**
  * The base of all Google Earth formats.
@@ -73,8 +73,6 @@ public abstract class KmlFormat extends BaseKmlFormat {
     static final int SPEED_SCALE = 10;
     static final String SPEEDBAR_URL = "http://www.routeconverter.de/images/speedbar.png";
 
-    static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*[[-|+]|\\d|\\.|E]*\\s*),(\\s*[[-|+]|\\d|\\.|E]*\\s*),?,?(\\s*[[-|+]|\\d|\\.|E]+\\s*)?");
-
     public String getExtension() {
         return ".kml";
     }
@@ -94,18 +92,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
     abstract List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException;
 
     boolean isPosition(String line) {
-        Matcher matcher = POSITION_PATTERN.matcher(line);
+        Matcher matcher = KmlUtil.POSITION_PATTERN.matcher(line);
         return matcher.matches();
-    }
-
-    protected KmlPosition parsePosition(String coordinates, String comment) {
-        Matcher matcher = POSITION_PATTERN.matcher(coordinates);
-        if (!matcher.matches())
-            throw new IllegalArgumentException("'" + coordinates + "' does not match");
-        String longitude = matcher.group(1);
-        String latitude = matcher.group(2);
-        String elevation = matcher.group(3);
-        return new KmlPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), Conversion.parseDouble(elevation), null, null, Conversion.trim(comment));
     }
 
     protected String createDocumentName(KmlRoute route) {
