@@ -22,6 +22,7 @@ package slash.navigation;
 
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.GarminPcx5Format;
+import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
 import slash.navigation.util.Files;
 
 import java.io.File;
@@ -39,7 +40,8 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         assertTrue(parser.getAllRoutes().size() > 0);
 
         File target = File.createTempFile("target", Files.getExtension(source));
-        if (parser.getFormat().isSupportsMultipleRoutes())
+        // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
+        if (parser.getFormat().isSupportsMultipleRoutes() || parser.getFormat() instanceof AlanWaypointsAndRoutesFormat)
             parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) parser.getFormat(), target);
         else
             parser.write(parser.getTheRoute(), parser.getFormat(), false, true, target);
@@ -55,7 +57,8 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         NavigationFormat sourceFormat = sourceParser.getFormat();
         NavigationFormat targetFormat = targetParser.getFormat();
         assertEquals(sourceFormat.getName(), targetFormat.getName());
-        if (sourceFormat.isSupportsMultipleRoutes())
+        // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
+        if (sourceFormat.isSupportsMultipleRoutes() || sourceFormat instanceof AlanWaypointsAndRoutesFormat)
             assertEquals(sourceParser.getAllRoutes().size(), targetParser.getAllRoutes().size());
         else
             assertEquals(1, targetParser.getAllRoutes().size());
@@ -104,7 +107,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
             int sourcePositionCount = parser.getTheRoute().getPositionCount();
             int positionCount = parser.getTheRoute().getPositionCount() + (duplicateFirstPosition ? 1 : 0);
             int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-            assertEquals(fileCount, parser.getNumberOfFilesToWriteFor(sourceRoute, parser.getFormat(), duplicateFirstPosition));
+            assertEquals(fileCount, NavigationFileParser.getNumberOfFilesToWriteFor(sourceRoute, parser.getFormat(), duplicateFirstPosition));
 
             File[] targets = new File[fileCount];
             for (int i = 0; i < targets.length; i++)

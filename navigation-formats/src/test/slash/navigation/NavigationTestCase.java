@@ -456,6 +456,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull(sourcePosition.getTime());
             assertNotNull(targetPosition.getTime());
         } else if (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof KmlFormat ||
+                sourceFormat instanceof HaicomLoggerFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof OziExplorerReadFormat ||
                 sourceFormat instanceof ColumbusV900Format && targetFormat instanceof CoPilotFormat) {
             assertNotNull(sourcePosition.getTime());
