@@ -96,7 +96,7 @@ public final class NavigationFormats {
         addFormat(Nmn4Format.class);
         addFormat(GoogleMapsFormat.class);
         addFormat(GpsTunerFormat.class);
-        // TODO later... addFormat(HaicomLoggerFormat.class);
+        addFormat(HaicomLoggerFormat.class);
         addFormat(CoPilot6Format.class);
         addFormat(CoPilot7Format.class);
         addFormat(Route66Format.class);
@@ -143,7 +143,7 @@ public final class NavigationFormats {
 
         // second try for broken files 
         addFormat(BrokenNmeaFormat.class);
-        // TODO later... addFormat(BrokenHaicomLoggerFormat.class);
+        addFormat(BrokenHaicomLoggerFormat.class);
         addFormat(BrokenGpx10Format.class);
         addFormat(BrokenGpx11Format.class);
         addFormat(BrokenKml21Format.class);
