@@ -644,10 +644,10 @@ public abstract class ConvertPanel {
         /*
         if(true) { // TODO if has been read by the service: PUT back
             // TODO use file name read from server
-            File tempFile = RouteService.createTempFile(null); 
+            File tempFile = RouteCatalog.createTempFile(null);
             new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, tempFile);
-            // TODO use RouteService object from BrowsePanel
-            RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+            // TODO use RouteCatalog object from BrowsePanel
+            RouteCatalog routeService = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
             // TODO update description? or only file? where is description extracted from?
             routeService.updateRoute(categoryUrl, routeUrl, description, fileUrl);
             routeService.updateFile(fileUrl, tempFile);

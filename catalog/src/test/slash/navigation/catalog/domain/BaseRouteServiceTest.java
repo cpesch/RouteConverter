@@ -22,11 +22,11 @@ package slash.navigation.catalog.domain;
 import slash.navigation.catalog.client.CatalogClientTest;
 
 abstract class BaseRouteServiceTest extends CatalogClientTest {
-    protected RouteService adminService;
+    protected RouteCatalog adminCatalog;
 
     protected void setUp() throws Exception {
         super.setUp();
-        adminService = new RouteService(ROOT, USERNAME, PASSWORD);
+        adminCatalog = new RouteCatalog(ROOT, USERNAME, PASSWORD);
     }
 
     protected void tearDown() throws Exception {

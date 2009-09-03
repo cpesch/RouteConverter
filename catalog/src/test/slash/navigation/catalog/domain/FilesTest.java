@@ -11,7 +11,7 @@ public class FilesTest extends BaseRouteServiceTest {
 
     public void testAddFileWithUmlauts() throws Exception {
         String name = "Category for files with umlauts " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         File in = File.createTempFile("дцья", ".file");

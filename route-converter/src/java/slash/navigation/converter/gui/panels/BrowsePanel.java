@@ -28,7 +28,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
@@ -74,8 +74,8 @@ import java.util.logging.Logger;
 
 public abstract class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private final RouteService routeService = new RouteService(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
-    private final RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeService);
+    private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+    private final RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeCatalog);
 
     private JPanel browsePanel;
     protected JTree treeCategories;
@@ -208,8 +208,8 @@ public abstract class BrowsePanel {
 
         new Thread(new Runnable() {
             public void run() {
-                routeService.setAuthentication(r.getUserNamePreference(), r.getPasswordPreference());
-                final CategoryTreeNode root = new CategoryTreeNode(routeService.getRootCategory());
+                routeCatalog.setAuthentication(r.getUserNamePreference(), r.getPasswordPreference());
+                final CategoryTreeNode root = new CategoryTreeNode(routeCatalog.getRootCategory());
                 final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
 
                 SwingUtilities.invokeLater(new Runnable() {

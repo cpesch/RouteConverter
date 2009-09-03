@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.catalog.domain.exception.UnAuthorizedException;
 import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.converter.gui.RouteConverter;
@@ -39,16 +39,16 @@ import java.util.logging.Logger;
 
 public class RouteServiceOperator {
     private static final Logger log = Logger.getLogger(RouteServiceOperator.class.getName());
-    private final RouteService routeService;
+    private final RouteCatalog routeCatalog;
     private final JFrame frame;
 
-    public RouteServiceOperator(JFrame frame, RouteService routeService) {
+    public RouteServiceOperator(JFrame frame, RouteCatalog routeCatalog) {
         this.frame = frame;
-        this.routeService = routeService;
+        this.routeCatalog = routeCatalog;
     }
 
     public boolean showLogin() {
-        LoginDialog loginDialog = new LoginDialog(routeService);
+        LoginDialog loginDialog = new LoginDialog(routeCatalog);
         loginDialog.pack();
         loginDialog.setLocationRelativeTo(frame);
         loginDialog.setVisible(true);
@@ -59,7 +59,7 @@ public class RouteServiceOperator {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 t.printStackTrace();
-                log.severe("Error while operating on RouteService: " + t.getMessage());
+                log.severe("Error while operating on RouteCatalog: " + t.getMessage());
                 JOptionPane.showMessageDialog(frame,
                         MessageFormat.format(RouteConverter.getBundle().getString("service-error"), t.getClass(), t.getMessage()),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);

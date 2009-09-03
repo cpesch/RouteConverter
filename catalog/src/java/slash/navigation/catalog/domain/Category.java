@@ -30,25 +30,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a category on the server which is transferred via {@link RouteService}
+ * Represents a category on the server which is transferred via {@link RouteCatalog}
  * and represented with GPX documents.
  *
  * @author Christian Pesch
  */
 
 public class Category {
-    private final RouteService routeService;
+    private final RouteCatalog routeCatalog;
     private String url;
     private GpxType gpx;
 
-    public Category(RouteService routeService, String url) {
-        this.routeService = routeService;
+    public Category(RouteCatalog routeCatalog, String url) {
+        this.routeCatalog = routeCatalog;
         this.url = url;
     }
 
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
-            gpx = routeService.fetchGpx(url);
+            gpx = routeCatalog.fetchGpx(url);
         }
         return gpx;
     }
@@ -67,7 +67,7 @@ public class Category {
         List<Category> categories = new ArrayList<Category>();
         if (gpx != null)
             for (LinkType linkType : gpx.getMetadata().getLink()) {
-                categories.add(new Category(routeService, linkType.getHref()));
+                categories.add(new Category(routeCatalog, linkType.getHref()));
             }
         return categories;
     }
@@ -84,7 +84,7 @@ public class Category {
     public List<Category> getSubCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (LinkType linkType : getGpx().getMetadata().getLink()) {
-            categories.add(new Category(routeService, linkType.getHref()));
+            categories.add(new Category(routeCatalog, linkType.getHref()));
         }
         return categories;
     }
@@ -100,36 +100,36 @@ public class Category {
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
         for (RteType rteType : getGpx().getRte()) {
-            routes.add(new Route(routeService, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
+            routes.add(new Route(routeCatalog, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
         }
         return routes;
     }
 
     public void updateCategory(Category parent, String name) throws IOException {
-        url = routeService.updateCategory(url, parent != null ? parent.url : null, name);
+        url = routeCatalog.updateCategory(url, parent != null ? parent.url : null, name);
         recursiveInvalidate();
     }
 
     public void delete() throws IOException {
-        routeService.deleteCategory(url);
+        routeCatalog.deleteCategory(url);
     }
 
     public Category addSubCategory(String name) throws IOException {
-        String resultUrl = routeService.addCategory(url, name);
+        String resultUrl = routeCatalog.addCategory(url, name);
         invalidate();
-        return new Category(routeService, resultUrl);
+        return new Category(routeCatalog, resultUrl);
     }
 
     public Route addRoute(String description, File file) throws IOException {
-        String resultUrl = routeService.addRouteAndFile(url, description, file);
+        String resultUrl = routeCatalog.addRouteAndFile(url, description, file);
         invalidate();
-        return new Route(routeService, resultUrl);
+        return new Route(routeCatalog, resultUrl);
     }
 
     public Route addRoute(String description, String fileUrl) throws IOException {
-        String resultUrl = routeService.addRoute(url, description, fileUrl);
+        String resultUrl = routeCatalog.addRoute(url, description, fileUrl);
         invalidate();
-        return new Route(routeService, resultUrl);
+        return new Route(routeCatalog, resultUrl);
     }
 
     public void updateRoute(Route route, Category category, String description) throws IOException {
@@ -150,12 +150,12 @@ public class Category {
 
         Category category = (Category) o;
 
-        return routeService.equals(category.routeService) && url.equals(category.url);
+        return routeCatalog.equals(category.routeCatalog) && url.equals(category.url);
     }
 
     public int hashCode() {
         int result;
-        result = routeService.hashCode();
+        result = routeCatalog.hashCode();
         result = 31 * result + url.hashCode();
         return result;
     }

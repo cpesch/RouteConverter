@@ -27,27 +27,27 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Represents a route on the server which is transferred via {@link RouteService}
+ * Represents a route on the server which is transferred via {@link RouteCatalog}
  * and represented with GPX documents.
  *
  * @author Christian Pesch
  */
 
 public class Route {
-    private final RouteService routeService;
+    private final RouteCatalog routeCatalog;
     private final String url;
     private String name, creator, description;
     private boolean fromCategory = false;
     private GpxType gpx;
 
 
-    public Route(RouteService routeService, String url) {
-        this.routeService = routeService;
+    public Route(RouteCatalog routeCatalog, String url) {
+        this.routeCatalog = routeCatalog;
         this.url = url;
     }
 
-    public Route(RouteService routeService, String url, String name, String creator, String description) {
-        this.routeService = routeService;
+    public Route(RouteCatalog routeCatalog, String url, String name, String creator, String description) {
+        this.routeCatalog = routeCatalog;
         this.url = url;
         this.name = name;
         this.creator = creator;
@@ -57,7 +57,7 @@ public class Route {
 
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
-            gpx = routeService.fetchGpx(url);
+            gpx = routeCatalog.fetchGpx(url);
         }
         return gpx;
     }
@@ -101,13 +101,13 @@ public class Route {
     }
 
     public void update(String categoryUrl, String description) throws IOException {
-        routeService.updateRoute(categoryUrl, url, description, getRteLinkHref());
+        routeCatalog.updateRoute(categoryUrl, url, description, getRteLinkHref());
         invalidate();
     }
 
     public void delete() throws IOException {
-        routeService.deleteRoute(url);
-        routeService.deleteFile(getRteLinkHref());
+        routeCatalog.deleteRoute(url);
+        routeCatalog.deleteFile(getRteLinkHref());
     }
 
 
@@ -117,12 +117,12 @@ public class Route {
 
         Route route = (Route) o;
 
-        return routeService.equals(route.routeService) && url.equals(route.url);
+        return routeCatalog.equals(route.routeCatalog) && url.equals(route.url);
     }
 
     public int hashCode() {
         int result;
-        result = routeService.hashCode();
+        result = routeCatalog.hashCode();
         result = 31 * result + url.hashCode();
         return result;
     }

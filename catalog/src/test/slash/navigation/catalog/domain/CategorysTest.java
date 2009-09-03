@@ -24,7 +24,7 @@ import java.io.IOException;
 public class CategorysTest extends BaseRouteServiceTest {
 
     public void testGetRoot() throws IOException {
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         assertNotNull(root);
         assertEquals("", root.getName());
         assertNull(root.getDescription());
@@ -44,21 +44,21 @@ public class CategorysTest extends BaseRouteServiceTest {
     }
 
     public void testAddSubCategoryWithSpaces() throws Exception {
-        addSubCategory(adminService.getRootCategory(), "Spaces Category " + System.currentTimeMillis());
+        addSubCategory(adminCatalog.getRootCategory(), "Spaces Category " + System.currentTimeMillis());
     }
 
     public void testAddSubCategoryWithUmlauts() throws Exception {
-        addSubCategory(adminService.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
+        addSubCategory(adminCatalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
     }
 
     public void testAddSubCategoryWithUmlautsBelowCategoryWithUmlauts() throws Exception {
-        Category category = addSubCategory(adminService.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
+        Category category = addSubCategory(adminCatalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
         addSubCategory(category, "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
     }
 
     public void testAddSubCategoryWithSlashes() throws Exception {
         try {
-            addSubCategory(adminService.getRootCategory(), "/Slashes/Category/" + System.currentTimeMillis() + "/");
+            addSubCategory(adminCatalog.getRootCategory(), "/Slashes/Category/" + System.currentTimeMillis() + "/");
             assertTrue(false);
         } catch (IOException e) {
         }
@@ -66,7 +66,7 @@ public class CategorysTest extends BaseRouteServiceTest {
 
     public void testAddSubCategoryWithPluses() throws Exception {
         try {
-            addSubCategory(adminService.getRootCategory(), "A + B + C" + System.currentTimeMillis() + "/");
+            addSubCategory(adminCatalog.getRootCategory(), "A + B + C" + System.currentTimeMillis() + "/");
             assertTrue(false);
         } catch (IOException e) {
         }
@@ -74,7 +74,7 @@ public class CategorysTest extends BaseRouteServiceTest {
 
     public void testRename() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
         String rename = "Renamed " + name;
         category.updateCategory(null, rename);
@@ -86,7 +86,7 @@ public class CategorysTest extends BaseRouteServiceTest {
 
     public void testRenameWithNullParentParameter() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
         String rename = "Renamed " + name;
         category.updateCategory(null, rename);
@@ -98,7 +98,7 @@ public class CategorysTest extends BaseRouteServiceTest {
 
     public void testRenameCategoryWithSlashes() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
         String rename = "Slashes / Category / " + name;
         try {
@@ -109,7 +109,7 @@ public class CategorysTest extends BaseRouteServiceTest {
     }
 
     public void testMove() throws Exception {
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         String firstName = "First Category " + System.currentTimeMillis();
         Category first = root.addSubCategory(firstName);
         String secondName = "Second Category " + System.currentTimeMillis();
@@ -129,7 +129,7 @@ public class CategorysTest extends BaseRouteServiceTest {
     }
 
     public void testMoveToSelfAsParent() throws Exception {
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         String parentName = "Parent " + System.currentTimeMillis();
         Category parent = root.addSubCategory(parentName);
         String moveName = "Move " + System.currentTimeMillis();
@@ -143,7 +143,7 @@ public class CategorysTest extends BaseRouteServiceTest {
     }
 
     public void testMoveToOwnChild() throws Exception {
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         String parentName = "Parent " + System.currentTimeMillis();
         Category parent = root.addSubCategory(parentName);
         String moveName = "Move " + System.currentTimeMillis();

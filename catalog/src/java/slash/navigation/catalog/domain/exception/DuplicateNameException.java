@@ -20,11 +20,11 @@
 
 package slash.navigation.catalog.domain.exception;
 
-import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.catalog.domain.RouteCatalog;
 
 /**
  * A name at the url would point to another resource with
- * the same name at the {@link RouteService}. 
+ * the same name at the {@link RouteCatalog}. 
  *
  * @author Christian Pesch
  */

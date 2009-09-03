@@ -26,7 +26,7 @@ public class RoutesTest extends BaseRouteServiceTest {
 
     public void testAddRoute() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         String description = "Route " + System.currentTimeMillis();
@@ -42,7 +42,7 @@ public class RoutesTest extends BaseRouteServiceTest {
 
     public void testAddRouteWithUmlauts() throws Exception {
         String name = "Category äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         String description = "Route äöüßÄÖÜ " + System.currentTimeMillis();
@@ -58,7 +58,7 @@ public class RoutesTest extends BaseRouteServiceTest {
 
     public void testUpdateRouteViaCategory() throws Exception {
         String sourceName = "Source Category " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category source = root.addSubCategory(sourceName);
 
         String sourceDescription = "Route " + System.currentTimeMillis();
@@ -93,7 +93,7 @@ public class RoutesTest extends BaseRouteServiceTest {
 
     public void testDeleteRouteViaCategory() throws Exception {
          String name = "Category " + System.currentTimeMillis();
-         Category root = adminService.getRootCategory();
+         Category root = adminCatalog.getRootCategory();
          Category category = root.addSubCategory(name);
 
          String description = "Route " + System.currentTimeMillis();
@@ -113,7 +113,7 @@ public class RoutesTest extends BaseRouteServiceTest {
 
      public void testDeleteRouteDirectly() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = adminService.getRootCategory();
+        Category root = adminCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         String description = "Route " + System.currentTimeMillis();

@@ -19,6 +19,9 @@
 */
 package slash.navigation.catalog.domain;
 
+import slash.navigation.rest.Helper;
+import slash.navigation.util.Files;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -37,17 +40,33 @@ public class RouteServiceTest extends BaseRouteServiceTest {
         return file;
     }
 
+    private File routeCatalogCreateTempFile(String fileName) throws IOException {
+        if (fileName == null)
+            fileName = "route.file";
+        String decodedName = Helper.decodeUri(fileName);
+        String prefix = Files.removeExtension(decodedName);
+        if (prefix.length() < 3)
+            prefix = "rcc" + prefix;
+        File file = File.createTempFile(prefix, Files.getExtension(decodedName));
+        File tmp = new File(file.getParentFile(), decodedName);
+        if (!tmp.exists()) {
+            if (file.renameTo(tmp))
+                file = tmp;
+        }
+        return file;
+    }
+
     public void testCreateDefaultTempFile() throws IOException {
         File expected = createTempFile(DEFAULT_PREFIX + DEFAULT_SUFFIX);
         assertTrue(expected.exists());
         assertTrue(expected.delete());
-        File file = adminService.createTempFile(null);
+        File file = routeCatalogCreateTempFile(null);
         assertEquals(expected, file);
     }
 
     public void testCreateDefaultTempFileIfItExists() throws IOException {
         File expected = createTempFile(DEFAULT_PREFIX + DEFAULT_SUFFIX);
-        File file = adminService.createTempFile(null);
+        File file = routeCatalogCreateTempFile(null);
         assertNotEquals(expected, file);
         assertTrue(file.getName().startsWith(DEFAULT_PREFIX));
         assertTrue(file.getName().endsWith(DEFAULT_SUFFIX));
@@ -58,13 +77,13 @@ public class RouteServiceTest extends BaseRouteServiceTest {
         File expected = createTempFile(A_PREFIX + A_SUFFIX);
         assertTrue(expected.exists());
         assertTrue(expected.delete());
-        File file = adminService.createTempFile(A_PREFIX + A_SUFFIX);
+        File file = routeCatalogCreateTempFile(A_PREFIX + A_SUFFIX);
         assertEquals(expected, file);
     }
 
     public void testCreateTempFileIfItExists() throws IOException {
         File expected = createTempFile(A_PREFIX + A_SUFFIX);
-        File file = adminService.createTempFile(A_PREFIX + A_SUFFIX);
+        File file = routeCatalogCreateTempFile(A_PREFIX + A_SUFFIX);
         assertNotEquals(expected, file);
         assertTrue(file.getName().startsWith(A_PREFIX));
         assertTrue(file.getName().endsWith(A_SUFFIX));

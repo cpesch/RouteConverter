@@ -20,10 +20,10 @@
 
 package slash.navigation.catalog.domain.exception;
 
-import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.catalog.domain.RouteCatalog;
 
 /**
- * An url does not point to a valid resource on the {@link RouteService}.
+ * An url does not point to a valid resource on the {@link RouteCatalog}.
  *
  * @author Christian Pesch
  */

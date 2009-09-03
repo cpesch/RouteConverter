@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 public class LoginDialog extends JDialog {
     private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
 
-    private final RouteService routeService;
+    private final RouteCatalog routeCatalog;
     private JPanel contentPane;
     private JTabbedPane tabbedPane;
 
@@ -68,9 +68,9 @@ public class LoginDialog extends JDialog {
     private JButton buttonCancel2;
     private JCheckBox checkBoxAcceptTerms;
 
-    public LoginDialog(RouteService routeService) {
+    public LoginDialog(RouteCatalog routeCatalog) {
         super(RouteConverter.getInstance().getFrame());
-        this.routeService = routeService;
+        this.routeCatalog = routeCatalog;
         setTitle(RouteConverter.getBundle().getString("login-title"));
         setContentPane(contentPane);
         setModal(true);
@@ -147,12 +147,12 @@ public class LoginDialog extends JDialog {
     }
 
     private void login(String userName, String password) {
-        routeService.setAuthentication(userName, password);
+        routeCatalog.setAuthentication(userName, password);
         RouteConverter.getInstance().setUserNamePreference(userName, password);
     }
 
     private void register(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        routeService.addUser(userName, password, firstName, lastName, email);
+        routeCatalog.addUser(userName, password, firstName, lastName, email);
     }
 
     private void login() {

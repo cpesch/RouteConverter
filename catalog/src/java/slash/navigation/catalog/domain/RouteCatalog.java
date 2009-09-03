@@ -35,13 +35,13 @@ import java.io.*;
 import java.util.logging.Logger;
 
 /**
- * Encapsulates REST access to the route service.
+ * Encapsulates REST access to the RouteCatalog of RouteConverter.
  *
  * @author Christian Pesch
  */
 
-public class RouteService {
-    private static final Logger log = Logger.getLogger(RouteService.class.getName());
+public class RouteCatalog {
+    private static final Logger log = Logger.getLogger(RouteCatalog.class.getName());
 
     private static final String ROOT_CATEGORY_URI = "categories/.gpx";
     private static final String ROUTES_URI = "routes/";
@@ -51,12 +51,12 @@ public class RouteService {
     private final String rootUrl;
     private String userName, password;
 
-    public RouteService(String rootUrl, String userName, String password) {
+    public RouteCatalog(String rootUrl, String userName, String password) {
         this.rootUrl = rootUrl;
         setAuthentication(userName, password);
     }
 
-    public RouteService(String rootUrl) {
+    public RouteCatalog(String rootUrl) {
         this(rootUrl, "anonymous", null);
     }
 
@@ -83,22 +83,6 @@ public class RouteService {
             }
         else
             return null;
-    }
-
-    File createTempFile(String fileName) throws IOException {
-        if (fileName == null)
-            fileName = "route.file";
-        String decodedName = Helper.decodeUri(fileName);
-        String prefix = Files.removeExtension(decodedName);
-        if (prefix.length() < 3)
-            prefix = "rcc" + prefix;
-        File file = File.createTempFile(prefix, Files.getExtension(decodedName));
-        File tmp = new File(file.getParentFile(), decodedName);
-        if (!tmp.exists()) {
-            if (file.renameTo(tmp))
-                file = tmp;
-        }
-        return file;
     }
 
     private static final ObjectFactory gpxFactory = new ObjectFactory();

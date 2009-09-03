@@ -20,10 +20,10 @@
 
 package slash.navigation.catalog.domain.exception;
 
-import slash.navigation.catalog.domain.RouteService;
+import slash.navigation.catalog.domain.RouteCatalog;
 
 /**
- * An url on the {@link RouteService} may not be modified since it's
+ * An url on the {@link RouteCatalog} may not be modified since it's
  * not the owner that is modifying. 
  *
  * @author Christian Pesch
