@@ -29,6 +29,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.FilterDialog;
 import slash.navigation.converter.gui.dialogs.RenameDialog;
+import slash.navigation.converter.gui.dialogs.UploadDialog;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.models.*;
@@ -636,6 +637,10 @@ public abstract class ConvertPanel {
         NavigationFormat<BaseRoute> format = formatAndRoutesModel.getFormat();
         String fileUrl = getSourceFileName();
         // TODO getFormat(); selects web service? or URL?
+        UploadDialog uploadDialog = new UploadDialog(fileUrl);
+        uploadDialog.pack();
+        uploadDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
+        uploadDialog.setVisible(true);
         /*
         if(true) { // TODO if has been read by the service: PUT back
             // TODO use file name read from server
