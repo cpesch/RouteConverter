@@ -65,17 +65,17 @@ public class Tcx1Format extends GpxFormat {
         return positionT != null ? positionT.getLatitudeDegrees() : null;
     }
 
-    private GpxRoute processTrack(String name, TrackT trackT) {
-        List<GpxPosition> positions = new ArrayList<GpxPosition>();
+    private List<GpxPosition> processTrack(TrackT trackT) {
+        List<GpxPosition> result = new ArrayList<GpxPosition>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
-            positions.add(new GpxPosition(convertLongitude(trackpointT.getPosition()),
+            result.add(new GpxPosition(convertLongitude(trackpointT.getPosition()),
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
                     parseTime(trackpointT.getTime()),
                     null));
         }
-        return new GpxRoute(this, RouteCharacteristics.Track, name, null, positions);
+        return result;
     }
 
     private GpxRoute processCoursePoints(String name, CourseT courseT) {
@@ -109,18 +109,18 @@ public class Tcx1Format extends GpxFormat {
     }
 
 
-    private List<GpxRoute> processTracks(String name, List<TrackT> trackListT) {
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
+    private GpxRoute processTracks(String name, List<TrackT> trackListT) {
+        List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (TrackT trackT : trackListT) {
-            result.add(processTrack(name, trackT));
+            positions.addAll(processTrack(trackT));
         }
-        return result;
+        return new GpxRoute(this, RouteCharacteristics.Track, name, null, positions);
     }
 
     private List<GpxRoute> processRun(String name, RunT runT) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (ActivityLapT activityLapT : runT.getLap())
-            result.addAll(processTracks(name, activityLapT.getTrack()));
+            result.add(processTracks(name, activityLapT.getTrack()));
         return result;
     }
 
@@ -147,7 +147,7 @@ public class Tcx1Format extends GpxFormat {
                 result.add(coursePoints);
             if (notWrittenByRouteConverter)
                 result.addAll(processCourseLap(positionListName, courseT));
-            result.addAll(processTracks(positionListName, courseT.getTrack()));
+            result.add(processTracks(positionListName, courseT.getTrack()));
         }
         return result;
     }
@@ -168,7 +168,7 @@ public class Tcx1Format extends GpxFormat {
                 result.addAll(processRun(positionListName, nextSportT.getRun()));
                 ActivityLapT activityLapT = nextSportT.getTransition();
                 if (activityLapT != null)
-                    result.addAll(processTracks(positionListName, activityLapT.getTrack()));
+                    result.add(processTracks(positionListName, activityLapT.getTrack()));
             }
         }
         return result;
