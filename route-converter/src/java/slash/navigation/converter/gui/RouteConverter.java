@@ -210,7 +210,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 if (mapView.getComponent() == null || cause != null) {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
-                    mapPanel.add(new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
                 }
@@ -264,35 +264,35 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public String getSourceFormatPreference() {
-        return preferences.get(RouteConverter.SOURCE_FORMAT_PREFERENCE, "");
+        return preferences.get(SOURCE_FORMAT_PREFERENCE, "");
     }
 
     public void setSourceFormatPreference(String format) {
-        preferences.put(RouteConverter.SOURCE_FORMAT_PREFERENCE, format);
+        preferences.put(SOURCE_FORMAT_PREFERENCE, format);
     }
 
     public String getSourcePreference() {
-        return preferences.get(RouteConverter.SOURCE_PREFERENCE, "");
+        return preferences.get(SOURCE_PREFERENCE, "");
     }
 
     public void setSourcePreference(String file) {
-        preferences.put(RouteConverter.SOURCE_PREFERENCE, file);
+        preferences.put(SOURCE_PREFERENCE, file);
     }
 
     public String getTargetFormatPreference() {
-        return preferences.get(RouteConverter.TARGET_FORMAT_PREFERENCE, Gpx11Format.class.getName());
+        return preferences.get(TARGET_FORMAT_PREFERENCE, Gpx11Format.class.getName());
     }
 
     public void setTargetFormatPreference(String format) {
-        preferences.put(RouteConverter.TARGET_FORMAT_PREFERENCE, format);
+        preferences.put(TARGET_FORMAT_PREFERENCE, format);
     }
 
     public String getTargetPreference(NavigationFormat format) {
-        return preferences.get(RouteConverter.TARGET_PREFERENCE + format.getName(), "");
+        return preferences.get(TARGET_PREFERENCE + format.getName(), "");
     }
 
     public void setTargetPreference(NavigationFormat format, String parent) {
-        preferences.put(RouteConverter.TARGET_PREFERENCE + format.getName(), parent);
+        preferences.put(TARGET_PREFERENCE + format.getName(), parent);
     }
 
     private BaseNavigationPosition getLastMapCenter() {
