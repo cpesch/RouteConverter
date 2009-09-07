@@ -31,6 +31,12 @@ public class RangeTest extends TestCase {
         assertEquals(Arrays.asList(Arrays.asList(0), Arrays.asList(2, 3), Arrays.asList(5, 6, 7)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{6, 0, 5, 2, 7, 3}));
     }
 
+    public void testAsContinuousMonotonicallyIncreasingRangesWithLimit() {
+        assertEquals(Arrays.asList(Arrays.asList(0), Arrays.asList(1), Arrays.asList(2)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2}, 1));
+        assertEquals(Arrays.asList(Arrays.asList(0, 1), Arrays.asList(2, 3), Arrays.asList(4)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 2, 3, 4}, 2));
+        assertEquals(Arrays.asList(Arrays.asList(0, 1), Arrays.asList(3), Arrays.asList(5, 6)), Range.asContinuousMonotonicallyIncreasingRanges(new int[]{0, 1, 3, 5, 6}, 2));
+    }
+
     public void testAsContinuousMonotonicallyDecreasingRanges() {
         assertEquals(Arrays.asList(Arrays.asList(1, 0)), Range.asContinuousMonotonicallyDecreasingRanges(new int[]{0, 1}));
         assertEquals(Arrays.asList(Arrays.asList(2), Arrays.asList(0)), Range.asContinuousMonotonicallyDecreasingRanges(new int[]{0, 2}));

@@ -33,11 +33,15 @@ import java.util.List;
 public class Range {
 
     public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices) {
+        return asContinuousMonotonicallyIncreasingRanges(indices, Integer.MAX_VALUE);
+    }
+
+    public static List<List<Integer>> asContinuousMonotonicallyIncreasingRanges(int[] indices, int maximumRangeLength) {
         Arrays.sort(indices);
         List<List<Integer>> result = new ArrayList<List<Integer>>();
         List<Integer> range = new ArrayList<Integer>();
         for (int index : indices) {
-            if (range.size() == 0 || index == range.get(range.size() - 1) + 1) {
+            if ((range.size() == 0 || index == range.get(range.size() - 1) + 1) && range.size() < maximumRangeLength) {
                 range.add(index);
             } else {
                 result.add(range);

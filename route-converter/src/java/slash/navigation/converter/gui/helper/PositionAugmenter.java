@@ -28,6 +28,7 @@ import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.ContinousRange;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,6 +42,9 @@ import java.text.MessageFormat;
  */
 
 public class PositionAugmenter {
+    private static final int SLOW_OPERATIONS_IN_A_ROW = 10;
+    private static final int FAST_OPERATIONS_IN_A_ROW = 100;
+
     private final JFrame frame;
 
     public PositionAugmenter(JFrame frame) {
@@ -95,6 +99,7 @@ public class PositionAugmenter {
     private void executeOperation(final JTable positionsTable,
                                   final PositionsModel positionsModel,
                                   final int[] rows,
+                                  final int operationsInARow,
                                   final OverwritePredicate predicate,
                                   final Operation operation) {
         Constants.startWaitCursor(frame.getRootPane());
@@ -102,29 +107,38 @@ public class PositionAugmenter {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Exception lastException = null;
-                    for (final int row : rows) {
-                        BaseNavigationPosition position = positionsModel.getPosition(row);
-                        if (position.hasCoordinates() && predicate.shouldOverwrite(position)) {
-                            try {
-                                if (operation.run(position)) {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            positionsModel.fireTableRowsUpdated(row, row);
+                    final Exception[] lastException = new Exception[1];
+                    lastException[0] = null;
 
-                                            Rectangle rectangle = positionsTable.getCellRect(Math.min(row + 10, positionsModel.getRowCount()), 1, true);
-                                            positionsTable.scrollRectToVisible(rectangle);
-                                        }
-                                    });
+                    new ContinousRange(rows, new ContinousRange.RangeOperation() {
+                        public void performOnIndex(int index) {
+                            BaseNavigationPosition position = positionsModel.getPosition(index);
+                            if (position.hasCoordinates() && predicate.shouldOverwrite(position)) {
+                                try {
+                                    // ignoring the result since the performance boost of the continous
+                                    // range operations outweights the possible optimization 
+                                    operation.run(position);
+                                } catch (Exception e) {
+                                    lastException[0] = e;
                                 }
-                            } catch (Exception e) {
-                                lastException = e;
                             }
                         }
-                    }
-                    if (lastException != null)
+
+                        public void performOnRange(final int firstIndex, final int lastIndex) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    positionsModel.fireTableRowsUpdated(firstIndex, lastIndex);
+
+                                    Rectangle rectangle = positionsTable.getCellRect(Math.min(lastIndex + SLOW_OPERATIONS_IN_A_ROW, positionsModel.getRowCount()), 1, true);
+                                    positionsTable.scrollRectToVisible(rectangle);
+                                }
+                            });
+                        }
+                    }).performMonotonicallyIncreasing(operationsInARow);
+
+                    if (lastException[0] != null)
                         JOptionPane.showMessageDialog(frame,
-                                MessageFormat.format(operation.getErrorMessage(), lastException.getMessage()),
+                                MessageFormat.format(operation.getErrorMessage(), lastException[0].getMessage()),
                                 frame.getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
                 finally {
@@ -150,7 +164,7 @@ public class PositionAugmenter {
                                    final PositionsModel positionsModel,
                                    final int[] rows,
                                    final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
                     private GeoNamesService service = new GeoNamesService();
 
@@ -189,7 +203,7 @@ public class PositionAugmenter {
                                     final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
                     private GeoNamesService service = new GeoNamesService();
 
@@ -228,7 +242,7 @@ public class PositionAugmenter {
                                     final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
                     private GoogleMapsService service = new GoogleMapsService();
 
@@ -260,7 +274,7 @@ public class PositionAugmenter {
                                final PositionsModel positionsModel,
                                final int[] rows,
                                final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, FAST_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
                     public String getName() {
                         return "SpeedPositionAugmenter";
@@ -297,7 +311,7 @@ public class PositionAugmenter {
                                 final int[] rows,
                                 final boolean spaceBetweenNumberAndComment,
                                 final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, predicate,
+        executeOperation(positionsTable, positionsModel, rows, FAST_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
                     public String getName() {
                         return "IndexPositionAugmenter";
@@ -310,7 +324,7 @@ public class PositionAugmenter {
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-speed-error");
+                        return RouteConverter.getBundle().getString("add-index-error");
                     }
                 }
         );

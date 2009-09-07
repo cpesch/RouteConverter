@@ -39,8 +39,8 @@ public class ContinousRange {
         this.operation = operation;
     }
 
-    public void performMonotonicallyIncreasing() {
-        perform(Range.asContinuousMonotonicallyIncreasingRanges(indices));
+    public void performMonotonicallyIncreasing(int maximumRangeLength) {
+        perform(Range.asContinuousMonotonicallyIncreasingRanges(indices, maximumRangeLength));
     }
 
     public void performMonotonicallyDecreasing() {
