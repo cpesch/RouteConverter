@@ -26,16 +26,17 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -56,14 +57,12 @@ public class Gpx11Format extends GpxFormat {
         if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
             return null;
 
-        boolean hasTimeInLocalTimeZone = gpxType.getCreator() != null &&
-                "Microsoft Streets & Trips".equals(gpxType.getCreator());
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType);
         if (wayPointsAsRoute != null)
             result.add(wayPointsAsRoute);
         result.addAll(extractRoutes(gpxType));
-        result.addAll(extractTracks(gpxType, hasTimeInLocalTimeZone));
+        result.addAll(extractTracks(gpxType));
         return result;
     }
 
@@ -105,14 +104,14 @@ public class Gpx11Format extends GpxFormat {
         return positions.size() == 0 ? null : new GpxRoute(this, RouteCharacteristics.Waypoints, name, descriptions, positions, gpxType);
     }
 
-    private List<GpxRoute> extractTracks(GpxType gpxType, boolean hasTimeInLocalTimeZone) {
+    private List<GpxRoute> extractTracks(GpxType gpxType) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
 
         for (TrkType trkType : gpxType.getTrk()) {
             String name = trkType.getName();
             String desc = trkType.getDesc();
             List<String> descriptions = asDescription(desc);
-            List<GpxPosition> positions = extractTrack(trkType, hasTimeInLocalTimeZone);
+            List<GpxPosition> positions = extractTrack(trkType);
             result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions, gpxType, trkType));
         }
 
@@ -159,20 +158,7 @@ public class Gpx11Format extends GpxFormat {
         return positions;
     }
 
-    private static CompactCalendar parseTime(XMLGregorianCalendar calendar, boolean hasTimeInLocalTimeZone) {
-        if (!hasTimeInLocalTimeZone)
-            return parseTime(calendar);
-
-        if (calendar == null)
-            return null;
-        GregorianCalendar local = calendar.toGregorianCalendar();
-        long millis = local.getTimeInMillis();
-        local.setTimeZone(TimeZone.getTimeZone("GMT"));
-        local.setTimeInMillis(millis);
-        return CompactCalendar.fromCalendar(local);
-    }
-
-    private List<GpxPosition> extractTrack(TrkType trkType, boolean hasTimeInLocalTimeZone) {
+    private List<GpxPosition> extractTrack(TrkType trkType) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
@@ -180,7 +166,7 @@ public class Gpx11Format extends GpxFormat {
                     Double speed = getSpeed(wptType);
                     if (speed == null)
                         speed = parseSpeed(wptType.getCmt());
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), speed, parseTime(wptType.getTime(), hasTimeInLocalTimeZone), asComment(wptType.getName(), wptType.getDesc()), wptType));
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), speed, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType));
                 }
             }
         }
