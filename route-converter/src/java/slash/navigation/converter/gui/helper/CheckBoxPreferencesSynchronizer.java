@@ -40,7 +40,10 @@ public class CheckBoxPreferencesSynchronizer implements ChangeListener {
         this.checkBox = checkBox;
         this.preferences = preferences;
         this.keyName = keyName;
+        initialize(defaultValue);
+    }
 
+    private void initialize(boolean defaultValue) {
         checkBox.setSelected(preferences.getBoolean(keyName, defaultValue));
         checkBox.addChangeListener(this);
     }

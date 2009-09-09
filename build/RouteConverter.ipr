@@ -336,6 +336,7 @@
       <module fileurl="file://$PROJECT_DIR$/../catalog/catalog.iml" filepath="$PROJECT_DIR$/../catalog/catalog.iml" />
       <module fileurl="file://$PROJECT_DIR$/../common/common.iml" filepath="$PROJECT_DIR$/../common/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/../common-gui/common-gui.iml" filepath="$PROJECT_DIR$/../common-gui/common-gui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../elevationview/elevationview.iml" filepath="$PROJECT_DIR$/../elevationview/elevationview.iml" />
       <module fileurl="file://$PROJECT_DIR$/../geonames/geonames.iml" filepath="$PROJECT_DIR$/../geonames/geonames.iml" />
       <module fileurl="file://$PROJECT_DIR$/../googlemaps/googlemaps.iml" filepath="$PROJECT_DIR$/../googlemaps/googlemaps.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxb6/jaxb6.iml" filepath="$PROJECT_DIR$/../jaxb6/jaxb6.iml" />
@@ -483,6 +484,24 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+    </library>
+    <library name="jfreechart/jfreechart">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="jfreechart/jcommon">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jcommon/1.0.16/jcommon-1.0.16.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jcommon/1.0.16/jcommon-1.0.16-sources.jar!/" />
+      </SOURCES>
     </library>
   </component>
   <component name="uidesigner-configuration">
