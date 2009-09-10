@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Percorso">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="Item">
+          <xs:complexType>
+            <xs:attribute name="label" type="xs:string" use="required" />
+            <xs:attribute name="poisuff" type="xs:string" use="required" />
+            <xs:attribute name="icon" type="xs:unsignedShort" use="required" />
+            <xs:attribute name="posx" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="posy" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="codice" type="xs:int" use="required" />
+            <xs:attribute name="categoria" type="xs:string" use="required" />
+            <xs:attribute name="comune" type="xs:string" use="required" />
+            <xs:attribute name="indirizzo" type="xs:string" use="required" />
+            <xs:attribute name="civico" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="tipopercorso" type="xs:unsignedByte" use="required" />
+      <xs:attribute name="drawclass" type="xs:string" use="required" />
+      <xs:attribute name="vistaclass" type="xs:string" use="required" />
+      <xs:attribute name="mode" type="xs:string" use="required" />
+      <xs:attribute name="setmode" type="xs:string" use="required" />
+      <xs:attribute name="option" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -24,15 +24,17 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
+import slash.navigation.converter.gui.services.CrossingWays;
+import slash.navigation.converter.gui.services.RouteCatalog;
 import slash.navigation.converter.gui.services.RouteService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -51,7 +53,7 @@ public class UploadDialog extends JDialog {
 
     private JButton buttonUpload;
     private JButton buttonCancel;
-    private JComboBox comboBoxChooseWebservice;
+    private JComboBox comboBoxChooseRouteService;
     private JTextField textFieldUserName;
     private JPasswordField textFieldPassword;
     private JCheckBox checkBoxRememberMe;
@@ -65,9 +67,21 @@ public class UploadDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonUpload);
 
-        comboBoxChooseWebservice.setModel(new DefaultComboBoxModel(new Object[]{"crossingways", "RouteCatalog"}));
-        // TODO like new CheckBoxPreferencesSynchronizer(checkBoxRememberMe, preferences, REMEMBER_ME_PREFERENCE, true);
-        // but specific for services
+        List<RouteService> services = new ArrayList<RouteService>();
+        services.add(new RouteCatalog());
+        services.add(new CrossingWays());
+
+        comboBoxChooseRouteService.setModel(new DefaultComboBoxModel(services.toArray()));
+        comboBoxChooseRouteService.setRenderer(new RouteServiceListCellRenderer());
+        comboBoxChooseRouteService.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                RouteService routeService = (RouteService) e.getSource();
+                textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
+                textFieldPassword.setText(preferences.get(PASSWORD_PREFERENCE + routeService.getName(), ""));
+                checkBoxRememberMe.setSelected(preferences.getBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), true));
+            }
+        });
+
         // TODO could analyse URL to find if the file has been read by the service: upload else save
         int index = routeUrl.lastIndexOf('/');
         if (index == -1)
@@ -112,15 +126,15 @@ public class UploadDialog extends JDialog {
     }
 
     private void upload() {
+        RouteService routeService = (RouteService) comboBoxChooseRouteService.getSelectedItem();
+        preferences.put(USERNAME_PREFERENCE + routeService.getName(), textFieldUserName.getText());
+        preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), new String(textFieldPassword.getPassword()).getBytes());
+        preferences.putBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());
         throw new RuntimeException("Sorry, not implemented yet"); // TODO fix me
     }
 
     private void cancel() {
         dispose();
-    }
-
-    private boolean getRememberPreference(RouteService service) {
-        return preferences.getBoolean(REMEMBER_ME_PREFERENCE + service.getName(), true);
     }
 
     {
@@ -156,8 +170,8 @@ public class UploadDialog extends JDialog {
         final JLabel label1 = new JLabel();
         label1.setText("RouteService:");
         contentPane.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxChooseWebservice = new JComboBox();
-        contentPane.add(comboBoxChooseWebservice, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxChooseRouteService = new JComboBox();
+        contentPane.add(comboBoxChooseRouteService, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("username-colon"));
         contentPane.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
