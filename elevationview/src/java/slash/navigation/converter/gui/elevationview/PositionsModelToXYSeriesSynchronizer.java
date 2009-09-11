@@ -43,7 +43,7 @@ public class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void initialize() {
-        handleAdd(0, positions.getRowCount());
+        handleAdd(0, positions.getRowCount() - 1);
 
         positions.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -63,14 +63,21 @@ public class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void handleAdd(int firstRow, int lastRow) {
-        for (int i = firstRow; i < lastRow; i++) {
-            series.add(positions.getRoute().getDistance(0, i), positions.getPosition(i).getElevation());
+        for (int i = firstRow; i < lastRow + 1; i++) {
+            series.add(positions.getRoute().getDistance(0, i) / 1000.0, positions.getPosition(i).getElevation());
         }
     }
 
     private void handleUpdate(int firstRow, int lastRow) {
-        handleDelete(firstRow, lastRow);
-        handleAdd(firstRow, lastRow);
+        // special treatment for fireTableDataChanged() notifications
+        if (firstRow == 0 && lastRow == Integer.MAX_VALUE) {
+            handleDelete(firstRow, series.getItemCount() - 1);
+            if (positions.getRowCount() > 0)
+                handleAdd(firstRow, positions.getRowCount() - 1);
+        } else {
+            handleDelete(firstRow, lastRow);
+            handleAdd(firstRow, lastRow);
+        }
     }
 
     private void handleDelete(int firstRow, int lastRow) {

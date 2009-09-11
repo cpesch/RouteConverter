@@ -34,6 +34,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Application;
 
+import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
@@ -71,6 +72,7 @@ public class ElevationView {
                 dataset,
                 PlotOrientation.VERTICAL, false, true, false
         );
+        chart.setBackgroundPaint(new JPanel().getBackground());
 
         XYPlot plot = chart.getXYPlot();
         plot.setForegroundAlpha(0.65F);
