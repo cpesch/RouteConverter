@@ -55,6 +55,14 @@
                 <border type="none"/>
                 <children/>
               </grid>
+              <grid id="36b54" binding="analysePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints>
+                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="analyse-tab"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children/>
+              </grid>
               <grid id="64361" binding="miscPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
                   <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="misc-tab"/>

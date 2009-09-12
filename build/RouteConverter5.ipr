@@ -329,6 +329,7 @@
       <module fileurl="file://$PROJECT_DIR$/../catalog/catalog5.iml" filepath="$PROJECT_DIR$/../catalog/catalog5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../common-gui/common-gui5.iml" filepath="$PROJECT_DIR$/../common-gui/common-gui5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../common/common5.iml" filepath="$PROJECT_DIR$/../common/common5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../elevationview/elevationview5.iml" filepath="$PROJECT_DIR$/../elevationview/elevationview5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../geonames/geonames5.iml" filepath="$PROJECT_DIR$/../geonames/geonames5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../googlemaps/googlemaps5.iml" filepath="$PROJECT_DIR$/../googlemaps/googlemaps5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxb5/jaxb5.iml" filepath="$PROJECT_DIR$/../jaxb5/jaxb5.iml" />
@@ -497,6 +498,24 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/djnativeswing-swt-0.9.8-src.zip!/" />
+      </SOURCES>
+    </library>
+ <library name="jfreechart/jfreechart">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-stripped.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="jcommon/jcommon">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jcommon/jcommon/1.0.16/jcommon-1.0.16-stripped.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../thirdparty/jcommon/jcommon/1.0.16/jcommon-1.0.16-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

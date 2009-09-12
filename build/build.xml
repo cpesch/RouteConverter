@@ -68,6 +68,11 @@
         <property name="common-gui.output" location="common-gui/output"/>
         <property name="common-gui.output.classes" location="${common-gui.output}/classes"/>
 
+        <property name="elevationview.src" location="elevationview/src"/>
+        <property name="elevationview.src.java" location="${elevationview.src}/java"/>
+        <property name="elevationview.output" location="elevationview/output"/>
+        <property name="elevationview.output.classes" location="${elevationview.output}/classes"/>
+
         <property name="geonames.src" location="geonames/src"/>
         <property name="geonames.src.java" location="${geonames.src}/java"/>
         <property name="geonames.src.test" location="${geonames.src}/test"/>
@@ -140,6 +145,8 @@
         <property name="eclipse.swt.win32.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86-stripped.jar"/>
         <property name="eclipse.swt.win32.x86_64.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86_64-stripped.jar"/>
         <property name="intellij.forms.lib" location="thirdparty/intellij/forms-rt/6.0.5/forms-rt-6.0.5-stripped.jar"/>
+        <property name="jcommon.jcommon.lib" location="thirdparty/jcommon/jcommon/1.0.16/jcommon-1.0.16-stripped.jar"/>
+        <property name="jfreechart.jfreechart.lib" location="thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-stripped.jar"/>
         <property name="junit.junit.lib" location="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
         <property name="sun.activation.lib" location="thirdparty/sun/activation/lib/activation-1.1.jar"/>
         <property name="sun.javaws.lib" location="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
@@ -181,6 +188,15 @@
             <path refid="common.classpath"/>
             <path refid="navigation-formats.classpath"/>
             <path location="${common-gui.output.classes}"/>
+        </path>
+
+        <path id="elevationview.classpath">
+            <path location="${jcommon.jcommon.lib}"/>
+            <path location="${jfreechart.jfreechart.lib}"/>
+            <path refid="common-gui.classpath"/>
+            <path refid="mapview.classpath"/>
+            <path refid="navigation-formats.classpath"/>
+            <path location="${elevationview.output.classes}"/>
         </path>
 
         <path id="geonames.classpath">
@@ -250,6 +266,7 @@
             <path refid="catalog.classpath"/>
             <path refid="common.classpath"/>
             <path refid="common-gui.classpath"/>
+            <path refid="elevationview.classpath"/>
             <path refid="geonames.classpath"/>
             <path refid="googlemaps.classpath"/>
             <path refid="navigation-formats.classpath"/>
@@ -281,6 +298,7 @@
         <property name="common.output.classes5" location="${common.output}/classes5"/>
         <property name="common.output.testclasses5" location="${common.output}/testclasses5"/>
         <property name="common-gui.output.classes5" location="${common-gui.output}/classes5"/>
+        <property name="elevationview.output.classes5" location="${elevationview.output}/classes5"/>
         <property name="geonames.output.classes5" location="${geonames.output}/classes5"/>
         <property name="geonames.output.testclasses5" location="${geonames.output}/testclasses5"/>
         <property name="googlemaps.output.classes5" location="${googlemaps.output}/classes5"/>
@@ -325,6 +343,15 @@
             <path refid="common.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
             <path location="${common-gui.output.classes5}"/>
+        </path>
+
+        <path id="elevationview.classpath5">
+            <path location="${jcommon.jcommon.lib}"/>
+            <path location="${jfreechart.jfreechart.lib}"/>
+            <path refid="common-gui.classpath5"/>
+            <path refid="mapview.classpath5"/>
+            <path refid="navigation-formats.classpath5"/>
+            <path location="${elevationview.output.classes5}"/>
         </path>
 
         <path id="geonames.classpath5">
@@ -397,6 +424,7 @@
             <path refid="catalog.classpath5"/>
             <path refid="common.classpath5"/>
             <path refid="common-gui.classpath5"/>
+            <path refid="elevationview.classpath5"/>
             <path refid="geonames.classpath5"/>
             <path refid="googlemaps.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
@@ -485,6 +513,17 @@
         <unjar src="${intellij.forms.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${jcommon.jcommon.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+            </patternset>
+        </unjar>
+        <unjar src="${jfreechart.jfreechart.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/LocalizationBundle.properties"/>
             </patternset>
         </unjar>
 
@@ -749,6 +788,12 @@
             <classpath refid="common-gui.classpath"/>
         </javac>
 
+        <mkdir dir="${elevationview.output.classes}"/>
+        <javac destdir="${elevationview.output.classes}" debug="${javac.debug}">
+            <src location="${elevationview.src.java}"/>
+            <classpath refid="elevationview.classpath"/>
+        </javac>
+
         <mkdir dir="${route-converter.output.classes}"/>
         <javac destdir="${route-converter.output.classes}" debug="${javac.debug}">
             <src location="${route-converter.src.java}"/>
@@ -872,6 +917,12 @@
         <javac destdir="${common-gui.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${common-gui.src.java}"/>
             <classpath refid="common-gui.classpath5"/>
+        </javac>
+
+        <mkdir dir="${elevationview.output.classes5}"/>
+        <javac destdir="${elevationview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+            <src location="${elevationview.src.java}"/>
+            <classpath refid="elevationview.classpath5"/>
         </javac>
 
         <mkdir dir="${route-converter.output.classes5}"/>
@@ -1053,6 +1104,7 @@
             <doctitle>${javadoc.title}</doctitle>
             <bottom>Created by Christian Pesch</bottom>
 
+            <fileset dir="${common.src.java}"/>
             <fileset dir="${navigation-formats.src.java}"/>
 
             <group title="Core">
@@ -1084,6 +1136,7 @@
             <fileset dir="${catalog.src.java}"/>
             <fileset dir="${common.src.java}"/>
             <fileset dir="${common-gui.src.java}"/>
+            <fileset dir="${elevationview.src.java}"/>
             <fileset dir="${geonames.src.java}"/>
             <fileset dir="${googlemaps.src.java}"/>
             <fileset dir="${jaxb6.src.java}"/>
@@ -1124,6 +1177,7 @@
             <fileset dir="${catalog.output.classes}"/>
             <fileset dir="${common.output.classes}"/>
             <fileset dir="${common-gui.output.classes}"/>
+            <fileset dir="${elevationview.output.classes}"/>
             <fileset dir="${geonames.output.classes}"/>
             <fileset dir="${googlemaps.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
@@ -1158,6 +1212,7 @@
             <fileset dir="${catalog.output.classes}"/>
             <fileset dir="${common.output.classes}"/>
             <fileset dir="${common-gui.output.classes}"/>
+            <fileset dir="${elevationview.output.classes}"/>
             <fileset dir="${geonames.output.classes}"/>
             <fileset dir="${googlemaps.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
@@ -1189,6 +1244,7 @@
             <fileset dir="${catalog.output.classes}"/>
             <fileset dir="${common.output.classes}"/>
             <fileset dir="${common-gui.output.classes}"/>
+            <fileset dir="${elevationview.output.classes}"/>
             <fileset dir="${geonames.output.classes}"/>
             <fileset dir="${googlemaps.output.classes}"/>
             <fileset dir="${jaxb6.output.classes}"/>
@@ -1223,6 +1279,7 @@
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${elevationview.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
@@ -1259,6 +1316,7 @@
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${elevationview.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
@@ -1292,6 +1350,7 @@
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${elevationview.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
@@ -1324,6 +1383,7 @@
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${elevationview.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
@@ -1360,6 +1420,7 @@
             <fileset dir="${catalog.output.classes5}"/>
             <fileset dir="${common.output.classes5}"/>
             <fileset dir="${common-gui.output.classes5}"/>
+            <fileset dir="${elevationview.output.classes5}"/>
             <fileset dir="${geonames.output.classes5}"/>
             <fileset dir="${googlemaps.output.classes5}"/>
             <fileset dir="${jaxb5.output.classes5}"/>
@@ -1454,6 +1515,7 @@
         <delete dir="${catalog.output}"/>
         <delete dir="${common.output}"/>
         <delete dir="${common-gui.output}"/>
+        <delete dir="${elevationview.output}"/>
         <delete dir="${geonames.output}"/>
         <delete dir="${googlemaps.output}"/>
         <delete dir="${jaxb5.output}"/>
