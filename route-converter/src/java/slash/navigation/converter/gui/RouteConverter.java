@@ -455,6 +455,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         mapView.print(withRoute);
     }
 
+    public void printElevationProfile() {
+        getAnalysePanel().print();
+    }
+
     public int selectDuplicatesWithinDistance(int duplicate) {
         return getConvertPanel().selectDuplicatesWithinDistance(duplicate);
     }
@@ -523,6 +527,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public boolean isConvertPanelSelected() {
         return tabbedPane.getSelectedComponent().equals(convertPanel);
+    }
+
+    private AnalysePanel getAnalysePanel() {
+        return tabInitializer.getAnalysePanel();
     }
 
     private BrowsePanel getBrowsePanel() {
@@ -624,6 +632,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     initialized.put(browsePanel, panel);
                 }
             });
+        }
+
+        private synchronized AnalysePanel getAnalysePanel() {
+            initialize(analysePanel);
+            return (AnalysePanel) initialized.get(analysePanel);
         }
 
         private synchronized BrowsePanel getBrowsePanel() {

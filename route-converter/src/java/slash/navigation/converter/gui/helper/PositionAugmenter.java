@@ -129,8 +129,10 @@ public class PositionAugmenter {
                                 public void run() {
                                     positionsModel.fireTableRowsUpdated(firstIndex, lastIndex);
 
-                                    Rectangle rectangle = positionsTable.getCellRect(Math.min(lastIndex + SLOW_OPERATIONS_IN_A_ROW, positionsModel.getRowCount()), 1, true);
-                                    positionsTable.scrollRectToVisible(rectangle);
+                                    if (positionsTable != null) {
+                                        Rectangle rectangle = positionsTable.getCellRect(Math.min(lastIndex + SLOW_OPERATIONS_IN_A_ROW, positionsModel.getRowCount()), 1, true);
+                                        positionsTable.scrollRectToVisible(rectangle);
+                                    }
                                 }
                             });
                         }
@@ -185,6 +187,10 @@ public class PositionAugmenter {
 
     public void addElevations(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
         processElevations(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
+    public void complementElevations(PositionsModel positionsModel) {
+        complementElevations(null, positionsModel);
     }
 
     public void complementElevations(JTable positionsTable, PositionsModel positionsModel) {

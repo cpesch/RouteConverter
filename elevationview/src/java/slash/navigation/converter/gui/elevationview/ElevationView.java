@@ -95,4 +95,8 @@ public class ElevationView {
     public Component getComponent() {
         return chartPanel;
     }
+
+    public void print() {
+        chartPanel.createChartPrintJob();
+    }
 }
