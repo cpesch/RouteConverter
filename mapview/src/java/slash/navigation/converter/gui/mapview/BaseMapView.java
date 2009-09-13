@@ -106,7 +106,7 @@ public abstract class BaseMapView implements MapView {
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
-            haveToUpdatePosition = false;
+            haveToUpdatePosition = false, ignoreNextZoomCallback = false;
     protected final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
 
@@ -892,7 +892,7 @@ public abstract class BaseMapView implements MapView {
         // set map type only on first start
         if (haveToInitializeMapOnFirstStart) {
             String mapType = preferences.get(MAP_TYPE_PREFERENCE, "Map");
-            buffer.append("setMapType(\"").append(mapType).append("\");");
+            buffer.append("setMapType(\"").append(mapType).append("\");\n");
         }
 
         // if there are positions center on first start or if we have to recenter
@@ -906,6 +906,7 @@ public abstract class BaseMapView implements MapView {
             Wgs84Position center = Calculation.center(positions);
             buffer.append("map.setCenter(new GLatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("), zoomLevel);");
+            ignoreNextZoomCallback = true;
         }
         executeScript(buffer.toString());
         haveToInitializeMapOnFirstStart = false;
@@ -1022,7 +1023,11 @@ public abstract class BaseMapView implements MapView {
             Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
             if (zoomEndMatcher.matches()) {
                 synchronized (notificationMutex) {
-                    haveToRepaintImmediately = true;
+                    // since setCenter leads to a callback and a doubled rendering
+                    if (ignoreNextZoomCallback)
+                        ignoreNextZoomCallback = false;
+                    else
+                        haveToRepaintImmediately = true;
                     haveToRecenterMap = true;
                     notificationMutex.notifyAll();
                 }
