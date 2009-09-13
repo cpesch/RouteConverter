@@ -18,30 +18,25 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.renderer;
-
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.NavigationFormat;
-
-import javax.swing.*;
-import java.awt.*;
+package slash.navigation.converter.gui.services;
 
 /**
- * Renders the {@link BaseNavigationFormat} labels of the format combo box.
+ * The {@link RouteService} at http://gpsies.com
  *
  * @author Christian Pesch
  */
 
-public class NavigationFormatListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        if (value instanceof Component)
-            return (Component) value;
+public class GPSies implements RouteService {
+    public String getName() {
+        return "GPSies";
+    }
 
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if (value instanceof NavigationFormat) {
-            NavigationFormat format = (NavigationFormat) value;
-            label.setText(format.getName());
-        }
-        return label;
+    public boolean isOriginOf(String url) {
+        return url.startsWith("http://www.gpsies.com/api.do");
+    }
+
+    public void upload(String userName, char[] password, String url, String name, String description) {
+        throw new UnsupportedOperationException();
+        // TODO HTTP POST to http://www.gpsies.com/upload.do
     }
 }

@@ -33,9 +33,10 @@ import slash.navigation.converter.gui.dialogs.UploadDialog;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
-import slash.navigation.converter.gui.renderer.NavigationFormatListCellRenderer;
+import slash.navigation.converter.gui.services.RouteServiceNavigationFormat;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -48,7 +49,9 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -261,8 +264,12 @@ public abstract class ConvertPanel {
         new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
         popupTable = new PositionTablePopupMenu();
 
-        NavigationFormat[] formats = NavigationFormats.getWriteFormatsSortedByName();
-        comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formats));
+        Vector<NavigationFormat> formats = new Vector<NavigationFormat>();
+        formats.addAll(NavigationFormats.getWriteFormatsSortedByName());
+        formats.add(new RouteServiceNavigationFormat());
+        Vector<Object> formatsAndServices = new Vector<Object>(formats);
+        formatsAndServices.insertElementAt(new JSeparator(JSeparator.HORIZONTAL), formatsAndServices.size() - 1);
+        comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formatsAndServices));
         comboBoxChooseFormat.setRenderer(new NavigationFormatListCellRenderer());
         String preferredFormat = r.getTargetFormatPreference();
         for (NavigationFormat format : formats) {
@@ -634,10 +641,7 @@ public abstract class ConvertPanel {
     }
 
     private void saveToWeb() {
-        NavigationFormat<BaseRoute> format = formatAndRoutesModel.getFormat();
-        String fileUrl = getSourceFileName();
-        // TODO getFormat(); selects web service? or URL?
-        UploadDialog uploadDialog = new UploadDialog(fileUrl);
+        UploadDialog uploadDialog = new UploadDialog(formatAndRoutesModel, getSourceFileName());
         uploadDialog.pack();
         uploadDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
         uploadDialog.setVisible(true);
@@ -660,8 +664,7 @@ public abstract class ConvertPanel {
     }
 
     private void save() {
-        // TODO if the save to web option in the format chooser was selected
-        if (false)
+        if (getFormat() instanceof RouteServiceNavigationFormat)
             saveToWeb();
         else
             saveFile();

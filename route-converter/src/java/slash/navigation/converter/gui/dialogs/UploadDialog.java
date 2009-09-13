@@ -23,9 +23,13 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.BaseRoute;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.util.CompactCalendar;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.models.FormatAndRoutesModel;
+import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
 import slash.navigation.converter.gui.services.CrossingWays;
 import slash.navigation.converter.gui.services.RouteCatalog;
 import slash.navigation.converter.gui.services.RouteService;
@@ -33,9 +37,10 @@ import slash.navigation.converter.gui.services.RouteService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 /**
@@ -46,6 +51,8 @@ import java.util.prefs.Preferences;
 
 public class UploadDialog extends JDialog {
     private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+
+    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 
     private static final String REMEMBER_ME_PREFERENCE = "remember";
     private static final String USERNAME_PREFERENCE = "userName";
@@ -61,41 +68,75 @@ public class UploadDialog extends JDialog {
     private JTextArea textAreaDescription;
     private JPanel contentPane;
 
-    public UploadDialog(String routeUrl) {
+    private String fileUrl;
+
+    public UploadDialog(FormatAndRoutesModel formatAndRoutesModel, String fileUrl) {
         super(RouteConverter.getInstance().getFrame());
+        this.fileUrl = fileUrl;
+
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonUpload);
 
         List<RouteService> services = new ArrayList<RouteService>();
-        services.add(new RouteCatalog());
         services.add(new CrossingWays());
+        services.add(new RouteCatalog());
 
         comboBoxChooseRouteService.setModel(new DefaultComboBoxModel(services.toArray()));
         comboBoxChooseRouteService.setRenderer(new RouteServiceListCellRenderer());
         comboBoxChooseRouteService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                RouteService routeService = (RouteService) e.getSource();
+                RouteService routeService = (RouteService) e.getItem();
                 textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
                 textFieldPassword.setText(preferences.get(PASSWORD_PREFERENCE + routeService.getName(), ""));
                 checkBoxRememberMe.setSelected(preferences.getBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), true));
             }
         });
 
-        // TODO could analyse URL to find if the file has been read by the service: upload else save
-        int index = routeUrl.lastIndexOf('/');
-        if (index == -1)
-            index = routeUrl.lastIndexOf('\\');
-        if (true || index == -1) {
-            setTitle(RouteConverter.getBundle().getString("upload-title"));
-            buttonUpload.setText(RouteConverter.getBundle().getString("upload"));
-            textFieldName.setText(routeUrl);
-        } else {
+        RouteService serviceForRouteUrl = null;
+        for (RouteService service : services) {
+            if (service.isOriginOf(fileUrl)) {
+                serviceForRouteUrl = service;
+                break;
+            }
+        }
+
+        if (serviceForRouteUrl != null) {
             setTitle(RouteConverter.getBundle().getString("save-title"));
             buttonUpload.setText(RouteConverter.getBundle().getString("save"));
-            textFieldName.setText(routeUrl.substring(index + 1));
+            comboBoxChooseRouteService.setSelectedItem(serviceForRouteUrl);
+        } else {
+            setTitle(RouteConverter.getBundle().getString("upload-title"));
+            buttonUpload.setText(RouteConverter.getBundle().getString("upload"));
         }
-        textAreaDescription.setText("From 2009-08-01T10:55:26 to 2009-08-01T17:45:50Z\n50.6km distance, 6:50h duration");
+
+        BaseRoute firstRoute = formatAndRoutesModel.getRoutes().get(0);
+        textFieldName.setText(firstRoute.getName());
+
+        String startTime = null, endTime = null;
+        if (firstRoute.getPositionCount() > 0) {
+            startTime = formatTime(firstRoute.getPosition(0));
+            endTime = formatTime(firstRoute.getPosition(firstRoute.getPositionCount() - 1));
+        }
+
+        // TODO add lots of error checking here
+        // TODO see LengthToJLabelAdapter
+        double meters = firstRoute.getDistance(0, firstRoute.getPositionCount() - 1);
+        long milliSeconds = firstRoute.getDuration();
+        String length = (meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.add(Calendar.MILLISECOND, (int) milliSeconds);
+        Date date = calendar.getTime();
+        String duration = MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date);
+
+        textAreaDescription.setText(
+                (firstRoute.getDescription() != null ? firstRoute.getDescription() + "\n" : "") +
+                (startTime != null ? "from " + startTime : "") + 
+                (endTime != null ? " to " + endTime : "") + "\n" +
+                "length: " + length + "\n" +
+                "duration: " + duration + "\n"
+        );
         textAreaDescription.setBorder(textFieldName.getBorder());
         textAreaDescription.setFont(textFieldName.getFont());
 
@@ -127,14 +168,25 @@ public class UploadDialog extends JDialog {
 
     private void upload() {
         RouteService routeService = (RouteService) comboBoxChooseRouteService.getSelectedItem();
-        preferences.put(USERNAME_PREFERENCE + routeService.getName(), textFieldUserName.getText());
-        preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), new String(textFieldPassword.getPassword()).getBytes());
+        String userName = textFieldUserName.getText();
+        char[] password = textFieldPassword.getPassword();
+
+        routeService.upload(userName, password, fileUrl, textFieldName.getText(), textAreaDescription.getText());
+
+        preferences.put(USERNAME_PREFERENCE + routeService.getName(), userName);
+        preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), new String(password).getBytes());
         preferences.putBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());
-        throw new RuntimeException("Sorry, not implemented yet"); // TODO fix me
     }
 
     private void cancel() {
         dispose();
+    }
+
+    private String formatTime(BaseNavigationPosition position) {
+        CompactCalendar calendar = position.getTime();
+        if (calendar == null)
+            return null;
+        return TIME_FORMAT.format(calendar.getTime().getTime());
     }
 
     {

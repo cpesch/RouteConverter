@@ -30,4 +30,12 @@ public class RouteCatalog implements RouteService {
     public String getName() {
         return "RouteCatalog";
     }
+
+    public boolean isOriginOf(String url) {
+        return url.startsWith("http://www.routeconverter.de/catalog/");
+    }
+
+    public void upload(String userName, char[] password, String url, String name, String description) {
+        throw new UnsupportedOperationException();
+    }
 }

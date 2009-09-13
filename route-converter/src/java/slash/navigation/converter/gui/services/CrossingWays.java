@@ -30,4 +30,34 @@ public class CrossingWays implements RouteService {
     public String getName() {
         return "crossingways";
     }
+
+    public boolean isOriginOf(String url) {
+        return url.startsWith("http://www.crossingways.com/services/");
+    }
+
+    public void upload(String userName, char[] password, String url, String name, String description) {
+        throw new UnsupportedOperationException();
+
+        /*
+
+HTTP POST
+
+The following is a sample HTTP POST request and response. The placeholders shown need to be replaced with actual values.
+
+POST /services/LiveTracking.asmx/UploadGPX HTTP/1.1
+Host: www.crossingways.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: length
+
+username=string&password=string&trackname=string&gpx=string
+
+HTTP/1.1 200 OK
+Content-Type: text/xml; charset=utf-8
+Content-Length: length
+
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://www.crossingways.com/">string</string>
+
+         */
+    }
 }

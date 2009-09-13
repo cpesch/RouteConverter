@@ -186,21 +186,21 @@ public final class NavigationFormats {
     }
 
 
-    private static NavigationFormat[] sortByName(List<NavigationFormat> formats) {
+    private static List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
         NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
         Arrays.sort(formatsArray, new Comparator<NavigationFormat>() {
             public int compare(NavigationFormat f1, NavigationFormat f2) {
                 return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
             }
         });
-        return formatsArray;
+        return Arrays.asList(formatsArray);
     }
 
-    public static NavigationFormat[] getReadFormatsSortedByName() {
+    public static List<NavigationFormat> getReadFormatsSortedByName() {
         return sortByName(getReadFormats());
     }
 
-    public static NavigationFormat[] getWriteFormatsSortedByName() {
+    public static List<NavigationFormat> getWriteFormatsSortedByName() {
         return sortByName(getWriteFormats());
     }
 

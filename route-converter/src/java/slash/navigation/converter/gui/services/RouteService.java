@@ -28,4 +28,6 @@ package slash.navigation.converter.gui.services;
 
 public interface RouteService {
     String getName();
+    boolean isOriginOf(String url);
+    void upload(String userName, char[] password, String url, String name, String description);
 }
