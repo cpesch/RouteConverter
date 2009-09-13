@@ -1022,12 +1022,16 @@ public abstract class BaseMapView implements MapView {
 
             Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
             if (zoomEndMatcher.matches()) {
+                int startZoomLevel = Conversion.parseInt(zoomEndMatcher.group(1));
+                int endZoomLevel = Conversion.parseInt(zoomEndMatcher.group(2));
+
                 synchronized (notificationMutex) {
-                    // since setCenter leads to a callback and a doubled rendering
+                    // since setCenter() leads to a callback and thus paints the track twice
                     if (ignoreNextZoomCallback)
                         ignoreNextZoomCallback = false;
                     else
-                        haveToRepaintImmediately = true;
+                        // only repaint immediately if the users zooms into the map and needs more details
+                        haveToRepaintImmediately = startZoomLevel < endZoomLevel;
                     haveToRecenterMap = true;
                     notificationMutex.notifyAll();
                 }
