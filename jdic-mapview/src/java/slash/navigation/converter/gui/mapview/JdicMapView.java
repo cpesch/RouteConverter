@@ -281,12 +281,12 @@ public class JdicMapView extends BaseMapView {
                 append(southWest.getLongitude()).append(")").append("));\n");
 
         String zoomLevel = executeScript(buffer);
-        return Conversion.parseInt(zoomLevel);
+        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 1;
     }
 
     protected int getCurrentZoomLevel() {
         String zoomLevel = executeScriptWithResult("map.getZoom();");
-        return Conversion.parseInt(zoomLevel);
+        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 1;
     }
 
     protected BaseNavigationPosition getNorthEastBounds() {

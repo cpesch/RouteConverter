@@ -270,12 +270,12 @@ public class EclipseSWTMapView extends BaseMapView {
                 append(southWest.getLongitude()).append(")").append("));");
 
         String zoomLevel = executeScriptWithResult(buffer.toString());
-        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 0;
+        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 1;
     }
 
     protected int getCurrentZoomLevel() {
         String zoomLevel = executeScriptWithResult("return map.getZoom();");
-        return Conversion.parseInt(zoomLevel);
+        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 1;
     }
 
     protected BaseNavigationPosition getNorthEastBounds() {
