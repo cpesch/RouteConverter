@@ -116,9 +116,25 @@
            for (i = 0; i < directions.getNumGeocodes(); i++) {
                directions.getMarker(i).hide();
            }
-           map.addOverlay(directions.getPolyline());
+           addDirection(directions);
        });
        return directions;
+   }
+
+   var displayedDirections = new Array();
+
+   function addDirection(direction) {
+       map.addOverlay(direction.getPolyline());
+       displayedDirections.push(direction);
+   }
+
+   function removeDirections() {
+       while (displayedDirections.length > 0) {
+           var direction = displayedDirections.pop();
+           if (direction.getPolyline() != null)
+               map.removeOverlay(direction.getPolyline());
+       }
+       displayedDirections = new Array();
    }
 
    var oldOverlays = new Array();

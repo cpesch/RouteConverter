@@ -109,6 +109,7 @@ public abstract class BaseMapView implements MapView {
             haveToUpdatePosition = false, ignoreNextZoomCallback = false;
     protected final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
+    private int meters = 0, seconds = 0;
 
     // initialization
 
@@ -734,46 +735,11 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private int lastDirectionsCount = -1, lastPolylinesCount = -1, lastMarkersCount = -1, meters = 0, seconds = 0;
-
     private void removeOverlays() {
-        if (lastDirectionsCount > 0) {
-            for (int j = 0; j < Conversion.ceiling(lastDirectionsCount, MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false); j++) {
-                StringBuffer buffer = new StringBuffer();
-                int maximum = Math.min(lastDirectionsCount, (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH);
-                for (int i = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH; i < maximum; i++)
-                    buffer.append("map.removeOverlay(directions").append(i).append(".getPolyline());");
-                executeScript(buffer.toString());
-            }
-            lastDirectionsCount = -1;
-        }
-
-        if (lastPolylinesCount > 0) {
-            for (int j = 0; j < Conversion.ceiling(lastPolylinesCount, MAXIMUM_POLYLINE_SEGMENT_LENGTH, false); j++) {
-                StringBuffer buffer = new StringBuffer();
-                int maximum = Math.min(lastPolylinesCount, (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH);
-                for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++)
-                    buffer.append("map.removeOverlay(line").append(i).append(");");
-                executeScript(buffer.toString());
-            }
-            lastPolylinesCount = -1;
-        }
-
-        if (lastMarkersCount > 0) {
-            for (int j = 0; j < Conversion.ceiling(lastMarkersCount, MAXIMUM_MARKER_SEGMENT_LENGTH, false); j++) {
-                StringBuffer buffer = new StringBuffer();
-                int maximum = Math.min(lastMarkersCount, (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
-                for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++)
-                    buffer.append("map.removeOverlay(marker").append(i).append(");");
-                executeScript(buffer.toString());
-            }
-            lastMarkersCount = -1;
-        }
+        executeScript("removeOverlays();\nremoveDirections();");
     }
 
     private void addDirectionsToMap(List<BaseNavigationPosition> positions) {
-        removeOverlays();
-
         meters = 0;
         seconds = 0;
 
@@ -783,10 +749,9 @@ public abstract class BaseMapView implements MapView {
             return;
         }
 
-        lastDirectionsCount = Conversion.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
-        for (int j = 0; j < lastDirectionsCount; j++) {
+        int directionsCount = Conversion.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
+        for (int j = 0; j < directionsCount; j++) {
             StringBuffer buffer = new StringBuffer();
-            buffer.append("var directions").append(j).append(" = createDirections();");
             buffer.append("var latlngs = [");
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH + 1);
             for (int i = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH; i < maximum; i++) {
@@ -796,7 +761,7 @@ public abstract class BaseMapView implements MapView {
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("directions").append(j).append(".loadFromWaypoints(latlngs, ").
+            buffer.append("createDirections().loadFromWaypoints(latlngs, ").
                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
                     append(avoidHighways).append(", travelMode: ").
                     append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
@@ -804,13 +769,12 @@ public abstract class BaseMapView implements MapView {
                     append(" });");
             executeScript(buffer.toString());
         }
+        removeOverlays();
     }
 
     private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
-        removeOverlays();
-
-        lastPolylinesCount = Conversion.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
-        for (int j = 0; j < lastPolylinesCount; j++) {
+        int polylinesCount = Conversion.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
+        for (int j = 0; j < polylinesCount; j++) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("var latlngs = [");
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
@@ -821,10 +785,10 @@ public abstract class BaseMapView implements MapView {
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("var line").append(j).append(" = new GPolyline(latlngs,\"#0033FF\",2,1);\n");
-            buffer.append("map.addOverlay(line").append(j).append(");");
+            buffer.append("addOverlay(new GPolyline(latlngs,\"#0033FF\",2,1));");
             executeScript(buffer.toString());
         }
+        removeOverlays();
 
         new Thread(new Runnable() {
             public void run() {
@@ -868,23 +832,22 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
-        removeOverlays();
-
-        lastMarkersCount = positions.size();
-        for (int j = 0; j < Conversion.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false); j++) {
+        int markersCount = Conversion.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
+        for (int j = 0; j < markersCount; j++) {
             StringBuffer buffer = new StringBuffer();
 
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("var marker").append(i).append(" = new GMarker(new GLatLng(").
+                buffer.append("var marker = new GMarker(new GLatLng(").
                         append(position.getLatitude()).append(",").append(position.getLongitude()).
                         append("), { title: \"").append(escape(position.getComment())).append("\", ").
                         append("clickable: false, icon: markerIcon });\n");
-                buffer.append("map.addOverlay(marker").append(i).append(");\n");
+                buffer.append("addOverlay(marker);\n");
             }
             executeScript(buffer.toString());
         }
+        removeOverlays();
     }
 
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
