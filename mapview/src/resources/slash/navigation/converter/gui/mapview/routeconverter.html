@@ -121,6 +121,22 @@
        return directions;
    }
 
+   var oldOverlays = new Array();
+   var newOverlays = new Array();
+
+   function addOverlay(overlay) {
+       map.addOverlay(overlay);
+       newOverlays.push(overlay);
+   }
+
+   function removeOverlays() {
+       while (oldOverlays.length > 0) {
+           map.removeOverlay(oldOverlays.pop());
+       }
+       oldOverlays = newOverlays;
+       newOverlays = new Array();
+   }
+
    function getNorthEastBounds() {
        return map.getBounds().getNorthEast().toUrlValue(6);
    }
