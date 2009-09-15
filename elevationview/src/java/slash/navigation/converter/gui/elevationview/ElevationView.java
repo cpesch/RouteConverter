@@ -51,7 +51,7 @@ public class ElevationView {
     public ElevationView(PositionsModel positionsModel) {
         XYSeriesCollection dataset = createDataset(positionsModel);
         JFreeChart chart = createChart(dataset);
-        chartPanel = new ChartPanel(chart);
+        chartPanel = new ChartPanel(chart, false, true, true, true, true);
     }
 
     private XYSeriesCollection createDataset(PositionsModel model) {
