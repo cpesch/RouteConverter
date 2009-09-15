@@ -147,6 +147,20 @@ public abstract class BaseNavigationPosition {
     }
 
     /**
+     * Calculate the elevation in meter between this and the other position.
+     *
+     * @param other the other position
+     * @return the elevation in meter between this and the other position
+     *         or null if the elevation cannot be calculated
+     */
+    public Double calculateElevation(BaseNavigationPosition other) {
+        if (getElevation() != null && other.getElevation() != null) {
+            return other.getElevation() - getElevation();
+        }
+        return null;
+    }
+
+    /**
      * Calculate the time in milliseconds between this and the other position.
      *
      * @param other the other position

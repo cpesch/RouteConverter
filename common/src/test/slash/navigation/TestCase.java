@@ -42,6 +42,15 @@ public abstract class TestCase extends junit.framework.TestCase {
         }
     }
 
+    public static void assertDoubleArrayEquals(double[] expected, double[] was) {
+        assertEquals(expected.length, was.length);
+        for (int i = 0; i < expected.length; i++) {
+            double e = expected[i];
+            double w = was[i];
+            assertEquals(e, w);
+        }
+    }
+
     public static void assertIntArrayEquals(int[] expected, int[] was) {
         assertEquals(expected.length, was.length);
         for (int i = 0; i < expected.length; i++) {

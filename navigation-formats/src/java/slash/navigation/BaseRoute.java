@@ -201,22 +201,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
-    public double getDistance(int startIndex, int endIndex) {
-        double result = 0;
-        List<P> positions = getPositions();
-        BaseNavigationPosition previous = null;
-        for (int i = startIndex; i <= endIndex; i++) {
-            BaseNavigationPosition next = positions.get(i);
-            if (previous != null) {
-                Double distance = previous.calculateDistance(next);
-                if (distance != null)
-                    result += distance;
-            }
-            previous = next;
-        }
-        return result;
-    }
-
     public long getDuration() {
         Calendar minimum = null, maximum = null;
         long delta = 0;
@@ -242,6 +226,54 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
         long maxMinusMin = minimum != null ? maximum.getTimeInMillis() - minimum.getTimeInMillis() : 0;
         return Math.max(maxMinusMin, delta);
+    }
+
+    public double getDistance(int startIndex, int endIndex) {
+        double result = 0;
+        List<P> positions = getPositions();
+        BaseNavigationPosition previous = null;
+        for (int i = startIndex; i <= endIndex; i++) {
+            BaseNavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double distance = previous.calculateDistance(next);
+                if (distance != null)
+                    result += distance;
+            }
+            previous = next;
+        }
+        return result;
+    }
+
+    public double[] getDistancesFromStart(int startIndex, int endIndex) {
+        double[] result = new double[endIndex - startIndex + 1];
+        List<P> positions = getPositions();
+        BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+        for (int i = startIndex; i <= endIndex; i++) {
+            BaseNavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double distance = previous.calculateDistance(next);
+                if (distance != null)
+                    result[i - startIndex] = (i > startIndex ? result[i - startIndex - 1] : 0) + distance;
+            }
+            previous = next;
+        }
+        return result;
+    }
+
+    public double getElevationSum(int startIndex, int endIndex) {
+        double result = 0;
+        List<P> positions = getPositions();
+        BaseNavigationPosition previous = null;
+        for (int i = startIndex; i <= endIndex; i++) {
+            BaseNavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double elevation = previous.calculateElevation(next);
+                if (elevation != null)
+                    result += Math.abs(elevation);
+            }
+            previous = next;
+        }
+        return result;
     }
 
     public void revert() {

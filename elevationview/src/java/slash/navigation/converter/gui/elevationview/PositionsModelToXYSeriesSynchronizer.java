@@ -63,8 +63,9 @@ public class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void handleAdd(int firstRow, int lastRow) {
+        double[] distances = positions.getRoute().getDistancesFromStart(firstRow, lastRow);
         for (int i = firstRow; i < lastRow + 1; i++) {
-            series.add(positions.getRoute().getDistance(0, i) / 1000.0, positions.getPosition(i).getElevation());
+            series.add(distances[i - firstRow] / 1000.0, positions.getPosition(i).getElevation());
         }
     }
 
