@@ -75,6 +75,8 @@ public class PositionsModel extends AbstractTableModel {
                 return formatSpeed(position.getSpeed());
             case PositionColumns.DISTANCE_COLUMN_INDEX:
                 return formatDistance(getRoute().getDistance(0, rowIndex));
+            case PositionColumns.ELEVATION_SUM_COLUMN_INDEX:
+                return formatElevation(getRoute().getElevationSum(0, rowIndex));
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
@@ -142,8 +144,10 @@ public class PositionsModel extends AbstractTableModel {
                     // intentionally left empty
                 }
                 break;
+
+            // only computed values
             case PositionColumns.DISTANCE_COLUMN_INDEX:
-                // only computed
+            case PositionColumns.ELEVATION_SUM_COLUMN_INDEX:
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");

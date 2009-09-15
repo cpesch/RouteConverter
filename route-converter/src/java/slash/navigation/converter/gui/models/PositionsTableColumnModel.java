@@ -51,6 +51,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", 108, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", 54, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.ELEVATION_SUM_COLUMN_INDEX, "elevation-sum", 40, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_COLUMN_INDEX, "elevation", 40, true, rightAligned, headerRenderer);
