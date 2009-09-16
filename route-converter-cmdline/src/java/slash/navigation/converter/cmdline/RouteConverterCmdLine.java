@@ -48,7 +48,7 @@ public class RouteConverterCmdLine {
         }
     }
 
-    private void logFormatNames(NavigationFormat[] formats) {
+    private void logFormatNames(List<NavigationFormat> formats) {
         log.info("Supported formats:");
         for(NavigationFormat format : formats)
             log.info(format.getClass().getSimpleName() + " for " + format.getName());
