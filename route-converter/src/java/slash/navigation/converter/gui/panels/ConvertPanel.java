@@ -108,10 +108,10 @@ public abstract class ConvertPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
+        new FormatToJLabelAdapter(getPositionsModel(), labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
         new PositionsCountToJLabelAdapter(getPositionsModel(), labelPositions);
-        new LengthToJLabelAdapter(formatAndRoutesModel, labelLength, labelDuration);
+        new LengthToJLabelAdapter(getPositionsModel(), labelLength, labelDuration);
 
         buttonOpenFile.addActionListener(new FrameAction() {
             public void run() {

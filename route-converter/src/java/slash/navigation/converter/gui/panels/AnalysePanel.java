@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.elevationview.ElevationView;
 import slash.navigation.converter.gui.helper.FrameAction;
 import slash.navigation.converter.gui.helper.PositionAugmenter;
+import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,8 +42,10 @@ import java.util.ResourceBundle;
 public class AnalysePanel {
     private JPanel analysePanel;
     private JPanel elevationPanel;
-    private JButton buttonComplementElevation;
     private ElevationView elevationView;
+    private JLabel labelElevationGain;
+    private JLabel labelElevationFall;
+    private JButton buttonComplementElevation;
 
     public AnalysePanel() {
         initialize();
@@ -60,6 +63,9 @@ public class AnalysePanel {
 
         elevationView = new ElevationView(r.getPositionsModel());
         elevationPanel.add(elevationView.getComponent(), BorderLayout.CENTER);
+
+        ElevationToJLabelAdapter elevationAdapter = new ElevationToJLabelAdapter(r.getPositionsModel(), labelElevationGain, labelElevationFall);
+        elevationAdapter.initialize();
     }
 
     public Component getRootComponent() {
@@ -91,13 +97,55 @@ public class AnalysePanel {
         elevationPanel.setLayout(new BorderLayout(0, 0));
         analysePanel.add(elevationPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(5, 8, 5, 8), -1, -1));
+        panel1.setLayout(new GridLayoutManager(2, 3, new Insets(5, 13, 5, 11), -1, -1));
         elevationPanel.add(panel1, BorderLayout.SOUTH);
+        final JLabel label1 = new JLabel();
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-gain"));
+        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelElevationGain = new JLabel();
+        labelElevationGain.setText("-");
+        panel1.add(labelElevationGain, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("elevation-fall"));
+        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelElevationFall = new JLabel();
+        labelElevationFall.setText("-");
+        panel1.add(labelElevationFall, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel2, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonComplementElevation = new JButton();
         this.$$$loadButtonText$$$(buttonComplementElevation, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-elevation"));
-        panel1.add(buttonComplementElevation, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(buttonComplementElevation, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel2.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private void $$$loadLabelText$$$(JLabel component, String text) {
+        StringBuffer result = new StringBuffer();
+        boolean haveMnemonic = false;
+        char mnemonic = '\0';
+        int mnemonicIndex = -1;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '&') {
+                i++;
+                if (i == text.length()) break;
+                if (!haveMnemonic && text.charAt(i) != '&') {
+                    haveMnemonic = true;
+                    mnemonic = text.charAt(i);
+                    mnemonicIndex = result.length();
+                }
+            }
+            result.append(text.charAt(i));
+        }
+        component.setText(result.toString());
+        if (haveMnemonic) {
+            component.setDisplayedMnemonic(mnemonic);
+            component.setDisplayedMnemonicIndex(mnemonicIndex);
+        }
     }
 
     /**

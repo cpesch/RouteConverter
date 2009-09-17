@@ -15,25 +15,67 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="8ceab" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="5" left="8" bottom="5" right="8"/>
+          <grid id="8ceab" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="5" left="13" bottom="5" right="11"/>
             <constraints border-constraint="South"/>
             <properties/>
             <border type="none"/>
             <children>
-              <component id="ff18d" class="javax.swing.JButton" binding="buttonComplementElevation">
+              <component id="4ea0a" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-elevation"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="elevation-gain"/>
                 </properties>
               </component>
-              <hspacer id="7ffe6">
+              <component id="aaec7" class="javax.swing.JLabel" binding="labelElevationGain">
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
-              </hspacer>
+                <properties>
+                  <text value="-"/>
+                </properties>
+              </component>
+              <component id="50bed" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="elevation-fall"/>
+                </properties>
+              </component>
+              <component id="45d91" class="javax.swing.JLabel" binding="labelElevationFall">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="-"/>
+                </properties>
+              </component>
+              <grid id="69bd3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="0" column="2" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="ff18d" class="javax.swing.JButton" binding="buttonComplementElevation">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-elevation"/>
+                    </properties>
+                  </component>
+                  <hspacer id="88c9d">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </hspacer>
+                </children>
+              </grid>
             </children>
           </grid>
         </children>
