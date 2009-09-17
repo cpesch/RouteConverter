@@ -21,8 +21,6 @@
 package slash.navigation.converter.gui.models;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
 /**
  * A bidirectional adapter that extracts the route format name from the selected route
@@ -31,27 +29,16 @@ import javax.swing.event.TableModelListener;
  * @author Christian Pesch
  */
 
-public class PositionsCountToJLabelAdapter {
-    private PositionsModel delegate;
+public class PositionsCountToJLabelAdapter extends PositionsModelToDocumentAdapter {
     private final JLabel label;
 
     public PositionsCountToJLabelAdapter(PositionsModel positionsModel, JLabel label) {
-        setDelegate(positionsModel);
+        super(positionsModel);
         this.label = label;
     }
 
-    protected PositionsModel getDelegate() {
-        return delegate;
-    }
-
-    private void setDelegate(PositionsModel positionsModel) {
-        this.delegate = positionsModel;
-
-        positionsModel.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                updateAdapterFromDelegate();
-            }
-        });
+    protected String getDelegateValue() {
+        throw new UnsupportedOperationException();
     }
 
     protected void updateAdapterFromDelegate() {

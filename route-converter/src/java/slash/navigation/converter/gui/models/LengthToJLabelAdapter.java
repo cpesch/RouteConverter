@@ -32,18 +32,18 @@ import java.util.Date;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
- * of a {@link FormatAndRoutesModel} for display.
+ * of a {@link PositionsModel} for display.
  *
  * @author Christian Pesch
  */
 
-public class LengthToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
+public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     private final JLabel labelLength;
     private final JLabel labelDuration;
 
-    public LengthToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
+    public LengthToJLabelAdapter(PositionsModel positionsModel,
                                  JLabel labelLength, JLabel labelDuration) {
-        super(formatAndRoutesModel);
+        super(positionsModel);
         this.labelLength = labelLength;
         this.labelDuration = labelDuration;
 
@@ -73,10 +73,8 @@ public class LengthToJLabelAdapter extends FormatAndRoutesListModelToDocumentAda
     }
 
     protected void updateAdapterFromDelegate() {
-        BaseRoute route = getDelegate().getSelectedRoute();
-        if (route != null && route.getCharacteristics() != RouteCharacteristics.Waypoints) {
-            updateLabel((int) route.getLength(), route.getDuration());
-        } else {
+        BaseRoute route = getDelegate().getRoute();
+        if (route != null && route.getCharacteristics() == RouteCharacteristics.Waypoints) {
             updateLabel(0, 0);
         }
     }

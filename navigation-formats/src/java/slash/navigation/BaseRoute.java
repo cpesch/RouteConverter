@@ -252,8 +252,39 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             BaseNavigationPosition next = positions.get(i);
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
-                if (distance != null)
-                    result[i - startIndex] = (i > startIndex ? result[i - startIndex - 1] : 0) + distance;
+                result[i - startIndex] = (i > startIndex ? result[i - startIndex - 1] : 0) + (distance != null ? distance : 0);
+            }
+            previous = next;
+        }
+        return result;
+    }
+
+    public double getElevationGain(int startIndex, int endIndex) {
+        double result = 0;
+        List<P> positions = getPositions();
+        BaseNavigationPosition previous = null;
+        for (int i = startIndex; i <= endIndex; i++) {
+            BaseNavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double elevation = previous.calculateElevation(next);
+                if (elevation != null && elevation > 0)
+                    result += elevation;
+            }
+            previous = next;
+        }
+        return result;
+    }
+
+    public double getElevationFall(int startIndex, int endIndex) {
+        double result = 0;
+        List<P> positions = getPositions();
+        BaseNavigationPosition previous = null;
+        for (int i = startIndex; i <= endIndex; i++) {
+            BaseNavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double elevation = previous.calculateElevation(next);
+                if (elevation != null && elevation < 0)
+                    result += Math.abs(elevation);
             }
             previous = next;
         }
