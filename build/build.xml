@@ -524,6 +524,9 @@
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/LocalizationBundle.properties"/>
+                <include name="**/org/jfree/chart/LocalizationBundle_de.properties"/>
+                <include name="**/org/jfree/chart/LocalizationBundle_fr.properties"/>
+                <include name="**/org/jfree/chart/LocalizationBundle_nl.properties"/>
             </patternset>
         </unjar>
 
