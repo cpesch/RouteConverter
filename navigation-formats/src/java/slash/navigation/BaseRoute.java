@@ -291,22 +291,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
-    public double getElevationSum(int startIndex, int endIndex) {
-        double result = 0;
-        List<P> positions = getPositions();
-        BaseNavigationPosition previous = null;
-        for (int i = startIndex; i <= endIndex; i++) {
-            BaseNavigationPosition next = positions.get(i);
-            if (previous != null) {
-                Double elevation = previous.calculateElevation(next);
-                if (elevation != null)
-                    result += Math.abs(elevation);
-            }
-            previous = next;
-        }
-        return result;
-    }
-
     public void revert() {
         List<P> positions = getPositions();
         List<P> reverted = new ArrayList<P>();
