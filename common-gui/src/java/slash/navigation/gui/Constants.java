@@ -31,7 +31,7 @@ import java.net.URL;
 /**
  * Constants used throughout the UI
  *
- * @author Christian Pesch 
+ * @author Christian Pesch
  */
 
 public class Constants {
@@ -86,12 +86,18 @@ public class Constants {
     public static JFileChooser createJFileChooser() {
         JFileChooser chooser;
         try {
-            chooser = new JFileChooser();
+            try {
+                chooser = new JFileChooser();
+            }
+            catch (NullPointerException npe) {
+                log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
+                UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
+                chooser = new JFileChooser();
+            }
         }
-        catch (NullPointerException npe) {
-            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
-            UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
-            chooser = new JFileChooser();
+        catch (Exception e) {
+            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857 by using restricted file system view");
+            chooser = new JFileChooser(new RestrictedFileSystemView());
         }
         return chooser;
     }
