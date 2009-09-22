@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.NavigationFormat;
 import slash.navigation.Wgs84Position;
+import slash.navigation.log.LoggingHelper;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -37,7 +38,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.SingleFrameApplication;
-import slash.navigation.util.DebugOutput;
 import slash.navigation.util.Files;
 import slash.navigation.util.Platform;
 import slash.navigation.util.Version;
@@ -102,6 +102,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
     private static final String DIVIDER_LOCATION_PREFERENCE = "dividerLocation";
 
+    private static final String DEBUG_PREFERENCE = "debug";
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
@@ -124,12 +125,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
     // application lifecycle callbacks
 
     protected void initialize(String[] args) {
-        DebugOutput.activate();
-        try {
-            throw new IllegalArgumentException("E");
-        }
-        catch(Exception e){
-            e.printStackTrace();
+        LoggingHelper.logToFile();
+        if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
+            LoggingHelper.logToStdOut();
         }
         this.args = args;
     }

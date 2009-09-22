@@ -74,8 +74,7 @@ public class EclipseSWTMapView extends BaseMapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.navigate(html.toURI().toURL().toExternalForm());
-            if (debug)
-                log.info(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
+            log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             setInitializationCause(t);
@@ -91,40 +90,33 @@ public class EclipseSWTMapView extends BaseMapView {
 
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
             }
 
             public void windowOpening(WebBrowserWindowOpeningEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
             }
 
             public void windowClosing(WebBrowserEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
             }
 
             public void locationChanging(WebBrowserNavigationEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChanged(WebBrowserNavigationEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChangeCanceled(WebBrowserNavigationEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             private int startCount = 0;
 
             public void loadingProgressChanged(WebBrowserEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
 
                 if (e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
                     // get out of the listener callback
@@ -146,18 +138,15 @@ public class EclipseSWTMapView extends BaseMapView {
             }
 
             public void titleChanged(WebBrowserEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
             }
 
             public void statusChanged(WebBrowserEvent e) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
             }
 
             public void commandReceived(WebBrowserEvent e, String command, String[] args) {
-                if (debug)
-                    log.info(System.currentTimeMillis() + " commandReceived " + command + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " commandReceived " + command + " thread " + Thread.currentThread());
             }
         });
 
@@ -173,8 +162,7 @@ public class EclipseSWTMapView extends BaseMapView {
         log.info(System.currentTimeMillis() + " initialized map: " + initialized);
 
         if (isInitialized()) {
-            if (debug)
-                log.info(System.currentTimeMillis() + " compatible, further initializing map");
+            log.fine(System.currentTimeMillis() + " compatible, further initializing map");
             initializeAfterLoading();
             initializeBrowserInteraction();
             initializeDragListener();

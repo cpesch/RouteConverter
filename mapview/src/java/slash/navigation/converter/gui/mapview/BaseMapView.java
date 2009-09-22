@@ -61,7 +61,6 @@ public abstract class BaseMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
-    private static final String DEBUG_PREFERENCE = "debug";
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     protected static final String SCALE_CONTROL_PREFERENCE = "scaleControl";
 
@@ -107,7 +106,6 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false, ignoreNextZoomCallback = false;
-    protected final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, true);
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
     private int meters = 0, seconds = 0;
 
@@ -720,7 +718,7 @@ public abstract class BaseMapView implements MapView {
                 this.haveToUpdatePosition = true;
                 significantPositionCache.clear();
             }
-            if(debug) log.info(System.currentTimeMillis() + " haveToUpdateRoute: " + haveToUpdateRoute +
+            log.fine(System.currentTimeMillis() + " haveToUpdateRoute: " + haveToUpdateRoute +
                     " haveToReplaceRoute: " + haveToReplaceRoute + " positions: " + positions);
             notificationMutex.notifyAll();
         }
@@ -938,11 +936,7 @@ public abstract class BaseMapView implements MapView {
 
     protected void logExecuteScript(String script, Object result) {
         String output = System.currentTimeMillis() + " executing script '" + script + (result != null ? "' with result '" + result : "") + "'";
-        if(debug) {
-            System.out.println(output);
-            log.info(output);
-        } else
-            log.fine(output);
+        log.fine(output);
     }
 
     protected abstract void executeScript(String script);

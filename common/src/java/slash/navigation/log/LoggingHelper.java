@@ -18,40 +18,49 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.util;
+package slash.navigation.log;
 
-import java.io.IOException;
 import java.io.File;
-import java.util.logging.LogManager;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.logging.*;
 
 /**
- * Allows to control debug output
+ * Allows to control log output
  *
  * @author Christian Pesch
  */
 
-public class DebugOutput {
-    public static void activate() {
-        // System.setProperty("java.util.logging.config.class", DebugOutput.class.getName());
+public class LoggingHelper {
+    private static PrintStream stdout = System.out, stderr = System.err;
+
+    public static void logToFile() {
         File logFile = new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
         System.out.println("Logging to " + logFile.getAbsolutePath());
         readDebugConfig();
+        redirectStdOutAndErrToLog();
     }
 
-    public static void deactivate() {
-        // System.clearProperty("java.util.logging.config.class");
-        readDefaultConfig();
+
+    public static void logToStdOut() {
+        // to avoid cycles between logging and stdout
+        resetStdOutAndErr();
+        logAsDefault();
+
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new SimpleFormatter());
+        Logger.getLogger("").addHandler(consoleHandler);
     }
 
     private static void readDebugConfig() {
         try {
-            LogManager.getLogManager().readConfiguration(DebugOutput.class.getResourceAsStream("debugoutput.properties"));
+            LogManager.getLogManager().readConfiguration(LoggingHelper.class.getResourceAsStream("logging.properties"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void readDefaultConfig() {
+    public static void logAsDefault() {
         try {
             LogManager.getLogManager().readConfiguration();
         } catch (IOException e) {
@@ -59,7 +68,18 @@ public class DebugOutput {
         }
     }
 
-    public DebugOutput() throws SecurityException {
-        readDebugConfig();
+    private static void redirectStdOutAndErrToLog() {
+        Logger logger = Logger.getLogger("stdout");
+        LoggingOutputStream los = new LoggingOutputStream(logger, Level.INFO);
+        System.setOut(new PrintStream(los, true));
+
+        logger = Logger.getLogger("stderr");
+        los = new LoggingOutputStream(logger, Level.SEVERE);
+        System.setErr(new PrintStream(los, true));
+    }
+
+    private static void resetStdOutAndErr() {
+        System.setOut(stdout);
+        System.setErr(stderr);
     }
 }
