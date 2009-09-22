@@ -75,8 +75,7 @@ public class JdicMapView extends BaseMapView {
                 scrollBarSize = 20;
             }
 
-            if (debug)
-                WebBrowserUtil.enableDebugMessages(true);
+            WebBrowserUtil.enableDebugMessages(!Platform.isWindows());
 
             return new WebBrowser(false);
         } catch (Throwable t) {
@@ -92,8 +91,7 @@ public class JdicMapView extends BaseMapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             webBrowser.setURL(html.toURI().toURL());
-            if (debug)
-            log.info(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
+            log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
             setInitializationCause(t);
@@ -109,30 +107,25 @@ public class JdicMapView extends BaseMapView {
 
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void downloadStarted(WebBrowserEvent event) {
-                if (debug)
-                log.info(System.currentTimeMillis() + " downloadStarted " + event + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " downloadStarted " + event + " thread " + Thread.currentThread());
             }
 
             public void downloadCompleted(WebBrowserEvent event) {
-                if (debug)
-                log.info(System.currentTimeMillis() + " downloadCompleted " + event + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " downloadCompleted " + event + " thread " + Thread.currentThread());
                 if (Platform.isMac())
                     documentCompleted(event);
             }
 
             public void downloadProgress(WebBrowserEvent event) {
-                if (debug)
-                log.info(System.currentTimeMillis() + " downloadProgress " + event + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " downloadProgress " + event + " thread " + Thread.currentThread());
            }
 
             public void downloadError(WebBrowserEvent event) {
-                if (debug)
-                log.info(System.currentTimeMillis() + " downloadError " + event + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " downloadError " + event + " thread " + Thread.currentThread());
             }
 
             public void documentCompleted(WebBrowserEvent event) {
-                if (debug)
-                log.info(System.currentTimeMillis() + " documentCompleted " + event + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " documentCompleted " + event + " thread " + Thread.currentThread());
                 synchronized (notificationMutex) {
                     initialized = getComponent() != null && isCompatible();
                 }

@@ -48,8 +48,16 @@ public class LoggingHelper {
         logAsDefault();
 
         Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.ALL);
+        consoleHandler.setFilter(new Filter() {
+            public boolean isLoggable(LogRecord record) {
+                return record.getLoggerName().startsWith("slash");
+            }
+        });
         consoleHandler.setFormatter(new SimpleFormatter());
-        Logger.getLogger("").addHandler(consoleHandler);
+        Logger logger = Logger.getLogger("");
+        logger.addHandler(consoleHandler);
+        logger.setLevel(Level.ALL);
     }
 
     private static void readDebugConfig() {
