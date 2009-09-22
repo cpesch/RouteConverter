@@ -125,6 +125,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void initialize(String[] args) {
         DebugOutput.activate();
+        try {
+            throw new IllegalArgumentException("E");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
         this.args = args;
     }
 
