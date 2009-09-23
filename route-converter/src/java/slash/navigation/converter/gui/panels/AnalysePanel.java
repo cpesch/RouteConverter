@@ -43,8 +43,8 @@ public class AnalysePanel {
     private JPanel analysePanel;
     private JPanel elevationPanel;
     private ElevationView elevationView;
-    private JLabel labelElevationGain;
-    private JLabel labelElevationFall;
+    private JLabel labelOverallAscend;
+    private JLabel labelOverallDescend;
     private JButton buttonComplementElevation;
 
     public AnalysePanel() {
@@ -64,7 +64,7 @@ public class AnalysePanel {
         elevationView = new ElevationView(r.getPositionsModel());
         elevationPanel.add(elevationView.getComponent(), BorderLayout.CENTER);
 
-        ElevationToJLabelAdapter elevationAdapter = new ElevationToJLabelAdapter(r.getPositionsModel(), labelElevationGain, labelElevationFall);
+        ElevationToJLabelAdapter elevationAdapter = new ElevationToJLabelAdapter(r.getPositionsModel(), labelOverallAscend, labelOverallDescend);
         elevationAdapter.initialize();
     }
 
@@ -100,17 +100,17 @@ public class AnalysePanel {
         panel1.setLayout(new GridLayoutManager(2, 3, new Insets(5, 13, 5, 11), -1, -1));
         elevationPanel.add(panel1, BorderLayout.SOUTH);
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("overall-gain"));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("overall-ascend"));
         panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelElevationGain = new JLabel();
-        labelElevationGain.setText("-");
-        panel1.add(labelElevationGain, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelOverallAscend = new JLabel();
+        labelOverallAscend.setText("-");
+        panel1.add(labelOverallAscend, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("overall-fall"));
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("overall-descend"));
         panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelElevationFall = new JLabel();
-        labelElevationFall.setText("-");
-        panel1.add(labelElevationFall, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelOverallDescend = new JLabel();
+        labelOverallDescend.setText("-");
+        panel1.add(labelOverallDescend, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

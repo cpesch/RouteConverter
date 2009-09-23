@@ -75,10 +75,10 @@ public class PositionsModel extends AbstractTableModel {
                 return formatSpeed(position.getSpeed());
             case PositionColumns.DISTANCE_COLUMN_INDEX:
                 return formatDistance(getRoute().getDistance(0, rowIndex));
-            case PositionColumns.ELEVATION_GAIN_COLUMN_INDEX:
-                return formatElevation(getRoute().getElevationGain(0, rowIndex));
-            case PositionColumns.ELEVATION_FALL_COLUMN_INDEX:
-                return formatElevation(getRoute().getElevationFall(0, rowIndex));
+            case PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX:
+                return formatElevation(getRoute().getElevationAscend(0, rowIndex));
+            case PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX:
+                return formatElevation(getRoute().getElevationDescend(0, rowIndex));
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
@@ -149,8 +149,8 @@ public class PositionsModel extends AbstractTableModel {
 
             // only computed values
             case PositionColumns.DISTANCE_COLUMN_INDEX:
-            case PositionColumns.ELEVATION_GAIN_COLUMN_INDEX:
-            case PositionColumns.ELEVATION_FALL_COLUMN_INDEX:
+            case PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX:
+            case PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX:
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");

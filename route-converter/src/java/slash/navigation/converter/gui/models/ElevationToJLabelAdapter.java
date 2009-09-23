@@ -34,14 +34,14 @@ import java.text.MessageFormat;
  */
 
 public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
-    private final JLabel labelGain;
-    private final JLabel labelFall;
+    private final JLabel labelAscend;
+    private final JLabel labelDescend;
 
     public ElevationToJLabelAdapter(PositionsModel positionsModel,
-                                    JLabel labelGain, JLabel labelFall) {
+                                    JLabel labelAscend, JLabel labelDescend) {
         super(positionsModel);
-        this.labelGain = labelGain;
-        this.labelFall = labelFall;
+        this.labelAscend = labelAscend;
+        this.labelDescend = labelDescend;
     }
 
     public void initialize() {
@@ -52,16 +52,16 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
         throw new UnsupportedOperationException();
     }
 
-    private void updateLabel(double gain, double fall) {
-        labelGain.setText(gain > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), gain) : "-");
-        labelFall.setText(fall > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), fall) : "-");
+    private void updateLabel(double ascend, double descend) {
+        labelAscend.setText(ascend > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), ascend) : "-");
+        labelDescend.setText(descend > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), descend) : "-");
     }
 
     protected void updateAdapterFromDelegate() {
         BaseRoute route = getDelegate().getRoute();
         if (route != null) {
-            updateLabel(route.getElevationGain(0, route.getPositionCount() - 1),
-                        route.getElevationFall(0, route.getPositionCount() - 1));
+            updateLabel(route.getElevationAscend(0, route.getPositionCount() - 1),
+                        route.getElevationDescend(0, route.getPositionCount() - 1));
         } else {
             updateLabel(0, 0);
         }
