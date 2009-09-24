@@ -24,11 +24,14 @@ import slash.navigation.BaseRoute;
 import slash.navigation.converter.gui.renderer.PositionsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.PositionsTableCellRenderer;
 
-import javax.swing.table.*;
-import javax.swing.event.TableColumnModelEvent;
 import javax.swing.*;
-import java.util.List;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -40,6 +43,7 @@ import java.util.prefs.Preferences;
 public class PositionsTableColumnModel extends DefaultTableColumnModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(PositionsTableColumnModel.class);
     private static final String VISIBLE_PREFERENCE = "visible";
+    private static final String ORDER_PREFERENCE = "order";
 
     private final List<PositionTableColumn> predefinedColumns = new ArrayList<PositionTableColumn>();
 
@@ -57,9 +61,21 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         predefineColumn(PositionColumns.LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_COLUMN_INDEX, "elevation", 40, true, rightAligned, headerRenderer);
 
-        for (PositionTableColumn predefinedColumn : predefinedColumns) {
-            if (predefinedColumn.isVisible())
-                addColumn(predefinedColumn);
+        PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size()];
+        for (int i = 0; i < predefinedColumns.size(); i++) {
+            PositionTableColumn column = predefinedColumns.get(i);
+            int index = preferences.getInt(ORDER_PREFERENCE + column.getName(), i);
+            if(columns[index] == null)
+                columns[index] = column;
+            else if (columns[i] == null)
+                columns[i] = column;
+            else if(column.isVisible())
+                column.toggleVisibility();
+        }
+
+        for (PositionTableColumn column : columns) {
+            if (column != null && column.isVisible())
+                addColumn(column);
         }
     }
 
@@ -79,7 +95,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         return predefinedColumns;
     }
 
-    public void addColumn(int columnIndex, TableColumn aColumn) {
+    private void addColumn(int columnIndex, TableColumn aColumn) {
         if (aColumn == null) {
             throw new IllegalArgumentException("Object is null");
         }
@@ -118,5 +134,16 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         else
             removeColumn(column);
         preferences.putBoolean(VISIBLE_PREFERENCE + column.getName(), column.isVisible());
+    }
+
+    public void moveColumn(int columnIndex, int newIndex) {
+        super.moveColumn(columnIndex, newIndex);
+        if (columnIndex == newIndex)
+            return;
+
+        for (int i = 0; i < getColumnCount(); i++) {
+            PositionTableColumn column = (PositionTableColumn) getColumn(i);
+            preferences.putInt(ORDER_PREFERENCE + column.getName(), i);
+        }
     }
 }
