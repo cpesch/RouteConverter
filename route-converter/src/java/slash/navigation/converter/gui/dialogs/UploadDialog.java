@@ -173,6 +173,21 @@ public class UploadDialog extends JDialog {
 
         routeService.upload(userName, password, fileUrl, textFieldName.getText(), textAreaDescription.getText());
 
+        /*
+        if(true) { // TODO if has been read by the service: PUT back
+            // TODO use file name read from server
+            File tempFile = RouteCatalog.createTempFile(null);
+            new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, tempFile);
+            // TODO use RouteCatalog object from BrowsePanel
+            RouteCatalog routeService = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+            // TODO update description? or only file? where is description extracted from?
+            routeService.updateRoute(categoryUrl, routeUrl, description, fileUrl);
+            routeService.updateFile(fileUrl, tempFile);
+        } else {
+            // TODO store new file to service
+        }
+        */
+        
         preferences.put(USERNAME_PREFERENCE + routeService.getName(), userName);
         preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), new String(password).getBytes());
         preferences.putBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());

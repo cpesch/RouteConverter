@@ -266,9 +266,9 @@ public abstract class ConvertPanel {
 
         Vector<NavigationFormat> formats = new Vector<NavigationFormat>();
         formats.addAll(NavigationFormats.getWriteFormatsSortedByName());
-        formats.add(new RouteServiceNavigationFormat());
+        // formats.add(new RouteServiceNavigationFormat());
         Vector<Object> formatsAndServices = new Vector<Object>(formats);
-        formatsAndServices.insertElementAt(new JSeparator(JSeparator.HORIZONTAL), formatsAndServices.size() - 1);
+        // formatsAndServices.insertElementAt(new JSeparator(JSeparator.HORIZONTAL), formatsAndServices.size() - 1);
         comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formatsAndServices));
         comboBoxChooseFormat.setRenderer(new NavigationFormatListCellRenderer());
         String preferredFormat = r.getTargetFormatPreference();
@@ -645,20 +645,6 @@ public abstract class ConvertPanel {
         uploadDialog.pack();
         uploadDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
         uploadDialog.setVisible(true);
-        /*
-        if(true) { // TODO if has been read by the service: PUT back
-            // TODO use file name read from server
-            File tempFile = RouteCatalog.createTempFile(null);
-            new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, tempFile);
-            // TODO use RouteCatalog object from BrowsePanel
-            RouteCatalog routeService = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
-            // TODO update description? or only file? where is description extracted from?
-            routeService.updateRoute(categoryUrl, routeUrl, description, fileUrl);
-            routeService.updateFile(fileUrl, tempFile);
-        } else {
-            // TODO store new file to service
-        }
-        */
         formatAndRoutesModel.setModified(false);
 
     }
