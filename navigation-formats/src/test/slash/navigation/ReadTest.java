@@ -210,7 +210,9 @@ public class ReadTest extends NavigationTestCase {
     }
 
     public void testTextFilesAreValid() throws IOException {
-        // KienzleGps MagicMaps2Go
+        // KienzleGps
+        // MagicMaps2Go
+        // Sygic
         readFiles(".txt");
     }
 

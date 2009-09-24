@@ -104,6 +104,8 @@ public final class NavigationFormats {
         addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);
         addFormat(ColumbusV900Format.class);
+        addFormat(SygicAsciiFormat.class);
+        addFormat(SygicUnicodeFormat.class);
         addFormat(MagicMapsPthFormat.class);
         addFormat(GoPalRouteFormat.class);
         addFormat(OvlFormat.class);

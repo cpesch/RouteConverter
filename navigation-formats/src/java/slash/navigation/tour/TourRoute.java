@@ -339,6 +339,10 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asSimpleFormat(new Route66Format());
     }
 
+    public SimpleRoute asSygicUnicodeFormat() {
+        return asSimpleFormat(new SygicUnicodeFormat());
+    }
+    
     public TourRoute asTourFormat() {
         return this;
     }

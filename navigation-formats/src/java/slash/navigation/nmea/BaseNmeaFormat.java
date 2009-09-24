@@ -285,9 +285,6 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     protected void writeHeader(PrintWriter writer) {
     }
 
-    protected void writeFooter(PrintWriter writer) {
-    }
-
     public void write(NmeaRoute route, PrintWriter writer, int startIndex, int endIndex) {
         writeHeader(writer);
 
@@ -298,5 +295,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         }
 
         writeFooter(writer);
+    }
+
+    protected void writeFooter(PrintWriter writer) {
     }
 }

@@ -375,6 +375,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asSimpleFormat(new Route66Format());
     }
 
+    public SimpleRoute asSygicUnicodeFormat() {
+        return asSimpleFormat(new SygicUnicodeFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (GpxPosition position : positions) {

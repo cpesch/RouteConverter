@@ -348,6 +348,10 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return asSimpleFormat(new Route66Format());
     }
 
+    public SimpleRoute asSygicUnicodeFormat() {
+        return asSimpleFormat(new SygicUnicodeFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (TomTomPosition position : positions) {

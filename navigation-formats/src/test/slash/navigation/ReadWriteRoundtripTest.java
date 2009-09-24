@@ -173,6 +173,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-route66poi.csv");
     }
 
+    public void testSygicUnicodeReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-sygic-unicode.txt");
+    }
+
     public void testTop50OvlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.ovl");
     }

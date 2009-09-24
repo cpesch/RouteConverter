@@ -372,6 +372,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public Wgs84Position asSygicUnicodePosition() {
+        return asWgs84Position();
+    }
+
     public GpxPosition asTcxPosition() {
         return asGpxPosition();
     }

@@ -98,6 +98,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
             Wgs84Position position = positions.get(i);
             writePosition(position, writer, i, i == startIndex);
         }
+        writeFooter(writer, endIndex - startIndex);
     }
 
     protected void writeHeader(PrintWriter writer) {
@@ -105,4 +106,6 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
 
     protected abstract void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition);
 
+    protected void writeFooter(PrintWriter writer, int positionCount) {
+    }
 }

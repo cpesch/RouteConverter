@@ -368,6 +368,10 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return asSimpleFormat(new Route66Format());
     }
 
+    public SimpleRoute asSygicUnicodeFormat() {
+        return asSimpleFormat(new SygicUnicodeFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (GoPalPosition position : positions) {

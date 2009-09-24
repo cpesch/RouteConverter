@@ -794,6 +794,20 @@ public class ConvertTest extends NavigationTestCase {
     }
 
 
+    public void testConvertSygicToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-sygic-ascii.txt", new SygicAsciiFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-sygic-unicode.txt", new SygicUnicodeFormat(), new Kml20Format());
+    }
+
+    public void testConvertRoute66ToSygic() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new SygicUnicodeFormat());
+    }
+
+    public void testConvertTomTomPoiToSygic() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.ov2", new TomTomPoiFormat(), new SygicUnicodeFormat());
+    }
+
+
     public void testConvertGlopusToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-glopus.tk", new GlopusFormat(), new Kml21Format());

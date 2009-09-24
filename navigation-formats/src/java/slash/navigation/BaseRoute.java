@@ -259,7 +259,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
-    public double getElevationGain(int startIndex, int endIndex) {
+    public double getElevationAscend(int startIndex, int endIndex) {
         double result = 0;
         List<P> positions = getPositions();
         BaseNavigationPosition previous = null;
@@ -275,7 +275,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
-    public double getElevationFall(int startIndex, int endIndex) {
+    public double getElevationDescend(int startIndex, int endIndex) {
         double result = 0;
         List<P> positions = getPositions();
         BaseNavigationPosition previous = null;
@@ -377,6 +377,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract OvlRoute asOvlFormat();
 
     public abstract SimpleRoute asRoute66Format();
+    public abstract SimpleRoute asSygicUnicodeFormat();
 
     public abstract TomTomRoute asTomTom5RouteFormat();
     public abstract TomTomRoute asTomTom8RouteFormat();
