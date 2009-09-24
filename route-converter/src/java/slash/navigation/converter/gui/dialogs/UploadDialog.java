@@ -30,9 +30,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
-import slash.navigation.converter.gui.services.CrossingWays;
-import slash.navigation.converter.gui.services.RouteCatalog;
-import slash.navigation.converter.gui.services.RouteService;
+import slash.navigation.converter.gui.services.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,8 +77,10 @@ public class UploadDialog extends JDialog {
         getRootPane().setDefaultButton(buttonUpload);
 
         List<RouteService> services = new ArrayList<RouteService>();
-        services.add(new CrossingWays());
         services.add(new RouteCatalog());
+        services.add(new OpenStreetMap());
+        services.add(new GPSies());
+        services.add(new CrossingWays());
 
         comboBoxChooseRouteService.setModel(new DefaultComboBoxModel(services.toArray()));
         comboBoxChooseRouteService.setRenderer(new RouteServiceListCellRenderer());
