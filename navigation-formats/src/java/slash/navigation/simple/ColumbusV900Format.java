@@ -69,7 +69,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "\\d+" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
                     SPACE_OR_ZERO + "(.*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
 
@@ -135,8 +135,9 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
             longitude = -longitude;
         String height = lineMatcher.group(9);
         String speed = lineMatcher.group(10).replaceAll(SPACE_OR_ZERO, "");
+        String heading = lineMatcher.group(11);
 
-        String comment = removeZeros(lineMatcher.group(11));
+        String comment = removeZeros(lineMatcher.group(12));
         int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
         if (commentSeparatorIndex != -1)
             comment = comment.substring(commentSeparatorIndex + 1);
@@ -147,8 +148,11 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
             String lineNumber = lineMatcher.group(1);
             comment = "POI " + Conversion.trim(removeZeros(lineNumber));
         }
-        return new Wgs84Position(longitude, latitude, Conversion.parseDouble(height), Conversion.parseDouble(speed),
+
+        Wgs84Position position = new Wgs84Position(longitude, latitude, Conversion.parseDouble(height), Conversion.parseDouble(speed),
                 parseDateAndTime(date, time), comment);
+        position.setHeading(Conversion.parseDouble(heading));
+        return position;
     }
 
 
@@ -196,6 +200,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? Conversion.formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? Conversion.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
+        String heading = fillWithZeros(position.getHeading() != null ? Conversion.formatIntAsString(position.getHeading().intValue()) : "0", 3);
         String comment = fillWithZeros(position.getComment() != null ? position.getComment().replaceAll(",", ";") : "", 8);
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
                 formatLineType(position.getComment()) + SEPARATOR_CHAR +
@@ -204,7 +209,7 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
                 longitude + westOrEast + SEPARATOR_CHAR +
                 height + SEPARATOR_CHAR +
                 speed + SEPARATOR_CHAR +
-                fillWithZeros("0", 3) + SEPARATOR_CHAR +
+                heading + SEPARATOR_CHAR +
                 comment);
     }
 }

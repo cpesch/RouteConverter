@@ -49,11 +49,14 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
         assertEquals(13.049739, position.getLongitude());
         assertEquals(47.797278, position.getLatitude());
         assertEquals(502.0, position.getElevation());
+        assertEquals(8.0, position.getSpeed());
+        assertEquals(206.0, position.getHeading());
+        assertNull(position.getHdop());
+        assertNull(position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2009, 4, 21, 6, 10, 58);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
-        assertEquals(8.0, position.getSpeed());
         assertEquals(expectedCal, position.getTime());
         assertEquals("VOX00006", position.getComment());
     }
@@ -72,15 +75,20 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
     }
 
     public void testParseProfessionalModePosition() {
+        assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
         Wgs84Position position = format.parsePosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", null);
         assertEquals(16.321871, position.getLongitude());
         assertEquals(48.132451, position.getLatitude());
         assertEquals(319.0, position.getElevation());
+        assertEquals(12.0, position.getSpeed());
+        assertEquals(207.0, position.getHeading());
+        assertEquals(1.6, position.getPdop());
+        assertEquals(1.3, position.getHdop());
+        assertEquals(0.9, position.getVdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2009, 5, 8, 8, 48, 15);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
-        assertEquals(12.0, position.getSpeed());
         assertEquals(expectedCal, position.getTime());
         assertEquals("VOX02971", position.getComment());
     }
