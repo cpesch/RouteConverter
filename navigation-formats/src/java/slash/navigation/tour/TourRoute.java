@@ -283,8 +283,12 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return new Wgs84Route(format, getCharacteristics(), tourPositions);
     }
 
-    public SimpleRoute asColumbusV900Format() {
-        return asSimpleFormat(new ColumbusV900Format());
+    public SimpleRoute asColumbusV900StandardFormat() {
+        return asSimpleFormat(new ColumbusV900StandardFormat());
+    }
+
+    public SimpleRoute asColumbusV900ProfessionalFormat() {
+        return asSimpleFormat(new ColumbusV900ProfessionalFormat());
     }
 
     public SimpleRoute asCoPilot6Format() {

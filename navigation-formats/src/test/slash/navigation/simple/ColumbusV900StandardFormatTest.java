@@ -26,22 +26,20 @@ import slash.navigation.util.CompactCalendar;
 
 import java.text.DateFormat;
 
-public class ColumbusV900FormatTest extends NavigationTestCase {
-    ColumbusV900Format format = new ColumbusV900Format();
+public class ColumbusV900StandardFormatTest extends NavigationTestCase {
+    ColumbusV900StandardFormat format = new ColumbusV900StandardFormat();
 
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
-        assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
         assertTrue(format.isValidLine("4     ,T,090421,061054,47.797283N,013.049748E,519  ,5   ,206,         "));
-        assertTrue(format.isValidLine("1150  ,T,090522,150532,48.206931N,016.372713E,-5   ,0   ,0  ,3D,SPS ,2.3  ,2.1  ,1.0  ,"));
         assertTrue(format.isValidLine("7\u0000\u0000\u0000\u0000\u0000,V,090421,061109,47.797191N,013.049593E,500\u0000\u0000,0\u0000\u0000\u0000,206,VOX00014 "));
     }
 
     public void testIsPosition() {
         assertTrue(format.isPosition("5     ,T,090421,061057,47.797281N,013.049743E,504  ,0   ,206,         "));
 
+        assertFalse(format.isPosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971"));
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
-        assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
     }
 
     public void testParsePosition() {
@@ -72,24 +70,5 @@ public class ColumbusV900FormatTest extends NavigationTestCase {
     public void testParsePOIPosition() {
         Wgs84Position position = format.parsePosition("6     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
         assertEquals("POI 6", position.getComment());
-    }
-
-    public void testParseProfessionalModePosition() {
-        assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX"));
-        Wgs84Position position = format.parsePosition("2971  ,V,090508,084815,48.132451N,016.321871E,319  ,12  ,207,3D,SPS ,1.6  ,1.3  ,0.9  ,VOX02971", null);
-        assertEquals(16.321871, position.getLongitude());
-        assertEquals(48.132451, position.getLatitude());
-        assertEquals(319.0, position.getElevation());
-        assertEquals(12.0, position.getSpeed());
-        assertEquals(207.0, position.getHeading());
-        assertEquals(1.6, position.getPdop());
-        assertEquals(1.3, position.getHdop());
-        assertEquals(0.9, position.getVdop());
-        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        CompactCalendar expectedCal = calendar(2009, 5, 8, 8, 48, 15);
-        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
-        assertEquals(expected, actual);
-        assertEquals(expectedCal, position.getTime());
-        assertEquals("VOX02971", position.getComment());
     }
 }

@@ -32,7 +32,7 @@ public class BcrReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals(value, bs.get(name));
     }
 
-    public void testBcrReadWriteRoundtrip() throws IOException {
+    public void testRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);

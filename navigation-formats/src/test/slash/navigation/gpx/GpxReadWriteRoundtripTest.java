@@ -104,7 +104,7 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals("URLName", trkpt.getUrlname());
     }
 
-    public void testGpx10ReadWriteRoundtrip() throws IOException {
+    public void testGpx10Roundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from10.gpx", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
@@ -148,7 +148,7 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         });
     }
 
-    public void testGpx10TrkReadWriteRoundtrip() throws IOException {
+    public void testGpx10TrkRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from10trk.gpx", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
@@ -243,7 +243,7 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals("22.75", speed.getTextContent());
     }
 
-    public void testGpx11ReadWriteRoundtrip() throws IOException {
+    public void testGpx11Roundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
@@ -287,7 +287,7 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         });
     }
 
-    public void testGpx11TrkReadWriteRoundtrip() throws IOException {
+    public void testGpx11TrkRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);

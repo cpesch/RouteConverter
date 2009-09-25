@@ -36,49 +36,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Columbus V900 (.csv) files.
- * 
- * Standard Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX<br/>
- * Standard Format: 1     ,T,090421,061051,47.797120N,013.049595E,524  ,33  ,0  ,<br/>
- * Professional Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX<br/>
- * Professional Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,
+ * The base of all Columbus V900 formats.
  *
  * @author Christian Pesch
  */
 
-public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
-    private static final String STANDARD_HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX";
-    private static final String PROFESSIONAL_HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
-    private static final char SEPARATOR_CHAR = ',';
-    private static final String SPACE_OR_ZERO = "[\\s\u0000]*";
+public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
+    protected static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
+    protected static final char SEPARATOR_CHAR = ',';
+    protected static final String SPACE_OR_ZERO = "[\\s\u0000]*";
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyMMdd HHmmss");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
-    private static final String WAYPOINT_POSITION = "T";
-    private static final String VOICE_POSITION = "V";
-    private static final String POI_POSITION = "C";
-
-    private static final Pattern LINE_PATTERN = Pattern.
-            compile(BEGIN_OF_LINE +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(.*)" + SPACE_OR_ZERO +
-                    END_OF_LINE);
+    protected static final String WAYPOINT_POSITION = "T";
+    protected static final String VOICE_POSITION = "V";
+    protected static final String POI_POSITION = "C";
 
     public String getExtension() {
         return ".csv";
-    }
-
-    public String getName() {
-        return "Columbus V900 (*" + getExtension() + ")";
     }
 
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
@@ -89,16 +64,20 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return RouteCharacteristics.Track;
     }
 
+    protected abstract String getHeader();
+
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line != null && (line.startsWith(STANDARD_HEADER_LINE) || line.startsWith(PROFESSIONAL_HEADER_LINE));
+        return isPosition(line) || line != null && line.startsWith(getHeader());
     }
 
+    protected abstract Pattern getPattern();
+
     protected boolean isPosition(String line) {
-        Matcher matcher = LINE_PATTERN.matcher(line);
+        Matcher matcher = getPattern().matcher(line);
         return matcher.matches();
     }
 
-    private CompactCalendar parseDateAndTime(String date, String time) {
+    protected CompactCalendar parseDateAndTime(String date, String time) {
         date = Conversion.trim(date);
         time = Conversion.trim(time);
         if(date == null || time == null)
@@ -115,52 +94,15 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return null;
     }
 
-    private String removeZeros(String string) {
+    protected String removeZeros(String string) {
         return string != null ? string.replace('\u0000', ' ') : "";
     }
 
-    protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
-        Matcher lineMatcher = LINE_PATTERN.matcher(line);
-        if (!lineMatcher.matches())
-            throw new IllegalArgumentException("'" + line + "' does not match");
-        String date = lineMatcher.group(3);
-        String time = lineMatcher.group(4);
-        Double latitude = Conversion.parseDouble(lineMatcher.group(5));
-        String northOrSouth = lineMatcher.group(6);
-        if ("S".equals(northOrSouth) && latitude != null)
-            latitude = -latitude;
-        Double longitude = Conversion.parseDouble(lineMatcher.group(7));
-        String westOrEasth = lineMatcher.group(8);
-        if ("W".equals(westOrEasth) && longitude != null)
-            longitude = -longitude;
-        String height = lineMatcher.group(9);
-        String speed = lineMatcher.group(10).replaceAll(SPACE_OR_ZERO, "");
-        String heading = lineMatcher.group(11);
-
-        String comment = removeZeros(lineMatcher.group(12));
-        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
-        if (commentSeparatorIndex != -1)
-            comment = comment.substring(commentSeparatorIndex + 1);
-        comment = Conversion.trim(comment);
-
-        String lineType = Conversion.trim(lineMatcher.group(2));
-        if (comment == null && POI_POSITION.equals(lineType)) {
-            String lineNumber = lineMatcher.group(1);
-            comment = "POI " + Conversion.trim(removeZeros(lineNumber));
-        }
-
-        Wgs84Position position = new Wgs84Position(longitude, latitude, Conversion.parseDouble(height), Conversion.parseDouble(speed),
-                parseDateAndTime(date, time), comment);
-        position.setHeading(Conversion.parseDouble(heading));
-        return position;
-    }
-
-
     protected void writeHeader(PrintWriter writer) {
-        writer.println(STANDARD_HEADER_LINE);
+        writer.println(getHeader());
     }
 
-    private String fillWithZeros(String string, int length) {
+    protected String fillWithZeros(String string, int length) {
         StringBuffer buffer = new StringBuffer(string != null ? string : "");
         while (buffer.length() < length) {
             buffer.append('\u0000');
@@ -168,19 +110,19 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
         return buffer.toString();
     }
 
-    private String formatDate(CompactCalendar date) {
+    protected String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
         return DATE_FORMAT.format(date.getTime());
     }
 
-    private String formatTime(CompactCalendar time) {
+    protected String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
         return TIME_FORMAT.format(time.getTime());
     }
 
-    private String formatLineType(String comment) {
+    protected String formatLineType(String comment) {
         if (comment != null) {
             if (comment.startsWith("VOX"))
                 return VOICE_POSITION;
@@ -189,27 +131,5 @@ public class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
             }
         }
         return WAYPOINT_POSITION;
-    }
-
-    protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String date = fillWithZeros(formatDate(position.getTime()), 6);
-        String time = fillWithZeros(formatTime(position.getTime()), 6);
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 6);
-        String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 6);
-        String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = fillWithZeros(position.getElevation() != null ? Conversion.formatIntAsString(position.getElevation().intValue()) : "0", 5);
-        String speed = fillWithZeros(position.getSpeed() != null ? Conversion.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
-        String heading = fillWithZeros(position.getHeading() != null ? Conversion.formatIntAsString(position.getHeading().intValue()) : "0", 3);
-        String comment = fillWithZeros(position.getComment() != null ? position.getComment().replaceAll(",", ";") : "", 8);
-        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
-                formatLineType(position.getComment()) + SEPARATOR_CHAR +
-                date + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
-                latitude + northOrSouth + SEPARATOR_CHAR +
-                longitude + westOrEast + SEPARATOR_CHAR +
-                height + SEPARATOR_CHAR +
-                speed + SEPARATOR_CHAR +
-                heading + SEPARATOR_CHAR +
-                comment);
     }
 }

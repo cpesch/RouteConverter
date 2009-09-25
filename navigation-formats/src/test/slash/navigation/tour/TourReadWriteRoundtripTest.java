@@ -31,7 +31,7 @@ public class TourReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals(name + " does not contain expected value", value, position.get(name));
     }
 
-    public void testTourReadWriteRoundtrip() throws IOException {
+    public void testRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.tour", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 TourRoute sourceRoute = (TourRoute) source.getAllRoutes().get(0);

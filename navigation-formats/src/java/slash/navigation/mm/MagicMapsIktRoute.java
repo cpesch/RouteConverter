@@ -280,8 +280,12 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
-    public SimpleRoute asColumbusV900Format() {
-        return asSimpleFormat(new ColumbusV900Format());
+    public SimpleRoute asColumbusV900StandardFormat() {
+        return asSimpleFormat(new ColumbusV900StandardFormat());
+    }
+
+    public SimpleRoute asColumbusV900ProfessionalFormat() {
+        return asSimpleFormat(new ColumbusV900ProfessionalFormat());
     }
 
     public SimpleRoute asCoPilot6Format() {

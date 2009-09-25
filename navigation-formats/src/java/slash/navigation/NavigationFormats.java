@@ -103,7 +103,8 @@ public final class NavigationFormats {
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);
-        addFormat(ColumbusV900Format.class);
+        addFormat(ColumbusV900ProfessionalFormat.class);
+        addFormat(ColumbusV900StandardFormat.class);
         addFormat(SygicAsciiFormat.class);
         addFormat(SygicUnicodeFormat.class);
         addFormat(MagicMapsPthFormat.class);

@@ -85,6 +85,7 @@ public class ReadTest extends NavigationTestCase {
     }
 
     public void testCsvFilesAreValid() throws IOException {
+        // Columbus V900
         readFiles(".csv");
     }
 

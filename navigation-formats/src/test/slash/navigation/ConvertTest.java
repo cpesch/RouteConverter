@@ -245,30 +245,23 @@ public class ConvertTest extends NavigationTestCase {
 
 
     public void testConvertColumbusV900ToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900StandardFormat(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot6Format());
     }
 
-
-    public void testConvertCoPilot6ToCoPilot7() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new CoPilot7Format());
-    }
-
-    public void testConvertCoPilot6ToGpx() throws IOException {
+    public void testConvertCoPilotToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx11Format());
-    }
-
-    public void testConvertCoPilot6ToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900Format());
-    }
-
-    public void testConvertCoPilot7ToCoPilot6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new CoPilot6Format());
-    }
-
-    public void testConvertCoPilot7ToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Gpx11Format());
+    }
+
+    public void testConvertCoPilotToColumbusV900() throws IOException {
+        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
+    }
+
+    public void testConvertCoPilotToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new CoPilot7Format());
+        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new CoPilot6Format());
     }
 
 
