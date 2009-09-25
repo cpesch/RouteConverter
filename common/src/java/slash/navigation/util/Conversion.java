@@ -442,6 +442,14 @@ public class Conversion {
         return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
     }
 
+    public static String formatAccuracyAsString(Double elevation) {
+        return formatDoubleAsStringWithMaximumFractionCount(elevation, 6);
+    }
+
+    public static String formatHeadingAsString(Double elevation) {
+        return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
+    }
+
     public static String formatSpeedAsString(Double speed) {
         return formatDoubleAsStringWithMaximumFractionCount(speed, 2);
     }

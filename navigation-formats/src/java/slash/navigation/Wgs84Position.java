@@ -30,8 +30,9 @@ import slash.navigation.util.RouteComments;
  */
 
 public class Wgs84Position extends BaseNavigationPosition {
-    protected Double longitude, latitude;
+    protected Double longitude, latitude, heading, hdop, vdop, pdop;
     protected String comment;
+    protected Integer satellites;
 
 
     public Wgs84Position(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
@@ -68,6 +69,46 @@ public class Wgs84Position extends BaseNavigationPosition {
             return;
 
         RouteComments.parseComment(this, comment);
+    }
+
+    public Double getHeading() {
+        return heading;
+    }
+
+    public void setHeading(Double heading) {
+        this.heading = heading;
+    }
+
+    public Double getHdop() {
+        return hdop;
+    }
+
+    public void setHdop(Double hdop) {
+        this.hdop = hdop;
+    }
+
+    public Double getVdop() {
+        return vdop;
+    }
+
+    public void setVdop(Double vdop) {
+        this.vdop = vdop;
+    }
+
+    public Double getPdop() {
+        return pdop;
+    }
+
+    public void setPdop(Double pdop) {
+        this.pdop = pdop;
+    }
+
+    public Integer getSatellites() {
+        return satellites;
+    }
+
+    public void setSatellites(Integer satellites) {
+        this.satellites = satellites;
     }
 
 

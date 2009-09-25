@@ -49,10 +49,10 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + POSITION + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + POSITION + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE +
                     END_OF_LINE);
 
@@ -117,12 +117,18 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String time = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
-        String speed = lineMatcher.group(4);
+        String heading = lineMatcher.group(4);
+        String speed = lineMatcher.group(5);
+        String hdop = lineMatcher.group(6);
+        String satellites = lineMatcher.group(7);
 
         CompactCalendar calendar = parseTime(time);
         Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
                 null, Conversion.parseDouble(speed), calendar, null);
         position.setStartDate(startDate);
+        position.setHeading(Conversion.parseDouble(heading));
+        position.setHdop(Conversion.parseDouble(hdop));
+        position.setSatellites(Conversion.parseInt(satellites));
         return position;
     }
 
@@ -149,10 +155,13 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = Conversion.formatPositionAsString(position.getLongitude());
         String latitude = Conversion.formatPositionAsString(position.getLatitude());
         String time = formatTime(position.getTime());
+        String heading = Conversion.formatHeadingAsString(position.getHeading());
         String speed = Conversion.formatSpeedAsString(position.getSpeed());
+        String hdop = Conversion.formatAccuracyAsString(position.getSpeed());
+        String satellites = Conversion.formatIntAsString(position.getSatellites());
         writer.println("0" + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
                 longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                "0.0" + SEPARATOR_CHAR + speed + SEPARATOR_CHAR +
-                "1" + SEPARATOR_CHAR + "0.0" + SEPARATOR_CHAR + "1");
+                heading + SEPARATOR_CHAR + speed + SEPARATOR_CHAR +
+                "1" + SEPARATOR_CHAR + hdop + SEPARATOR_CHAR + satellites);
     }
 }

@@ -50,11 +50,14 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000000, 3", null);
+        Wgs84Position position = format.parsePosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000001, 4", null);
         assertEquals(8.016903, position.getLongitude());
         assertEquals(52.34555, position.getLatitude());
         assertNull(position.getElevation());
+        assertEquals(12.95, position.getHeading());
         assertEquals(30.0394, position.getSpeed());
+        assertEquals(3.000001, position.getHdop());
+        assertEquals(new Integer(4), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         Calendar expectedCal = Calendar.getInstance();
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
