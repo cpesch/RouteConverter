@@ -629,7 +629,7 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new ColumbusV900ProfessionalFormat());
     }
 
-    public void testConvertGoPalTrackToGoPal() throws IOException {
+    public void testConvertGoPalTrackToGoPalTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new GoPalTrackFormat());
     }
 

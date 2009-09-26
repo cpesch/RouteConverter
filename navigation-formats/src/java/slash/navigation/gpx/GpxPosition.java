@@ -26,6 +26,7 @@ import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.regex.Matcher;
 
 /**
@@ -42,10 +43,17 @@ public class GpxPosition extends Wgs84Position {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, CompactCalendar time, String comment, Object origin) {
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed,
+                       Double heading, CompactCalendar time, String comment, BigDecimal hdop, BigDecimal pdop,
+                       BigDecimal vdop, BigInteger satellites, Object origin) {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
                 Conversion.formatDouble(elevation), speed, time, comment);
         this.origin = origin;
+        setHeading(heading);
+        setHdop(Conversion.formatDouble(hdop));
+        setPdop(Conversion.formatDouble(pdop));
+        setVdop(Conversion.formatDouble(vdop));
+        setSatellites(Conversion.formatInt(satellites));
     }
 
     public void setComment(String comment) {
@@ -94,6 +102,7 @@ public class GpxPosition extends Wgs84Position {
         else
             return null;
     }
+
 
     public GpxPosition asGpxPosition() {
         return this;

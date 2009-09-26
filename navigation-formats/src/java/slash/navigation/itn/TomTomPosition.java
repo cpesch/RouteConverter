@@ -22,6 +22,7 @@ package slash.navigation.itn;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
+import slash.navigation.gpx.GpxPosition;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
 
@@ -130,6 +131,12 @@ public class TomTomPosition extends BaseNavigationPosition {
         this.heading = heading;
     }
     
+
+    public GpxPosition asGpxPosition() {
+        GpxPosition position = super.asGpxPosition();
+        position.setHeading(getHeading());
+        return position;
+    }
 
     public TomTomPosition asTomTomRoutePosition() {
         return this;

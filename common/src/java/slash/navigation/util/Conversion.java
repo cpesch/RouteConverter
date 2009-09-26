@@ -21,6 +21,7 @@
 package slash.navigation.util;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -405,7 +406,10 @@ public class Conversion {
         return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
     }
 
-    
+    public static Integer formatInt(BigInteger aBigInteger) {
+        return aBigInteger != null ? aBigInteger.intValue() : null;
+    }
+
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     static {
         DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
@@ -458,12 +462,18 @@ public class Conversion {
         return formatDoubleAsStringWithMaximumFractionCount(speed, 2);
     }
 
-
     public static String formatIntAsString(Integer anInteger) {
         if (anInteger == null)
             return "0";
         return Integer.toString(anInteger);
     }
+
+    public static BigInteger formatInt(Integer anInteger) {
+        if(anInteger == null)
+            return null;
+        return BigInteger.valueOf(anInteger);
+    }
+
 
     public static Double parseDouble(String string) {
         String trimmed = trim(string);

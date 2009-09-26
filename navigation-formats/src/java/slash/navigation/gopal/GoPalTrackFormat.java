@@ -87,8 +87,8 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (!matcher.matches())
             return false;
-        Double satellites = Conversion.parseDouble(matcher.group(5));
-        return satellites != null && satellites > 0.0;
+        Integer satellites = Conversion.parseInt(matcher.group(7));
+        return satellites != null && satellites > 0;
     }
 
     private CompactCalendar parseTime(String time) {
@@ -157,7 +157,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String time = formatTime(position.getTime());
         String heading = Conversion.formatHeadingAsString(position.getHeading());
         String speed = Conversion.formatSpeedAsString(position.getSpeed());
-        String hdop = Conversion.formatAccuracyAsString(position.getSpeed());
+        String hdop = Conversion.formatAccuracyAsString(position.getHdop());
         String satellites = Conversion.formatIntAsString(position.getSatellites());
         writer.println("0" + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
                 longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
