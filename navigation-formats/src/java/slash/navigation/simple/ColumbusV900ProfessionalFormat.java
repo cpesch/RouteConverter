@@ -118,9 +118,9 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = fillWithZeros(formatDate(position.getTime()), 6);
         String time = fillWithZeros(formatTime(position.getTime()), 6);
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 6);
+        String latitude = Conversion.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 6);
+        String longitude = Conversion.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? Conversion.formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? Conversion.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
