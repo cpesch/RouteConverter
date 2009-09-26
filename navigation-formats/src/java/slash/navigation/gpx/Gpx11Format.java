@@ -166,7 +166,9 @@ public class Gpx11Format extends GpxFormat {
                     Double speed = getSpeed(wptType);
                     if (speed == null)
                         speed = parseSpeed(wptType.getCmt());
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), speed, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType));
+                    GpxPosition position = new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), speed, parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType);
+                    position.setHeading(getHeading(wptType));
+                    positions.add(position);
                 }
             }
         }
@@ -232,11 +234,72 @@ public class Gpx11Format extends GpxFormat {
             wptType.setExtensions(null);
     }
 
+    private Double getHeading(WptType wptType) {
+        Double heading = null;
+        if (wptType.getExtensions() != null) {
+            for (Object any : wptType.getExtensions().getAny()) {
+                if (any instanceof Element) {
+                    Element element = (Element) any;
+                    if ("course".equals(element.getLocalName()))
+                        heading = Conversion.parseDouble(element.getTextContent());
+                }
+            }
+        }
+        return heading;
+    }
+
+    private void setHeading(WptType wptType, Double heading) {
+        if (wptType.getExtensions() == null)
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        List<Object> anys = wptType.getExtensions().getAny();
+
+        boolean foundHeading = false;
+        Iterator<Object> iterator = anys.iterator();
+        while (iterator.hasNext()) {
+            Object any = iterator.next();
+
+            // this is parsed
+            if (any instanceof Element) {
+                Element element = (Element) any;
+                if ("course".equals(element.getLocalName())) {
+                    if(foundHeading || heading == null)
+                        iterator.remove();
+                    else {
+                        element.setTextContent(Conversion.formatHeadingAsString(heading));
+                        foundHeading = true;
+                    }
+                }
+            }
+
+            // this is if I create the extensions with JAXB
+            if (any instanceof JAXBElement) {
+                JAXBElement element = (JAXBElement) any;
+                if ("course".equals(element.getName().getLocalPart())) {
+                    if(foundHeading || heading == null)
+                        iterator.remove();
+                    else {
+                        element.setValue(Conversion.formatHeadingAsString(heading));
+                        foundHeading = true;
+                    }
+                }
+            }
+        }
+        if (!foundHeading && heading != null) {
+            slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
+            anys.add(tbFactory.createCourse(Conversion.formatHeading(heading)));
+        }
+
+        if(anys.size() == 0)
+            wptType.setExtensions(null);
+    }
+
     private void clearWptType(WptType wptType) {
         if (!isWriteElevation())
             wptType.setEle(null);
         if (!isWriteSpeed())
             setSpeed(wptType, null);
+        if (!isWriteHeading())
+            setHeading(wptType, null);
         if (!isWriteTime())
             wptType.setTime(null);
         if (!isWriteName()) {
@@ -256,6 +319,7 @@ public class Gpx11Format extends GpxFormat {
             wptType.setLon(Conversion.formatPosition(position.getLongitude()));
             wptType.setEle(Conversion.formatElevation(position.getElevation()));
             setSpeed(wptType, position.getSpeed());
+            setHeading(wptType, position.getHeading());
             wptType.setTime(formatTime(position.getTime()));
             wptType.setName(asName(position.getComment()));
             wptType.setDesc(asDesc(position.getComment(), wptType.getDesc()));
@@ -286,6 +350,7 @@ public class Gpx11Format extends GpxFormat {
             wptType.setLon(Conversion.formatPosition(position.getLongitude()));
             wptType.setEle(Conversion.formatElevation(position.getElevation()));
             setSpeed(wptType, position.getSpeed());
+            setHeading(wptType, position.getHeading());
             wptType.setName(asName(position.getComment()));
             wptType.setDesc(asDesc(position.getComment(), wptType.getDesc()));
             wptType.setTime(formatTime(position.getTime()));
@@ -317,6 +382,7 @@ public class Gpx11Format extends GpxFormat {
             wptType.setLon(Conversion.formatPosition(position.getLongitude()));
             wptType.setEle(Conversion.formatElevation(position.getElevation()));
             setSpeed(wptType, position.getSpeed());
+            setHeading(wptType, position.getHeading());
             wptType.setName(asName(position.getComment()));
             wptType.setDesc(asDesc(position.getComment(), wptType.getDesc()));
             wptType.setTime(formatTime(position.getTime()));

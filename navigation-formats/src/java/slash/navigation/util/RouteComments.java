@@ -23,6 +23,7 @@ package slash.navigation.util;
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
+import slash.navigation.Wgs84Position;
 import slash.navigation.itn.TomTomPosition;
 
 import java.text.DateFormat;
@@ -196,6 +197,7 @@ public abstract class RouteComments {
             "Course \\d+|Cape \\d+|Kurs \\d+|Richtung \\d+|" +
             "Waypoint|Wpt|Punkt|Pause";
 
+    private static final Pattern TRIPMASTER_HEADING_PATTERN = Pattern.compile("(Course|Cape|Kurs|Richtung) (\\d+)");
     private static final Pattern TRIPMASTER_1dot4_PATTERN = Pattern.compile("(" + TRIPMASTER_REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
     private static final Pattern TRIPMASTER_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
@@ -222,9 +224,9 @@ public abstract class RouteComments {
     private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
     private static final SimpleDateFormat LOGPOS_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
     private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
-            COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+))?.+)\\)");
+            COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+) d=(\\d+))?.*)\\)");
     private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
-            COMMENT_SEPARATOR + " (.+) \\((s=(\\d+).+)\\)");
+            COMMENT_SEPARATOR + " (.+) \\((s=(\\d+) d=(\\d+))\\)");
 
 
     private static final String TTTRACKLOG_NUMBER = "\\d+\\.?\\d?";
@@ -256,6 +258,14 @@ public abstract class RouteComments {
         return parse(string, TRIPMASTER_DATE);
     }
 
+    public static Double parseTripmasterHeading(String string) {
+        Matcher matcher = TRIPMASTER_HEADING_PATTERN.matcher(string);
+        if (matcher.matches()) {
+            return Conversion.parseDouble(matcher.group(2));
+        }
+        return null;
+    }
+
     private static CompactCalendar parseLogposDate(String string) {
         return parse(string, LOGPOS_DATE);
     }
@@ -275,8 +285,16 @@ public abstract class RouteComments {
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                tomTomPosition.setReason(Conversion.trim(matcher.group(1)));
+                String reason = Conversion.trim(matcher.group(1));
+                tomTomPosition.setReason(reason);
+                tomTomPosition.setHeading(parseTripmasterHeading(reason));
                 tomTomPosition.setCity(Conversion.trim(matcher.group(4)));
+            }
+
+            if  (position instanceof Wgs84Position) {
+                Wgs84Position wgs84Position = (Wgs84Position) position;
+                String reason = Conversion.trim(matcher.group(1));
+                wgs84Position.setHeading(parseTripmasterHeading(reason));
             }
         }
 
@@ -378,6 +396,7 @@ public abstract class RouteComments {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 tomTomPosition.setReason(Conversion.trim(matcher.group(4)));
                 tomTomPosition.setCity(Conversion.trim(matcher.group(3)));
+                tomTomPosition.setHeading(Conversion.parseDouble(matcher.group(6)));
             }
         }
 
@@ -397,6 +416,7 @@ public abstract class RouteComments {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 tomTomPosition.setReason(Conversion.trim(matcher.group(5)));
                 tomTomPosition.setCity(Conversion.trim(matcher.group(3)));
+                tomTomPosition.setHeading(Conversion.parseDouble(matcher.group(8)));
             }
         }
 

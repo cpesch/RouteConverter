@@ -61,6 +61,10 @@ public class GpxPosition extends Wgs84Position {
         if (matcher.matches()) {
             this.reason = Conversion.trim(matcher.group(1));
             this.comment = Conversion.trim(matcher.group(3));
+
+            Double heading = RouteComments.parseTripmasterHeading(reason);
+            if(heading != null)
+                this.heading = heading;
         } /* TODO think about how to solve this with that much errors
           else {
             matcher = GpxFormat.TRIPMASTER_DESCRIPTION_PATTERN.matcher(comment);

@@ -35,19 +35,20 @@ import java.util.List;
 public class TripmasterTest extends NavigationTestCase {
 
     private void checkTripmaster1dot4Position(TomTomPosition position) {
-        assertEquals("Abstand 6", position.getReason());
+        assertEquals("Richtung 316", position.getReason());
         assertEquals("Bahrenfeld", position.getCity());
         assertEquals(34.0, position.getElevation());
+        assertEquals(316.0, position.getHeading());
         assertEquals(calendar(1970, 1, 1, 11, 32, 26).getTime(), position.getTime().getTime());
     }
 
-    public void testTripmaster1dot4PositionByParsingFile() {
-        TomTomPosition position = new TomTomPosition(0, 0, "Abstand 6 - 11:32:26 - 34 m - Bahrenfeld");
+    public void testTripmaster1dot4Position() {
+        TomTomPosition position = new TomTomPosition(0, 0, "Richtung 316 - 11:32:26 - 34 m - Bahrenfeld");
         checkTripmaster1dot4Position(position);
     }
 
     public void testTripmaster1dot4PositionByConvertingFromOtherFormat() {
-        TomTomPosition position = new TomTomPosition(null, null, null, null, null, "Abstand 6 - 11:32:26 - 34 m - Bahrenfeld");
+        TomTomPosition position = new TomTomPosition(null, null, null, null, null, "Richtung 316 - 11:32:26 - 34 m - Bahrenfeld");
         checkTripmaster1dot4Position(position);
     }
 
@@ -93,7 +94,6 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Weil Der Stadt", position3a.getCity());
         assertEquals(39.0, position3a.getSpeed());
         assertEquals(408.3, position3a.getElevation());
-        assertEquals(39.0, position3a.getSpeed());
         assertEquals(calendar(1970, 1, 1, 13, 39, 33), position3a.getTime());
 
         TomTomPosition position4 = new TomTomPosition(0, 0, "09:01:31 - Cape 125: Cesson-Sévigné - 62.0 m - 7.1 Km");
@@ -233,6 +233,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals("Klütz", position1.getComment());
         assertEquals("Klütz", position1.getCity());
         assertEquals("Richtung 248", position1.getReason());
+        assertEquals(248.0, position1.getHeading());
         CompactCalendar actual = position1.getTime();
         String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
         CompactCalendar expected = calendar(2007, 6, 23, 14, 57, 14);

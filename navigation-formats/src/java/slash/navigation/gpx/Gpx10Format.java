@@ -161,7 +161,9 @@ public class Gpx10Format extends GpxFormat {
                         speed = asKmh(speed);
                     if(speed == null && trkPt.getCmt() != null)
                         speed = parseSpeed(trkPt.getCmt());
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt));
+                    GpxPosition position = new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt);
+                    position.setHeading(Conversion.formatDouble(trkPt.getCourse()));
+                    positions.add(position);
                 }
             }
         }
@@ -173,6 +175,13 @@ public class Gpx10Format extends GpxFormat {
             return comment;
         return (comment != null ? comment + " " : "") +
                 "Speed: " + Conversion.formatSpeedAsString(speed) + " Km/h";
+    }
+
+    private String formatHeading(String comment, Double heading) {
+        if (heading == null || heading == 0.0)
+            return comment;
+        return (comment != null ? comment + " " : "") +
+                "Heading: " + Conversion.formatHeadingAsString(heading);
     }
 
     private List<Gpx.Wpt> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
@@ -190,6 +199,8 @@ public class Gpx10Format extends GpxFormat {
             wpt.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
+            if (isWriteHeading() && reuseReadObjectsForWriting)
+                wpt.setCmt(formatHeading(wpt.getCmt(), position.getHeading()));
             wpt.setName(isWriteName() ? asName(position.getComment()) : null);
             wpt.setDesc(isWriteName() ? asDesc(position.getComment(), wpt.getDesc()) : null);
             wpts.add(wpt);
@@ -224,6 +235,8 @@ public class Gpx10Format extends GpxFormat {
             rtept.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
+            if (isWriteHeading() && reuseReadObjectsForWriting)
+                rtept.setCmt(formatHeading(rtept.getCmt(), position.getHeading()));
             rtept.setName(isWriteName() ? asName(position.getComment()) : null);
             rtept.setDesc(isWriteName() ? asDesc(position.getComment(), rtept.getDesc()) : null);
             rte.getRtept().add(rtept);
@@ -257,6 +270,7 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setLon(Conversion.formatPosition(position.getLongitude()));
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
+            trkpt.setCourse(isWriteHeading() ? Conversion.formatDouble(position.getHeading(), 1) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
                     Conversion.formatDouble(Conversion.kmhToMs(position.getSpeed()), 3) : null);
             trkpt.setName(isWriteName() ? asName(position.getComment()) : null);

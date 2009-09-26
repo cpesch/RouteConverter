@@ -20,19 +20,20 @@
 
 package slash.navigation.gpx;
 
+import org.w3c.dom.Element;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.ReadWriteBase;
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.Wgs84Position;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.gpx.binding11.RteType;
 import slash.navigation.gpx.binding11.TrkType;
+import slash.navigation.gpx.binding11.WptType;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import org.w3c.dom.Element;
 
 public class GpxReadWriteRoundtripTest extends ReadWriteBase {
 
@@ -76,6 +77,10 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals("Source", wpt.getSrc());
         assertEquals("URL", wpt.getUrl());
         assertEquals("URLName", wpt.getUrlname());
+        assertEquals(new BigInteger("3"), wpt.getSat());
+        assertEquals(new BigDecimal("1.2"), wpt.getHdop());
+        assertEquals(new BigDecimal("1.1"), wpt.getVdop());
+        assertEquals(new BigDecimal("1.4"), wpt.getPdop());
     }
 
     private void checkUnprocessed(Gpx.Rte.Rtept rtept) {
@@ -89,6 +94,10 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals("Source", rtept.getSrc());
         assertEquals("URL", rtept.getUrl());
         assertEquals("URLName", rtept.getUrlname());
+        assertEquals(new BigInteger("4"), rtept.getSat());
+        assertEquals(new BigDecimal("1.5"), rtept.getHdop());
+        assertEquals(new BigDecimal("1.2"), rtept.getVdop());
+        assertEquals(new BigDecimal("1.7"), rtept.getPdop());
     }
 
     private void checkUnprocessed(Gpx.Trk.Trkseg.Trkpt trkpt) {
@@ -102,6 +111,23 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
         assertEquals("Source", trkpt.getSrc());
         assertEquals("URL", trkpt.getUrl());
         assertEquals("URLName", trkpt.getUrlname());
+        assertEquals(new BigDecimal("22.4"), trkpt.getCourse());
+        assertEquals(new BigDecimal("15.5"), trkpt.getSpeed());
+        assertEquals(new BigInteger("5"), trkpt.getSat());
+        assertEquals(new BigDecimal("1.5"), trkpt.getHdop());
+        assertEquals(new BigDecimal("1.2"), trkpt.getVdop());
+        assertEquals(new BigDecimal("1.7"), trkpt.getPdop());
+    }
+
+    private void checkHeadingAndAccuracy(GpxRoute sourceTrack, GpxRoute targetTrack) {
+        for (int i = 0; i < sourceTrack.getPositionCount(); i++) {
+            Wgs84Position sourcePosition = sourceTrack.getPosition(i);
+            Wgs84Position targetPosition = targetTrack.getPosition(i);
+            assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
+            assertEquals(targetPosition.getHdop(), sourcePosition.getHdop());
+            assertEquals(targetPosition.getVdop(), sourcePosition.getVdop());
+            assertEquals(targetPosition.getPdop(), sourcePosition.getPdop());
+        }
     }
 
     public void testGpx10Roundtrip() throws IOException {
@@ -144,6 +170,9 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
                 GpxPosition targetRoutePoint = targetRoute.getPosition(0);
                 assertNotNull(targetRoutePoint.getOrigin());
                 checkUnprocessed(targetRoutePoint.getOrigin(Gpx.Rte.Rtept.class));
+
+                checkHeadingAndAccuracy(sourceWaypoints, targetWaypoints);
+                checkHeadingAndAccuracy(sourceRoute, targetRoute);
             }
         });
     }
@@ -184,6 +213,9 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
                 GpxPosition targetTrackPoint = targetTrack.getPosition(0);
                 assertNotNull(targetTrackPoint.getOrigin());
                 checkUnprocessed(targetTrackPoint.getOrigin(Gpx.Trk.Trkseg.Trkpt.class));
+
+                checkHeadingAndAccuracy(sourceWaypoints, targetWaypoints);
+                checkHeadingAndAccuracy(sourceTrack, targetTrack);
             }
         });
     }
@@ -235,10 +267,10 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
     private void checkSpeedExtension(WptType wptType) {
         assertNotNull(wptType.getExtensions().getAny());
         assertEquals(2, wptType.getExtensions().getAny().size());
-        Element course = (Element)wptType.getExtensions().getAny().get(0);
+        Element course = (Element) wptType.getExtensions().getAny().get(0);
         assertEquals("course", course.getLocalName());
         assertEquals("86.8", course.getTextContent());
-        Element speed = (Element)wptType.getExtensions().getAny().get(1);
+        Element speed = (Element) wptType.getExtensions().getAny().get(1);
         assertEquals("speed", speed.getLocalName());
         assertEquals("22.75", speed.getTextContent());
     }
@@ -283,6 +315,9 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
                 GpxPosition targetRoutePoint = targetRoute.getPosition(0);
                 assertNotNull(targetRoutePoint.getOrigin());
                 checkUnprocessed(targetRoutePoint.getOrigin(WptType.class));
+
+                checkHeadingAndAccuracy(sourceWaypoints, targetWaypoints);
+                checkHeadingAndAccuracy(sourceRoute, targetRoute);
             }
         });
     }
@@ -327,6 +362,9 @@ public class GpxReadWriteRoundtripTest extends ReadWriteBase {
                 assertNotNull(targetTrackPoint.getOrigin());
                 checkUnprocessed(targetTrackPoint.getOrigin(WptType.class));
                 checkSpeedExtension(targetTrackPoint.getOrigin(WptType.class));
+
+                checkHeadingAndAccuracy(sourceTrack, targetTrack);
+                checkHeadingAndAccuracy(sourceWaypoints, targetWaypoints);
             }
         });
     }

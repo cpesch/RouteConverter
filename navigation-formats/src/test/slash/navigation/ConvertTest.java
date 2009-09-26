@@ -249,6 +249,12 @@ public class ConvertTest extends NavigationTestCase {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot6Format());
     }
 
+    public void testConvertColumbusV900ToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new Gpx11Format());
+    }
+
+
     public void testConvertCoPilotToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Gpx11Format());
@@ -617,6 +623,10 @@ public class ConvertTest extends NavigationTestCase {
     public void testConvertGoPalTrackToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new Gpx11Format());
+    }
+
+    public void testConvertGoPalTrackToColumbusV900() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gopal.trk", new GoPalTrackFormat(), new ColumbusV900ProfessionalFormat());
     }
 
     public void testConvertGoPalTrackToGoPal() throws IOException {

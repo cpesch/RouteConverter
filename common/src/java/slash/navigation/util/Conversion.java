@@ -393,6 +393,10 @@ public class Conversion {
         return formatDouble(elevation, 2);
     }
 
+    public static BigDecimal formatHeading(Double heading) {
+        return formatDouble(heading, 1);
+    }
+
     public static BigDecimal formatSpeed(Double speed) {
         return formatDouble(speed, 2);
     }
@@ -447,7 +451,7 @@ public class Conversion {
     }
 
     public static String formatHeadingAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
+        return formatDoubleAsStringWithMaximumFractionCount(elevation, 1);
     }
 
     public static String formatSpeedAsString(Double speed) {

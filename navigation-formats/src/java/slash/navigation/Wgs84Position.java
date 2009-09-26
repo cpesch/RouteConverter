@@ -22,6 +22,7 @@ package slash.navigation;
 
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
+import slash.navigation.itn.TomTomPosition;
 
 /**
  * Represents a WGS84 position in a route.
@@ -111,6 +112,12 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.satellites = satellites;
     }
 
+
+    public TomTomPosition asTomTomRoutePosition() {
+        TomTomPosition position = super.asTomTomRoutePosition();
+        position.setHeading(getHeading());
+        return position;
+    }
 
     public Wgs84Position asWgs84Position() {
         return this;

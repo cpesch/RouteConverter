@@ -21,6 +21,7 @@
 package slash.navigation.itn;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.Wgs84Position;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
 
@@ -35,6 +36,7 @@ public class TomTomPosition extends BaseNavigationPosition {
 
     private Integer longitude, latitude;
     private String city, reason;
+    private Double heading;
 
     public TomTomPosition(Integer longitude, Integer latitude, String comment) {
         super(null, null, null);
@@ -120,8 +122,23 @@ public class TomTomPosition extends BaseNavigationPosition {
         this.reason = reason;
     }
 
+    public Double getHeading() {
+        return heading;
+    }
+
+    public void setHeading(Double heading) {
+        this.heading = heading;
+    }
+    
+
     public TomTomPosition asTomTomRoutePosition() {
         return this;
+    }
+
+    public Wgs84Position asWgs84Position() {
+        Wgs84Position position = super.asWgs84Position();
+        position.setHeading(getHeading());
+        return position;
     }
 
 

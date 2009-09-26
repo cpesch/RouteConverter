@@ -232,7 +232,11 @@ public abstract class BaseNavigationPosition {
     }
 
 
-    public Wgs84Position asColumbusVPosition() {
+    public Wgs84Position asColumbusVStandardPosition() {
+        return asWgs84Position();
+    }
+
+    public Wgs84Position asColumbusVProfessionalPosition() {
         return asWgs84Position();
     }
 
