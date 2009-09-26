@@ -117,7 +117,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             if (comment != null && comment.toUpperCase().equals(comment))
                 comment = Conversion.toMixedCase(comment);
             return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    Double.parseDouble(altitude), null, null, Conversion.trim(comment));
+                    Double.parseDouble(altitude), null, null, null, Conversion.trim(comment));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

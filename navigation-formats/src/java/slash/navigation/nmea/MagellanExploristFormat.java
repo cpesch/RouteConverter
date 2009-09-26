@@ -82,7 +82,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
                 comment = Conversion.toMixedCase(comment);
             String date = matcher.group(8);
             return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    Double.parseDouble(altitude), null, parseDateAndTime(date, time), Conversion.trim(comment));
+                    Double.parseDouble(altitude), null, null, parseDateAndTime(date, time), Conversion.trim(comment));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

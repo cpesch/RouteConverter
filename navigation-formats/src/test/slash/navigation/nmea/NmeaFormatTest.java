@@ -73,9 +73,8 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("$GPWPL,4837.4374,N,903.4036,E,*4C"));
         assertTrue(format.isPosition("$GPRMC,134012,A,4837.4374,N,903.4036,E,,,260707,,A*5A"));
         assertTrue(format.isPosition("$GPZDA,134012,26,07,07,,*49"));
-
+        assertTrue(format.isPosition("$GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F"));
         assertTrue(format.isPosition("$GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F"));
-
         assertTrue(format.isPosition("$GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D"));
         assertTrue(format.isPosition("$GPGGA,130441,5239,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6F"));
         assertTrue(format.isPosition("$GPGGA,140404.000,4837.5339,N,00903.4040,E,1,08,00.0,484.0,M,00.0,M,,*67"));
@@ -110,29 +109,29 @@ public class NmeaFormatTest extends NavigationTestCase {
     }
 
     public void testHaveDifferentLongitudeAndLatitude() {
-        NmeaPosition one = new NmeaPosition(1.0, "E", 5159.971, "N", 22.0, 14.0, null, null);
-        NmeaPosition two = new NmeaPosition(1.1, "E", 5159.971, "N", 22.0, 14.0, null, null);
+        NmeaPosition one = new NmeaPosition(1.0, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
+        NmeaPosition two = new NmeaPosition(1.1, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(one, two));
         assertTrue(format.haveDifferentLongitudeAndLatitude(two, one));
         assertFalse(format.haveDifferentLongitudeAndLatitude(one, one));
         assertFalse(format.haveDifferentLongitudeAndLatitude(two, two));
 
-        NmeaPosition three = new NmeaPosition(528.81, "E", 1.0, "N", 22.0, 14.0, null, null);
-        NmeaPosition four = new NmeaPosition(528.9, "E", 1.1, "N", 22.0, 14.0, null, null);
+        NmeaPosition three = new NmeaPosition(528.81, "E", 1.0, "N", 22.0, 14.0, 12.0, null, null);
+        NmeaPosition four = new NmeaPosition(528.9, "E", 1.1, "N", 22.0, 14.0, 12.0, null, null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(three, four));
         assertTrue(format.haveDifferentLongitudeAndLatitude(four, three));
         assertFalse(format.haveDifferentLongitudeAndLatitude(three, three));
         assertFalse(format.haveDifferentLongitudeAndLatitude(four, four));
 
-        NmeaPosition five = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, 14.0, null, null);
-        NmeaPosition six = new NmeaPosition(528.82, "E", 5159.971, "N", 22.0, 14.0, null, null);
+        NmeaPosition five = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
+        NmeaPosition six = new NmeaPosition(528.82, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(five, six));
         assertTrue(format.haveDifferentLongitudeAndLatitude(six, five));
         assertFalse(format.haveDifferentLongitudeAndLatitude(five, five));
         assertFalse(format.haveDifferentLongitudeAndLatitude(six, six));
 
-        NmeaPosition seven = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, 14.0, null, null);
-        NmeaPosition eight = new NmeaPosition(528.81, "E", 5159.972, "N", 22.0, 14.0, null, null);
+        NmeaPosition seven = new NmeaPosition(528.81, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
+        NmeaPosition eight = new NmeaPosition(528.81, "E", 5159.972, "N", 22.0, 14.0, 12.0, null, null);
         assertTrue(format.haveDifferentLongitudeAndLatitude(seven, eight));
         assertTrue(format.haveDifferentLongitudeAndLatitude(eight, seven));
         assertFalse(format.haveDifferentLongitudeAndLatitude(seven, seven));
@@ -212,6 +211,11 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
+    }
+
+    public void testParseGSA() {
+        NmeaPosition position = format.parsePosition("$GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F");
+        // TODO HDOP...
     }
 
     public void testMerging() throws IOException {

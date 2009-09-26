@@ -246,7 +246,7 @@ public class ConvertTest extends NavigationTestCase {
 
     public void testConvertColumbusV900ToCoPilot() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900StandardFormat(), new CoPilot6Format());
-        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot7Format());
     }
 
     public void testConvertColumbusV900ToGpx() throws IOException {
@@ -262,6 +262,8 @@ public class ConvertTest extends NavigationTestCase {
 
     public void testConvertCoPilotToColumbusV900() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900ProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new ColumbusV900StandardFormat());
         convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
     }
 

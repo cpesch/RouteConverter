@@ -49,7 +49,9 @@ public class GpxPosition extends Wgs84Position {
         this(Conversion.formatDouble(longitude), Conversion.formatDouble(latitude),
                 Conversion.formatDouble(elevation), speed, time, comment);
         this.origin = origin;
-        setHeading(heading);
+        // avoid overwriting values determined by setComment() with a null value
+        if (heading != null)
+            setHeading(heading);
         setHdop(Conversion.formatDouble(hdop));
         setPdop(Conversion.formatDouble(pdop));
         setVdop(Conversion.formatDouble(vdop));
@@ -117,10 +119,14 @@ public class GpxPosition extends Wgs84Position {
 
         return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
+                !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(reason != null ? !reason.equals(that.reason) : that.reason != null) &&
-                !(time != null ? !time.equals(that.time) : that.time != null);
+                !(time != null ? !time.equals(that.time) : that.time != null) &&
+                !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
+                !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
+                !(vdop != null ? !vdop.equals(that.vdop) : that.vdop != null) &&
+                !(satellites != null ? !satellites.equals(that.satellites) : that.satellites != null);
     }
 
     public int hashCode() {
@@ -128,9 +134,13 @@ public class GpxPosition extends Wgs84Position {
         result = (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (heading != null ? heading.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (reason != null ? reason.hashCode() : 0);
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (hdop != null ? hdop.hashCode() : 0);
+        result = 31 * result + (pdop != null ? pdop.hashCode() : 0);
+        result = 31 * result + (vdop != null ? vdop.hashCode() : 0);
+        result = 31 * result + (satellites != null ? satellites.hashCode() : 0);
         return result;
     }
 }

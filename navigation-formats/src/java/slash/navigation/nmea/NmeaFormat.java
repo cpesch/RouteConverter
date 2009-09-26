@@ -69,7 +69,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
                     "[012]" + SEPARATOR +
-                    "[\\d]*" + SEPARATOR +           // Number of satellites in view, 00 - 12
+                    "([\\d]*)" + SEPARATOR +           // Number of satellites in view, 00 - 12
                     "[\\d\\.]*" + SEPARATOR +
                     "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)  
                     "M" + SEPARATOR +
@@ -118,9 +118,9 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPVTG,138.7,T,,M,014.2,N,026.3,K,A*00
     private static final Pattern VTG_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "VTG" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR +    // Track degrees
+                    "([\\d\\.]*)" + SEPARATOR +    // true course
                     "T" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR +    // Track degrees
+                    "[\\d\\.]*" + SEPARATOR +    // magnetic course
                     "M" + SEPARATOR +     
                     "([\\d\\.]*)" + SEPARATOR +
                     "N" + SEPARATOR +
@@ -129,16 +129,30 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "A" +
                     END_OF_LINE);
 
-    // Unbekannte Herkunft: GLL - Geographic position, latitude / longitude
-    // http://www.gpsinformation.org/dale/nmea.htm#GLL
-    // $GPGLL,5239.3154,N,00907.7011,E,130441.89,A,A*6C
-    // $GPGLL,3751.65,S,14507.36,E*77
-    // $GPGLL,4916.45,N,12311.12,W,225444,A
-    // $GPGLL,4858.330500,N,1223.554680,E,151518.000,A,A*6C
+    // $GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F
+    private static final Pattern GSA_PATTERN = Pattern.
+            compile(BEGIN_OF_LINE + "GSA" + SEPARATOR +
+                    "A" + SEPARATOR +
+                    "[123]" + SEPARATOR +        // Fix
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
 
-    // Garmin: RMZ - Altitude Information
-    // $PGRMZ,246,f,3*1B
-    // $PGRMZ,93,f,3*21
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+
+                    "([\\d\\.]*)" + SEPARATOR +  // PDOP
+                    "([\\d\\.]*)" + SEPARATOR +  // HDOP
+                    "([\\d\\.]*)" +              // VDOP
+                    END_OF_LINE);
 
     public String getExtension() {
         return ".nmea";
@@ -171,7 +185,11 @@ public class NmeaFormat extends BaseNmeaFormat {
             return hasValidChecksum(line);
 
         Matcher vtgMatcher = NmeaFormat.VTG_PATTERN.matcher(line);
-        return vtgMatcher.matches() && hasValidChecksum(line);
+        if (vtgMatcher.matches())
+            return hasValidChecksum(line);
+
+        Matcher gsaMatcher = NmeaFormat.GSA_PATTERN.matcher(line);
+        return gsaMatcher.matches() && hasValidChecksum(line);
     }
 
     protected NmeaPosition parsePosition(String line) {
@@ -191,7 +209,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             }
             String date = rmcMatcher.group(7);
             return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    null, speed, parseDateAndTime(date, time), null);
+                    null, speed, null, parseDateAndTime(date, time), null);
         }
 
         Matcher ggaMatcher = GGA_PATTERN.matcher(line);
@@ -201,9 +219,12 @@ public class NmeaFormat extends BaseNmeaFormat {
             String northOrSouth = ggaMatcher.group(3);
             String longitude = ggaMatcher.group(4);
             String westOrEast = ggaMatcher.group(5);
-            String altitude = ggaMatcher.group(6);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    Conversion.parseDouble(altitude), null, parseTime(time), null);
+            String satellites = ggaMatcher.group(6);
+            String altitude = ggaMatcher.group(7);
+            // TODO satellites
+            NmeaPosition position = new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
+                    Conversion.parseDouble(altitude), null, null, parseTime(time), null);
+            return position;
         }
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
@@ -214,7 +235,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String westOrEast = wplMatcher.group(4);
             String comment = wplMatcher.group(5);
             return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    null, null, null, Conversion.trim(comment));
+                    null, null, null, null, Conversion.trim(comment));
         }
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
@@ -224,21 +245,32 @@ public class NmeaFormat extends BaseNmeaFormat {
             String month = Conversion.trim(zdaMatcher.group(3));
             String year = Conversion.trim(zdaMatcher.group(4));
             String date = (day != null ? day : "") + (month != null ? month : "") + (year != null ? year : "");
-            return new NmeaPosition(null, null, null, null, null, null, parseDateAndTime(date, time), null);
+            return new NmeaPosition(null, null, null, null, null, null, null, parseDateAndTime(date, time), null);
         }
 
         Matcher vtgMatcher = VTG_PATTERN.matcher(line);
         if (vtgMatcher.matches()) {
+            Double heading = Conversion.parseDouble(vtgMatcher.group(1));
             boolean knots = false;
-            String speedStr = Conversion.trim(vtgMatcher.group(2));
+            String speedStr = Conversion.trim(vtgMatcher.group(3));
             if (speedStr == null) {
-                speedStr = Conversion.trim(vtgMatcher.group(1));
+                speedStr = Conversion.trim(vtgMatcher.group(2));
                 knots = true;
             }
             Double speed = Conversion.parseDouble(speedStr);
             if (knots && speed != null)
                 speed = Conversion.knotsToKilometers(speed);
-            return new NmeaPosition(null, null, null, null, null, speed, null, null);
+            return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
+        }
+
+        Matcher gsaMatcher = GSA_PATTERN.matcher(line);
+        if (gsaMatcher.matches()) {
+            String pdop = gsaMatcher.group(1);
+            String hdop = gsaMatcher.group(1);
+            String vdop = gsaMatcher.group(1);
+            // TODO HDOP, PDOP, VDOP
+            NmeaPosition position = new NmeaPosition(null, null, null, null, null, null, null, null, null);
+            return position;
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

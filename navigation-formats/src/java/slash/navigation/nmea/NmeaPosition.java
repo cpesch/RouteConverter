@@ -31,16 +31,17 @@ import slash.navigation.util.Conversion;
  */
 
 public class NmeaPosition extends BaseNavigationPosition {
-    private Double longitude, latitude;
+    private Double longitude, latitude, heading;
     private String northOrSouth /*latitude*/, westOrEast /*longitude*/;
     private String comment;
 
-    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, CompactCalendar time, String comment) {
+    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, Double heading, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         this.longitude = longitude;
         this.westOrEast = westOrEast;
         this.latitude = latitude;
         this.northOrSouth = northOrSouth;
+        this.heading = heading;
         this.comment = comment;
     }
 
@@ -114,6 +115,14 @@ public class NmeaPosition extends BaseNavigationPosition {
         this.comment = comment;
     }
 
+    public Double getHeading() {
+        return heading;
+    }
+
+    public void setHeading(Double heading) {
+        this.heading = heading;
+    }
+
 
     public NmeaPosition asNmeaPosition() {
         return this;
@@ -128,6 +137,7 @@ public class NmeaPosition extends BaseNavigationPosition {
 
         return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
+                !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(northOrSouth != null ? !northOrSouth.equals(that.northOrSouth) : that.northOrSouth != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
@@ -142,6 +152,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (northOrSouth != null ? northOrSouth.hashCode() : 0);
         result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
+        result = 31 * result + (heading != null ? heading.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;

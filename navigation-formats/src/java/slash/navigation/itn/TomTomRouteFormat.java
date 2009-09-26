@@ -159,20 +159,22 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         return Conversion.trim(description);
     }
 
-    String formatFirstOrLastName(TomTomPosition position, String firstOrLast) {
+    String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
         return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
                 firstOrLast + " : " +
                 (position.getTime() != null ? RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " : "") +
                 position.getComment() +
-                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - " +
-                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - 6" : "");
+                (position.getElevation() != null ? " - " + position.getElevation() + " m - " + distance.intValue() + " km - " +
+                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - " +
+                (position.getHeading() != null ? position.getHeading().intValue() : "6") : "");
     }
 
-    String formatIntermediateName(TomTomPosition position) {
+    String formatIntermediateName(TomTomPosition position, Double distance) {
         return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
                 position.getComment() +
-                (position.getElevation() != null ? " - " + position.getElevation() + " m - 0 km - " +
-                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - 6" : "");
+                (position.getElevation() != null ? " - " + position.getElevation() + " m - " + distance.intValue() + " km - " +
+                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - " +
+                (position.getHeading() != null ? position.getHeading().intValue() : "6") : "");
     }
 
     public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex) {
@@ -192,12 +194,13 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
             String comment = position.getComment();
             if (route.getCharacteristics().equals(RouteCharacteristics.Track)) {
+                Double distance = route.getDistance(startIndex, i);
                 if (first)
-                    comment = formatFirstOrLastName(position, "Start");
+                    comment = formatFirstOrLastName(position, "Start", distance);
                 else if (last)
-                    comment = formatFirstOrLastName(position, "Finish");
+                    comment = formatFirstOrLastName(position, "Finish", distance);
                 else
-                    comment = formatIntermediateName(position);
+                    comment = formatIntermediateName(position, distance);
             }
             if (comment != null)
                 comment = comment.replaceAll(SEPARATOR, ";").replaceAll("€", "\u0080");

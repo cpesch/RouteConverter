@@ -157,6 +157,7 @@ public class TomTomPosition extends BaseNavigationPosition {
 
         return !(city != null ? !city.equals(that.city) : that.city != null) &&
                 !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
+                !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
                 !(reason != null ? !reason.equals(that.reason) : that.reason != null) &&
@@ -168,6 +169,7 @@ public class TomTomPosition extends BaseNavigationPosition {
         result = (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
+        result = 31 * result + (heading != null ? heading.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);

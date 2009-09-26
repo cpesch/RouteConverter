@@ -33,6 +33,9 @@ public class ColumbusV900StandardFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
         assertTrue(format.isValidLine("4     ,T,090421,061054,47.797283N,013.049748E,519  ,5   ,206,         "));
         assertTrue(format.isValidLine("7\u0000\u0000\u0000\u0000\u0000,V,090421,061109,47.797191N,013.049593E,500\u0000\u0000,0\u0000\u0000\u0000,206,VOX00014 "));
+
+        assertFalse(format.isValidLine("4     ,T,090421,061054,-47.797283N,013.049748E,519  ,5   ,206,         "));
+        assertFalse(format.isValidLine("4     ,T,090421,061054,47.797283N,-013.049748E,519  ,5   ,206,         "));
     }
 
     public void testIsPosition() {

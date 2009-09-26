@@ -32,6 +32,7 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
@@ -269,20 +270,53 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static void compareHeading(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
-        if (!(sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpxFormat))
-            return;
-        Wgs84Position wgs84SourcePosition = (Wgs84Position) sourcePosition;
-        Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+        Double sourceHeading = null;
+        if (sourcePosition instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+            sourceHeading = wgs84Position.getHeading();
+        }
+        if (sourcePosition instanceof TomTomPosition) {
+            TomTomPosition tomTomPosition = (TomTomPosition) sourcePosition;
+            sourceHeading = tomTomPosition.getHeading();
+        }
+
+        Double targetHeading = null;
+        if (targetPosition instanceof Wgs84Position) {
+            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+            targetHeading = wgs84TargetPosition.getHeading();
+        }
+        if (targetPosition instanceof TomTomPosition) {
+            TomTomPosition tomTomPosition = (TomTomPosition) targetPosition;
+            targetHeading = tomTomPosition.getHeading();
+        }
+
         if (targetFormat instanceof ColumbusV900Format) {
-            assertEquals("Heading " + index + " does not match", wgs84TargetPosition.getHeading().intValue(), wgs84SourcePosition.getHeading().intValue());
-        } else if (targetFormat instanceof Gpx10Format && !targetCharacteristics.equals(RouteCharacteristics.Track)) {
-            assertNull(wgs84TargetPosition.getHeading());
+            if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format ||
+                    sourceFormat instanceof GpxFormat || sourceFormat instanceof TomTomRouteFormat) {
+                assertNotNull(sourceHeading);
+                assertNotNull(targetHeading);
+                assertEquals("Heading " + index + " does not match", targetHeading.intValue(), sourceHeading.intValue());
+            } else {
+                assertNull(sourceHeading);
+                assertNotNull(targetHeading);
+            }
+        } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format ||
+                sourceFormat instanceof GpxFormat || sourceFormat instanceof TomTomRouteFormat) &&
+                (targetFormat instanceof GoPalTrackFormat ||
+                 targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track))) {
+            assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
+        } else if (targetFormat instanceof Gpx11Format) {
+            assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
+        } else if (targetFormat instanceof GoPalTrackFormat) {
+            assertNull(sourceHeading);
+            assertNotNull(targetHeading);
         } else
-            assertEquals("Heading " + index + " does not match", wgs84TargetPosition.getHeading(), wgs84SourcePosition.getHeading());
+            assertNull("Heading " + index + " is not null: " + targetHeading, targetHeading);
     }
 
     private static void compareAccuracy(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
-        if (!(sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpxFormat))
+        if (!((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof Gpx10Format || sourceFormat instanceof Gpx11Format) &&
+                (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusV900Format || targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format)))
             return;
         Wgs84Position wgs84SourcePosition = (Wgs84Position) sourcePosition;
         Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;

@@ -147,8 +147,8 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
             return "000000";
         Calendar calendar = time.getCalendar();
         return formatNumber(calendar.get(Calendar.HOUR_OF_DAY)) +
-                formatNumber(calendar.get(Calendar.MINUTE)) +
-                formatNumber(calendar.get(Calendar.SECOND));
+               formatNumber(calendar.get(Calendar.MINUTE)) +
+               formatNumber(calendar.get(Calendar.SECOND));
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
@@ -158,10 +158,19 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String heading = Conversion.formatHeadingAsString(position.getHeading());
         String speed = Conversion.formatSpeedAsString(position.getSpeed());
         String hdop = Conversion.formatAccuracyAsString(position.getHdop());
-        String satellites = Conversion.formatIntAsString(position.getSatellites());
-        writer.println("0" + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                heading + SEPARATOR_CHAR + speed + SEPARATOR_CHAR +
-                "1" + SEPARATOR_CHAR + hdop + SEPARATOR_CHAR + satellites);
+        Integer satellites = position.getSatellites();
+        // since positions with zero satellites are ignored during reading
+        if (satellites == null || satellites == 0)
+            satellites = 1;
+        String satellitesStr = Conversion.formatIntAsString(satellites);
+        writer.println("0" + SEPARATOR_CHAR + " " +
+                       time + SEPARATOR_CHAR + " " +
+                       longitude + SEPARATOR_CHAR + " " +
+                       latitude + SEPARATOR_CHAR + " " +
+                       heading + SEPARATOR_CHAR + " " +
+                       speed + SEPARATOR_CHAR + " " +
+                       "1" + SEPARATOR_CHAR + " " +
+                       hdop + SEPARATOR_CHAR + " " +
+                       satellitesStr);
     }
 }
