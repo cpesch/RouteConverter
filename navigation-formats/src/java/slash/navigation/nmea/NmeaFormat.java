@@ -346,12 +346,15 @@ public class NmeaFormat extends BaseNmeaFormat {
             writeSentence(writer, zda);
         }
 
-        if(position.getSpeed() != null) {
+        if(position.getHeading() != null || position.getSpeed() != null) {
+            String heading = formatAltitude(position.getHeading());
             String speedKm = formatSpeed(position.getSpeed());
-            // $GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37
-            String vtg = "GPVTG" + SEPARATOR + SEPARATOR + "T" + SEPARATOR + SEPARATOR + "M" + SEPARATOR +
+            // $GPVTG,32.1,T,,M,1.531,N,2.835,K,A*37
+            String vtg = "GPVTG" + SEPARATOR + heading + SEPARATOR + "T" + SEPARATOR + SEPARATOR + "M" + SEPARATOR +
                     speedKnots + SEPARATOR + "N" + SEPARATOR + speedKm + SEPARATOR + "K" + SEPARATOR + "A";
             writeSentence(writer, vtg);
         }
+
+        // TODO add GSA
     }
 }

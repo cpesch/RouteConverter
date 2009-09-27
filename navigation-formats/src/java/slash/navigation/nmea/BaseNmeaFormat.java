@@ -141,6 +141,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             position.setElevation(toBeMergedInto.getElevation());
         if (position.getSpeed() == null)
             position.setSpeed(toBeMergedInto.getSpeed());
+        if (position.getHeading() == null)
+            position.setHeading(toBeMergedInto.getHeading());
         if (position.getLatitude() == null)
             position.setLatitude(toBeMergedInto.getLatitude());
         if (position.getLongitude() == null)
@@ -149,6 +151,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                 (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
                         position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
+        if (position.getHdop() == null)
+            position.setHdop(toBeMergedInto.getHdop());
+        if (position.getPdop() == null)
+            position.setPdop(toBeMergedInto.getPdop());
+        if (position.getVdop() == null)
+            position.setVdop(toBeMergedInto.getVdop());
+        if (position.getSatellites() == null)
+            position.setSatellites(toBeMergedInto.getSatellites());
     }
 
     private boolean isStartDateEqual(CompactCalendar compactCalendar1, CompactCalendar compactCalendar2) {

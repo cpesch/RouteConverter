@@ -312,7 +312,8 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNotNull(targetHeading);
             }
         } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format ||
-                sourceFormat instanceof GpxFormat || sourceFormat instanceof TomTomRouteFormat) &&
+                sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat ||
+                sourceFormat instanceof TomTomRouteFormat) &&
                 (targetFormat instanceof GoPalTrackFormat ||
                  targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track))) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
@@ -381,7 +382,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals("Pdop " + index + " does not match", targetPdop, sourcePdop);
         } else if (sourceFormat instanceof GoPalTrackFormat) {
             assertNull("Pdop " + index + " is not null: " + sourcePdop, sourcePdop);
-            assertNotNull("Pdop " + index + " is null", targetPdop);
+            assertNull("Pdop " + index + " is null", targetPdop);
         } else
             assertNull("Pdop " + index + " is not null: " + targetPdop, targetPdop);
     }
@@ -412,7 +413,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals("Vdop " + index + " does not match", targetVdop, sourceVdop);
         } else if (sourceFormat instanceof GoPalTrackFormat) {
             assertNull("Vdop " + index + " is not null: " + sourceVdop, sourceVdop);
-            assertNotNull("Vdop " + index + " is null", targetVdop);
+            assertNull("Vdop " + index + " is null", targetVdop);
         } else
             assertNull("Vdop " + index + " is not null: " + targetVdop, targetVdop);
     }
@@ -598,7 +599,9 @@ public abstract class NavigationTestCase extends TestCase {
     @SuppressWarnings({"UnusedDeclaration"})
     private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
-            if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
+            if (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) {
+                assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.05);
+            } else if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
                     (sourceFormat instanceof Gpx10Format && targetFormat instanceof AlanTrackLogFormat)) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof GoPalTrackFormat && targetFormat instanceof ColumbusV900Format) {
