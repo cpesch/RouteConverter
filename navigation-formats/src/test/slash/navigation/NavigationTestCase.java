@@ -215,7 +215,10 @@ public abstract class NavigationTestCase extends TestCase {
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
-        compareAccuracy(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        compareHdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        comparePdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        compareVdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        compareSatellites(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
     }
 
     private static void compareLongitudeAndLatitude(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
@@ -279,6 +282,10 @@ public abstract class NavigationTestCase extends TestCase {
             TomTomPosition tomTomPosition = (TomTomPosition) sourcePosition;
             sourceHeading = tomTomPosition.getHeading();
         }
+        if (sourcePosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+            sourceHeading = nmeaPosition.getHeading();
+        }
 
         Double targetHeading = null;
         if (targetPosition instanceof Wgs84Position) {
@@ -288,6 +295,10 @@ public abstract class NavigationTestCase extends TestCase {
         if (targetPosition instanceof TomTomPosition) {
             TomTomPosition tomTomPosition = (TomTomPosition) targetPosition;
             targetHeading = tomTomPosition.getHeading();
+        }
+        if (targetPosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+            sourceHeading = nmeaPosition.getHeading();
         }
 
         if (targetFormat instanceof ColumbusV900Format) {
@@ -314,19 +325,127 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull("Heading " + index + " is not null: " + targetHeading, targetHeading);
     }
 
-    private static void compareAccuracy(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
-        if (!((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof Gpx10Format || sourceFormat instanceof Gpx11Format) &&
-                (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusV900Format || targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format)))
-            return;
-        Wgs84Position wgs84SourcePosition = (Wgs84Position) sourcePosition;
-        Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
-        assertEquals(wgs84TargetPosition.getHdop(), wgs84SourcePosition.getHdop());
-        if (!(sourceFormat instanceof GoPalTrackFormat)) {
-            assertEquals(wgs84TargetPosition.getPdop(), wgs84SourcePosition.getPdop());
-            assertEquals(wgs84TargetPosition.getVdop(), wgs84SourcePosition.getVdop());
+    private static void compareHdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+        Double sourceHdop = null;
+        if (sourcePosition instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+            sourceHdop = wgs84Position.getHdop();
         }
-        if (!(targetFormat instanceof ColumbusV900Format))
-            assertEquals("Satellites " + index + " does not match", wgs84TargetPosition.getSatellites(), wgs84SourcePosition.getSatellites());
+        if (sourcePosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+            sourceHdop = nmeaPosition.getHdop();
+        }
+
+        Double targetHdop = null;
+        if (targetPosition instanceof Wgs84Position) {
+            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+            targetHdop = wgs84TargetPosition.getHdop();
+        }
+        if (targetPosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+            sourceHdop = nmeaPosition.getHdop();
+        }
+
+        if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GoPalTrackFormat ||
+             sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+            (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GoPalTrackFormat ||
+             targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+            assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
+        } else
+            assertNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
+    }
+
+    private static void comparePdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+        Double sourcePdop = null;
+        if (sourcePosition instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+            sourcePdop = wgs84Position.getPdop();
+        }
+        if (sourcePosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+            sourcePdop = nmeaPosition.getPdop();
+        }
+
+        Double targetPdop = null;
+        if (targetPosition instanceof Wgs84Position) {
+            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+            targetPdop = wgs84TargetPosition.getPdop();
+        }
+        if (targetPosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+            sourcePdop = nmeaPosition.getPdop();
+        }
+
+        if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+                (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+            assertEquals("Pdop " + index + " does not match", targetPdop, sourcePdop);
+        } else if (sourceFormat instanceof GoPalTrackFormat) {
+            assertNull("Pdop " + index + " is not null: " + sourcePdop, sourcePdop);
+            assertNotNull("Pdop " + index + " is null", targetPdop);
+        } else
+            assertNull("Pdop " + index + " is not null: " + targetPdop, targetPdop);
+    }
+
+    private static void compareVdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+        Double sourceVdop = null;
+        if (sourcePosition instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+            sourceVdop = wgs84Position.getVdop();
+        }
+        if (sourcePosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+            sourceVdop = nmeaPosition.getVdop();
+        }
+
+        Double targetVdop = null;
+        if (targetPosition instanceof Wgs84Position) {
+            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+            targetVdop = wgs84TargetPosition.getVdop();
+        }
+        if (targetPosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+            sourceVdop = nmeaPosition.getVdop();
+        }
+
+        if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+            (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+            assertEquals("Vdop " + index + " does not match", targetVdop, sourceVdop);
+        } else if (sourceFormat instanceof GoPalTrackFormat) {
+            assertNull("Vdop " + index + " is not null: " + sourceVdop, sourceVdop);
+            assertNotNull("Vdop " + index + " is null", targetVdop);
+        } else
+            assertNull("Vdop " + index + " is not null: " + targetVdop, targetVdop);
+    }
+
+    private static void compareSatellites(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+        Integer sourceSatellites = null;
+        if (sourcePosition instanceof Wgs84Position) {
+            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+            sourceSatellites = wgs84Position.getSatellites();
+        }
+        if (sourcePosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+            sourceSatellites = nmeaPosition.getSatellites();
+        }
+
+        Integer targetSatellites = null;
+        if (targetPosition instanceof Wgs84Position) {
+            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+            targetSatellites = wgs84TargetPosition.getSatellites();
+        }
+        if (targetPosition instanceof NmeaPosition) {
+            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+            sourceSatellites = nmeaPosition.getSatellites();
+        }
+
+        if ((sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+            (targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+            assertEquals("Satellites " + index + " does not match", targetSatellites, sourceSatellites);
+        } else if (targetFormat instanceof GoPalTrackFormat) {
+            assertNull("Satellites " + index + " is not null: " + sourceSatellites, sourceSatellites);
+            assertNotNull("Satellites " + index + " is null", targetSatellites);
+        }  else
+            assertNull("Satellites " + index + " is not null: " + targetSatellites, targetSatellites);
     }
 
     private static String getAlanWaypointsAndRoutesPositionComment(BaseNavigationPosition position) {

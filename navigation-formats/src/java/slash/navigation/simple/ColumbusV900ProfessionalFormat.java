@@ -138,10 +138,8 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
                 height + SEPARATOR_CHAR +
                 speed + SEPARATOR_CHAR +
                 heading + SEPARATOR_CHAR +
-
                 "3D" + SEPARATOR_CHAR +
                 "SPS" + SEPARATOR_CHAR +
-
                 pdop + SEPARATOR_CHAR +
                 hdop + SEPARATOR_CHAR +
                 vdop + SEPARATOR_CHAR +

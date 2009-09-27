@@ -74,6 +74,8 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("$GPRMC,134012,A,4837.4374,N,903.4036,E,,,260707,,A*5A"));
         assertTrue(format.isPosition("$GPZDA,134012,26,07,07,,*49"));
         assertTrue(format.isPosition("$GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F"));
+        assertTrue(format.isPosition("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
+
         assertTrue(format.isPosition("$GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F"));
         assertTrue(format.isPosition("$GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D"));
         assertTrue(format.isPosition("$GPGGA,130441,5239,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6F"));
@@ -99,7 +101,6 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertFalse(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
 
-        assertFalse(format.isPosition("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
         assertFalse(format.isPosition("$GPGSV,2,1,08,05,40,250,50,09,85,036,51,22,16,285,36,17,,,00*4F"));
         assertFalse(format.isPosition("@Sonygps/ver1.0/wgs-84"));
         assertFalse(format.isPosition("$GPGGA,123613.957,,,,,0,00,,,M,0.0,M,,0000*59"));
@@ -147,6 +148,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertEquals(9.0567266, position.getLongitude());
         assertEquals(48.6239566, position.getLatitude());
         assertEquals(16.76, position.getElevation());
+        assertEquals(new Integer(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 13, 4, 41, 89);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -206,8 +208,9 @@ public class NmeaFormatTest extends NavigationTestCase {
     }
 
     public void testParseVTG() {
-        NmeaPosition position = format.parsePosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37");
+        NmeaPosition position = format.parsePosition("$GPVTG,32.19,T,,M,1.531,N,2.835,K,A*37");
         assertEquals(2.835, position.getSpeed());
+        assertEquals(32.19, position.getHeading());
         assertNull(position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
@@ -215,7 +218,9 @@ public class NmeaFormatTest extends NavigationTestCase {
 
     public void testParseGSA() {
         NmeaPosition position = format.parsePosition("$GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F");
-        // TODO HDOP...
+        assertEquals(4.7, position.getPdop());
+        assertEquals(4.4, position.getHdop());
+        assertEquals(1.5, position.getVdop());
     }
 
     public void testMerging() throws IOException {

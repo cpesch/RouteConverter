@@ -69,7 +69,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
                     "[012]" + SEPARATOR +
-                    "([\\d]*)" + SEPARATOR +           // Number of satellites in view, 00 - 12
+                    "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
                     "[\\d\\.]*" + SEPARATOR +
                     "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)  
                     "M" + SEPARATOR +
@@ -118,9 +118,9 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPVTG,138.7,T,,M,014.2,N,026.3,K,A*00
     private static final Pattern VTG_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "VTG" + SEPARATOR +
-                    "([\\d\\.]*)" + SEPARATOR +    // true course
+                    "([\\d\\.]*)" + SEPARATOR +   // true course
                     "T" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR +    // magnetic course
+                    "[\\d\\.]*" + SEPARATOR +     // magnetic course
                     "M" + SEPARATOR +     
                     "([\\d\\.]*)" + SEPARATOR +
                     "N" + SEPARATOR +
@@ -137,18 +137,15 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
-
-                    "\\d*" + SEPARATOR +
-                    "\\d*" + SEPARATOR +
-                    "\\d*" + SEPARATOR +
-                    "\\d*" + SEPARATOR +
-
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
-
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
+                    "\\d*" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +  // PDOP
                     "([\\d\\.]*)" + SEPARATOR +  // HDOP
                     "([\\d\\.]*)" +              // VDOP
@@ -221,9 +218,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             String westOrEast = ggaMatcher.group(5);
             String satellites = ggaMatcher.group(6);
             String altitude = ggaMatcher.group(7);
-            // TODO satellites
             NmeaPosition position = new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
                     Conversion.parseDouble(altitude), null, null, parseTime(time), null);
+            position.setSatellites(Conversion.parseInt(satellites));
             return position;
         }
 
@@ -266,10 +263,12 @@ public class NmeaFormat extends BaseNmeaFormat {
         Matcher gsaMatcher = GSA_PATTERN.matcher(line);
         if (gsaMatcher.matches()) {
             String pdop = gsaMatcher.group(1);
-            String hdop = gsaMatcher.group(1);
-            String vdop = gsaMatcher.group(1);
-            // TODO HDOP, PDOP, VDOP
+            String hdop = gsaMatcher.group(2);
+            String vdop = gsaMatcher.group(3);
             NmeaPosition position = new NmeaPosition(null, null, null, null, null, null, null, null, null);
+            position.setPdop(Conversion.parseDouble(pdop));
+            position.setHdop(Conversion.parseDouble(hdop));
+            position.setVdop(Conversion.parseDouble(vdop));
             return position;
         }
 

@@ -21,6 +21,9 @@
 package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.Wgs84Position;
+import slash.navigation.itn.TomTomPosition;
+import slash.navigation.gpx.GpxPosition;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
@@ -31,9 +34,10 @@ import slash.navigation.util.Conversion;
  */
 
 public class NmeaPosition extends BaseNavigationPosition {
-    private Double longitude, latitude, heading;
+    private Double longitude, latitude, heading, hdop, vdop, pdop;
     private String northOrSouth /*latitude*/, westOrEast /*longitude*/;
     private String comment;
+    protected Integer satellites;
 
     public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, Double heading, CompactCalendar time, String comment) {
         super(elevation, speed, time);
@@ -123,9 +127,67 @@ public class NmeaPosition extends BaseNavigationPosition {
         this.heading = heading;
     }
 
+   public Double getHdop() {
+        return hdop;
+    }
+
+    public void setHdop(Double hdop) {
+        this.hdop = hdop;
+    }
+
+    public Double getVdop() {
+        return vdop;
+    }
+
+    public void setVdop(Double vdop) {
+        this.vdop = vdop;
+    }
+
+    public Double getPdop() {
+        return pdop;
+    }
+
+    public void setPdop(Double pdop) {
+        this.pdop = pdop;
+    }
+
+    public Integer getSatellites() {
+        return satellites;
+    }
+
+    public void setSatellites(Integer satellites) {
+        this.satellites = satellites;
+    }
+
+
+    public GpxPosition asGpxPosition() {
+        GpxPosition position = super.asGpxPosition();
+        position.setHeading(getHeading());
+        position.setHdop(getHdop());
+        position.setPdop(getPdop());
+        position.setVdop(getVdop());
+        position.setSatellites(getSatellites());
+        return position;
+    }
 
     public NmeaPosition asNmeaPosition() {
         return this;
+    }
+
+    public TomTomPosition asTomTomRoutePosition() {
+        TomTomPosition position = super.asTomTomRoutePosition();
+        position.setHeading(getHeading());
+        return position;
+    }
+
+    public Wgs84Position asWgs84Position() {
+        Wgs84Position position = super.asWgs84Position();
+        position.setHeading(getHeading());
+        position.setHdop(getHdop());
+        position.setPdop(getPdop());
+        position.setVdop(getVdop());
+        position.setSatellites(getSatellites());
+        return position;
     }
 
 
@@ -142,8 +204,11 @@ public class NmeaPosition extends BaseNavigationPosition {
                 !(northOrSouth != null ? !northOrSouth.equals(that.northOrSouth) : that.northOrSouth != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
                 !(westOrEast != null ? !westOrEast.equals(that.westOrEast) : that.westOrEast != null) &&
-                !(time != null ? !time.equals(that.time) : that.time != null);
-    }
+                !(time != null ? !time.equals(that.time) : that.time != null) &&
+                !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
+                !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
+                !(vdop != null ? !vdop.equals(that.vdop) : that.vdop != null) &&
+                !(satellites != null ? !satellites.equals(that.satellites) : that.satellites != null);    }
 
     public int hashCode() {
         int result;
@@ -155,6 +220,10 @@ public class NmeaPosition extends BaseNavigationPosition {
         result = 31 * result + (heading != null ? heading.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (hdop != null ? hdop.hashCode() : 0);
+        result = 31 * result + (pdop != null ? pdop.hashCode() : 0);
+        result = 31 * result + (vdop != null ? vdop.hashCode() : 0);
+        result = 31 * result + (satellites != null ? satellites.hashCode() : 0);
         return result;
     }
 }
