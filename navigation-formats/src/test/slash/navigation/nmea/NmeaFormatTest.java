@@ -56,6 +56,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("$GPGGA,123613.957,,,,,0,00,,,M,0.0,M,,0000*59"));
         assertTrue(format.isValidLine("$GPRMC,123613.957,V,,,,,,,170807,,*29"));
 
+        assertTrue(format.isValidLine("$GPZDA,032910.331,07,08,2004,00,00*48"));
         assertTrue(format.isValidLine("$GPGGA,145524.054,,,,,0,00,,,M,0.0,M,,0000*54"));
         assertTrue(format.isValidLine("$GPRMC,145524.054,V,,,,,,,300807,,*21"));
 
@@ -194,11 +195,11 @@ public class NmeaFormatTest extends NavigationTestCase {
     }
 
     public void testParseZDA() {
-        NmeaPosition position = format.parsePosition("$GPZDA,032910,07,08,2004,00,00*48");
+        NmeaPosition position = format.parsePosition("$GPZDA,032910.542,07,08,2004,00,00*48");
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        CompactCalendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
+        CompactCalendar expectedCal = calendar(2004, 8, 7, 3, 29, 10, 542);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
@@ -271,7 +272,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
-        String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,,,-48.8,M,,M,,*77" + eol +
+        String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,,-48.8,M,,M,,*4F" + eol +
                 "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
                 "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
                 "$GPZDA,134012.000,26,07,07,,*57" + eol +

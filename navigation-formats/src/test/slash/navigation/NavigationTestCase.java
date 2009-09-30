@@ -104,7 +104,7 @@ public abstract class NavigationTestCase extends TestCase {
         return isReallyUnprecise(format) ||
                 format instanceof GarminPoiFormat || format instanceof GarminMapSource6Format ||
                 format instanceof GeoCachingFormat || format instanceof GarminMapSource5Format ||
-                format instanceof GarminPcx5Format;
+                format instanceof GarminPcx5Format || format instanceof GpsTunerFormat;
     }
 
     static boolean mayNotTransformBidirectionally(NavigationFormat first, NavigationFormat second) {
@@ -211,7 +211,7 @@ public abstract class NavigationTestCase extends TestCase {
 
         compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
-        compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
+        compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
@@ -249,8 +249,10 @@ public abstract class NavigationTestCase extends TestCase {
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof GarminPcx5Format) {
                 assertEquals((double) Math.round(sourcePosition.getElevation()), targetPosition.getElevation());
-            } else if (targetFormat instanceof OziExplorerReadFormat) {
+            } else if (targetFormat instanceof OziExplorerReadFormat || targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
+            } else if (targetFormat instanceof ColumbusV900Format) {
+                assertEquals(sourcePosition.getElevation().intValue(), targetPosition.getElevation().intValue());
             } else
                 assertEquals(sourcePosition.getElevation(), targetPosition.getElevation());
 
@@ -272,7 +274,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertTrue(targetPosition.getElevation() == null || targetPosition.getElevation() == 0.0);
     }
 
-    private static void compareHeading(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
+    private static void compareHeading(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         Double sourceHeading = null;
         if (sourcePosition instanceof Wgs84Position) {
             Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
@@ -298,12 +300,14 @@ public abstract class NavigationTestCase extends TestCase {
         }
         if (targetPosition instanceof NmeaPosition) {
             NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
-            sourceHeading = nmeaPosition.getHeading();
+            targetHeading = nmeaPosition.getHeading();
         }
 
-        if (targetFormat instanceof ColumbusV900Format) {
+        if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof GpsTunerFormat) {
             if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format ||
-                    sourceFormat instanceof GpxFormat || sourceFormat instanceof TomTomRouteFormat) {
+                sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
+                sourceFormat instanceof Gpx11Format || sourceFormat instanceof NmeaFormat || 
+                sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof TomTomRouteFormat) {
                 assertNotNull(sourceHeading);
                 assertNotNull(targetHeading);
                 assertEquals("Heading " + index + " does not match", targetHeading.intValue(), sourceHeading.intValue());
@@ -311,10 +315,15 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNull(sourceHeading);
                 assertNotNull(targetHeading);
             }
-        } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format ||
-                sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat ||
-                sourceFormat instanceof TomTomRouteFormat) &&
-                (targetFormat instanceof GoPalTrackFormat ||
+        } else if ((sourceFormat instanceof GoPalTrackFormat && targetFormat instanceof NmeaFormat) ||
+                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
+                (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) ||
+                (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat)) {
+            assertEquals("Heading " + index + " does not match", Conversion.roundFraction(sourceHeading, 0), Conversion.roundFraction(targetHeading, 0));
+        } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
+                sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
+                sourceFormat instanceof NmeaFormat || sourceFormat instanceof TomTomRouteFormat) &&
+                (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat ||
                  targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track))) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
         } else if (targetFormat instanceof Gpx11Format) {
@@ -344,14 +353,19 @@ public abstract class NavigationTestCase extends TestCase {
         }
         if (targetPosition instanceof NmeaPosition) {
             NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
-            sourceHdop = nmeaPosition.getHdop();
+            targetHdop = nmeaPosition.getHdop();
         }
 
         if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GoPalTrackFormat ||
              sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
             (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GoPalTrackFormat ||
-             targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+             targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
+             targetFormat instanceof NmeaFormat)) {
             assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
+        } else if (targetFormat instanceof GoPalTrackFormat ||
+            (sourceFormat instanceof CoPilotFormat && targetFormat instanceof ColumbusV900ProfessionalFormat) ||
+            (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof ColumbusV900Format)) {
+            assertNotNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
         } else
             assertNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
     }
@@ -374,15 +388,15 @@ public abstract class NavigationTestCase extends TestCase {
         }
         if (targetPosition instanceof NmeaPosition) {
             NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
-            sourcePdop = nmeaPosition.getPdop();
+            targetPdop = nmeaPosition.getPdop();
         }
 
         if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
-                (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+                (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof Gpx10Format ||
+                 targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
             assertEquals("Pdop " + index + " does not match", targetPdop, sourcePdop);
-        } else if (sourceFormat instanceof GoPalTrackFormat) {
+        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusV900Format) {
             assertNull("Pdop " + index + " is not null: " + sourcePdop, sourcePdop);
-            assertNull("Pdop " + index + " is null", targetPdop);
         } else
             assertNull("Pdop " + index + " is not null: " + targetPdop, targetPdop);
     }
@@ -405,15 +419,15 @@ public abstract class NavigationTestCase extends TestCase {
         }
         if (targetPosition instanceof NmeaPosition) {
             NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
-            sourceVdop = nmeaPosition.getVdop();
+            targetVdop = nmeaPosition.getVdop();
         }
 
         if ((sourceFormat instanceof ColumbusV900ProfessionalFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
-            (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+            (targetFormat instanceof ColumbusV900ProfessionalFormat || targetFormat instanceof Gpx10Format ||
+             targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
             assertEquals("Vdop " + index + " does not match", targetVdop, sourceVdop);
-        } else if (sourceFormat instanceof GoPalTrackFormat) {
+        } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusV900Format) {
             assertNull("Vdop " + index + " is not null: " + sourceVdop, sourceVdop);
-            assertNull("Vdop " + index + " is null", targetVdop);
         } else
             assertNull("Vdop " + index + " is not null: " + targetVdop, targetVdop);
     }
@@ -436,14 +450,14 @@ public abstract class NavigationTestCase extends TestCase {
         }
         if (targetPosition instanceof NmeaPosition) {
             NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
-            sourceSatellites = nmeaPosition.getSatellites();
+            targetSatellites = nmeaPosition.getSatellites();
         }
 
-        if ((sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
-            (targetFormat instanceof GpxFormat || targetFormat instanceof NmeaFormat)) {
+        if ((sourceFormat instanceof GpxFormat || sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof NmeaFormat) &&
+            (targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
+             targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat)) {
             assertEquals("Satellites " + index + " does not match", targetSatellites, sourceSatellites);
         } else if (targetFormat instanceof GoPalTrackFormat) {
-            assertNull("Satellites " + index + " is not null: " + sourceSatellites, sourceSatellites);
             assertNotNull("Satellites " + index + " is null", targetSatellites);
         }  else
             assertNull("Satellites " + index + " is not null: " + targetSatellites, targetSatellites);
@@ -552,9 +566,16 @@ public abstract class NavigationTestCase extends TestCase {
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(trimSpeedComment(targetPosition.getComment()), 50));
             else if (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Route))
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 8)), trim(trimSpeedComment(targetPosition.getComment()), 8));
-            else if (targetFormat instanceof TomTomRouteFormat)
-                assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetPosition.getComment());
-            else if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof MagellanExploristFormat ||
+            else if (targetFormat instanceof TomTomRouteFormat) {
+                String targetComment = targetPosition.getComment();
+                // strip tripmaster prefix if required
+                int colonIndex = targetComment.lastIndexOf(" : ");
+                if (colonIndex == -1)
+                    colonIndex = targetComment.lastIndexOf(" - ");
+                if (colonIndex != -1) 
+                    targetComment = targetComment.substring(colonIndex + 3);
+                assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll("\\|", ";"), targetComment);
+            } else if (targetFormat instanceof ColumbusV900Format || targetFormat instanceof MagellanExploristFormat ||
                     targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment().replaceAll(",", ";"), targetPosition.getComment());
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
@@ -599,13 +620,18 @@ public abstract class NavigationTestCase extends TestCase {
     @SuppressWarnings({"UnusedDeclaration"})
     private static void compareSpeed(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getSpeed() != null && targetPosition.getSpeed() != null) {
-            if (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) {
+            if ((sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
+                (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat)) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.05);
+            } else if ((sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GoPalTrackFormat ||
+                    sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
+                    targetFormat instanceof ColumbusV900Format) {
+                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
+            } else if (sourceFormat instanceof ColumbusV900Format && targetFormat instanceof NmeaFormat) {
+                assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.1);
             } else if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
                     (sourceFormat instanceof Gpx10Format && targetFormat instanceof AlanTrackLogFormat)) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
-            } else if (sourceFormat instanceof GoPalTrackFormat && targetFormat instanceof ColumbusV900Format) {
-                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
                 assertEquals("Speed " + index + " does not match", Conversion.roundFraction(sourcePosition.getSpeed(), 1), Conversion.roundFraction(targetPosition.getSpeed(), 1));

@@ -58,6 +58,10 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from-gopal.trk");
     }
 
+    public void testGpsTunerReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-gpstuner.trk");
+    }
+
     public void testGpx11ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx");
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx");
@@ -183,10 +187,6 @@ public class ReadWriteRoundtripTest extends ReadWriteBase {
 
     public void testTourReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.tour");
-    }
-
-    public void testTrkReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-gpstuner.trk");
     }
 
     public void testTomTomRouteReadWriteRoundtrip() throws IOException {

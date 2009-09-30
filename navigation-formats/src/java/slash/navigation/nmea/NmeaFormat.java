@@ -103,13 +103,13 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "(.*)" + 
                     END_OF_LINE);
 
-    // $GPZDA,032910,07,08,2004,00,00*48
+    // $GPZDA,032910.542,07,08,2004,00,00*48
     private static final Pattern ZDA_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "ZDA" + SEPARATOR +
-                    "(\\d*)" + SEPARATOR +     // UTC Time
-                    "(\\d*)" + SEPARATOR +     // day
-                    "(\\d*)" + SEPARATOR +     // month
-                    "(\\d*)" + SEPARATOR +     // year
+                    "([\\d\\.]*)" + SEPARATOR + // UTC Time
+                    "(\\d*)" + SEPARATOR +      // day
+                    "(\\d*)" + SEPARATOR +      // month
+                    "(\\d*)" + SEPARATOR +      // year
                     "\\d*" + SEPARATOR +
                     "\\d*" +
                     END_OF_LINE);
@@ -165,27 +165,27 @@ public class NmeaFormat extends BaseNmeaFormat {
     }
 
     protected boolean isPosition(String line) {
-        Matcher rmcMatcher = NmeaFormat.RMC_PATTERN.matcher(line);
+        Matcher rmcMatcher = RMC_PATTERN.matcher(line);
         if (rmcMatcher.matches())
             return hasValidChecksum(line);
 
-        Matcher ggaMatcher = NmeaFormat.GGA_PATTERN.matcher(line);
+        Matcher ggaMatcher = GGA_PATTERN.matcher(line);
         if (ggaMatcher.matches())
             return hasValidChecksum(line);
 
-        Matcher wplMatcher = NmeaFormat.WPL_PATTERN.matcher(line);
+        Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
             return hasValidChecksum(line);
 
-        Matcher zdaMatcher = NmeaFormat.ZDA_PATTERN.matcher(line);
+        Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
         if (zdaMatcher.matches())
             return hasValidChecksum(line);
 
-        Matcher vtgMatcher = NmeaFormat.VTG_PATTERN.matcher(line);
+        Matcher vtgMatcher = VTG_PATTERN.matcher(line);
         if (vtgMatcher.matches())
             return hasValidChecksum(line);
 
-        Matcher gsaMatcher = NmeaFormat.GSA_PATTERN.matcher(line);
+        Matcher gsaMatcher = GSA_PATTERN.matcher(line);
         return gsaMatcher.matches() && hasValidChecksum(line);
     }
 
@@ -306,11 +306,18 @@ public class NmeaFormat extends BaseNmeaFormat {
         return ALTITUDE_AND_SPEED_NUMBER_FORMAT.format(speed);
     }
 
+    private String formatAccuracy(Double accuracy) {
+        if (accuracy == null)
+            return "";
+        return ALTITUDE_AND_SPEED_NUMBER_FORMAT.format(accuracy);
+    }
+
     protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
         String longitude = formatLongitude(position.getLongitudeAsDdmm());
         String westOrEast = position.getWestOrEast();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
+        String satellites = position.getSatellites() != null ? Conversion.formatIntAsString(position.getSatellites()) : "";
         String comment = formatComment(position.getComment());
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
@@ -320,7 +327,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                "1" + SEPARATOR + SEPARATOR + SEPARATOR + altitude + SEPARATOR + "M" +
+                "1" + SEPARATOR + satellites + SEPARATOR + SEPARATOR + altitude + SEPARATOR + "M" +
                 SEPARATOR + SEPARATOR + "M" + SEPARATOR + SEPARATOR;
         writeSentence(writer, gga);
 
@@ -355,6 +362,15 @@ public class NmeaFormat extends BaseNmeaFormat {
             writeSentence(writer, vtg);
         }
 
-        // TODO add GSA
+        if (position.getHdop() != null || position.getPdop() != null || position.getVdop() != null) {
+            String hdop = formatAccuracy(position.getHdop());
+            String pdop = formatAccuracy(position.getPdop());
+            String vdop = formatAccuracy(position.getVdop());
+            // $GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F
+            String gsa = "GPGSA" + SEPARATOR + "A" + SEPARATOR + "2" + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR +
+                    SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR +
+                    SEPARATOR + pdop + SEPARATOR + hdop + SEPARATOR + vdop;
+            writeSentence(writer, gsa);
+        }
     }
 }

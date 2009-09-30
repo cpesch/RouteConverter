@@ -52,8 +52,9 @@ public class GpsTunerFormatTest extends NavigationTestCase {
         CompactCalendar expectedCal = calendar(1172932595000L);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
-        assertEquals(77.56176, position.getSpeed());
         assertEquals(expectedCal, position.getTime());
+        assertEquals(77.56176, position.getSpeed());
+        assertEquals(279.0, position.getHeading());
         assertNull(position.getComment());
     }
 

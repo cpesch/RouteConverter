@@ -37,19 +37,16 @@ import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
-import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
-import slash.navigation.tcx.*;
+import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ConvertTest extends BaseConvertTest {
 

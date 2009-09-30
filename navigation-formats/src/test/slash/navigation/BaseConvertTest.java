@@ -20,30 +20,11 @@
 
 package slash.navigation;
 
-import slash.navigation.babel.*;
-import slash.navigation.bcr.MTP0607Format;
-import slash.navigation.bcr.MTP0809Format;
-import slash.navigation.copilot.CoPilot6Format;
-import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.gopal.GoPalRouteFormat;
-import slash.navigation.gopal.GoPalTrackFormat;
-import slash.navigation.gpx.Gpx10Format;
-import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.itn.TomTom5RouteFormat;
-import slash.navigation.itn.TomTom8RouteFormat;
-import slash.navigation.klicktel.KlickTelRouteFormat;
-import slash.navigation.kml.*;
-import slash.navigation.mm.MagicMapsIktFormat;
-import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.MagellanExploristFormat;
-import slash.navigation.nmea.MagellanRouteFormat;
-import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.nmn.*;
-import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.*;
-import slash.navigation.tcx.*;
-import slash.navigation.tour.TourFormat;
-import slash.navigation.viamichelin.ViaMichelinFormat;
+import slash.navigation.babel.MicrosoftAutoRouteFormat;
+import slash.navigation.babel.OziExplorerReadFormat;
+import slash.navigation.babel.OziExplorerWriteFormat;
+import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx1Format;
 
 import java.io.File;
 import java.io.IOException;

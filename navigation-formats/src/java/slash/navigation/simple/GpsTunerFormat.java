@@ -52,7 +52,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "\\d+" + WHITE_SPACE + 
+                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE +
                     END_OF_LINE);
 
 
@@ -100,8 +100,11 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String altitude = lineMatcher.group(3);
         String speed = lineMatcher.group(4);
         String time = lineMatcher.group(5);
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+        String heading = lineMatcher.group(6);
+        Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
                 Conversion.parseDouble(altitude), Conversion.parseDouble(speed), parseTime(time), null);
+        position.setHeading(Conversion.parseDouble(heading));
+        return position;
     }
 
 
@@ -122,7 +125,8 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String altitude = Conversion.formatElevationAsString(position.getElevation());
         String speed = Conversion.formatSpeedAsString(position.getSpeed());
         String time = formatTime(position.getTime());
+        String heading = position.getHeading() != null ? Conversion.formatIntAsString(position.getHeading().intValue()) : "0";
         writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + altitude + SEPARATOR_CHAR +
-                speed + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + "0");
+                speed + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + heading);
     }
 }
