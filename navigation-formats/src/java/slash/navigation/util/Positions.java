@@ -32,7 +32,7 @@ import java.util.List;
  * @author Christian Pesch, Malte Neumann
  */
 
-public class Calculation {
+public class Positions {
     private static final double DIV_BY_ZERO_AVOIDANCE_OFFSET = 0.000000000001;
 
     private static int[] douglasPeuckerSimplify(List<? extends BaseNavigationPosition> positions, int from, int to, double threshold) {

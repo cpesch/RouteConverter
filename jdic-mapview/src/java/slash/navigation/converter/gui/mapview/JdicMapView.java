@@ -26,7 +26,7 @@ import org.jdesktop.jdic.browser.WebBrowserListener;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.Calculation;
+import slash.navigation.util.Positions;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.Externalization;
 import slash.navigation.util.Platform;
@@ -263,8 +263,8 @@ public class JdicMapView extends BaseMapView {
         if ((positions == null) || (positions.size() < 1))
             return 0;
 
-        Wgs84Position northEast = Calculation.northEast(positions);
-        Wgs84Position southWest = Calculation.southWest(positions);
+        Wgs84Position northEast = Positions.northEast(positions);
+        Wgs84Position southWest = Positions.southWest(positions);
 
         StringBuffer buffer = new StringBuffer();
         buffer.append("map.getBoundsZoomLevel(new GLatLngBounds(").

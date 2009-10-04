@@ -672,7 +672,7 @@ public abstract class ConvertPanel {
         BaseNavigationPosition second = getPositionsModel().getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
-        return Calculation.center(Arrays.asList(second, position));
+        return Positions.center(Arrays.asList(second, position));
     }
 
     private void addPosition() {

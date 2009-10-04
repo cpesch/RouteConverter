@@ -25,7 +25,7 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.util.Calculation;
+import slash.navigation.util.Positions;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
@@ -562,7 +562,7 @@ public abstract class BaseMapView implements MapView {
     public BaseNavigationPosition getCenter() {
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
-        return northEast != null && southWest != null ? Calculation.center(Arrays.asList(northEast, southWest)) : null;
+        return northEast != null && southWest != null ? Positions.center(Arrays.asList(northEast, southWest)) : null;
     }
 
     protected abstract BaseNavigationPosition getNorthEastBounds();
@@ -592,7 +592,7 @@ public abstract class BaseMapView implements MapView {
             if (zoomLevel <= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
                 double threshold = ZOOMLEVEL_SCALE[zoomLevel] / 2500.0;
                 long start = System.currentTimeMillis();
-                int[] significantPositions = Calculation.getSignificantPositions(positions, threshold);
+                int[] significantPositions = Positions.getSignificantPositions(positions, threshold);
                 long end = System.currentTimeMillis();
                 log.info("zoomLevel " + zoomLevel + " < " + MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION + " threshold " + threshold + " significant positions " + significantPositions.length + " calculated in " + (end - start) + " milliseconds");
                 for (int significantPosition : significantPositions)
@@ -659,7 +659,7 @@ public abstract class BaseMapView implements MapView {
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (BaseNavigationPosition position : positions) {
-            if (Calculation.contains(northEast, southWest, position)) {
+            if (Positions.contains(northEast, southWest, position)) {
                 result.add(position);
             }
         }
@@ -858,13 +858,13 @@ public abstract class BaseMapView implements MapView {
 
         // if there are positions center on first start or if we have to recenter
         if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
-            Wgs84Position northEast = Calculation.northEast(positions);
-            Wgs84Position southWest = Calculation.southWest(positions);
+            Wgs84Position northEast = Positions.northEast(positions);
+            Wgs84Position southWest = Positions.southWest(positions);
             buffer.append("var zoomLevel = map.getBoundsZoomLevel(new GLatLngBounds(").
                     append("new GLatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append("),").
                     append("new GLatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(")").
                     append("));\n");
-            Wgs84Position center = Calculation.center(positions);
+            Wgs84Position center = Positions.center(positions);
             buffer.append("map.setCenter(new GLatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("), zoomLevel);");
             ignoreNextZoomCallback = true;

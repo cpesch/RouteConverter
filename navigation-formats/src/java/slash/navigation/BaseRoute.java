@@ -31,7 +31,7 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnRoute;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.util.Calculation;
+import slash.navigation.util.Positions;
 import slash.navigation.util.Range;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.viamichelin.ViaMichelinRoute;
@@ -153,7 +153,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public int[] getInsignificantPositions(double threshold) {
-        int[] significantPositions = Calculation.getSignificantPositions(getPositions(), threshold);
+        int[] significantPositions = Positions.getSignificantPositions(getPositions(), threshold);
         BitSet bitset = new BitSet(getPositionCount());
         for (int significantPosition : significantPositions)
             bitset.set(significantPosition);
