@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.hex;
+package slash.common.hex;
 
 import java.io.IOException;
 import java.io.OutputStream;
