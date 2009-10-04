@@ -1120,11 +1120,10 @@
             </group>
 
             <group title="Utilities">
-                <package name="slash.navigation.util*"/>
-            </group>
-
-            <group title="JAXB">
+                <package name="slash.navigation.hex*"/>
                 <package name="slash.navigation.jaxb*"/>
+                <package name="slash.navigation.log*"/>
+                <package name="slash.navigation.util*"/>
             </group>
 
             <link href="http://java.sun.com/javase/6/docs/api/"/>
