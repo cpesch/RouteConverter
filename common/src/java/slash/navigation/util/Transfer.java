@@ -35,7 +35,7 @@ import java.math.BigInteger;
  */
 
 public class Transfer {
-    public static final Preferences preferences = Preferences.userNodeForPackage(Conversion.class);
+    public static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
 
     private Transfer() {}
 

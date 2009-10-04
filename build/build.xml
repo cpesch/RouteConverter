@@ -1108,6 +1108,7 @@
             <bottom>Created by Christian Pesch</bottom>
 
             <fileset dir="${common.src.java}"/>
+            <fileset dir="${jaxb6.src.java}"/>
             <fileset dir="${navigation-formats.src.java}"/>
 
             <group title="Core">
@@ -1120,6 +1121,10 @@
 
             <group title="Utilities">
                 <package name="slash.navigation.util*"/>
+            </group>
+
+            <group title="JAXB">
+                <package name="slash.navigation.jaxb*"/>
             </group>
 
             <link href="http://java.sun.com/javase/6/docs/api/"/>
