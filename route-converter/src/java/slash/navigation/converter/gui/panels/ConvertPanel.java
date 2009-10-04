@@ -444,7 +444,10 @@ public abstract class ConvertPanel {
                     }
                 } catch (BabelException e) {
                     r.handleBabelError(e);
+                } catch (OutOfMemoryError e) {
+                    r.handleOutOfMemoryError();
                 } catch (Throwable t) {
+                    log.severe("Open error: " + t.getMessage());
                     r.handleOpenError(t, path);
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -494,6 +497,10 @@ public abstract class ConvertPanel {
                             r.handleUnsupportedFormat(path);
                         }
                     }
+                } catch (BabelException e) {
+                    r.handleBabelError(e);
+                } catch (OutOfMemoryError e) {
+                    r.handleOutOfMemoryError();
                 } catch (Throwable t) {
                     log.severe("Append error: " + t.getMessage());
                     r.handleOpenError(t, urls);

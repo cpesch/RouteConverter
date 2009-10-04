@@ -70,4 +70,8 @@ public class Platform {
             return "x86";
         return canonical(osArch);
     }
+
+    public static long getMaximumMemory() {
+        return Runtime.getRuntime().maxMemory() / (1024 * 1000 /* to get 2^n numbers */);
+    }
 }

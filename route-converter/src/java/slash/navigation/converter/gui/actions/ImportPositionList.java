@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.NavigationFileParser;
+import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
@@ -109,9 +110,13 @@ public class ImportPositionList implements ActionListener {
                             r.handleUnsupportedFormat(path);
                         }
                     }
-                } catch (Exception e) {
-                    log.severe("Append error: " + e.getMessage());
-                    r.handleOpenError(e, urls);
+                } catch (BabelException e) {
+                    r.handleBabelError(e);
+                } catch (OutOfMemoryError e) {
+                    r.handleOutOfMemoryError();
+                } catch (Throwable t) {
+                    log.severe("Import error: " + t.getMessage());
+                    r.handleOpenError(t, urls);
                 }
             }
         }, "FileImporter").start();

@@ -500,7 +500,7 @@
         <root url="jar://$PROJECT_DIR$/../thirdparty/djproject/nativeswing-swt/djnativeswing-swt-0.9.8-src.zip!/" />
       </SOURCES>
     </library>
- <library name="jfreechart/jfreechart">
+    <library name="jfreechart/jfreechart">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-stripped.jar!/" />
       </CLASSES>

@@ -133,7 +133,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     protected void startup() {
-        log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
+        log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() +  " and " + Platform.getMaximumMemory() + " MByte heap");
         show();
         new Updater().implicitCheck(frame);
         parseArgs(args);
@@ -392,6 +392,20 @@ public abstract class RouteConverter extends SingleFrameApplication {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    public void handleOutOfMemoryError() {
+        // get some air to breath
+        System.gc();
+        System.runFinalization();
+
+        final long limitBefore = Platform.getMaximumMemory();
+        final long limitAfter = limitBefore * 2;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         });
     }
