@@ -22,7 +22,7 @@ package slash.navigation.bcr;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.util.RouteComments;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -382,7 +382,7 @@ public class BcrRouteTest extends NavigationTestCase {
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals(Conversion.formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
+            assertEquals(Transfer.formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
         }
     }
 

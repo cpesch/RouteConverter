@@ -21,8 +21,8 @@
 package slash.navigation.simple;
 
 import slash.navigation.*;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -78,8 +78,8 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
-        date = Conversion.trim(date);
-        time = Conversion.trim(time);
+        date = Transfer.trim(date);
+        time = Transfer.trim(time);
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;

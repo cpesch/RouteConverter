@@ -22,7 +22,7 @@ package slash.navigation.copilot;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.Wgs84Route;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -50,9 +50,9 @@ public class CoPilot6Format extends CoPilotFormat {
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             writer.println(START_STOP + NAME_VALUE_SEPARATOR + "Stop " + i);
-            String longitude = Conversion.formatIntAsString(position.getLongitude() != null ? (int)(position.getLongitude() * INTEGER_FACTOR) : null);
+            String longitude = Transfer.formatIntAsString(position.getLongitude() != null ? (int)(position.getLongitude() * INTEGER_FACTOR) : null);
             writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
-            String latitude = Conversion.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
+            String latitude = Transfer.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
             writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
             String comment = position.getComment();
             writer.println(CITY + NAME_VALUE_SEPARATOR + comment);

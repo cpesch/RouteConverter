@@ -22,7 +22,7 @@ package slash.navigation.simple;
 
 import slash.navigation.*;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -112,11 +112,11 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String organization = Conversion.trim(lineMatcher.group(3));
-        String postalCode = Conversion.trim(lineMatcher.group(5));
-        String city = Conversion.trim(lineMatcher.group(6));
-        String street = Conversion.trim(lineMatcher.group(7));
-        String houseNo = Conversion.trim(lineMatcher.group(8));
+        String organization = Transfer.trim(lineMatcher.group(3));
+        String postalCode = Transfer.trim(lineMatcher.group(5));
+        String city = Transfer.trim(lineMatcher.group(6));
+        String street = Transfer.trim(lineMatcher.group(7));
+        String houseNo = Transfer.trim(lineMatcher.group(8));
         String time = lineMatcher.group(9);
         String comment = (organization != null ? organization + ": " : "") +
                 (postalCode != null ? postalCode + " " : "") +
@@ -125,7 +125,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 (houseNo != null ? houseNo : "");
 
         CompactCalendar calendar = parseTime(time);
-        Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+        Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
                 null, null, calendar, comment);
         position.setStartDate(startDate);
         return position;

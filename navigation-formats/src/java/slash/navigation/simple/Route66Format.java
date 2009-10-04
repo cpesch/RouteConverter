@@ -19,8 +19,8 @@
 */
 package slash.navigation.simple;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 import slash.navigation.*;
 
 import java.io.PrintWriter;
@@ -70,10 +70,10 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = Conversion.trim(lineMatcher.group(3));
+        String comment = Transfer.trim(lineMatcher.group(3));
         if (comment != null && comment.toUpperCase().equals(comment))
-            comment = Conversion.toMixedCase(comment);
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+            comment = Transfer.toMixedCase(comment);
+        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
                 null, null, null, comment);
     }
 
@@ -82,8 +82,8 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 6);
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
+        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
         String comment = formatForRoute66(position.getComment());
         writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + "\"" + comment + "\"");
     }

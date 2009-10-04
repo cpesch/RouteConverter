@@ -2,7 +2,7 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -79,10 +79,10 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
             String time = matcher.group(6);
             String comment = matcher.group(7);
             if (comment != null && comment.toUpperCase().equals(comment))
-                comment = Conversion.toMixedCase(comment);
+                comment = Transfer.toMixedCase(comment);
             String date = matcher.group(8);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    Double.parseDouble(altitude), null, null, parseDateAndTime(date, time), Conversion.trim(comment));
+            return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
+                    Double.parseDouble(altitude), null, null, parseDateAndTime(date, time), Transfer.trim(comment));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

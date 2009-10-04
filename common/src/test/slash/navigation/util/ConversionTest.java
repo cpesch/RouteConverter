@@ -22,8 +22,6 @@ package slash.navigation.util;
 
 import slash.navigation.TestCase;
 
-import java.math.BigDecimal;
-
 public class ConversionTest extends TestCase {
     public void testFeetToMeters() {
         assertEquals(4.572, Conversion.feetToMeters(15));
@@ -110,82 +108,4 @@ public class ConversionTest extends TestCase {
         assertEquals(48.6239566, Conversion.ddmm2degrees(4837.4374));
         assertEquals(9.0557233, Conversion.ddmm2degrees(903.3434));
     }
-
-    public void testCeiling() {
-        assertEquals(3, Conversion.ceiling(184, 90, true));
-        assertEquals(1, Conversion.ceiling(0, 1, true));
-        assertEquals(3, Conversion.ceiling(184, 90, false));
-        assertEquals(0, Conversion.ceiling(0, 1, false));
-        assertEquals(0, Conversion.ceiling(0, 20, false));
-        assertEquals(1, Conversion.ceiling(1, 20, false));
-    }
-
-    public void testRoundFraction() {
-        assertEquals(1.0, Conversion.roundFraction(1.1, 0));
-        assertEquals(1.1, Conversion.roundFraction(1.1, 1));
-        assertEquals(11.0, Conversion.roundFraction(11.1, 0));
-        assertEquals(11.1, Conversion.roundFraction(11.1, 1));
-        assertEquals(1.004, Conversion.roundFraction(1.004, 3));
-        assertEquals(1.004, Conversion.roundFraction(1.0044, 3));
-        assertEquals(1.005, Conversion.roundFraction(1.0045, 3));
-        assertEquals(1.005, Conversion.roundFraction(1.005, 3));
-    }
-
-    public void testFormatDoubleAsString() {
-        assertEquals("0.001", Conversion.formatDoubleAsString(0.001));
-        assertEquals("0.0001", Conversion.formatDoubleAsString(0.0001));
-        assertEquals("0.00001", Conversion.formatDoubleAsString(0.00001));
-        assertEquals("0.000001", Conversion.formatDoubleAsString(0.000001));
-        assertEquals("0.0000001", Conversion.formatDoubleAsString(0.0000001));
-
-        assertEquals("1.00000", Conversion.formatDoubleAsString(1.0, 5));
-        assertEquals("1.50000", Conversion.formatDoubleAsString(1.5, 5));
-        assertEquals("1.05000", Conversion.formatDoubleAsString(1.05, 5));
-        assertEquals("1.00500", Conversion.formatDoubleAsString(1.005, 5));
-        assertEquals("1.00005", Conversion.formatDoubleAsString(1.00005, 5));
-        assertEquals("1.00000", Conversion.formatDoubleAsString(1.000005, 5));
-        assertEquals("1.00000", Conversion.formatDoubleAsString(1.0000005, 5));
-    }
-
-    public void testFormatIntAsString() {
-        assertEquals("1", Conversion.formatIntAsString(1, 1));
-        assertEquals("01", Conversion.formatIntAsString(1, 2));
-        assertEquals("001", Conversion.formatIntAsString(1, 3));
-
-        assertEquals("100", Conversion.formatIntAsString(100, 1));
-        assertEquals("100", Conversion.formatIntAsString(100, 2));
-        assertEquals("100", Conversion.formatIntAsString(100, 3));
-        assertEquals("0100", Conversion.formatIntAsString(100, 4));
-        assertEquals("00100", Conversion.formatIntAsString(100, 5));
-    }
-
-    public void testWidthInDigits() {
-        assertEquals(1, Conversion.widthInDigits(1));
-        assertEquals(3, Conversion.widthInDigits(123));
-        assertEquals(5, Conversion.widthInDigits(12345));
-    }
-
-    public void testParseStringAsDouble() {
-        assertEquals(1.0, Conversion.parseDouble("1.0"));
-        assertEquals(1.0, Conversion.parseDouble("01.0"));
-        assertEquals(1.0, Conversion.parseDouble("1.00"));
-
-        assertEquals(0.00001, Conversion.parseDouble("0.00001"));
-        assertEquals(0.00001, Conversion.parseDouble("0.1E-4"));
-        assertEquals(0.000001, Conversion.parseDouble("0.1E-5"));
-    }
-
-    public void testFormatDoubleAsBigDecimal() {
-        assertEquals(new BigDecimal("1.0"), Conversion.formatDouble(1.0, 5));
-        assertEquals(new BigDecimal("1.5"), Conversion.formatDouble(1.5, 5));
-        assertEquals(new BigDecimal("1.05"), Conversion.formatDouble(1.05, 5));
-        assertEquals(new BigDecimal("1.005"), Conversion.formatDouble(1.005, 5));
-        assertEquals(new BigDecimal("1.00004"), Conversion.formatDouble(1.00004, 5));
-        assertEquals(new BigDecimal("1.000044"), Conversion.formatDouble(1.000044, 5));
-        assertEquals(new BigDecimal("1.000045"), Conversion.formatDouble(1.000045, 5));
-        assertEquals(new BigDecimal("1.00005"), Conversion.formatDouble(1.00005, 5));
-        assertEquals(new BigDecimal("1.000004"), Conversion.formatDouble(1.000004, 5));
-        assertEquals(new BigDecimal("1.000005"), Conversion.formatDouble(1.000005, 5));
-    }
-
 }

@@ -24,8 +24,8 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.XmlNavigationFormat;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;
@@ -65,16 +65,16 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
     }
 
     private String parseComment(Poi poi) {
-        String comment = Conversion.trim(poi.getCpCity());
-        String address = Conversion.trim(poi.getAddress());
+        String comment = Transfer.trim(poi.getCpCity());
+        String address = Transfer.trim(poi.getAddress());
         if (address != null)
             comment = comment != null ? comment + " " + address : address;
-        String name = Conversion.trim(poi.getName());
+        String name = Transfer.trim(poi.getName());
         if (name != null)
             comment = comment != null ? comment + " " + name : name;
         Description description = poi.getDescription();
         if (description != null) {
-            String descriptionStr = Conversion.trim(description.toString());
+            String descriptionStr = Transfer.trim(description.toString());
             if (descriptionStr != null)
                 comment = comment != null ? comment + " " + descriptionStr : descriptionStr;
         }
@@ -89,12 +89,12 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
                 Itinerary itinerary = (Itinerary) itineraryOrPoi;
                 routeName = itinerary.getName();
                 for (Step step : itinerary.getStep()) {
-                    positions.add(new Wgs84Position(Conversion.parseDouble(step.getLongitude()), Conversion.parseDouble(step.getLatitude()), null, null, null, step.getName()));
+                    positions.add(new Wgs84Position(Transfer.parseDouble(step.getLongitude()), Transfer.parseDouble(step.getLatitude()), null, null, null, step.getName()));
                 }
             }
             if (itineraryOrPoi instanceof Poi) {
                 Poi poi = (Poi) itineraryOrPoi;
-                positions.add(new Wgs84Position(Conversion.parseDouble(poi.getLongitude()), Conversion.parseDouble(poi.getLatitude()), null, null, null, parseComment(poi)));
+                positions.add(new Wgs84Position(Transfer.parseDouble(poi.getLongitude()), Transfer.parseDouble(poi.getLatitude()), null, null, null, parseComment(poi)));
             }    
         }
         return new ViaMichelinRoute(routeName, positions);
@@ -124,8 +124,8 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         poiList.getItineraryOrPoi().add(itinerary);
         for (Wgs84Position position : route.getPositions()) {
             Step step = objectFactory.createStep();
-            step.setLongitude(Conversion.formatPositionAsString(position.getLongitude()));
-            step.setLatitude(Conversion.formatPositionAsString(position.getLatitude()));
+            step.setLongitude(Transfer.formatPositionAsString(position.getLongitude()));
+            step.setLatitude(Transfer.formatPositionAsString(position.getLatitude()));
             step.setName(position.getComment());
             itinerary.getStep().add(step);
         }

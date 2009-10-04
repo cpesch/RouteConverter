@@ -22,7 +22,7 @@ package slash.navigation.nmn;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.util.regex.Matcher;
 
@@ -69,10 +69,10 @@ public class NmnPosition extends Wgs84Position {
 
         Matcher matcher = NmnFormat.COMMENT_PATTERN.matcher(NmnFormat.escapeSeparator(comment));
         if (matcher.matches()) {
-            this.comment = Conversion.trim(matcher.group(2));
-            zip = Conversion.trim(matcher.group(1));
-            street = Conversion.trim(matcher.group(3));
-            number = Conversion.trim(matcher.group(4));
+            this.comment = Transfer.trim(matcher.group(2));
+            zip = Transfer.trim(matcher.group(1));
+            street = Transfer.trim(matcher.group(3));
+            number = Transfer.trim(matcher.group(4));
         }
     }
 

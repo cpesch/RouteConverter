@@ -26,7 +26,7 @@ import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -150,7 +150,7 @@ public class GpxFormatTest extends NavigationTestCase {
         ObjectFactory gpxFactory = new ObjectFactory();
         slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
         ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(tbFactory.createSpeed(Conversion.formatDouble(123.45, 2)));
+        extensionsType.getAny().add(tbFactory.createSpeed(Transfer.formatDouble(123.45, 2)));
         GpxType gpx = gpxFactory.createGpxType();
         gpx.setExtensions(extensionsType);
         assertNotNull(gpx);

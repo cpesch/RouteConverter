@@ -20,25 +20,17 @@
 
 package slash.navigation.util;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.StringTokenizer;
-import java.util.prefs.Preferences;
-
 /**
- * Provides conversion functionality.
+ * Provides geo conversion functionality.
  *
  * @author Christian Pesch
  */
 
 public class Conversion {
-    private static final Preferences preferences = Preferences.userNodeForPackage(Conversion.class);
+    private Conversion() {}
 
     /* 6371014 would be a better value, but this seems to be used by
-      Map&Guide Tourenplaner when exporting to XML. */
+       Map&Guide Tourenplaner when exporting to XML. */
     private static final double EARTH_RADIUS = 6371000.0;
 
     private static final double METER_OF_A_FEET = 0.3048;
@@ -55,6 +47,13 @@ public class Conversion {
         return Math.floor(wgs84 * 100000.0) / 100000.0;
     }
 
+    private static long roundMercator(double wgs84, double mercator) {
+        if (wgs84 > 0.0)
+            return Math.round(Math.ceil(mercator));
+        else
+            return Math.round(Math.floor(mercator));
+    }
+
     // see http://en.wikipedia.org/wiki/Mercator_projection
 
     public static double mercatorXToWgs84Longitude(long x) {
@@ -65,14 +64,6 @@ public class Conversion {
     public static double mercatorYToWgs84Latitude(long y) {
         double latitude = 2.0 * (Math.atan(Math.exp(y / EARTH_RADIUS)) - Math.PI / 4.0) / Math.PI * 180.0;
         return roundWgs84(latitude);
-    }
-
-
-    private static long roundMercator(double wgs84, double mercator) {
-        if (wgs84 > 0.0)
-            return Math.round(Math.ceil(mercator));
-        else
-            return Math.round(Math.floor(mercator));
     }
 
     public static long wgs84LongitudeToMercatorX(double longitude) {
@@ -280,7 +271,7 @@ public class Conversion {
         double feet = (altitude - ALTITUDE_6m) *
                 (meterToFeets(ELEVATION_146m - ELEVATION_6m) / (ALTITUDE_146m - ALTITUDE_6m));
         double meters = feetToMeters(feet) + ELEVATION_6m;
-        return ceilFraction(meters, 2);
+        return Transfer.ceilFraction(meters, 2);
     }
 
     public static long elevationMetersToBcrAltitude(double elevation) {
@@ -294,31 +285,17 @@ public class Conversion {
     public static double ddmm2degrees(double ddmm) {
         double decimal = ddmm / 100.0;
         int asInt = (int) decimal;
-        double behindDot = floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
+        double behindDot = Transfer.floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
         return asInt + behindDot;
     }
 
     public static double degrees2ddmm(double decimal) {
         int asInt = (int) decimal;
-        double behindDot = ceilFraction(decimal - asInt, 7);
-        double behindDdMm = ceilFraction(behindDot * 60.0, 4);
+        double behindDot = Transfer.ceilFraction(decimal - asInt, 7);
+        double behindDdMm = Transfer.ceilFraction(behindDot * 60.0, 4);
         return asInt * 100.0 + behindDdMm;
     }
 
-    public static double roundFraction(double number, int fractionCount) {
-        double factor = Math.pow(10, fractionCount);
-        return Math.round(number * factor) / factor;
-    }
-
-    private static double ceilFraction(double number, int fractionCount) {
-        double factor = Math.pow(10, fractionCount);
-        return Math.ceil(number * factor) / factor;
-    }
-
-    public static double floorFraction(double number, int fractionCount) {
-        double factor = Math.pow(10, fractionCount);
-        return Math.floor(number * factor) / factor;
-    }
 
     public static double feetToMeters(double feet) {
         return feet * METER_OF_A_FEET;
@@ -342,183 +319,5 @@ public class Conversion {
 
     public static double kmhToMs(double kilometersPerHour) {
         return kilometersPerHour * METERS_OF_A_KILOMETER / SECONDS_OF_AN_HOUR;
-    }
-
-    public static double roundMeterToMillimeterPrecision(double number) {
-        return Math.floor(number * 10000.0) / 10000.0;
-    }
-
-    public static int ceiling(int dividend, int divisor, boolean roundUpToAtLeastOne) {
-        double fraction = (double) dividend / divisor;
-        double result = Math.ceil(fraction);
-        return Math.max((int) result, roundUpToAtLeastOne ? 1 : 0);
-    }
-
-    public static int widthInDigits(long number) {
-        return 1 + (int) (Math.log(number) / Math.log(10));
-    }
-
-
-    public static String trim(String string) {
-        if (string == null)
-            return null;
-        string = string.trim();
-        if (string == null || string.length() == 0)
-            return null;
-        else
-            return string;
-    }
-
-    public static String toMixedCase(String string) {
-        StringBuffer buffer = new StringBuffer();
-        StringTokenizer tokenizer = new StringTokenizer(string, " -", true);
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            if (token.length() > 1)
-                buffer.append(token.substring(0, 1).toUpperCase()).append(token.substring(1).toLowerCase());
-            else
-                buffer.append(token);
-        }
-        return buffer.toString();
-    }
-
-
-    public static BigDecimal formatDouble(Double aDouble, int maximumFractionCount) {
-        if(aDouble == null)
-            return null;
-        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return BigDecimal.valueOf(aDouble);
-    }
-
-    public static BigDecimal formatPosition(Double longitudeOrLatitude) {
-        return formatDouble(longitudeOrLatitude, 7);
-    }
-
-    public static BigDecimal formatElevation(Double elevation) {
-        return formatDouble(elevation, 2);
-    }
-
-    public static BigDecimal formatHeading(Double heading) {
-        return formatDouble(heading, 1);
-    }
-
-    public static BigDecimal formatSpeed(Double speed) {
-        return formatDouble(speed, 2);
-    }
-
-    public static Double formatDouble(BigDecimal aBigDecimal) {
-        return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
-    }
-
-    public static Integer formatInt(BigInteger aBigInteger) {
-        return aBigInteger != null ? aBigInteger.intValue() : null;
-    }
-
-    private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-    static {
-        DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
-        DECIMAL_NUMBER_FORMAT.setMinimumFractionDigits(1);
-        DECIMAL_NUMBER_FORMAT.setMaximumFractionDigits(20);
-    }
-
-    static String formatDoubleAsString(Double aDouble) {
-        if (aDouble == null)
-            return "0.0";
-        return DECIMAL_NUMBER_FORMAT.format(aDouble);
-    }
-
-    public static String formatDoubleAsString(Double aDouble, int exactFractionCount) {
-        StringBuffer buffer = new StringBuffer(formatDoubleAsString(aDouble));
-        int index = buffer.indexOf(".");
-        if (index == -1) {
-            buffer.append(".");
-        }
-        while (buffer.length() - index <= exactFractionCount)
-            buffer.append("0");
-        while (buffer.length() - index > exactFractionCount + 1)
-            buffer.deleteCharAt(buffer.length() - 1);
-        return buffer.toString();
-    }
-
-    private static String formatDoubleAsStringWithMaximumFractionCount(Double aDouble, int maximumFractionCount) {
-        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
-            aDouble = roundFraction(aDouble, maximumFractionCount);
-        return formatDoubleAsString(aDouble);
-    }
-
-    public static String formatPositionAsString(Double longitudeOrLatitude) {
-        return formatDoubleAsStringWithMaximumFractionCount(longitudeOrLatitude, 7);
-    }
-
-    public static String formatElevationAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 2);
-    }
-
-    public static String formatAccuracyAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 6);
-    }
-
-    public static String formatHeadingAsString(Double elevation) {
-        return formatDoubleAsStringWithMaximumFractionCount(elevation, 1);
-    }
-
-    public static String formatSpeedAsString(Double speed) {
-        return formatDoubleAsStringWithMaximumFractionCount(speed, 2);
-    }
-
-    public static String formatIntAsString(Integer anInteger) {
-        if (anInteger == null)
-            return "0";
-        return Integer.toString(anInteger);
-    }
-
-    public static String formatIntAsString(Integer anInteger, int exactDigitCount) {
-        StringBuffer buffer = new StringBuffer(formatIntAsString(anInteger));
-        while (buffer.length() < exactDigitCount)
-            buffer.insert(0, "0");
-        return buffer.toString();
-    }
-
-    public static BigInteger formatInt(Integer anInteger) {
-        if(anInteger == null)
-            return null;
-        return BigInteger.valueOf(anInteger);
-    }
-
-
-    public static Double parseDouble(String string) {
-        String trimmed = trim(string);
-        if (trimmed != null) {
-            trimmed = trimmed.replaceAll(",", ".");
-            try {
-                return Double.parseDouble(trimmed);
-            } catch (NumberFormatException e) {
-                if(trimmed.equals("\u221e"))
-                    return Double.POSITIVE_INFINITY;
-                throw e;
-            }
-        } else
-            return null;
-    }
-
-    public static Integer parseInt(String string) {
-        String trimmed = trim(string);
-        if (trimmed != null) {
-            if (trimmed.startsWith("+"))
-                trimmed = trimmed.substring(1);
-            return Integer.parseInt(trimmed);
-        } else
-            return null;
-    }
-
-    public static Long parseLong(String string) {
-        String trimmed = trim(string);
-        if (trimmed != null) {
-            if (trimmed.startsWith("+"))
-                trimmed = trimmed.substring(1);
-            return Long.parseLong(trimmed);
-        } else
-            return null;
     }
 }

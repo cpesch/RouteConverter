@@ -21,8 +21,8 @@
 package slash.navigation.simple;
 
 import slash.navigation.*;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.*;
 import java.net.URL;
@@ -111,7 +111,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         Matcher urlMatcher = URL_PATTERN.matcher(text);
         if (!urlMatcher.matches())
             return null;
-        return Conversion.trim(urlMatcher.group(1));
+        return Transfer.trim(urlMatcher.group(1));
     }
 
     Map<String, List<String>> parseURLParameters(String data, String encoding) {
@@ -192,14 +192,14 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         Matcher matcher = START_PATTERN.matcher(coordinates);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
-        Double latitude = Conversion.parseDouble(matcher.group(1));
-        Double longitude = Conversion.parseDouble(matcher.group(2));
+        Double latitude = Transfer.parseDouble(matcher.group(1));
+        Double longitude = Transfer.parseDouble(matcher.group(2));
 
         Wgs84Position position = comment != null ? parsePosition(comment) : null;
         if (position != null && position.hasCoordinates()) {
             return position;
         } else {
-            return new Wgs84Position(longitude, latitude, null, null, null, Conversion.trim(comment));
+            return new Wgs84Position(longitude, latitude, null, null, null, Transfer.trim(comment));
         }
     }
 
@@ -210,8 +210,8 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         String comment = matcher.group(1);
         String latitude = matcher.group(3);
         String longitude = matcher.group(4);
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, null, null, Conversion.trim(comment));
+        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                null, null, null, Transfer.trim(comment));
     }
 
     List<Wgs84Position> parseDestinationPositions(String destinationComments) {
@@ -232,7 +232,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         List<Wgs84Position> result = new ArrayList<Wgs84Position>(positions);
         for (int i = result.size() - 1; i >= 0; i--) {
             Wgs84Position position = result.get(i);
-            if (Conversion.trim(position.getComment()) == null)
+            if (Transfer.trim(position.getComment()) == null)
                 result.remove(i);
         }
         return result;
@@ -275,9 +275,9 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
                     tokenizer.nextToken();
                     if (tokenizer.hasMoreTokens()) {
                         try {
-                            Double latitude = Conversion.parseDouble(tokenizer.nextToken());
+                            Double latitude = Transfer.parseDouble(tokenizer.nextToken());
                             if (tokenizer.hasMoreTokens()) {
-                                Double longitude = Conversion.parseDouble(tokenizer.nextToken());
+                                Double longitude = Transfer.parseDouble(tokenizer.nextToken());
                                 Wgs84Position position = geocodePositions.get(positionIndex++);
                                 position.setLongitude(longitude);
                                 position.setLatitude(latitude);
@@ -297,9 +297,9 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         StringBuffer buffer = new StringBuffer("http://maps.google.com/maps?ie=UTF8&");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 6);
-            String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 6);
-            String comment = encodeComment(Conversion.trim(position.getComment()));
+            String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
+            String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+            String comment = encodeComment(Transfer.trim(position.getComment()));
             if (i == startIndex) {
                 buffer.append("saddr=").append(comment).append("%40").append(latitude).append(",").append(longitude);
                 if (endIndex > startIndex + 1)

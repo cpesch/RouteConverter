@@ -70,7 +70,7 @@ public abstract class RouteComments {
     }
 
     public static String createRouteDescription(BaseRoute route) {
-        String name = Conversion.trim(route.getName());
+        String name = Transfer.trim(route.getName());
         List<String> description = route.getDescription();
         StringBuffer buffer = new StringBuffer();
         if (name != null)
@@ -117,8 +117,8 @@ public abstract class RouteComments {
         commentPosition(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(position.getComment());
         if (matcher.matches()) {
-            String postfix = Conversion.trim(matcher.group(2));
-            String prefix = Conversion.formatIntAsString((index + 1), digitCount);
+            String postfix = Transfer.trim(matcher.group(2));
+            String prefix = Transfer.formatIntAsString((index + 1), digitCount);
             position.setComment(prefix + (spaceBetweenNumberAndComment ? " " : "") + postfix);
         }
     }
@@ -261,7 +261,7 @@ public abstract class RouteComments {
     public static Double parseTripmasterHeading(String string) {
         Matcher matcher = TRIPMASTER_HEADING_PATTERN.matcher(string);
         if (matcher.matches()) {
-            return Conversion.parseDouble(matcher.group(2));
+            return Transfer.parseDouble(matcher.group(2));
         }
         return null;
     }
@@ -281,40 +281,40 @@ public abstract class RouteComments {
         Matcher matcher = TRIPMASTER_1dot4_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster1dot4Time(matcher.group(2)));
-            position.setElevation(Conversion.parseDouble(matcher.group(3)));
+            position.setElevation(Transfer.parseDouble(matcher.group(3)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                String reason = Conversion.trim(matcher.group(1));
+                String reason = Transfer.trim(matcher.group(1));
                 tomTomPosition.setReason(reason);
                 tomTomPosition.setHeading(parseTripmasterHeading(reason));
-                tomTomPosition.setCity(Conversion.trim(matcher.group(4)));
+                tomTomPosition.setCity(Transfer.trim(matcher.group(4)));
             }
 
             if  (position instanceof Wgs84Position) {
                 Wgs84Position wgs84Position = (Wgs84Position) position;
-                String reason = Conversion.trim(matcher.group(1));
+                String reason = Transfer.trim(matcher.group(1));
                 wgs84Position.setHeading(parseTripmasterHeading(reason));
             }
         }
 
         matcher = TRIPMASTER_SHORT_STARTEND_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            String dateStr = Conversion.trim(matcher.group(4));
-            String timeStr = Conversion.trim(matcher.group(5));
+            String dateStr = Transfer.trim(matcher.group(4));
+            String timeStr = Transfer.trim(matcher.group(5));
             position.setTime(parseTripmaster1dot8Date(dateStr + " " + timeStr));
             if (position.getTime() == null)
                 position.setTime(parseTripmaster1dot4Time(timeStr));
-            position.setElevation(Conversion.parseDouble(matcher.group(6)));
+            position.setElevation(Transfer.parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                String city = Conversion.trim(matcher.group(3));
+                String city = Transfer.trim(matcher.group(3));
                 if (city == null) {
                     city = dateStr;
                     dateStr = null;
                 }
-                tomTomPosition.setReason(Conversion.trim(matcher.group(1)) + " : " + (dateStr != null ? dateStr + " - " : "") + timeStr);
+                tomTomPosition.setReason(Transfer.trim(matcher.group(1)) + " : " + (dateStr != null ? dateStr + " - " : "") + timeStr);
                 tomTomPosition.setCity(city);
             }
         }
@@ -322,7 +322,7 @@ public abstract class RouteComments {
         matcher = TRIPMASTER_SHORT_WAYPOINT_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster1dot4Time(matcher.group(1)));
-            position.setElevation(Conversion.parseDouble(matcher.group(2)));
+            position.setElevation(Transfer.parseDouble(matcher.group(2)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -334,15 +334,15 @@ public abstract class RouteComments {
 
         matcher = TRIPMASTER_MIDDLE_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot4Time(Conversion.trim(matcher.group(1))));
-            position.setElevation(Conversion.parseDouble(matcher.group(4)));
+            position.setTime(parseTripmaster1dot4Time(Transfer.trim(matcher.group(1))));
+            position.setElevation(Transfer.parseDouble(matcher.group(4)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                String city = Conversion.trim(matcher.group(3));
+                String city = Transfer.trim(matcher.group(3));
                 if (city != null && city.startsWith(": "))
-                    city = Conversion.trim(city.substring(2, city.length()));
-                String reason = Conversion.trim(matcher.group(2));
+                    city = Transfer.trim(city.substring(2, city.length()));
+                String reason = Transfer.trim(matcher.group(2));
                 if (reason == null)
                     reason = city;
                 tomTomPosition.setCity(city);
@@ -352,15 +352,15 @@ public abstract class RouteComments {
 
         matcher = TRIPMASTER_LONG_NO_REASON_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot4Time(Conversion.trim(matcher.group(1))));
-            position.setSpeed(Conversion.parseDouble(matcher.group(6)));
-            position.setElevation(Conversion.parseDouble(matcher.group(3)));
+            position.setTime(parseTripmaster1dot4Time(Transfer.trim(matcher.group(1))));
+            position.setSpeed(Transfer.parseDouble(matcher.group(6)));
+            position.setElevation(Transfer.parseDouble(matcher.group(3)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                String city = Conversion.trim(matcher.group(2));
+                String city = Transfer.trim(matcher.group(2));
                 if (city != null && city.startsWith(": "))
-                    city = Conversion.trim(city.substring(2, city.length()));
+                    city = Transfer.trim(city.substring(2, city.length()));
                 tomTomPosition.setCity(city);
                 tomTomPosition.setReason(city);
             }
@@ -371,15 +371,15 @@ public abstract class RouteComments {
             position.setTime(parseTripmaster1dot8Date(matcher.group(3)));
             if (position.getTime() == null)
                 position.setTime(parseTripmaster1dot4Time(matcher.group(1)));
-            position.setSpeed(Conversion.parseDouble(matcher.group(9)));
-            position.setElevation(Conversion.parseDouble(matcher.group(6)));
+            position.setSpeed(Transfer.parseDouble(matcher.group(9)));
+            position.setElevation(Transfer.parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                String city = Conversion.trim(matcher.group(5));
+                String city = Transfer.trim(matcher.group(5));
                 if (city != null && city.startsWith(": "))
-                    city = Conversion.trim(city.substring(2, city.length()));
-                String reason = Conversion.trim(matcher.group(2));
+                    city = Transfer.trim(city.substring(2, city.length()));
+                String reason = Transfer.trim(matcher.group(2));
                 if (city == null)
                     city = reason;
                 tomTomPosition.setCity(city);
@@ -390,13 +390,13 @@ public abstract class RouteComments {
         matcher = LOGPOS_2_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseLogposDate(matcher.group(1)));
-            position.setSpeed(Conversion.parseDouble(matcher.group(5)));
+            position.setSpeed(Transfer.parseDouble(matcher.group(5)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                tomTomPosition.setReason(Conversion.trim(matcher.group(4)));
-                tomTomPosition.setCity(Conversion.trim(matcher.group(3)));
-                tomTomPosition.setHeading(Conversion.parseDouble(matcher.group(6)));
+                tomTomPosition.setReason(Transfer.trim(matcher.group(4)));
+                tomTomPosition.setCity(Transfer.trim(matcher.group(3)));
+                tomTomPosition.setHeading(Transfer.parseDouble(matcher.group(6)));
             }
         }
 
@@ -405,32 +405,32 @@ public abstract class RouteComments {
             position.setTime(parseLogposDate(matcher.group(1)));
             Double elevation;
             try {
-                elevation = Conversion.parseDouble(matcher.group(4));
+                elevation = Transfer.parseDouble(matcher.group(4));
             } catch (NumberFormatException e) {
                 elevation = null;
             }
             position.setElevation(elevation);
-            position.setSpeed(Conversion.parseDouble(matcher.group(7)));
+            position.setSpeed(Transfer.parseDouble(matcher.group(7)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                tomTomPosition.setReason(Conversion.trim(matcher.group(5)));
-                tomTomPosition.setCity(Conversion.trim(matcher.group(3)));
-                tomTomPosition.setHeading(Conversion.parseDouble(matcher.group(8)));
+                tomTomPosition.setReason(Transfer.trim(matcher.group(5)));
+                tomTomPosition.setCity(Transfer.trim(matcher.group(3)));
+                tomTomPosition.setHeading(Transfer.parseDouble(matcher.group(8)));
             }
         }
 
         matcher = TTTRACKLOG_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTTTracklogTime(matcher.group(1)));
-            position.setSpeed(Conversion.parseDouble(matcher.group(5)));
-            Double elevation = Conversion.parseDouble(matcher.group(6));
+            position.setSpeed(Transfer.parseDouble(matcher.group(5)));
+            Double elevation = Transfer.parseDouble(matcher.group(6));
             if(elevation == null)
-                elevation = Conversion.parseDouble(matcher.group(4)); // pause with elevation
+                elevation = Transfer.parseDouble(matcher.group(4)); // pause with elevation
             position.setElevation(elevation);
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
-                tomTomPosition.setReason(Conversion.trim(matcher.group(2)));
+                tomTomPosition.setReason(Transfer.trim(matcher.group(2)));
             }
         }
     }

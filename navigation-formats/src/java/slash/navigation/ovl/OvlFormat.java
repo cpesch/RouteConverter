@@ -22,8 +22,8 @@ package slash.navigation.ovl;
 
 import slash.navigation.*;
 import slash.navigation.util.Positions;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -280,8 +280,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
         Wgs84Position center = Positions.center(route.getPositions());
-        writeMissingAttribute(route.getMapLage(), writer, "CenterLat", Conversion.formatPositionAsString(center.getLatitude()));
-        writeMissingAttribute(route.getMapLage(), writer, "CenterLong", Conversion.formatPositionAsString(center.getLongitude()));
+        writeMissingAttribute(route.getMapLage(), writer, "CenterLat", Transfer.formatPositionAsString(center.getLatitude()));
+        writeMissingAttribute(route.getMapLage(), writer, "CenterLong", Transfer.formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
     }
 

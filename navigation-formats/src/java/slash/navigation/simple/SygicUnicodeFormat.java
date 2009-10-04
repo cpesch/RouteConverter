@@ -22,7 +22,7 @@ package slash.navigation.simple;
 import slash.navigation.SimpleRoute;
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,8 +72,8 @@ public class SygicUnicodeFormat extends SygicFormat {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 6);
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
+        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
         String comment = formatForSygic(position.getComment());
         String phone = null;
         int plus = comment.lastIndexOf('+');

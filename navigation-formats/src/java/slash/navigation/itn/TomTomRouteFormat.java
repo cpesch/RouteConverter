@@ -23,9 +23,9 @@ package slash.navigation.itn;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.TextNavigationFormat;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -148,7 +148,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
         String comment = lineMatcher.group(3);
-        return new TomTomPosition(Conversion.parseInt(longitude), Conversion.parseInt(latitude), Conversion.trim(comment));
+        return new TomTomPosition(Transfer.parseInt(longitude), Transfer.parseInt(latitude), Transfer.trim(comment));
     }
 
     String parseName(String line) {
@@ -156,7 +156,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
         String description = lineMatcher.group(1);
-        return Conversion.trim(description);
+        return Transfer.trim(description);
     }
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
@@ -181,8 +181,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         List<TomTomPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             TomTomPosition position = positions.get(i);
-            String longitude = Conversion.formatIntAsString(position.getLongitudeAsInt());
-            String latitude = Conversion.formatIntAsString(position.getLatitudeAsInt());
+            String longitude = Transfer.formatIntAsString(position.getLongitudeAsInt());
+            String latitude = Transfer.formatIntAsString(position.getLatitudeAsInt());
             boolean first = i == startIndex;
             boolean last = i == endIndex - 1;
 

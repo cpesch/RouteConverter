@@ -22,7 +22,7 @@ package slash.navigation.simple;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
@@ -72,11 +72,11 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String date = lineMatcher.group(3);
         String time = lineMatcher.group(4);
-        Double latitude = Conversion.parseDouble(lineMatcher.group(5));
+        Double latitude = Transfer.parseDouble(lineMatcher.group(5));
         String northOrSouth = lineMatcher.group(6);
         if ("S".equals(northOrSouth) && latitude != null)
             latitude = -latitude;
-        Double longitude = Conversion.parseDouble(lineMatcher.group(7));
+        Double longitude = Transfer.parseDouble(lineMatcher.group(7));
         String westOrEasth = lineMatcher.group(8);
         if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
@@ -88,30 +88,30 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
         if (commentSeparatorIndex != -1)
             comment = comment.substring(commentSeparatorIndex + 1);
-        comment = Conversion.trim(comment);
+        comment = Transfer.trim(comment);
 
-        String lineType = Conversion.trim(lineMatcher.group(2));
+        String lineType = Transfer.trim(lineMatcher.group(2));
         if (comment == null && POI_POSITION.equals(lineType)) {
             String lineNumber = lineMatcher.group(1);
-            comment = "POI " + Conversion.trim(removeZeros(lineNumber));
+            comment = "POI " + Transfer.trim(removeZeros(lineNumber));
         }
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, Conversion.parseDouble(height), Conversion.parseDouble(speed),
+        Wgs84Position position = new Wgs84Position(longitude, latitude, Transfer.parseDouble(height), Transfer.parseDouble(speed),
                 parseDateAndTime(date, time), comment);
-        position.setHeading(Conversion.parseDouble(heading));
+        position.setHeading(Transfer.parseDouble(heading));
         return position;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = fillWithZeros(formatDate(position.getTime()), 6);
         String time = fillWithZeros(formatTime(position.getTime()), 6);
-        String latitude = Conversion.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
+        String latitude = Transfer.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = Conversion.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
+        String longitude = Transfer.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = fillWithZeros(position.getElevation() != null ? Conversion.formatIntAsString(position.getElevation().intValue()) : "0", 5);
-        String speed = fillWithZeros(position.getSpeed() != null ? Conversion.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
-        String heading = fillWithZeros(position.getHeading() != null ? Conversion.formatIntAsString(position.getHeading().intValue()) : "0", 3);
+        String height = fillWithZeros(position.getElevation() != null ? Transfer.formatIntAsString(position.getElevation().intValue()) : "0", 5);
+        String speed = fillWithZeros(position.getSpeed() != null ? Transfer.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
+        String heading = fillWithZeros(position.getHeading() != null ? Transfer.formatIntAsString(position.getHeading().intValue()) : "0", 3);
         String comment = fillWithZeros(position.getComment() != null ? position.getComment().replaceAll(",", ";") : "", 8);
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
                 formatLineType(position.getComment()) + SEPARATOR_CHAR +

@@ -26,7 +26,7 @@ import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -186,7 +186,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (description != null) {
             Matcher matcher = TAVELLOG_SPEED_PATTERN.matcher(description);
             if (matcher.matches()) {
-                return Conversion.parseDouble(matcher.group(1));
+                return Transfer.parseDouble(matcher.group(1));
             }
         }
         return null;
@@ -198,15 +198,15 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (description != null) {
             Matcher matcher = TAVELLOG_ELEVATION_PATTERN.matcher(description);
             if (matcher.matches()) {
-                return Conversion.parseDouble(matcher.group(1));
+                return Transfer.parseDouble(matcher.group(1));
             }
         }
         return null;
     }
 
     protected String concatPath(String path, String fragment) {
-        path = Conversion.trim(path);
-        fragment = Conversion.trim(fragment);
+        path = Transfer.trim(path);
+        fragment = Transfer.trim(fragment);
         String result = path != null ? path : "";
         if(fragment != null)
             result = result + "/" + fragment;

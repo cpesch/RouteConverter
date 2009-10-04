@@ -24,7 +24,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.XmlNavigationFormat;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -79,7 +79,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         if (comment != null) {
             Matcher matcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
             if (matcher.matches())
-                return Conversion.parseDouble(matcher.group(1));
+                return Transfer.parseDouble(matcher.group(1));
         }
         return null;
     }

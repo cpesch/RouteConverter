@@ -23,10 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.Positions;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.Externalization;
-import slash.navigation.util.Platform;
+import slash.navigation.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -258,12 +255,12 @@ public class EclipseSWTMapView extends BaseMapView {
                 append(southWest.getLongitude()).append(")").append("));");
 
         String zoomLevel = executeScriptWithResult(buffer.toString());
-        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 1;
+        return zoomLevel != null ? Transfer.parseInt(zoomLevel) : 1;
     }
 
     protected int getCurrentZoomLevel() {
         String zoomLevel = executeScriptWithResult("return map.getZoom();");
-        return zoomLevel != null ? Conversion.parseInt(zoomLevel) : 1;
+        return zoomLevel != null ? Transfer.parseInt(zoomLevel) : 1;
     }
 
     protected BaseNavigationPosition getNorthEastBounds() {

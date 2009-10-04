@@ -24,8 +24,8 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.XmlNavigationFormat;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
@@ -74,8 +74,8 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
-            positions.add(new Wgs84Position(Conversion.parseDouble(point.getLongitude()), Conversion.parseDouble(point.getLatitude()),
-                    null, null, null, Conversion.trim(comment)));
+            positions.add(new Wgs84Position(Transfer.parseDouble(point.getLongitude()), Transfer.parseDouble(point.getLatitude()),
+                    null, null, null, Transfer.trim(comment)));
         }
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
@@ -90,7 +90,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
     }
 
     private String formatPosition(Double aDouble) {
-        return Conversion.formatDoubleAsString(aDouble, 8).replace('.', ',');
+        return Transfer.formatDoubleAsString(aDouble, 8).replace('.', ',');
     }
 
     private KDRoute createKlicktel(KlickTelRoute route) {

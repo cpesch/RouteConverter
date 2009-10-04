@@ -24,8 +24,8 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.GkPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.SimpleFormat;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,7 +69,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (Conversion.trim(line) == null)
+            if (Transfer.trim(line) == null)
                 continue;
 
             if (line.startsWith("#")) {
@@ -102,9 +102,9 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        Double right = Conversion.parseDouble(lineMatcher.group(1));
-        Double height = Conversion.parseDouble(lineMatcher.group(2));
-        String comment = Conversion.trim(lineMatcher.group(3));
+        Double right = Transfer.parseDouble(lineMatcher.group(1));
+        Double height = Transfer.parseDouble(lineMatcher.group(2));
+        String comment = Transfer.trim(lineMatcher.group(3));
         return new GkPosition(right, height, comment);
     }
 
@@ -116,8 +116,8 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
 
         for (int i = startIndex; i < endIndex; i++) {
             GkPosition position = positions.get(i);
-            String right = Conversion.formatDoubleAsString(position.getRight(), 2);
-            String height = Conversion.formatDoubleAsString(position.getHeight(), 2);
+            String right = Transfer.formatDoubleAsString(position.getRight(), 2);
+            String height = Transfer.formatDoubleAsString(position.getHeight(), 2);
             writer.println(right + " \t " + height);
         }
     }

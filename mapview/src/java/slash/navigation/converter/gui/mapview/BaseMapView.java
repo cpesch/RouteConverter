@@ -27,7 +27,7 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Positions;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -335,7 +335,7 @@ public abstract class BaseMapView implements MapView {
                         while (true) {
                             try {
                                 String line = is.readLine();
-                                if (Conversion.trim(line) == null)
+                                if (Transfer.trim(line) == null)
                                     break;
                                 lines.add(line);
                             } catch (IOException e) {
@@ -747,7 +747,7 @@ public abstract class BaseMapView implements MapView {
             return;
         }
 
-        int directionsCount = Conversion.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
+        int directionsCount = Transfer.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
         for (int j = 0; j < directionsCount; j++) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("var latlngs = [");
@@ -771,7 +771,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
-        int polylinesCount = Conversion.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
+        int polylinesCount = Transfer.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("var latlngs = [");
@@ -830,7 +830,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
-        int markersCount = Conversion.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
+        int markersCount = Transfer.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
         for (int j = 0; j < markersCount; j++) {
             StringBuffer buffer = new StringBuffer();
 
@@ -958,16 +958,16 @@ public abstract class BaseMapView implements MapView {
         for (String line : lines) {
             Matcher dragEndMatcher = DRAG_END_PATTERN.matcher(line);
             if (dragEndMatcher.matches()) {
-                int index = Conversion.parseInt(dragEndMatcher.group(1));
-                Double latitude = Conversion.parseDouble(dragEndMatcher.group(2));
-                Double longitude = Conversion.parseDouble(dragEndMatcher.group(3));
+                int index = Transfer.parseInt(dragEndMatcher.group(1));
+                Double latitude = Transfer.parseDouble(dragEndMatcher.group(2));
+                Double longitude = Transfer.parseDouble(dragEndMatcher.group(3));
                 movedPosition(index, longitude, latitude);
             }
 
             Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
             if (directionsLoadMatcher.matches()) {
-                meters += Conversion.parseInt(directionsLoadMatcher.group(1));
-                seconds += Conversion.parseInt(directionsLoadMatcher.group(2));
+                meters += Transfer.parseInt(directionsLoadMatcher.group(1));
+                seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
                 calculatedDistance(meters, seconds);
             }
 
@@ -979,8 +979,8 @@ public abstract class BaseMapView implements MapView {
 
             Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
             if (zoomEndMatcher.matches()) {
-                int startZoomLevel = Conversion.parseInt(zoomEndMatcher.group(1));
-                int endZoomLevel = Conversion.parseInt(zoomEndMatcher.group(2));
+                int startZoomLevel = Transfer.parseInt(zoomEndMatcher.group(1));
+                int endZoomLevel = Transfer.parseInt(zoomEndMatcher.group(2));
 
                 synchronized (notificationMutex) {
                     // since setCenter() leads to a callback and thus paints the track twice
@@ -1006,7 +1006,7 @@ public abstract class BaseMapView implements MapView {
 
             Matcher testMatcher = CALLBACK_PATTERN.matcher(line);
             if (testMatcher.matches()) {
-                int port = Conversion.parseInt(testMatcher.group(1));
+                int port = Transfer.parseInt(testMatcher.group(1));
                 receivedCallback(port);
             }
         }
@@ -1044,8 +1044,8 @@ public abstract class BaseMapView implements MapView {
 
     private boolean isAuthenticated(List<String> lines) {
         Map<String, String> map = asMap(lines);
-        String host = Conversion.trim(map.get("Host"));
-        String id = Conversion.trim(map.get("id"));
+        String host = Transfer.trim(map.get("Host"));
+        String id = Transfer.trim(map.get("id"));
         return host != null && host.equals("localhost:" + dragListenerServerSocket.getLocalPort()) &&
                 id != null && id.equals("Jx3dQUv4");
     }

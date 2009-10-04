@@ -26,9 +26,9 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
 import slash.navigation.util.ContinousRange;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,7 +70,7 @@ public class PositionAugmenter {
 
     private static final OverwritePredicate NO_COMMENT_PREDICATE = new OverwritePredicate() {
         public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return Conversion.trim(position.getComment()) == null ||
+            return Transfer.trim(position.getComment()) == null ||
                     RouteComments.isPositionComment(position.getComment());
         }
     };
@@ -347,7 +347,7 @@ public class PositionAugmenter {
                     maximumIndex = index;
             }
         }
-        int digitCount = prefixNumberWithZeros ? Conversion.widthInDigits(maximumIndex) : 0;
+        int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumIndex) : 0;
 
         processIndices(positionsTable, positionsModel, selectedRows,
                 digitCount, spaceBetweenNumberAndComment, TAUTOLOGY_PREDICATE);

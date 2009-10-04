@@ -21,8 +21,8 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -86,11 +86,11 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         Attribute attribute = startElement.getAttributeByName(new QName(attributeName));
         if (attribute == null)
             return null;
-        return Conversion.parseDouble(attribute.getValue());
+        return Transfer.parseDouble(attribute.getValue());
     }
 
     private String extractValue(Characters chars, String value) {
-        String append = Conversion.trim(chars.getData());
+        String append = Transfer.trim(chars.getData());
         if (append == null)
             return value;
         if (value == null)
@@ -208,8 +208,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         writer.add(eventFactory.createStartElement(new QName(POINT_ELEMENT + "_" + index), null, null));
 
         List<Attribute> attributes = new ArrayList<Attribute>();
-        attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, Conversion.formatPositionAsString(position.getLongitude())));
-        attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, Conversion.formatPositionAsString(position.getLatitude())));
+        attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, Transfer.formatPositionAsString(position.getLongitude())));
+        attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, Transfer.formatPositionAsString(position.getLatitude())));
         writer.add(eventFactory.createStartElement(new QName(GEO_POSITION_ELEMENT), attributes.iterator(), null));
         writer.add(eventFactory.createEndElement(new QName(GEO_POSITION_ELEMENT), null));
 
@@ -235,7 +235,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
         List<Wgs84Position> positions = route.getPositions();
         writer.add(eventFactory.createStartElement(new QName(COUNT_ELEMENT), null, null));
-        writer.add(eventFactory.createCharacters(Conversion.formatIntAsString(positions.size())));
+        writer.add(eventFactory.createCharacters(Transfer.formatIntAsString(positions.size())));
         writer.add(eventFactory.createEndElement(new QName(COUNT_ELEMENT), null));
 
         for (int i = 0; i < positions.size(); i++) {
@@ -298,7 +298,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                 writeHeader(getProjectName(routes), getDescription(routes), writer, eventFactory);
 
                 writer.add(eventFactory.createStartElement(new QName(COUNT_ELEMENT), null, null));
-                writer.add(eventFactory.createCharacters(Conversion.formatIntAsString(routes.size())));
+                writer.add(eventFactory.createCharacters(Transfer.formatIntAsString(routes.size())));
                 writer.add(eventFactory.createEndElement(new QName(COUNT_ELEMENT), null));
 
                 for (int i = 0; i < routes.size(); i++) {

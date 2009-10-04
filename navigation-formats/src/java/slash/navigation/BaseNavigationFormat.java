@@ -20,7 +20,7 @@
 
 package slash.navigation;
 
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         int index = comment.indexOf(';');
         if (index != -1) 
             comment = comment.substring(0, index);
-        return Conversion.trim(comment);
+        return Transfer.trim(comment);
     }
 
     protected String asDesc(String comment, String description) {
@@ -92,7 +92,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
             } else 
                 return null;
         }
-        return Conversion.trim(description);
+        return Transfer.trim(description);
     }
 
     public boolean isSupportsReading() {

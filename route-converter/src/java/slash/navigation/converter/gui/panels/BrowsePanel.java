@@ -45,9 +45,9 @@ import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
 import slash.navigation.gui.Constants;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -282,7 +282,7 @@ public abstract class BrowsePanel {
         final String name = JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
                 RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE);
-        if (Conversion.trim(name) == null)
+        if (Transfer.trim(name) == null)
             return;
 
         operator.executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -303,7 +303,7 @@ public abstract class BrowsePanel {
         final String name = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
                 RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
-        if (Conversion.trim(name) == null)
+        if (Transfer.trim(name) == null)
             return;
 
         operator.executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -437,7 +437,7 @@ public abstract class BrowsePanel {
         } catch (IOException e) {
             operator.handleServiceError(e);
         }
-        if (Conversion.trim(description) == null)
+        if (Transfer.trim(description) == null)
             return;
 
         final String theDescription = description;

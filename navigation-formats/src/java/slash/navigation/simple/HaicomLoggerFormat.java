@@ -20,8 +20,8 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 import slash.navigation.*;
 
 import java.io.PrintWriter;
@@ -109,7 +109,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     CompactCalendar parseDateAndTime(String date, String time) {
-        String dateAndTime = Conversion.trim(date) + " " + Conversion.trim(time);
+        String dateAndTime = Transfer.trim(date) + " " + Transfer.trim(time);
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
             Calendar calendar = Calendar.getInstance();
@@ -126,17 +126,17 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (matcher.matches()) {
             String date = matcher.group(1);
             String time = matcher.group(2);
-            Double latitude = Conversion.parseDouble(matcher.group(3));
-            String northOrSouth = Conversion.trim(matcher.group(4));
+            Double latitude = Transfer.parseDouble(matcher.group(3));
+            String northOrSouth = Transfer.trim(matcher.group(4));
             if("S".equals(northOrSouth))
                 latitude = -latitude;
-            Double longitude = Conversion.parseDouble(matcher.group(5));
-            String westOrEast = Conversion.trim(matcher.group(6));
+            Double longitude = Transfer.parseDouble(matcher.group(5));
+            String westOrEast = Transfer.trim(matcher.group(6));
             if("W".equals(westOrEast))
                 longitude = -longitude;
             String altitude = matcher.group(7);
             String speed = matcher.group(9);
-            return new Wgs84Position(longitude, latitude, Conversion.parseDouble(altitude), Conversion.parseDouble(speed), parseDateAndTime(date, time), null);
+            return new Wgs84Position(longitude, latitude, Transfer.parseDouble(altitude), Transfer.parseDouble(speed), parseDateAndTime(date, time), null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -177,8 +177,8 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String northOrSouth = position.getLatitude() >= 0.0 ? "N" : "S";
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
-        String altitude = Conversion.formatElevationAsString(position.getElevation());
-        String speed = Conversion.formatSpeedAsString(position.getSpeed());
+        String altitude = Transfer.formatElevationAsString(position.getElevation());
+        String speed = Transfer.formatSpeedAsString(position.getSpeed());
         writer.println((index + 1) + SEPARATOR + "T" + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +

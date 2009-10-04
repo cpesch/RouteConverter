@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.util.InputOutput;
 import slash.navigation.util.Version;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,7 +91,7 @@ public class Updater {
             log.fine("I think it's latest: " + Version.isLatestVersion(result.latestVersion, result.myVersion));
 
             // some people reported update dialogs with null as latest version
-            if (Conversion.trim(result.latestVersion) == null)
+            if (Transfer.trim(result.latestVersion) == null)
                 result.isLatestVersion = true;
         } catch (Throwable t) {
             log.severe("Cannot check for update: " + t.getMessage());

@@ -20,7 +20,7 @@
 
 package slash.navigation;
 
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.IOException;
 
@@ -83,7 +83,7 @@ public class SplitTest extends ReadWriteBase {
     }
 
     public void testCeiling() {
-        assertEquals(3, Conversion.ceiling(184, 90, true));
-        assertEquals(1, Conversion.ceiling(0, 1, true));
+        assertEquals(3, Transfer.ceiling(184, 90, true));
+        assertEquals(1, Transfer.ceiling(0, 1, true));
     }
 }

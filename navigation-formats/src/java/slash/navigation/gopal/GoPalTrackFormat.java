@@ -21,8 +21,8 @@
 package slash.navigation.gopal;
 
 import slash.navigation.*;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.util.Calendar;
@@ -87,24 +87,24 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (!matcher.matches())
             return false;
-        Integer satellites = Conversion.parseInt(matcher.group(7));
+        Integer satellites = Transfer.parseInt(matcher.group(7));
         return satellites != null && satellites > 0;
     }
 
     private CompactCalendar parseTime(String time) {
-        time = Conversion.trim(time);
+        time = Transfer.trim(time);
         if (time == null || time.length() != 6)
             return null;
         Calendar calendar = Calendar.getInstance();
         calendar.set(1970, 0, 1, 0, 0, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        Integer hour = Conversion.parseInt(time.substring(0, 2));
+        Integer hour = Transfer.parseInt(time.substring(0, 2));
         if (hour != null)
             calendar.set(Calendar.HOUR_OF_DAY, hour);
-        Integer minute = Conversion.parseInt(time.substring(2, 4));
+        Integer minute = Transfer.parseInt(time.substring(2, 4));
         if (minute != null)
             calendar.set(Calendar.MINUTE, minute);
-        Integer second = Conversion.parseInt(time.substring(4, 6));
+        Integer second = Transfer.parseInt(time.substring(4, 6));
         if (second != null)
             calendar.set(Calendar.SECOND, second);
         return CompactCalendar.fromCalendar(calendar);
@@ -123,12 +123,12 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String satellites = lineMatcher.group(7);
 
         CompactCalendar calendar = parseTime(time);
-        Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, Conversion.parseDouble(speed), calendar, null);
+        Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                null, Transfer.parseDouble(speed), calendar, null);
         position.setStartDate(startDate);
-        position.setHeading(Conversion.parseDouble(heading));
-        position.setHdop(Conversion.parseDouble(hdop));
-        position.setSatellites(Conversion.parseInt(satellites));
+        position.setHeading(Transfer.parseDouble(heading));
+        position.setHdop(Transfer.parseDouble(hdop));
+        position.setSatellites(Transfer.parseInt(satellites));
         return position;
     }
 
@@ -152,17 +152,17 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatPositionAsString(position.getLongitude());
-        String latitude = Conversion.formatPositionAsString(position.getLatitude());
+        String longitude = Transfer.formatPositionAsString(position.getLongitude());
+        String latitude = Transfer.formatPositionAsString(position.getLatitude());
         String time = formatTime(position.getTime());
-        String heading = Conversion.formatHeadingAsString(position.getHeading());
-        String speed = Conversion.formatSpeedAsString(position.getSpeed());
-        String hdop = Conversion.formatAccuracyAsString(position.getHdop());
+        String heading = Transfer.formatHeadingAsString(position.getHeading());
+        String speed = Transfer.formatSpeedAsString(position.getSpeed());
+        String hdop = Transfer.formatAccuracyAsString(position.getHdop());
         Integer satellites = position.getSatellites();
         // since positions with zero satellites are ignored during reading
         if (satellites == null || satellites == 0)
             satellites = 1;
-        String satellitesStr = Conversion.formatIntAsString(satellites);
+        String satellitesStr = Transfer.formatIntAsString(satellites);
         writer.println("0" + SEPARATOR_CHAR + " " +
                        time + SEPARATOR_CHAR + " " +
                        longitude + SEPARATOR_CHAR + " " +

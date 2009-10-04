@@ -23,8 +23,8 @@ package slash.navigation.tour;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.*;
 import java.util.*;
@@ -110,8 +110,8 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                 }
                 sectionTitle = parseSectionTitle(line);
             } else if (isNameValue(line)) {
-                String name = Conversion.trim(parseName(line));
-                String value = Conversion.trim(parseValue(line));
+                String name = Transfer.trim(parseName(line));
+                String value = Transfer.trim(parseValue(line));
                 map.put(name, value);
             } else {
                 return null;
@@ -141,14 +141,14 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
     TourPosition parsePosition(Map<String, String> map, String sectionTitle) {
-        String zipCode = Conversion.trim(map.get(ZIPCODE));
-        String city = Conversion.trim(map.get(CITY));
-        String street = Conversion.trim(map.get(STREET));
-        String houseNo = Conversion.trim(map.get(HOUSENO));
-        String name = Conversion.trim(map.get(NAME));
+        String zipCode = Transfer.trim(map.get(ZIPCODE));
+        String city = Transfer.trim(map.get(CITY));
+        String street = Transfer.trim(map.get(STREET));
+        String houseNo = Transfer.trim(map.get(HOUSENO));
+        String name = Transfer.trim(map.get(NAME));
 
-        Long x = Conversion.parseLong(Conversion.trim(map.get(LONGITUDE)));
-        Long y = Conversion.parseLong(Conversion.trim(map.get(LATITUDE)));
+        Long x = Transfer.parseLong(Transfer.trim(map.get(LONGITUDE)));
+        Long y = Transfer.parseLong(Transfer.trim(map.get(LATITUDE)));
         if (x == null || y == null)
             return null;
 

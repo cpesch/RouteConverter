@@ -24,10 +24,7 @@ import slash.navigation.bcr.BcrFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.NotClosingUnderlyingInputStream;
-import slash.navigation.util.RouteComments;
-import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.*;
 import slash.navigation.simple.GoogleMapsFormat;
 
 import java.io.*;
@@ -219,7 +216,7 @@ public class NavigationFileParser {
 
 
     public static int getNumberOfFilesToWriteFor(BaseRoute route, NavigationFormat format, boolean duplicateFirstPosition) {
-        return Conversion.ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
+        return Transfer.ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
     }
 
     public void write(BaseRoute route, NavigationFormat format,

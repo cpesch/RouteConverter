@@ -27,8 +27,8 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -72,7 +72,7 @@ public class AddFileDialog extends JDialog {
 
         labelLabel.setText(MessageFormat.format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
         textFieldFile.setText(Files.createReadablePath(file));
-        textFieldLength.setText(Conversion.formatDoubleAsString(length / 1000.0, 1));
+        textFieldLength.setText(Transfer.formatDoubleAsString(length / 1000.0, 1));
         textFieldDescription.setText(description);
 
         buttonAdd.addActionListener(new DialogAction(this) {
@@ -111,7 +111,7 @@ public class AddFileDialog extends JDialog {
 
     private void addFile() {
         String description = textFieldDescription.getText();
-        if (Conversion.trim(description) == null) {
+        if (Transfer.trim(description) == null) {
             labelResult.setText("No description given!"); // TODO make nicer
             pack();
             return;

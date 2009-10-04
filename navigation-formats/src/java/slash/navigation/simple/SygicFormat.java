@@ -21,7 +21,7 @@ package slash.navigation.simple;
 
 import slash.navigation.*;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -68,11 +68,11 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = Conversion.trim(lineMatcher.group(3));
-        String phone = Conversion.trim(lineMatcher.group(4));
+        String comment = Transfer.trim(lineMatcher.group(3));
+        String phone = Transfer.trim(lineMatcher.group(4));
         if (phone != null)
             comment = comment + " " + phone;
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
+        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
                 null, null, null, comment);
     }
 }

@@ -24,6 +24,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -200,12 +201,12 @@ public class NmeaFormat extends BaseNmeaFormat {
             Double speed = null;
             String speedStr = rmcMatcher.group(6);
             if (speedStr != null) {
-                Double knots = Conversion.parseDouble(speedStr);
+                Double knots = Transfer.parseDouble(speedStr);
                 if (knots != null)
                     speed = Conversion.knotsToKilometers(knots);
             }
             String date = rmcMatcher.group(7);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
+            return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
                     null, speed, null, parseDateAndTime(date, time), null);
         }
 
@@ -218,9 +219,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             String westOrEast = ggaMatcher.group(5);
             String satellites = ggaMatcher.group(6);
             String altitude = ggaMatcher.group(7);
-            NmeaPosition position = new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    Conversion.parseDouble(altitude), null, null, parseTime(time), null);
-            position.setSatellites(Conversion.parseInt(satellites));
+            NmeaPosition position = new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
+                    Transfer.parseDouble(altitude), null, null, parseTime(time), null);
+            position.setSatellites(Transfer.parseInt(satellites));
             return position;
         }
 
@@ -231,30 +232,30 @@ public class NmeaFormat extends BaseNmeaFormat {
             String longitude = wplMatcher.group(3);
             String westOrEast = wplMatcher.group(4);
             String comment = wplMatcher.group(5);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    null, null, null, null, Conversion.trim(comment));
+            return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
+                    null, null, null, null, Transfer.trim(comment));
         }
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
         if (zdaMatcher.matches()) {
             String time = zdaMatcher.group(1);
-            String day = Conversion.trim(zdaMatcher.group(2));
-            String month = Conversion.trim(zdaMatcher.group(3));
-            String year = Conversion.trim(zdaMatcher.group(4));
+            String day = Transfer.trim(zdaMatcher.group(2));
+            String month = Transfer.trim(zdaMatcher.group(3));
+            String year = Transfer.trim(zdaMatcher.group(4));
             String date = (day != null ? day : "") + (month != null ? month : "") + (year != null ? year : "");
             return new NmeaPosition(null, null, null, null, null, null, null, parseDateAndTime(date, time), null);
         }
 
         Matcher vtgMatcher = VTG_PATTERN.matcher(line);
         if (vtgMatcher.matches()) {
-            Double heading = Conversion.parseDouble(vtgMatcher.group(1));
+            Double heading = Transfer.parseDouble(vtgMatcher.group(1));
             boolean knots = false;
-            String speedStr = Conversion.trim(vtgMatcher.group(3));
+            String speedStr = Transfer.trim(vtgMatcher.group(3));
             if (speedStr == null) {
-                speedStr = Conversion.trim(vtgMatcher.group(2));
+                speedStr = Transfer.trim(vtgMatcher.group(2));
                 knots = true;
             }
-            Double speed = Conversion.parseDouble(speedStr);
+            Double speed = Transfer.parseDouble(speedStr);
             if (knots && speed != null)
                 speed = Conversion.knotsToKilometers(speed);
             return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
@@ -266,9 +267,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             String hdop = gsaMatcher.group(2);
             String vdop = gsaMatcher.group(3);
             NmeaPosition position = new NmeaPosition(null, null, null, null, null, null, null, null, null);
-            position.setPdop(Conversion.parseDouble(pdop));
-            position.setHdop(Conversion.parseDouble(hdop));
-            position.setVdop(Conversion.parseDouble(vdop));
+            position.setPdop(Transfer.parseDouble(pdop));
+            position.setHdop(Transfer.parseDouble(hdop));
+            position.setVdop(Transfer.parseDouble(vdop));
             return position;
         }
 
@@ -317,7 +318,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String westOrEast = position.getWestOrEast();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
-        String satellites = position.getSatellites() != null ? Conversion.formatIntAsString(position.getSatellites()) : "";
+        String satellites = position.getSatellites() != null ? Transfer.formatIntAsString(position.getSatellites()) : "";
         String comment = formatComment(position.getComment());
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());

@@ -21,8 +21,8 @@
 package slash.navigation.copilot;
 
 import slash.navigation.*;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -78,7 +78,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
              String line = reader.readLine();
              if (line == null)
                  break;
-             if (Conversion.trim(line) == null)
+             if (Transfer.trim(line) == null)
                  continue;
 
              if (line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
@@ -123,19 +123,19 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     Wgs84Position parsePosition(Map<String, String> map) {
-        Integer latitude = Conversion.parseInt(map.get(LATITUDE));
-        Integer longitude = Conversion.parseInt(map.get(LONGITUDE));
-        String state = Conversion.trim(map.get(STATE));
-        String zip = Conversion.trim(map.get(ZIP));
-        String city = Conversion.trim(map.get(CITY));
-        String county = Conversion.trim(map.get(COUNTY));
-        String address = Conversion.trim(map.get(ADDRESS));
+        Integer latitude = Transfer.parseInt(map.get(LATITUDE));
+        Integer longitude = Transfer.parseInt(map.get(LONGITUDE));
+        String state = Transfer.trim(map.get(STATE));
+        String zip = Transfer.trim(map.get(ZIP));
+        String city = Transfer.trim(map.get(CITY));
+        String county = Transfer.trim(map.get(COUNTY));
+        String address = Transfer.trim(map.get(ADDRESS));
         String comment = (state != null ? state + (zip != null ? "-" : " ") : "") +
                 (zip != null ? zip + " " : "") + (city != null ? city : "") +
                 (county != null ? ", " + county : "") + (address != null ? ", " + address : "");
         return new Wgs84Position(longitude != null ? longitude / INTEGER_FACTOR : null,
                 latitude != null ? latitude / INTEGER_FACTOR : null,
-                null, null, null, Conversion.trim(comment));
+                null, null, null, Transfer.trim(comment));
     }
 
 }

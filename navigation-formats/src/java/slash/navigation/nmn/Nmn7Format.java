@@ -24,8 +24,8 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -71,7 +71,7 @@ public class Nmn7Format extends NmnFormat {
     private NmnRoute process(Route route) {
         List<NmnPosition> positions = new ArrayList<NmnPosition>();
         for (Route.Point point : route.getPoint()) {
-            positions.add(new NmnPosition(Conversion.formatDouble(point.getX()), Conversion.formatDouble(point.getY()), (Double)null, null, null, point.getName()));
+            positions.add(new NmnPosition(Transfer.formatDouble(point.getX()), Transfer.formatDouble(point.getY()), (Double)null, null, null, point.getName()));
         }
         return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
     }
@@ -98,8 +98,8 @@ public class Nmn7Format extends NmnFormat {
         for (int i = startIndex; i < endIndex; i++) {
             NmnPosition position = route.getPosition(i);
             Route.Point point = objectFactory.createRoutePoint();
-            point.setX(Conversion.formatDouble(position.getLongitude(), 7));
-            point.setY(Conversion.formatDouble(position.getLatitude(), 7));
+            point.setX(Transfer.formatDouble(position.getLongitude(), 7));
+            point.setY(Transfer.formatDouble(position.getLatitude(), 7));
             point.setName(position.getComment());
             result.getPoint().add(point);
         }

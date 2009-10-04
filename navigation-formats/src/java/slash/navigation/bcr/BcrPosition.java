@@ -25,6 +25,7 @@ import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -102,19 +103,19 @@ public class BcrPosition extends MercatorPosition {
 
         Matcher matcher = MTP0809Format.DESCRIPTION_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            zipCode = Conversion.trim(matcher.group(1));
+            zipCode = Transfer.trim(matcher.group(1));
             if (ZIPCODE_DEFINES_NOTHING.equals(zipCode)) {
                 zipCode = null;
             }
-            this.comment = Conversion.trim(matcher.group(2));
+            this.comment = Transfer.trim(matcher.group(2));
             if (zipCode != null && this.comment == null) {
                 this.comment = zipCode;
                 zipCode = null;
             }
-            street = Conversion.trim(matcher.group(3));
+            street = Transfer.trim(matcher.group(3));
             if (street != null && STREET_DEFINES_CENTER_SYMBOL.equals(street))
                 street = STREET_DEFINES_CENTER_NAME;
-            this.type = Conversion.trim(matcher.group(4));
+            this.type = Transfer.trim(matcher.group(4));
         }
     }
 

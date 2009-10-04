@@ -21,8 +21,8 @@
 package slash.navigation.nmn;
 
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
@@ -73,7 +73,7 @@ public class Nmn6Format extends NmnFormat {
         String comment = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
-        return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), (Double)null, null, null, Conversion.trim(comment));
+        return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), (Double)null, null, null, Transfer.trim(comment));
     }
 
     private static String formatForNmn6(String string) {
@@ -81,8 +81,8 @@ public class Nmn6Format extends NmnFormat {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatPositionAsString(position.getLongitude());
-        String latitude = Conversion.formatPositionAsString(position.getLatitude());
+        String longitude = Transfer.formatPositionAsString(position.getLongitude());
+        String latitude = Transfer.formatPositionAsString(position.getLatitude());
         String comment = formatForNmn6(position.getComment());
         writer.println(LEFT_BRACE + comment + SEPARATOR_CHAR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +

@@ -26,6 +26,7 @@ import slash.navigation.itn.TomTomPosition;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 /**
  * Represents a position in a NMEA 0183 Sentences (.nmea) file.
@@ -60,7 +61,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         if (ddmm2 == null)
             return null;
         double decimal = Conversion.ddmm2degrees(ddmm2);
-        direction = Conversion.trim(direction);
+        direction = Transfer.trim(direction);
         boolean southOrWest = "S".equals(direction) || "W".equals(direction);
         return southOrWest ? -decimal : decimal;
     }

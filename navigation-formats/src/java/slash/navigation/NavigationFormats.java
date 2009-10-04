@@ -49,8 +49,8 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tour.TourFormat;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.Transfer;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
@@ -259,7 +259,7 @@ public final class NavigationFormats {
     private static String getFormatName(NavigationFormat format) {
         Class<? extends NavigationFormat> formatClass = format.getClass();
         String formatName = formatClass.getSimpleName();
-        if (Conversion.trim(formatName) == null && formatClass.getSuperclass() != null)
+        if (Transfer.trim(formatName) == null && formatClass.getSuperclass() != null)
             formatName = formatClass.getSuperclass().getSimpleName();
         // shortcut to prevent lots of as... methods
         if (format instanceof BabelFormat)

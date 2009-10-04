@@ -106,7 +106,7 @@ public class PositionsModel extends AbstractTableModel {
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         BaseNavigationPosition position = getPosition(rowIndex);
-        String value = Conversion.trim(aValue.toString());
+        String value = Transfer.trim(aValue.toString());
         switch(columnIndex) {
             case PositionColumns.DESCRIPTION_COLUMN_INDEX:
                 position.setComment(value);
@@ -124,7 +124,7 @@ public class PositionsModel extends AbstractTableModel {
                 break;
             case PositionColumns.LONGITUDE_COLUMN_INDEX:
                 try {
-                    position.setLongitude(Conversion.parseDouble(value));
+                    position.setLongitude(Transfer.parseDouble(value));
                 }
                 catch(NumberFormatException e) {
                     // intentionally left empty
@@ -132,7 +132,7 @@ public class PositionsModel extends AbstractTableModel {
                 break;
             case PositionColumns.LATITUDE_COLUMN_INDEX:
                 try {
-                    position.setLatitude(Conversion.parseDouble(value));
+                    position.setLatitude(Transfer.parseDouble(value));
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }
@@ -141,7 +141,7 @@ public class PositionsModel extends AbstractTableModel {
                 try {
                     if (value != null)
                         value = value.replaceAll("m", "");
-                    position.setElevation(Conversion.parseDouble(value));
+                    position.setElevation(Transfer.parseDouble(value));
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }
@@ -168,7 +168,7 @@ public class PositionsModel extends AbstractTableModel {
             return "";
         String speedStr;
         if (Math.abs(speed) < 10.0)
-            speedStr = Double.toString(Conversion.roundFraction(speed, 1));
+            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
         else
             speedStr = Long.toString(Math.round(speed));
         return speedStr + " Km/h";
@@ -188,7 +188,7 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     private String formatDistance(double distance) {
-        double rounded = Conversion.roundFraction(distance / 1000.0, 1);
+        double rounded = Transfer.roundFraction(distance / 1000.0, 1);
         return rounded > 0.0 ? rounded + " Km" : "";
     }
 

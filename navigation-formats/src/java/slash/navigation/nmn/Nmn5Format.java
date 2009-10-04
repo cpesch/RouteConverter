@@ -21,8 +21,8 @@
 package slash.navigation.nmn;
 
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
@@ -60,11 +60,11 @@ public class Nmn5Format extends NmnFormat {
     }
 
     private static String parseForNmn5(String string) {
-        String result = Conversion.trim(string);
+        String result = Transfer.trim(string);
         if (result != null && "-".equals(result))
             result = null;
         if (result != null && result.length() > 2 && result.toUpperCase().equals(result))
-            result = Conversion.toMixedCase(result);
+            result = Transfer.toMixedCase(result);
         return result;
     }
 
@@ -78,7 +78,7 @@ public class Nmn5Format extends NmnFormat {
         String number = parseForNmn5(lineMatcher.group(3));
         String longitude = lineMatcher.group(4);
         String latitude = lineMatcher.group(5);
-        return new NmnPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), null, city, street, number);
+        return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), null, city, street, number);
     }
 
     private static String formatForNmn5(String string) {
@@ -87,8 +87,8 @@ public class Nmn5Format extends NmnFormat {
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
-        String longitude = Conversion.formatPositionAsString(nmnPosition.getLongitude());
-        String latitude = Conversion.formatPositionAsString(nmnPosition.getLatitude());
+        String longitude = Transfer.formatPositionAsString(nmnPosition.getLongitude());
+        String latitude = Transfer.formatPositionAsString(nmnPosition.getLatitude());
         String city = formatForNmn5(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
         String street = formatForNmn5(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
         String number = formatForNmn5(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());

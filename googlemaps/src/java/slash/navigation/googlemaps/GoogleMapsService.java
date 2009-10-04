@@ -25,7 +25,7 @@ import slash.navigation.kml.KmlUtil;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Helper;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -145,8 +145,8 @@ public class GoogleMapsService {
                 public int compare(Placemark p1, Placemark p2) {
                     AddressDetails a1 = find(p1.getDescriptionOrNameOrSnippet(), AddressDetails.class);
                     AddressDetails a2 = find(p2.getDescriptionOrNameOrSnippet(), AddressDetails.class);
-                    Integer accuracy1 = Conversion.parseInt(a1.getOtherAttributes().get(new QName("Accuracy")));
-                    Integer accuracy2 = Conversion.parseInt(a2.getOtherAttributes().get(new QName("Accuracy")));
+                    Integer accuracy1 = Transfer.parseInt(a1.getOtherAttributes().get(new QName("Accuracy")));
+                    Integer accuracy2 = Transfer.parseInt(a2.getOtherAttributes().get(new QName("Accuracy")));
                     return accuracy2.compareTo(accuracy1);
                 }
             });

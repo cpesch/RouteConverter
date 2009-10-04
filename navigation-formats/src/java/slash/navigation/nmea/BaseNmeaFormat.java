@@ -25,7 +25,7 @@ import slash.navigation.SimpleFormat;
 import slash.navigation.hex.HexDecoder;
 import slash.navigation.hex.HexEncoder;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -96,7 +96,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (Conversion.trim(line) == null)
+            if (Transfer.trim(line) == null)
                 continue;
 
             if (isValidLine(line)) {
@@ -202,7 +202,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     protected abstract NmeaPosition parsePosition(String line);
 
     protected CompactCalendar parseTime(String time) {
-        time = Conversion.trim(time);
+        time = Transfer.trim(time);
         if (time == null)
             return null;
         // 130441.89
@@ -227,8 +227,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
-        time = Conversion.trim(time);
-        date = Conversion.trim(date);
+        time = Transfer.trim(time);
+        date = Transfer.trim(date);
         if (date == null)
             return parseTime(time);
         String dateAndTime = date + " " + time;
@@ -279,7 +279,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     protected String formatComment(String comment) {
-        comment = Conversion.trim(comment);
+        comment = Transfer.trim(comment);
         if (comment == null)
             return "";
         return comment.replaceAll(",", ";");

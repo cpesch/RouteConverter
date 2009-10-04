@@ -22,7 +22,7 @@ package slash.navigation.kml;
 
 import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.kml.binding20.Kml;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -241,6 +241,6 @@ public class KmlUtil {
         String longitude = matcher.group(1);
         String latitude = matcher.group(2);
         String elevation = matcher.group(3);
-        return new KmlPosition(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude), Conversion.parseDouble(elevation), null, null, Conversion.trim(comment));
+        return new KmlPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), Transfer.parseDouble(elevation), null, null, Transfer.trim(comment));
     }
 }

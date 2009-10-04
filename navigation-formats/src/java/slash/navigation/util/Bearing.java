@@ -229,7 +229,7 @@ public class Bearing {
             azimuth += 360.0;  // reset azs from -180 to 180 to 0 to 360
         }
         double backazimuth = BAZ * deg;  // radians to degrees; already in 0 to 360 range
-        return new Bearing(azimuth, backazimuth, Conversion.roundMeterToMillimeterPrecision(S));
+        return new Bearing(azimuth, backazimuth, Transfer.roundMeterToMillimeterPrecision(S));
     }
 }
 

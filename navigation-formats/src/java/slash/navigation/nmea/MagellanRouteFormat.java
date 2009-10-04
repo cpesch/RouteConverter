@@ -22,7 +22,7 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -115,9 +115,9 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             String altitude = matcher.group(5);
             String comment = matcher.group(6);
             if (comment != null && comment.toUpperCase().equals(comment))
-                comment = Conversion.toMixedCase(comment);
-            return new NmeaPosition(Conversion.parseDouble(longitude), westOrEast, Conversion.parseDouble(latitude), northOrSouth,
-                    Double.parseDouble(altitude), null, null, null, Conversion.trim(comment));
+                comment = Transfer.toMixedCase(comment);
+            return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
+                    Double.parseDouble(altitude), null, null, null, Transfer.trim(comment));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -163,7 +163,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         }
 
         String routeName = formatRouteName(route.getName());
-        int count = Conversion.ceiling(endIndex - startIndex, 2, true);
+        int count = Transfer.ceiling(endIndex - startIndex, 2, true);
         for (int i = startIndex; i < endIndex; i += 2) {
             NmeaPosition start = positions.get(i);
             NmeaPosition end = positions.size() > i + 1 ? positions.get(i + 1) : null;
@@ -183,7 +183,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
         String comment = formatComment(position.getComment());
-        String altitude = Conversion.formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
+        String altitude = Transfer.formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
 
         String wpl = "PMGNWPL" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +

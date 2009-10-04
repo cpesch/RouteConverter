@@ -22,8 +22,8 @@ package slash.navigation.copilot;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.Wgs84Route;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,9 +67,9 @@ public class CoPilot7Format extends CoPilotFormat {
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             writer.println(START_STOP + NAME_VALUE_SEPARATOR + "Stop " + i);
-            String longitude = Conversion.formatIntAsString(position.getLongitude() != null ? (int)(position.getLongitude() * INTEGER_FACTOR) : null);
+            String longitude = Transfer.formatIntAsString(position.getLongitude() != null ? (int)(position.getLongitude() * INTEGER_FACTOR) : null);
             writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
-            String latitude = Conversion.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
+            String latitude = Transfer.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
             writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
 
             // TODO write decomposed comment
@@ -83,9 +83,9 @@ public class CoPilot7Format extends CoPilotFormat {
             String comment = position.getComment();
             int index = comment.indexOf(',');
             String city = index != -1 ? comment.substring(0, index) : comment;
-            city = Conversion.trim(city);
+            city = Transfer.trim(city);
             String address = index != -1 ? comment.substring(index + 1) : comment;
-            address = Conversion.trim(address);
+            address = Transfer.trim(address);
 
             // only store address if there was a comma in the comment
             writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));

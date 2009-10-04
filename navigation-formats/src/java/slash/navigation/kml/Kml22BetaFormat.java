@@ -22,10 +22,7 @@ package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.kml.binding22beta.*;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.ISO8601;
-import slash.navigation.util.RouteComments;
+import slash.navigation.util.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -92,13 +89,13 @@ public class Kml22BetaFormat extends KmlFormat {
                 features = ((FolderType) containerType).getAbstractFeatureGroup();
             else if (containerType instanceof DocumentType)
                 features = ((DocumentType) containerType).getAbstractFeatureGroup();
-            routes = extractTracks(Conversion.trim(containerType.getNameElement()), Conversion.trim(containerType.getDescription()), features);
+            routes = extractTracks(Transfer.trim(containerType.getNameElement()), Transfer.trim(containerType.getDescription()), features);
         }
 
         if (feature instanceof PlacemarkType) {
             PlacemarkType placemarkType = (PlacemarkType) feature;
-            String placemarkName = asComment(Conversion.trim(placemarkType.getNameElement()),
-                    Conversion.trim(placemarkType.getDescription()));
+            String placemarkName = asComment(Transfer.trim(placemarkType.getNameElement()),
+                    Transfer.trim(placemarkType.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkType.getAbstractGeometryGroup());
             for (KmlPosition position : positions) {
@@ -143,8 +140,8 @@ public class Kml22BetaFormat extends KmlFormat {
         List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
-            String placemarkName = asComment(Conversion.trim(placemarkTypeValue.getNameElement()),
-                    Conversion.trim(placemarkTypeValue.getDescription()));
+            String placemarkName = asComment(Transfer.trim(placemarkTypeValue.getNameElement()),
+                    Transfer.trim(placemarkTypeValue.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getAbstractGeometryGroup());
             if (positions.size() == 1) {
@@ -247,9 +244,9 @@ public class Kml22BetaFormat extends KmlFormat {
             }
             PointType pointType = objectFactory.createPointType();
             placemarkType.setAbstractGeometryGroup(objectFactory.createPoint(pointType));
-            pointType.getCoordinates().add(Conversion.formatPositionAsString(position.getLongitude()) + "," +
-                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
-                    Conversion.formatElevationAsString(position.getElevation()));
+            pointType.getCoordinates().add(Transfer.formatPositionAsString(position.getLongitude()) + "," +
+                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
+                    Transfer.formatElevationAsString(position.getElevation()));
         }
         return folderType;
     }
@@ -265,9 +262,9 @@ public class Kml22BetaFormat extends KmlFormat {
         multiGeometryType.getAbstractGeometryGroup().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(Conversion.formatPositionAsString(position.getLongitude()) + "," +
-                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
-                    Conversion.formatElevationAsString(position.getElevation()));
+            coordinates.add(Transfer.formatPositionAsString(position.getLongitude()) + "," +
+                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
+                    Transfer.formatElevationAsString(position.getElevation()));
         }
         return placemarkType;
     }
@@ -281,9 +278,9 @@ public class Kml22BetaFormat extends KmlFormat {
         placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(Conversion.formatPositionAsString(position.getLongitude()) + "," +
-                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
-                    Conversion.formatElevationAsString(position.getElevation()));
+            coordinates.add(Transfer.formatPositionAsString(position.getLongitude()) + "," +
+                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
+                    Transfer.formatElevationAsString(position.getElevation()));
         }
         return placemarkType;
     }

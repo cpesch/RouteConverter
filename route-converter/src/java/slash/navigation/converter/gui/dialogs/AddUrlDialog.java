@@ -27,7 +27,7 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -105,14 +105,14 @@ public class AddUrlDialog extends JDialog {
 
     private void addUrl() {
         String url = textFieldUrl.getText();
-        if (Conversion.trim(url) == null) {
+        if (Transfer.trim(url) == null) {
             labelResult.setText("No url given!"); // TODO make nicer
             pack();
             return;
         }
 
         String description = textFieldDescription.getText();
-        if (Conversion.trim(description) == null) {
+        if (Transfer.trim(description) == null) {
             labelResult.setText("No description given!"); // TODO make nicer
             pack();
             return;

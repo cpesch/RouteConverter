@@ -27,7 +27,7 @@ import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -177,7 +177,7 @@ public class Gpx11Format extends GpxFormat {
                 if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("speed".equals(element.getLocalName()))
-                        speed = Conversion.parseDouble(element.getTextContent());
+                        speed = Transfer.parseDouble(element.getTextContent());
                 }
             }
         }
@@ -203,7 +203,7 @@ public class Gpx11Format extends GpxFormat {
                     if(foundSpeed || speed == null)
                         iterator.remove();
                     else {
-                        element.setTextContent(Conversion.formatSpeedAsString(speed));
+                        element.setTextContent(Transfer.formatSpeedAsString(speed));
                         foundSpeed = true;
                     }
                 }
@@ -216,7 +216,7 @@ public class Gpx11Format extends GpxFormat {
                     if(foundSpeed || speed == null)
                         iterator.remove();
                     else {
-                        element.setValue(Conversion.formatSpeedAsString(speed));
+                        element.setValue(Transfer.formatSpeedAsString(speed));
                         foundSpeed = true;
                     }
                 }
@@ -224,7 +224,7 @@ public class Gpx11Format extends GpxFormat {
         }
         if (!foundSpeed && speed != null) {
             slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createSpeed(Conversion.formatSpeed(speed)));
+            anys.add(tbFactory.createSpeed(Transfer.formatSpeed(speed)));
         }
 
         if(anys.size() == 0)
@@ -238,7 +238,7 @@ public class Gpx11Format extends GpxFormat {
                 if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("course".equals(element.getLocalName()))
-                        heading = Conversion.parseDouble(element.getTextContent());
+                        heading = Transfer.parseDouble(element.getTextContent());
                 }
             }
         }
@@ -262,7 +262,7 @@ public class Gpx11Format extends GpxFormat {
                     if(foundHeading || heading == null)
                         iterator.remove();
                     else {
-                        element.setTextContent(Conversion.formatHeadingAsString(heading));
+                        element.setTextContent(Transfer.formatHeadingAsString(heading));
                         foundHeading = true;
                     }
                 }
@@ -275,7 +275,7 @@ public class Gpx11Format extends GpxFormat {
                     if(foundHeading || heading == null)
                         iterator.remove();
                     else {
-                        element.setValue(Conversion.formatHeadingAsString(heading));
+                        element.setValue(Transfer.formatHeadingAsString(heading));
                         foundHeading = true;
                     }
                 }
@@ -283,7 +283,7 @@ public class Gpx11Format extends GpxFormat {
         }
         if (!foundHeading && heading != null) {
             slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-            anys.add(tbFactory.createCourse(Conversion.formatHeading(heading)));
+            anys.add(tbFactory.createCourse(Transfer.formatHeading(heading)));
         }
 
         if(anys.size() == 0)
@@ -294,18 +294,18 @@ public class Gpx11Format extends GpxFormat {
         WptType wptType = position.getOrigin(WptType.class);
         if (wptType == null)
             wptType = new ObjectFactory().createWptType();
-        wptType.setLat(Conversion.formatPosition(position.getLatitude()));
-        wptType.setLon(Conversion.formatPosition(position.getLongitude()));
-        wptType.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
+        wptType.setLat(Transfer.formatPosition(position.getLatitude()));
+        wptType.setLon(Transfer.formatPosition(position.getLongitude()));
+        wptType.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
         setSpeed(wptType, isWriteSpeed() ? position.getSpeed() : null);
         setHeading(wptType, isWriteHeading() ? position.getHeading() : null);
         wptType.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
         wptType.setName(isWriteName() ? asName(position.getComment()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getComment(), wptType.getDesc()) : null);
-        wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? Conversion.formatDouble(position.getHdop(), 6) : null);
-        wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? Conversion.formatDouble(position.getPdop(), 6) : null);
-        wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? Conversion.formatDouble(position.getVdop(), 6) : null);
-        wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? Conversion.formatInt(position.getSatellites()) : null);
+        wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatDouble(position.getHdop(), 6) : null);
+        wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatDouble(position.getPdop(), 6) : null);
+        wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatDouble(position.getVdop(), 6) : null);
+        wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
         return wptType;
     }
 

@@ -21,11 +21,8 @@
 package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.RouteComments;
 import slash.navigation.kml.binding20.*;
-import slash.navigation.util.Conversion;
-import slash.navigation.util.ISO8601;
-import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -106,7 +103,7 @@ public class Kml20Format extends KmlFormat {
 
     private String extractName(List<Object> elements) {
         JAXBElement name = findElement(elements, "name");
-        return name != null ? Conversion.trim((String) name.getValue()) : null;
+        return name != null ? Transfer.trim((String) name.getValue()) : null;
     }
 
     private String extractDescription(List<Object> elements) {
@@ -236,7 +233,7 @@ public class Kml20Format extends KmlFormat {
         List<String> result = new ArrayList<String>();
         Matcher matcher = KmlUtil.POSITION_PATTERN.matcher(line);
         while (matcher.find()) {
-            result.add(Conversion.trim(matcher.group(0)));
+            result.add(Transfer.trim(matcher.group(0)));
         }
         return result;
     }
@@ -289,9 +286,9 @@ public class Kml20Format extends KmlFormat {
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));
             Point point = objectFactory.createPoint();
             placemarkList.add(point);
-            point.setCoordinates(Conversion.formatPositionAsString(position.getLongitude()) + "," +
-                    Conversion.formatPositionAsString(position.getLatitude()) + "," +
-                    Conversion.formatElevationAsString(position.getElevation()));
+            point.setCoordinates(Transfer.formatPositionAsString(position.getLongitude()) + "," +
+                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
+                    Transfer.formatElevationAsString(position.getElevation()));
         }
         return folder;
     }
@@ -308,9 +305,9 @@ public class Kml20Format extends KmlFormat {
         multiGeometry.getExtrudeOrTessellateOrAltitudeMode().add(lineString);
         StringBuffer coordinates = new StringBuffer();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(Conversion.formatPositionAsString(position.getLongitude())).append(",").
-                    append(Conversion.formatPositionAsString(position.getLatitude())).append(",").
-                    append(Conversion.formatElevationAsString(position.getElevation())).append(" ");
+            coordinates.append(Transfer.formatPositionAsString(position.getLongitude())).append(",").
+                    append(Transfer.formatPositionAsString(position.getLatitude())).append(",").
+                    append(Transfer.formatElevationAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
@@ -326,9 +323,9 @@ public class Kml20Format extends KmlFormat {
         placemarkList.add(lineString);
         StringBuffer coordinates = new StringBuffer();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(Conversion.formatPositionAsString(position.getLongitude())).append(",").
-                    append(Conversion.formatPositionAsString(position.getLatitude())).append(",").
-                    append(Conversion.formatElevationAsString(position.getElevation())).append(" ");
+            coordinates.append(Transfer.formatPositionAsString(position.getLongitude())).append(",").
+                    append(Transfer.formatPositionAsString(position.getLatitude())).append(",").
+                    append(Transfer.formatElevationAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;

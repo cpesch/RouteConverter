@@ -27,7 +27,7 @@ import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -157,13 +157,13 @@ public class LoginDialog extends JDialog {
 
     private void login() {
         String name = textFieldLogin.getText();
-        if (Conversion.trim(name) == null) {
+        if (Transfer.trim(name) == null) {
             labelLoginResult.setText("No name given!"); // TODO make nicer
             pack();
             return;
         }
         String password = new String(passwordLogin.getPassword());
-        if (Conversion.trim(password) == null) {
+        if (Transfer.trim(password) == null) {
             labelLoginResult.setText("No password given!"); // TODO make nicer
             pack();
             return;
@@ -176,7 +176,7 @@ public class LoginDialog extends JDialog {
 
     private void register() {
         String userName = textFieldName.getText();
-        if (Conversion.trim(userName) == null) {
+        if (Transfer.trim(userName) == null) {
             labelRegisterResult.setText("No user name given!"); // TODO make nicer
             pack();
             return;
@@ -188,7 +188,7 @@ public class LoginDialog extends JDialog {
         }
 
         String email = textFieldEMail.getText();
-        if (Conversion.trim(email) == null) {
+        if (Transfer.trim(email) == null) {
             labelRegisterResult.setText("No email given!"); // TODO make nicer
             pack();
             return;
@@ -200,7 +200,7 @@ public class LoginDialog extends JDialog {
         }
 
         String password = new String(passwordRegister.getPassword());
-        if (Conversion.trim(password) == null) {
+        if (Transfer.trim(password) == null) {
             labelRegisterResult.setText("No password given!"); // TODO make nicer
             pack();
             return;

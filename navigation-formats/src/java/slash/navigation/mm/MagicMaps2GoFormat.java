@@ -22,7 +22,7 @@ package slash.navigation.mm;
 
 import slash.navigation.*;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -81,8 +81,8 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
-        time = Conversion.trim(time);
-        date = Conversion.trim(date);
+        time = Transfer.trim(time);
+        date = Transfer.trim(date);
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
@@ -104,14 +104,14 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String elevation = lineMatcher.group(3);
         String date = lineMatcher.group(4);
         String time = lineMatcher.group(5);
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                Conversion.parseDouble(elevation), null, parseDateAndTime(date, time), null);
+        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                Transfer.parseDouble(elevation), null, parseDateAndTime(date, time), null);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 7);
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 7);
-        String elevation = Conversion.formatDoubleAsString(position.getElevation(), 7);
+        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
+        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
+        String elevation = Transfer.formatDoubleAsString(position.getElevation(), 7);
         String dateAndTime = position.getTime() != null ? DATE_AND_TIME_FORMAT.format(position.getTime().getTime()) : "00.00.00 00:00:=00";
         writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + elevation + SEPARATOR_CHAR + dateAndTime);
     }

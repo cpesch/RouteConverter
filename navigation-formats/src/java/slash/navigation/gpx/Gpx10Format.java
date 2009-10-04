@@ -26,6 +26,7 @@ import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -156,12 +157,12 @@ public class Gpx10Format extends GpxFormat {
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    Double speed = Conversion.formatDouble(trkPt.getSpeed());
+                    Double speed = Transfer.formatDouble(trkPt.getSpeed());
                     if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
                         speed = asKmh(speed);
                     if(speed == null && trkPt.getCmt() != null)
                         speed = parseSpeed(trkPt.getCmt());
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, Conversion.formatDouble(trkPt.getCourse()), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, Transfer.formatDouble(trkPt.getCourse()), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
                 }
             }
         }
@@ -172,14 +173,14 @@ public class Gpx10Format extends GpxFormat {
         if (speed == null || speed == 0.0)
             return comment;
         return (comment != null ? comment + " " : "") +
-                "Speed: " + Conversion.formatSpeedAsString(speed) + " Km/h";
+                "Speed: " + Transfer.formatSpeedAsString(speed) + " Km/h";
     }
 
     private String formatHeading(String comment, Double heading) {
         if (heading == null || heading == 0.0)
             return comment;
         return (comment != null ? comment + " " : "") +
-                "Heading: " + Conversion.formatHeadingAsString(heading);
+                "Heading: " + Transfer.formatHeadingAsString(heading);
     }
 
     private List<Gpx.Wpt> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
@@ -191,20 +192,20 @@ public class Gpx10Format extends GpxFormat {
             Gpx.Wpt wpt = position.getOrigin(Gpx.Wpt.class);
             if (wpt == null || !reuseReadObjectsForWriting)
                 wpt = objectFactory.createGpxWpt();
-            wpt.setLat(Conversion.formatPosition(position.getLatitude()));
-            wpt.setLon(Conversion.formatPosition(position.getLongitude()));
+            wpt.setLat(Transfer.formatPosition(position.getLatitude()));
+            wpt.setLon(Transfer.formatPosition(position.getLongitude()));
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            wpt.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
+            wpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatHeading(wpt.getCmt(), position.getHeading()));
             wpt.setName(isWriteName() ? asName(position.getComment()) : null);
             wpt.setDesc(isWriteName() ? asDesc(position.getComment(), wpt.getDesc()) : null);
-            wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? Conversion.formatDouble(position.getHdop(), 6) : null);
-            wpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? Conversion.formatDouble(position.getPdop(), 6) : null);
-            wpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? Conversion.formatDouble(position.getVdop(), 6) : null);
-            wpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? Conversion.formatInt(position.getSatellites()) : null);
+            wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatDouble(position.getHdop(), 6) : null);
+            wpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatDouble(position.getPdop(), 6) : null);
+            wpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatDouble(position.getVdop(), 6) : null);
+            wpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
             wpts.add(wpt);
         }
         return wpts;
@@ -231,20 +232,20 @@ public class Gpx10Format extends GpxFormat {
             Gpx.Rte.Rtept rtept = position.getOrigin(Gpx.Rte.Rtept.class);
             if (rtept == null || !reuseReadObjectsForWriting)
                 rtept = objectFactory.createGpxRteRtept();
-            rtept.setLat(Conversion.formatPosition(position.getLatitude()));
-            rtept.setLon(Conversion.formatPosition(position.getLongitude()));
+            rtept.setLat(Transfer.formatPosition(position.getLatitude()));
+            rtept.setLon(Transfer.formatPosition(position.getLongitude()));
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            rtept.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
+            rtept.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatHeading(rtept.getCmt(), position.getHeading()));
             rtept.setName(isWriteName() ? asName(position.getComment()) : null);
             rtept.setDesc(isWriteName() ? asDesc(position.getComment(), rtept.getDesc()) : null);
-            rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? Conversion.formatDouble(position.getHdop(), 6) : null);
-            rtept.setPdop(isWriteAccuracy() && position.getPdop() != null ? Conversion.formatDouble(position.getPdop(), 6) : null);
-            rtept.setVdop(isWriteAccuracy() && position.getVdop() != null ? Conversion.formatDouble(position.getVdop(), 6) : null);
-            rtept.setSat(isWriteAccuracy() && position.getSatellites() != null ? Conversion.formatInt(position.getSatellites()) : null);
+            rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatDouble(position.getHdop(), 6) : null);
+            rtept.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatDouble(position.getPdop(), 6) : null);
+            rtept.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatDouble(position.getVdop(), 6) : null);
+            rtept.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
             rte.getRtept().add(rtept);
         }
         return rtes;
@@ -272,19 +273,19 @@ public class Gpx10Format extends GpxFormat {
             Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
             if (trkpt == null || !reuseReadObjectsForWriting)
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
-            trkpt.setLat(Conversion.formatPosition(position.getLatitude()));
-            trkpt.setLon(Conversion.formatPosition(position.getLongitude()));
+            trkpt.setLat(Transfer.formatPosition(position.getLatitude()));
+            trkpt.setLon(Transfer.formatPosition(position.getLongitude()));
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            trkpt.setEle(isWriteElevation() ? Conversion.formatElevation(position.getElevation()) : null);
-            trkpt.setCourse(isWriteHeading() ? Conversion.formatHeading(position.getHeading()) : null);
+            trkpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
+            trkpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
-                    Conversion.formatDouble(Conversion.kmhToMs(position.getSpeed()), 3) : null);
+                    Transfer.formatDouble(Conversion.kmhToMs(position.getSpeed()), 3) : null);
             trkpt.setName(isWriteName() ? asName(position.getComment()) : null);
             trkpt.setDesc(isWriteName() ? asDesc(position.getComment(), trkpt.getDesc()) : null);
-            trkpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? Conversion.formatDouble(position.getHdop(), 6) : null);
-            trkpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? Conversion.formatDouble(position.getPdop(), 6) : null);
-            trkpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? Conversion.formatDouble(position.getVdop(), 6) : null);
-            trkpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? Conversion.formatInt(position.getSatellites()) : null);
+            trkpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatDouble(position.getHdop(), 6) : null);
+            trkpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatDouble(position.getPdop(), 6) : null);
+            trkpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatDouble(position.getVdop(), 6) : null);
+            trkpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
             trkseg.getTrkpt().add(trkpt);
         }
         trk.getTrkseg().add(trkseg);

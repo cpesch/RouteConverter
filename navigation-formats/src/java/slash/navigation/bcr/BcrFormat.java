@@ -23,8 +23,8 @@ package slash.navigation.bcr;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -188,12 +188,12 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         if (!clientMatcher.matches())
             log.info("'" + client + "' does not match client station pattern; ignoring it");
         else {
-            String altitudeString = Conversion.trim(clientMatcher.group(2));
+            String altitudeString = Transfer.trim(clientMatcher.group(2));
             if (altitudeString != null)
-                altitude = Conversion.parseLong(altitudeString);
+                altitude = Transfer.parseLong(altitudeString);
         }
 
-        return new BcrPosition(Conversion.parseInt(x), Conversion.parseInt(y), altitude, Conversion.trim(description));
+        return new BcrPosition(Transfer.parseInt(x), Transfer.parseInt(y), altitude, Transfer.trim(description));
     }
 
 

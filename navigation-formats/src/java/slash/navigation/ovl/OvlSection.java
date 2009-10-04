@@ -22,7 +22,7 @@ package slash.navigation.ovl;
 
 import slash.navigation.IniFileSection;
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -72,19 +72,19 @@ class OvlSection extends IniFileSection {
     Wgs84Position getPosition(int index) {
         Double x, y;
         String indexKey = getPositionCount() > 1 ? Integer.toString(index) : "";
-        String xValue = Conversion.trim(get(X_POSITION + indexKey));
-        String yValue = Conversion.trim(get(Y_POSITION + indexKey));
-        String comment = getPositionCount() == 1 ? Conversion.trim(getText()) : null;
+        String xValue = Transfer.trim(get(X_POSITION + indexKey));
+        String yValue = Transfer.trim(get(Y_POSITION + indexKey));
+        String comment = getPositionCount() == 1 ? Transfer.trim(getText()) : null;
         // for the strange format of EasyGPS
         if (yValue == null && xValue != null) {
             Matcher matcher = EASY_GPS_PATTERN.matcher(xValue);
             if (matcher.matches()) {
-                xValue = Conversion.trim(matcher.group(1));
-                yValue = Conversion.trim(matcher.group(2));
+                xValue = Transfer.trim(matcher.group(1));
+                yValue = Transfer.trim(matcher.group(2));
             }
         }
-        x = Conversion.parseDouble(xValue);
-        y = Conversion.parseDouble(yValue);
+        x = Transfer.parseDouble(xValue);
+        y = Transfer.parseDouble(yValue);
         return new Wgs84Position(x, y, null, null, null, comment);
     }
 

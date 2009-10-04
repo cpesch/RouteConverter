@@ -20,8 +20,8 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 import slash.navigation.*;
 
 import java.io.PrintWriter;
@@ -83,7 +83,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseTime(String time) {
-        Long milliseconds = Conversion.parseLong(time);
+        Long milliseconds = Transfer.parseLong(time);
         if (milliseconds == null || milliseconds == 0)
             return null;
         Calendar calendar = Calendar.getInstance();
@@ -101,9 +101,9 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = lineMatcher.group(4);
         String time = lineMatcher.group(5);
         String heading = lineMatcher.group(6);
-        Wgs84Position position = new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                Conversion.parseDouble(altitude), Conversion.parseDouble(speed), parseTime(time), null);
-        position.setHeading(Conversion.parseDouble(heading));
+        Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                Transfer.parseDouble(altitude), Transfer.parseDouble(speed), parseTime(time), null);
+        position.setHeading(Transfer.parseDouble(heading));
         return position;
     }
 
@@ -120,12 +120,12 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatPositionAsString(position.getLongitude());
-        String latitude = Conversion.formatPositionAsString(position.getLatitude());
-        String altitude = Conversion.formatElevationAsString(position.getElevation());
-        String speed = Conversion.formatSpeedAsString(position.getSpeed());
+        String longitude = Transfer.formatPositionAsString(position.getLongitude());
+        String latitude = Transfer.formatPositionAsString(position.getLatitude());
+        String altitude = Transfer.formatElevationAsString(position.getElevation());
+        String speed = Transfer.formatSpeedAsString(position.getSpeed());
         String time = formatTime(position.getTime());
-        String heading = position.getHeading() != null ? Conversion.formatIntAsString(position.getHeading().intValue()) : "0";
+        String heading = position.getHeading() != null ? Transfer.formatIntAsString(position.getHeading().intValue()) : "0";
         writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + altitude + SEPARATOR_CHAR +
                 speed + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + heading);
     }

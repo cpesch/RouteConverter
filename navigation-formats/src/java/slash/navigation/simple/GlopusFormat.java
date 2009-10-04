@@ -20,8 +20,8 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.util.Conversion;
 import slash.navigation.util.CompactCalendar;
+import slash.navigation.util.Transfer;
 import slash.navigation.*;
 
 import java.io.PrintWriter;
@@ -76,13 +76,13 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String comment = lineMatcher.group(3);
-        return new Wgs84Position(Conversion.parseDouble(longitude), Conversion.parseDouble(latitude),
-                null, null, null, Conversion.trim(comment));
+        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                null, null, null, Transfer.trim(comment));
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Conversion.formatDoubleAsString(position.getLongitude(), 7);
-        String latitude = Conversion.formatDoubleAsString(position.getLatitude(), 7);
+        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
+        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
         String comment = position.getComment();
         writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + comment);
     }

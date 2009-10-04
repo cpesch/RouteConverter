@@ -48,8 +48,8 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Conversion;
 import slash.navigation.util.Files;
+import slash.navigation.util.Transfer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -319,7 +319,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat)) {
-            assertEquals("Heading " + index + " does not match", Conversion.roundFraction(sourceHeading, 0), Conversion.roundFraction(targetHeading, 0));
+            assertEquals("Heading " + index + " does not match", Transfer.roundFraction(sourceHeading, 0), Transfer.roundFraction(targetHeading, 0));
         } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
                 sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                 sourceFormat instanceof NmeaFormat || sourceFormat instanceof TomTomRouteFormat) &&
@@ -601,7 +601,7 @@ public abstract class NavigationTestCase extends TestCase {
                 String targetName = getMicrosoftAutoroutePositionComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof Route66Format)
-                assertEquals("Comment " + index + " does not match", Conversion.toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
+                assertEquals("Comment " + index + " does not match", Transfer.toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format) {
                 String sourceName = getGarminMapSource6PositionComment(sourcePosition);
                 String targetName = getGarminMapSource6PositionComment(targetPosition);
@@ -634,7 +634,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
-                assertEquals("Speed " + index + " does not match", Conversion.roundFraction(sourcePosition.getSpeed(), 1), Conversion.roundFraction(targetPosition.getSpeed(), 1));
+                assertEquals("Speed " + index + " does not match", Transfer.roundFraction(sourcePosition.getSpeed(), 1), Transfer.roundFraction(targetPosition.getSpeed(), 1));
             } else {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed(), targetPosition.getSpeed());
             }
@@ -723,7 +723,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static String escapeNmn4and5(String str) {
         if (str != null && str.length() > 2 && str.toUpperCase().equals(str))
-            str = Conversion.toMixedCase(str);
+            str = Transfer.toMixedCase(str);
         return str != null ? str.replaceAll("\\|", ";") : null;
     }
 
@@ -732,7 +732,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String escapeNmn6Favorites(String str) {
-        return str != null ? Conversion.toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("ß", "ss")) : null;
+        return str != null ? Transfer.toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("ß", "ss")) : null;
     }
 
     private static String trimSpaces(String str) {

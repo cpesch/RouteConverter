@@ -68,7 +68,7 @@ public class BearingTest extends TestCase {
         double deltaSigma = B * sinSigma * (cos2SigmaM + B / 4.0 * (cosSigma * (-1.0 + 2.0 * cos2SigmaM * cos2SigmaM) -
                 B / 6.0 * cos2SigmaM * (-3.0 + 4.0 * sinSigma * sinSigma) * (-3.0 + 4.0 * cos2SigmaM * cos2SigmaM)));
         double s = b * A * (sigma - deltaSigma);
-        s = Conversion.roundMeterToMillimeterPrecision(s); // round to 1mm precision
+        s = Transfer.roundMeterToMillimeterPrecision(s); // round to 1mm precision
         return s;
     }
 

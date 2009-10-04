@@ -22,7 +22,7 @@ package slash.navigation.geonames;
 
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
-import slash.navigation.util.Conversion;
+import slash.navigation.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class GeoNamesService {
         String result = get.execute();
         if (get.isSuccessful())
             try {
-                Integer elevation = Conversion.parseInt(result);
+                Integer elevation = Transfer.parseInt(result);
                 if (elevation != null && !elevation.equals(nullValue))
                     return elevation;
             } catch (NumberFormatException e) {
