@@ -247,8 +247,8 @@ public class EclipseSWTMapView extends BaseMapView {
         if ((positions == null) || (positions.size() < 1))
             return 0;
 
-        Wgs84Position northEast = Calculation.getNorthEast(positions);
-        Wgs84Position southWest = Calculation.getSouthWest(positions);
+        Wgs84Position northEast = Calculation.northEast(positions);
+        Wgs84Position southWest = Calculation.southWest(positions);
 
         StringBuffer buffer = new StringBuffer();
         buffer.append("return map.getBoundsZoomLevel(new GLatLngBounds(").

@@ -42,15 +42,17 @@ public class Calculation {
         int maximumDistanceIndex = -1;
         double maximumDistance = 0.0;
         for (int i = from + 1; i < to; i++) {
-            // TODO check hasCoordinates
-            double d = Math.abs(positions.get(i).calculateOrthogonalDistance(pointA, pointB));
-            if (d > maximumDistance) {
-                maximumDistance = d;
-                maximumDistanceIndex = i;
+            BaseNavigationPosition position = positions.get(i);
+            if (position.hasCoordinates()) {
+                double distance = Math.abs(position.calculateOrthogonalDistance(pointA, pointB));
+                if (distance > maximumDistance) {
+                    maximumDistance = distance;
+                    maximumDistanceIndex = i;
+                }
             }
         }
 
-        // if max distance is greater than threshold, recursively simplify
+        // if maximum distance is greater than threshold, recursively simplify
         if ((maximumDistanceIndex != -1) && (maximumDistance > threshold)) {
             int[] res1 = douglasPeuckerSimplify(positions, from, maximumDistanceIndex, threshold);
             int[] res2 = douglasPeuckerSimplify(positions, maximumDistanceIndex, to, threshold);
@@ -64,7 +66,7 @@ public class Calculation {
     }
 
     /**
-     * Search the significant positions with Douglas-Peucker-algorithm.
+     * Search the significant positions with the Douglas-Peucker-Algorithm.
      * <p/>
      * http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus
      *
@@ -77,8 +79,8 @@ public class Calculation {
     }
 
     public static Wgs84Position center(List<? extends BaseNavigationPosition> positions) {
-        Wgs84Position northEast = getNorthEast(positions);
-        Wgs84Position southWest = getSouthWest(positions);
+        Wgs84Position northEast = northEast(positions);
+        Wgs84Position southWest = southWest(positions);
         double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         CompactCalendar time = null;
@@ -92,7 +94,7 @@ public class Calculation {
         return new Wgs84Position(longitude, latitude, null, null, time, null);
     }
 
-    public static Wgs84Position getNorthEast(List<? extends BaseNavigationPosition> positions) {
+    public static Wgs84Position northEast(List<? extends BaseNavigationPosition> positions) {
         double minimumLongitude = 180.0, minimumLatitude = 180.0;
         Calendar minimumTime = null;
         for (BaseNavigationPosition position : positions) {
@@ -117,7 +119,7 @@ public class Calculation {
                 minimumTime != null ? CompactCalendar.fromCalendar(minimumTime) : null, null);
     }
 
-    public static Wgs84Position getSouthWest(List<? extends BaseNavigationPosition> positions) {
+    public static Wgs84Position southWest(List<? extends BaseNavigationPosition> positions) {
         double maximumLongitude = -180.0, maximumLatitude = -180.0;
         Calendar maximumTime = null;
         for (BaseNavigationPosition position : positions) {
@@ -142,9 +144,9 @@ public class Calculation {
                 maximumTime != null ? CompactCalendar.fromCalendar(maximumTime) : null, null);
     }
 
-    public static boolean containsPosition(BaseNavigationPosition northEastCorner,
-                                           BaseNavigationPosition southWestCorner,
-                                           BaseNavigationPosition position) {
+    public static boolean contains(BaseNavigationPosition northEastCorner,
+                                   BaseNavigationPosition southWestCorner,
+                                   BaseNavigationPosition position) {
         boolean result = position.getLongitude() > southWestCorner.getLongitude();
         result = result && (position.getLongitude() < northEastCorner.getLongitude());
         result = result && (position.getLatitude() > southWestCorner.getLatitude());

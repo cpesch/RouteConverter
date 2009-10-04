@@ -659,7 +659,7 @@ public abstract class BaseMapView implements MapView {
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (BaseNavigationPosition position : positions) {
-            if (Calculation.containsPosition(northEast, southWest, position)) {
+            if (Calculation.contains(northEast, southWest, position)) {
                 result.add(position);
             }
         }
@@ -858,8 +858,8 @@ public abstract class BaseMapView implements MapView {
 
         // if there are positions center on first start or if we have to recenter
         if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
-            Wgs84Position northEast = Calculation.getNorthEast(positions);
-            Wgs84Position southWest = Calculation.getSouthWest(positions);
+            Wgs84Position northEast = Calculation.northEast(positions);
+            Wgs84Position southWest = Calculation.southWest(positions);
             buffer.append("var zoomLevel = map.getBoundsZoomLevel(new GLatLngBounds(").
                     append("new GLatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append("),").
                     append("new GLatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(")").
