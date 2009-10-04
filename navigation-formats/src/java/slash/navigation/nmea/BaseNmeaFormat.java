@@ -22,8 +22,8 @@ package slash.navigation.nmea;
 
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.SimpleFormat;
-import slash.navigation.hex.HexDecoder;
-import slash.navigation.hex.HexEncoder;
+import slash.common.hex.HexDecoder;
+import slash.common.hex.HexEncoder;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Transfer;
 

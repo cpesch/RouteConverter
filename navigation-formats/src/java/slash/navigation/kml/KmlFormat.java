@@ -24,7 +24,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.hex.HexDecoder;
+import slash.common.hex.HexDecoder;
 import slash.navigation.util.CompactCalendar;
 import slash.navigation.util.Transfer;
 

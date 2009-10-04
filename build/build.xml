@@ -1120,9 +1120,10 @@
             </group>
 
             <group title="Utilities">
-                <package name="slash.navigation.hex*"/>
-                <package name="slash.navigation.jaxb*"/>
-                <package name="slash.navigation.log*"/>
+                <package name="slash.common.hex*"/>
+                <package name="slash.common.jaxb*"/>
+                <package name="slash.common.log*"/>
+                <package name="slash.common.util*"/>
                 <package name="slash.navigation.util*"/>
             </group>
 
