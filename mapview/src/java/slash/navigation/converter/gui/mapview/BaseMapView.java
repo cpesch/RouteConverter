@@ -26,8 +26,8 @@ import slash.navigation.Wgs84Position;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Positions;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;

@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.util.InputOutput;
-import slash.navigation.util.Version;
-import slash.navigation.util.Transfer;
+import slash.common.util.InputOutput;
+import slash.common.util.Version;
+import slash.common.util.Transfer;
 
 import javax.swing.*;
 import java.awt.*;

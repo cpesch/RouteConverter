@@ -22,8 +22,8 @@ package slash.navigation.ovl;
 
 import slash.navigation.*;
 import slash.navigation.util.Positions;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import java.io.BufferedReader;
 import java.io.File;

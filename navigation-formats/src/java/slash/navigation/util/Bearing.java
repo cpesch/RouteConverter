@@ -22,6 +22,8 @@
 
 package slash.navigation.util;
 
+import slash.common.util.Transfer;
+
 /**
  * Computes the distance, azimuth, and back azimuth between
  * two lat-lon positions on the Earth's surface. Reference ellipsoid is the WGS-84.

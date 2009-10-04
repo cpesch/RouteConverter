@@ -20,7 +20,8 @@
 
 package slash.navigation.util;
 
-import slash.navigation.TestCase;
+import slash.common.TestCase;
+import slash.common.util.Transfer;
 
 public class BearingTest extends TestCase {
 

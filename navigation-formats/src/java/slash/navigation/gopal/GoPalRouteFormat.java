@@ -23,7 +23,7 @@ package slash.navigation.gopal;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.XmlNavigationFormat;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.gopal.binding3.ObjectFactory;
 import slash.navigation.gopal.binding3.Tour;
 

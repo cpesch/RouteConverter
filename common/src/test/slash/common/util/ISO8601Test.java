@@ -18,9 +18,9 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.util;
+package slash.common.util;
 
-import slash.navigation.TestCase;
+import slash.common.TestCase;
 
 import java.util.Calendar;
 

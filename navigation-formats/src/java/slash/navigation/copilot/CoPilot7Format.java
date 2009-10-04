@@ -22,8 +22,8 @@ package slash.navigation.copilot;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.Wgs84Route;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import java.io.File;
 import java.io.IOException;

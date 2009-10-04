@@ -27,8 +27,8 @@ import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
 import slash.navigation.util.RouteComments;
-import slash.navigation.util.ContinousRange;
-import slash.navigation.util.Transfer;
+import slash.common.util.ContinousRange;
+import slash.common.util.Transfer;
 
 import javax.swing.*;
 import java.awt.*;

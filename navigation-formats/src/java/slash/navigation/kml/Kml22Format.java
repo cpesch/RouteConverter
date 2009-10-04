@@ -22,6 +22,9 @@ package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
 import slash.common.hex.HexDecoder;
+import slash.common.util.ISO8601;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.bindingatom.Link;
 import slash.navigation.util.*;

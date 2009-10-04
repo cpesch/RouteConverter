@@ -20,7 +20,7 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import java.util.Comparator;
 

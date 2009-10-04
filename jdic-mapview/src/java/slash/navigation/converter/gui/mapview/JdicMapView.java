@@ -26,7 +26,8 @@ import org.jdesktop.jdic.browser.WebBrowserListener;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.*;
+import slash.navigation.util.Positions;
+import slash.common.util.*;
 
 import javax.swing.*;
 import java.awt.*;

@@ -21,7 +21,7 @@
 package slash.navigation.wbt;
 
 import slash.navigation.*;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 
 import java.io.*;
 import java.nio.ByteBuffer;

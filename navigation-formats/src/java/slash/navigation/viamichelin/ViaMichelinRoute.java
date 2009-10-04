@@ -42,7 +42,7 @@ import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
 
 import java.util.ArrayList;

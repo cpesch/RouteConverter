@@ -21,7 +21,7 @@
 package slash.navigation.babel;
 
 import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gpx.GpxPosition;
 

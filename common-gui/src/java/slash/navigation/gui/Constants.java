@@ -20,13 +20,13 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.util.Platform;
+import slash.common.util.Platform;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.Locale;
 import java.util.logging.Logger;
-import java.net.URL;
 
 /**
  * Constants used throughout the UI

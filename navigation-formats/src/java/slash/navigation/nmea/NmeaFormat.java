@@ -22,9 +22,9 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.util.Conversion;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;

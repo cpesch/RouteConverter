@@ -20,7 +20,7 @@
 
 package slash.navigation;
 
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import java.io.IOException;
 

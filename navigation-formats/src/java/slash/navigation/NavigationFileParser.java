@@ -26,6 +26,9 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.*;
 import slash.navigation.simple.GoogleMapsFormat;
+import slash.common.util.NotClosingUnderlyingInputStream;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -263,10 +266,8 @@ public class NavigationFileParser {
             routeToWrite.add(0, ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite));
     }
 
-    /**
-     * Gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment.
-     */
     private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int trackIndex, File... targets) {
+        // gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
             String name = RouteComments.createRouteName(routeToWrite.getPositions().subList(startIndex, endIndex));

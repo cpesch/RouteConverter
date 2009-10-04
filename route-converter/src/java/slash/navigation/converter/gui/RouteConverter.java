@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.NavigationFormat;
 import slash.navigation.Wgs84Position;
-import slash.navigation.log.LoggingHelper;
+import slash.common.log.LoggingHelper;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -38,9 +38,9 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.SingleFrameApplication;
-import slash.navigation.util.Files;
-import slash.navigation.util.Platform;
-import slash.navigation.util.Version;
+import slash.common.util.Files;
+import slash.common.util.Platform;
+import slash.common.util.Version;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -134,7 +134,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     protected void startup() {
-        log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() +  " and " + Platform.getMaximumMemory() + " MByte heap");
+        log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
         show();
         new Updater().implicitCheck(frame);
         parseArgs(args);

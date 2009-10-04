@@ -27,7 +27,7 @@ import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

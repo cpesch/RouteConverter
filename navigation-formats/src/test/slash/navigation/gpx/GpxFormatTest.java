@@ -26,7 +26,7 @@ import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;

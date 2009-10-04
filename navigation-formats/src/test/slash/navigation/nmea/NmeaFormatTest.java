@@ -24,7 +24,7 @@ import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.SimpleRoute;
 import slash.navigation.util.Conversion;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;

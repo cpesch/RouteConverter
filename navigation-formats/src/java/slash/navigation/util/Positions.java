@@ -22,6 +22,7 @@ package slash.navigation.util;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
+import slash.common.util.CompactCalendar;
 
 import java.util.Calendar;
 import java.util.List;

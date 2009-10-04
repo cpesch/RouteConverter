@@ -19,7 +19,7 @@
  */ 
 package org.jdesktop.jdic.init;
 
-import slash.navigation.util.Externalization;
+import slash.common.util.Externalization;
 
 import java.io.File;
 import java.io.IOException;

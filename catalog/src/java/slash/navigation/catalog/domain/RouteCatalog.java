@@ -28,7 +28,6 @@ import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.*;
-import slash.navigation.util.Files;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;

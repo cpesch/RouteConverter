@@ -25,8 +25,8 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 import slash.navigation.util.Conversion;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;

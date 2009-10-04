@@ -22,7 +22,7 @@ package slash.navigation.itn;
 
 import junit.framework.Assert;
 import slash.navigation.*;
-import slash.navigation.util.Files;
+import slash.common.util.Files;
 
 import java.io.File;
 import java.io.IOException;

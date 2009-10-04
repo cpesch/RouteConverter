@@ -23,7 +23,7 @@ package slash.navigation.gopal;
 import slash.navigation.MercatorPosition;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.tour.TourPosition;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 
 import java.util.HashMap;
 

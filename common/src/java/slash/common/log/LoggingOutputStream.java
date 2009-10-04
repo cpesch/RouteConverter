@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.log;
+package slash.common.log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

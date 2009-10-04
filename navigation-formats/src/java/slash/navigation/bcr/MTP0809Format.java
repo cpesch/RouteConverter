@@ -20,7 +20,7 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;

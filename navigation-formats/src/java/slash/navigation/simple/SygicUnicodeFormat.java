@@ -21,8 +21,8 @@ package slash.navigation.simple;
 
 import slash.navigation.SimpleRoute;
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.services;
 import slash.navigation.NavigationFormat;
 import slash.navigation.BaseRoute;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 
 import java.util.List;
 import java.io.InputStream;

@@ -25,6 +25,8 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.Wgs84Position;
 import slash.navigation.itn.TomTomPosition;
+import slash.common.util.Transfer;
+import slash.common.util.CompactCalendar;
 
 import java.text.DateFormat;
 import java.text.ParseException;

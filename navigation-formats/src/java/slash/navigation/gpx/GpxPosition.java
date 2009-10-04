@@ -21,9 +21,9 @@
 package slash.navigation.gpx;
 
 import slash.navigation.Wgs84Position;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.util.RouteComments;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

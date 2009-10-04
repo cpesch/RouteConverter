@@ -21,8 +21,7 @@
 package slash.navigation.converter.cmdline;
 
 import slash.navigation.*;
-import slash.navigation.util.Files;
-import slash.navigation.util.Platform;
+import slash.common.util.*;
 
 import java.io.File;
 import java.io.IOException;

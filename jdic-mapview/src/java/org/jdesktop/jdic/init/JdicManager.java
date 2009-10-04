@@ -31,7 +31,7 @@ import java.net.URLClassLoader;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
 import com.sun.jnlp.JNLPClassLoader;
-import slash.navigation.util.Externalization;
+import slash.common.util.Externalization;
 
 /**
  * Initialization manager for JDIC to set the environment variables or

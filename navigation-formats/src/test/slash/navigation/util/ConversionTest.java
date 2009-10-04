@@ -20,7 +20,7 @@
 
 package slash.navigation.util;
 
-import slash.navigation.TestCase;
+import slash.common.TestCase;
 
 public class ConversionTest extends TestCase {
     public void testFeetToMeters() {

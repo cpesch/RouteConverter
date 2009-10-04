@@ -24,8 +24,8 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;

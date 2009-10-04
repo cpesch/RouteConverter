@@ -22,7 +22,7 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
-import slash.navigation.util.Platform;
+import slash.common.util.Platform;
 
 import javax.swing.*;
 

@@ -50,7 +50,7 @@ import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.RouteComments;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;

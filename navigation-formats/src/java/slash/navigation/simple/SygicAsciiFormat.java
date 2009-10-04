@@ -20,7 +20,7 @@
 package slash.navigation.simple;
 
 import slash.navigation.*;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;

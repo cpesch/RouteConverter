@@ -20,7 +20,7 @@
 
 package slash.common.hex;
 
-import slash.navigation.TestCase;
+import slash.common.TestCase;
 
 public class HexDecoderTest extends TestCase {
 

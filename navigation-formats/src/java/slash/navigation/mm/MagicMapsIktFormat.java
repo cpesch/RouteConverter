@@ -21,8 +21,8 @@
 package slash.navigation.mm;
 
 import slash.navigation.*;
-import slash.navigation.util.CompactCalendar;
-import slash.navigation.util.Transfer;
+import slash.common.util.CompactCalendar;
+import slash.common.util.Transfer;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;

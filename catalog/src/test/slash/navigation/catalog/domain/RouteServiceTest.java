@@ -19,8 +19,8 @@
 */
 package slash.navigation.catalog.domain;
 
+import slash.common.util.Files;
 import slash.navigation.rest.Helper;
-import slash.navigation.util.Files;
 
 import java.io.File;
 import java.io.IOException;

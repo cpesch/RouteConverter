@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.BaseRoute;
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
@@ -132,10 +132,10 @@ public class UploadDialog extends JDialog {
 
         textAreaDescription.setText(
                 (firstRoute.getDescription() != null ? firstRoute.getDescription() + "\n" : "") +
-                (startTime != null ? "from " + startTime : "") + 
-                (endTime != null ? " to " + endTime : "") + "\n" +
-                "length: " + length + "\n" +
-                "duration: " + duration + "\n"
+                        (startTime != null ? "from " + startTime : "") +
+                        (endTime != null ? " to " + endTime : "") + "\n" +
+                        "length: " + length + "\n" +
+                        "duration: " + duration + "\n"
         );
         textAreaDescription.setBorder(textFieldName.getBorder());
         textAreaDescription.setFont(textFieldName.getFont());
@@ -187,7 +187,7 @@ public class UploadDialog extends JDialog {
             // TODO store new file to service
         }
         */
-        
+
         preferences.put(USERNAME_PREFERENCE + routeService.getName(), userName);
         preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), new String(password).getBytes());
         preferences.putBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());

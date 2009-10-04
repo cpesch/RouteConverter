@@ -25,7 +25,7 @@ import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 
 import java.io.File;
 import java.io.FileInputStream;

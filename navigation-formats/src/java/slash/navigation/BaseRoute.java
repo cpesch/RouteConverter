@@ -20,10 +20,13 @@
 
 package slash.navigation;
 
+import slash.common.util.CompactCalendar;
+import slash.common.util.Range;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTomRoute;
+import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -32,10 +35,7 @@ import slash.navigation.nmn.NmnRoute;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Positions;
-import slash.navigation.util.Range;
-import slash.navigation.util.CompactCalendar;
 import slash.navigation.viamichelin.ViaMichelinRoute;
-import slash.navigation.klicktel.KlickTelRoute;
 
 import java.util.ArrayList;
 import java.util.BitSet;

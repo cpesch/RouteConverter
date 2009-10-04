@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.util.Platform;
+import slash.common.util.Platform;
 
 import javax.swing.*;
 import java.awt.*;

@@ -19,13 +19,13 @@
 */
 package slash.navigation.catalog.client;
 
-import slash.navigation.TestCase;
-import slash.navigation.rest.Delete;
-import slash.navigation.rest.Post;
+import slash.common.TestCase;
+import slash.common.util.InputOutput;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.navigation.util.InputOutput;
+import slash.navigation.rest.Delete;
+import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;

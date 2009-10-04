@@ -20,11 +20,11 @@
 
 package slash.navigation.kml;
 
+import slash.common.util.CompactCalendar;
+import slash.common.util.InputOutput;
+import slash.common.util.NotClosingUnderlyingInputStream;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.util.InputOutput;
-import slash.navigation.util.NotClosingUnderlyingInputStream;
-import slash.navigation.util.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;

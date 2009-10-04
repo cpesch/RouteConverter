@@ -45,9 +45,9 @@ import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
 import slash.navigation.gui.Constants;
-import slash.navigation.util.Files;
+import slash.common.util.Files;
 import slash.navigation.util.RouteComments;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.*;

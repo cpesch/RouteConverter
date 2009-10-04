@@ -29,7 +29,7 @@ import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.util.Bearing;
-import slash.navigation.util.CompactCalendar;
+import slash.common.util.CompactCalendar;
 
 import java.util.Calendar;
 

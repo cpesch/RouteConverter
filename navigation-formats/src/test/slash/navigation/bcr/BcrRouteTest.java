@@ -22,7 +22,7 @@ package slash.navigation.bcr;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.util.RouteComments;
-import slash.navigation.util.Transfer;
+import slash.common.util.Transfer;
 
 import java.util.ArrayList;
 import java.util.List;
