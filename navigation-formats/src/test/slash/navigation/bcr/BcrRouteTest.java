@@ -22,6 +22,7 @@ package slash.navigation.bcr;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.util.RouteComments;
+import slash.navigation.util.Conversion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,14 +199,14 @@ public class BcrRouteTest extends NavigationTestCase {
         BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
         List<BcrPosition> positions = route.getPositions();
         positions.add(a);
-        assertEquals(0.0, route.getDistance(0,0));
+        assertEquals(0.0, route.getDistance(0, 0));
         positions.add(b);
-        assertEquals(0.0, route.getDistance(0,0));
-        assertEquals(3.138, route.getDistance(0,1));
+        assertEquals(0.0, route.getDistance(0, 0));
+        assertEquals(3.138, route.getDistance(0, 1));
         positions.add(c);
-        assertEquals(0.0, route.getDistance(0,0));
-        assertEquals(3.138, route.getDistance(0,1));
-        assertEquals(6.276, route.getDistance(0,2));
+        assertEquals(0.0, route.getDistance(0, 0));
+        assertEquals(3.138, route.getDistance(0, 1));
+        assertEquals(6.276, route.getDistance(0, 2));
     }
 
     public void testGetDistancesFromStart() {
@@ -214,13 +215,13 @@ public class BcrRouteTest extends NavigationTestCase {
         positions.add(a);
         positions.add(b);
         positions.add(c);
-        assertDoubleArrayEquals(new double[]{0.0}, route.getDistancesFromStart(0,0));
-        assertDoubleArrayEquals(new double[]{0.0, 3.138}, route.getDistancesFromStart(0,1));
-        assertDoubleArrayEquals(new double[]{0.0, 3.138, 6.276}, route.getDistancesFromStart(0,2));
-        assertDoubleArrayEquals(new double[]{3.138, 6.276}, route.getDistancesFromStart(1,2));
-        assertDoubleArrayEquals(new double[]{0.0}, route.getDistancesFromStart(0,0));
-        assertDoubleArrayEquals(new double[]{3.138}, route.getDistancesFromStart(1,1));
-        assertDoubleArrayEquals(new double[]{6.2761}, route.getDistancesFromStart(2,2));
+        assertDoubleArrayEquals(new double[]{0.0}, route.getDistancesFromStart(0, 0));
+        assertDoubleArrayEquals(new double[]{0.0, 3.138}, route.getDistancesFromStart(0, 1));
+        assertDoubleArrayEquals(new double[]{0.0, 3.138, 6.276}, route.getDistancesFromStart(0, 2));
+        assertDoubleArrayEquals(new double[]{3.138, 6.276}, route.getDistancesFromStart(1, 2));
+        assertDoubleArrayEquals(new double[]{0.0}, route.getDistancesFromStart(0, 0));
+        assertDoubleArrayEquals(new double[]{3.138}, route.getDistancesFromStart(1, 1));
+        assertDoubleArrayEquals(new double[]{6.2761}, route.getDistancesFromStart(2, 2));
     }
 
     public void testRouteLength() {
@@ -340,7 +341,7 @@ public class BcrRouteTest extends NavigationTestCase {
         RouteComments.commentPositions(positions);
 
         assertEquals("Position 1", positions.get(0).getComment());
-        assertEquals("Hamburg",    positions.get(1).getComment());
+        assertEquals("Hamburg", positions.get(1).getComment());
         assertEquals("Position 3", positions.get(2).getComment());
         assertEquals("Hamburg (Position 4)", positions.get(3).getComment());
         assertEquals("Position 5: Hamburg", positions.get(4).getComment());
@@ -353,11 +354,11 @@ public class BcrRouteTest extends NavigationTestCase {
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            RouteComments.numberPosition(positions.get(i), i, false);
+            RouteComments.numberPosition(positions.get(i), i, 0, false);
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals((i + 1 ) + "Comment", positions.get(i).getComment());
+            assertEquals((i + 1) + "Comment", positions.get(i).getComment());
         }
 
         positions.remove(8);
@@ -365,23 +366,23 @@ public class BcrRouteTest extends NavigationTestCase {
 
         // check renumbering, add space
         for (int i = 0; i < positions.size(); i++) {
-            RouteComments.numberPosition(positions.get(i), i, true);
+            RouteComments.numberPosition(positions.get(i), i, 0, true);
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals((i + 1 ) + " Comment", positions.get(i).getComment());
+            assertEquals((i + 1) + " Comment", positions.get(i).getComment());
         }
 
         positions.remove(5);
         positions.remove(0);
 
-        // check renumbering, check remove space again
+        // check renumbering, check remove space again but have 2 digits and leading zeros
         for (int i = 0; i < positions.size(); i++) {
-            RouteComments.numberPosition(positions.get(i), i, false);
+            RouteComments.numberPosition(positions.get(i), i, 2, false);
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals((i + 1 ) + "Comment", positions.get(i).getComment());
+            assertEquals(Conversion.formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
         }
     }
 

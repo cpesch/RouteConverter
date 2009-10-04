@@ -112,14 +112,14 @@ public abstract class RouteComments {
         }
     }
 
-    public static void numberPosition(BaseNavigationPosition position, int index, boolean spaceBetweenNumberAndComment) {
+    public static void numberPosition(BaseNavigationPosition position, int index,
+                                      int digitCount, boolean spaceBetweenNumberAndComment) {
         commentPosition(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(position.getComment());
         if (matcher.matches()) {
-            String postfix = matcher.group(2);
-            if (!spaceBetweenNumberAndComment)
-                postfix = postfix.trim();
-            position.setComment((index + 1) + (spaceBetweenNumberAndComment ? " " : "") + postfix);
+            String postfix = Conversion.trim(matcher.group(2));
+            String prefix = Conversion.formatIntAsString((index + 1), digitCount);
+            position.setComment(prefix + (spaceBetweenNumberAndComment ? " " : "") + postfix);
         }
     }
 

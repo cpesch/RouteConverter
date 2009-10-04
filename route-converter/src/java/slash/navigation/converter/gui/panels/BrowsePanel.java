@@ -27,6 +27,7 @@ import slash.navigation.BaseNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.NavigationFileParser;
+import slash.navigation.babel.BabelException;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.catalog.model.CategoryTreeModel;
@@ -346,6 +347,7 @@ public abstract class BrowsePanel {
     }
 
     private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
+        RouteConverter r = RouteConverter.getInstance();
         String path = Files.createReadablePath(file);
         String description = null;
         Double length = null;
@@ -359,10 +361,14 @@ public abstract class BrowsePanel {
                 }
                 showAddFileToCatalog(categoryTreeNode, description, length, file);
             } else
-                RouteConverter.getInstance().handleUnsupportedFormat(path);
-        } catch (Exception e) {
-            log.severe("Cannot parse description from route " + path + ": " + e.getMessage());
-            RouteConverter.getInstance().handleOpenError(e, Files.toUrls(file));
+                r.handleUnsupportedFormat(path);
+        } catch (BabelException e) {
+            r.handleBabelError(e);
+        } catch (OutOfMemoryError e) {
+            r.handleOutOfMemoryError();
+        } catch (Throwable t) {
+            log.severe("Cannot parse description from route " + path + ": " + t.getMessage());
+            r.handleOpenError(t, path);
         }
     }
 

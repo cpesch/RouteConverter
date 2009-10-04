@@ -315,6 +315,7 @@ public class PositionAugmenter {
     private void processIndices(final JTable positionsTable,
                                 final PositionsModel positionsModel,
                                 final int[] rows,
+                                final int digitCount,
                                 final boolean spaceBetweenNumberAndComment,
                                 final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, FAST_OPERATIONS_IN_A_ROW, predicate,
@@ -325,7 +326,7 @@ public class PositionAugmenter {
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
                         int index = positionsModel.getIndex(position);
-                        RouteComments.numberPosition(position, index, spaceBetweenNumberAndComment);
+                        RouteComments.numberPosition(position, index, digitCount, spaceBetweenNumberAndComment);
                         return true;
                     }
 
@@ -336,8 +337,20 @@ public class PositionAugmenter {
         );
     }
 
-    public void addIndices(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows, boolean spaceBetweenNumberAndComment) {
-        processIndices(positionsTable, positionsModel, selectedRows, spaceBetweenNumberAndComment, TAUTOLOGY_PREDICATE);
+    public void addIndices(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows,
+                           boolean prefixNumberWithZeros,
+                           boolean spaceBetweenNumberAndComment) {
+        int maximumIndex = 0;
+        if(prefixNumberWithZeros) {
+            for (int index : selectedRows) {
+                if (index > maximumIndex)
+                    maximumIndex = index;
+            }
+        }
+        int digitCount = prefixNumberWithZeros ? Conversion.widthInDigits(maximumIndex) : 0;
+
+        processIndices(positionsTable, positionsModel, selectedRows,
+                digitCount, spaceBetweenNumberAndComment, TAUTOLOGY_PREDICATE);
     }
 
 }

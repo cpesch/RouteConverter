@@ -147,6 +147,24 @@ public class ConversionTest extends TestCase {
         assertEquals("1.00000", Conversion.formatDoubleAsString(1.0000005, 5));
     }
 
+    public void testFormatIntAsString() {
+        assertEquals("1", Conversion.formatIntAsString(1, 1));
+        assertEquals("01", Conversion.formatIntAsString(1, 2));
+        assertEquals("001", Conversion.formatIntAsString(1, 3));
+
+        assertEquals("100", Conversion.formatIntAsString(100, 1));
+        assertEquals("100", Conversion.formatIntAsString(100, 2));
+        assertEquals("100", Conversion.formatIntAsString(100, 3));
+        assertEquals("0100", Conversion.formatIntAsString(100, 4));
+        assertEquals("00100", Conversion.formatIntAsString(100, 5));
+    }
+
+    public void testWidthInDigits() {
+        assertEquals(1, Conversion.widthInDigits(1));
+        assertEquals(3, Conversion.widthInDigits(123));
+        assertEquals(5, Conversion.widthInDigits(12345));
+    }
+
     public void testParseStringAsDouble() {
         assertEquals(1.0, Conversion.parseDouble("1.0"));
         assertEquals(1.0, Conversion.parseDouble("01.0"));

@@ -93,6 +93,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
+    public static final String PREFIX_NUMBER_WITH_ZEROS = "prefixNumberWithZeros";
     public static final String SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE = "spaceBetweenNumberAndComment";
     public static final String PEDESTRIANS_PREFERENCE = "pedestrians";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
@@ -318,6 +319,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     boolean getStartWithLastFilePreference() {
         return preferences.getBoolean(START_WITH_LAST_FILE_PREFERENCE, true);
+    }
+
+    public boolean getPrefixNumberWithZerosPreference() {
+        return preferences.getBoolean(PREFIX_NUMBER_WITH_ZEROS, false);
     }
 
     public boolean getSpaceBetweenNumberAndCommentPreference() {

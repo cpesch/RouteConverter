@@ -354,6 +354,10 @@ public class Conversion {
         return Math.max((int) result, roundUpToAtLeastOne ? 1 : 0);
     }
 
+    public static int widthInDigits(long number) {
+        return 1 + (int) (Math.log(number) / Math.log(10));
+    }
+
 
     public static String trim(String string) {
         if (string == null)
@@ -377,6 +381,7 @@ public class Conversion {
         }
         return buffer.toString();
     }
+
 
     public static BigDecimal formatDouble(Double aDouble, int maximumFractionCount) {
         if(aDouble == null)
@@ -466,6 +471,13 @@ public class Conversion {
         if (anInteger == null)
             return "0";
         return Integer.toString(anInteger);
+    }
+
+    public static String formatIntAsString(Integer anInteger, int exactDigitCount) {
+        StringBuffer buffer = new StringBuffer(formatIntAsString(anInteger));
+        while (buffer.length() < exactDigitCount)
+            buffer.insert(0, "0");
+        return buffer.toString();
     }
 
     public static BigInteger formatInt(Integer anInteger) {

@@ -51,7 +51,9 @@ public class AddIndicesToPositions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addIndices(table, positionsModel, selectedRows, routeConverter.getSpaceBetweenNumberAndCommentPreference());
+            augmenter.addIndices(table, positionsModel, selectedRows, 
+                    routeConverter.getPrefixNumberWithZerosPreference(),
+                    routeConverter.getSpaceBetweenNumberAndCommentPreference());
         }
     }
 }
