@@ -20,7 +20,7 @@
 
 package slash.common;
 
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.util.Calendar;
 import java.util.TimeZone;
