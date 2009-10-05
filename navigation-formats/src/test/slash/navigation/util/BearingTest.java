@@ -21,7 +21,7 @@
 package slash.navigation.util;
 
 import slash.common.TestCase;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 public class BearingTest extends TestCase {
 
