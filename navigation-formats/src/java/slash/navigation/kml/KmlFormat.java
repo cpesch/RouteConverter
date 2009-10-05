@@ -25,8 +25,8 @@ import slash.navigation.BaseRoute;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
 import slash.common.hex.HexDecoder;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

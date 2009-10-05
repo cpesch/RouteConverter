@@ -27,8 +27,8 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
-import slash.common.util.Files;
-import slash.common.util.Transfer;
+import slash.common.io.Files;
+import slash.common.io.Transfer;
 
 import javax.swing.*;
 import java.awt.*;

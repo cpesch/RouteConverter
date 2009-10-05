@@ -24,7 +24,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.MultipleRoutesFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.XmlNavigationFormat;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import java.util.List;
 import java.util.prefs.Preferences;

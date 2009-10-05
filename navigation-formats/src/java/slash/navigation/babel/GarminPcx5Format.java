@@ -22,7 +22,7 @@ package slash.navigation.babel;
 
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gpx.GpxPosition;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.io.IOException;
 import java.io.InputStream;

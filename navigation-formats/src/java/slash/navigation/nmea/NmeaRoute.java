@@ -21,7 +21,7 @@
 package slash.navigation.nmea;
 
 import slash.navigation.*;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.util.ArrayList;
 import java.util.List;

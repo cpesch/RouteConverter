@@ -20,13 +20,8 @@
 package slash.navigation.simple;
 
 import slash.navigation.*;
-import slash.common.util.CompactCalendar;
-import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Reads Sygic POI ASCII (.txt) files.

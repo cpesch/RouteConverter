@@ -40,7 +40,7 @@ import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tcx.Tcx2Format;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 

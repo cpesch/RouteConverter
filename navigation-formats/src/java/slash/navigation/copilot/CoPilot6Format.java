@@ -22,7 +22,7 @@ package slash.navigation.copilot;
 
 import slash.navigation.Wgs84Position;
 import slash.navigation.Wgs84Route;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import java.io.PrintWriter;
 import java.util.List;

@@ -23,9 +23,9 @@ package slash.navigation.bcr;
 import slash.navigation.MercatorPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.tour.TourPosition;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 import slash.navigation.util.Conversion;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;

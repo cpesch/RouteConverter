@@ -1,6 +1,6 @@
 package slash.navigation.catalog.domain;
 
-import slash.common.util.InputOutput;
+import slash.common.io.InputOutput;
 
 import java.io.File;
 import java.io.FileInputStream;

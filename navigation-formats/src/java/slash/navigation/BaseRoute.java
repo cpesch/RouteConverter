@@ -20,8 +20,8 @@
 
 package slash.navigation;
 
-import slash.common.util.CompactCalendar;
-import slash.common.util.Range;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Range;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gpx.GpxRoute;

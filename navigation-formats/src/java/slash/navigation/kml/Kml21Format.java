@@ -20,9 +20,9 @@
 
 package slash.navigation.kml;
 
-import slash.common.util.CompactCalendar;
-import slash.common.util.ISO8601;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.ISO8601;
+import slash.common.io.Transfer;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.kml.binding21.*;
 import slash.navigation.util.RouteComments;

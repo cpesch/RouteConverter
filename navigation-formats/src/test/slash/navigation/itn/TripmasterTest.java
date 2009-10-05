@@ -25,7 +25,7 @@ import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;

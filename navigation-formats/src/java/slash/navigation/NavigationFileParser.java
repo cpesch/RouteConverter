@@ -26,9 +26,9 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.*;
 import slash.navigation.simple.GoogleMapsFormat;
-import slash.common.util.NotClosingUnderlyingInputStream;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Transfer;
+import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 
 import java.io.*;
 import java.net.URISyntaxException;

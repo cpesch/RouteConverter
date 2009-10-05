@@ -22,7 +22,7 @@
 
 package slash.navigation.util;
 
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 /**
  * Computes the distance, azimuth, and back azimuth between

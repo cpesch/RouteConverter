@@ -23,8 +23,8 @@ package slash.navigation.tour;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.IniFileFormat;
 import slash.navigation.RouteCharacteristics;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 
 import java.io.*;
 import java.util.*;

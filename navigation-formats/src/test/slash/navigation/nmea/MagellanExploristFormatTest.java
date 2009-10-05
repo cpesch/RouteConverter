@@ -22,7 +22,7 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationTestCase;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;

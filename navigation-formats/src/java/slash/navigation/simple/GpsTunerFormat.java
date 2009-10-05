@@ -20,8 +20,8 @@
 
 package slash.navigation.simple;
 
-import slash.common.util.CompactCalendar;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.*;
 
 import java.io.PrintWriter;

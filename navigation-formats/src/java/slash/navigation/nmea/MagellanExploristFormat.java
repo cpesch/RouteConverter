@@ -2,7 +2,7 @@ package slash.navigation.nmea;
 
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;

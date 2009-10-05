@@ -20,7 +20,7 @@
 
 package slash.navigation.util;
 
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 /**
  * Provides geo conversion functionality.

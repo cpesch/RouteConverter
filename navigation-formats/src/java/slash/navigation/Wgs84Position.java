@@ -20,7 +20,7 @@
 
 package slash.navigation;
 
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 import slash.navigation.util.RouteComments;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.gpx.GpxPosition;

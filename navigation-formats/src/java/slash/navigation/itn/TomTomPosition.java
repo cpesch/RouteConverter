@@ -24,7 +24,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.gpx.GpxPosition;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 import slash.navigation.util.RouteComments;
 
 /**

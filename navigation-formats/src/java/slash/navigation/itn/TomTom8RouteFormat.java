@@ -20,7 +20,7 @@
 
 package slash.navigation.itn;
 
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;

@@ -22,7 +22,7 @@ package slash.navigation.ovl;
 
 import slash.navigation.IniFileSection;
 import slash.navigation.Wgs84Position;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import java.util.HashSet;
 import java.util.regex.Matcher;

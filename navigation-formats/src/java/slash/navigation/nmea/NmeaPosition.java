@@ -24,9 +24,9 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.gpx.GpxPosition;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 import slash.navigation.util.Conversion;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 /**
  * Represents a position in a NMEA 0183 Sentences (.nmea) file.

@@ -22,7 +22,7 @@ package slash.navigation.kml;
 
 import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.kml.binding20.Kml;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;

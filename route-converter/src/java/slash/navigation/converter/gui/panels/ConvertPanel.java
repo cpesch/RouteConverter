@@ -44,9 +44,9 @@ import slash.navigation.gui.Constants;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.util.*;
-import slash.common.util.Files;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Range;
+import slash.common.io.Files;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Range;
 
 import javax.swing.*;
 import javax.swing.event.*;

@@ -24,9 +24,9 @@ import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.Wgs84Position;
 import slash.navigation.util.*;
-import slash.common.util.Platform;
-import slash.common.util.Externalization;
-import slash.common.util.Transfer;
+import slash.common.io.Platform;
+import slash.common.io.Externalization;
+import slash.common.io.Transfer;
 
 import javax.swing.*;
 import java.awt.*;

@@ -20,7 +20,7 @@
 package slash.navigation.catalog.client;
 
 import slash.common.TestCase;
-import slash.common.util.InputOutput;
+import slash.common.io.InputOutput;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.routecatalog10.UserextensionType;

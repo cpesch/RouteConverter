@@ -21,7 +21,7 @@
 package slash.navigation.kml;
 
 import slash.navigation.Wgs84Position;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 /**
  * Represents a position in a Google Earth (.kml) file.

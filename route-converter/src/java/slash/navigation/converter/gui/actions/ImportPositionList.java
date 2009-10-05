@@ -26,7 +26,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.Constants;
-import slash.common.util.Files;
+import slash.common.io.Files;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

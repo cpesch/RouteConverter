@@ -38,9 +38,9 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.SingleFrameApplication;
-import slash.common.util.Files;
-import slash.common.util.Platform;
-import slash.common.util.Version;
+import slash.common.io.Files;
+import slash.common.io.Platform;
+import slash.common.io.Version;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

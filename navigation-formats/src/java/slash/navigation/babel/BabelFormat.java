@@ -20,10 +20,10 @@
 
 package slash.navigation.babel;
 
-import slash.common.util.CompactCalendar;
-import slash.common.util.Externalization;
-import slash.common.util.InputOutput;
-import slash.common.util.Platform;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Externalization;
+import slash.common.io.InputOutput;
+import slash.common.io.Platform;
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;

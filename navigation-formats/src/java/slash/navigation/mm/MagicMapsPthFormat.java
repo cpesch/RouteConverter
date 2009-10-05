@@ -24,8 +24,8 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.GkPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.SimpleFormat;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

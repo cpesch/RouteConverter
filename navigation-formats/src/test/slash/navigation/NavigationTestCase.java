@@ -47,9 +47,9 @@ import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Files;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Files;
+import slash.common.io.Transfer;
 import slash.common.TestCase;
 
 import java.io.File;

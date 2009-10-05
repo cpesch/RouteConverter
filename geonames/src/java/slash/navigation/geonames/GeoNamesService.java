@@ -22,7 +22,7 @@ package slash.navigation.geonames;
 
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

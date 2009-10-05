@@ -19,7 +19,7 @@
 */
 package slash.navigation.catalog.domain;
 
-import slash.common.util.Files;
+import slash.common.io.Files;
 import slash.navigation.rest.Helper;
 
 import java.io.File;

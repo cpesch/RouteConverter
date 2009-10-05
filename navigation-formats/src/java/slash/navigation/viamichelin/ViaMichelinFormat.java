@@ -24,8 +24,8 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
 import slash.navigation.XmlNavigationFormat;
-import slash.common.util.CompactCalendar;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;

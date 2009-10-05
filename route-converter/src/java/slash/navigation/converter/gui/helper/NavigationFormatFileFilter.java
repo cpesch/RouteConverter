@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.NavigationFormat;
-import slash.common.util.Files;
+import slash.common.io.Files;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;

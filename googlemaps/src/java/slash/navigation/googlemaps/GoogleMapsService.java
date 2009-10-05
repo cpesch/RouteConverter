@@ -25,7 +25,7 @@ import slash.navigation.kml.KmlUtil;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Helper;
-import slash.common.util.Transfer;
+import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;

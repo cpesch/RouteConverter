@@ -22,7 +22,7 @@ package slash.navigation.simple;
 
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.text.DateFormat;
 

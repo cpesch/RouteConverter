@@ -20,12 +20,11 @@
 
 package slash.navigation;
 
-import slash.common.util.CompactCalendar;
+import slash.common.io.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.List;
 
 /**

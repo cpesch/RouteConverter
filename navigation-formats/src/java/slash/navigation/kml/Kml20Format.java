@@ -23,9 +23,9 @@ package slash.navigation.kml;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.util.*;
-import slash.common.util.CompactCalendar;
-import slash.common.util.ISO8601;
-import slash.common.util.Transfer;
+import slash.common.io.CompactCalendar;
+import slash.common.io.ISO8601;
+import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;

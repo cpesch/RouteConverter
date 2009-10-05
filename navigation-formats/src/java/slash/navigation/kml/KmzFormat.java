@@ -20,9 +20,9 @@
 
 package slash.navigation.kml;
 
-import slash.common.util.CompactCalendar;
-import slash.common.util.InputOutput;
-import slash.common.util.NotClosingUnderlyingInputStream;
+import slash.common.io.CompactCalendar;
+import slash.common.io.InputOutput;
+import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 
