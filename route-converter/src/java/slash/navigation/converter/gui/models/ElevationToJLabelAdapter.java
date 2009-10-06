@@ -27,7 +27,7 @@ import javax.swing.*;
 import java.text.MessageFormat;
 
 /**
- * A bidirectional adapter that extracts the elevation incline and decline
+ * A bidirectional adapter that extracts the elevation ascend and descend
  * of a {@link PositionsModel} for display.
  *
  * @author Christian Pesch
