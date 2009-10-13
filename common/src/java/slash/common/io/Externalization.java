@@ -33,11 +33,12 @@ import java.util.logging.Logger;
 
 public class Externalization {
     private static final Logger log = Logger.getLogger(Externalization.class.getName());
-    private static final File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator + "routeconverter");
+    private static final File tempDirectory = new File(System.getProperty("java.io.tmpdir") + File.separator +
+            "routeconverter" + (Platform.isLinux() ? "-" + System.getProperty("user.name") : ""));
 
     public synchronized static File getTempDirectory() {
         if (!tempDirectory.exists())
-            if(!tempDirectory.mkdir())
+            if(!tempDirectory.mkdirs())
                 log.severe("Could not create temp directory " + tempDirectory);
         return tempDirectory;
     }
