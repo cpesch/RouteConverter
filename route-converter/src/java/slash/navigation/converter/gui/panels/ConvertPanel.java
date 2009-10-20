@@ -269,9 +269,9 @@ public abstract class ConvertPanel {
 
         Vector<NavigationFormat> formats = new Vector<NavigationFormat>();
         formats.addAll(NavigationFormats.getWriteFormatsSortedByName());
-        // formats.add(new RouteServiceNavigationFormat());
+        formats.add(new RouteServiceNavigationFormat());
         Vector<Object> formatsAndServices = new Vector<Object>(formats);
-        // formatsAndServices.insertElementAt(new JSeparator(JSeparator.HORIZONTAL), formatsAndServices.size() - 1);
+        formatsAndServices.insertElementAt(new JSeparator(JSeparator.HORIZONTAL), formatsAndServices.size() - 1);
         comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formatsAndServices));
         comboBoxChooseFormat.setRenderer(new NavigationFormatListCellRenderer());
         String preferredFormat = r.getTargetFormatPreference();
@@ -409,7 +409,7 @@ public abstract class ConvertPanel {
 
                     final NavigationFileParser parser = new NavigationFileParser();
                     parser.addNavigationFileParserListener(new NavigationFileParserListener() {
-                        public void reading(final NavigationFormat format) {
+                        public void reading(final NavigationFormat<BaseRoute> format) {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     formatAndRoutesModel.setFormat(format);

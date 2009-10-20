@@ -102,7 +102,7 @@ public class NavigationFileParser {
         return positionCounts;
     }
 
-    private void notifyReading(NavigationFormat format) {
+    private void notifyReading(NavigationFormat<BaseRoute> format) {
         for (NavigationFileParserListener listener : navigationFileParserListeners) {
             listener.reading(format);
         }
