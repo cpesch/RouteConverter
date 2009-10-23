@@ -22,6 +22,8 @@
 			  <!-- Position info -->
               <xsd:element name="ele" type="xsd:decimal" minOccurs="0"/>
               <xsd:element name="time" type="xsd:dateTime" minOccurs="0"/>
+              <xsd:element name="course" type="gpx:degreesType" minOccurs="0"/>
+              <xsd:element name="speed" type="xsd:decimal" minOccurs="0"/>
 			  <xsd:element name="magvar" type="gpx:degreesType" minOccurs="0"/>
 			  <xsd:element name="geoidheight" type="xsd:decimal" minOccurs="0"/>
 
@@ -71,6 +73,8 @@
 				    <!-- Position info -->
                     <xsd:element name="ele" type="xsd:decimal" minOccurs="0"/>
                     <xsd:element name="time" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="course" type="gpx:degreesType" minOccurs="0"/>
+                    <xsd:element name="speed" type="xsd:decimal" minOccurs="0"/>
 					<xsd:element name="magvar" type="gpx:degreesType" minOccurs="0"/>
 					<xsd:element name="geoidheight" type="xsd:decimal" minOccurs="0"/>
 

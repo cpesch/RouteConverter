@@ -20,18 +20,19 @@
 
 package slash.navigation.gpx;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.BaseNavigationFormat;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 import slash.navigation.util.Conversion;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -64,12 +65,13 @@ public class Gpx10Format extends GpxFormat {
             return null;
 
         boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond = gpx.getCreator() != null &&
-                "Mobile Action http://www.mobileaction.com/".equals(gpx.getCreator());
+                ("Mobile Action http://www.mobileaction.com/".equals(gpx.getCreator()) ||
+                 "Holux Utility".equals(gpx.getCreator()));
         List<GpxRoute> result = new ArrayList<GpxRoute>();
-        GpxRoute wayPointsAsRoute = extractWayPoints(gpx);
+        GpxRoute wayPointsAsRoute = extractWayPoints(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
         if (wayPointsAsRoute != null)
             result.add(wayPointsAsRoute);
-        result.addAll(extractRoutes(gpx));
+        result.addAll(extractRoutes(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
         result.addAll(extractTracks(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
         return result;
     }
@@ -84,24 +86,24 @@ public class Gpx10Format extends GpxFormat {
         }
     }
 
-    private List<GpxRoute> extractRoutes(Gpx gpx) {
+    private List<GpxRoute> extractRoutes(Gpx gpx, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
 
         for (Gpx.Rte rte : gpx.getRte()) {
             String name = rte.getName();
             String desc = rte.getDesc();
             List<String> descriptions = asDescription(desc);
-            List<GpxPosition> positions = extractRoute(rte);
+            List<GpxPosition> positions = extractRoute(rte, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
             result.add(new GpxRoute(this, RouteCharacteristics.Route, name, descriptions, positions, gpx, rte));
         }
 
         return result;
     }
 
-    private GpxRoute extractWayPoints(Gpx gpx) {
+    private GpxRoute extractWayPoints(Gpx gpx, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         String name = gpx.getName();
         List<String> descriptions = asDescription(gpx.getDesc());
-        List<GpxPosition> positions = extractWayPoints(gpx.getWpt());
+        List<GpxPosition> positions = extractWayPoints(gpx.getWpt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
         return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Waypoints, name, descriptions, positions, gpx);
     }
 
@@ -134,20 +136,20 @@ public class Gpx10Format extends GpxFormat {
         return Conversion.msToKmh(metersPerSecond);
     }
 
-    private List<GpxPosition> extractRoute(Gpx.Rte rte) {
+    private List<GpxPosition> extractRoute(Gpx.Rte rte, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
             for (Gpx.Rte.Rtept rtept : rte.getRtept()) {
-                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), parseSpeed(rtept.getCmt()), null, parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
+                positions.add(new GpxPosition(rtept.getLon(), rtept.getLat(), rtept.getEle(), getSpeed(rtept.getSpeed(), rtept.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), Transfer.formatDouble(rtept.getCourse()), parseTime(rtept.getTime()), asComment(rtept.getName(), rtept.getDesc()), rtept.getHdop(), rtept.getPdop(), rtept.getVdop(), rtept.getSat(), rtept));
             }
         }
         return positions;
     }
 
-    private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts) {
+    private List<GpxPosition> extractWayPoints(List<Gpx.Wpt> wpts, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (Gpx.Wpt wpt : wpts) {
-            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), parseSpeed(wpt.getCmt()), null, parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
+            positions.add(new GpxPosition(wpt.getLon(), wpt.getLat(), wpt.getEle(), getSpeed(wpt.getSpeed(), wpt.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), Transfer.formatDouble(wpt.getCourse()), parseTime(wpt.getTime()), asWayPointComment(wpt.getName(), wpt.getDesc()), wpt.getHdop(), wpt.getPdop(), wpt.getVdop(), wpt.getSat(), wpt));
         }
         return positions;
     }
@@ -157,16 +159,20 @@ public class Gpx10Format extends GpxFormat {
         if (trk != null) {
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
-                    Double speed = Transfer.formatDouble(trkPt.getSpeed());
-                    if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
-                        speed = asKmh(speed);
-                    if(speed == null && trkPt.getCmt() != null)
-                        speed = parseSpeed(trkPt.getCmt());
-                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), speed, Transfer.formatDouble(trkPt.getCourse()), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
+                    positions.add(new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), getSpeed(trkPt.getSpeed(), trkPt.getCmt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond), Transfer.formatDouble(trkPt.getCourse()), parseTime(trkPt.getTime()), asComment(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt));
                 }
             }
         }
         return positions;
+    }
+
+    private Double getSpeed(BigDecimal speed, String comment, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
+        Double result = Transfer.formatDouble(speed);
+        if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
+            result = asKmh(result);
+        if (result == null)
+            result = parseSpeed(comment);
+        return result;
     }
 
     private String formatSpeed(String comment, Double speed) {
@@ -196,6 +202,8 @@ public class Gpx10Format extends GpxFormat {
             wpt.setLon(Transfer.formatPosition(position.getLongitude()));
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             wpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
+            wpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
+            wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? Transfer.formatDouble(Conversion.kmhToMs(position.getSpeed()), 3) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
@@ -236,6 +244,8 @@ public class Gpx10Format extends GpxFormat {
             rtept.setLon(Transfer.formatPosition(position.getLongitude()));
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             rtept.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
+            rtept.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
+            rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? Transfer.formatDouble(Conversion.kmhToMs(position.getSpeed()), 3) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
