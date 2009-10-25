@@ -43,6 +43,7 @@
         <property name="build.output.tmp-swt-linux64" location="${build.output}/tmp-swt-linux64"/>
         <property name="build.output.tmp-swt-windows" location="${build.output}/tmp-swt-windows"/>
         <property name="build.output.tmp-swt-windows64" location="${build.output}/tmp-swt-windows64"/>
+        <property name="build.output.webstart" location="${build.output}/webstart"/>
         <property name="build.output.src" location="${build.output}/src"/>
         <property name="build.output.javadoc" location="${build.output}/javadoc"/>
         <property name="build.test.dir" location="${build.output}/test"/>
@@ -1535,6 +1536,71 @@
                     version="${build.version}"/>
     </target>
 
+    <!-- c:\Programme\Java\jdk1.6.0_16\bin\keytool -genkey -keystore cpesch.keystore -alias cpesch
+         c:\Programme\Java\jdk1.6.0_16\bin\keytool -selfcert -alias cpesch -keystore cpesch.keystore
+         c:\Programme\Java\jdk1.6.0_16\bin\keytool.exe -list -keystore cpesch.keystore -->
+    <target name="webstart" depends="init">
+        <mkdir dir="${build.output.webstart}"/>
+
+        <jar destfile="${build.output.webstart}/RouteConverter.jar">
+            <fileset dir="${build.output.tmp-thirdparty}"/>
+            <fileset dir="${build.output.tmp-djproject}"/>
+            <fileset dir="${catalog.output.classes}"/>
+            <fileset dir="${common.output.classes}"/>
+            <fileset dir="${common-gui.output.classes}"/>
+            <fileset dir="${elevationview.output.classes}"/>
+            <fileset dir="${geonames.output.classes}"/>
+            <fileset dir="${googlemaps.output.classes}"/>
+            <fileset dir="${jaxb6.output.classes}"/>
+            <fileset dir="${mapview.output.classes}"/>
+            <fileset dir="${navigation-formats.output.classes}">
+                <exclude name="**/*.dll"/>
+                <exclude name="**/*.exe"/>
+                <exclude name="**/*.html"/>
+            </fileset>
+            <fileset dir="${rest.output.classes}"/>
+            <fileset dir="${route-converter.output.classes}"/>
+            <fileset dir="${route-converter6.output.classes}"/>
+            <fileset dir="${swt-mapview.output.classes}"/>
+            <fileset file="${license}"/>
+            <manifest>
+                <attribute name="Created-By" value="Christian Pesch"/>
+                <attribute name="Download-At" value="http://www.routeconverter.de"/>
+                <attribute name="Main-Class" value="slash.navigation.converter.gui.RouteConverter6"/>
+                <attribute name="Version" value="${build.version}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Date" value="${today}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${build.output.webstart}/gpsbabel-linux-x86.jar">
+            <fileset dir="${build.output.tmp-linux}"/>
+        </jar>
+        <jar destfile="${build.output.webstart}/jna.jar">
+            <fileset dir="${build.output.tmp-jna}"/>
+        </jar>
+        <jar destfile="${build.output.webstart}/gpsbabel-macosx-x86.jar">
+            <fileset dir="${build.output.tmp-mac}"/>
+        </jar>
+        <jar destfile="${build.output.webstart}/gpsbabel-win32-x86.jar">
+            <fileset dir="${build.output.tmp-windows}"/>
+        </jar>
+
+        <copy todir="${build.output.webstart}" overwrite="true">
+            <fileset file="${eclipse.swt.linux.x86.lib}"/>
+            <fileset file="${eclipse.swt.linux.x86_64.lib}"/>
+            <fileset file="${eclipse.swt.mac.x86.lib}"/>
+            <fileset file="${eclipse.swt.win32.x86.lib}"/>
+            <fileset file="${eclipse.swt.win32.x86_64.lib}"/>
+        </copy>
+
+        <signjar alias="cpesch" keystore="build/cpesch.keystore" storepass="cpesch" lazy="true">
+            <path>
+                <fileset dir="${build.output.webstart}/" includes="**/*.jar"/>
+            </path>
+        </signjar>
+    </target>
+                                      
     <!-- Cleans up any temporary stuff -->
     <target name="clean" depends="init">
         <delete dir="${catalog.output}"/>

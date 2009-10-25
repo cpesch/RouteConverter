@@ -1,4 +1,5 @@
 keep chrriis.common.ObjectRegistry
+keep chrriis.common.WebServer
 keep chrriis.dj.nativeswing.NativeSwing
 keep chrriis.dj.nativeswing.swtimpl.NativeInterface
 keep chrriis.dj.nativeswing.swtimpl.components.JWebBrowser
