@@ -327,7 +327,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat ||
                  targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track))) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
-        } else if (targetFormat instanceof Gpx11Format) {
+        } else if (targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
         } else if (targetFormat instanceof GoPalTrackFormat) {
             assertNull(sourceHeading);
