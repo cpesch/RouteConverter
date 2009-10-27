@@ -111,7 +111,7 @@ public abstract class ConvertPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        new FormatToJLabelAdapter(getPositionsModel(), labelFormat);
+        new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
         new PositionsCountToJLabelAdapter(getPositionsModel(), labelPositions);
         new LengthToJLabelAdapter(getPositionsModel(), labelLength, labelDuration);

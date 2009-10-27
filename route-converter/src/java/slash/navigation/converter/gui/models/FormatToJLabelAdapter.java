@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.BaseRoute;
+import slash.navigation.NavigationFormat;
 
 import javax.swing.*;
 
@@ -31,12 +32,12 @@ import javax.swing.*;
  * @author Christian Pesch
  */
 
-public class FormatToJLabelAdapter extends PositionsModelToDocumentAdapter {
+public class FormatToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
     private final JLabel label;
 
-    public FormatToJLabelAdapter(PositionsModel positionsModel,
+    public FormatToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel,
                                  JLabel label) {
-        super(positionsModel);
+        super(formatAndRoutesModel);
         this.label = label;
     }
 
@@ -46,9 +47,9 @@ public class FormatToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     protected void updateAdapterFromDelegate() {
-        BaseRoute route = getDelegate().getRoute();
-        if (route != null) {
-            label.setText(route.getFormat().getName());
+        NavigationFormat<BaseRoute> format = getDelegate().getFormat();
+        if (format != null) {
+            label.setText(format.getName());
         } else {
             label.setText("-");
         }

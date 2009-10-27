@@ -92,7 +92,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     }
 
     public NavigationFormat<BaseRoute> getFormat() {
-        return formatAndRoutes.getFormat();
+        return formatAndRoutes != null ? formatAndRoutes.getFormat() : null;
     }
 
     public void setFormat(NavigationFormat<BaseRoute> format) {
