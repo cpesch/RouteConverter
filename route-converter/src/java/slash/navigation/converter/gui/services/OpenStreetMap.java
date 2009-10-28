@@ -35,7 +35,7 @@ public class OpenStreetMap implements RouteService {
         return url.startsWith("http://www.openstreetmap.org/api/");
     }
 
-    public void upload(String userName, char[] password, String url, String name, String description) {
+    public void upload(String userName, String password, String url, String name, String description) {
         // TODO see http://wiki.openstreetmap.org/wiki/DE:Batch_Upload
         throw new UnsupportedOperationException();
     }

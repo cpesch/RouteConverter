@@ -35,7 +35,7 @@ public class GPSies implements RouteService {
         return url.startsWith("http://www.gpsies.com/api.do");
     }
 
-    public void upload(String userName, char[] password, String url, String name, String description) {
+    public void upload(String userName, String password, String url, String name, String description) {
         throw new UnsupportedOperationException();
         // TODO HTTP POST to http://www.gpsies.com/upload.do
     }

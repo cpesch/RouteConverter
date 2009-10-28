@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.services;
 
+import java.io.IOException;
+
 /**
  * Encapsulates access to web-based services that store position lists.
  *
@@ -29,5 +31,5 @@ package slash.navigation.converter.gui.services;
 public interface RouteService {
     String getName();
     boolean isOriginOf(String url);
-    void upload(String userName, char[] password, String url, String name, String description);
+    void upload(String userName, String password, String url, String name, String description) throws IOException;
 }

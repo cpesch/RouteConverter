@@ -35,7 +35,7 @@ public class CrossingWays implements RouteService {
         return url.startsWith("http://www.crossingways.com/services/");
     }
 
-    public void upload(String userName, char[] password, String url, String name, String description) {
+    public void upload(String userName, String password, String url, String name, String description) {
         throw new UnsupportedOperationException();
 
         /*

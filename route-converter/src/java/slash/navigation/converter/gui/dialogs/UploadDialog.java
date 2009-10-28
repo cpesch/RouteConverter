@@ -40,6 +40,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
+import java.io.IOException;
 
 /**
  * Dialog to upload a file to a RouteService
@@ -52,9 +53,9 @@ public class UploadDialog extends JDialog {
 
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 
-    private static final String REMEMBER_ME_PREFERENCE = "remember";
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
+    private static final String REMEMBER_PASSWORD_PREFERENCE = "rememberPassword";
 
     private JButton buttonUpload;
     private JButton buttonCancel;
@@ -89,7 +90,7 @@ public class UploadDialog extends JDialog {
                 RouteService routeService = (RouteService) e.getItem();
                 textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
                 textFieldPassword.setText(preferences.get(PASSWORD_PREFERENCE + routeService.getName(), ""));
-                checkBoxRememberMe.setSelected(preferences.getBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), true));
+                checkBoxRememberMe.setSelected(preferences.getBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), true));
             }
         });
 
@@ -169,9 +170,14 @@ public class UploadDialog extends JDialog {
     private void upload() {
         RouteService routeService = (RouteService) comboBoxChooseRouteService.getSelectedItem();
         String userName = textFieldUserName.getText();
-        char[] password = textFieldPassword.getPassword();
+        String password = new String(textFieldPassword.getPassword());
 
-        routeService.upload(userName, password, fileUrl, textFieldName.getText(), textAreaDescription.getText());
+        try {
+            routeService.upload(userName, password, fileUrl, textFieldName.getText(), textAreaDescription.getText());
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            // TODO dialog
+        }
 
         /*
         if(true) { // TODO if has been read by the service: PUT back
@@ -189,8 +195,8 @@ public class UploadDialog extends JDialog {
         */
 
         preferences.put(USERNAME_PREFERENCE + routeService.getName(), userName);
-        preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), new String(password).getBytes());
-        preferences.putBoolean(REMEMBER_ME_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());
+        preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), password.getBytes());
+        preferences.putBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());
     }
 
     private void cancel() {
@@ -275,7 +281,7 @@ public class UploadDialog extends JDialog {
         checkBoxRememberMe.setText("");
         contentPane.add(checkBoxRememberMe, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label8 = new JLabel();
-        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("remember"));
+        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("remember-password"));
         contentPane.add(label8, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 

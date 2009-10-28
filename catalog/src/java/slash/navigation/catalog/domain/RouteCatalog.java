@@ -324,7 +324,7 @@ public class RouteCatalog {
         return request.getLocation();
     }
 
-    void updateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
+    public void updateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
         Put request = prepareUpdateRoute(categoryUrl, routeUrl, description, fileUrl);
         String result = request.execute();
         if (request.isUnAuthorized())

@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.services;
 
+import java.io.IOException;
+
 /**
  * The {@link RouteService} at http://www.routeconverter.de/catalog
  *
@@ -27,6 +29,9 @@ package slash.navigation.converter.gui.services;
  */
 
 public class RouteCatalog implements RouteService {
+    // todo share with the one in BrowsePanel?
+    private final slash.navigation.catalog.domain.RouteCatalog routeCatalog = new slash.navigation.catalog.domain.RouteCatalog("http://localhost:8000/catalog/");// System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+
     public String getName() {
         return "RouteCatalog";
     }
@@ -35,7 +40,12 @@ public class RouteCatalog implements RouteService {
         return url.startsWith("http://www.routeconverter.de/catalog/");
     }
 
-    public void upload(String userName, char[] password, String url, String name, String description) {
-        throw new UnsupportedOperationException();
+    public void upload(String userName, String password, String fileUrl, String name, String description) throws IOException {
+        routeCatalog.setAuthentication(userName, password);
+        String categoryUrl = "?", routeUrl = "?"; // TODO fix me
+        if (isOriginOf(fileUrl))
+            routeCatalog.addRoute(categoryUrl, description, fileUrl);
+        else
+            routeCatalog.updateRoute(categoryUrl, routeUrl, description, fileUrl);
     }
 }

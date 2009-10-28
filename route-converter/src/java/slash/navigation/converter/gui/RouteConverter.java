@@ -370,6 +370,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public void setUserNamePreference(String userNamePreference, String passwordPreference) {
+        // TODO unifiy username password stuff with that from UploadDialog
         preferences.put(USERNAME_PREFERENCE, userNamePreference);
         preferences.putByteArray(PASSWORD_PREFERENCE, passwordPreference.getBytes());
     }
