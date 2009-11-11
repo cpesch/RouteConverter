@@ -20,6 +20,19 @@
 
 package slash.navigation.converter.gui.services;
 
+import slash.common.io.Files;
+import slash.common.io.InputOutput;
+import slash.navigation.NavigationFileParser;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.rest.Post;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
 /**
  * The {@link RouteService} at http://crossingways.com
  *
@@ -35,29 +48,33 @@ public class CrossingWays implements RouteService {
         return url.startsWith("http://www.crossingways.com/services/");
     }
 
-    public void upload(String userName, String password, String url, String name, String description) {
-        throw new UnsupportedOperationException();
+    private String readFile(File file) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        InputOutput inout = new InputOutput(new FileInputStream(file), baos);
+        inout.start();
+        return baos.toString();
+    }
 
-        /*
+    public void upload(String userName, String password, String url, String name, String description) throws IOException {
+        NavigationFileParser parser = new NavigationFileParser();
+        List<URL> urls = Files.toUrls(url);
+        if (urls.size() == 0)
+            throw new IllegalArgumentException("Cannot read url " + url);
+        if (!parser.read(urls.iterator().next()))
+            throw new IllegalArgumentException("Cannot parse url " + url);
+        File tempFile = File.createTempFile("crossingwaysclient", ".xml");
+        // TODO extend write to write to OutputStream and File
+        parser.write(parser.getRoutes(), new Gpx10Format(), tempFile);
+        String gpx = readFile(tempFile);
+        if (!tempFile.delete())
+            throw new IOException("Cannot delete temp file " + tempFile);
 
-HTTP POST
-
-The following is a sample HTTP POST request and response. The placeholders shown need to be replaced with actual values.
-
-POST /services/LiveTracking.asmx/UploadGPX HTTP/1.1
-Host: www.crossingways.com
-Content-Type: application/x-www-form-urlencoded
-Content-Length: length
-
-username=string&password=string&trackname=string&gpx=string
-
-HTTP/1.1 200 OK
-Content-Type: text/xml; charset=utf-8
-Content-Length: length
-
-<?xml version="1.0" encoding="utf-8"?>
-<string xmlns="http://www.crossingways.com/">string</string>
-
-         */
+        Post post = new Post("http://www.crossingways.com/services/LiveTracking.asmx/UploadGPX");
+        String body = "username=" + userName + "&password=" + password + "&trackname=" + name + "&gpx=" + gpx;
+        post.setBody(body);
+        System.out.println("Body: " + body);   // TODO remove me
+        String result = post.execute();
+        System.out.println("Result: " + result);        // TODO remove me
+        throw new IOException(result);    // TODO fix return code stuff
     }
 }

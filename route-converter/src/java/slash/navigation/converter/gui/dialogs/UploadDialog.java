@@ -62,7 +62,7 @@ public class UploadDialog extends JDialog {
     private JComboBox comboBoxChooseRouteService;
     private JTextField textFieldUserName;
     private JPasswordField textFieldPassword;
-    private JCheckBox checkBoxRememberMe;
+    private JCheckBox checkBoxRememberPassword;
     private JTextField textFieldName;
     private JTextArea textAreaDescription;
     private JPanel contentPane;
@@ -78,9 +78,10 @@ public class UploadDialog extends JDialog {
         getRootPane().setDefaultButton(buttonUpload);
 
         List<RouteService> services = new ArrayList<RouteService>();
-        services.add(new RouteCatalog());
-        services.add(new OpenStreetMap());
-        services.add(new GPSies());
+        // TODO implement these:
+        // services.add(new RouteCatalog());
+        // services.add(new OpenStreetMap());
+        // services.add(new GPSies());
         services.add(new CrossingWays());
 
         comboBoxChooseRouteService.setModel(new DefaultComboBoxModel(services.toArray()));
@@ -88,9 +89,7 @@ public class UploadDialog extends JDialog {
         comboBoxChooseRouteService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 RouteService routeService = (RouteService) e.getItem();
-                textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
-                textFieldPassword.setText(preferences.get(PASSWORD_PREFERENCE + routeService.getName(), ""));
-                checkBoxRememberMe.setSelected(preferences.getBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), true));
+                handleRouteServiceUpdate(routeService);
             }
         });
 
@@ -110,6 +109,8 @@ public class UploadDialog extends JDialog {
             setTitle(RouteConverter.getBundle().getString("upload-title"));
             buttonUpload.setText(RouteConverter.getBundle().getString("upload"));
         }
+
+        handleRouteServiceUpdate((RouteService) comboBoxChooseRouteService.getSelectedItem());
 
         BaseRoute firstRoute = formatAndRoutesModel.getRoutes().get(0);
         textFieldName.setText(firstRoute.getName());
@@ -167,6 +168,12 @@ public class UploadDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    private void handleRouteServiceUpdate(RouteService routeService) {
+        textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
+        textFieldPassword.setText(preferences.get(PASSWORD_PREFERENCE + routeService.getName(), ""));
+        checkBoxRememberPassword.setSelected(preferences.getBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), true));
+    }
+
     private void upload() {
         RouteService routeService = (RouteService) comboBoxChooseRouteService.getSelectedItem();
         String userName = textFieldUserName.getText();
@@ -195,8 +202,14 @@ public class UploadDialog extends JDialog {
         */
 
         preferences.put(USERNAME_PREFERENCE + routeService.getName(), userName);
-        preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), password.getBytes());
-        preferences.putBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), checkBoxRememberMe.isSelected());
+        boolean rememberPassword = checkBoxRememberPassword.isSelected();
+        preferences.putBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), rememberPassword);
+        if (rememberPassword)
+            preferences.putByteArray(PASSWORD_PREFERENCE + routeService.getName(), password.getBytes());
+        else
+            preferences.remove(PASSWORD_PREFERENCE + routeService.getName());
+
+        dispose();
     }
 
     private void cancel() {
@@ -277,9 +290,9 @@ public class UploadDialog extends JDialog {
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel3, new GridConstraints(10, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 5), null, null, 0, false));
-        checkBoxRememberMe = new JCheckBox();
-        checkBoxRememberMe.setText("");
-        contentPane.add(checkBoxRememberMe, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxRememberPassword = new JCheckBox();
+        checkBoxRememberPassword.setText("");
+        contentPane.add(checkBoxRememberPassword, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label8 = new JLabel();
         this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("remember-password"));
         contentPane.add(label8, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

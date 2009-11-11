@@ -19,11 +19,15 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
 /**
@@ -60,6 +64,14 @@ public abstract class HttpRequest {
             method.setDoAuthentication(true);
         } catch (URIException e) {
             log.severe("Cannot set authentication: " + e.getMessage());
+        }
+    }
+
+    public void setBody(String body) {
+        try {
+            ((EntityEnclosingMethod) method).setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE, Helper.UTF8_ENCODING));
+        } catch (UnsupportedEncodingException e) {
+            log.severe("Cannot set body: " + e.getMessage());
         }
     }
 

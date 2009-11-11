@@ -14,15 +14,16 @@
     <orderEntry type="module" module-name="catalog" exported="" />
     <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module" module-name="common-gui" exported="" />
+    <orderEntry type="module" module-name="elevationview" />
     <orderEntry type="module" module-name="geonames" />
     <orderEntry type="module" module-name="googlemaps" />
     <orderEntry type="module" module-name="mapview" />
     <orderEntry type="module" module-name="navigation-formats" exported="" />
     <orderEntry type="module" module-name="rest" exported="" />
     <orderEntry type="module" module-name="swt-mapview" />
+    <orderEntry type="library" name="apache/commons-httpclient" level="project" />
     <orderEntry type="library" name="intellij/forms-rt" level="project" />
     <orderEntry type="library" name="junit/junit" level="project" />
-    <orderEntry type="module" module-name="elevationview" />
   </component>
 </module>
 

@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 public class Helper {
     private static final Logger log = Logger.getLogger(Helper.class.getName());
-    private static final String UTF8_ENCODING = "UTF-8";
+    static final String UTF8_ENCODING = "UTF-8";
 
     public static String encodeUri(String uri) {
         try {
