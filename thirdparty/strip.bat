@@ -1,3 +1,4 @@
+java -jar jarjar\jarjar\lib\jarjar-1.0.jar process strip-rules.txt apache\commons-httpclient\lib\commons-httpclient-3.1.jar apache\commons-httpclient\lib\commons-httpclient-3.1-stripped.jar
 java -jar jarjar\jarjar\lib\jarjar-1.0.jar process strip-rules.txt djproject\nativeswing\lib\DJNativeSwing-0.9.8.jar djproject\nativeswing\lib\DJNativeSwing-0.9.8-stripped.jar
 java -jar jarjar\jarjar\lib\jarjar-1.0.jar process strip-rules.txt djproject\nativeswing-swt\lib\DJNativeSwing-SWT-0.9.8.jar djproject\nativeswing-swt\lib\DJNativeSwing-SWT-0.9.8-stripped.jar
 java -jar jarjar\jarjar\lib\jarjar-1.0.jar process strip-rules.txt eclipse\swt\lib\swt-3.5-win32-win32-x86.jar eclipse\swt\lib\swt-3.5-win32-win32-x86-stripped.jar

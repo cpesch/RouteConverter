@@ -5,6 +5,15 @@ keep chrriis.dj.nativeswing.swtimpl.NativeInterface
 keep chrriis.dj.nativeswing.swtimpl.components.JWebBrowser
 keep chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener
 keep chrriis.dj.nativeswing.swtimpl.components.WebBrowserEvent
+keep org.apache.commons.httpclient.HttpClient
+keep org.apache.commons.httpclient.HttpStatus
+keep org.apache.commons.httpclient.methods.DeleteMethod
+keep org.apache.commons.httpclient.methods.GetMethod
+keep org.apache.commons.httpclient.methods.PostMethod
+keep org.apache.commons.httpclient.methods.PutMethod
+keep org.apache.commons.httpclient.methods.multipart.FilePart
+keep org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
+keep org.apache.commons.httpclient.methods.multipart.StringPart
 keep org.eclipse.swt.browser.WebBrowser
 keep org.eclipse.swt.awt.SWT_AWT
 keep org.eclipse.swt.events.ControlAdapter
