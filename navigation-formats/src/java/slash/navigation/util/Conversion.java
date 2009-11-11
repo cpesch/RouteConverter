@@ -78,6 +78,7 @@ public class Conversion {
         return roundMercator(latitude, y);
     }
 
+    // see http://de.wikipedia.org/wiki/Gau%C3%9F-Kr%C3%BCger-Koordinatensystem
 
     private static final double aBessel = 6377397.155;
     private static final double bBessel = 6356078.962;
