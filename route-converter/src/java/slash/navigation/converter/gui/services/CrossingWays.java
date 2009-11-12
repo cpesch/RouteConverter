@@ -71,7 +71,8 @@ public class CrossingWays implements RouteService {
         try {
             messageDigest = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
-            throw new IOException(e);
+            // Java6: throw new IOException(e);
+            throw createIOException(e);
         }
         messageDigest.update(text.getBytes("UTF-8"), 0, text.length());
         byte[] bytes = messageDigest.digest();
@@ -85,14 +86,16 @@ public class CrossingWays implements RouteService {
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw new IOException(e);
+            // Java6: throw new IOException(e);
+            throw createIOException(e);
         }
 
         Document document;
         try {
             document = builder.parse(new InputSource(new StringReader(result)));
         } catch (SAXException e) {
-            throw new IOException(e);
+            // Java6: throw new IOException(e);
+            throw createIOException(e);
         }
 
         NodeList nodeList = document.getChildNodes();
@@ -101,6 +104,12 @@ public class CrossingWays implements RouteService {
             return node.getTextContent();
         }
         return null;
+    }
+
+    private static IOException createIOException(Exception e) {
+        IOException exception = new IOException();
+        exception.setStackTrace(e.getStackTrace());
+        return exception;
     }
 
     public void upload(String userName, String password, String url, String name, String description) throws IOException {
