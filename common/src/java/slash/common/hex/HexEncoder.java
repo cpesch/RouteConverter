@@ -88,7 +88,7 @@ public class HexEncoder extends OutputStream {
         return new String(chars);
     }
 
-    private static String encodeBytes(byte[] bytes) {
+    public static String encodeBytes(byte[] bytes) {
         StringWriter writer = new StringWriter(2 * bytes.length);
         HexEncoder encoder = new HexEncoder(writer);
         try {

@@ -23,24 +23,25 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.BaseRoute;
-import slash.navigation.BaseNavigationPosition;
 import slash.common.io.CompactCalendar;
+import slash.navigation.BaseNavigationPosition;
+import slash.navigation.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
-import slash.navigation.converter.gui.services.*;
+import slash.navigation.converter.gui.services.CrossingWays;
+import slash.navigation.converter.gui.services.RouteService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
-import java.io.IOException;
 
 /**
  * Dialog to upload a file to a RouteService
@@ -170,7 +171,7 @@ public class UploadDialog extends JDialog {
 
     private void handleRouteServiceUpdate(RouteService routeService) {
         textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
-        textFieldPassword.setText(preferences.get(PASSWORD_PREFERENCE + routeService.getName(), ""));
+        textFieldPassword.setText(new String(preferences.getByteArray(PASSWORD_PREFERENCE + routeService.getName(), new byte[0])));
         checkBoxRememberPassword.setSelected(preferences.getBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), true));
     }
 
@@ -182,8 +183,8 @@ public class UploadDialog extends JDialog {
         try {
             routeService.upload(userName, password, fileUrl, textFieldName.getText(), textAreaDescription.getText());
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            // TODO dialog
+            JFrame f = RouteConverter.getInstance().getFrame();
+            JOptionPane.showMessageDialog(f, MessageFormat.format(RouteConverter.getBundle().getString("service-error"), routeService.getName(), e.getMessage()), f.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
 
         /*
