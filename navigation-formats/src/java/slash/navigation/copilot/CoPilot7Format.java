@@ -25,10 +25,7 @@ import slash.navigation.Wgs84Route;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -47,7 +44,7 @@ public class CoPilot7Format extends CoPilotFormat {
         return read(source, startDate, UTF16_ENCODING);
     }
 
-    public void write(Wgs84Route route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
 

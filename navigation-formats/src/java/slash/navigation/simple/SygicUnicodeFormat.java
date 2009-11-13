@@ -24,10 +24,7 @@ import slash.navigation.Wgs84Position;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.File;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -52,7 +49,7 @@ public class SygicUnicodeFormat extends SygicFormat {
         return read(source, startDate, UTF16_ENCODING);
     }
 
-    public void write(SimpleRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
 

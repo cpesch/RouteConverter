@@ -25,6 +25,7 @@ import slash.common.io.CompactCalendar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -46,5 +47,5 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     List<R> read(InputStream source) throws IOException;
     List<R> read(InputStream source, CompactCalendar startDate) throws IOException;
-    void write(R route, File target, int startIndex, int endIndex) throws IOException;
+    void write(R route, OutputStream target, int startIndex, int endIndex) throws IOException;
 }

@@ -30,9 +30,9 @@ import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -125,7 +125,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return kdRoute;
     }
 
-    public void write(KlickTelRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(KlickTelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             KlickTelUtil.marshal(createKlicktel(route), target);
         } catch (JAXBException e) {

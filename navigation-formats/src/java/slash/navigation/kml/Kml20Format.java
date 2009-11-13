@@ -32,6 +32,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -401,7 +402,7 @@ public class Kml20Format extends KmlFormat {
         return kml;
     }
 
-    public void write(KmlRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             KmlUtil.marshal20(createKml(route), target);
         } catch (JAXBException e) {

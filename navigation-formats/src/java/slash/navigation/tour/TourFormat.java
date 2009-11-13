@@ -164,7 +164,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
 
-    public void write(TourRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(TourRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 

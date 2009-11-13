@@ -28,10 +28,7 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,7 +103,7 @@ public class Nmn7Format extends NmnFormat {
         return result;
     }
 
-    public void write(NmnRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(NmnRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             Nmn7Util.marshal(createNmn(route, startIndex, endIndex), target);
         } catch (JAXBException e) {

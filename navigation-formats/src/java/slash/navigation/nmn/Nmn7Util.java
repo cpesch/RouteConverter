@@ -59,18 +59,17 @@ class Nmn7Util {
     }
 
 
-    public static void marshal(Route route, File file) throws JAXBException {
+    public static void marshal(Route route, OutputStream out) throws JAXBException {
         try {
-            FileOutputStream fos = new FileOutputStream(file);
             try {
-                newMarshaller().marshal(new JAXBElement<Route>(new QName(NMN7_NAMESPACE_URI, "Route"), Route.class, route), fos);
+                newMarshaller().marshal(new JAXBElement<Route>(new QName(NMN7_NAMESPACE_URI, "Route"), Route.class, route), out);
             }
             finally {
-                fos.flush();
-                fos.close();
+                out.flush();
+                out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
     }
 }

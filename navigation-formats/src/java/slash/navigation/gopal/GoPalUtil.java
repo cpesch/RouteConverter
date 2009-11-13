@@ -59,18 +59,17 @@ class GoPalUtil {
     }
 
 
-    public static void marshal(Tour tour, File file) throws JAXBException {
+    public static void marshal(Tour tour, OutputStream out) throws JAXBException {
         try {
-            FileOutputStream fos = new FileOutputStream(file);
             try {
-                newMarshaller().marshal(new JAXBElement<Tour>(new QName(GOPAL_NAMESPACE_URI, "tour"), Tour.class, tour), fos);
+                newMarshaller().marshal(new JAXBElement<Tour>(new QName(GOPAL_NAMESPACE_URI, "tour"), Tour.class, tour), out);
             }
             finally {
-                fos.flush();
-                fos.close();
+                out.flush();
+                out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
     }
 }

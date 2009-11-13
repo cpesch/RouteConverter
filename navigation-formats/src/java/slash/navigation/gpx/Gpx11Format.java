@@ -34,6 +34,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -423,7 +424,7 @@ public class Gpx11Format extends GpxFormat {
         return gpxType;
     }
 
-    public void write(GpxRoute route, File target, int startIndex, int endIndex) {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
         try {
             GpxUtil.marshal11(createGpxType(route), target);
         } catch (JAXBException e) {

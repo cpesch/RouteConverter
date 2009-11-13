@@ -93,12 +93,12 @@ public abstract class KmzFormat extends BaseKmlFormat {
         }
     }
 
-    private void writeIntermediate(File target, byte[] bytes) throws IOException {
+    private void writeIntermediate(OutputStream target, byte[] bytes) throws IOException {
         CRC32 crc = new CRC32();
         crc.reset();
         crc.update(bytes);
 
-        ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(target));
+        ZipOutputStream outputStream = new ZipOutputStream(target);
         try {
             ZipEntry entry = new ZipEntry("doc.kml");
             entry.setSize(bytes.length);
@@ -113,11 +113,11 @@ public abstract class KmzFormat extends BaseKmlFormat {
         }
     }
 
-    public void write(KmlRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         File intermediate = File.createTempFile("rckml", ".kml");
 
         try {
-            delegate.write(route, intermediate, startIndex, endIndex);
+            delegate.write(route, new FileOutputStream(intermediate), startIndex, endIndex);
             byte[] bytes = InputOutput.readBytes(new FileInputStream(intermediate));
             writeIntermediate(target, bytes);
         }
@@ -135,7 +135,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
         try {
             delegate.write(routes, intermediate);
             byte[] bytes = InputOutput.readBytes(new FileInputStream(intermediate));
-            writeIntermediate(target, bytes);
+            writeIntermediate(new FileOutputStream(target), bytes);
         }
         finally {
             if (intermediate.exists())

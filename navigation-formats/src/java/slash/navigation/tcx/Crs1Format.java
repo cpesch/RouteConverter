@@ -30,6 +30,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -182,7 +183,7 @@ public class Crs1Format extends GpxFormat {
         return trainingCenterDatabaseT;
     }
 
-    public void write(GpxRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
             TcxUtil.marshal1(createTrainingCenterDatabase(route, startIndex, endIndex), target);
         } catch (JAXBException e) {

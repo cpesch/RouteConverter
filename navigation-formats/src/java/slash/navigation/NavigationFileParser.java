@@ -248,7 +248,7 @@ public class NavigationFileParser {
             File target = targets[i];
             int endIndex = Math.min(startIndex + writeInOneChunk, positionsToWrite);
             renameRoute(route, routeToWrite, startIndex, endIndex, i, targets);
-            format.write(routeToWrite, target, startIndex, endIndex);
+            format.write(routeToWrite, new FileOutputStream(target), startIndex, endIndex);
             log.info("Wrote '" + target.getAbsoluteFile() + "'");
             startIndex += writeInOneChunk;
         }

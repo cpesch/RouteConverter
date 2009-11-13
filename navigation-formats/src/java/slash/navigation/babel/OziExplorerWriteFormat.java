@@ -26,6 +26,7 @@ import slash.navigation.gpx.GpxRoute;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public abstract class OziExplorerWriteFormat extends BabelFormat implements Mult
 
     protected abstract RouteCharacteristics getRouteCharacteristics();
 
-    public void write(GpxRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         // otherwise the ozi gpsbabel module would write .rte for Routes, .plt for Tracks and .wpt for Waypoints
         route.setCharacteristics(getRouteCharacteristics());
         super.write(route, target, startIndex, endIndex);

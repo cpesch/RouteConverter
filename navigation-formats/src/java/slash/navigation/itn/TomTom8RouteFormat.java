@@ -22,9 +22,9 @@ package slash.navigation.itn;
 
 import slash.common.io.CompactCalendar;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -54,7 +54,7 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         return false;
     }
 
-    public void write(TomTomRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(TomTomRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 }

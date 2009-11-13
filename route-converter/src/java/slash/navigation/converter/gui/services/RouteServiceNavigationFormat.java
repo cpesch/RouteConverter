@@ -28,7 +28,7 @@ import slash.common.io.CompactCalendar;
 import java.util.List;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.File;
+import java.io.OutputStream;
 
 /**
  * Used in the save combobox to indicate storage in a RouteService.
@@ -77,7 +77,7 @@ public class RouteServiceNavigationFormat implements NavigationFormat {
         throw new UnsupportedOperationException();
     }
 
-    public void write(BaseRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(BaseRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

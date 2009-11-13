@@ -92,9 +92,8 @@ class ViaMichelinUtil {
         return result;
     }
 
-    public static void marshal(PoiList poiList, File file) throws JAXBException {
+    public static void marshal(PoiList poiList, OutputStream fos) throws JAXBException {
         try {
-            FileOutputStream fos = new FileOutputStream(file);
             try {
                 String header = XML_PREAMBLE + "\n" +
                         "<!DOCTYPE poi_list SYSTEM \"" + VIAMICHELIN_NAMESPACE_URI + "\">";
@@ -106,7 +105,7 @@ class ViaMichelinUtil {
                 fos.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
     }
 }

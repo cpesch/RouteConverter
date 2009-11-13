@@ -81,7 +81,7 @@ public class GpxUtil {
         return result;
     }
 
-    public static void marshal10(Gpx gpx, File file) throws JAXBException {
+    public static void marshal10(Gpx gpx, File file) throws JAXBException {   // TODO remove me
         try {
             FileOutputStream fos = new FileOutputStream(file);
             try {
@@ -93,6 +93,20 @@ public class GpxUtil {
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+        }
+    }
+
+    public static void marshal10(Gpx gpx, OutputStream out) throws JAXBException {
+        try {
+            try {
+                newMarshaller10().marshal(new JAXBElement<Gpx>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), out);
+            }
+            finally {
+                out.flush();
+                out.close();
+            }
+        } catch (IOException e) {
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
     }
 
@@ -128,7 +142,7 @@ public class GpxUtil {
         newMarshaller11().marshal(new JAXBElement<GpxType>(new QName(GPX_11_NAMESPACE_URI, "gpx"), GpxType.class, gpxType), writer);
     }
 
-    public static void marshal11(GpxType gpxType, File file) throws JAXBException {
+    public static void marshal11(GpxType gpxType, File file) throws JAXBException { // TODO remove me
         try {
             FileOutputStream fos = new FileOutputStream(file);
             try {
@@ -140,6 +154,20 @@ public class GpxUtil {
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+        }
+    }
+
+    public static void marshal11(GpxType gpxType, OutputStream out) throws JAXBException {
+        try {
+            try {
+                newMarshaller11().marshal(new JAXBElement<GpxType>(new QName(GPX_11_NAMESPACE_URI, "gpx"), GpxType.class, gpxType), out);
+            }
+            finally {
+                out.flush();
+                out.close();
+            }
+        } catch (IOException e) {
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
     }
 }

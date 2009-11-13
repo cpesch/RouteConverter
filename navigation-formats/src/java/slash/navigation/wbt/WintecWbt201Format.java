@@ -224,7 +224,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 CompactCalendar.fromCalendar(calendar), comment);
     }
 
-    public void write(Wgs84Route route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

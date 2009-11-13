@@ -31,6 +31,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -237,7 +238,7 @@ public class Tcx1Format extends GpxFormat {
         }
     }
 
-    public void write(GpxRoute route, File target, int startIndex, int endIndex) throws IOException {
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         throw new UnsupportedOperationException();
     }
 
