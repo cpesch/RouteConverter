@@ -354,12 +354,19 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
     }
 
-    public void write(List<GpxRoute> routes, File target) throws IOException {
-        File source = File.createTempFile(target.getName(), "." + BABEL_INTERFACE_FORMAT_NAME);
-        getGpxFormat().write(routes, source);
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, target, getBabelFormatName(), getBabelOptions());
-        if (successful)
+    public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
+        File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+        getGpxFormat().write(routes, new FileOutputStream(source));
+        File targetFile = File.createTempFile("babeltarget", getExtension());
+        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getBabelFormatName(), getBabelOptions());
+        if (successful) {
             log.fine("Successfully converted " + source + " to " + target);
+            new InputOutput(new FileInputStream(targetFile), target).start();
+        }
+        if (targetFile.exists()) {
+            if (!targetFile.delete())
+                log.warning("Cannot delete target file " + targetFile);
+        }
         if (source.exists()) {
             if (!source.delete())
                 log.warning("Cannot delete source file " + source);

@@ -174,21 +174,6 @@ public class KmlUtil {
     }
 
 
-    public static void marshal20(Kml kml, File file) throws JAXBException {  // TODO remove me
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                newMarshaller20().marshal(new JAXBElement<Kml>(new QName(KML_20_NAMESPACE_URI, "kml"), Kml.class, kml), fos);
-            }
-            finally {
-                fos.flush();
-                fos.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
-        }
-    }
-
     public static void marshal20(Kml kml, OutputStream out) throws JAXBException {
         try {
             try {
@@ -200,21 +185,6 @@ public class KmlUtil {
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e.getMessage());
-        }
-    }
-
-    public static void marshal21(slash.navigation.kml.binding21.KmlType kmlType, File file) throws JAXBException {  // TODO remove me
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                newMarshaller21().marshal(new JAXBElement<slash.navigation.kml.binding21.KmlType>(new QName(KML_21_NAMESPACE_URI, "kml"), slash.navigation.kml.binding21.KmlType.class, kmlType), fos);
-            }
-            finally {
-                fos.flush();
-                fos.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
         }
     }
 
@@ -232,21 +202,6 @@ public class KmlUtil {
         }
     }
 
-    public static void marshal22Beta(slash.navigation.kml.binding22beta.KmlType kmlType, File file) throws JAXBException {     // TODO remove me
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                newMarshaller22Beta().marshal(new JAXBElement<slash.navigation.kml.binding22beta.KmlType>(new QName(KML_22_BETA_NAMESPACE_URI, "kml"), slash.navigation.kml.binding22beta.KmlType.class, kmlType), fos);
-            }
-            finally {
-                fos.flush();
-                fos.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
-        }
-    }
-
     public static void marshal22Beta(slash.navigation.kml.binding22beta.KmlType kmlType, OutputStream out) throws JAXBException {
         try {
             try {
@@ -258,21 +213,6 @@ public class KmlUtil {
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e.getMessage());
-        }
-    }
-
-    public static void marshal22(slash.navigation.kml.binding22.KmlType kmlType, File file) throws JAXBException {   // TODO remove me
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                newMarshaller22().marshal(new JAXBElement<slash.navigation.kml.binding22.KmlType>(new QName(KML_22_NAMESPACE_URI, "kml"), slash.navigation.kml.binding22.KmlType.class, kmlType), fos);
-            }
-            finally {
-                fos.flush();
-                fos.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
         }
     }
 

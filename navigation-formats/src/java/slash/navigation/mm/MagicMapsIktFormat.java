@@ -287,15 +287,11 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return buffer.toString();
     }
 
-    public void write(List<MagicMapsIktRoute> routes, File target) throws IOException {
-        write(routes, new FileOutputStream(target));
-    }
-
-    public void write(List<MagicMapsIktRoute> routes, OutputStream fos) throws IOException {
+    public void write(List<MagicMapsIktRoute> routes, OutputStream target) throws IOException {
         try {
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
             XMLOutputFactory output = XMLOutputFactory.newInstance();
-            XMLEventWriter writer = output.createXMLEventWriter(fos, UTF8_ENCODING);
+            XMLEventWriter writer = output.createXMLEventWriter(target, UTF8_ENCODING);
 
             try {
                 writeHeader(getProjectName(routes), getDescription(routes), writer, eventFactory);
@@ -313,8 +309,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
             finally {
                 writer.flush();
                 writer.close();
-                fos.flush();
-                fos.close();
+                target.flush();
+                target.close();
             }
         } catch (XMLStreamException e) {
             throw new IOException("Error while marshalling: " + e.getMessage());

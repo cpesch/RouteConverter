@@ -28,7 +28,6 @@ import slash.navigation.tcx.binding1.*;
 import slash.common.io.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -242,7 +241,7 @@ public class Tcx1Format extends GpxFormat {
         throw new UnsupportedOperationException();
     }
 
-    public void write(List<GpxRoute> routes, File target) throws IOException {
+    public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

@@ -29,7 +29,6 @@ import slash.navigation.gpx.binding10.ObjectFactory;
 import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -367,7 +366,7 @@ public class Gpx10Format extends GpxFormat {
         }
     }
 
-    public void write(List<GpxRoute> routes, File target) {
+    public void write(List<GpxRoute> routes, OutputStream target) {
         try {
             GpxUtil.marshal10(createGpx(routes), target);
         } catch (JAXBException e) {

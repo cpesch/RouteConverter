@@ -81,21 +81,6 @@ public class GpxUtil {
         return result;
     }
 
-    public static void marshal10(Gpx gpx, File file) throws JAXBException {   // TODO remove me
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                newMarshaller10().marshal(new JAXBElement<Gpx>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), fos);
-            }
-            finally {
-                fos.flush();
-                fos.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
-        }
-    }
-
     public static void marshal10(Gpx gpx, OutputStream out) throws JAXBException {
         try {
             try {
@@ -140,21 +125,6 @@ public class GpxUtil {
 
     public static void marshal11(GpxType gpxType, Writer writer) throws JAXBException {
         newMarshaller11().marshal(new JAXBElement<GpxType>(new QName(GPX_11_NAMESPACE_URI, "gpx"), GpxType.class, gpxType), writer);
-    }
-
-    public static void marshal11(GpxType gpxType, File file) throws JAXBException { // TODO remove me
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                newMarshaller11().marshal(new JAXBElement<GpxType>(new QName(GPX_11_NAMESPACE_URI, "gpx"), GpxType.class, gpxType), fos);
-            }
-            finally {
-                fos.flush();
-                fos.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
-        }
     }
 
     public static void marshal11(GpxType gpxType, OutputStream out) throws JAXBException {

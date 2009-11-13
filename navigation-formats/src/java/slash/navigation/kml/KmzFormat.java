@@ -21,13 +21,15 @@
 package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.InputOutput;
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -89,7 +91,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
             return null;
         }
         finally {
-          zip.close();
+            zip.close();
         }
     }
 
@@ -114,33 +116,14 @@ public abstract class KmzFormat extends BaseKmlFormat {
     }
 
     public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        File intermediate = File.createTempFile("rckml", ".kml");
-
-        try {
-            delegate.write(route, new FileOutputStream(intermediate), startIndex, endIndex);
-            byte[] bytes = InputOutput.readBytes(new FileInputStream(intermediate));
-            writeIntermediate(target, bytes);
-        }
-        finally {
-            if (intermediate.exists()) {
-                if (!intermediate.delete())
-                    log.warning("Cannot delete intermediate file " + intermediate);
-            }
-        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        delegate.write(route, baos, startIndex, endIndex);
+        writeIntermediate(target, baos.toByteArray());
     }
 
-    public void write(List<KmlRoute> routes, File target) throws IOException {
-        File intermediate = File.createTempFile("rckml", ".kml");
-
-        try {
-            delegate.write(routes, intermediate);
-            byte[] bytes = InputOutput.readBytes(new FileInputStream(intermediate));
-            writeIntermediate(new FileOutputStream(target), bytes);
-        }
-        finally {
-            if (intermediate.exists())
-                if (!intermediate.delete())
-                    log.warning("Cannot delete intermediate file " + intermediate);
-        }
+    public void write(List<KmlRoute> routes, OutputStream target) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        delegate.write(routes, baos);
+        writeIntermediate(target, baos.toByteArray());
     }
 }

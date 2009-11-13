@@ -225,8 +225,8 @@ public class NavigationFileParser {
     public void write(BaseRoute route, NavigationFormat format,
                       boolean duplicateFirstPosition,
                       boolean ignoreMaximumPositionCount,
-                      File... targets) throws IOException {
-        log.info("Writing '" + format.getName() + "' file(s) with 1 route and " + route.getPositionCount() + " positions");
+                      OutputStream... targets) throws IOException {
+        log.info("Writing '" + format.getName() + "' position lists with 1 route and " + route.getPositionCount() + " positions");
 
         BaseRoute routeToWrite = NavigationFormats.asFormat(route, format);
         preprocessRoute(routeToWrite, format, duplicateFirstPosition);
@@ -240,22 +240,32 @@ public class NavigationFileParser {
                 writeInOneChunk = positionsToWrite;
             else
                 throw new IOException("Found " + positionsToWrite + " positions, " + format.getName() +
-                        " format may only contain " + writeInOneChunk + " positions in one file.");
+                        " format may only contain " + writeInOneChunk + " positions in one position list.");
         }
 
         int startIndex = 0;
         for (int i = 0; i < targets.length; i++) {
-            File target = targets[i];
+            OutputStream target = targets[i];
             int endIndex = Math.min(startIndex + writeInOneChunk, positionsToWrite);
             renameRoute(route, routeToWrite, startIndex, endIndex, i, targets);
-            format.write(routeToWrite, new FileOutputStream(target), startIndex, endIndex);
-            log.info("Wrote '" + target.getAbsoluteFile() + "'");
+            format.write(routeToWrite, target, startIndex, endIndex);
+            log.info("Wrote position list from " + startIndex + " to " + endIndex);
             startIndex += writeInOneChunk;
         }
 
         postProcessRoute(routeToWrite, format, duplicateFirstPosition);
 
         this.formatAndRoutes = new FormatAndRoutes(format, Arrays.asList(routeToWrite));
+    }
+
+    public void write(BaseRoute route, NavigationFormat format,
+                      boolean duplicateFirstPosition,
+                      boolean ignoreMaximumPositionCount,
+                      File... targets) throws IOException {
+        OutputStream[] targetStreams = new OutputStream[targets.length];
+        for (int i = 0; i < targetStreams.length; i++)
+            targetStreams[i] = new FileOutputStream(targets[i]);
+        write(route, format, duplicateFirstPosition, ignoreMaximumPositionCount, targetStreams);
     }
 
 
@@ -266,7 +276,7 @@ public class NavigationFileParser {
             routeToWrite.add(0, ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite));
     }
 
-    private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int trackIndex, File... targets) {
+    private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int trackIndex, OutputStream... targets) {
         // gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
@@ -293,7 +303,7 @@ public class NavigationFileParser {
             routesToWrite.add(routeToWrite);
         }
 
-        format.write(routesToWrite, target);
+        format.write(routesToWrite, new FileOutputStream(target));
         log.info("Wrote '" + target.getAbsolutePath() + "'");
 
         this.formatAndRoutes = new FormatAndRoutes(format, routesToWrite);

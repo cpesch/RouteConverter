@@ -29,7 +29,6 @@ import slash.navigation.util.RouteComments;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -353,7 +352,7 @@ public class Kml21Format extends KmlFormat {
         }
     }
 
-    public void write(List<KmlRoute> routes, File target) throws IOException {
+    public void write(List<KmlRoute> routes, OutputStream target) throws IOException {
         try {
             KmlUtil.marshal21(createKmlType(routes), target);
         } catch (JAXBException e) {

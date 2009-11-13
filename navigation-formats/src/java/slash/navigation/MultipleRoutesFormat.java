@@ -22,6 +22,7 @@ package slash.navigation;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -31,5 +32,5 @@ import java.util.List;
  */
 
 public interface MultipleRoutesFormat<R extends BaseRoute> extends NavigationFormat<R> {
-    void write(List<R> routes, File target) throws IOException;
+    void write(List<R> routes, OutputStream target) throws IOException;
 }

@@ -27,7 +27,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import slash.common.hex.HexEncoder;
 import slash.common.io.Files;
-import slash.common.io.InputOutput;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.rest.Post;
@@ -35,7 +34,9 @@ import slash.navigation.rest.Post;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -57,13 +58,6 @@ public class CrossingWays implements RouteService {
 
     public boolean isOriginOf(String url) {
         return url.startsWith("http://www.crossingways.com/services/");
-    }
-
-    private String readFile(File file) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        InputOutput inout = new InputOutput(new FileInputStream(file), baos);
-        inout.start();
-        return baos.toString();
     }
 
     private String sha1(String text) throws IOException {
@@ -119,15 +113,12 @@ public class CrossingWays implements RouteService {
             throw new IOException("Cannot read url " + url);
         if (!parser.read(urls.iterator().next()))
             throw new IOException("Cannot parse url " + url);
-        File tempFile = File.createTempFile("crossingwaysclient", ".xml");
-        // TODO extend write to write to OutputStream and File
-        parser.write(parser.getTheRoute(), new Gpx10Format(), false, false, tempFile);
-        String gpx = readFile(tempFile);
-        if (!tempFile.delete())
-            throw new IOException("Cannot delete temp file " + tempFile);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        parser.write(parser.getTheRoute(), new Gpx10Format(), false, false, baos);
 
         Post post = new Post("http://www.crossingways.com/services/LiveTracking.asmx/UploadGPX");
-        String body = "username=" + userName + "&password=" + sha1(password) + "&trackname=" + name + "&gpx=" + gpx;
+        String body = "username=" + userName + "&password=" + sha1(password) + "&trackname=" + name + "&gpx=" + baos.toString();
         post.setBody(body);
         log.info("Body: " + body);
         String resultBody = post.execute();

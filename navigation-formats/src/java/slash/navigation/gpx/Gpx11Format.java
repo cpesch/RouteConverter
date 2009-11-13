@@ -31,7 +31,6 @@ import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -432,7 +431,7 @@ public class Gpx11Format extends GpxFormat {
         }
     }
 
-    public void write(List<GpxRoute> routes, File target) {
+    public void write(List<GpxRoute> routes, OutputStream target) {
         try {
             GpxUtil.marshal11(createGpxType(routes), target);
         } catch (JAXBException e) {

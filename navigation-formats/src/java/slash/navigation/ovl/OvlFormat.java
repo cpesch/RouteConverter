@@ -25,10 +25,7 @@ import slash.navigation.util.Positions;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -291,8 +288,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMapLage(route, writer);
     }
 
-    public void write(List<OvlRoute> routes, File target) throws IOException {
-        PrintWriter writer = new PrintWriter(target, DEFAULT_ENCODING);
+    public void write(List<OvlRoute> routes, OutputStream target) throws IOException {
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, DEFAULT_ENCODING));
         try {
             int symbols = 0;
             for (OvlRoute route : routes) {

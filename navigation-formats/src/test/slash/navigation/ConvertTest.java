@@ -196,15 +196,6 @@ public class ConvertTest extends BaseConvertTest {
         convertRoundtrip(TEST_PATH + "from.xcsv", new GarminPoiDbFormat(), new GarminPoiDbFormat());
     }
 
-    public void testConvertXcsvToGpiFails() throws IOException {
-        // TODO Garmin file contains 400 instead of expected 216 positions
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from.xcsv", new GarminPoiDbFormat(), new GarminPoiFormat());
-            }
-        });
-    }
-
 
     public void testConvertGarminMapSource5ToGarminMapSource5() throws IOException {
         convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
@@ -226,24 +217,6 @@ public class ConvertTest extends BaseConvertTest {
     public void testConvertGpx11ToGarminMapSource5() throws IOException {
         convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminMapSource5Format());
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource5Format());
-    }
-
-    public void testConvertMicrosoftAutoRouteToGarminMapSource5() throws IOException {
-        // TODO Garmin file contains only 41 instead of expected 45 positions
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from.axe", new MicrosoftAutoRouteFormat(), new GarminMapSource5Format());
-            }
-        });
-    }
-
-    public void testConvertTourExchangeToGarminMapSource5Fails() throws IOException {
-        // TODO Garmin file contains only 47 instead of expected 49 positions
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminMapSource5Format());
-            }
-        });
     }
 
 
@@ -397,47 +370,12 @@ public class ConvertTest extends BaseConvertTest {
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OvlFormat());
     }
 
-    public void testConvertOziExplorerTrackToTop50() throws IOException {
-        // TODO differences in conversion:
-        // TODO Target longitude 0 does not exist
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OvlFormat());
-            }
-        });
-    }
-
     public void testConvertOziExplorerWaypointToTop50() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OvlFormat());
     }
 
-    public void testConvertOziExplorerToMagicMaps() throws IOException {
-        // TODO differences in conversion:
-        // TODO 2.6141469644200224 is not within +5.0E-6 of -17.954639 to -17.954728773195
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-            }
-        });
-    }
-
     public void testConvertGpx10ToOziExplorerTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
-    }
-
-    public void testConvertGpx10ToOziExplorerRoute() throws IOException {
-        // TODO differences in conversion:
-        // TODO Longitude 0 does not match expected:<-10.76617> but was:<-53.69928>
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerRouteFormat());
-            }
-        });
     }
 
     public void testConvertGpx10ToOziExplorerWaypoints() throws IOException {
@@ -688,15 +626,6 @@ public class ConvertTest extends BaseConvertTest {
     }
 
 
-    public void testConvertMagellanMapSendToMagellanMapSendFails() throws IOException {
-        // TODO roundtrip fails since name and description are mangled
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from-mapsend.wpt", new MagellanMapSendFormat(), new MagellanMapSendFormat());
-            }
-        });
-    }
-
     public void testConvertMagellanMapSendToTomTomPoi() throws IOException {
         convertRoundtrip(TEST_PATH + "from-mapsend.wpt", new MagellanMapSendFormat(), new TomTomPoiFormat());
     }
@@ -736,18 +665,6 @@ public class ConvertTest extends BaseConvertTest {
 
     public void testConvertAlanWaypointsAndRoutesToAlanWaypointsAndRoutes() throws IOException {
         convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new AlanWaypointsAndRoutesFormat());
-    }
-
-    public void testConvertAlanWaypointsAndRoutesToGarminMapSource5() throws IOException {
-        // TODO fails since the Garmin Mapsource seems to capture only tracks correctly
-        // TODO in routes positions with the same name have the same coordinates
-        // TODO in waypoint lists positions with the same coordinates are eliminated
-        // TODO Garmin file contains only 37 instead of expected 46 positions
-        assertTestFails(new ThrowsException() {
-            public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new GarminMapSource5Format());
-            }
-        });
     }
 
     public void testConvertGpx11ToAlanWaypointsAndRoutes() throws IOException {
