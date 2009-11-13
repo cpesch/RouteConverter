@@ -128,7 +128,7 @@ public abstract class BaseMapView implements MapView {
             public void tableChanged(TableModelEvent e) {
                 boolean insertOrDelete = e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE;
                 boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
-                // TODO used to be limited to single rows which did work reliably but with usabilty problems
+                // used to be limited to single rows which did work reliably but with usabilty problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)
                     updateButDontRecenter();
