@@ -435,6 +435,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                throwable.printStackTrace();
+                log.severe("Open error: " + throwable.getMessage());
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {

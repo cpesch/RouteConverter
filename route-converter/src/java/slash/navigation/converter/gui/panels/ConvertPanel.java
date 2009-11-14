@@ -57,6 +57,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -449,8 +450,9 @@ public abstract class ConvertPanel {
                     r.handleBabelError(e);
                 } catch (OutOfMemoryError e) {
                     r.handleOutOfMemoryError();
+                } catch (FileNotFoundException e) {
+                    r.handleUnsupportedFormat(path);
                 } catch (Throwable t) {
-                    log.severe("Open error: " + t.getMessage());
                     r.handleOpenError(t, path);
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
