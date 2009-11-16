@@ -504,17 +504,6 @@
         <root url="jar://$PROJECT_DIR$/../thirdparty/jcommon/jcommon/1.0.16/jcommon-1.0.16-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: junit:junit:4.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.1/junit-4.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.1/junit-4.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.1/junit-4.1-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: sun:jdic:0.9.3-stripped">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar!/" />
@@ -678,6 +667,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: junit:junit:4.7">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.7/junit-4.7.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.7/junit-4.7-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.7/junit-4.7-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
