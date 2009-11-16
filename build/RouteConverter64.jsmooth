@@ -9,7 +9,7 @@
 <arguments></arguments>
 <embeddedJar>true</embeddedJar>
 <executableName>output\RouteConverter64.exe</executableName>
-<iconLocation>..\route-converter\src\resources\slash\navigation\converter\gui\RouteConverter.png</iconLocation>
+<iconLocation>..\route-converter\src\main\resources\slash\navigation\converter\gui\RouteConverter.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>output\RouteConverter64.jar</jarLocation>
 <mainClassName>slash.navigation.converter.gui.RouteConverter6</mainClassName>
