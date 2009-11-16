@@ -81,7 +81,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new GpxRoute(new Gpx11Format(), characteristics, name, null, (List<GpxPosition>) positions);
+        return new GpxRoute(new Gpx10Format(), characteristics, name, null, (List<GpxPosition>) positions);
     }
 
 

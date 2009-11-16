@@ -654,7 +654,8 @@ public class ConvertTest extends BaseConvertTest {
         convertRoundtrip(TEST_PATH + "from.trl", new AlanTrackLogFormat(), new AlanTrackLogFormat());
     }
 
-    public void testConvertAlanTrackLogToGarminMapSource5() throws IOException {
+    public void testConvertAlanTrackLogToGarminMapSource5() throws Exception {
+        Thread.sleep(5000); // this seems to help against the errors that only show up on complete runs
         convertRoundtrip(TEST_PATH + "from.trl", new AlanTrackLogFormat(), new GarminMapSource5Format());
     }
 

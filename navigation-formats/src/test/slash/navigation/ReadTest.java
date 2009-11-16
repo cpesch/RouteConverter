@@ -225,8 +225,11 @@ public class ReadTest extends NavigationTestCase {
         readFiles(".url");
     }
 
-    public void testWintecWbt201FilesAreValid() throws IOException {
+    public void testWintecWbt201Tk1FilesAreValid() throws IOException {
         readFiles(".tk1");
+    }
+
+    public void testWintecWbt201Tk2FilesAreValid() throws IOException {
         readFiles(".tk2");
     }
 
