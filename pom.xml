@@ -28,27 +28,7 @@
         </repository>
     </repositories>
 
-    <properties>
-        <version>1.31.3</version>
-    </properties>
-
     <build>
-        <directory>output</directory>
-        <outputDirectory>output/classes</outputDirectory>
-        <testOutputDirectory>output/testclasses</testOutputDirectory>
-        <sourceDirectory>src/java</sourceDirectory>
-        <testSourceDirectory>src/test</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/resources</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/testresources</directory>
-            </testResource>
-        </testResources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -73,7 +53,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.1</version>
+            <version>4.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
