@@ -26,114 +26,114 @@
     <target name="init">
         <property name="javac.debug" value="false"/>
         <property file="build/build.properties"/>
-        <property name="build.output" location="build/output"/>
-        <property name="build.output.tmp-linux" location="${build.output}/tmp-linux"/>
-        <property name="build.output.tmp-mac" location="${build.output}/tmp-mac"/>
-        <property name="build.output.tmp-windows" location="${build.output}/tmp-windows"/>
-        <property name="build.output.tmp-thirdparty" location="${build.output}/tmp-thirdparty"/>
-        <property name="build.output.tmp-thirdparty5" location="${build.output}/tmp-thirdparty5"/>
-        <property name="build.output.tmp-jdic" location="${build.output}/tmp-jdic"/>
-        <property name="build.output.tmp-jdic-linux" location="${build.output}/tmp-jdic-linux"/>
-        <property name="build.output.tmp-jdic-mac" location="${build.output}/tmp-jdic-mac"/>
-        <property name="build.output.tmp-jdic-windows" location="${build.output}/tmp-jdic-windows"/>
-        <property name="build.output.tmp-djproject" location="${build.output}/tmp-djproject"/>
-        <property name="build.output.tmp-jna" location="${build.output}/tmp-jna"/>
-        <property name="build.output.tmp-swt-mac" location="${build.output}/tmp-swt-mac"/>
-        <property name="build.output.tmp-swt-linux" location="${build.output}/tmp-swt-linux"/>
-        <property name="build.output.tmp-swt-linux64" location="${build.output}/tmp-swt-linux64"/>
-        <property name="build.output.tmp-swt-windows" location="${build.output}/tmp-swt-windows"/>
-        <property name="build.output.tmp-swt-windows64" location="${build.output}/tmp-swt-windows64"/>
-        <property name="build.output.webstart" location="${build.output}/webstart"/>
-        <property name="build.output.src" location="${build.output}/src"/>
-        <property name="build.output.javadoc" location="${build.output}/javadoc"/>
-        <property name="build.test.dir" location="${build.output}/test"/>
-        <property name="build.test.dir5" location="${build.output}/test5"/>
+        <property name="build.target" location="build/output"/>
+        <property name="build.target.tmp-linux" location="${build.target}/tmp-linux"/>
+        <property name="build.target.tmp-mac" location="${build.target}/tmp-mac"/>
+        <property name="build.target.tmp-windows" location="${build.target}/tmp-windows"/>
+        <property name="build.target.tmp-thirdparty" location="${build.target}/tmp-thirdparty"/>
+        <property name="build.target.tmp-thirdparty5" location="${build.target}/tmp-thirdparty5"/>
+        <property name="build.target.tmp-jdic" location="${build.target}/tmp-jdic"/>
+        <property name="build.target.tmp-jdic-linux" location="${build.target}/tmp-jdic-linux"/>
+        <property name="build.target.tmp-jdic-mac" location="${build.target}/tmp-jdic-mac"/>
+        <property name="build.target.tmp-jdic-windows" location="${build.target}/tmp-jdic-windows"/>
+        <property name="build.target.tmp-djproject" location="${build.target}/tmp-djproject"/>
+        <property name="build.target.tmp-jna" location="${build.target}/tmp-jna"/>
+        <property name="build.target.tmp-swt-mac" location="${build.target}/tmp-swt-mac"/>
+        <property name="build.target.tmp-swt-linux" location="${build.target}/tmp-swt-linux"/>
+        <property name="build.target.tmp-swt-linux64" location="${build.target}/tmp-swt-linux64"/>
+        <property name="build.target.tmp-swt-windows" location="${build.target}/tmp-swt-windows"/>
+        <property name="build.target.tmp-swt-windows64" location="${build.target}/tmp-swt-windows64"/>
+        <property name="build.target.webstart" location="${build.target}/webstart"/>
+        <property name="build.target.src" location="${build.target}/src"/>
+        <property name="build.target.javadoc" location="${build.target}/javadoc"/>
+        <property name="build.test.dir" location="${build.target}/test"/>
+        <property name="build.test.dir5" location="${build.target}/test5"/>
         <property name="license" location="LICENSE.txt"/>
 
         <property name="catalog.src" location="catalog/src"/>
-        <property name="catalog.src.java" location="${catalog.src}/java"/>
-        <property name="catalog.src.test" location="${catalog.src}/test"/>
-        <property name="catalog.output" location="catalog/output"/>
-        <property name="catalog.output.classes" location="${catalog.output}/classes"/>
-        <property name="catalog.output.testclasses" location="${catalog.output}/testclasses"/>
+        <property name="catalog.src.java" location="${catalog.src}/main/java"/>
+        <property name="catalog.src.test" location="${catalog.src}/test/java"/>
+        <property name="catalog.target" location="catalog/target"/>
+        <property name="catalog.target.classes" location="${catalog.target}/classes"/>
+        <property name="catalog.target.testclasses" location="${catalog.target}/testclasses"/>
 
         <property name="common.src" location="common/src"/>
-        <property name="common.src.java" location="${common.src}/java"/>
-        <property name="common.src.test" location="${common.src}/test"/>
-        <property name="common.resources" location="${common.src}/resources"/>
-        <property name="common.output" location="common/output"/>
-        <property name="common.output.classes" location="${common.output}/classes"/>
-        <property name="common.output.testclasses" location="${common.output}/testclasses"/>
+        <property name="common.src.java" location="${common.src}/main/java"/>
+        <property name="common.src.test" location="${common.src}/test/java"/>
+        <property name="common.resources" location="${common.src}/main/resources"/>
+        <property name="common.target" location="common/target"/>
+        <property name="common.target.classes" location="${common.target}/classes"/>
+        <property name="common.target.testclasses" location="${common.target}/testclasses"/>
 
-        <property name="common-gui.src.java" location="common-gui/src/java"/>
-        <property name="common-gui.output" location="common-gui/output"/>
-        <property name="common-gui.output.classes" location="${common-gui.output}/classes"/>
+        <property name="common-gui.src.java" location="common-gui/src/main/java"/>
+        <property name="common-gui.target" location="common-gui/target"/>
+        <property name="common-gui.target.classes" location="${common-gui.target}/classes"/>
 
         <property name="elevationview.src" location="elevationview/src"/>
-        <property name="elevationview.src.java" location="${elevationview.src}/java"/>
-        <property name="elevationview.output" location="elevationview/output"/>
-        <property name="elevationview.output.classes" location="${elevationview.output}/classes"/>
+        <property name="elevationview.src.java" location="${elevationview.src}/main/java"/>
+        <property name="elevationview.target" location="elevationview/target"/>
+        <property name="elevationview.target.classes" location="${elevationview.target}/classes"/>
 
         <property name="geonames.src" location="geonames/src"/>
-        <property name="geonames.src.java" location="${geonames.src}/java"/>
-        <property name="geonames.src.test" location="${geonames.src}/test"/>
-        <property name="geonames.output" location="geonames/output"/>
-        <property name="geonames.output.classes" location="${geonames.output}/classes"/>
-        <property name="geonames.output.testclasses" location="${geonames.output}/testclasses"/>
+        <property name="geonames.src.java" location="${geonames.src}/main/java"/>
+        <property name="geonames.src.test" location="${geonames.src}/test/java"/>
+        <property name="geonames.target" location="geonames/target"/>
+        <property name="geonames.target.classes" location="${geonames.target}/classes"/>
+        <property name="geonames.target.testclasses" location="${geonames.target}/testclasses"/>
 
         <property name="googlemaps.src" location="googlemaps/src"/>
-        <property name="googlemaps.src.java" location="${googlemaps.src}/java"/>
-        <property name="googlemaps.src.test" location="${googlemaps.src}/test"/>
-        <property name="googlemaps.output" location="googlemaps/output"/>
-        <property name="googlemaps.output.classes" location="${googlemaps.output}/classes"/>
-        <property name="googlemaps.output.testclasses" location="${googlemaps.output}/testclasses"/>
+        <property name="googlemaps.src.java" location="${googlemaps.src}/main/java"/>
+        <property name="googlemaps.src.test" location="${googlemaps.src}/test/java"/>
+        <property name="googlemaps.target" location="googlemaps/target"/>
+        <property name="googlemaps.target.classes" location="${googlemaps.target}/classes"/>
+        <property name="googlemaps.target.testclasses" location="${googlemaps.target}/testclasses"/>
 
         <property name="jaxb6.src" location="jaxb6/src"/>
-        <property name="jaxb6.src.java" location="${jaxb6.src}/java"/>
-        <property name="jaxb6.output" location="jaxb6/output"/>
-        <property name="jaxb6.output.classes" location="${jaxb6.output}/classes"/>
+        <property name="jaxb6.src.java" location="${jaxb6.src}/main/java"/>
+        <property name="jaxb6.target" location="jaxb6/target"/>
+        <property name="jaxb6.target.classes" location="${jaxb6.target}/classes"/>
 
         <property name="jdic-mapview.src" location="jdic-mapview/src"/>
-        <property name="jdic-mapview.src.java" location="${jdic-mapview.src}/java"/>
-        <property name="jdic-mapview.output" location="jdic-mapview/output"/>
-        <property name="jdic-mapview.output.classes" location="${jdic-mapview.output}/classes"/>
+        <property name="jdic-mapview.src.java" location="${jdic-mapview.src}/main/java"/>
+        <property name="jdic-mapview.target" location="jdic-mapview/target"/>
+        <property name="jdic-mapview.target.classes" location="${jdic-mapview.target}/classes"/>
 
         <property name="mapview.src" location="mapview/src"/>
-        <property name="mapview.src.java" location="${mapview.src}/java"/>
-        <property name="mapview.resources" location="${mapview.src}/resources"/>
-        <property name="mapview.output" location="mapview/output"/>
-        <property name="mapview.output.classes" location="${mapview.output}/classes"/>
+        <property name="mapview.src.java" location="${mapview.src}/main/java"/>
+        <property name="mapview.resources" location="${mapview.src}/main/resources"/>
+        <property name="mapview.target" location="mapview/target"/>
+        <property name="mapview.target.classes" location="${mapview.target}/classes"/>
 
         <property name="navigation-formats.src" location="navigation-formats/src"/>
-        <property name="navigation-formats.src.java" location="${navigation-formats.src}/java"/>
-        <property name="navigation-formats.src.test" location="${navigation-formats.src}/test"/>
-        <property name="navigation-formats.output" location="navigation-formats/output"/>
-        <property name="navigation-formats.output.classes" location="${navigation-formats.output}/classes"/>
-        <property name="navigation-formats.output.testclasses" location="${navigation-formats.output}/testclasses"/>
+        <property name="navigation-formats.src.java" location="${navigation-formats.src}/main/java"/>
+        <property name="navigation-formats.src.test" location="${navigation-formats.src}/test/java"/>
+        <property name="navigation-formats.target" location="navigation-formats/target"/>
+        <property name="navigation-formats.target.classes" location="${navigation-formats.target}/classes"/>
+        <property name="navigation-formats.target.testclasses" location="${navigation-formats.target}/testclasses"/>
 
         <property name="rest.src" location="rest/src"/>
-        <property name="rest.src.java" location="${rest.src}/java"/>
-        <property name="rest.output" location="rest/output"/>
-        <property name="rest.output.classes" location="${rest.output}/classes"/>
-        <property name="rest.output.testclasses" location="${rest.output}/testclasses"/>
+        <property name="rest.src.java" location="${rest.src}/main/java"/>
+        <property name="rest.output" location="rest/target"/>
+        <property name="rest.target.classes" location="${rest.output}/classes"/>
+        <property name="rest.target.testclasses" location="${rest.output}/testclasses"/>
 
         <property name="route-converter.src" location="route-converter/src"/>
-        <property name="route-converter.src.java" location="${route-converter.src}/java"/>
-        <property name="route-converter.resources" location="${route-converter.src}/resources"/>
-        <property name="route-converter.output" location="route-converter/output"/>
-        <property name="route-converter.output.classes" location="${route-converter.output}/classes"/>
-        <property name="route-converter6.src.java" location="route-converter6/src/java"/>
-        <property name="route-converter6.output" location="route-converter6/output"/>
-        <property name="route-converter6.output.classes" location="${route-converter6.output}/classes"/>
+        <property name="route-converter.src.java" location="${route-converter.src}/main/java"/>
+        <property name="route-converter.resources" location="${route-converter.src}/main/resources"/>
+        <property name="route-converter.output" location="route-converter/target"/>
+        <property name="route-converter.target.classes" location="${route-converter.output}/classes"/>
+        <property name="route-converter6.src.java" location="route-converter6/src/main/java"/>
+        <property name="route-converter6.output" location="route-converter6/target"/>
+        <property name="route-converter6.target.classes" location="${route-converter6.output}/classes"/>
         <property name="route-converter-cmdline.src" location="route-converter-cmdline/src"/>
-        <property name="route-converter-cmdline.java" location="${route-converter-cmdline.src}/java"/>
-        <property name="route-converter-cmdline.resources" location="${route-converter-cmdline.src}/resources"/>
-        <property name="route-converter-cmdline.output" location="route-converter-cmdline/output"/>
+        <property name="route-converter-cmdline.java" location="${route-converter-cmdline.src}/main/java"/>
+        <property name="route-converter-cmdline.resources" location="${route-converter-cmdline.src}/main/resources"/>
+        <property name="route-converter-cmdline.output" location="route-converter-cmdline/target"/>
 
         <property name="swt-mapview.src" location="swt-mapview/src"/>
-        <property name="swt-mapview.src.java" location="${swt-mapview.src}/java"/>
-        <property name="swt-mapview.output" location="swt-mapview/output"/>
-        <property name="swt-mapview.output.classes" location="${swt-mapview.output}/classes"/>
+        <property name="swt-mapview.src.java" location="${swt-mapview.src}/main/java"/>
+        <property name="swt-mapview.output" location="swt-mapview/target"/>
+        <property name="swt-mapview.target.classes" location="${swt-mapview.output}/classes"/>
 
         <property name="apache.commons-codec.lib" location="thirdparty/apache/commons-codec/lib/commons-codec-1.3-stripped.jar"/>
         <property name="apache.commons-httpclient.lib" location="thirdparty/apache/commons-httpclient/lib/commons-httpclient-3.1-stripped.jar"/>
@@ -168,27 +168,27 @@
         <path id="catalog.classpath">
             <path refid="navigation-formats.classpath"/>
             <path refid="rest.classpath"/>
-            <path location="${catalog.output.classes}"/>
+            <path location="${catalog.target.classes}"/>
         </path>
         <path id="catalog.testclasspath">
             <path refid="catalog.classpath"/>
             <path refid="navigation-formats.testclasspath"/>
-            <path location="${catalog.output.testclasses}"/>
+            <path location="${catalog.target.testclasses}"/>
         </path>
 
         <path id="common.classpath">
-            <path location="${common.output.classes}"/>
+            <path location="${common.target.classes}"/>
         </path>
         <path id="common.testclasspath">
             <path location="${junit.junit.lib}"/>
             <path refid="common.classpath"/>
-            <path location="${common.output.testclasses}"/>
+            <path location="${common.target.testclasses}"/>
         </path>
 
         <path id="common-gui.classpath">
             <path refid="common.classpath"/>
             <path refid="navigation-formats.classpath"/>
-            <path location="${common-gui.output.classes}"/>
+            <path location="${common-gui.target.classes}"/>
         </path>
 
         <path id="elevationview.classpath">
@@ -197,35 +197,35 @@
             <path refid="common-gui.classpath"/>
             <path refid="mapview.classpath"/>
             <path refid="navigation-formats.classpath"/>
-            <path location="${elevationview.output.classes}"/>
+            <path location="${elevationview.target.classes}"/>
         </path>
 
         <path id="geonames.classpath">
             <path refid="common.classpath"/>
             <path refid="jaxb6.classpath"/>
             <path refid="rest.classpath"/>
-            <path location="${geonames.output.classes}"/>
+            <path location="${geonames.target.classes}"/>
         </path>
         <path id="geonames.testclasspath">
             <path location="${junit.junit.lib}"/>
             <path refid="geonames.classpath"/>
-            <path location="${geonames.output.testclasses}"/>
+            <path location="${geonames.target.testclasses}"/>
         </path>
 
         <path id="googlemaps.classpath">
             <path refid="navigation-formats.classpath"/>
             <path refid="rest.classpath"/>
-            <path location="${googlemaps.output.classes}"/>
+            <path location="${googlemaps.target.classes}"/>
         </path>
         <path id="googlemaps.testclasspath">
             <path location="${junit.junit.lib}"/>
             <path refid="googlemaps.classpath"/>
-            <path location="${googlemaps.output.testclasses}"/>
+            <path location="${googlemaps.target.testclasses}"/>
         </path>
 
         <path id="jaxb6.classpath">
             <path location="${sun.jaxb.jdk6.impl.lib}"/>
-            <path location="${jaxb6.output.classes}"/>
+            <path location="${jaxb6.target.classes}"/>
         </path>
 
         <path id="jdic-mapview.classpath">
@@ -233,33 +233,33 @@
             <path location="${sun.jdic.lib}"/>
             <path refid="common.classpath"/>
             <path refid="mapview.classpath"/>
-            <path location="${jdic-mapview.output.classes}"/>
+            <path location="${jdic-mapview.target.classes}"/>
         </path>
 
         <path id="mapview.classpath">
             <path refid="common.classpath"/>
             <path refid="navigation-formats.classpath"/>
-            <path location="${mapview.output.classes}"/>
+            <path location="${mapview.target.classes}"/>
         </path>
 
         <path id="navigation-formats.classpath">
             <path refid="common.classpath"/>
             <path refid="jaxb6.classpath"/>
-            <path location="${navigation-formats.output.classes}"/>
+            <path location="${navigation-formats.target.classes}"/>
         </path>
         <path id="navigation-formats.testclasspath">
             <path refid="navigation-formats.classpath"/>
             <path refid="common.testclasspath"/>
-            <path location="${navigation-formats.output.testclasses}"/>
+            <path location="${navigation-formats.target.testclasses}"/>
         </path>
 
         <path id="rest.classpath">
             <path location="${apache.commons-httpclient.lib}"/>
-            <path location="${rest.output.classes}"/>
+            <path location="${rest.target.classes}"/>
         </path>
         <path id="rest.testclasspath">
             <path refid="rest.classpath"/>
-            <path location="${rest.output.testclasses}"/>
+            <path location="${rest.target.testclasses}"/>
         </path>
 
         <path id="route-converter.classpath">
@@ -274,7 +274,7 @@
             <path refid="mapview.classpath"/>
             <path refid="jdic-mapview.classpath"/>
             <path refid="swt-mapview.classpath"/>
-            <path location="${route-converter.output.classes}"/>
+            <path location="${route-converter.target.classes}"/>
         </path>
 
         <path id="swt-mapview.classpath">
@@ -282,7 +282,7 @@
             <path location="${djproject.nativeswing-swt.lib}"/>
             <path refid="common.classpath"/>
             <path refid="mapview.classpath"/>
-            <path location="${swt-mapview.output.classes}"/>
+            <path location="${swt-mapview.target.classes}"/>
         </path>
 
         <condition property="java5">
@@ -294,56 +294,56 @@
     </target>
 
     <target name="init5" depends="init">
-        <property name="catalog.output.classes5" location="${catalog.output}/classes5"/>
-        <property name="catalog.output.testclasses5" location="${catalog.output}/testclasses5"/>
-        <property name="common.output.classes5" location="${common.output}/classes5"/>
-        <property name="common.output.testclasses5" location="${common.output}/testclasses5"/>
-        <property name="common-gui.output.classes5" location="${common-gui.output}/classes5"/>
-        <property name="elevationview.output.classes5" location="${elevationview.output}/classes5"/>
-        <property name="geonames.output.classes5" location="${geonames.output}/classes5"/>
-        <property name="geonames.output.testclasses5" location="${geonames.output}/testclasses5"/>
-        <property name="googlemaps.output.classes5" location="${googlemaps.output}/classes5"/>
-        <property name="googlemaps.output.testclasses5" location="${googlemaps.output}/testclasses5"/>
-        <property name="jaxb5.src.java" location="jaxb5/src/java"/>
-        <property name="jaxb5.output" location="jaxb5/output"/>
-        <property name="jaxb5.output.classes5" location="${jaxb5.output}/classes5"/>
-        <property name="jdic-mapview.output.classes5" location="${jdic-mapview.output}/classes5"/>
-        <property name="mapview.output.classes5" location="${mapview.output}/classes5"/>
-        <property name="navigation-formats.output.classes5" location="${navigation-formats.output}/classes5"/>
-        <property name="navigation-formats.output.testclasses5" location="${navigation-formats.output}/testclasses5"/>
-        <property name="rest.output.classes5" location="${rest.output}/classes5"/>
-        <property name="rest.output.testclasses5" location="${rest.output}/testclasses5"/>
-        <property name="route-converter.output.classes5" location="${route-converter.output}/classes5"/>
-        <property name="route-converter5.src.java" location="route-converter5/src/java"/>
-        <property name="route-converter5.output" location="route-converter5/output"/>
-        <property name="route-converter5.output.classes5" location="${route-converter5.output}/classes5"/>
-        <property name="route-converter-cmdline.output.classes5" location="${route-converter-cmdline.output}/classes5"/>
-        <property name="swt-mapview.output.classes5" location="${swt-mapview.output}/classes5"/>
+        <property name="catalog.target.classes5" location="${catalog.target}/classes5"/>
+        <property name="catalog.target.testclasses5" location="${catalog.target}/testclasses5"/>
+        <property name="common.target.classes5" location="${common.target}/classes5"/>
+        <property name="common.target.testclasses5" location="${common.target}/testclasses5"/>
+        <property name="common-gui.target.classes5" location="${common-gui.target}/classes5"/>
+        <property name="elevationview.target.classes5" location="${elevationview.target}/classes5"/>
+        <property name="geonames.target.classes5" location="${geonames.target}/classes5"/>
+        <property name="geonames.target.testclasses5" location="${geonames.target}/testclasses5"/>
+        <property name="googlemaps.target.classes5" location="${googlemaps.target}/classes5"/>
+        <property name="googlemaps.target.testclasses5" location="${googlemaps.target}/testclasses5"/>
+        <property name="jaxb5.src.java" location="jaxb5/src/main/java"/>
+        <property name="jaxb5.output" location="jaxb5/target"/>
+        <property name="jaxb5.target.classes5" location="${jaxb5.output}/classes5"/>
+        <property name="jdic-mapview.target.classes5" location="${jdic-mapview.target}/classes5"/>
+        <property name="mapview.target.classes5" location="${mapview.target}/classes5"/>
+        <property name="navigation-formats.target.classes5" location="${navigation-formats.target}/classes5"/>
+        <property name="navigation-formats.target.testclasses5" location="${navigation-formats.target}/testclasses5"/>
+        <property name="rest.target.classes5" location="${rest.output}/classes5"/>
+        <property name="rest.target.testclasses5" location="${rest.output}/testclasses5"/>
+        <property name="route-converter.target.classes5" location="${route-converter.output}/classes5"/>
+        <property name="route-converter5.src.java" location="route-converter5/src/main/java"/>
+        <property name="route-converter5.output" location="route-converter5/target"/>
+        <property name="route-converter5.target.classes5" location="${route-converter5.output}/classes5"/>
+        <property name="route-converter-cmdline.target.classes5" location="${route-converter-cmdline.output}/classes5"/>
+        <property name="swt-mapview.target.classes5" location="${swt-mapview.output}/classes5"/>
 
         <path id="catalog.classpath5">
             <path refid="navigation-formats.classpath5"/>
             <path refid="rest.classpath5"/>
-            <path location="${catalog.output.classes5}"/>
+            <path location="${catalog.target.classes5}"/>
         </path>
         <path id="catalog.testclasspath5">
             <path refid="catalog.classpath5"/>
             <path refid="navigation-formats.testclasspath5"/>
-            <path location="${catalog.output.testclasses5}"/>
+            <path location="${catalog.target.testclasses5}"/>
         </path>
 
         <path id="common.classpath5">
-            <path location="${common.output.classes5}"/>
+            <path location="${common.target.classes5}"/>
         </path>
         <path id="common.testclasspath5">
             <path location="${junit.junit.lib}"/>
             <path refid="common.classpath5"/>
-            <path location="${common.output.testclasses5}"/>
+            <path location="${common.target.testclasses5}"/>
         </path>
 
         <path id="common-gui.classpath5">
             <path refid="common.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
-            <path location="${common-gui.output.classes5}"/>
+            <path location="${common-gui.target.classes5}"/>
         </path>
 
         <path id="elevationview.classpath5">
@@ -352,37 +352,37 @@
             <path refid="common-gui.classpath5"/>
             <path refid="mapview.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
-            <path location="${elevationview.output.classes5}"/>
+            <path location="${elevationview.target.classes5}"/>
         </path>
 
         <path id="geonames.classpath5">
             <path refid="common.classpath5"/>
             <path refid="jaxb5.classpath"/>
             <path refid="rest.classpath5"/>
-            <path location="${geonames.output.classes5}"/>
+            <path location="${geonames.target.classes5}"/>
         </path>
         <path id="geonames.testclasspath5">
             <path location="${junit.junit.lib}"/>
             <path refid="geonames.classpath5"/>
-            <path location="${geonames.output.testclasses5}"/>
+            <path location="${geonames.target.testclasses5}"/>
         </path>
 
         <path id="googlemaps.classpath5">
             <path refid="navigation-formats.classpath5"/>
             <path refid="rest.classpath5"/>
-            <path location="${googlemaps.output.classes5}"/>
+            <path location="${googlemaps.target.classes5}"/>
         </path>
         <path id="googlemaps.testclasspath5">
             <path location="${junit.junit.lib}"/>
             <path refid="googlemaps.classpath5"/>
-            <path location="${googlemaps.output.testclasses5}"/>
+            <path location="${googlemaps.target.testclasses5}"/>
         </path>
 
         <path id="jaxb5.classpath">
             <path location="${sun.jaxb.api.lib}"/>
             <path location="${sun.jaxb.impl.lib}"/>
             <path location="${sun.jsr173.api.lib}"/>
-            <path location="${jaxb5.output.classes5}"/>
+            <path location="${jaxb5.target.classes5}"/>
         </path>
 
         <path id="jdic-mapview.classpath5">
@@ -390,34 +390,34 @@
             <path location="${sun.jdic.lib}"/>
             <path refid="common.classpath5"/>
             <path refid="mapview.classpath5"/>
-            <path location="${jdic-mapview.output.classes5}"/>
+            <path location="${jdic-mapview.target.classes5}"/>
         </path>
 
         <path id="mapview.classpath5">
             <path refid="common.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
-            <path location="${mapview.output.classes5}"/>
+            <path location="${mapview.target.classes5}"/>
         </path>
 
         <path id="navigation-formats.classpath5">
             <path refid="common.classpath5"/>
             <path refid="jaxb5.classpath"/>
-            <path location="${navigation-formats.output.classes5}"/>
+            <path location="${navigation-formats.target.classes5}"/>
         </path>
         <path id="navigation-formats.testclasspath5">
             <path location="${sun.activation.lib}"/>
             <path location="${sun.jsr173.impl.lib}"/>
             <path refid="navigation-formats.classpath5"/>
             <path refid="common.testclasspath5"/>
-            <path location="${navigation-formats.output.testclasses5}"/>
+            <path location="${navigation-formats.target.testclasses5}"/>
         </path>
 
         <path id="rest.classpath5">
             <path location="${apache.commons-httpclient.lib}"/>
-            <path location="${rest.output.classes5}"/>
+            <path location="${rest.target.classes5}"/>
         </path>
         <path id="rest.testclasspath5">
-            <path location="${rest.output.testclasses5}"/>
+            <path location="${rest.target.testclasses5}"/>
         </path>
 
         <path id="route-converter.classpath5">
@@ -432,13 +432,13 @@
             <path refid="mapview.classpath5"/>
             <path refid="jdic-mapview.classpath5"/>
             <path refid="swt-mapview.classpath5"/>
-            <path location="${route-converter.output.classes5}"/>
+            <path location="${route-converter.target.classes5}"/>
         </path>
 
         <path id="route-converter-cmdline.classpath5">
             <path refid="common.classpath5"/>
             <path refid="navigation-formats.classpath5"/>
-            <path location="${route-converter-cmdline.output.classes5}"/>
+            <path location="${route-converter-cmdline.target.classes5}"/>
         </path>
 
         <path id="swt-mapview.classpath5">
@@ -446,48 +446,48 @@
             <path location="${djproject.nativeswing-swt.lib}"/>
             <path refid="common.classpath5"/>
             <path refid="mapview.classpath5"/>
-            <path location="${swt-mapview.output.classes5}"/>
+            <path location="${swt-mapview.target.classes5}"/>
         </path>
     </target>
 
     <target name="copy-native" depends="init">
-        <mkdir dir="${build.output.tmp-linux}/bin"/>
-        <copy todir="${build.output.tmp-linux}/bin">
+        <mkdir dir="${build.target.tmp-linux}/bin"/>
+        <copy todir="${build.target.tmp-linux}/bin">
             <fileset dir="${gpsbabel.bin}">
                 <include name="linux/**"/>
             </fileset>
         </copy>
 
-        <mkdir dir="${build.output.tmp-mac}/bin"/>
-        <copy todir="${build.output.tmp-mac}/bin">
+        <mkdir dir="${build.target.tmp-mac}/bin"/>
+        <copy todir="${build.target.tmp-mac}/bin">
             <fileset dir="${gpsbabel.bin}">
                 <include name="mac_os_x/**"/>
             </fileset>
         </copy>
 
-        <mkdir dir="${build.output.tmp-windows}/bin"/>
-        <copy todir="${build.output.tmp-windows}/bin">
+        <mkdir dir="${build.target.tmp-windows}/bin"/>
+        <copy todir="${build.target.tmp-windows}/bin">
             <fileset dir="${gpsbabel.bin}">
                 <include name="windows/**"/>
             </fileset>
         </copy>
 
-        <mkdir dir="${build.output.tmp-jdic-linux}/bin"/>
-        <copy todir="${build.output.tmp-jdic-linux}/bin">
+        <mkdir dir="${build.target.tmp-jdic-linux}/bin"/>
+        <copy todir="${build.target.tmp-jdic-linux}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="linux/**"/>
             </fileset>
         </copy>
 
-        <mkdir dir="${build.output.tmp-jdic-mac}/bin"/>
-        <copy todir="${build.output.tmp-jdic-mac}/bin">
+        <mkdir dir="${build.target.tmp-jdic-mac}/bin"/>
+        <copy todir="${build.target.tmp-jdic-mac}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="mac_os_x/**"/>
             </fileset>
         </copy>
 
-        <mkdir dir="${build.output.tmp-jdic-windows}/bin"/>
-        <copy todir="${build.output.tmp-jdic-windows}/bin">
+        <mkdir dir="${build.target.tmp-jdic-windows}/bin"/>
+        <copy todir="${build.target.tmp-jdic-windows}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>
@@ -495,33 +495,33 @@
     </target>
 
     <target name="unjar-jars" depends="init">
-        <mkdir dir="${build.output.tmp-thirdparty}"/>
-        <unjar src="${apache.commons-codec.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+        <mkdir dir="${build.target.tmp-thirdparty}"/>
+        <unjar src="${apache.commons-codec.lib}" dest="${build.target.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${apache.commons-httpclient.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+        <unjar src="${apache.commons-httpclient.lib}" dest="${build.target.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${apache.commons-logging.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+        <unjar src="${apache.commons-logging.lib}" dest="${build.target.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${intellij.forms.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+        <unjar src="${intellij.forms.lib}" dest="${build.target.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${jcommon.jcommon.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+        <unjar src="${jcommon.jcommon.lib}" dest="${build.target.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${jfreechart.jfreechart.lib}" dest="${build.output.tmp-thirdparty}" overwrite="false">
+        <unjar src="${jfreechart.jfreechart.lib}" dest="${build.target.tmp-thirdparty}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/LocalizationBundle.properties"/>
@@ -531,24 +531,15 @@
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-jdic}"/>
-        <unjar src="${sun.jdic.lib}" dest="${build.output.tmp-jdic}" overwrite="false">
+        <mkdir dir="${build.target.tmp-jdic}"/>
+        <unjar src="${sun.jdic.lib}" dest="${build.target.tmp-jdic}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-swt-linux}"/>
-        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.output.tmp-swt-linux}" overwrite="false">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.properties"/>
-                <include name="**/*.so"/>
-            </patternset>
-        </unjar>
-
-        <mkdir dir="${build.output.tmp-swt-linux64}"/>
-        <unjar src="${eclipse.swt.linux.x86_64.lib}" dest="${build.output.tmp-swt-linux64}" overwrite="false">
+        <mkdir dir="${build.target.tmp-swt-linux}"/>
+        <unjar src="${eclipse.swt.linux.x86.lib}" dest="${build.target.tmp-swt-linux}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.properties"/>
@@ -556,37 +547,46 @@
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-swt-mac}"/>
-        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.output.tmp-swt-mac}" overwrite="false">
+        <mkdir dir="${build.target.tmp-swt-linux64}"/>
+        <unjar src="${eclipse.swt.linux.x86_64.lib}" dest="${build.target.tmp-swt-linux64}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.properties"/>
+                <include name="**/*.so"/>
+            </patternset>
+        </unjar>
+
+        <mkdir dir="${build.target.tmp-swt-mac}"/>
+        <unjar src="${eclipse.swt.mac.x86.lib}" dest="${build.target.tmp-swt-mac}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.jnilib"/>
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-swt-windows}"/>
-        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.output.tmp-swt-windows}" overwrite="false">
+        <mkdir dir="${build.target.tmp-swt-windows}"/>
+        <unjar src="${eclipse.swt.win32.x86.lib}" dest="${build.target.tmp-swt-windows}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.dll"/>
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-swt-windows64}"/>
-        <unjar src="${eclipse.swt.win32.x86_64.lib}" dest="${build.output.tmp-swt-windows64}" overwrite="false">
+        <mkdir dir="${build.target.tmp-swt-windows64}"/>
+        <unjar src="${eclipse.swt.win32.x86_64.lib}" dest="${build.target.tmp-swt-windows64}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.dll"/>
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-djproject}"/>
-        <unjar src="${djproject.nativeswing.lib}" dest="${build.output.tmp-djproject}" overwrite="false">
+        <mkdir dir="${build.target.tmp-djproject}"/>
+        <unjar src="${djproject.nativeswing.lib}" dest="${build.target.tmp-djproject}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.output.tmp-djproject}" overwrite="false">
+        <unjar src="${djproject.nativeswing-swt.lib}" dest="${build.target.tmp-djproject}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.gif"/>
@@ -596,37 +596,37 @@
     </target>
 
     <target name="unjar-jars5" depends="init">
-        <mkdir dir="${build.output.tmp-thirdparty5}"/>
-        <unjar src="${sun.activation.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
+        <mkdir dir="${build.target.tmp-thirdparty5}"/>
+        <unjar src="${sun.activation.lib}" dest="${build.target.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${sun.jaxb.api.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
-            <patternset>
-                <include name="**/*.class"/>
-                <include name="**/*.properties"/>
-            </patternset>
-        </unjar>
-        <unjar src="${sun.jaxb.impl.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
+        <unjar src="${sun.jaxb.api.lib}" dest="${build.target.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.properties"/>
             </patternset>
         </unjar>
-        <unjar src="${sun.jsr173.api.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
+        <unjar src="${sun.jaxb.impl.lib}" dest="${build.target.tmp-thirdparty5}" overwrite="false">
+            <patternset>
+                <include name="**/*.class"/>
+                <include name="**/*.properties"/>
+            </patternset>
+        </unjar>
+        <unjar src="${sun.jsr173.api.lib}" dest="${build.target.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
-        <unjar src="${sun.jsr173.impl.lib}" dest="${build.output.tmp-thirdparty5}" overwrite="false">
+        <unjar src="${sun.jsr173.impl.lib}" dest="${build.target.tmp-thirdparty5}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
             </patternset>
         </unjar>
 
-        <mkdir dir="${build.output.tmp-jna}"/>
-        <unjar src="${sun.jna.lib}" dest="${build.output.tmp-jna}" overwrite="false">
+        <mkdir dir="${build.target.tmp-jna}"/>
+        <unjar src="${sun.jna.lib}" dest="${build.target.tmp-jna}" overwrite="false">
             <patternset>
                 <include name="**/*.class"/>
                 <include name="**/*.so"/>
@@ -637,14 +637,14 @@
     <target name="idea" depends="idea6,idea5"/>
 
     <target name="idea6" depends="init">
-        <mkdir dir="${navigation-formats.output.classes}/bin"/>
-        <copy todir="${navigation-formats.output.classes}/bin">
+        <mkdir dir="${navigation-formats.target.classes}/bin"/>
+        <copy todir="${navigation-formats.target.classes}/bin">
             <fileset dir="${gpsbabel.bin}">
                 <include name="windows/**"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-mapview.output.classes}/bin"/>
-        <copy todir="${jdic-mapview.output.classes}/bin">
+        <mkdir dir="${jdic-mapview.target.classes}/bin"/>
+        <copy todir="${jdic-mapview.target.classes}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>
@@ -652,14 +652,14 @@
     </target>
 
     <target name="idea5" depends="init5">
-        <mkdir dir="${navigation-formats.output.classes5}/bin"/>
-        <copy todir="${navigation-formats.output.classes5}/bin">
+        <mkdir dir="${navigation-formats.target.classes5}/bin"/>
+        <copy todir="${navigation-formats.target.classes5}/bin">
             <fileset dir="${gpsbabel.bin}">
                 <include name="windows/**"/>
             </fileset>
         </copy>
-        <mkdir dir="${jdic-mapview.output.classes5}/bin"/>
-        <copy todir="${jdic-mapview.output.classes5}/bin">
+        <mkdir dir="${jdic-mapview.target.classes5}/bin"/>
+        <copy todir="${jdic-mapview.target.classes5}/bin">
             <fileset dir="${sun.jdic.bin}">
                 <include name="windows/**"/>
             </fileset>
@@ -667,20 +667,20 @@
     </target>
 
     <target name="copy-resources" depends="init,copy-native,unjar-jars">
-        <mkdir dir="${common.output.classes}"/>
-        <copy todir="${common.output.classes}">
+        <mkdir dir="${common.target.classes}"/>
+        <copy todir="${common.target.classes}">
             <fileset dir="${common.resources}">
                 <include name="**/*.properties"/>
             </fileset>
         </copy>
-        <mkdir dir="${mapview.output.classes}"/>
-        <copy todir="${mapview.output.classes}">
+        <mkdir dir="${mapview.target.classes}"/>
+        <copy todir="${mapview.target.classes}">
             <fileset dir="${mapview.resources}">
                 <include name="**/*.html"/>
             </fileset>
         </copy>
-        <mkdir dir="${route-converter.output.classes}"/>
-        <copy todir="${route-converter.output.classes}">
+        <mkdir dir="${route-converter.target.classes}"/>
+        <copy todir="${route-converter.target.classes}">
             <fileset dir="${route-converter.resources}">
                 <include name="**/*.png"/>
                 <include name="**/*.properties"/>
@@ -689,27 +689,27 @@
     </target>
 
     <target name="copy-resources5" depends="init5,copy-native,unjar-jars,unjar-jars5">
-        <mkdir dir="${common.output.classes5}"/>
-        <copy todir="${common.output.classes5}">
+        <mkdir dir="${common.target.classes5}"/>
+        <copy todir="${common.target.classes5}">
             <fileset dir="${common.resources}">
                 <include name="**/*.properties"/>
             </fileset>
         </copy>
-        <mkdir dir="${mapview.output.classes5}"/>
-        <copy todir="${mapview.output.classes5}">
+        <mkdir dir="${mapview.target.classes5}"/>
+        <copy todir="${mapview.target.classes5}">
             <fileset dir="${mapview.resources}">
                 <include name="**/*.html"/>
             </fileset>
         </copy>
-        <mkdir dir="${route-converter.output.classes5}"/>
-        <copy todir="${route-converter.output.classes5}">
+        <mkdir dir="${route-converter.target.classes5}"/>
+        <copy todir="${route-converter.target.classes5}">
             <fileset dir="${route-converter.resources}">
                 <include name="**/*.png"/>
                 <include name="**/*.properties"/>
             </fileset>
         </copy>
-        <mkdir dir="${route-converter-cmdline.output.classes5}"/>
-        <copy todir="${route-converter-cmdline.output.classes5}">
+        <mkdir dir="${route-converter-cmdline.target.classes5}"/>
+        <copy todir="${route-converter-cmdline.target.classes5}">
             <fileset dir="${route-converter-cmdline.resources}">
                 <include name="**/*.properties"/>
             </fileset>
@@ -726,118 +726,118 @@
             </condition>
         </fail>
 
-        <mkdir dir="${common.output.classes}"/>
-        <javac destdir="${common.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${common.target.classes}"/>
+        <javac destdir="${common.target.classes}" debug="${javac.debug}">
             <src location="${common.src.java}"/>
             <classpath refid="common.classpath"/>
         </javac>
 
-        <mkdir dir="${jaxb6.output.classes}"/>
-        <javac destdir="${jaxb6.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${jaxb6.target.classes}"/>
+        <javac destdir="${jaxb6.target.classes}" debug="${javac.debug}">
             <src location="${jaxb6.src.java}"/>
             <classpath refid="jaxb6.classpath"/>
         </javac>
 
-        <mkdir dir="${navigation-formats.output.classes}"/>
-        <javac destdir="${navigation-formats.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${navigation-formats.target.classes}"/>
+        <javac destdir="${navigation-formats.target.classes}" debug="${javac.debug}">
             <src location="${navigation-formats.src.java}"/>
             <classpath refid="navigation-formats.classpath"/>
         </javac>
 
-        <mkdir dir="${mapview.output.classes}"/>
-        <javac destdir="${mapview.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${mapview.target.classes}"/>
+        <javac destdir="${mapview.target.classes}" debug="${javac.debug}">
             <src location="${mapview.src.java}"/>
             <classpath refid="mapview.classpath"/>
         </javac>
 
-        <mkdir dir="${jdic-mapview.output.classes}"/>
-        <javac destdir="${jdic-mapview.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${jdic-mapview.target.classes}"/>
+        <javac destdir="${jdic-mapview.target.classes}" debug="${javac.debug}">
             <src location="${jdic-mapview.src.java}"/>
             <classpath refid="jdic-mapview.classpath"/>
         </javac>
 
-        <mkdir dir="${swt-mapview.output.classes}"/>
-        <javac destdir="${swt-mapview.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${swt-mapview.target.classes}"/>
+        <javac destdir="${swt-mapview.target.classes}" debug="${javac.debug}">
             <src location="${swt-mapview.src.java}"/>
             <classpath refid="swt-mapview.classpath"/>
         </javac>
 
-        <mkdir dir="${rest.output.classes}"/>
-        <javac destdir="${rest.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${rest.target.classes}"/>
+        <javac destdir="${rest.target.classes}" debug="${javac.debug}">
             <src location="${rest.src.java}"/>
             <classpath refid="rest.classpath"/>
         </javac>
 
-        <mkdir dir="${catalog.output.classes}"/>
-        <javac destdir="${catalog.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${catalog.target.classes}"/>
+        <javac destdir="${catalog.target.classes}" debug="${javac.debug}">
             <src location="${catalog.src.java}"/>
             <classpath refid="catalog.classpath"/>
         </javac>
 
-        <mkdir dir="${geonames.output.classes}"/>
-        <javac destdir="${geonames.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${geonames.target.classes}"/>
+        <javac destdir="${geonames.target.classes}" debug="${javac.debug}">
             <src location="${geonames.src.java}"/>
             <classpath refid="geonames.classpath"/>
         </javac>
 
-        <mkdir dir="${googlemaps.output.classes}"/>
-        <javac destdir="${googlemaps.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${googlemaps.target.classes}"/>
+        <javac destdir="${googlemaps.target.classes}" debug="${javac.debug}">
             <src location="${googlemaps.src.java}"/>
             <classpath refid="googlemaps.classpath"/>
         </javac>
 
-        <mkdir dir="${common-gui.output.classes}"/>
-        <javac destdir="${common-gui.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${common-gui.target.classes}"/>
+        <javac destdir="${common-gui.target.classes}" debug="${javac.debug}">
             <src location="${common-gui.src.java}"/>
             <classpath refid="common-gui.classpath"/>
         </javac>
 
-        <mkdir dir="${elevationview.output.classes}"/>
-        <javac destdir="${elevationview.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${elevationview.target.classes}"/>
+        <javac destdir="${elevationview.target.classes}" debug="${javac.debug}">
             <src location="${elevationview.src.java}"/>
             <classpath refid="elevationview.classpath"/>
         </javac>
 
-        <mkdir dir="${route-converter.output.classes}"/>
-        <javac destdir="${route-converter.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${route-converter.target.classes}"/>
+        <javac destdir="${route-converter.target.classes}" debug="${javac.debug}">
             <src location="${route-converter.src.java}"/>
             <classpath refid="route-converter.classpath"/>
         </javac>
 
-        <mkdir dir="${route-converter6.output.classes}"/>
-        <javac destdir="${route-converter6.output.classes}" debug="${javac.debug}">
+        <mkdir dir="${route-converter6.target.classes}"/>
+        <javac destdir="${route-converter6.target.classes}" debug="${javac.debug}">
             <src location="${route-converter6.src.java}"/>
             <classpath refid="route-converter.classpath"/>
         </javac>
     </target>
 
     <target name="compile-test" depends="compile">
-        <mkdir dir="${common.output.testclasses}"/>
-        <javac destdir="${common.output.testclasses}" debug="${javac.debug}">
+        <mkdir dir="${common.target.testclasses}"/>
+        <javac destdir="${common.target.testclasses}" debug="${javac.debug}">
             <src location="${common.src.test}"/>
             <classpath refid="common.testclasspath"/>
         </javac>
 
-        <mkdir dir="${navigation-formats.output.testclasses}"/>
-        <javac destdir="${navigation-formats.output.testclasses}" debug="${javac.debug}">
+        <mkdir dir="${navigation-formats.target.testclasses}"/>
+        <javac destdir="${navigation-formats.target.testclasses}" debug="${javac.debug}">
             <src location="${navigation-formats.src.test}"/>
             <classpath refid="navigation-formats.testclasspath"/>
         </javac>
 
-        <mkdir dir="${catalog.output.testclasses}"/>
-        <javac destdir="${catalog.output.testclasses}" debug="${javac.debug}">
+        <mkdir dir="${catalog.target.testclasses}"/>
+        <javac destdir="${catalog.target.testclasses}" debug="${javac.debug}">
             <src location="${catalog.src.test}"/>
             <classpath refid="catalog.testclasspath"/>
         </javac>
 
-       <mkdir dir="${geonames.output.testclasses}"/>
-        <javac destdir="${geonames.output.testclasses}" debug="${javac.debug}">
+       <mkdir dir="${geonames.target.testclasses}"/>
+        <javac destdir="${geonames.target.testclasses}" debug="${javac.debug}">
             <src location="${geonames.src.test}"/>
             <classpath refid="geonames.testclasspath"/>
         </javac>
 
-         <mkdir dir="${googlemaps.output.testclasses}"/>
-        <javac destdir="${googlemaps.output.testclasses}" debug="${javac.debug}">
+         <mkdir dir="${googlemaps.target.testclasses}"/>
+        <javac destdir="${googlemaps.target.testclasses}" debug="${javac.debug}">
             <src location="${googlemaps.src.test}"/>
             <classpath refid="googlemaps.testclasspath"/>
         </javac>
@@ -857,124 +857,124 @@
             </condition>
         </fail>
 
-        <mkdir dir="${common.output.classes5}"/>
-        <javac destdir="${common.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${common.target.classes5}"/>
+        <javac destdir="${common.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${common.src.java}"/>
             <classpath refid="common.classpath5"/>
         </javac>
 
-        <mkdir dir="${jaxb5.output.classes5}"/>
-        <javac destdir="${jaxb5.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${jaxb5.target.classes5}"/>
+        <javac destdir="${jaxb5.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${jaxb5.src.java}"/>
             <classpath refid="jaxb5.classpath"/>
         </javac>
 
-        <mkdir dir="${navigation-formats.output.classes5}"/>
-        <javac destdir="${navigation-formats.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${navigation-formats.target.classes5}"/>
+        <javac destdir="${navigation-formats.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${navigation-formats.src.java}"/>
             <classpath refid="navigation-formats.classpath5"/>
         </javac>
 
-        <mkdir dir="${mapview.output.classes5}"/>
-        <javac destdir="${mapview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${mapview.target.classes5}"/>
+        <javac destdir="${mapview.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${mapview.src.java}"/>
             <classpath refid="mapview.classpath5"/>
         </javac>
 
-        <mkdir dir="${jdic-mapview.output.classes5}"/>
-        <javac destdir="${jdic-mapview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${jdic-mapview.target.classes5}"/>
+        <javac destdir="${jdic-mapview.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${jdic-mapview.src.java}"/>
             <classpath refid="jdic-mapview.classpath5"/>
         </javac>
 
-        <mkdir dir="${swt-mapview.output.classes5}"/>
-        <javac destdir="${swt-mapview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${swt-mapview.target.classes5}"/>
+        <javac destdir="${swt-mapview.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${swt-mapview.src.java}"/>
             <classpath refid="swt-mapview.classpath5"/>
         </javac>
 
-        <mkdir dir="${rest.output.classes5}"/>
-        <javac destdir="${rest.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${rest.target.classes5}"/>
+        <javac destdir="${rest.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${rest.src.java}"/>
             <classpath refid="rest.classpath5"/>
         </javac>
 
-        <mkdir dir="${catalog.output.classes5}"/>
-        <javac destdir="${catalog.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${catalog.target.classes5}"/>
+        <javac destdir="${catalog.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${catalog.src.java}"/>
             <classpath refid="catalog.classpath5"/>
         </javac>
 
-        <mkdir dir="${geonames.output.classes5}"/>
-        <javac destdir="${geonames.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${geonames.target.classes5}"/>
+        <javac destdir="${geonames.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${geonames.src.java}"/>
             <classpath refid="geonames.classpath5"/>
         </javac>
 
-        <mkdir dir="${googlemaps.output.classes5}"/>
-        <javac destdir="${googlemaps.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${googlemaps.target.classes5}"/>
+        <javac destdir="${googlemaps.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${googlemaps.src.java}"/>
             <classpath refid="googlemaps.classpath5"/>
         </javac>
 
-        <mkdir dir="${common-gui.output.classes5}"/>
-        <javac destdir="${common-gui.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${common-gui.target.classes5}"/>
+        <javac destdir="${common-gui.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${common-gui.src.java}"/>
             <classpath refid="common-gui.classpath5"/>
         </javac>
 
-        <mkdir dir="${elevationview.output.classes5}"/>
-        <javac destdir="${elevationview.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${elevationview.target.classes5}"/>
+        <javac destdir="${elevationview.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${elevationview.src.java}"/>
             <classpath refid="elevationview.classpath5"/>
         </javac>
 
-        <mkdir dir="${route-converter.output.classes5}"/>
-        <javac destdir="${route-converter.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${route-converter.target.classes5}"/>
+        <javac destdir="${route-converter.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${route-converter.src.java}"/>
             <classpath refid="route-converter.classpath5"/>
         </javac>
 
-        <mkdir dir="${route-converter5.output.classes5}"/>
-        <javac destdir="${route-converter5.output.classes5}" debug="${javac.debug}">
+        <mkdir dir="${route-converter5.target.classes5}"/>
+        <javac destdir="${route-converter5.target.classes5}" debug="${javac.debug}">
             <src location="${route-converter5.src.java}"/>
             <classpath refid="route-converter.classpath5"/>
         </javac>
 
-        <mkdir dir="${route-converter-cmdline.output.classes5}"/>
-        <javac destdir="${route-converter-cmdline.output.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${route-converter-cmdline.target.classes5}"/>
+        <javac destdir="${route-converter-cmdline.target.classes5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${route-converter-cmdline.java}"/>
             <classpath refid="route-converter-cmdline.classpath5"/>
         </javac>
     </target>
 
     <target name="compile-test5" depends="compile5">
-        <mkdir dir="${common.output.testclasses5}"/>
-        <javac destdir="${common.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${common.target.testclasses5}"/>
+        <javac destdir="${common.target.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${common.src.test}"/>
             <classpath refid="common.testclasspath5"/>
         </javac>
 
-        <mkdir dir="${navigation-formats.output.testclasses5}"/>
-        <javac destdir="${navigation-formats.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${navigation-formats.target.testclasses5}"/>
+        <javac destdir="${navigation-formats.target.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${navigation-formats.src.test}"/>
             <classpath refid="navigation-formats.testclasspath5"/>
         </javac>
 
-        <mkdir dir="${catalog.output.testclasses5}"/>
-        <javac destdir="${catalog.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${catalog.target.testclasses5}"/>
+        <javac destdir="${catalog.target.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${catalog.src.test}"/>
             <classpath refid="catalog.testclasspath5"/>
         </javac>
 
-        <mkdir dir="${geonames.output.testclasses5}"/>
-        <javac destdir="${geonames.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${geonames.target.testclasses5}"/>
+        <javac destdir="${geonames.target.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${geonames.src.test}"/>
             <classpath refid="geonames.testclasspath5"/>
         </javac>
 
-        <mkdir dir="${googlemaps.output.testclasses5}"/>
-        <javac destdir="${googlemaps.output.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
+        <mkdir dir="${googlemaps.target.testclasses5}"/>
+        <javac destdir="${googlemaps.target.testclasses5}" source="1.5" target="1.5" debug="${javac.debug}">
             <src location="${googlemaps.src.test}"/>
             <classpath refid="googlemaps.testclasspath5"/>
         </javac>
@@ -1099,11 +1099,11 @@
     </target>
 
     <target name="javadoc" depends="init">
-        <delete dir="${build.output.javadoc}"/>
-        <mkdir dir="${build.output.javadoc}"/>
+        <delete dir="${build.target.javadoc}"/>
+        <mkdir dir="${build.target.javadoc}"/>
 
         <property name="javadoc.title" value="RouteConverter ${build.version} API"/>
-        <javadoc destdir="${build.output.javadoc}" use="true" useexternalfile="true" 
+        <javadoc destdir="${build.target.javadoc}" use="true" useexternalfile="true" 
                  windowtitle="${javadoc.title}" classpathref="navigation-formats.classpath">
             <doctitle>${javadoc.title}</doctitle>
             <bottom>Created by Christian Pesch</bottom>
@@ -1132,16 +1132,16 @@
             <link href="http://jakarta.apache.org/commons/logging/apidocs/"/>
         </javadoc>
 
-        <copy todir="${build.output.javadoc}">
+        <copy todir="${build.target.javadoc}">
             <fileset file="${license}"/>
         </copy>
     </target>
 
     <target name="source" depends="init">
-        <delete dir="${build.output.src}"/>
-        <mkdir dir="${build.output.src}"/>
+        <delete dir="${build.target.src}"/>
+        <mkdir dir="${build.target.src}"/>
 
-        <copy todir="${build.output.src}">
+        <copy todir="${build.target.src}">
             <fileset dir="${catalog.src.java}"/>
             <fileset dir="${common.src.java}"/>
             <fileset dir="${common-gui.src.java}"/>
@@ -1161,7 +1161,7 @@
     </target>
 
     <target name="prepare-jar">
-        <mkdir dir="${build.output}"/>
+        <mkdir dir="${build.target}"/>
         <buildnumber file="build/build.number"/>
         <tstamp>
             <format property="today" pattern="dd-MM-yyyy HH:mm:ss"/>
@@ -1169,7 +1169,7 @@
     </target>
 
     <target name="prepare-tmp">
-        <mkdir dir="${build.output}"/>
+        <mkdir dir="${build.target}"/>
         <buildnumber file="build/build.number"/>
         <tstamp>
             <format property="today" pattern="dd-MM-yyyy HH:mm:ss"/>
@@ -1178,31 +1178,31 @@
 
     <!-- Jars all classes and resources -->
     <target name="jar" depends="init,compile,prepare-jar">
-        <jar destfile="${build.output}/RouteConverterJDIC.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-windows}"/>
-            <fileset dir="${build.output.tmp-jdic}"/>
-            <fileset dir="${build.output.tmp-jdic-windows}"/>
-            <fileset dir="${catalog.output.classes}"/>
-            <fileset dir="${common.output.classes}"/>
-            <fileset dir="${common-gui.output.classes}"/>
-            <fileset dir="${elevationview.output.classes}"/>
-            <fileset dir="${geonames.output.classes}"/>
-            <fileset dir="${googlemaps.output.classes}"/>
-            <fileset dir="${jaxb6.output.classes}"/>
-            <fileset dir="${jdic-mapview.output.classes}">
+        <jar destfile="${build.target}/RouteConverterJDIC.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-windows}"/>
+            <fileset dir="${build.target.tmp-jdic}"/>
+            <fileset dir="${build.target.tmp-jdic-windows}"/>
+            <fileset dir="${catalog.target.classes}"/>
+            <fileset dir="${common.target.classes}"/>
+            <fileset dir="${common-gui.target.classes}"/>
+            <fileset dir="${elevationview.target.classes}"/>
+            <fileset dir="${geonames.target.classes}"/>
+            <fileset dir="${googlemaps.target.classes}"/>
+            <fileset dir="${jaxb6.target.classes}"/>
+            <fileset dir="${jdic-mapview.target.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
-            <fileset dir="${mapview.output.classes}"/>
-            <fileset dir="${navigation-formats.output.classes}">
+            <fileset dir="${mapview.target.classes}"/>
+            <fileset dir="${navigation-formats.target.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes}"/>
-            <fileset dir="${route-converter.output.classes}"/>
-            <fileset dir="${route-converter6.output.classes}"/>
+            <fileset dir="${rest.target.classes}"/>
+            <fileset dir="${route-converter.target.classes}"/>
+            <fileset dir="${route-converter6.target.classes}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1215,28 +1215,28 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverter.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-windows}"/>
-            <fileset dir="${build.output.tmp-djproject}"/>
-            <fileset dir="${build.output.tmp-swt-windows}"/>
-            <fileset dir="${catalog.output.classes}"/>
-            <fileset dir="${common.output.classes}"/>
-            <fileset dir="${common-gui.output.classes}"/>
-            <fileset dir="${elevationview.output.classes}"/>
-            <fileset dir="${geonames.output.classes}"/>
-            <fileset dir="${googlemaps.output.classes}"/>
-            <fileset dir="${jaxb6.output.classes}"/>
-            <fileset dir="${mapview.output.classes}"/>
-            <fileset dir="${navigation-formats.output.classes}">
+        <jar destfile="${build.target}/RouteConverter.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-windows}"/>
+            <fileset dir="${build.target.tmp-djproject}"/>
+            <fileset dir="${build.target.tmp-swt-windows}"/>
+            <fileset dir="${catalog.target.classes}"/>
+            <fileset dir="${common.target.classes}"/>
+            <fileset dir="${common-gui.target.classes}"/>
+            <fileset dir="${elevationview.target.classes}"/>
+            <fileset dir="${geonames.target.classes}"/>
+            <fileset dir="${googlemaps.target.classes}"/>
+            <fileset dir="${jaxb6.target.classes}"/>
+            <fileset dir="${mapview.target.classes}"/>
+            <fileset dir="${navigation-formats.target.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes}"/>
-            <fileset dir="${route-converter.output.classes}"/>
-            <fileset dir="${route-converter6.output.classes}"/>
-            <fileset dir="${swt-mapview.output.classes}"/>
+            <fileset dir="${rest.target.classes}"/>
+            <fileset dir="${route-converter.target.classes}"/>
+            <fileset dir="${route-converter6.target.classes}"/>
+            <fileset dir="${swt-mapview.target.classes}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1249,28 +1249,28 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverter64.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-windows}"/>
-            <fileset dir="${build.output.tmp-djproject}"/>
-            <fileset dir="${build.output.tmp-swt-windows64}"/>
-            <fileset dir="${catalog.output.classes}"/>
-            <fileset dir="${common.output.classes}"/>
-            <fileset dir="${common-gui.output.classes}"/>
-            <fileset dir="${elevationview.output.classes}"/>
-            <fileset dir="${geonames.output.classes}"/>
-            <fileset dir="${googlemaps.output.classes}"/>
-            <fileset dir="${jaxb6.output.classes}"/>
-            <fileset dir="${mapview.output.classes}"/>
-            <fileset dir="${navigation-formats.output.classes}">
+        <jar destfile="${build.target}/RouteConverter64.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-windows}"/>
+            <fileset dir="${build.target.tmp-djproject}"/>
+            <fileset dir="${build.target.tmp-swt-windows64}"/>
+            <fileset dir="${catalog.target.classes}"/>
+            <fileset dir="${common.target.classes}"/>
+            <fileset dir="${common-gui.target.classes}"/>
+            <fileset dir="${elevationview.target.classes}"/>
+            <fileset dir="${geonames.target.classes}"/>
+            <fileset dir="${googlemaps.target.classes}"/>
+            <fileset dir="${jaxb6.target.classes}"/>
+            <fileset dir="${mapview.target.classes}"/>
+            <fileset dir="${navigation-formats.target.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes}"/>
-            <fileset dir="${route-converter.output.classes}"/>
-            <fileset dir="${route-converter6.output.classes}"/>
-            <fileset dir="${swt-mapview.output.classes}"/>
+            <fileset dir="${rest.target.classes}"/>
+            <fileset dir="${route-converter.target.classes}"/>
+            <fileset dir="${route-converter6.target.classes}"/>
+            <fileset dir="${swt-mapview.target.classes}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1285,32 +1285,32 @@
     </target>
 
     <target name="jar5" depends="init5,compile5,prepare-jar">
-        <jar destfile="${build.output}/RouteConverterLinuxJDIC.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-thirdparty5}"/>
-            <fileset dir="${build.output.tmp-linux}"/>
-            <fileset dir="${build.output.tmp-jdic}"/>
-            <fileset dir="${build.output.tmp-jdic-linux}"/>
-            <fileset dir="${catalog.output.classes5}"/>
-            <fileset dir="${common.output.classes5}"/>
-            <fileset dir="${common-gui.output.classes5}"/>
-            <fileset dir="${elevationview.output.classes5}"/>
-            <fileset dir="${geonames.output.classes5}"/>
-            <fileset dir="${googlemaps.output.classes5}"/>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-mapview.output.classes5}">
+        <jar destfile="${build.target}/RouteConverterLinuxJDIC.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-thirdparty5}"/>
+            <fileset dir="${build.target.tmp-linux}"/>
+            <fileset dir="${build.target.tmp-jdic}"/>
+            <fileset dir="${build.target.tmp-jdic-linux}"/>
+            <fileset dir="${catalog.target.classes5}"/>
+            <fileset dir="${common.target.classes5}"/>
+            <fileset dir="${common-gui.target.classes5}"/>
+            <fileset dir="${elevationview.target.classes5}"/>
+            <fileset dir="${geonames.target.classes5}"/>
+            <fileset dir="${googlemaps.target.classes5}"/>
+            <fileset dir="${jaxb5.target.classes5}"/>
+            <fileset dir="${jdic-mapview.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
-            <fileset dir="${mapview.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
+            <fileset dir="${mapview.target.classes5}"/>
+            <fileset dir="${navigation-formats.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes5}"/>
-            <fileset dir="${route-converter.output.classes5}"/>
-            <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset dir="${rest.target.classes5}"/>
+            <fileset dir="${route-converter.target.classes5}"/>
+            <fileset dir="${route-converter5.target.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1323,30 +1323,30 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterLinux.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-thirdparty5}"/>
-            <fileset dir="${build.output.tmp-linux}"/>
-            <fileset dir="${build.output.tmp-djproject}"/>
-            <fileset dir="${build.output.tmp-jna}"/>
-            <fileset dir="${build.output.tmp-swt-linux}"/>
-            <fileset dir="${catalog.output.classes5}"/>
-            <fileset dir="${common.output.classes5}"/>
-            <fileset dir="${common-gui.output.classes5}"/>
-            <fileset dir="${elevationview.output.classes5}"/>
-            <fileset dir="${geonames.output.classes5}"/>
-            <fileset dir="${googlemaps.output.classes5}"/>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${mapview.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
+        <jar destfile="${build.target}/RouteConverterLinux.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-thirdparty5}"/>
+            <fileset dir="${build.target.tmp-linux}"/>
+            <fileset dir="${build.target.tmp-djproject}"/>
+            <fileset dir="${build.target.tmp-jna}"/>
+            <fileset dir="${build.target.tmp-swt-linux}"/>
+            <fileset dir="${catalog.target.classes5}"/>
+            <fileset dir="${common.target.classes5}"/>
+            <fileset dir="${common-gui.target.classes5}"/>
+            <fileset dir="${elevationview.target.classes5}"/>
+            <fileset dir="${geonames.target.classes5}"/>
+            <fileset dir="${googlemaps.target.classes5}"/>
+            <fileset dir="${jaxb5.target.classes5}"/>
+            <fileset dir="${mapview.target.classes5}"/>
+            <fileset dir="${navigation-formats.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes5}"/>
-            <fileset dir="${route-converter.output.classes5}"/>
-            <fileset dir="${route-converter5.output.classes5}"/>
-            <fileset dir="${swt-mapview.output.classes5}"/>
+            <fileset dir="${rest.target.classes5}"/>
+            <fileset dir="${route-converter.target.classes5}"/>
+            <fileset dir="${route-converter5.target.classes5}"/>
+            <fileset dir="${swt-mapview.target.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1359,30 +1359,30 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterLinux64.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-thirdparty5}"/>
-            <fileset dir="${build.output.tmp-linux}"/>
-            <fileset dir="${build.output.tmp-djproject}"/>
-            <fileset dir="${build.output.tmp-jna}"/>
-            <fileset dir="${build.output.tmp-swt-linux64}"/>
-            <fileset dir="${catalog.output.classes5}"/>
-            <fileset dir="${common.output.classes5}"/>
-            <fileset dir="${common-gui.output.classes5}"/>
-            <fileset dir="${elevationview.output.classes5}"/>
-            <fileset dir="${geonames.output.classes5}"/>
-            <fileset dir="${googlemaps.output.classes5}"/>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${mapview.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
+        <jar destfile="${build.target}/RouteConverterLinux64.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-thirdparty5}"/>
+            <fileset dir="${build.target.tmp-linux}"/>
+            <fileset dir="${build.target.tmp-djproject}"/>
+            <fileset dir="${build.target.tmp-jna}"/>
+            <fileset dir="${build.target.tmp-swt-linux64}"/>
+            <fileset dir="${catalog.target.classes5}"/>
+            <fileset dir="${common.target.classes5}"/>
+            <fileset dir="${common-gui.target.classes5}"/>
+            <fileset dir="${elevationview.target.classes5}"/>
+            <fileset dir="${geonames.target.classes5}"/>
+            <fileset dir="${googlemaps.target.classes5}"/>
+            <fileset dir="${jaxb5.target.classes5}"/>
+            <fileset dir="${mapview.target.classes5}"/>
+            <fileset dir="${navigation-formats.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes5}"/>
-            <fileset dir="${route-converter.output.classes5}"/>
-            <fileset dir="${route-converter5.output.classes5}"/>
-            <fileset dir="${swt-mapview.output.classes5}"/>
+            <fileset dir="${rest.target.classes5}"/>
+            <fileset dir="${route-converter.target.classes5}"/>
+            <fileset dir="${route-converter5.target.classes5}"/>
+            <fileset dir="${swt-mapview.target.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1395,32 +1395,32 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterMacJDIC.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-thirdparty5}"/>
-            <fileset dir="${build.output.tmp-mac}"/>
-            <fileset dir="${build.output.tmp-jdic}"/>
-            <fileset dir="${build.output.tmp-jdic-mac}"/>
-            <fileset dir="${catalog.output.classes5}"/>
-            <fileset dir="${common.output.classes5}"/>
-            <fileset dir="${common-gui.output.classes5}"/>
-            <fileset dir="${elevationview.output.classes5}"/>
-            <fileset dir="${geonames.output.classes5}"/>
-            <fileset dir="${googlemaps.output.classes5}"/>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${jdic-mapview.output.classes5}">
+        <jar destfile="${build.target}/RouteConverterMacJDIC.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-thirdparty5}"/>
+            <fileset dir="${build.target.tmp-mac}"/>
+            <fileset dir="${build.target.tmp-jdic}"/>
+            <fileset dir="${build.target.tmp-jdic-mac}"/>
+            <fileset dir="${catalog.target.classes5}"/>
+            <fileset dir="${common.target.classes5}"/>
+            <fileset dir="${common-gui.target.classes5}"/>
+            <fileset dir="${elevationview.target.classes5}"/>
+            <fileset dir="${geonames.target.classes5}"/>
+            <fileset dir="${googlemaps.target.classes5}"/>
+            <fileset dir="${jaxb5.target.classes5}"/>
+            <fileset dir="${jdic-mapview.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
             </fileset>
-            <fileset dir="${mapview.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
+            <fileset dir="${mapview.target.classes5}"/>
+            <fileset dir="${navigation-formats.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes5}"/>
-            <fileset dir="${route-converter.output.classes5}"/>
-            <fileset dir="${route-converter5.output.classes5}"/>
+            <fileset dir="${rest.target.classes5}"/>
+            <fileset dir="${route-converter.target.classes5}"/>
+            <fileset dir="${route-converter5.target.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1433,30 +1433,30 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterMacSWT.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-thirdparty5}"/>
-            <fileset dir="${build.output.tmp-mac}"/>
-            <fileset dir="${build.output.tmp-djproject}"/>
-            <fileset dir="${build.output.tmp-jna}"/>
-            <fileset dir="${build.output.tmp-swt-mac}"/>
-            <fileset dir="${catalog.output.classes5}"/>
-            <fileset dir="${common.output.classes5}"/>
-            <fileset dir="${common-gui.output.classes5}"/>
-            <fileset dir="${elevationview.output.classes5}"/>
-            <fileset dir="${geonames.output.classes5}"/>
-            <fileset dir="${googlemaps.output.classes5}"/>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${mapview.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
+        <jar destfile="${build.target}/RouteConverterMacSWT.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-thirdparty5}"/>
+            <fileset dir="${build.target.tmp-mac}"/>
+            <fileset dir="${build.target.tmp-djproject}"/>
+            <fileset dir="${build.target.tmp-jna}"/>
+            <fileset dir="${build.target.tmp-swt-mac}"/>
+            <fileset dir="${catalog.target.classes5}"/>
+            <fileset dir="${common.target.classes5}"/>
+            <fileset dir="${common-gui.target.classes5}"/>
+            <fileset dir="${elevationview.target.classes5}"/>
+            <fileset dir="${geonames.target.classes5}"/>
+            <fileset dir="${googlemaps.target.classes5}"/>
+            <fileset dir="${jaxb5.target.classes5}"/>
+            <fileset dir="${mapview.target.classes5}"/>
+            <fileset dir="${navigation-formats.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes5}"/>
-            <fileset dir="${route-converter.output.classes5}"/>
-            <fileset dir="${route-converter5.output.classes5}"/>
-            <fileset dir="${swt-mapview.output.classes5}"/>
+            <fileset dir="${rest.target.classes5}"/>
+            <fileset dir="${route-converter.target.classes5}"/>
+            <fileset dir="${route-converter5.target.classes5}"/>
+            <fileset dir="${swt-mapview.target.classes5}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1469,26 +1469,26 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output}/RouteConverterCmdLine.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-thirdparty5}"/>
-            <fileset dir="${common.output.classes5}">
+        <jar destfile="${build.target}/RouteConverterCmdLine.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-thirdparty5}"/>
+            <fileset dir="${common.target.classes5}">
                 <exclude name="**/*.properties"/>
             </fileset>
-            <fileset dir="${jaxb5.output.classes5}"/>
-            <fileset dir="${navigation-formats.output.classes5}">
+            <fileset dir="${jaxb5.target.classes5}"/>
+            <fileset dir="${navigation-formats.target.classes5}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${route-converter-cmdline.output.classes5}"/>
-            <fileset dir="${build.output.tmp-linux}">
+            <fileset dir="${route-converter-cmdline.target.classes5}"/>
+            <fileset dir="${build.target.tmp-linux}">
                 <include name="bin/**/gpsbabel"/>
             </fileset>
-            <fileset dir="${build.output.tmp-mac}">
+            <fileset dir="${build.target.tmp-mac}">
                 <include name="bin/**/gpsbabel"/>
             </fileset>
-            <fileset dir="${build.output.tmp-windows}">
+            <fileset dir="${build.target.tmp-windows}">
                 <include name="bin/**/libexpat.dll"/>
                 <include name="bin/**/gpsbabel.exe"/>
             </fileset>
@@ -1540,28 +1540,28 @@
          c:\Programme\Java\jdk1.6.0_16\bin\keytool -selfcert -alias cpesch -keystore cpesch.keystore
          c:\Programme\Java\jdk1.6.0_16\bin\keytool.exe -list -keystore cpesch.keystore -->
     <target name="webstart" depends="init">
-        <mkdir dir="${build.output.webstart}"/>
+        <mkdir dir="${build.target.webstart}"/>
 
-        <jar destfile="${build.output.webstart}/RouteConverter.jar">
-            <fileset dir="${build.output.tmp-thirdparty}"/>
-            <fileset dir="${build.output.tmp-djproject}"/>
-            <fileset dir="${catalog.output.classes}"/>
-            <fileset dir="${common.output.classes}"/>
-            <fileset dir="${common-gui.output.classes}"/>
-            <fileset dir="${elevationview.output.classes}"/>
-            <fileset dir="${geonames.output.classes}"/>
-            <fileset dir="${googlemaps.output.classes}"/>
-            <fileset dir="${jaxb6.output.classes}"/>
-            <fileset dir="${mapview.output.classes}"/>
-            <fileset dir="${navigation-formats.output.classes}">
+        <jar destfile="${build.target.webstart}/RouteConverter.jar">
+            <fileset dir="${build.target.tmp-thirdparty}"/>
+            <fileset dir="${build.target.tmp-djproject}"/>
+            <fileset dir="${catalog.target.classes}"/>
+            <fileset dir="${common.target.classes}"/>
+            <fileset dir="${common-gui.target.classes}"/>
+            <fileset dir="${elevationview.target.classes}"/>
+            <fileset dir="${geonames.target.classes}"/>
+            <fileset dir="${googlemaps.target.classes}"/>
+            <fileset dir="${jaxb6.target.classes}"/>
+            <fileset dir="${mapview.target.classes}"/>
+            <fileset dir="${navigation-formats.target.classes}">
                 <exclude name="**/*.dll"/>
                 <exclude name="**/*.exe"/>
                 <exclude name="**/*.html"/>
             </fileset>
-            <fileset dir="${rest.output.classes}"/>
-            <fileset dir="${route-converter.output.classes}"/>
-            <fileset dir="${route-converter6.output.classes}"/>
-            <fileset dir="${swt-mapview.output.classes}"/>
+            <fileset dir="${rest.target.classes}"/>
+            <fileset dir="${route-converter.target.classes}"/>
+            <fileset dir="${route-converter6.target.classes}"/>
+            <fileset dir="${swt-mapview.target.classes}"/>
             <fileset file="${license}"/>
             <manifest>
                 <attribute name="Created-By" value="Christian Pesch"/>
@@ -1573,20 +1573,20 @@
             </manifest>
         </jar>
 
-        <jar destfile="${build.output.webstart}/gpsbabel-linux-x86.jar">
-            <fileset dir="${build.output.tmp-linux}"/>
+        <jar destfile="${build.target.webstart}/gpsbabel-linux-x86.jar">
+            <fileset dir="${build.target.tmp-linux}"/>
         </jar>
-        <jar destfile="${build.output.webstart}/jna.jar">
-            <fileset dir="${build.output.tmp-jna}"/>
+        <jar destfile="${build.target.webstart}/jna.jar">
+            <fileset dir="${build.target.tmp-jna}"/>
         </jar>
-        <jar destfile="${build.output.webstart}/gpsbabel-macosx-x86.jar">
-            <fileset dir="${build.output.tmp-mac}"/>
+        <jar destfile="${build.target.webstart}/gpsbabel-macosx-x86.jar">
+            <fileset dir="${build.target.tmp-mac}"/>
         </jar>
-        <jar destfile="${build.output.webstart}/gpsbabel-win32-x86.jar">
-            <fileset dir="${build.output.tmp-windows}"/>
+        <jar destfile="${build.target.webstart}/gpsbabel-win32-x86.jar">
+            <fileset dir="${build.target.tmp-windows}"/>
         </jar>
 
-        <copy todir="${build.output.webstart}" overwrite="true">
+        <copy todir="${build.target.webstart}" overwrite="true">
             <fileset file="${eclipse.swt.linux.x86.lib}"/>
             <fileset file="${eclipse.swt.linux.x86_64.lib}"/>
             <fileset file="${eclipse.swt.mac.x86.lib}"/>
@@ -1596,29 +1596,29 @@
 
         <signjar alias="cpesch" keystore="build/cpesch.keystore" storepass="cpesch" lazy="true">
             <path>
-                <fileset dir="${build.output.webstart}/" includes="**/*.jar"/>
+                <fileset dir="${build.target.webstart}/" includes="**/*.jar"/>
             </path>
         </signjar>
     </target>
                                       
     <!-- Cleans up any temporary stuff -->
     <target name="clean" depends="init">
-        <delete dir="${catalog.output}"/>
-        <delete dir="${common.output}"/>
-        <delete dir="${common-gui.output}"/>
-        <delete dir="${elevationview.output}"/>
-        <delete dir="${geonames.output}"/>
-        <delete dir="${googlemaps.output}"/>
+        <delete dir="${catalog.target}"/>
+        <delete dir="${common.target}"/>
+        <delete dir="${common-gui.target}"/>
+        <delete dir="${elevationview.target}"/>
+        <delete dir="${geonames.target}"/>
+        <delete dir="${googlemaps.target}"/>
         <delete dir="${jaxb5.output}"/>
-        <delete dir="${jaxb6.output}"/>
-        <delete dir="${jdic-mapview.output}"/>
-        <delete dir="${mapview.output}"/>
-        <delete dir="${navigation-formats.output}"/>
+        <delete dir="${jaxb6.target}"/>
+        <delete dir="${jdic-mapview.target}"/>
+        <delete dir="${mapview.target}"/>
+        <delete dir="${navigation-formats.target}"/>
         <delete dir="${rest.output}"/>
         <delete dir="${route-converter.output}"/>
         <delete dir="${route-converter5.output}"/>
         <delete dir="${route-converter6.output}"/>
         <delete dir="${swt-mapview.output}"/>
-        <delete dir="${build.output}"/>
+        <delete dir="${build.target}"/>
     </target>
 </project>
