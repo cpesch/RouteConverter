@@ -7,12 +7,16 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/output" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="jaxb6" />
     <orderEntry type="library" name="junit/junit" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.1" level="project" />
+    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module" module-name="common" />
+    <orderEntry type="module" module-name="jaxb6" exported="" />
+    <orderEntry type="library" exported="" name="Maven: sun:jaxb-impl:jdk6" level="project" />
   </component>
 </module>
 

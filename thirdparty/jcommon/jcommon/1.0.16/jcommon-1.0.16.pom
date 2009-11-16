@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>jcommon</groupId>
+  <artifactId>jcommon</artifactId>
+  <version>1.0.16</version>
+  <description>JCommon Library</description>
+</project>
