@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReadTest extends NavigationTestCase {
+public class ReadIT extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
     protected interface TestFileCallback {

@@ -48,7 +48,7 @@ import slash.navigation.viamichelin.ViaMichelinFormat;
 
 import java.io.IOException;
 
-public class ConvertTest extends BaseConvertTest {
+public class ConvertIT extends ConvertBase {
 
     public void testConvertMTP0607ToMTP0809() throws IOException {
         convertRoundtrip(TEST_PATH + "from-mtp0607.bcr", new MTP0607Format(), new MTP0809Format());

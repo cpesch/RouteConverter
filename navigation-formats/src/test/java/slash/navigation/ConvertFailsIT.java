@@ -28,7 +28,7 @@ import slash.navigation.ovl.OvlFormat;
 
 import java.io.IOException;
 
-public class ConvertFailsTest extends BaseConvertTest {
+public class ConvertFailsIT extends ConvertBase {
 
     public void testConvertXcsvToGpiFails() throws IOException {
         // Garmin file contains 400 instead of expected 216 positions

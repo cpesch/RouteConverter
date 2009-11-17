@@ -24,7 +24,7 @@ import slash.common.io.Transfer;
 
 import java.io.IOException;
 
-public class SplitTest extends ReadWriteBase {
+public class SplitIT extends ReadWriteBase {
 
     public void testSplitBcrReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large.bcr");

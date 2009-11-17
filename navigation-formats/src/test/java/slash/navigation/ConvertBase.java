@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class BaseConvertTest extends NavigationTestCase {
+public abstract class ConvertBase extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
     void convertRoundtrip(String testFileName,

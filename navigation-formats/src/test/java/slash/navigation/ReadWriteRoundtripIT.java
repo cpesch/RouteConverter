@@ -22,7 +22,7 @@ package slash.navigation;
 
 import java.io.IOException;
 
-public class ReadWriteRoundtripTest extends ReadWriteBase {
+public class ReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testAlanTrackLogWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.trl");

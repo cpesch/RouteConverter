@@ -32,7 +32,7 @@ import slash.navigation.simple.GpsTunerFormat;
 
 import java.io.IOException;
 
-public class AccurracyConvertTest extends BaseConvertTest {
+public class AccurracyConvertIT extends ConvertBase {
 
     public void testConvertColumbusV900ToGoPalTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new GoPalTrackFormat());
