@@ -20,12 +20,9 @@
 
 package slash.navigation.gopal;
 
-import slash.navigation.NavigationFileParser;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 
@@ -38,7 +35,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("6664226,180820,8.016903,52.345550,12.95,30.0394,2,3.000000,3"));
         assertTrue(format.isValidLine("6651145, 180807, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
         assertTrue(format.isValidLine("6122534, 160149, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
-        assertTrue(format.isValidLine("54850635, 184229, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));        
+        assertTrue(format.isValidLine("54850635, 184229, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
     }
 
     public void testIsPosition() {
@@ -85,12 +82,5 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime().getCalendar());
         assertNull(position.getComment());
-    }
-
-    public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {
-        File source = new File(SAMPLE_PATH + "dieter2-GoPal3Track.trk");
-        NavigationFileParser parser = new NavigationFileParser();
-        assertTrue(parser.read(source));
-        assertEquals(GoPalTrackFormat.class, parser.getFormat().getClass());
     }
 }

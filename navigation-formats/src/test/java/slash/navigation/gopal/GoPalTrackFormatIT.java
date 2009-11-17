@@ -17,19 +17,21 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.catalog.domain;
 
-import slash.navigation.catalog.client.CatalogClientBase;
+package slash.navigation.gopal;
 
-abstract class BaseRouteServiceTest extends CatalogClientBase {
-    protected RouteCatalog adminCatalog;
+import slash.navigation.NavigationFileParser;
+import slash.navigation.NavigationTestCase;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        adminCatalog = new RouteCatalog(ROOT, USERNAME, PASSWORD);
-    }
+import java.io.File;
+import java.io.IOException;
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+public class GoPalTrackFormatIT extends NavigationTestCase {
+ 
+    public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {
+        File source = new File(SAMPLE_PATH + "dieter2-GoPal3Track.trk");
+        NavigationFileParser parser = new NavigationFileParser();
+        assertTrue(parser.read(source));
+        assertEquals(GoPalTrackFormat.class, parser.getFormat().getClass());
     }
 }

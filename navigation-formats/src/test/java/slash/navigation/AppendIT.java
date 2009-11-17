@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppendTest extends NavigationTestCase {
+public class AppendIT extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
     static boolean isStoringRouteName(NavigationFormat format) {

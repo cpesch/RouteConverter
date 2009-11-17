@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class OziExplorerFormatTest extends NavigationTestCase {
+public class OziExplorerFormatIT extends NavigationTestCase {
 
     public void testEliminateNonsenseRoutes() throws IOException {
         File source = new File(SAMPLE_PATH + "Feissneck.rte");

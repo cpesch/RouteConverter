@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class NavigationFileParserTest extends NavigationTestCase {
+public class NavigationFileParserIT extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
     void read(String testFileName) throws IOException {

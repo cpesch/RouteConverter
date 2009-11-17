@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class UserTest extends CatalogClientTest {
+public class UserIT extends CatalogClientBase {
 
     private Get readUser(String user) throws IOException {
         return new Get(USERS_URL + user + GPX_URL_POSTFIX);

@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 
-public class CategoryTest extends CatalogClientTest {
+public class CategoryIT extends CatalogClientBase {
 
     private Post createCategoryFromFile(String fileName,
                                         String authenticationUserName, String authenticationPassword) throws IOException {

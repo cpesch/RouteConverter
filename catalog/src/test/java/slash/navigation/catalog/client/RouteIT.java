@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class RouteTest extends CatalogClientTest {
+public class RouteIT extends CatalogClientBase {
 
     private Get readRoute(int key) throws IOException {
         return new Get(ROUTES_URL + key + GPX_URL_POSTFIX);

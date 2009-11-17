@@ -12,7 +12,7 @@ import slash.navigation.rest.*;
 import java.io.File;
 import java.io.IOException;
 
-public class FileTest extends CatalogClientTest {
+public class FileIT extends CatalogClientBase {
 
     private Get readFile(int key) throws IOException {
         return new Get(FILES_URL + key + "/");
