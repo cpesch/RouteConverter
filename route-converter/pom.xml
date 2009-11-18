@@ -45,8 +45,7 @@
         <dependency>
             <groupId>intellij</groupId>
             <artifactId>forms-rt</artifactId>
-            <version>6.0.5</version>
-            <scope>compile</scope>
+            <version>6.0.5-stripped</version>
         </dependency>
     </dependencies>
 </project>

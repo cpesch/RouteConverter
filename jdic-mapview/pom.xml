@@ -20,14 +20,12 @@
         <dependency>
             <groupId>sun</groupId>
             <artifactId>jdic</artifactId>
-            <version>0.9.3</version>
-            <scope>compile</scope>
+            <version>0.9.3-stripped</version>
         </dependency>
         <dependency>
             <groupId>sun</groupId>
             <artifactId>javaws</artifactId>
             <version>jdk6</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

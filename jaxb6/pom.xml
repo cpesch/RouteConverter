@@ -16,7 +16,6 @@
             <groupId>sun</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>jdk6</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

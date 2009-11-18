@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>sun</groupId>
-  <artifactId>javaws</artifactId>
-  <version>jdk6</version>
-  <description>Sun Java Webstart</description>
-</project>
