@@ -37,7 +37,7 @@
             <groupId>com.sun</groupId>
             <artifactId>javaws</artifactId>
             <version>jdk6</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
             <classifier>stripped</classifier>
         </dependency>
     </dependencies>

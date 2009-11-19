@@ -16,7 +16,7 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>jdk6</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
             <classifier>stripped</classifier>
         </dependency>
     </dependencies>
