@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 
-public class GeoNamesServiceTest extends TestCase {
+public class GeoNamesServiceIT extends TestCase {
     private final GeoNamesService service = new GeoNamesService();
 
     public void testSrtm3ElevationLookup() throws IOException {
