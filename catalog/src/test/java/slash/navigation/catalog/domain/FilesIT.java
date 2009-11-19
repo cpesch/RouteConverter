@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-public class FilesTest extends BaseRouteServiceTest {
+public class FilesIT extends RouteServiceBase {
 
     public void testAddFileWithUmlauts() throws Exception {
         String name = "Category for files with umlauts " + System.currentTimeMillis();

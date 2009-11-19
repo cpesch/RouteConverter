@@ -21,9 +21,6 @@
 package slash.navigation.itn;
 
 import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteCharacteristics;
-
-import java.io.IOException;
 
 public class LogposTest extends NavigationTestCase {
 
@@ -74,21 +71,5 @@ public class LogposTest extends NavigationTestCase {
         assertEquals(207.0, position.getHeading());
         assertNull(position.getElevation());
         assertEquals(calendar(2008, 5, 30, 8, 11, 44), position.getTime());
-    }
-
-    private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        readFiles("pilog", extension, routeCount, expectElevation, expectTime, characteristics);
-    }
-
-    public void testAllLogpos1Tracks() throws IOException {
-        readFiles(".itn", 1, true, true, RouteCharacteristics.Track);
-    }
-
-    private void read2Files(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        readFiles("logpos", extension, routeCount, expectElevation, expectTime, characteristics);
-    }
-
-    public void testAllLogpos2Tracks() throws IOException {
-        read2Files(".itn", 1, false, true, RouteCharacteristics.Track);
     }
 }

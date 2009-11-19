@@ -21,7 +21,7 @@ package slash.navigation.catalog.domain;
 
 import slash.navigation.catalog.client.CatalogClientBase;
 
-abstract class BaseRouteServiceTest extends CatalogClientBase {
+abstract class RouteServiceBase extends CatalogClientBase {
     protected RouteCatalog adminCatalog;
 
     protected void setUp() throws Exception {

@@ -25,7 +25,7 @@ import slash.navigation.ReadWriteBase;
 
 import java.io.IOException;
 
-public class TourReadWriteRoundtripTest extends ReadWriteBase {
+public class TourReadWriteRoundtripIT extends ReadWriteBase {
     private void checkUnprocessedValue(TourPosition position, String name, String value) {
         assertNotNull(position);
         assertEquals(name + " does not contain expected value", value, position.get(name));

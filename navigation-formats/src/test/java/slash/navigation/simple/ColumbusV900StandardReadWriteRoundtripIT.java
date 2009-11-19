@@ -27,10 +27,10 @@ import slash.navigation.Wgs84Position;
 
 import java.io.IOException;
 
-public class ColumbusV900ProfessionalReadWriteRoundtripTest extends ReadWriteBase {
+public class ColumbusV900StandardReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new NavigationFileParserCallback() {
+        readWriteRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
@@ -38,9 +38,8 @@ public class ColumbusV900ProfessionalReadWriteRoundtripTest extends ReadWriteBas
                     Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
                     Wgs84Position targetPosition= (Wgs84Position) targetRoute.getPosition(i);
                     assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
-                    assertEquals(targetPosition.getHdop(), sourcePosition.getHdop());
-                    assertEquals(targetPosition.getVdop(), sourcePosition.getVdop());
-                    assertEquals(targetPosition.getPdop(), sourcePosition.getPdop());
+                    assertNull(sourcePosition.getHdop());
+                    assertNull(targetPosition.getHdop());
                 }
             }
         });

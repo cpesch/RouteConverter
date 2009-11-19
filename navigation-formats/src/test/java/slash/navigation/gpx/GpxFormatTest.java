@@ -20,113 +20,18 @@
 
 package slash.navigation.gpx;
 
+import slash.common.io.Transfer;
 import slash.navigation.NavigationTestCase;
-import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
-import java.util.List;
+import java.io.IOException;
+import java.io.StringWriter;
 
 public class GpxFormatTest extends NavigationTestCase {
-
-    public void testReader() throws FileNotFoundException, JAXBException {
-        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
-        Gpx gpx = (Gpx) GpxUtil.newUnmarshaller10().unmarshal(reader);
-        assertNotNull(gpx);
-        assertNotNull(gpx.getWpt());
-        assertEquals(3, gpx.getWpt().size());
-        assertNotNull(gpx.getRte());
-        assertEquals(3, gpx.getRte().size());
-        assertNotNull(gpx.getTrk());
-        assertEquals(3, gpx.getRte().size());
-    }
-
-    public void testInputStream() throws FileNotFoundException, JAXBException {
-        InputStream in = new FileInputStream(TEST_PATH + "from10.gpx");
-        Gpx gpx = (Gpx) GpxUtil.newUnmarshaller10().unmarshal(in);
-        assertNotNull(gpx);
-        assertNotNull(gpx.getWpt());
-        assertEquals(3, gpx.getWpt().size());
-        assertNotNull(gpx.getRte());
-        assertEquals(3, gpx.getRte().size());
-        assertNotNull(gpx.getTrk());
-        assertEquals(3, gpx.getRte().size());
-    }
-
-    public void testUnmarshal10() throws IOException, JAXBException {
-        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
-        Gpx gpx = GpxUtil.unmarshal10(reader);
-        assertNotNull(gpx);
-        assertNotNull(gpx.getWpt());
-        assertEquals(3, gpx.getWpt().size());
-        assertNotNull(gpx.getRte());
-        assertEquals(3, gpx.getRte().size());
-        assertNotNull(gpx.getTrk());
-        assertEquals(3, gpx.getRte().size());
-    }
-
-    public void testUnmarshal10TypeError() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
-        try {
-            GpxUtil.unmarshal11(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
-    }
-
-    public void testUnmarshal11() throws IOException, JAXBException {
-        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
-        GpxType gpx = GpxUtil.unmarshal11(reader);
-        assertNotNull(gpx);
-        assertNotNull(gpx.getWpt());
-        assertEquals(3, gpx.getWpt().size());
-    }
-
-    public void testUnmarshal11TypeError() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
-        try {
-            GpxUtil.unmarshal10(reader);
-            assertTrue(false);
-        } catch (JAXBException e) {
-        }
-    }
-
-    public void testAkGpxReadWriteRoundtrip() throws IOException {
-        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "ak.gpx");
-        assertNotNull(routes);
-        assertEquals(1, routes.size());
-        GpxRoute route = routes.get(0);
-        assertEquals(7, route.getPositionCount());
-    }
-
-    public void testGarminExtensions() throws IOException, JAXBException {
-        List<GpxRoute> routes = readSampleGpxFile(new Gpx11Format(), "MS.gpx");
-        assertNotNull(routes);
-        assertEquals(2, routes.size());
-        GpxRoute route = routes.get(0);
-        assertEquals(2, route.getPositionCount());
-        GpxRoute track = routes.get(1);
-        assertEquals(1073, track.getPositionCount());
-    }
-
-    public void testWritingNamespaces() throws IOException, JAXBException {
-        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
-        GpxType gpx = GpxUtil.unmarshal11(reader);
-        assertNotNull(gpx);
-        StringWriter writer = new StringWriter();
-        GpxUtil.marshal11(gpx, writer);
-        String string = writer.toString();
-        assertTrue(string.contains("<gpx version"));
-        assertFalse(string.contains("ns1"));
-        assertFalse(string.contains("ns2"));
-        assertFalse(string.contains("ns3"));
-        assertFalse(string.contains("ns4"));
-    }
 
     public void testWritingRouteConverterExtensions() throws IOException, JAXBException {
         slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();

@@ -22,7 +22,7 @@ package slash.navigation.catalog.domain;
 import java.io.File;
 import java.util.List;
 
-public class RoutesTest extends BaseRouteServiceTest {
+public class RoutesIT extends RouteServiceBase {
 
     public void testAddRoute() throws Exception {
         String name = "Category " + System.currentTimeMillis();

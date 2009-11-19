@@ -21,9 +21,6 @@
 package slash.navigation.itn;
 
 import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteCharacteristics;
-
-import java.io.IOException;
 
 public class TTTracklogTest extends NavigationTestCase {
 
@@ -61,13 +58,5 @@ public class TTTracklogTest extends NavigationTestCase {
         assertNull(position.getSpeed());
         assertEquals(48.2, position.getElevation());
         assertEquals(calendar(1970, 1, 1, 15, 4, 0), position.getTime());
-    }
-
-    private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        readFiles("tttracklog", extension, routeCount, expectElevation, expectTime, characteristics);
-    }
-
-    public void testAllTTTracklogTracks() throws IOException {
-        readFiles(".itn", 1, false, true, RouteCharacteristics.Track);
     }
 }

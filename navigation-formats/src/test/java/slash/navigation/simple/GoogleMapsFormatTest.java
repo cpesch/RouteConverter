@@ -20,10 +20,9 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.*;
+import slash.navigation.NavigationTestCase;
+import slash.navigation.Wgs84Position;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -316,28 +315,4 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         String actual = format.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
-
-    private void checkBookmark(String name) throws IOException {
-        File source = new File(SAMPLE_PATH + name);
-        NavigationFileParser parser = new NavigationFileParser();
-        assertTrue(parser.read(source));
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
-        BaseNavigationPosition position = route.getPositions().get(route.getPositionCount() - 1);
-        assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getComment());
-        assertNotNull(position.getLongitude());
-        assertNotNull(position.getLatitude());
-    }
-
-    public void testOriginalBookmark() throws IOException {
-        checkBookmark("4a-original.url");
-    }
-
-    public void testBookmarkWrittenByFirefox() throws IOException {
-        checkBookmark("4a-modified-by-firefox.url");
-    }
-
-    public void testBookmarkWrittenByIE() throws IOException {
-        checkBookmark("4a-modified-by-ie.url");
-    }
-
 }

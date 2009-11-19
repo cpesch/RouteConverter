@@ -25,7 +25,7 @@ import slash.navigation.rest.Helper;
 import java.io.File;
 import java.io.IOException;
 
-public class RouteServiceTest extends BaseRouteServiceTest {
+public class RouteServiceIT extends RouteServiceBase {
     private static final String DEFAULT_PREFIX = "route";
     private static final String DEFAULT_SUFFIX = ".file";
     private static final String A_PREFIX = "nice route";

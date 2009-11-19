@@ -18,29 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.simple;
+package slash.navigation.ovl;
 
 import slash.navigation.NavigationFileParser;
 import slash.navigation.ReadWriteBase;
-import slash.navigation.SimpleRoute;
-import slash.navigation.Wgs84Position;
 
 import java.io.IOException;
 
-public class ColumbusV900StandardReadWriteRoundtripTest extends ReadWriteBase {
+public class OvlReadWriteRoundtripIT extends ReadWriteBase {
+    private void checkUnprocessedValue(OvlSection section, String name, String value) {
+        assertNotNull(section);
+        assertEquals(value, section.get(name));
+    }
 
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new NavigationFileParserCallback() {
+        readWriteRoundtrip(TEST_PATH + "from.ovl", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
-                SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
-                SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
-                for(int i=0; i < sourceRoute.getPositionCount(); i++) {
-                    Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
-                    Wgs84Position targetPosition= (Wgs84Position) targetRoute.getPosition(i);
-                    assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
-                    assertNull(sourcePosition.getHdop());
-                    assertNull(targetPosition.getHdop());
-                }
+                OvlRoute sourceRoute = (OvlRoute) source.getAllRoutes().get(0);
+                checkUnprocessedValue(sourceRoute.getSymbol(), "Extra", "1");
+                checkUnprocessedValue(sourceRoute.getOverlay(), "Plus", "2");
+                checkUnprocessedValue(sourceRoute.getMapLage(), "Encore", "3");
+                OvlRoute targetRoute = (OvlRoute) target.getAllRoutes().get(0);
+                checkUnprocessedValue(targetRoute.getSymbol(), "Extra", "1");
+                checkUnprocessedValue(targetRoute.getOverlay(), "Plus", "2");
+                checkUnprocessedValue(targetRoute.getMapLage(), "Encore", "3");
             }
         });
     }

@@ -21,7 +21,7 @@ package slash.navigation.catalog.domain;
 
 import java.io.IOException;
 
-public class CategorysTest extends BaseRouteServiceTest {
+public class CategorysIT extends RouteServiceBase {
 
     public void testGetRoot() throws IOException {
         Category root = adminCatalog.getRootCategory();

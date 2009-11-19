@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>RouteConverter</name>
-    <url>http://maven.apache.org</url>
+    <url>http://www.routeconverter.de</url>
 
     <developers>
         <developer>
@@ -21,10 +21,7 @@
     <repositories>
         <repository>
             <id>routeconverter-thirdparty</id>
-            <url>file://${basedir}/../thirdparty</url>
-            <releases>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
+            <url>http://www.routeconverter.de/svn/RouteThirdParty</url>
         </repository>
     </repositories>
 

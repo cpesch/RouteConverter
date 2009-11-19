@@ -20,12 +20,8 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.NavigationFileParser;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
-
-import java.io.File;
-import java.io.IOException;
 
 public class Nmn6FavoritesFormatTest extends NavigationTestCase {
     Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();
@@ -52,12 +48,5 @@ public class Nmn6FavoritesFormatTest extends NavigationTestCase {
         assertEquals(11.92417, position.getLongitude());
         assertEquals(51.47978, position.getLatitude());
         assertEquals("P Halleneu Cinemaxx, Neustädter Passage", position.getComment());
-    }
-
-    public void testIsNmn6FavoritesWithValidPositions() throws IOException {
-        File source = new File(SAMPLE_PATH + "Favorites.storage-1.rte");
-        NavigationFileParser parser = new NavigationFileParser();
-        assertTrue(parser.read(source));
-        assertEquals(Nmn6FavoritesFormat.class, parser.getFormat().getClass());
     }
 }

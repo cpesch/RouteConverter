@@ -113,31 +113,31 @@
 
         <property name="rest.src" location="rest/src"/>
         <property name="rest.src.java" location="${rest.src}/main/java"/>
-        <property name="rest.output" location="rest/target"/>
-        <property name="rest.target.classes" location="${rest.output}/classes"/>
-        <property name="rest.target.testclasses" location="${rest.output}/testclasses"/>
+        <property name="rest.target" location="rest/target"/>
+        <property name="rest.target.classes" location="${rest.target}/classes"/>
+        <property name="rest.target.testclasses" location="${rest.target}/testclasses"/>
 
         <property name="route-converter.src" location="route-converter/src"/>
         <property name="route-converter.src.java" location="${route-converter.src}/main/java"/>
         <property name="route-converter.resources" location="${route-converter.src}/main/resources"/>
-        <property name="route-converter.output" location="route-converter/target"/>
-        <property name="route-converter.target.classes" location="${route-converter.output}/classes"/>
+        <property name="route-converter.target" location="route-converter/target"/>
+        <property name="route-converter.target.classes" location="${route-converter.target}/classes"/>
         <property name="route-converter6.src.java" location="route-converter6/src/main/java"/>
-        <property name="route-converter6.output" location="route-converter6/target"/>
-        <property name="route-converter6.target.classes" location="${route-converter6.output}/classes"/>
+        <property name="route-converter6.target" location="route-converter6/target"/>
+        <property name="route-converter6.target.classes" location="${route-converter6.target}/classes"/>
         <property name="route-converter-cmdline.src" location="route-converter-cmdline/src"/>
         <property name="route-converter-cmdline.java" location="${route-converter-cmdline.src}/main/java"/>
         <property name="route-converter-cmdline.resources" location="${route-converter-cmdline.src}/main/resources"/>
-        <property name="route-converter-cmdline.output" location="route-converter-cmdline/target"/>
+        <property name="route-converter-cmdline.target" location="route-converter-cmdline/target"/>
 
         <property name="swt-mapview.src" location="swt-mapview/src"/>
         <property name="swt-mapview.src.java" location="${swt-mapview.src}/main/java"/>
-        <property name="swt-mapview.output" location="swt-mapview/target"/>
-        <property name="swt-mapview.target.classes" location="${swt-mapview.output}/classes"/>
+        <property name="swt-mapview.target" location="swt-mapview/target"/>
+        <property name="swt-mapview.target.classes" location="${swt-mapview.target}/classes"/>
 
-        <property name="apache.commons-codec.lib" location="thirdparty/apache/commons-codec/lib/commons-codec-1.3-stripped.jar"/>
-        <property name="apache.commons-httpclient.lib" location="thirdparty/apache/commons-httpclient/lib/commons-httpclient-3.1-stripped.jar"/>
-        <property name="apache.commons-logging.lib" location="thirdparty/apache/commons-logging/lib/commons-logging-1.1-stripped.jar"/>
+        <property name="apache.commons-codec.lib" location="thirdparty/apache/commons-codec/1.3-stripped/commons-codec-1.3-stripped.jar"/>
+        <property name="apache.commons-httpclient.lib" location="thirdparty/apache/commons-httpclient/3.1-stripped/commons-httpclient-3.1-stripped.jar"/>
+        <property name="apache.commons-logging.lib" location="thirdparty/apache/commons-logging/1.1-stripped/commons-logging-1.1-stripped.jar"/>
         <property name="djproject.nativeswing.lib" location="thirdparty/djproject/nativeswing/lib/DJNativeSwing-0.9.8-stripped.jar"/>
         <property name="djproject.nativeswing-swt.lib" location="thirdparty/djproject/nativeswing-swt/lib/DJNativeSwing-SWT-0.9.8-stripped.jar"/>
         <property name="eclipse.swt.linux.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-gtk-linux-x86.jar"/>
@@ -146,15 +146,15 @@
         <property name="eclipse.swt.win32.x86.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86-stripped.jar"/>
         <property name="eclipse.swt.win32.x86_64.lib" location="thirdparty/eclipse/swt/lib/swt-3.5-win32-win32-x86_64-stripped.jar"/>
         <property name="intellij.forms.lib" location="thirdparty/intellij/forms-rt/6.0.5/forms-rt-6.0.5-stripped.jar"/>
-        <property name="jcommon.jcommon.lib" location="thirdparty/jcommon/jcommon/1.0.16/jcommon-1.0.16-stripped.jar"/>
-        <property name="jfreechart.jfreechart.lib" location="thirdparty/jfreechart/jfreechart/1.0.13/jfreechart-1.0.13-stripped.jar"/>
+        <property name="jcommon.jcommon.lib" location="thirdparty/jcommon/jcommon/1.0.16-stripped/jcommon-1.0.16-stripped.jar"/>
+        <property name="jfreechart.jfreechart.lib" location="thirdparty/jfreechart/jfreechart/1.0.13-stripped/jfreechart-1.0.13-stripped.jar"/>
         <property name="junit.junit.lib" location="thirdparty/junit/junit/4.1/junit-4.1.jar"/>
         <property name="sun.activation.lib" location="thirdparty/sun/activation/lib/activation-1.1.jar"/>
         <property name="sun.javaws.lib" location="thirdparty/sun/javaws/jdk6/javaws-jdk6.jar"/>
         <property name="sun.jaxb.api.lib" location="thirdparty/sun/jaxb-api/lib/jaxb-api-2.0.5.jar"/>
         <property name="sun.jaxb.impl.lib" location="thirdparty/sun/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar"/>
         <property name="sun.jaxb.jdk6.impl.lib" location="thirdparty/sun/jaxb-impl/jdk6/jaxb-impl-jdk6.jar"/>
-        <property name="sun.jdic.lib" location="thirdparty/sun/jdic/lib-0.9.3/jdic-0.9.3-stripped.jar"/>
+        <property name="sun.jdic.lib" location="thirdparty/sun/jdic/0.9.3-stripped/jdic-0.9.3-stripped.jar"/>
         <property name="sun.jna.lib" location="thirdparty/sun/jna/lib/jna-3.0.7.jar"/>
         <property name="sun.jsr173.api.lib" location="thirdparty/sun/jsr173-api/lib/jsr173-api-1.0.jar"/>
         <property name="sun.jsr173.impl.lib" location="thirdparty/sun/jsr173-impl/lib/jsr173-impl-1.0.jar"/>
@@ -305,20 +305,20 @@
         <property name="googlemaps.target.classes5" location="${googlemaps.target}/classes5"/>
         <property name="googlemaps.target.testclasses5" location="${googlemaps.target}/testclasses5"/>
         <property name="jaxb5.src.java" location="jaxb5/src/main/java"/>
-        <property name="jaxb5.output" location="jaxb5/target"/>
-        <property name="jaxb5.target.classes5" location="${jaxb5.output}/classes5"/>
+        <property name="jaxb5.target" location="jaxb5/target"/>
+        <property name="jaxb5.target.classes5" location="${jaxb5.target}/classes5"/>
         <property name="jdic-mapview.target.classes5" location="${jdic-mapview.target}/classes5"/>
         <property name="mapview.target.classes5" location="${mapview.target}/classes5"/>
         <property name="navigation-formats.target.classes5" location="${navigation-formats.target}/classes5"/>
         <property name="navigation-formats.target.testclasses5" location="${navigation-formats.target}/testclasses5"/>
-        <property name="rest.target.classes5" location="${rest.output}/classes5"/>
-        <property name="rest.target.testclasses5" location="${rest.output}/testclasses5"/>
-        <property name="route-converter.target.classes5" location="${route-converter.output}/classes5"/>
+        <property name="rest.target.classes5" location="${rest.target}/classes5"/>
+        <property name="rest.target.testclasses5" location="${rest.target}/testclasses5"/>
+        <property name="route-converter.target.classes5" location="${route-converter.target}/classes5"/>
         <property name="route-converter5.src.java" location="route-converter5/src/main/java"/>
-        <property name="route-converter5.output" location="route-converter5/target"/>
-        <property name="route-converter5.target.classes5" location="${route-converter5.output}/classes5"/>
-        <property name="route-converter-cmdline.target.classes5" location="${route-converter-cmdline.output}/classes5"/>
-        <property name="swt-mapview.target.classes5" location="${swt-mapview.output}/classes5"/>
+        <property name="route-converter5.target" location="route-converter5/target"/>
+        <property name="route-converter5.target.classes5" location="${route-converter5.target}/classes5"/>
+        <property name="route-converter-cmdline.target.classes5" location="${route-converter-cmdline.target}/classes5"/>
+        <property name="swt-mapview.target.classes5" location="${swt-mapview.target}/classes5"/>
 
         <path id="catalog.classpath5">
             <path refid="navigation-formats.classpath5"/>
@@ -1609,16 +1609,16 @@
         <delete dir="${elevationview.target}"/>
         <delete dir="${geonames.target}"/>
         <delete dir="${googlemaps.target}"/>
-        <delete dir="${jaxb5.output}"/>
+        <delete dir="${jaxb5.target}"/>
         <delete dir="${jaxb6.target}"/>
         <delete dir="${jdic-mapview.target}"/>
         <delete dir="${mapview.target}"/>
         <delete dir="${navigation-formats.target}"/>
-        <delete dir="${rest.output}"/>
-        <delete dir="${route-converter.output}"/>
-        <delete dir="${route-converter5.output}"/>
-        <delete dir="${route-converter6.output}"/>
-        <delete dir="${swt-mapview.output}"/>
+        <delete dir="${rest.target}"/>
+        <delete dir="${route-converter.target}"/>
+        <delete dir="${route-converter5.target}"/>
+        <delete dir="${route-converter6.target}"/>
+        <delete dir="${swt-mapview.target}"/>
         <delete dir="${build.target}"/>
     </target>
 </project>

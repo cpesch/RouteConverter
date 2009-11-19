@@ -25,7 +25,7 @@ import slash.navigation.ReadWriteBase;
 
 import java.io.IOException;
 
-public class BcrReadWriteRoundtripTest extends ReadWriteBase {
+public class BcrReadWriteRoundtripIT extends ReadWriteBase {
     private void checkUnprocessedValue(BcrRoute route, String section, String name, String value) {
         BcrSection bs = route.findSection(section);
         assertNotNull(bs);

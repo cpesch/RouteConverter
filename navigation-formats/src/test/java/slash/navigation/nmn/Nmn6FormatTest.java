@@ -20,12 +20,8 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.NavigationFileParser;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.Wgs84Position;
-
-import java.io.File;
-import java.io.IOException;
 
 public class Nmn6FormatTest extends NavigationTestCase {
     Nmn6Format format = new Nmn6Format();
@@ -98,19 +94,5 @@ public class Nmn6FormatTest extends NavigationTestCase {
         assertEquals(7.62424, position.getLongitude());
         assertEquals(50.29042, position.getLatitude());
         assertNull(position.getComment());
-    }
-
-    public void testIsNmn6FavoritesWithValidPositionsOnly() throws IOException {
-        File source = new File(SAMPLE_PATH + "MÜ GÖ A38-stripped.rte");
-        NavigationFileParser parser = new NavigationFileParser();
-        assertTrue(parser.read(source));
-        assertEquals(Nmn6Format.class, parser.getFormat().getClass());
-    }
-
-    public void testIsNmn6WithFirstValidLineButNotPosition() throws IOException {
-        File source = new File(SAMPLE_PATH + "MÜ GÖ A38.rte");
-        NavigationFileParser parser = new NavigationFileParser();
-        assertTrue(parser.read(source));
-        assertEquals(Nmn6Format.class, parser.getFormat().getClass());
     }
 }
