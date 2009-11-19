@@ -28,7 +28,6 @@ import slash.navigation.BaseNavigationFormat;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
-import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 

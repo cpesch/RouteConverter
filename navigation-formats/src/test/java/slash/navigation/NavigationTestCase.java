@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 public abstract class NavigationTestCase extends TestCase {
     protected static final Logger log = Logger.getLogger(NavigationTestCase.class.getName());
 
-    public static final String ROUTE_PATH = "..\\routes\\src\\";
+    public static final String ROUTE_PATH = "routes\\src\\";
     public static final String TEST_PATH = ROUTE_PATH + "test\\";
     public static final String SAMPLE_PATH = ROUTE_PATH + "samples\\";
 

@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class GpxReadWriteRoundtripTest extends ReadWriteBase {
+public class GpxReadWriteRoundtripIT extends ReadWriteBase {
 
     private void checkUnprocessed(Gpx gpx) {
         assertNotNull(gpx);

@@ -60,6 +60,7 @@
         <module>common</module>
         <module>common-gui</module>
         <module>elevationview</module>
+        <module>jaxb5</module>
         <module>jaxb6</module>
         <module>jdic-mapview</module>
         <module>geonames</module>
@@ -68,6 +69,8 @@
         <module>navigation-formats</module>
         <module>rest</module>
         <module>route-converter</module>
+        <module>route-converter-cmdline</module>
+        <module>route-converter5</module>
         <module>route-converter6</module>
         <module>swt-mapview</module>
     </modules>
