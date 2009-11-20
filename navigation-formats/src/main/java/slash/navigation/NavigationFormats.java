@@ -157,8 +157,8 @@ public final class NavigationFormats {
 
         // greedy BabelFormats
         addFormat(GarminPoiFormat.class);
-        addFormat(GarminPoiDbFormat.class);
         addFormat(Igo8TrackFormat.class);
+        addFormat(GarminPoiDbFormat.class);
     }
 
     public static void addFormat(Class<? extends NavigationFormat> format) {

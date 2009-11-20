@@ -43,12 +43,16 @@ public class GpxPosition extends Wgs84Position {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
+    public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment, Object origin) {
+        this(longitude, latitude, elevation, speed, time, comment);
+        this.origin = origin;
+    }
+
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed,
                        Double heading, CompactCalendar time, String comment, BigDecimal hdop, BigDecimal pdop,
                        BigDecimal vdop, BigInteger satellites, Object origin) {
         this(Transfer.formatDouble(longitude), Transfer.formatDouble(latitude),
-                Transfer.formatDouble(elevation), speed, time, comment);
-        this.origin = origin;
+                Transfer.formatDouble(elevation), speed, time, comment, origin);
         // avoid overwriting values determined by setComment() with a null value
         if (heading != null)
             setHeading(heading);
@@ -97,7 +101,7 @@ public class GpxPosition extends Wgs84Position {
         return origin;
     }
 
-    <T> T getOrigin(Class<T> resultClass) {
+    public <T> T getOrigin(Class<T> resultClass) {
         if (resultClass.isInstance(origin))
             //noinspection unchecked
             return (T) origin;

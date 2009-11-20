@@ -73,7 +73,8 @@ public class Tcx1Format extends GpxFormat {
                     trackpointT.getAltitudeMeters(),
                     null,
                     parseTime(trackpointT.getTime()),
-                    null));
+                    null,
+                    trackpointT));
         }
         return result;
     }
@@ -98,13 +99,15 @@ public class Tcx1Format extends GpxFormat {
                 courseLapT.getBeginAltitudeMeters(),
                 null,
                 null,
-                "0 seconds"));
+                "0 seconds",
+                courseLapT));
         positions.add(new GpxPosition(convertLongitude(courseLapT.getEndPosition()),
                 convertLatitude(courseLapT.getEndPosition()),
                 courseLapT.getEndAltitudeMeters(),
                 null,
                 null,
-                courseLapT.getTotalTimeSeconds() + " seconds"));
+                courseLapT.getTotalTimeSeconds() + " seconds",
+                courseLapT));
         return new GpxRoute(this, RouteCharacteristics.Waypoints, name, null, positions);
     }
 

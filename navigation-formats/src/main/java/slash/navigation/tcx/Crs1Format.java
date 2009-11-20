@@ -20,11 +20,15 @@
 
 package slash.navigation.tcx;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.tcx.binding1.*;
-import slash.common.io.CompactCalendar;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -54,6 +58,38 @@ public class Crs1Format extends GpxFormat {
 
     public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    private Double getHeartBeatRate(WptType wptType) {
+        Double heartBeatRate = null;
+        if (wptType.getExtensions() != null) {
+            for (Object any : wptType.getExtensions().getAny()) {
+                if (any instanceof Element) {
+                    Element extension = (Element) any;
+                    if ("TrackPointExtension".equals(extension.getLocalName())) {
+                        for (int i = 0; i < extension.getChildNodes().getLength(); i++) {
+                            Node hr = extension.getChildNodes().item(i);
+                            if ("hr".equals(hr.getLocalName()))
+                                heartBeatRate = Transfer.parseDouble(hr.getTextContent());
+                        }
+                    }
+                }
+            }
+        }
+        return heartBeatRate;
+    }
+
+    private Short getHeartBeatRate(GpxPosition position) {
+        // conversion is done currently only from Gpx11Format to Crs1Format
+        if (position != null) {
+            WptType wpt = position.getOrigin(WptType.class);
+            if (wpt != null) {
+                Double heartBeatRate = getHeartBeatRate(wpt);
+                if (heartBeatRate != null)
+                    return heartBeatRate.shortValue();
+            }
+        }
+        return null;
     }
 
     private PositionT createPosition(GpxPosition position) {
@@ -88,10 +124,10 @@ public class Crs1Format extends GpxFormat {
             }
             previous = position;
         }
-
+        courseLapT.setAverageHeartRateBpm(getHeartBeatRate(first));
         courseLapT.setDistanceMeters(distanceMeters);
-        courseLapT.setTotalTimeSeconds(totalTimeMilliSeconds / 1000);
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
+        courseLapT.setTotalTimeSeconds(totalTimeMilliSeconds / 1000);
 
         if (first != null) {
             courseLapT.setBeginPosition(createPosition(first));
@@ -118,6 +154,7 @@ public class Crs1Format extends GpxFormat {
             GpxPosition position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();
             trackpointT.setAltitudeMeters(position.getElevation());
+            trackpointT.setHeartRateBpm(getHeartBeatRate(position));
             trackpointT.setPosition(createPosition(position));
 
             CompactCalendar time = position.getTime();
