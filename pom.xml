@@ -25,7 +25,28 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>routeconverter-release</id>
+            <name>RouteConverter Release Repository</name>
+            <url>scp://routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/release</url>
+        </repository>
+        <snapshotRepository>
+            <id>routeconverter-prerelease</id>
+            <name>RouteConverter Prerelease Snapshot Repository</name>
+            <url>scp://routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>1.0-alpha-5</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -73,5 +94,11 @@
         <module>route-converter5</module>
         <module>route-converter6</module>
         <module>swt-mapview</module>
+        <module>route-converter-build</module>
+        <module>route-converter-license</module>
+        <module>RouteConverterCmdLine</module>
+        <module>RouteConverterLinux</module>
+        <module>RouteConverterMac</module>
+        <module>RouteConverterWindows</module>
     </modules>
 </project>

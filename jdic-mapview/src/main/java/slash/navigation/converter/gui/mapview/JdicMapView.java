@@ -59,7 +59,7 @@ public class JdicMapView extends BaseMapView {
 
     private WebBrowser createWebBrowser() {
         try {
-            String path = "bin/" + Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/";
+            String path = Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/";
             if (Platform.isLinux()) {
                 Externalization.extractFile(path + "libmozembed-linux-gtk1.2.so");
                 Externalization.extractFile(path + "libmozembed-linux-gtk2.so");
