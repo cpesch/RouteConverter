@@ -11,6 +11,13 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>jsmoothgen-plugin</id>
+            <url>http://mindtreeinsight.svn.sourceforge.net/viewvc/mindtreeinsight/maven-repo/trunk/release/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -38,6 +45,60 @@
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.mindtree.techworks.insight.releng</groupId>
+                <artifactId>maven-jsmooth-plugin</artifactId>
+                <version>0.2.0</version>
+                <configuration>
+                    <jsmoothFile>RouteConverter.jsmooth</jsmoothFile>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+                <artifactId>launch4j-plugin</artifactId>
+                <version>1.0.0.3</version>
+                <executions>
+                    <execution>
+                        <id>routeconverter-exe</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/RouteConverterWindows.exe</outfile>
+                            <jar>target/RouteConverterWindows.jar</jar>
+                            <errTitle>RouteConverter</errTitle>
+                            <icon>RouteConverter.ico</icon>
+                            <classPath>
+                                <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
+                            </classPath>
+                            <jre>
+                                <minVersion>1.6.0</minVersion>
+                                <maxHeapSize>256</maxHeapSize>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.${maven.build.number}</fileVersion>
+                                <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtFileVersion>
+                                <fileDescription>RouteConverter displays, modifies and converts GPS data between over 50 formats</fileDescription>
+                                <copyright>Christian Pesch</copyright>
+                                <productName>RouteConverter</productName>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtProductVersion>
+                                <internalName>RouteConverter for Windows as Executable</internalName>
+                                <originalFilename>RouteConverterWindows.exe</originalFilename>
+                            </versionInfo>
+                            <!--
+                            <splash>
+                                <file>RouteConverter.bmp</file>
+                            </splash>
+                            -->
                         </configuration>
                     </execution>
                 </executions>
