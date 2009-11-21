@@ -39,20 +39,16 @@ import java.util.List;
  */
 
 public class WintecWbt201Tk1Format extends WintecWbt201Format {
+    private static final String FORMAT_DESCRIPTOR = "WintecLogFormat";
 
     public String getExtension() {
         return ".tk1";
     }
 
-    protected boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException {
-        sourceHeader.position(0);
-
-        // TODO why an array of 20 bytes
-        byte[] bytes = new byte[20];
-        sourceHeader.get(bytes, 0, 16);
-        String formatDescriptor = new String(bytes, 0, 15, DEFAULT_ENCODING);
-
-        return formatDescriptor.equals("WintecLogFormat");
+    protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
+        buffer.position(0);
+        String formatDescriptor = extractFormatDescriptor(buffer);
+        return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 
     protected List<Wgs84Route> read(ByteBuffer source) throws IOException {
@@ -76,24 +72,19 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
            char pResever1[876];                   //1024
          */
 
-        source.position(0);
         source.order(ByteOrder.LITTLE_ENDIAN);
-        byte[] bytes = new byte[20];
-
-        source.get(bytes, 0, 16);
-        String formatDescriptor = new String(bytes, 0, 15, DEFAULT_ENCODING);
-
+        source.position(0);
+        String formatDescriptor = extractFormatDescriptor(source);
         /*float logVersion =*/ source.getFloat();
         /*float swVersion =*/ source.getFloat();
         /*float hwVersion =*/ source.getFloat();
 
         source.position(40);
-        source.get(bytes);
+        source.get(new byte[20]);
 
         source.position(140);
         int startTrackInfoStruct = source.getInt();
-
-        if (!formatDescriptor.equals("WintecLogFormat"))
+        if (!formatDescriptor.equals(FORMAT_DESCRIPTOR))
             return null;
 
         return readPositions(source, startTrackInfoStruct);

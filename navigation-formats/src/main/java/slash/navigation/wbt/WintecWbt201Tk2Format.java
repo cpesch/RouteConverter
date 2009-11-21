@@ -39,19 +39,16 @@ import java.util.List;
  */
 
 public class WintecWbt201Tk2Format extends WintecWbt201Format {
+    private static final String FORMAT_DESCRIPTOR = "WintecLogTk2\u0000\u0000\u0000";
 
     public String getExtension() {
         return ".tk2";
     }
 
-    protected boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException {
-        sourceHeader.position(0);
-
-        byte[] bytes = new byte[12];
-        sourceHeader.get(bytes, 0, 12);
-        String formatDescriptor = new String(bytes, DEFAULT_ENCODING);
-
-        return formatDescriptor.equals("WintecLogTk2");
+    protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
+        buffer.position(0);
+        String formatDescriptor = extractFormatDescriptor(buffer);
+        return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 
     protected List<Wgs84Route> read(ByteBuffer source) throws IOException {
@@ -79,28 +76,22 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
            char pResever1[548];                  //1024
          */
 
-        source.position(0);
         source.order(ByteOrder.LITTLE_ENDIAN);
-        byte[] bytes = new byte[20];
-
-        source.get(bytes, 0, 16);
-
-        String formatDescriptor = new String(bytes, 0, 15, DEFAULT_ENCODING).trim();
-
+        source.position(0);
+        String formatDescriptor = extractFormatDescriptor(source);
         /*float logVersion =*/ source.getFloat();
         /*float swVersion =*/ source.getFloat();
         /*float hwVersion =*/ source.getFloat();
 
         source.position(40);
-        source.get(bytes);
+        source.get(new byte[20]);
 
         source.position(140);
-
         // Tk2 has no TrackInfo Structure, set position to end of file
         // readPositions processes this correctly
         long startTrackInfoStruct = source.capacity();
 
-        if (!formatDescriptor.equals("WintecLogTk2"))
+        if (!formatDescriptor.equals(FORMAT_DESCRIPTOR))
             return null;
 
         return readPositions(source, startTrackInfoStruct);

@@ -110,6 +110,12 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
+    protected String extractFormatDescriptor(ByteBuffer buffer) throws UnsupportedEncodingException {
+        byte[] bytes = new byte[16];
+        buffer.get(bytes, 0, 16);
+        return new String(bytes, 0, 15, DEFAULT_ENCODING);
+    }
+
     List<Wgs84Route> readPositions(ByteBuffer source, long trackInfoAddress) {
         /* http://forum.pocketnavigation.de/attachment.php?attachmentid=1082953
            2 byte Trackflag
