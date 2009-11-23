@@ -8,8 +8,16 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.32-SNAPSHOT</version>
     </parent>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>vineetmanohar-release-repo</id>
+            <name>Vineet Manohar Release Repo</name>
+            <url>http://repo.vineetmanohar.com/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <properties>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
@@ -39,6 +47,24 @@
                     <doUpdate>false</doUpdate>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.vineetmanohar</groupId>
+                <artifactId>maven-twitter-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <twitterStatus>Version ${project.version} of RouteConverter released to http://www.routeconverter.de</twitterStatus>
+                        </configuration>
+                        <id>deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>tweet</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -46,7 +72,7 @@
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>route-converter-license</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.32-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -5,7 +5,7 @@
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.32-SNAPSHOT</version>
     <name>RouteConverter</name>
     <url>http://www.routeconverter.de</url>
 
@@ -29,12 +29,12 @@
         <repository>
             <id>routeconverter-release</id>
             <name>RouteConverter Release Repository</name>
-            <url>scp://routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/release</url>
+            <url>scpexe://www.routeconverter.de:/home/notroot/public_html/routeconverter.com/static/downloads</url>
         </repository>
         <snapshotRepository>
             <id>routeconverter-prerelease</id>
             <name>RouteConverter Prerelease Snapshot Repository</name>
-            <url>scp://routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
+            <url>scpexe://www.routeconverter.de:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -63,6 +63,12 @@
                 <configuration>
                     <encoding>ISO-8859-1</encoding>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.vineetmanohar</groupId>
+                <artifactId>maven-twitter-plugin</artifactId>
+                <version>0.1</version>
             </plugin>
         </plugins>
     </build>
