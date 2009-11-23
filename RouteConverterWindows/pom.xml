@@ -40,13 +40,13 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Created-By>Christian Pesch</Created-By>
+                                        <Specification-Title>${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
                                         <Download-At>http://www.routeconverter.de</Download-At>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter6</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
-                                        <Version>${project.version}</Version>
-                                        <Build-Number>${maven.build.number}</Build-Number>
-                                        <Build-Date>${maven.build.timestamp}</Build-Date>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>

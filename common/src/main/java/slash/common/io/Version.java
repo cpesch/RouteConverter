@@ -20,9 +20,6 @@
 
 package slash.common.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,8 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 
 /**
  * Provides version parsing functionality.
@@ -87,48 +82,79 @@ public class Version {
         return Boolean.parseBoolean(map.get(ROUTECONVERTER_IS_LATEST_KEY));
     }
 
-    public static String getMajor(String version) {
-        int index = version.indexOf('.');
-        if (index != -1)
-            return version.substring(0, index);
+
+    private static final SimpleDateFormat BUILD_DATE = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private String version, date;
+
+    public Version(String version, String date) {
+        this.version = version;
+        this.date = date;
+    }
+
+    public Version(String version) {
+        this(version, null);
+    }
+
+    public String getMajor() {
+        int dot = version.indexOf('.');
+        if (dot != -1)
+            return version.substring(0, dot);
         return version;
     }
 
-    public static String getMinor(String version) {
-        int index = version.indexOf('.');
-        if (index != -1)
-            return version.substring(index + 1);
+    public String getMinor() {
+        int dot = version.indexOf('.');
+        if (dot != -1)
+            version = version.substring(dot + 1);
         return version;
     }
 
-    public static boolean isLatestVersion(String latestVersion, String foundVersion) {
-        String latestVersionMajor = getMajor(latestVersion);
-        String foundMajor = getMajor(foundVersion);
-        int major = latestVersionMajor.compareTo(foundMajor);
-        if (major != 0)
-            return major <= 0;
-        String latestVersionMinor = getMinor(latestVersion);
-        String foundMinor = getMinor(foundVersion);
-        while (foundMinor.length() < latestVersionMinor.length())
-            foundMinor = "0" + foundMinor;
-        return latestVersionMinor.compareTo(foundMinor) <= 0;
+    private String sameLength(String reference, String hasToHaveSameLength) {
+        while (hasToHaveSameLength.length() < reference.length())
+            hasToHaveSameLength = "0" + hasToHaveSameLength;
+        return hasToHaveSameLength;
     }
 
-    private static final SimpleDateFormat BUILD_DATE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private String version;
-    private String buildDate;
+    private String removeSnapshot(String string) {
+        int index = string.indexOf("-");
+        if (index != -1)
+            string = string.substring(0, index);
+        int dot = string.indexOf(".");
+        if (dot != -1)
+            string = string.substring(0, dot);
+        return string;
+    }
 
-    private Version() {
+    public boolean isLaterVersionThan(Version other) {
+        String major = getMajor();
+        String otherMajor = sameLength(major, other.getMajor());
+        int result = otherMajor.compareTo(major);
+        if (result != 0)
+            return result <= 0;
+
+        String minor = removeSnapshot(getMinor());
+        String otherMinor = sameLength(minor, removeSnapshot(other.getMinor()));
+        result = otherMinor.compareTo(minor);
+        return result <= 0;
     }
 
     public String getVersion() {
-        return version != null ? version : "?";
+        if (version != null) {
+            if (version.contains("-SNAPSHOT"))
+                return version;
+            int index = version.indexOf('-');
+            if (index != -1)
+                return version.substring(0, index);
+            else
+                return version;
+        }
+        return "?";
     }
 
-    public String getBuildDate() {
-        if (buildDate != null) {
+    public String getDate() {
+        if (date != null) {
             try {
-                Date date = BUILD_DATE.parse(buildDate);
+                Date date = BUILD_DATE.parse(this.date);
                 return DateFormat.getDateInstance(DateFormat.LONG).format(date);
             }
             catch (ParseException e) {
@@ -139,27 +165,7 @@ public class Version {
     }
 
     public static Version parseVersionFromManifest() {
-        try {
-            URL url = Version.class.getProtectionDomain().getCodeSource().getLocation();
-            InputStream in = url.openStream();
-            if (in != null) {
-                JarInputStream jar = new JarInputStream(in);
-                try {
-                    Manifest manifest = jar.getManifest();
-                    if (manifest != null) {
-                        Version data = new Version();
-                        data.version = manifest.getMainAttributes().getValue("Version");
-                        data.buildDate = manifest.getMainAttributes().getValue("Build-Date");
-                        return data;
-                    }
-                }
-                finally {
-                    jar.close();
-                }
-            }
-        } catch (IOException e) {
-            // intentionally ignored
-        }
-        return new Version();
+        return new Version(Version.class.getPackage().getSpecificationVersion(),
+                Version.class.getPackage().getImplementationVersion());
     }
 }

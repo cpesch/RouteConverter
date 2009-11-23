@@ -20,9 +20,11 @@
 
 package slash.common.io;
 
-import junit.framework.TestCase;
+import slash.common.TestCase;
 
 import java.util.Map;
+import java.util.Date;
+import java.text.DateFormat;
 
 public class VersionTest extends TestCase {
 
@@ -39,30 +41,64 @@ public class VersionTest extends TestCase {
         assertEquals("2", Version.parseVersionFromParameters("x=y,routeconverter.version=2,y=z"));
     }
 
+    public void testGetVersion() {
+        assertEquals("1.2.3", new Version("1.2.3").getVersion());
+        assertEquals("1.2", new Version("1.2-3").getVersion());
+        assertEquals("1.2-SNAPSHOT-3", new Version("1.2-SNAPSHOT-3").getVersion());
+    }
+
     public void testGetMajor() {
-        assertEquals("1", Version.getMajor("1"));
-        assertEquals("1", Version.getMajor("1.1"));
-        assertEquals("1", Version.getMajor("1.1.1"));
+        assertEquals("1", new Version("1").getMajor());
+        assertEquals("1", new Version("1.2").getMajor());
+        assertEquals("1", new Version("1.2.3").getMajor());
+        assertEquals("1", new Version("1.2-SNAPSHOT-3").getMajor());
     }
 
     public void testGetMinor() {
-        assertEquals("1", Version.getMinor("1"));
-        assertEquals("1", Version.getMinor("1.1"));
-        assertEquals("1.1", Version.getMinor("1.1.1"));
+        assertEquals("1", new Version("1").getMinor());
+        assertEquals("2", new Version("1.2").getMinor());
+        assertEquals("2-3", new Version("1.2-3").getMinor());
+        assertEquals("2.3-4", new Version("1.2.3-4").getMinor());
+        assertEquals("2-SNAPSHOT-3", new Version("1.2-SNAPSHOT-3").getMinor());
+        assertEquals("2.3-SNAPSHOT-4", new Version("1.2.3-SNAPSHOT-4").getMinor());
     }
 
-    public void testIsCurrent() {
-        assertTrue(Version.isLatestVersion("1.3", "1.3"));
-        assertFalse(Version.isLatestVersion("2.1", "1.9"));
-        assertFalse(Version.isLatestVersion("1.3", "1.2"));
-        assertFalse(Version.isLatestVersion("1.3", "1"));
-        assertTrue(Version.isLatestVersion("1.2", "1.3"));
-        assertFalse(Version.isLatestVersion("1.9.1", "1.9"));
-        assertFalse(Version.isLatestVersion("1.9.2", "1.9.1"));
-        assertFalse(Version.isLatestVersion("1.9.10", "1.9.9"));
-        assertFalse(Version.isLatestVersion("1.9a", "1.9"));
-        assertFalse(Version.isLatestVersion("1.10", "1.09"));
-        assertFalse(Version.isLatestVersion("1.10", "1.9"));
-        assertFalse(Version.isLatestVersion("1.100", "1.99"));
+    public void testGetDate() {
+        assertEquals(DateFormat.getDateInstance(DateFormat.LONG).format(calendar(2009, 11, 23, 20, 53, 49).getTime()),
+                new Version(null, "2009-11-23 20:53:49").getDate());
+    }
+
+    public void testIsLatestVersion() {
+        assertTrue(new Version("1").isLaterVersionThan(new Version("1")));
+        assertTrue(new Version("2").isLaterVersionThan(new Version("1.3")));
+        assertTrue(new Version("10").isLaterVersionThan(new Version("9")));
+        assertTrue(new Version("11").isLaterVersionThan(new Version("10")));
+
+        assertTrue(new Version("1.3").isLaterVersionThan(new Version("1")));
+        assertTrue(new Version("1.3").isLaterVersionThan(new Version("1.3")));
+        assertTrue(new Version("1.10").isLaterVersionThan(new Version("1.9")));
+        assertTrue(new Version("1.100").isLaterVersionThan(new Version("1.99")));
+
+        assertTrue(new Version("1.3.1").isLaterVersionThan(new Version("1.3")));
+        assertTrue(new Version("1.3.10").isLaterVersionThan(new Version("1.3.9")));
+
+        assertTrue(new Version("1.3-SNAPSHOT-1").isLaterVersionThan(new Version("1.3")));
+        assertTrue(new Version("1.3-SNAPSHOT-2").isLaterVersionThan(new Version("1.3-SNAPSHOT-1")));
+
+        assertTrue(new Version("0.3").isLaterVersionThan(new Version("0.2")));
+        assertTrue(new Version("1.3").isLaterVersionThan(new Version("1.2")));
+        assertTrue(new Version("2.3").isLaterVersionThan(new Version("2.2")));
+
+        assertTrue(new Version("1.1").isLaterVersionThan(new Version("0.9")));
+        assertTrue(new Version("1.30.1").isLaterVersionThan(new Version("1.29.2")));
+
+        assertTrue(new Version("1.30.1").isLaterVersionThan(new Version("1.29.2")));
+    }
+
+    public void testIsNotLatestVersion() {
+        assertFalse(new Version("1").isLaterVersionThan(new Version("1.3")));
+        assertFalse(new Version("1.2").isLaterVersionThan(new Version("1.3")));
+        assertFalse(new Version("1.2.1").isLaterVersionThan(new Version("1.3")));
+        assertFalse(new Version("1.2-SNAPSHOT-1").isLaterVersionThan(new Version("1.3")));
     }
 }

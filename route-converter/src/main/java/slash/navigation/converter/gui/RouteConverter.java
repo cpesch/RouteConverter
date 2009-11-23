@@ -80,7 +80,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     static String getTitle() {
         Version version = Version.parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getBuildDate());
+        return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
     }
 
     private static final String SOURCE_PREFERENCE = "source";

@@ -88,7 +88,8 @@ public class Updater {
 
             result.isLatestVersion = Version.isLatestVersionFromParameters(parameters);
             log.fine("Server thinks it's latest: " + result.isLatestVersion);
-            log.fine("I think it's latest: " + Version.isLatestVersion(result.latestVersion, result.myVersion));
+            result.isLatestVersion = new Version(result.myVersion).isLaterVersionThan(new Version(result.latestVersion));
+            log.fine("I think it's latest: " + result.isLatestVersion);
 
             // some people reported update dialogs with null as latest version
             if (Transfer.trim(result.latestVersion) == null)
