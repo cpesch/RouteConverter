@@ -7,17 +7,12 @@
     <name>The RouteConverter command line tool</name>
     <parent>
         <groupId>slash.navigation</groupId>
-        <artifactId>RouteConverter</artifactId>
+        <artifactId>route-converter-build</artifactId>
         <version>1.32-SNAPSHOT</version>
     </parent>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

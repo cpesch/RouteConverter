@@ -21,11 +21,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.2.1</version>
@@ -55,6 +50,26 @@
                 </executions>
             </plugin>
 
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="target/${project.build.finalName}.jar" tofile="target/${project.artifactId}.jar" preservelastmodified="true" verbose="true" failonerror="true"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+            
             <plugin>
                 <groupId>com.mindtree.techworks.insight.releng</groupId>
                 <artifactId>maven-jsmooth-plugin</artifactId>

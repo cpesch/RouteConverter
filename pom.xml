@@ -102,9 +102,11 @@
         <module>swt-mapview</module>
         <module>route-converter-build</module>
         <module>route-converter-license</module>
+        <module>RouteConverterBase</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
         <module>RouteConverterMac</module>
         <module>RouteConverterWindows</module>
+        <module>RouteConverterWebstart</module>
     </modules>
 </project>
