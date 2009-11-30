@@ -11,13 +11,6 @@
         <version>1.32-SNAPSHOT</version>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>jsmoothgen-plugin</id>
-            <url>http://mindtreeinsight.svn.sourceforge.net/viewvc/mindtreeinsight/maven-repo/trunk/release/</url>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>

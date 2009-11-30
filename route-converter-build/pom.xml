@@ -17,6 +17,10 @@
             <name>Vineet Manohar Release Repo</name>
             <url>http://repo.vineetmanohar.com/releases</url>
         </pluginRepository>
+        <pluginRepository>
+            <id>jsmoothgen-plugin</id>
+            <url>http://mindtreeinsight.svn.sourceforge.net/viewvc/mindtreeinsight/maven-repo/trunk/release/</url>
+        </pluginRepository>
     </pluginRepositories>
 
     <properties>
