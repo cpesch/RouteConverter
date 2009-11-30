@@ -20,9 +20,9 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.*;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,7 @@ import java.util.regex.Pattern;
  */
 
 public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusV900Format.class);
     protected static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
     protected static final char SEPARATOR_CHAR = ',';
     protected static final String SPACE_OR_ZERO = "[\\s\u0000]*";
@@ -77,6 +79,10 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return matcher.matches();
     }
 
+    private int getTimeOffset() {
+        return preferences.getInt("columbusV900TimeOffsetSeconds", 0);
+    }
+
     protected CompactCalendar parseDateAndTime(String date, String time) {
         date = Transfer.trim(date);
         time = Transfer.trim(time);
@@ -87,6 +93,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(parsed);
+            calendar.add(Calendar.SECOND, getTimeOffset());
             return CompactCalendar.fromCalendar(calendar);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
