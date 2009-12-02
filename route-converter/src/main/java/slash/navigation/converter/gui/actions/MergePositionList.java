@@ -56,14 +56,20 @@ public class MergePositionList extends AbstractAction {
         initialize();
     }
 
+    private final ItemListener itemListener = new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+            BaseRoute route = (BaseRoute) e.getItem();
+            setEnabled(!sourceRoute.equals(route));
+        }
+    };
+
     protected void initialize() {
         setEnabled(!sourceRoute.equals(combobox.getSelectedItem()));
-        combobox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                BaseRoute route = (BaseRoute) e.getItem();
-                setEnabled(!sourceRoute.equals(route));
-            }
-        });
+        combobox.addItemListener(itemListener);
+    }
+
+    public void cleanup() {
+        combobox.removeItemListener(itemListener);
     }
 
     public void actionPerformed(ActionEvent e) {

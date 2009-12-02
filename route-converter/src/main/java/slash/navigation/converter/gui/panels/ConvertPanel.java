@@ -1278,13 +1278,18 @@ public abstract class ConvertPanel {
             popupMenu.add(buttonSplitPositionlist);
 
             final JMenu menuMergePositionlist = new JMenu(RouteConverter.getBundle().getString("merge-positionlist"));
+            final Map<JMenuItem, MergePositionList> menuItem2MergePositonList = new HashMap<JMenuItem, MergePositionList>();
             popupMenu.add(menuMergePositionlist);
 
             formatAndRoutesModel.addListDataListener(new ListDataListener() {
                 public void intervalAdded(ListDataEvent e) {
                     for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                         BaseRoute route = formatAndRoutesModel.getRoute(i);
-                        JMenuItem menuItem = new JMenuItem(new MergePositionList(RouteConverter.getInstance().getFrame(), tablePositions, comboBoxChoosePositionList, route, getPositionsModel(), formatAndRoutesModel));
+                        // initialization code
+                        MergePositionList mergePositionList = new MergePositionList(RouteConverter.getInstance().getFrame(), tablePositions, comboBoxChoosePositionList, route, getPositionsModel(), formatAndRoutesModel);
+                        JMenuItem menuItem = new JMenuItem(mergePositionList);
+                        menuItem2MergePositonList.put(menuItem, mergePositionList);
+                        // end of initialization code
                         menuItem.setText(RouteComments.shortenRouteName(route));
                         menuMergePositionlist.add(menuItem, i);
                     }
@@ -1292,6 +1297,16 @@ public abstract class ConvertPanel {
 
                 public void intervalRemoved(ListDataEvent e) {
                     for (int i = e.getIndex1(); i >= e.getIndex0(); i--) {
+                        // clean up code
+                        JMenuItem menuItem = i < menuMergePositionlist.getMenuComponentCount() ? (JMenuItem)menuMergePositionlist.getMenuComponent(i) : null;
+                        if (menuItem != null) {
+                            MergePositionList mergePositionList = menuItem2MergePositonList.get(menuItem);
+                            if(mergePositionList != null)
+                                mergePositionList.cleanup();
+                            menuItem2MergePositonList.remove(menuItem);
+                            menuItem.setAction(null);
+                        }
+                        // end of clean up code
                         menuMergePositionlist.remove(i);
                     }
                 }
