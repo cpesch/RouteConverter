@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.elevationview;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
+import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
@@ -32,6 +32,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.Application;
 
 import javax.swing.*;
@@ -48,10 +49,20 @@ import java.util.ResourceBundle;
 public class ElevationView {
     private ChartPanel chartPanel;
 
-    public ElevationView(PositionsModel positionsModel) {
+    public ElevationView(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel) {
         XYSeriesCollection dataset = createDataset(positionsModel);
         JFreeChart chart = createChart(dataset);
         chartPanel = new ChartPanel(chart, false, true, true, true, true);
+        chartPanel.addChartMouseListener(new ChartMouseListener() {
+            public void chartMouseClicked(ChartMouseEvent e) {
+                ChartEntity entity = e.getEntity();
+                if (!(entity instanceof XYItemEntity))
+                    return;
+                int index = ((XYItemEntity) entity).getItem();
+                positionsSelectionModel.setSelectedPositions(new int[]{index});
+            }
+            public void chartMouseMoved(ChartMouseEvent e) {}
+        });
     }
 
     private XYSeriesCollection createDataset(PositionsModel model) {

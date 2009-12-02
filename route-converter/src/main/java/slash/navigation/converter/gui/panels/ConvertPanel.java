@@ -47,6 +47,7 @@ import slash.navigation.util.*;
 import slash.common.io.Files;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Range;
+import slash.common.io.ContinousRange;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -698,9 +699,7 @@ public abstract class ConvertPanel {
                 RouteConverter.getBundle().getString("add-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Rectangle rectangle = tablePositions.getCellRect(insertRow, 1, true);
-                tablePositions.scrollRectToVisible(rectangle);
-
+                scrollToPosition(insertRow);
                 selectPositions(insertRow, insertRow);
             }
         });
@@ -714,9 +713,7 @@ public abstract class ConvertPanel {
             if (tablePositions.getRowCount() > 0) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        Rectangle rectangle = tablePositions.getCellRect(removeRow, 1, true);
-                        tablePositions.scrollRectToVisible(rectangle);
-
+                        scrollToPosition(removeRow);
                         selectPositions(removeRow, removeRow);
                     }
                 });
@@ -742,6 +739,11 @@ public abstract class ConvertPanel {
                 MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
                 RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_OPTION);
         return confirm != JOptionPane.YES_OPTION;
+    }
+
+    private void scrollToPosition(int insertRow) {
+        Rectangle rectangle = tablePositions.getCellRect(insertRow, 1, true);
+        tablePositions.scrollRectToVisible(rectangle);
     }
 
     private void selectPositions(final int index0, final int index1) {
@@ -817,19 +819,21 @@ public abstract class ConvertPanel {
 
     private void handleSelectionUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
-        if (selectedRows.length == 0)
-            return;
-        boolean firstRowNotSelected = selectedRows[0] != 0;
-        buttonMovePositionToTop.setEnabled(firstRowNotSelected);
-        buttonMovePositionUp.setEnabled(firstRowNotSelected);
-        boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
-        buttonMovePositionDown.setEnabled(lastRowNotSelected);
-        buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
-        if (RouteConverter.getInstance().isMapViewAvailable())
-            RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
+        if (selectedRows.length > 0) {
+            boolean firstRowNotSelected = selectedRows[0] != 0;
+            buttonMovePositionToTop.setEnabled(firstRowNotSelected);
+            buttonMovePositionUp.setEnabled(firstRowNotSelected);
+            boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
+            buttonMovePositionDown.setEnabled(lastRowNotSelected);
+            buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
+        }
 
-        final boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-        popupTable.handlePositionsUpdate(supportsMultipleRoutes, selectedRows.length > 0);
+        RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
+        
+        if (selectedRows.length > 0) {
+            boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
+            popupTable.handlePositionsUpdate(supportsMultipleRoutes, selectedRows.length > 0);
+        }
     }
 
     // helpers
@@ -914,6 +918,21 @@ public abstract class ConvertPanel {
 
     public PositionsModel getPositionsModel() {
         return formatAndRoutesModel.getPositionsModel();
+    }
+
+    public PositionsSelectionModel getPositionsSelectionModel() {
+        return new PositionsSelectionModel() {
+            public void setSelectedPositions(int[] selectedPositions) {
+                new ContinousRange(selectedPositions, new ContinousRange.RangeOperation() {
+                    public void performOnIndex(int index) {
+                        tablePositions.getSelectionModel().addSelectionInterval(index, index);
+                    }
+                    public void performOnRange(int firstIndex, int lastIndex) {
+                        scrollToPosition(firstIndex);
+                    }
+                }).performMonotonicallyIncreasing(20);
+            }
+        };
     }
 
     public CharacteristicsModel getCharacteristicsModel() {

@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
 
 import java.awt.*;
 
@@ -32,7 +33,7 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public interface MapView {
+public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
                     boolean pedestrians, boolean avoidHighways);
     boolean isSupportedPlatform();
@@ -43,7 +44,6 @@ public interface MapView {
     Component getComponent();
 
     void resize();
-    void setSelectedPositions(int[] selectedPositions);
     void setPedestrians(boolean pedestrians);
     void setAvoidHighways(boolean avoidHighways);
     BaseNavigationPosition getCenter();

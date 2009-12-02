@@ -34,6 +34,7 @@ import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
 import slash.navigation.converter.gui.panels.AnalysePanel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
@@ -474,7 +475,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public void selectPositionsOnMap(int[] selectPositions) {
-        mapView.setSelectedPositions(selectPositions);
+        if (isMapViewAvailable())
+            mapView.setSelectedPositions(selectPositions);
     }
 
     public void printMap(boolean withRoute) {
@@ -543,6 +545,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public PositionsModel getPositionsModel() {
         return getConvertPanel().getPositionsModel();
+    }
+
+    public PositionsSelectionModel getPositionsSelectionModel() {
+        return getConvertPanel().getPositionsSelectionModel();
     }
 
     // tab related helpers

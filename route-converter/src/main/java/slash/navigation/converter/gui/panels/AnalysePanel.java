@@ -61,7 +61,7 @@ public class AnalysePanel {
             }
         });
 
-        elevationView = new ElevationView(r.getPositionsModel());
+        elevationView = new ElevationView(r.getPositionsModel(), r.getPositionsSelectionModel());
         elevationPanel.add(elevationView.getComponent(), BorderLayout.CENTER);
 
         ElevationToJLabelAdapter elevationAdapter = new ElevationToJLabelAdapter(r.getPositionsModel(), labelOverallAscend, labelOverallDescend);
