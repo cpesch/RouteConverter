@@ -97,13 +97,21 @@ public class GeoNamesServiceIT extends TestCase {
     }
 
     public void testNearByPostalCodeFor() throws IOException {
-        assertEquals("CH 9622", service.getNearByPostalCodeFor(9.0, 47.3));
-        assertEquals("DE 97506", service.getNearByPostalCodeFor(10.2, 50.001));
-        assertEquals("Hammersbach", service.getNearByPlaceNameFor(11.06561, 47.42428));
+        assertEquals(new PostalCode("CH", "9622", "Krinau"), service.getNearByPostalCodeFor(9.0, 47.3));
+        assertEquals(new PostalCode("DE", "97506", "Grafenrheinfeld"), service.getNearByPostalCodeFor(10.2, 50.001));
+        assertEquals(new PostalCode("AT", "6105", "Obern"), service.getNearByPostalCodeFor(11.06561, 47.42428));
         assertEquals(null, service.getNearByPostalCodeFor(0.0, 0.0));
         assertEquals(null, service.getNearByPostalCodeFor(0.0, -90.0));
-        assertEquals("CA H0H", service.getNearByPostalCodeFor(0.0, 90.0));
+        assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), service.getNearByPostalCodeFor(0.0, 90.0));
         assertEquals(null, service.getNearByPostalCodeFor(90.0, 90.0));
         assertEquals(null, service.getNearByPostalCodeFor(-90.0, -90.0));
+    }
+
+    public void testPlaceNameFor() throws IOException {
+        assertEquals("Krinau", service.getPlaceNameFor("CH", "9622"));
+        assertEquals("Grafenrheinfeld", service.getPlaceNameFor("DE", "97506"));
+        assertEquals("Leutasch", service.getPlaceNameFor("AT", "6105"));
+        assertEquals("Walldorf", service.getPlaceNameFor("DE", "69190"));
+        assertEquals("Walldorf", service.getPlaceNameFor("de", "69190"));
     }
 }
