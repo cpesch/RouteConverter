@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * Encapsulates REST access to the GeoNames.org service.
+ * Encapsulates REST access to the geonames.org service.
  *
  * @author Christian Pesch
  */
@@ -140,17 +140,24 @@ public class GeoNamesService {
         }
         return result.size() > 0 ? result.get(0).placeName : null;
     }
-    
-    public double[] getLatLng(String countryCode, String postalCode) throws IOException {
-	Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode="+postalCode+"&country="+countryCode);
+
+    /**
+     * Return longitude and latitude for the given country and postal code.
+     *
+     * @param countryCode the country code to search a position for
+     * @param postalCode the postal code to search a position for
+     * @return the longitude and latitude for the given country and postal code
+     * @throws IOException if an error occurs while accessing geonames.org
+     */
+    public double[] getPositionFor(String countryCode, String postalCode) throws IOException {
+        Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode=" + postalCode + "&country=" + countryCode);
         if (geonames == null || geonames.getCode() == null)
             return null;
-        double[] result = new double[2]; // lat in 0, lng in 1
+        List<Double> result = new ArrayList<Double>();
         for (Geonames.Code code : geonames.getCode()) {
-            result[0] = code.getLat().doubleValue();
-            result[1] = code.getLng().doubleValue();
-            break;
+            result.add(code.getLng().doubleValue());
+            result.add(code.getLat().doubleValue());
         }
-        return result;
+        return result.size() > 1 ? new double[]{result.get(0), result.get(1)} : null;
     }
 }
