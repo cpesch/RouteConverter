@@ -3,7 +3,25 @@
   <xs:element name="geonames">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="geoname">
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="code">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="postalcode" type="xs:string" />
+              <xs:element name="name" type="xs:string" />
+              <xs:element name="countryCode" type="xs:string" />
+              <xs:element name="lat" type="xs:decimal" />
+              <xs:element name="lng" type="xs:decimal" />
+              <xs:element name="adminCode1" type="xs:string" />
+              <xs:element name="adminName1" type="xs:string" />
+              <xs:element name="adminCode2" type="xs:string" />
+              <xs:element name="adminName2" type="xs:string" />
+              <xs:element name="adminCode3" type="xs:string" />
+              <xs:element name="adminName3" type="xs:string" />
+              <xs:element name="distance" type="xs:decimal" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="geoname">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="name" type="xs:string" />

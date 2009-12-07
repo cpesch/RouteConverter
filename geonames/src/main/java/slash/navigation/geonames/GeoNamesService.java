@@ -27,6 +27,8 @@ import slash.common.io.Transfer;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.prefs.Preferences;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Encapsulates REST access to the GeoNames.org service.
@@ -73,20 +75,29 @@ public class GeoNamesService {
             return getGtopo30ElevationFor(longitude, latitude);
     }
 
-    private String getNearByFor(String uri, double longitude, double latitude) throws IOException {
+    private Geonames getDataFor(String uri, double longitude, double latitude) throws IOException {
         Get get = new Get(getGeoNamesUrlPreference() + uri + "?lat=" + latitude + "&lng=" + longitude);
         String result = get.execute();
         if (get.isSuccessful())
             try {
-                Geonames geonames = GeoNamesUtil.unmarshal(result);
-                if (geonames.getGeoname() != null)
-                    return geonames.getGeoname().getName();
+                return GeoNamesUtil.unmarshal(result);
             } catch (JAXBException e) {
                 IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
                 io.setStackTrace(e.getStackTrace());
                 throw io;
             }
         return null;
+    }
+
+    private String getNearByFor(String uri, double longitude, double latitude) throws IOException {
+        Geonames geonames = getDataFor(uri, longitude, latitude);
+        if(geonames == null || geonames.getGeoname() == null)
+            return null;
+        List<String> result = new ArrayList<String>();
+        for (Geonames.Geoname geoname : geonames.getGeoname()) {
+            result.add(geoname.getName());
+        }
+        return result.size() > 0 ? result.get(0) : null;
     }
 
     String getNearByToponymFor(double longitude, double latitude) throws IOException {
@@ -102,5 +113,16 @@ public class GeoNamesService {
         if (description == null)
             description = getNearByToponymFor(longitude, latitude);
         return description;
+    }
+
+    public String getNearByPostalCodeFor(double longitude, double latitude) throws IOException {
+        Geonames geonames = getDataFor("findNearbyPostalCodes", longitude, latitude);
+        if(geonames == null || geonames.getCode() == null)
+            return null;
+        List<String> result = new ArrayList<String>();
+        for (Geonames.Code code : geonames.getCode()) {
+            result.add(code.getCountryCode() + " " + code.getPostalcode());
+        }
+        return result.size() > 0 ? result.get(0) : null;
     }
 }
