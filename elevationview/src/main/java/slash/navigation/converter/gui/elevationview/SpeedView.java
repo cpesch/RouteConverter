@@ -41,15 +41,15 @@ import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
 /**
- * Displays the elevations of a {@link PositionsModel}.
+ * Displays the speed of a {@link PositionsModel}.
  *
  * @author Christian Pesch
  */
 
-public class ElevationView {
+public class SpeedView {
     private ChartPanel chartPanel;
 
-    public ElevationView(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel) {
+    public SpeedView(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel) {
         XYSeriesCollection dataset = createDataset(positionsModel);
         JFreeChart chart = createChart(dataset);
         chartPanel = new ChartPanel(chart, false, true, true, true, true);
@@ -66,8 +66,8 @@ public class ElevationView {
     }
 
     private XYSeriesCollection createDataset(PositionsModel model) {
-        XYSeries series = new XYSeries("Elevation");
-        new ElevationModel(model, series);
+        XYSeries series = new XYSeries("Speed");
+        new SpeedModel(model, series);
         return new XYSeriesCollection(series);
     }
 
@@ -79,7 +79,7 @@ public class ElevationView {
         JFreeChart chart = ChartFactory.createXYAreaChart(
                 getBundle().getString("elevation-profile"),
                 getBundle().getString("distance-axis"),
-                getBundle().getString("elevation-axis"),
+                getBundle().getString("speed-axis"),
                 dataset,
                 PlotOrientation.VERTICAL, false, true, false
         );
@@ -97,7 +97,7 @@ public class ElevationView {
         valueAxis.setUpperMargin(0.0);
 
         XYItemRenderer renderer = plot.getRenderer();
-        renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{2}m @ {1} Km",
+        renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{2} Km/h @ {1} Km",
                 NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 
         return chart;

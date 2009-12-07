@@ -32,14 +32,22 @@ import javax.swing.event.TableModelEvent;
  * @author Christian Pesch
  */
 
-public class PositionsModelToXYSeriesSynchronizer {
+public abstract class PositionsModelToXYSeriesSynchronizer {
     private PositionsModel positions;
     private XYSeries series;
 
-    public PositionsModelToXYSeriesSynchronizer(PositionsModel positions, XYSeries series) {
+    protected PositionsModelToXYSeriesSynchronizer(PositionsModel positions, XYSeries series) {
         this.positions = positions;
         this.series = series;
         initialize();
+    }
+
+    protected PositionsModel getPositions() {
+        return positions;
+    }
+
+    protected XYSeries getSeries() {
+        return series;
     }
 
     private void initialize() {
@@ -62,10 +70,9 @@ public class PositionsModelToXYSeriesSynchronizer {
         });
     }
 
-    private void handleAdd(int firstRow, int lastRow) {
-        double[] distances = positions.getRoute().getDistancesFromStart(firstRow, lastRow);
+    protected void handleAdd(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
-            series.add(distances[i - firstRow] / 1000.0, positions.getPosition(i).getElevation());
+            series.add(i - firstRow, i);
         }
     }
 
