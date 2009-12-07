@@ -140,4 +140,17 @@ public class GeoNamesService {
         }
         return result.size() > 0 ? result.get(0).placeName : null;
     }
+    
+    public double[] getLatLng(String countryCode, String postalCode) throws IOException {
+	Geonames geonames = getGeonamesFor("postalCodeSearch?postalcode="+postalCode+"&country="+countryCode);
+        if (geonames == null || geonames.getCode() == null)
+            return null;
+        double[] result = new double[2]; // lat in 0, lng in 1
+        for (Geonames.Code code : geonames.getCode()) {
+            result[0] = code.getLat().doubleValue();
+            result[1] = code.getLng().doubleValue();
+            break;
+        }
+        return result;
+    }
 }
