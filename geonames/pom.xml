@@ -19,6 +19,13 @@
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
+            <artifactId>common</artifactId>
+            <version>1.32-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
             <artifactId>jaxb6</artifactId>
             <version>1.32-SNAPSHOT</version>
         </dependency>
