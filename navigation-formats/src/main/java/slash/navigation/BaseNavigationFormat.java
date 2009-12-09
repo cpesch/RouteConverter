@@ -107,6 +107,10 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return preferences.getInt("maximumFileNameLength", 64);
     }
 
+    public int getMaximumRouteNameLength() {
+        return preferences.getInt("maximumRouteNameLength", 64); 
+    }
+
     public abstract <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
     public List<R> read(InputStream source) throws IOException {

@@ -49,6 +49,10 @@ public class RouteServiceNavigationFormat implements NavigationFormat {
         throw new UnsupportedOperationException();
     }
 
+    public int getMaximumRouteNameLength() {
+        throw new UnsupportedOperationException();
+    }
+
     public int getMaximumPositionCount() {
         throw new UnsupportedOperationException();
     }

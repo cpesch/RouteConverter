@@ -22,7 +22,6 @@ package slash.navigation;
 
 import slash.common.io.CompactCalendar;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +37,7 @@ public interface NavigationFormat<R extends BaseRoute> {
     String getName();
     String getExtension();
     int getMaximumFileNameLength();
+    int getMaximumRouteNameLength();
     int getMaximumPositionCount();
     boolean isSupportsReading();
     boolean isSupportsWriting();
