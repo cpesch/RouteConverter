@@ -54,15 +54,11 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <encoding>ISO-8859-1</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <encoding>ISO-8859-1</encoding>
-                </configuration>
             </plugin>
 
             <plugin>

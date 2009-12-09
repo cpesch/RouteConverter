@@ -20,7 +20,6 @@
 
 package slash.navigation.itn;
 
-import junit.framework.Assert;
 import slash.common.io.Files;
 import slash.navigation.*;
 
@@ -34,7 +33,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         File source = new File(SAMPLE_PATH + "bcr_with_itnconv.itn");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
-        Assert.assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
+        assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
     }
 
     public void testIsTripmasterTrackRouteCharacteristics() throws IOException {
@@ -56,7 +55,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         File source = new File(SAMPLE_PATH + "itn_with_tyre.itn");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
-        Assert.assertEquals("Eis essen in Ratzeburg", parser.getTheRoute().getName());
+        assertEquals("Eis essen in Ratzeburg", parser.getTheRoute().getName());
     }
 
     public void testTomTomRoute5() throws IOException {
@@ -65,7 +64,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        Assert.assertEquals("abcäöüß€", first.getComment());
+        assertEquals("abcäöüß€", first.getComment());
     }
 
     public void testTomTomRoute8() throws IOException {
@@ -74,7 +73,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        Assert.assertEquals("abcäöüß€", first.getComment());
+        assertEquals("abcäöüß€", first.getComment());
     }
 
     public void testTomTomRoute8FromDevice() throws IOException {
@@ -83,7 +82,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        Assert.assertEquals("Borkum - Anleger", first.getComment());
+        assertEquals("Borkum - Anleger", first.getComment());
     }
 
     public void testManfredsTourFiles() throws IOException {

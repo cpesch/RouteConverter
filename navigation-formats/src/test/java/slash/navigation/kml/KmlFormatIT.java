@@ -20,7 +20,6 @@
 
 package slash.navigation.kml;
 
-import junit.framework.Assert;
 import slash.navigation.NavigationTestCase;
 import slash.navigation.kml.binding20.Kml;
 
@@ -99,7 +98,7 @@ public class KmlFormatIT extends NavigationTestCase {
     public void testKmlVsKmz21() throws IOException {
         List<KmlRoute> kmlRoute = new Kml21Format().read(new FileInputStream(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kml")));
         List<KmlRoute> kmzRoute = new Kmz21Format().read(new FileInputStream(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kmz")));
-        Assert.assertEquals(kmlRoute, kmzRoute);
+        assertEquals(kmlRoute, kmzRoute);
     }
 
     public void testNetworkLink20() throws IOException {
