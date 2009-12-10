@@ -71,6 +71,7 @@ public abstract class ConvertBase extends NavigationTestCase {
 
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
         File target = File.createTempFile("singletarget", targetFormat.getExtension());
+        target.deleteOnExit();
         try {
             parser.write(sourceRoute, targetFormat, false, false, target);
             assertTrue(target.exists());
@@ -106,6 +107,7 @@ public abstract class ConvertBase extends NavigationTestCase {
 
     private void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
         File target = File.createTempFile("multitarget", targetFormat.getExtension());
+        target.deleteOnExit();
         try {
             parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
             assertTrue(target.exists());

@@ -313,10 +313,12 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         } else {
             List<GpxRoute> result = null;
             File source = File.createTempFile("babelsource", "." + getBabelFormatName());
+            source.deleteOnExit();
             InputOutput inputOutput = new InputOutput(in, new FileOutputStream(source));
             inputOutput.start();
             inputOutput.close();
             File target = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
+            target.deleteOnExit();
             boolean successful = startBabel(source, getBabelFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, "-r -w -t");
             if (successful) {
                 log.fine("Successfully converted " + source + " to " + target);
