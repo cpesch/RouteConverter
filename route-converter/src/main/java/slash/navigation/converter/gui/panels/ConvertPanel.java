@@ -23,6 +23,9 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.common.io.ContinousRange;
+import slash.common.io.Files;
+import slash.common.io.Range;
 import slash.navigation.*;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.RouteConverter;
@@ -43,11 +46,7 @@ import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.Constants;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.util.*;
-import slash.common.io.Files;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Range;
-import slash.common.io.ContinousRange;
+import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -57,8 +56,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -184,7 +183,7 @@ public abstract class ConvertPanel {
 
         buttonAddPosition.addActionListener(new FrameAction() {
             public void run() {
-                addPosition();
+                new InsertPosition(tablePositions, getPositionsModel()).actionPerformed(null);
             }
         });
 
@@ -238,7 +237,7 @@ public abstract class ConvertPanel {
 
         convertPanel.registerKeyboardAction(new FrameAction() {
             public void run() {
-                addPosition();
+                new InsertPosition(tablePositions, getPositionsModel()).actionPerformed(null);
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -669,58 +668,10 @@ public abstract class ConvertPanel {
             saveFile();
     }
 
-    private BaseNavigationPosition calculateCenter(int row) {
-        BaseNavigationPosition position = getPositionsModel().getPosition(row);
-        // if there is only one position or it is the first row, choose the map center
-        if (row >= getPositionsModel().getRowCount() - 1)
-            return null;
-        // otherwhise center between given positions
-        BaseNavigationPosition second = getPositionsModel().getPosition(row + 1);
-        if (!second.hasCoordinates() || !position.hasCoordinates())
-            return null;
-        return Positions.center(Arrays.asList(second, position));
-    }
-
-    private void addPosition() {
-        int[] selectedRows = tablePositions.getSelectedRows();
-        int row = selectedRows.length > 0 ? selectedRows[0] : tablePositions.getRowCount();
-        BaseNavigationPosition center = selectedRows.length > 0 ? calculateCenter(row) :
-                getPositionsModel().getRowCount() > 0 ? calculateCenter(getPositionsModel().getRowCount() - 1) : null;
-        final int insertRow = row > getPositionsModel().getRowCount() - 1 ? row : row + 1;
-
-        RouteConverter r = RouteConverter.getInstance();
-        if (center == null)
-            center = r.getMapCenter();
-        r.setLastMapCenter(center);
-
-        getPositionsModel().add(insertRow, center.getLongitude(), center.getLatitude(),
-                center.getElevation(), center.getSpeed(),
-                center.getTime() != null ? center.getTime() : CompactCalendar.getInstance(),
-                RouteConverter.getBundle().getString("add-position-comment"));
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                scrollToPosition(insertRow);
-                selectPositions(insertRow, insertRow);
-            }
-        });
-    }
-
     public void removePositions() {
-        int[] selectedRows = tablePositions.getSelectedRows();
-        if (selectedRows.length > 0) {
-            getPositionsModel().remove(selectedRows);
-            final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
-            if (tablePositions.getRowCount() > 0) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        scrollToPosition(removeRow);
-                        selectPositions(removeRow, removeRow);
-                    }
-                });
-            }
-        }
+        new DeletePositions(tablePositions, getPositionsModel()).actionPerformed(null);
     }
-
+    
     // helpers for actions
 
     public boolean confirmDiscard() {
@@ -741,24 +692,11 @@ public abstract class ConvertPanel {
         return confirm != JOptionPane.YES_OPTION;
     }
 
-    private void scrollToPosition(int insertRow) {
-        Rectangle rectangle = tablePositions.getCellRect(insertRow, 1, true);
-        tablePositions.scrollRectToVisible(rectangle);
-    }
-
-    private void selectPositions(final int index0, final int index1) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                tablePositions.getSelectionModel().setSelectionInterval(index0, index1);
-            }
-        });
-    }
-
     private void reestablishPositionSelection(final int upOrDown) {
         final int minSelectedRow = tablePositions.getSelectionModel().getMinSelectionIndex();
         final int maxSelectedRow = tablePositions.getSelectionModel().getMaxSelectionIndex();
         if (minSelectedRow != -1 && maxSelectedRow != -1)
-            selectPositions(minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
+            JTableHelper.selectPositions(tablePositions, minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
     }
 
     // handle notifications
@@ -929,7 +867,7 @@ public abstract class ConvertPanel {
                     }
 
                     public void performOnRange(int firstIndex, int lastIndex) {
-                        scrollToPosition(firstIndex);
+                        JTableHelper.scrollToPosition(tablePositions, firstIndex);
                     }
                 }).performMonotonicallyIncreasing(20);
             }
@@ -1072,7 +1010,7 @@ public abstract class ConvertPanel {
         buttonAddPosition = new JButton();
         buttonAddPosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/add-position.png")));
         buttonAddPosition.setText("");
-        buttonAddPosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-tooltip"));
+        buttonAddPosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-position-tooltip"));
         panel1.add(buttonAddPosition, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkboxDuplicateFirstPosition = new JCheckBox();
         this.$$$loadButtonText$$$(checkboxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
@@ -1260,8 +1198,8 @@ public abstract class ConvertPanel {
     }
 
     public class PositionTablePopupMenu extends TablePopupMenu {
-        private JMenuItem buttonAddElevation, buttonAddPostalAddress, buttonAddPopulatedPlace, buttonAddSpeed,
-                buttonAddIndex, buttonSplitPositionlist;
+        private JMenuItem buttonDeletePositions, buttonAddElevation, buttonAddPostalAddress,
+                buttonAddPopulatedPlace, buttonAddSpeed, buttonAddIndex, buttonSplitPositionlist;
 
         public PositionTablePopupMenu() {
             super(tablePositions);
@@ -1270,6 +1208,18 @@ public abstract class ConvertPanel {
         protected JPopupMenu createPopupMenu() {
             JPopupMenu popupMenu = new JPopupMenu();
             PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
+
+            JMenuItem buttonInsertPosition = new JMenuItem(RouteConverter.getBundle().getString("insert-position"));
+            buttonInsertPosition.setToolTipText(RouteConverter.getBundle().getString("insert-position-tooltip"));
+            buttonInsertPosition.addActionListener(new InsertPosition(tablePositions, getPositionsModel()));
+            popupMenu.add(buttonInsertPosition);
+
+            buttonDeletePositions = new JMenuItem(RouteConverter.getBundle().getString("delete-positions"));
+            buttonDeletePositions.setToolTipText(RouteConverter.getBundle().getString("delete-positions-tooltip"));
+            buttonDeletePositions.addActionListener(new DeletePositions(tablePositions, getPositionsModel()));
+            popupMenu.add(buttonDeletePositions);
+
+            popupMenu.addSeparator();
 
             buttonAddElevation = new JMenuItem(RouteConverter.getBundle().getString("add-elevation"));
             buttonAddElevation.addActionListener(new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
@@ -1360,12 +1310,13 @@ public abstract class ConvertPanel {
         }
 
         void handlePositionsUpdate(final boolean supportsMultipleRoutes, boolean existsASelectedPosition) {
-            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsASelectedPosition);
+            buttonDeletePositions.setEnabled(existsASelectedPosition);
             buttonAddElevation.setEnabled(existsASelectedPosition);
             buttonAddPostalAddress.setEnabled(existsASelectedPosition);
             buttonAddPopulatedPlace.setEnabled(existsASelectedPosition);
             buttonAddSpeed.setEnabled(existsASelectedPosition);
             buttonAddIndex.setEnabled(existsASelectedPosition);
+            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsASelectedPosition);
         }
     }
 }

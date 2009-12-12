@@ -151,7 +151,7 @@
             <properties>
               <icon value="slash/navigation/converter/gui/add-position.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-position-tooltip"/>
             </properties>
           </component>
         </children>
