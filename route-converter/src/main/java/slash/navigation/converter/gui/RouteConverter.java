@@ -487,6 +487,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getAnalysePanel().print();
     }
 
+    public int selectAll() {
+        return getConvertPanel().selectAll();
+    }
+
     public int selectDuplicatesWithinDistance(int duplicate) {
         return getConvertPanel().selectDuplicatesWithinDistance(duplicate);
     }
@@ -507,8 +511,24 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().clearSelection();
     }
 
-    public void removePositions() {
-        getConvertPanel().removePositions();
+    public void addElevationToPositions() {
+        getConvertPanel().addElevationToPositions();
+    }
+
+    public void addSpeedToPositions() {
+        getConvertPanel().addSpeedToPositions();
+    }
+
+    public void addPostalAddressToPositions() {
+        getConvertPanel().addPostalAddressToPositions();
+    }
+
+    public void addPopulatedPlaceToPositions() {
+        getConvertPanel().addPopulatedPlaceToPositions();
+    }
+
+    public void deletePositions() {
+        getConvertPanel().deletePositions();
     }
 
     public void renameRoute(String name) {
