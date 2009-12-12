@@ -60,9 +60,9 @@ public class AppendIT extends NavigationTestCase {
 
         File testFile = new File(testFileName);
         assertTrue(parser.read(testFile));
-        BaseRoute testRoute = parser.getTheRoute();
+        BaseRoute<?, ?> testRoute = parser.getTheRoute();
         assertNotNull(testRoute);
-        NavigationFormat testFormat = parser.getFormat();
+        NavigationFormat<?> testFormat = parser.getFormat();
         assertNotNull(testFormat);
         String testName = parser.getTheRoute().getName();
         List<String> testDescription = parser.getTheRoute().getDescription();
@@ -76,7 +76,7 @@ public class AppendIT extends NavigationTestCase {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = NavigationFormats.asFormat(appendParser.getTheRoute(), parser.getFormat());
         parser.getTheRoute().getPositions().addAll(appendRoute.getPositions());
 
-        BaseRoute route = parser.getTheRoute();
+        BaseRoute<BaseNavigationPosition, ?> route = parser.getTheRoute();
         assertEquals(testRoute, route);
         // since a lot of formats determine route names from the first
         // and the (here changing) last way point name

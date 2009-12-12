@@ -80,7 +80,7 @@ public abstract class Application {
 
     private static void invokeNativeInterfaceMethod(String name) {
         try {
-            Class clazz = Class.forName("chrriis.dj.nativeswing.swtimpl.NativeInterface");
+            Class<?> clazz = Class.forName("chrriis.dj.nativeswing.swtimpl.NativeInterface");
             Method method = clazz.getMethod(name);
             method.invoke(null);
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public abstract class Application {
         runNativeInterfaceEventPump();
     }
 
-    private static ResourceBundle tryToLoadBundleFor(Class clazz) {
+    private static ResourceBundle tryToLoadBundleFor(Class<?> clazz) {
         try {
             return ResourceBundle.getBundle(clazz.getName());
         } catch (Exception e) {
