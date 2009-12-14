@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.BaseNavigationPosition;
+import slash.navigation.kml.KmlPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
@@ -62,22 +63,37 @@ public class PositionAugmenter {
         }
     };
 
+    private static final OverwritePredicate COORDINATE_PREDICATE = new OverwritePredicate() {
+        public boolean shouldOverwrite(BaseNavigationPosition position) {
+            return !position.hasCoordinates();
+        }
+    };
+
+    private static final OverwritePredicate NO_COORDINATE_PREDICATE = new OverwritePredicate() {
+        public boolean shouldOverwrite(BaseNavigationPosition position) {
+            return !position.hasCoordinates();
+        }
+    };
+
     private static final OverwritePredicate NO_ELEVATION_PREDICATE = new OverwritePredicate() {
         public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return position.getElevation() == null || position.getElevation() == 0.0;
+            return position.hasCoordinates() &&
+                    (position.getElevation() == null || position.getElevation() == 0.0);
         }
     };
 
     private static final OverwritePredicate NO_COMMENT_PREDICATE = new OverwritePredicate() {
         public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return Transfer.trim(position.getComment()) == null ||
-                    RouteComments.isPositionComment(position.getComment());
+            return position.hasCoordinates() &&
+                    (Transfer.trim(position.getComment()) == null ||
+                            RouteComments.isPositionComment(position.getComment()));
         }
     };
 
     private static final OverwritePredicate NO_SPEED_PREDICATE = new OverwritePredicate() {
         public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return position.getSpeed() == null || position.getSpeed() == 0.0;
+            return position.hasCoordinates() &&
+                    (position.getSpeed() == null || position.getSpeed() == 0.0);
         }
     };
 
@@ -113,7 +129,7 @@ public class PositionAugmenter {
                     new ContinousRange(rows, new ContinousRange.RangeOperation() {
                         public void performOnIndex(int index) {
                             BaseNavigationPosition position = positionsModel.getPosition(index);
-                            if (position.hasCoordinates() && predicate.shouldOverwrite(position)) {
+                            if (predicate.shouldOverwrite(position)) {
                                 try {
                                     // ignoring the result since the performance boost of the continous
                                     // range operations outweights the possible optimization 
@@ -155,8 +171,53 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addElevation(GeoNamesService service, final BaseNavigationPosition position) throws IOException {
-        final Integer elevation = service.getElevationFor(position.getLongitude(), position.getLatitude());
+    private boolean addCoordinates(GoogleMapsService service, BaseNavigationPosition position) throws IOException {
+        KmlPosition coordinates = service.getPositionFor(position.getComment());
+        if (coordinates != null) {
+            position.setLongitude(coordinates.getLongitude());
+            position.setLatitude(coordinates.getLatitude());
+        }
+        return coordinates != null;
+    }
+
+    private void processCoordinates(final JTable positionsTable,
+                                   final PositionsModel positionsModel,
+                                   final int[] rows,
+                                   final OverwritePredicate predicate) {
+        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
+                new Operation() {
+                    private GoogleMapsService service = new GoogleMapsService();
+
+                    public String getName() {
+                        return "CoordinatesPositionAugmenter";
+                    }
+
+                    public boolean run(BaseNavigationPosition position) throws Exception {
+                        return addCoordinates(service, position);
+                    }
+
+                    public String getErrorMessage() {
+                        return RouteConverter.getBundle().getString("add-coordinates-error");
+                    }
+                }
+        );
+    }
+
+    public void addCoordinates(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        processCoordinates(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+    }
+
+    public void complementCoordinates(PositionsModel positionsModel) {
+        complementCoordinates(null, positionsModel);
+    }
+
+    public void complementCoordinates(JTable positionsTable, PositionsModel positionsModel) {
+        processCoordinates(positionsTable, positionsModel, selectAllRows(positionsModel), NO_COORDINATE_PREDICATE);
+    }
+
+
+    private boolean addElevation(GeoNamesService service, BaseNavigationPosition position) throws IOException {
+        Integer elevation = service.getElevationFor(position.getLongitude(), position.getLatitude());
         if (elevation != null)
             position.setElevation(elevation.doubleValue());
         return elevation != null;
@@ -186,7 +247,7 @@ public class PositionAugmenter {
     }
 
     public void addElevations(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processElevations(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+        processElevations(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
     public void complementElevations(PositionsModel positionsModel) {
@@ -229,7 +290,7 @@ public class PositionAugmenter {
     }
 
     public void addPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        addPopulatedPlaces(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+        addPopulatedPlaces(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
     public void complementPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel) {
@@ -268,7 +329,7 @@ public class PositionAugmenter {
     }
 
     public void addPostalAddresses(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        addPostalAddresses(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+        addPostalAddresses(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
     public void complementPostalAddresses(JTable positionsTable, PositionsModel positionsModel) {
@@ -304,7 +365,7 @@ public class PositionAugmenter {
     }
 
     public void addSpeeds(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        processSpeeds(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
+        processSpeeds(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
     public void complementSpeeds(JTable positionsTable, PositionsModel positionsModel) {
@@ -350,7 +411,7 @@ public class PositionAugmenter {
         int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumIndex) : 0;
 
         processIndices(positionsTable, positionsModel, selectedRows,
-                digitCount, spaceBetweenNumberAndComment, TAUTOLOGY_PREDICATE);
+                digitCount, spaceBetweenNumberAndComment, COORDINATE_PREDICATE);
     }
 
 }

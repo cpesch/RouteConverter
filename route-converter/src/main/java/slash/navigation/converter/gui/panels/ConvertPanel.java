@@ -1248,7 +1248,7 @@ public abstract class ConvertPanel {
     }
 
     public class PositionTablePopupMenu extends TablePopupMenu {
-        private JMenuItem buttonDeletePositions, buttonAddElevation, buttonAddPostalAddress,
+        private JMenuItem buttonDeletePositions, buttonAddCoordinates, buttonAddElevation, buttonAddPostalAddress,
                 buttonAddPopulatedPlace, buttonAddSpeed, buttonAddIndex, buttonSplitPositionlist;
 
         public PositionTablePopupMenu() {
@@ -1269,6 +1269,10 @@ public abstract class ConvertPanel {
             popupMenu.add(buttonDeletePositions);
 
             popupMenu.addSeparator();
+
+            buttonAddCoordinates = new JMenuItem(RouteConverter.getBundle().getString("add-coordinates"));
+            buttonAddCoordinates.addActionListener(new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
+            popupMenu.add(buttonAddCoordinates);
 
             buttonAddElevation = new JMenuItem(RouteConverter.getBundle().getString("add-elevation"));
             buttonAddElevation.addActionListener(new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
