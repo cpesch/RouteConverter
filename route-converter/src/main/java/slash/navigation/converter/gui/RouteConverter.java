@@ -511,6 +511,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().clearSelection();
     }
 
+    public void addCoordinatesToPositions() {
+        getConvertPanel().addCoordinatesToPositions();
+    }
+
     public void addElevationToPositions() {
         getConvertPanel().addElevationToPositions();
     }

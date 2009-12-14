@@ -65,7 +65,7 @@ public class PositionAugmenter {
 
     private static final OverwritePredicate COORDINATE_PREDICATE = new OverwritePredicate() {
         public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return !position.hasCoordinates();
+            return position.hasCoordinates();
         }
     };
 
