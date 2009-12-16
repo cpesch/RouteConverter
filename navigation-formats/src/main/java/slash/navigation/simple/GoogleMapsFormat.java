@@ -42,9 +42,9 @@ import java.util.regex.Pattern;
 public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(GoogleMapsFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*http://maps\\.google\\..+/maps\\?([^\\s]+).*");
+    private static final Pattern URL_PATTERN = Pattern.compile(".*http://.+\\.google\\..+/maps\\?([^\\s]+).*");
     private static final Pattern BOOKMARK_PATTERN = Pattern.compile(".*InternetShortcut(.+)IconFile.*");
-    private static final Pattern START_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
+    private static final Pattern PLAIN_POSITION_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
     private static final Pattern COMMENT_POSITION_PATTERN = Pattern.
             compile("(" + WHITE_SPACE + ".*?" + WHITE_SPACE + ")" +
                     "(@?(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + ")," +
@@ -188,30 +188,27 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
-    Wgs84Position parseStartPosition(String coordinates, String comment) {
-        Matcher matcher = START_PATTERN.matcher(coordinates);
+    Wgs84Position parsePlainPosition(String coordinates) {
+        Matcher matcher = PLAIN_POSITION_PATTERN.matcher(coordinates);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
         Double latitude = Transfer.parseDouble(matcher.group(1));
         Double longitude = Transfer.parseDouble(matcher.group(2));
-
-        Wgs84Position position = comment != null ? parsePosition(comment) : null;
-        if (position != null && position.hasCoordinates()) {
-            return position;
-        } else {
-            return new Wgs84Position(longitude, latitude, null, null, null, Transfer.trim(comment));
-        }
+        String comment = Transfer.trim(null); // TODO geocode
+        return new Wgs84Position(longitude, latitude, null, null, null, comment);
     }
 
-    Wgs84Position parsePosition(String position) {
+    Wgs84Position parseCommentPosition(String position) {
         Matcher matcher = COMMENT_POSITION_PATTERN.matcher(position);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + position + "' does not match");
-        String comment = matcher.group(1);
-        String latitude = matcher.group(3);
-        String longitude = matcher.group(4);
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                null, null, null, Transfer.trim(comment));
+        String comment = Transfer.trim(matcher.group(1));
+        Double latitude = Transfer.parseDouble(matcher.group(3));
+        Double longitude = Transfer.parseDouble(matcher.group(4));
+        if(latitude == null && longitude == null) {
+            ; // TODO reverse geocode
+        }
+        return new Wgs84Position(longitude, latitude, null, null, null, comment);
     }
 
     List<Wgs84Position> parseDestinationPositions(String destinationComments) {
@@ -222,7 +219,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
             if (endIndex == -1)
                 endIndex = destinationComments.length();
             String position = destinationComments.substring(startIndex, endIndex);
-            result.add(parsePosition(position));
+            result.add(parseCommentPosition(position));
             startIndex = endIndex + 3 /* DESTINATION_SEPARATOR */;
         }
         return result;
@@ -243,20 +240,12 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         if (parameters == null)
             return result;
 
-        List<String> startPositions = parameters.get("ll");
-        if (startPositions == null)
-            startPositions = parameters.get("sll");
-        List<String> startComments = parameters.get("saddr");
+        // ignore ll and sll parameters as they contain positions far off the route
 
-        if(startPositions != null) {
-            for (int i = 0; i < startPositions.size(); i++) {
-                String startPosition = startPositions.get(i);
-                String startComment = startComments != null ? startComments.get(i) : null;
-                result.add(parseStartPosition(startPosition, startComment));
-            }
-        } else if (startComments != null) {
-            for (String startComment : startComments) {
-                result.add(parsePosition(startComment));
+        List<String> startPositions = parameters.get("saddr");
+        if (startPositions != null) {
+            for (String startComment : startPositions) {
+                result.add(parseCommentPosition(startComment));
             }
         }
 

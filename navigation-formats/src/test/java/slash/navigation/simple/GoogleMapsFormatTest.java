@@ -51,6 +51,8 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
 
     private static final String INPUT7_GEOCODE = "http://maps.google.de/maps?f=d&saddr=Hamburg%2FUhlenhorst&daddr=Hauptstra%C3%9Fe%2FL160+to:53.588429,10.419159+to:Breitenfelde%2FNeuenlande&hl=de&geocode=%3BFVy1MQMdDoudAA%3B%3B&mra=dpe&mrcr=0&mrsp=2&sz=11&via=1,2&sll=53.582575,10.30528&sspn=0.234798,0.715485&ie=UTF8&z=11";
 
+    private static final String INPUT8_WWW_NO_COORDINATES ="http://www.google.de/maps?f=d&source=s_d&saddr=hannover&daddr=hamburg&hl=de&geocode=&mra=ls&sll=51.151786,10.415039&sspn=20.697059,39.331055&ie=UTF8&z=9";
+
     GoogleMapsFormat format = new GoogleMapsFormat();
 
     public void testFindURL() {
@@ -103,30 +105,19 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseStartPosition() {
-        String comment = "Hölderlinstraße, 51545 Bröl, Oberbergischer Kreis, Nordrhein-Westfalen, Deutschland";
-        Wgs84Position position = format.parseStartPosition("50.954318,7.311401", comment);
+        Wgs84Position position = format.parsePlainPosition("50.954318,7.311401");
         assertEquals(7.311401, position.getLongitude());
         assertEquals(50.954318, position.getLatitude());
-        assertEquals(comment, position.getComment());
     }
 
     public void testParseNegativeStartPosition() {
-        Wgs84Position position = format.parseStartPosition("-50.954318,-7.311401", null);
+        Wgs84Position position = format.parsePlainPosition("-50.954318,-7.311401");
         assertEquals(-7.311401, position.getLongitude());
         assertEquals(-50.954318, position.getLatitude());
-        assertNull(position.getComment());
-    }
-
-    public void testParseCoordinateStartPosition() {
-        String comment = "L1042/Langensaltzaer Straße @51.125340, 10.480100";
-        Wgs84Position position = format.parseStartPosition("50.954318,7.311401", comment);
-        assertEquals(10.4801, position.getLongitude());
-        assertEquals(51.125340, position.getLatitude());
-        assertEquals("L1042/Langensaltzaer Straße", position.getComment());
     }
 
     public void testParseDestinationPosition() {
-        Wgs84Position position = format.parsePosition("L339/Wuppertaler Straße @50.918890,7.560880 ");
+        Wgs84Position position = format.parseCommentPosition("L339/Wuppertaler Straße @50.918890,7.560880 ");
         assertEquals(7.560880, position.getLongitude());
         assertEquals(50.918890, position.getLatitude());
         assertEquals("L339/Wuppertaler Straße", position.getComment());
@@ -156,8 +147,8 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         assertNotNull(positions);
         assertEquals(6, positions.size());
         Wgs84Position position1 = positions.get(0);
-        assertEquals(7.261276, position1.getLongitude());
-        assertEquals(50.952371, position1.getLatitude());
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
         assertEquals("Hölderlinstraße, 51545 Bröl, Oberbergischer Kreis, Nordrhein-Westfalen, Deutschland", position1.getComment());
         Wgs84Position position3 = positions.get(2);
         assertEquals(7.46395, position3.getLongitude());
@@ -176,8 +167,8 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         assertNotNull(positions);
         assertEquals(3, positions.size());
         Wgs84Position position1 = positions.get(0);
-        assertEquals(7.312145, position1.getLongitude());
-        assertEquals(50.892745, position1.getLatitude());
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
         assertEquals("51545 Waldbroel, Hoelderlinstr.", position1.getComment());
         Wgs84Position position2 = positions.get(1);
         assertNull(position2.getLongitude());
@@ -196,8 +187,8 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position1 = positions.get(0);
-        assertEquals(-95.677068, position1.getLongitude());
-        assertEquals(37.0625, position1.getLatitude());
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
         assertEquals("LÃ¼beck, Germany", position1.getComment());
         Wgs84Position position2 = positions.get(1);
         assertNull(position2.getLongitude());
@@ -292,8 +283,8 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         assertNotNull(positions);
         assertEquals(4, positions.size());
         Wgs84Position position1 = positions.get(0);
-        assertEquals(10.30528, position1.getLongitude());
-        assertEquals(53.582575, position1.getLatitude());
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
         assertEquals("Hamburg/Uhlenhorst", position1.getComment());
         Wgs84Position position2 = positions.get(2);
         assertEquals(10.419159, position2.getLongitude());
@@ -303,6 +294,22 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         assertEquals(null, position3.getLongitude());
         assertEquals(null, position3.getLatitude());
         assertEquals("Breitenfelde/Neuenlande", position3.getComment());
+    }
+
+    public void testParseWWWNoCoordinatesFromInput8() {
+        String url = GoogleMapsFormat.findURL(INPUT8_WWW_NO_COORDINATES);
+        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = format.parsePositions(parameters);
+        assertNotNull(positions);
+        assertEquals(2, positions.size());
+        Wgs84Position position1 = positions.get(0);
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
+        assertEquals("hannover", position1.getComment());
+        Wgs84Position position2 = positions.get(1);
+        assertNull(position2.getLongitude());
+        assertNull(position2.getLatitude());
+        assertEquals("hamburg", position2.getComment());
     }
 
     public void testCreateURL() {
