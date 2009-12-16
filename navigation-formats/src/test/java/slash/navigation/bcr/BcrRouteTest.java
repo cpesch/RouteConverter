@@ -314,7 +314,7 @@ public class BcrRouteTest extends NavigationTestCase {
             assertNull(positions.get(i).getComment());
         }
 
-        RouteComments.commentPositions(positions);
+        RouteComments.commentPositions(positions, false);
 
         for (int i = 0; i < 10; i++) {
             assertEquals("Position " + (i + 1), positions.get(i).getComment());
@@ -327,7 +327,7 @@ public class BcrRouteTest extends NavigationTestCase {
             positions.add(new BcrPosition(i, i, i, null));
         }
 
-        RouteComments.commentPositions(positions);
+        RouteComments.commentPositions(positions, false);
 
         positions.get(9).setComment("Position 7: Hamburg");
         positions.get(7).setComment("Hamburg (Position 7)");
@@ -338,7 +338,7 @@ public class BcrRouteTest extends NavigationTestCase {
         positions.remove(2);
         positions.remove(1);
 
-        RouteComments.commentPositions(positions);
+        RouteComments.commentPositions(positions, false);
 
         assertEquals("Position 1", positions.get(0).getComment());
         assertEquals("Hamburg", positions.get(1).getComment());

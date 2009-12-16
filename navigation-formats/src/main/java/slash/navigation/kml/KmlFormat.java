@@ -20,13 +20,14 @@
 
 package slash.navigation.kml;
 
+import slash.common.hex.HexDecoder;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.RouteCharacteristics;
-import slash.common.hex.HexDecoder;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
+import slash.navigation.googlemaps.GoogleMapsPosition;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -91,9 +92,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     abstract List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException;
 
-    boolean isPosition(String line) {
-        Matcher matcher = KmlUtil.POSITION_PATTERN.matcher(line);
-        return matcher.matches();
+    protected KmlPosition asKmlPosition(GoogleMapsPosition position) {
+        return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());
     }
 
     protected String createDocumentName(KmlRoute route) {

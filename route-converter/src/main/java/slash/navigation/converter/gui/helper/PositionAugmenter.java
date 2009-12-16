@@ -20,16 +20,16 @@
 
 package slash.navigation.converter.gui.helper;
 
+import slash.common.io.ContinousRange;
+import slash.common.io.Transfer;
 import slash.navigation.BaseNavigationPosition;
-import slash.navigation.kml.KmlPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
 import slash.navigation.util.RouteComments;
-import slash.common.io.ContinousRange;
-import slash.common.io.Transfer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -172,7 +172,7 @@ public class PositionAugmenter {
 
 
     private boolean addCoordinates(GoogleMapsService service, BaseNavigationPosition position) throws IOException {
-        KmlPosition coordinates = service.getPositionFor(position.getComment());
+        GoogleMapsPosition coordinates = service.getPositionFor(position.getComment());
         if (coordinates != null) {
             position.setLongitude(coordinates.getLongitude());
             position.setLatitude(coordinates.getLatitude());

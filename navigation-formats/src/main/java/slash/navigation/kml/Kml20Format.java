@@ -20,12 +20,13 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.kml.binding20.*;
-import slash.navigation.util.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
+import slash.navigation.RouteCharacteristics;
+import slash.navigation.googlemaps.GoogleMapsPosition;
+import slash.navigation.kml.binding20.*;
+import slash.navigation.util.RouteComments;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -36,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 /**
  * Reads and writes Google Earth 3 (.kml) files.
@@ -89,7 +89,7 @@ public class Kml20Format extends KmlFormat {
             return null;
 
         List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements);
-        RouteComments.commentRoutePositions(routes);
+        RouteComments.commentRoutePositions(routes, false);
         return routes;
     }
 
@@ -232,19 +232,10 @@ public class Kml20Format extends KmlFormat {
         return result;
     }
 
-    List<String> findPositions(String line) {
-        List<String> result = new ArrayList<String>();
-        Matcher matcher = KmlUtil.POSITION_PATTERN.matcher(line);
-        while (matcher.find()) {
-            result.add(Transfer.trim(matcher.group(0)));
-        }
-        return result;
-    }
-
     private List<KmlPosition> extractPositions(LineString lineString) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (String string : findPositions(lineString.getCoordinates())) {
-            result.add(KmlUtil.parsePosition(string, null));
+        for (GoogleMapsPosition position : GoogleMapsPosition.parsePositions(lineString.getCoordinates())) {
+            result.add(asKmlPosition(position));
         }
         return result;
     }
@@ -254,7 +245,7 @@ public class Kml20Format extends KmlFormat {
         for (Object element : elements) {
             if (element instanceof Point) {
                 Point point = (Point) element;
-                result.add(KmlUtil.parsePosition(point.getCoordinates(), null));
+                result.add(asKmlPosition(GoogleMapsPosition.parsePosition(point.getCoordinates(), null)));
             }
             if (element instanceof LineString) {
                 LineString lineString = (LineString) element;

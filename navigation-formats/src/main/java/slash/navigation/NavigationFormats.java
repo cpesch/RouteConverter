@@ -241,7 +241,7 @@ public final class NavigationFormats {
         try {
             Method method = route.getClass().getMethod("as" + formatName, new Class[0]);
             result = (BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) method.invoke(route);
-            RouteComments.commentPositions(result.getPositions());
+            RouteComments.commentPositions(result.getPositions(), false);
             RouteComments.commentRouteName(result);
         } catch (Exception e) {
             // Java6: throw new IOException("Cannot call as" + formatName + "() on " + position, e);

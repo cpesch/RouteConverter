@@ -21,6 +21,7 @@
 package slash.navigation.kml;
 
 import slash.navigation.RouteCharacteristics;
+import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding22beta.*;
 import slash.navigation.util.*;
 import slash.common.io.CompactCalendar;
@@ -108,7 +109,7 @@ public class Kml22BetaFormat extends KmlFormat {
         }
 
         if (routes != null)
-            RouteComments.commentRoutePositions(routes);
+            RouteComments.commentRoutePositions(routes, false);
         return routes;
     }
 
@@ -199,12 +200,12 @@ public class Kml22BetaFormat extends KmlFormat {
         if (geometryTypeValue instanceof PointType) {
             PointType point = (PointType) geometryTypeValue;
             for (String coordinates : point.getCoordinates())
-                positions.add(KmlUtil.parsePosition(coordinates, null));
+                positions.add(asKmlPosition(GoogleMapsPosition.parsePosition(coordinates, null)));
         }
         if (geometryTypeValue instanceof LineStringType) {
             LineStringType lineString = (LineStringType) geometryTypeValue;
             for (String coordinates : lineString.getCoordinates())
-                positions.add(KmlUtil.parsePosition(coordinates, null));
+                positions.add(asKmlPosition(GoogleMapsPosition.parsePosition(coordinates, null)));
         }
         if (geometryTypeValue instanceof MultiGeometryType) {
             MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;

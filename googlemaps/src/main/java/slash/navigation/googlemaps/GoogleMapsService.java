@@ -20,12 +20,11 @@
 
 package slash.navigation.googlemaps;
 
-import slash.navigation.kml.KmlPosition;
+import slash.common.io.Transfer;
 import slash.navigation.kml.KmlUtil;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Helper;
-import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -72,7 +71,7 @@ public class GoogleMapsService {
         return null;
     }
 
-    public KmlPosition getPositionFor(String address) throws IOException {
+    public GoogleMapsPosition getPositionFor(String address) throws IOException {
         Get get = new Get(getGoogleMapsUrl(Helper.encodeUri(address)));
         String result = get.execute();
         if (get.isSuccessful())
@@ -163,12 +162,12 @@ public class GoogleMapsService {
         return null;
     }
 
-    KmlPosition extractHighestAccuracyPosition(Kml kml, String comment) {
+    GoogleMapsPosition extractHighestAccuracyPosition(Kml kml, String comment) {
         Placemark placemark = extractHighestAccuracyPlacemark(kml);
         if (placemark != null) {
             Point point = find(placemark.getDescriptionOrNameOrSnippet(), Point.class);
             if (point != null)
-                return KmlUtil.parsePosition(point.getCoordinates(), comment);
+                return GoogleMapsPosition.parsePosition(point.getCoordinates(), comment);
         }
         return null;
     }

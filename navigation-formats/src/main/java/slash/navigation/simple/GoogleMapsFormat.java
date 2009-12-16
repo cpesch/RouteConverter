@@ -20,16 +20,16 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.*;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.prefs.Preferences;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -194,8 +194,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
         Double latitude = Transfer.parseDouble(matcher.group(1));
         Double longitude = Transfer.parseDouble(matcher.group(2));
-        String comment = Transfer.trim(null); // TODO geocode
-        return new Wgs84Position(longitude, latitude, null, null, null, comment);
+        return new Wgs84Position(longitude, latitude, null, null, null, null);
     }
 
     Wgs84Position parseCommentPosition(String position) {
@@ -205,9 +204,6 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
         String comment = Transfer.trim(matcher.group(1));
         Double latitude = Transfer.parseDouble(matcher.group(3));
         Double longitude = Transfer.parseDouble(matcher.group(4));
-        if(latitude == null && longitude == null) {
-            ; // TODO reverse geocode
-        }
         return new Wgs84Position(longitude, latitude, null, null, null, comment);
     }
 

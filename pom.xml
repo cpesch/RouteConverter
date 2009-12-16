@@ -23,7 +23,7 @@
             <id>routeconverter-thirdparty</id>
             <url>http://www.routeconverter.de/svn/RouteThirdParty</url>
         </repository>
-    </repositories>
+    </repositories>                                  K
 
     <distributionManagement>
         <repository>
@@ -54,11 +54,15 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <encoding>Cp1252</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>Cp1252</encoding>
+                </configuration>
             </plugin>
 
             <plugin>

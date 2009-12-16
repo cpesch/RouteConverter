@@ -42,7 +42,6 @@ public class KmlUtil {
     private static final String KML_22_NAMESPACE_URI = "http://www.opengis.net/kml/2.2";
     private static final String ATOM_2005_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
     private static final String XAL_20_NAMESPACE_URI = "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0";
-    static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*[[-|+]|\\d|\\.|E]*\\s*),(\\s*[[-|+]|\\d|\\.|E]*\\s*),?,?(\\s*[[-|+]|\\d|\\.|E]+\\s*)?");
 
     public static Unmarshaller newUnmarshaller20() {
         return JaxbUtils.newUnmarshaller(CONTEXT_20);
@@ -228,15 +227,5 @@ public class KmlUtil {
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
-    }
-
-    public static KmlPosition parsePosition(String coordinates, String comment) {
-        Matcher matcher = POSITION_PATTERN.matcher(coordinates);
-        if (!matcher.matches())
-            throw new IllegalArgumentException("'" + coordinates + "' does not match");
-        String longitude = matcher.group(1);
-        String latitude = matcher.group(2);
-        String elevation = matcher.group(3);
-        return new KmlPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), Transfer.parseDouble(elevation), null, null, Transfer.trim(comment));
     }
 }

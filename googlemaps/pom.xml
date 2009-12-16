@@ -14,7 +14,12 @@
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
-            <artifactId>navigation-formats</artifactId>
+            <artifactId>common</artifactId>
+            <version>1.32-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>jaxb6</artifactId>
             <version>1.32-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -20,7 +20,6 @@
 package slash.navigation.googlemaps;
 
 import junit.framework.TestCase;
-import slash.navigation.kml.KmlPosition;
 
 import java.io.IOException;
 
@@ -38,8 +37,8 @@ public class GoogleMapsServiceIT extends TestCase {
     }
 
     public void testPositionLookup() throws IOException {
-        KmlPosition expected = new KmlPosition(10.2003632, 50.0004554, 0.0, null, null, "Bühlstraße, 97506 Grafenrheinfeld, Germany");
-        KmlPosition actual = service.getPositionFor("Bühlstraße, 97506 Grafenrheinfeld, Germany");
+        GoogleMapsPosition expected = new GoogleMapsPosition(10.2003632, 50.0004554, 0.0, "Bühlstraße, 97506 Grafenrheinfeld, Germany");
+        GoogleMapsPosition actual = service.getPositionFor("Bühlstraße, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
     }
 }

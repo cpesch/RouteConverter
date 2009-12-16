@@ -141,7 +141,7 @@ public class NavigationFileParser {
 
     private void commentRoutes(List<BaseRoute> routes) {
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            RouteComments.commentPositions(route.getPositions());
+            RouteComments.commentPositions(route.getPositions(), route.getFormat() instanceof GoogleMapsFormat);
             RouteComments.commentRouteName(route);
         }
     }
