@@ -105,7 +105,8 @@ public abstract class NavigationTestCase extends TestCase {
         return isReallyUnprecise(format) ||
                 format instanceof GarminPoiFormat || format instanceof GarminMapSource6Format ||
                 format instanceof GeoCachingFormat || format instanceof GarminMapSource5Format ||
-                format instanceof GarminPcx5Format || format instanceof GpsTunerFormat;
+                format instanceof GarminPcx5Format || format instanceof GoogleMapsFormat ||
+                format instanceof GpsTunerFormat;
     }
 
     static boolean mayNotTransformBidirectionally(NavigationFormat first, NavigationFormat second) {

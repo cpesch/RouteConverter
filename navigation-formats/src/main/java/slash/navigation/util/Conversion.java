@@ -96,11 +96,6 @@ public class Conversion {
     private static final double epsilonGk2Wgs84 = Math.pow(nBessel, 4) * 1097 / 512;
 
     public static double[] gaussKruegerRightHeightToWgs84LongitudeLatitude(double right, double height) {
-        if (!(right > 1000000))
-            throw new IllegalArgumentException("Invalid Gauss-Krueger right value given: " + right);
-        if (!(height > 1000000))
-            throw new IllegalArgumentException("Invalid Gauss-Krueger height value given: " + height);
-
         /* from http://www.wolfgang-back.com/navigauss.php
         double rho = 180.0 / Math.PI;
         double e2 = 0.0067192188;
