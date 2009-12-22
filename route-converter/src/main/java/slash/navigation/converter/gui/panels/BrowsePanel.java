@@ -407,14 +407,14 @@ public abstract class BrowsePanel {
     private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
         AddUrlDialog addUrlDialog = new AddUrlDialog(operator, categoryTreeNode, description, url);
         addUrlDialog.pack();
-        addUrlDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
+        addUrlDialog.restoreLocation();
         addUrlDialog.setVisible(true);
     }
 
     private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
         AddFileDialog addFileDialog = new AddFileDialog(operator, categoryTreeNode, description, length, file);
         addFileDialog.pack();
-        addFileDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
+        addFileDialog.restoreLocation();
         addFileDialog.setVisible(true);
     }
 

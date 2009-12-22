@@ -51,4 +51,7 @@ public interface MapView extends PositionsSelectionModel {
     
     void addMapViewListener(MapViewListener listener);
     void removeMapViewListener(MapViewListener listener);
+
+    void insertAllWaypoints(int[] startPositions);
+    void insertOnlyTurnpoints(int[] startPositions);
 }

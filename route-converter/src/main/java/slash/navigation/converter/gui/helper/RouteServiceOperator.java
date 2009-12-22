@@ -50,7 +50,7 @@ public class RouteServiceOperator {
     public boolean showLogin() {
         LoginDialog loginDialog = new LoginDialog(routeCatalog);
         loginDialog.pack();
-        loginDialog.setLocationRelativeTo(frame);
+        loginDialog.restoreLocation();
         loginDialog.setVisible(true);
         return loginDialog.isSuccessful();
     }

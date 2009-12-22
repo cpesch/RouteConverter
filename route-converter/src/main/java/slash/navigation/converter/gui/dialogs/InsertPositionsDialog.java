@@ -20,39 +20,51 @@
 
 package slash.navigation.converter.gui.dialogs;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
+import slash.navigation.gui.SimpleDialog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.KeyEvent;
-import java.awt.*;
-
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.Spacer;
 
 /**
- * Dialog for inserting {@link slash.navigation.BaseNavigationPosition}s into the current {@link slash.navigation.BaseRoute}.
+ * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
 
-public class InsertPositionsDialog extends JDialog {
+public class InsertPositionsDialog extends SimpleDialog {
     private JPanel contentPane;
     private JButton buttonInsertPosition;
-    private JTextField textField1;
-    private JList list1;
+    private JTextField textFieldSearch;
+    private JList listResult;
     private JButton buttonInsertAllWaypoints;
     private JButton buttonInsertOnlyTurnpoints;
 
     public InsertPositionsDialog() {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "insert-positions");
         setTitle(RouteConverter.getBundle().getString("insert-positions-title"));
         setContentPane(contentPane);
+
+        buttonInsertAllWaypoints.addActionListener(new DialogAction(this) {
+            public void run() {
+                insertAllWaypoints();
+            }
+        });
+
+        buttonInsertOnlyTurnpoints.addActionListener(new DialogAction(this) {
+            public void run() {
+                insertOnlyTurnpoints();
+            }
+        });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -66,6 +78,14 @@ public class InsertPositionsDialog extends JDialog {
                 close();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    private void insertAllWaypoints() {
+        RouteConverter.getInstance().insertAllWaypoints();
+    }
+
+    private void insertOnlyTurnpoints() {
+        RouteConverter.getInstance().insertOnlyTurnpoints();
     }
 
     private void savePreferences() {
@@ -116,12 +136,12 @@ public class InsertPositionsDialog extends JDialog {
         panel3.add(buttonInsertOnlyTurnpoints, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel3.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        textField1 = new JTextField();
-        panel1.add(textField1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        textFieldSearch = new JTextField();
+        panel1.add(textFieldSearch, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        list1 = new JList();
-        scrollPane1.setViewportView(list1);
+        listResult = new JList();
+        scrollPane1.setViewportView(listResult);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel4, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

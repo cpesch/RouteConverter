@@ -27,6 +27,7 @@ import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.gui.SimpleDialog;
 import slash.common.io.Transfer;
 
 import javax.swing.*;
@@ -44,7 +45,7 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public class LoginDialog extends JDialog {
+public class LoginDialog extends SimpleDialog {
     private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
 
     private final RouteCatalog routeCatalog;
@@ -69,7 +70,7 @@ public class LoginDialog extends JDialog {
     private JCheckBox checkBoxAcceptTerms;
 
     public LoginDialog(RouteCatalog routeCatalog) {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "login");
         this.routeCatalog = routeCatalog;
         setTitle(RouteConverter.getBundle().getString("login-title"));
         setContentPane(contentPane);

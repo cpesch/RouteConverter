@@ -36,13 +36,13 @@ public abstract class SingleFrameApplication extends Application {
     private static final Logger log = Logger.getLogger(SingleFrameApplication.class.getName());
     private final Preferences preferences = Preferences.userNodeForPackage(getClass());
 
-    private static final String X_PREFERENCE = "x";
-    private static final String Y_PREFERENCE = "y";
-    private static final String WIDTH_PREFERENCE = "width";
-    private static final String HEIGHT_PREFERENCE = "height";
+    static final String X_PREFERENCE = "x";
+    static final String Y_PREFERENCE = "y";
+    static final String WIDTH_PREFERENCE = "width";
+    static final String HEIGHT_PREFERENCE = "height";
     private static final String STATE_PREFERENCE = "state";
     private static final String DEVICE_PREFERENCE = "device";
-    private static final int MAXIMIZE_OFFSET = 4;
+    static final int MAXIMIZE_OFFSET = 4;
 
     protected JFrame frame;
 
@@ -122,7 +122,7 @@ public abstract class SingleFrameApplication extends Application {
         return crop("preferenceWidth", preferences.getInt(WIDTH_PREFERENCE, -1), 0, Integer.MAX_VALUE);
     }
 
-    private int crop(String name, int position, int minimum, int maximum) {
+    static int crop(String name, int position, int minimum, int maximum) {
         int result = position < minimum ? (position == -1 ? -1 : minimum) :
                 position > maximum ? (position == -1 ? -1 : maximum) : position;
         log.info("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);

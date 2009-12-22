@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,12 +34,12 @@ import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
 
 /**
- * Dialog for selecting and complementing {@link slash.navigation.BaseNavigationPosition}s from the current {@link slash.navigation.BaseRoute}.
+ * Dialog for selecting and complementing {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
 
-public class ComplementPositionsDialog extends JDialog {
+public class ComplementPositionsDialog extends SimpleDialog {
     private JPanel contentPane;
 
     private JButton buttonSelectAll;
@@ -50,7 +51,7 @@ public class ComplementPositionsDialog extends JDialog {
     private JLabel labelSelection;
 
     public ComplementPositionsDialog() {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "complement-positions");
         setTitle(RouteConverter.getBundle().getString("complement-positions-title"));
         setContentPane(contentPane);
 

@@ -479,6 +479,22 @@ public abstract class RouteConverter extends SingleFrameApplication {
             mapView.setSelectedPositions(selectPositions);
     }
 
+    public void insertAllWaypoints() {
+        if (isMapViewAvailable()) {
+            int[] selectedPositions = getConvertPanel().getSelectedPositions();
+            getConvertPanel().clearSelection();
+            mapView.insertAllWaypoints(selectedPositions);
+        }
+    }
+
+    public void insertOnlyTurnpoints() {
+        if (isMapViewAvailable()) {
+            int[] selectedPositions = getConvertPanel().getSelectedPositions();
+            getConvertPanel().clearSelection();
+            mapView.insertOnlyTurnpoints(selectedPositions);
+        }
+    }
+
     public void printMap(boolean withRoute) {
         mapView.print(withRoute);
     }

@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.NavigationFormat;
+import slash.navigation.gui.SimpleDialog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.AbstractDocumentListener;
 import slash.navigation.converter.gui.helper.DialogAction;
@@ -43,7 +44,7 @@ import java.util.ResourceBundle;
  * @author Christian Pesch
  */
 
-public class RenameDialog extends JDialog {
+public class RenameDialog extends SimpleDialog {
     private JPanel contentPane;
     private JButton buttonRename;
     private JButton buttonCancel;
@@ -51,7 +52,7 @@ public class RenameDialog extends JDialog {
     private JLabel labelResult;
 
     public RenameDialog(String sourceRouteName, final NavigationFormat targetFormat) {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "rename");
         setTitle(RouteConverter.getBundle().getString("rename-title"));
         setContentPane(contentPane);
         setModal(true);

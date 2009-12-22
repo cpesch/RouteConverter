@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.NumberDocument;
+import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,12 +36,12 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for selecting and deleting {@link slash.navigation.BaseNavigationPosition}s from the current {@link slash.navigation.BaseRoute}.
+ * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
 
-public class DeletePositionsDialog extends JDialog {
+public class DeletePositionsDialog extends SimpleDialog {
     private JPanel contentPane;
 
     private JTextField textFieldDuplicates;
@@ -59,7 +60,7 @@ public class DeletePositionsDialog extends JDialog {
     private NumberDocument significance;
 
     public DeletePositionsDialog() {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "delete-positions");
         setTitle(RouteConverter.getBundle().getString("delete-positions-title"));
         setContentPane(contentPane);
 

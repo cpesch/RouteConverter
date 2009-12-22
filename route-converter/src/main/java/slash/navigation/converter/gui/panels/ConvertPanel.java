@@ -183,7 +183,7 @@ public abstract class ConvertPanel {
             public void run() {
                 InsertPositionsDialog options = new InsertPositionsDialog();
                 options.pack();
-                options.setLocationRelativeTo(r.getFrame());
+                options.restoreLocation();
                 options.setVisible(true);
             }
         });
@@ -192,7 +192,7 @@ public abstract class ConvertPanel {
             public void run() {
                 ComplementPositionsDialog options = new ComplementPositionsDialog();
                 options.pack();
-                options.setLocationRelativeTo(r.getFrame());
+                options.restoreLocation();
                 options.setVisible(true);
             }
         });
@@ -201,7 +201,7 @@ public abstract class ConvertPanel {
             public void run() {
                 DeletePositionsDialog options = new DeletePositionsDialog();
                 options.pack();
-                options.setLocationRelativeTo(r.getFrame());
+                options.restoreLocation();
                 options.setVisible(true);
             }
         });
@@ -563,7 +563,7 @@ public abstract class ConvertPanel {
     private void renamePositionList() {
         RenameDialog renameDialog = new RenameDialog(getPositionsModel().getRoute().getName(), getFormat());
         renameDialog.pack();
-        renameDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
+        renameDialog.restoreLocation();
         renameDialog.setVisible(true);
     }
 
@@ -659,7 +659,7 @@ public abstract class ConvertPanel {
     private void saveToWeb() {
         UploadDialog uploadDialog = new UploadDialog(formatAndRoutesModel, getSourceFileName());
         uploadDialog.pack();
-        uploadDialog.setLocationRelativeTo(RouteConverter.getInstance().getFrame());
+        uploadDialog.restoreLocation();
         uploadDialog.setVisible(true);
         formatAndRoutesModel.setModified(false);
 

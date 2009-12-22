@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
+import slash.navigation.gui.SimpleDialog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
@@ -49,7 +50,7 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 
-public class UploadDialog extends JDialog {
+public class UploadDialog extends SimpleDialog {
     private final Preferences preferences = Preferences.userNodeForPackage(getClass());
 
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
@@ -71,7 +72,7 @@ public class UploadDialog extends JDialog {
     private String fileUrl;
 
     public UploadDialog(FormatAndRoutesModel formatAndRoutesModel, String fileUrl) {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "upload");
         this.fileUrl = fileUrl;
 
         setContentPane(contentPane);

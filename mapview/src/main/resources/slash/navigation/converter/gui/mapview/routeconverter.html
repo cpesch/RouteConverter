@@ -70,6 +70,14 @@
        }
    }
 
+   function callJavaWithPost(body) {
+       if (xmlhttp) {
+           xmlhttp.open("POST", "http://localhost:" + dragListenerPort + "/generic-post-url/", true);
+           xmlhttp.setRequestHeader("id", "Jx3dQUv4");
+           xmlhttp.send(body);
+       }
+   }
+
    var dragListenerPort = 4711;
 
    function setDragListenerPort(port) {
@@ -106,6 +114,38 @@
    function centerMap(latlng) {
        if (!map.getBounds().contains(latlng))
            map.panTo(latlng);
+   }
+
+   function insertAllWaypoints(index) {
+       var directions = new GDirections(null, null);
+       GEvent.addListener(directions, "load", function() {
+           var polyline = directions.getPolyline();
+           var result = [];
+           for (i = 0; i < polyline.getVertexCount(); i++) {
+               var vertex = polyline.getVertex(i);
+               result.push(vertex.lat());
+               result.push(vertex.lng());
+           }
+           callJavaWithPost("Insert-All-Waypoints: " + index + "/" + result.join("/") + "\n\n");
+       });
+       return directions;
+   }
+
+   function insertOnlyTurnpoints(index) {
+       var directions = new GDirections(null, null);
+       GEvent.addListener(directions, "load", function() {
+           if (directions.getNumRoutes() > 0) {
+               var route = directions.getRoute(0);
+               var result = [];
+               for (i = 0; i < route.getNumSteps(); i++) {
+                   var step = route.getStep(i).getLatLng();
+                   result.push(step.lat());
+                   result.push(step.lng());
+               }
+               callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + result.join("/") + "\n\n");
+           }
+       });
+       return directions;
    }
 
    function createDirections() {

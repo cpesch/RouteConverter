@@ -27,6 +27,7 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.gui.SimpleDialog;
 import slash.common.io.Transfer;
 
 import javax.swing.*;
@@ -44,7 +45,7 @@ import java.util.ResourceBundle;
  * @author Christian Pesch
  */
 
-public class AddUrlDialog extends JDialog {
+public class AddUrlDialog extends SimpleDialog {
     private final RouteServiceOperator operator;
     private final CategoryTreeNode categoryTreeNode;
     private JPanel contentPane;
@@ -57,7 +58,7 @@ public class AddUrlDialog extends JDialog {
 
     public AddUrlDialog(RouteServiceOperator operator,
                         CategoryTreeNode categoryTreeNode, String description, String url) {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "add-url");
         this.operator = operator;
         this.categoryTreeNode = categoryTreeNode;
         setTitle(RouteConverter.getBundle().getString("add-url-title"));

@@ -27,6 +27,7 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.gui.SimpleDialog;
 import slash.common.io.Files;
 import slash.common.io.Transfer;
 
@@ -46,7 +47,7 @@ import java.util.ResourceBundle;
  * @author Christian Pesch
  */
 
-public class AddFileDialog extends JDialog {
+public class AddFileDialog extends SimpleDialog {
     private final RouteServiceOperator operator;
     private final CategoryTreeNode categoryTreeNode;
     private final File file;
@@ -61,7 +62,7 @@ public class AddFileDialog extends JDialog {
 
     public AddFileDialog(RouteServiceOperator operator,
                          CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
-        super(RouteConverter.getInstance().getFrame());
+        super(RouteConverter.getInstance().getFrame(), "add-file");
         this.operator = operator;
         this.categoryTreeNode = categoryTreeNode;
         this.file = file;
