@@ -161,7 +161,7 @@ public abstract class ConvertPanel {
 
         buttonMovePositionToTop.addActionListener(new FrameAction() {
             public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getSelectedPositions();
                 if (selectedRows.length > 0) {
                     getPositionsModel().top(selectedRows);
                     reestablishPositionSelection(0);
@@ -171,7 +171,7 @@ public abstract class ConvertPanel {
 
         buttonMovePositionUp.addActionListener(new FrameAction() {
             public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getSelectedPositions();
                 if (selectedRows.length > 0) {
                     getPositionsModel().up(selectedRows);
                     reestablishPositionSelection(-1);
@@ -215,7 +215,7 @@ public abstract class ConvertPanel {
 
         buttonMovePositionDown.addActionListener(new FrameAction() {
             public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getSelectedPositions();
                 if (selectedRows.length > 0) {
                     getPositionsModel().down(selectedRows);
                     reestablishPositionSelection(+1);
@@ -225,7 +225,7 @@ public abstract class ConvertPanel {
 
         buttonMovePositionToBottom.addActionListener(new FrameAction() {
             public void run() {
-                int[] selectedRows = tablePositions.getSelectedRows();
+                int[] selectedRows = getSelectedPositions();
                 if (selectedRows.length > 0) {
                     getPositionsModel().bottom(selectedRows);
                     reestablishPositionSelection(0);
@@ -725,6 +725,10 @@ public abstract class ConvertPanel {
             JTableHelper.selectPositions(tablePositions, minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
     }
 
+    public int[] getSelectedPositions() {
+        return tablePositions.getSelectedRows();
+    }
+
     // handle notifications
 
     private void handleFormatUpdate() {
@@ -782,7 +786,7 @@ public abstract class ConvertPanel {
     }
 
     private void handleSelectionUpdate() {
-        int[] selectedRows = tablePositions.getSelectedRows();
+        int[] selectedRows = getSelectedPositions();
         if (selectedRows.length > 0) {
             boolean firstRowNotSelected = selectedRows[0] != 0;
             buttonMovePositionToTop.setEnabled(firstRowNotSelected);
