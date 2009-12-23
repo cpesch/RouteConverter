@@ -481,7 +481,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void insertAllWaypoints() {
         if (isMapViewAvailable()) {
-            int[] selectedPositions = getConvertPanel().getSelectedPositions();
+            int[] selectedPositions = getSelectedPositions();
             getConvertPanel().clearSelection();
             mapView.insertAllWaypoints(selectedPositions);
         }
@@ -489,7 +489,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void insertOnlyTurnpoints() {
         if (isMapViewAvailable()) {
-            int[] selectedPositions = getConvertPanel().getSelectedPositions();
+            int[] selectedPositions = getSelectedPositions();
             getConvertPanel().clearSelection();
             mapView.insertOnlyTurnpoints(selectedPositions);
         }
@@ -501,6 +501,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void printElevationProfile() {
         getAnalysePanel().print();
+    }
+
+    public int[] getSelectedPositions() {
+        return getConvertPanel().getSelectedPositions();
     }
 
     public int selectAll() {

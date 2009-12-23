@@ -52,6 +52,8 @@ public abstract class SimpleDialog extends JDialog {
                 (int) bounds.getY() + (int) bounds.getHeight() + 2 * SingleFrameApplication.MAXIMIZE_OFFSET - getHeight());
         if (x != -1 && y != -1)
             setLocation(x, y);
+        else
+            setLocationRelativeTo(getOwner());
         log.info("Dialog " + getName() + " location is " + getLocation());
     }
 
