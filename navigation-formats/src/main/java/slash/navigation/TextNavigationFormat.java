@@ -74,6 +74,6 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         write(route, target, DEFAULT_ENCODING, startIndex, endIndex);
     }
 
-    public abstract void write(R route, PrintWriter writer, int startIndex, int endIndex);
+    public abstract void write(R route, PrintWriter writer, int startIndex, int endIndex) throws IOException;
 
 }

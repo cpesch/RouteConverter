@@ -415,6 +415,10 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
+    public SimpleRoute asWebPageFormat() {
+        return asSimpleFormat(new WebPageFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (BcrPosition position : positions) {

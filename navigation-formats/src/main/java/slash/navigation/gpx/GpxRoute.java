@@ -383,6 +383,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
+    public SimpleRoute asWebPageFormat() {
+        return asSimpleFormat(new WebPageFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (GpxPosition position : positions) {

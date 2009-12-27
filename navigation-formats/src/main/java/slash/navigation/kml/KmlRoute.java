@@ -358,6 +358,10 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
+    public SimpleRoute asWebPageFormat() {
+        return asSimpleFormat(new WebPageFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (KmlPosition position : positions) {

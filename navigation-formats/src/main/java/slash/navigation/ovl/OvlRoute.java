@@ -366,6 +366,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
     
+    public SimpleRoute asWebPageFormat() {
+        return asSimpleFormat(new WebPageFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (Wgs84Position position : positions) {

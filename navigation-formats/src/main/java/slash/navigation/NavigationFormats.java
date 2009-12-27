@@ -95,6 +95,7 @@ public final class NavigationFormats {
         addFormat(Nmn5Format.class);
         addFormat(Nmn4Format.class);
         addFormat(GoogleMapsFormat.class);
+        addFormat(WebPageFormat.class);
         addFormat(GpsTunerFormat.class);
         addFormat(HaicomLoggerFormat.class);
         addFormat(CoPilot6Format.class);

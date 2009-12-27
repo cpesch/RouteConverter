@@ -283,6 +283,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
+    public SimpleRoute asWebPageFormat() {
+        if (getFormat() instanceof WebPageFormat)
+            return this;
+        return asSimpleFormat(new WebPageFormat());
+    }
+
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
         for (P position : positions) {

@@ -379,6 +379,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asRoute66Format();
     public abstract SimpleRoute asSygicUnicodeFormat();
+    public abstract SimpleRoute asWebPageFormat();
 
     public abstract TomTomRoute asTomTom5RouteFormat();
     public abstract TomTomRoute asTomTom8RouteFormat();

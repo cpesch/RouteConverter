@@ -345,6 +345,10 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return asSimpleFormat(new SygicUnicodeFormat());
     }
     
+    public SimpleRoute asWebPageFormat() {
+        return asSimpleFormat(new WebPageFormat());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (Wgs84Position position : positions) {

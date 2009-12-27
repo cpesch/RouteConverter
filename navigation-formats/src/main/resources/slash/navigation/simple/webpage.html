@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>INSERT_ROUTENAME</title>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAzr2EBOXUKnm_jVnk0OJI7xSosDVG8KKPE1-m51RBrvYughuyMxQ-i1QfUnH94QxWIa6N4U6MouMmBA" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        function GetTileUrl_Mapnik(a, b) {
+            return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
+        }
+
+        function GetTileUrl_TaH(a, b) {
+            return "http://tah.openstreetmap.org/Tiles/tile/" + b + "/" + a.x + "/" + a.y + ".png";
+        }
+
+        function GetTileUrl_Cyc(a, b) {
+            return "http://a.andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
+        }
+
+        function isLoaded() {
+            return window.GBrowserIsCompatible;
+        }
+
+        function setMapType(map, mapType) {
+            var types = map.getMapTypes();
+            for (i = 0; i < types.length; i++) {
+                var type = types[i];
+                if (type.getName() == mapType) {
+                    map.setMapType(type);
+                    break;
+                }
+            }
+        }
+
+        function addTrack(map, latlngs) {
+            map.addOverlay(new GPolyline(latlngs, "#0033FF", 2, 1));
+        }
+
+        function addRoute(map, latlngs) {
+            new GDirections(map, document.getElementById("directions")).loadFromWaypoints(latlngs, { avoidHighways: true, travelMode: G_TRAVEL_MODE_DRIVING, locale: 'en' });
+        }
+
+        function addWaypoints(map, markers) {
+            for (var i = 0; i < markers.length; i++) {
+                map.addOverlay(markers[i]);
+            }
+        }
+
+        function setError(text) {
+            var element = document.createElement("div");
+            element.innerHTML = text;
+            var error = document.getElementById("error");
+            error.style.padding = "20pt";
+            error.appendChild(element);
+        }
+
+        function initialize() {
+            if (isLoaded()) {
+                try {
+                    if (GBrowserIsCompatible()) {
+                        var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "(CC-by-sa)");
+                        var copyrightCollection = new GCopyrightCollection("&copy; OpenStreetMap");
+                        copyrightCollection.addCopyright(copyright);
+                        var tilelayers_mapnik = new Array();
+                        tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
+                        tilelayers_mapnik[0].getTileUrl = GetTileUrl_Mapnik;
+                        tilelayers_mapnik[0].getOpacity = function () {
+                            return 1.0;
+                        };
+                        var tilelayers_tah = new Array();
+                        tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
+                        tilelayers_tah[0].getTileUrl = GetTileUrl_TaH;
+                        tilelayers_tah[0].getOpacity = function () {
+                            return 1.0;
+                        };
+                        var tilelayers_cyc = new Array();
+                        tilelayers_cyc[0] = new GTileLayer(copyrightCollection, 0, 17);
+                        tilelayers_cyc[0].getTileUrl = GetTileUrl_Cyc;
+                        tilelayers_cyc[0].getOpacity = function () {
+                            return 1.0;
+                        };
+                        mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data" });
+                        tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data" });
+                        cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data" });
+
+                        var markerIcon = new GIcon();
+                        markerIcon.image = "http://maps.google.com/mapfiles/kml/shapes/placemark_circle_maps.png";
+                        markerIcon.iconSize = new GSize(32, 32);
+                        markerIcon.shadowSize = markerIcon.iconSize;
+                        markerIcon.iconAnchor = new GPoint(14, 16);
+
+                        var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap] });
+                        map.addControl(new GLargeMapControl());
+                        map.addControl(new GMapTypeControl());
+                        map.enableScrollWheelZoom();
+
+                        // options: Normal, Satellite, Hybrid, Terrain, Mapnik, T@H, Cycle
+                        setMapType(map, "Normal");
+
+                        // options: Track, Route, Waypoint list
+                        var route = [INSERT_TRACK];
+                        addRoute(map, route);
+                        var track = [INSERT_ROUTE];
+                        addTrack(map, track);
+                        var waypoints = [INSERT_WAYPOINTS];
+                        addWaypoints(map, waypoints);
+                          
+                        // zoom
+                        var zoomLevel = map.getBoundsZoomLevel(new GLatLngBounds(INSERT_BOUNDS));
+                        map.setCenter(INSERT_CENTER, zoomLevel);
+
+                    } else {
+                        setError("<p>Sorry, Google Maps is not compatible</p><p>with this browser.</p>");
+                    }
+                } catch (e) {
+                    setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p></div>");
+                }
+            } else {
+                setError("<p>Sorry, could not access Google Maps.</p><p>Please check your Internet connection.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+            }
+        }
+
+        function unload() {
+            if (isLoaded())
+                GUnload();
+        }
+
+    </script>
+    <style type="text/css">
+        #map { width: 600px; height: 400px }
+        #directions { display: none }
+    </style>
+</head>
+<body onload="initialize()" onunload="unload()">
+<h1>INSERT_ROUTENAME</h1>
+<div id="error"></div>
+<div id="map"></div>
+<div id="directions"></div>
+</body>
+</html>
