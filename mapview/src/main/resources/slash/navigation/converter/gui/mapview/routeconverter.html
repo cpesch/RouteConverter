@@ -88,9 +88,9 @@
    }
 
    function setMapType(mapType) {
-       types = map.getMapTypes();
+       var types = map.getMapTypes();
        for (i=0; i < types.length; i++) {
-           type = types[i];
+           var type = types[i];
            if(type.getName() == mapType) {
                map.setMapType(type);
                break;
