@@ -507,8 +507,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return getConvertPanel().getSelectedPositions();
     }
 
-    public int selectAll() {
-        return getConvertPanel().selectAll();
+    public void selectAll() {
+        getConvertPanel().selectAll();
     }
 
     public int selectDuplicatesWithinDistance(int duplicate) {

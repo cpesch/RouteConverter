@@ -143,6 +143,10 @@ public class DeletePositionsDialog extends SimpleDialog {
         labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedPositionCount));
     }
 
+    private void resetDeleteCount() {
+        labelProgress.setText("-");
+    }
+
     private void selectDuplicates() {
         int duplicate = this.duplicate.getNumber();
         if (duplicate >= 0) {
@@ -150,6 +154,7 @@ public class DeletePositionsDialog extends SimpleDialog {
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-duplicates-result"), selectedRowCount, duplicate));
             savePreferences();
         }
+        resetDeleteCount();
     }
 
     private void selectByDistance() {
@@ -159,6 +164,7 @@ public class DeletePositionsDialog extends SimpleDialog {
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-distance-result"), selectedRowCount, distance));
             savePreferences();
         }
+        resetDeleteCount();
     }
 
     private void selectByOrder() {
@@ -168,6 +174,7 @@ public class DeletePositionsDialog extends SimpleDialog {
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-order-result"), selectedRowCount[0], selectedRowCount[1]));
             savePreferences();
         }
+        resetDeleteCount();
     }
 
     private void selectBySignificance() {
@@ -177,11 +184,13 @@ public class DeletePositionsDialog extends SimpleDialog {
             labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, significance));
             savePreferences();
         }
+        resetDeleteCount();
     }
 
     private void clearSelection() {
         RouteConverter.getInstance().clearSelection();
         updateSelectionCount();
+        resetDeleteCount();
     }
 
     private void deletePositions() {

@@ -767,7 +767,7 @@ public abstract class ConvertPanel {
 
     private void handlePositionsUpdate() {
         final boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-        boolean existsAPosition = getPositionsModel().getRowCount() > 0;
+        final boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
         buttonMovePositionToTop.setEnabled(existsMoreThanOnePosition);
@@ -780,7 +780,7 @@ public abstract class ConvertPanel {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                popupTable.handlePositionsUpdate(supportsMultipleRoutes, tablePositions.getSelectedRowCount() > 0);
+                popupTable.handlePositionsUpdate(supportsMultipleRoutes, existsAPosition, tablePositions.getSelectedRowCount() > 0);
             }
         });
     }
@@ -800,7 +800,8 @@ public abstract class ConvertPanel {
 
         if (selectedRows.length > 0) {
             boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-            popupTable.handlePositionsUpdate(supportsMultipleRoutes, selectedRows.length > 0);
+            boolean existsAPosition = getPositionsModel().getRowCount() > 0;
+            popupTable.handlePositionsUpdate(supportsMultipleRoutes, existsAPosition, selectedRows.length > 0);
         }
     }
 
@@ -910,9 +911,8 @@ public abstract class ConvertPanel {
 
     // helpers for external components
 
-    public int selectAll() {
-        tablePositions.getSelectionModel().addSelectionInterval(0, tablePositions.getRowCount() - 1);
-        return tablePositions.getRowCount();
+    public void selectAll() {
+        new SelectAll(tablePositions).actionPerformed(null);
     }
 
     public int selectDuplicatesWithinDistance(int distance) {
@@ -1233,8 +1233,9 @@ public abstract class ConvertPanel {
     }
 
     public class PositionTablePopupMenu extends TablePopupMenu {
-        private JMenuItem buttonDeletePositions, buttonAddCoordinates, buttonAddElevation, buttonAddPostalAddress,
-                buttonAddPopulatedPlace, buttonAddSpeed, buttonAddIndex, buttonSplitPositionlist;
+        private JMenuItem buttonDeletePositions, buttonSelectAll, buttonAddCoordinates, buttonAddElevation,
+                buttonAddPostalAddress, buttonAddPopulatedPlace, buttonAddSpeed, buttonAddIndex,
+                buttonSplitPositionlist;
 
         public PositionTablePopupMenu() {
             super(tablePositions);
@@ -1253,8 +1254,12 @@ public abstract class ConvertPanel {
             buttonDeletePositions.addActionListener(new DeletePositions(tablePositions, getPositionsModel()));
             popupMenu.add(buttonDeletePositions);
 
-            popupMenu.addSeparator();
+            buttonSelectAll = new JMenuItem(RouteConverter.getBundle().getString("complement-select-all"));
+            buttonSelectAll.setToolTipText(RouteConverter.getBundle().getString("complement-select-all-tooltip"));
+            buttonSelectAll.addActionListener(new SelectAll(tablePositions));
+            popupMenu.add(buttonSelectAll);
 
+            popupMenu.addSeparator();
             buttonAddCoordinates = new JMenuItem(RouteConverter.getBundle().getString("add-coordinates"));
             buttonAddCoordinates.addActionListener(new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
             popupMenu.add(buttonAddCoordinates);
@@ -1347,8 +1352,9 @@ public abstract class ConvertPanel {
             buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
         }
 
-        void handlePositionsUpdate(final boolean supportsMultipleRoutes, boolean existsASelectedPosition) {
+        void handlePositionsUpdate(final boolean supportsMultipleRoutes, boolean existsAPosition, boolean existsASelectedPosition) {
             buttonDeletePositions.setEnabled(existsASelectedPosition);
+            buttonSelectAll.setEnabled(existsAPosition);
             buttonAddElevation.setEnabled(existsASelectedPosition);
             buttonAddPostalAddress.setEnabled(existsASelectedPosition);
             buttonAddPopulatedPlace.setEnabled(existsASelectedPosition);
