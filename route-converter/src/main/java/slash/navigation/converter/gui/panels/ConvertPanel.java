@@ -1254,7 +1254,7 @@ public abstract class ConvertPanel {
             buttonDeletePositions.addActionListener(new DeletePositions(tablePositions, getPositionsModel()));
             popupMenu.add(buttonDeletePositions);
 
-            buttonSelectAll = new JMenuItem(RouteConverter.getBundle().getString("complement-select-all"));
+            buttonSelectAll = new JMenuItem(RouteConverter.getBundle().getString("select-all"));
             buttonSelectAll.setToolTipText(RouteConverter.getBundle().getString("complement-select-all-tooltip"));
             buttonSelectAll.addActionListener(new SelectAll(tablePositions));
             popupMenu.add(buttonSelectAll);

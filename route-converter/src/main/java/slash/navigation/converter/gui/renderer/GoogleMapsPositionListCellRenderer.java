@@ -20,29 +20,23 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.models.PositionTableColumn;
+import slash.navigation.googlemaps.GoogleMapsPosition;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders the column header of the positions table.
+ * Renders the position labels of the insert position list.
  *
  * @author Christian Pesch
  */
 
-public class PositionsTableCellHeaderRenderer extends DefaultTableCellRenderer {
+public class GoogleMapsPositionListCellRenderer extends DefaultListCellRenderer {
 
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        label.setHorizontalAlignment(JLabel.LEFT);
-        label.setOpaque(false);
-        PositionTableColumn column = (PositionTableColumn) table.getColumnModel().getColumn(columnIndex);
-        String name = RouteConverter.getBundle().getString(column.getName());
-        label.setText(name);
-        label.setToolTipText(name);
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        GoogleMapsPosition position = (GoogleMapsPosition) value;
+        label.setText(position.getComment() + " @ " + position.getLongitude() + "," + position.getLatitude());
         return label;
     }
 }

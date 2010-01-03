@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.*;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.NumberDocument;
@@ -39,7 +40,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for selecting and deleting {@link slash.navigation.BaseNavigationPosition}s from the current {@link slash.navigation.BaseRoute}.
+ * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -63,7 +64,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     private NumberDocument order;
     private NumberDocument significance;
     private JLabel labelProgress;
-    private int updatedPositionsCount = 0;
+    private int removedPositionsCount = 0;
 
     public DeletePositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "delete-positions");
@@ -132,8 +133,8 @@ public class DeletePositionsDialog extends SimpleDialog {
         updateSelectionCount();
         RouteConverter.getInstance().getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                updatedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
-                labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-removed-positions"), updatedPositionsCount));
+                removedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
+                labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-removed-positions"), removedPositionsCount));
             }
         });
     }
@@ -194,7 +195,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        updatedPositionsCount = 0;
+        removedPositionsCount = 0;
         RouteConverter.getInstance().deletePositions();
         updateSelectionCount();
     }

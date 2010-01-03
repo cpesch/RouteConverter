@@ -71,7 +71,7 @@ public class GoogleMapsService {
         return null;
     }
 
-    public GoogleMapsPosition getPositionFor(String address) throws IOException {
+    Kml getKmlFor(String address) throws IOException {
         Get get = new Get(getGoogleMapsUrl(Helper.encodeUri(address)));
         String result = get.execute();
         if (get.isSuccessful())
@@ -79,7 +79,7 @@ public class GoogleMapsService {
                 Kml kml = KmlUtil.unmarshal20(result);
                 if (kml != null) {
                     if (extractStatusCode(kml) == 200) {
-                        return extractHighestAccuracyPosition(kml, address);
+                        return kml;
                     }
                 }
             } catch (JAXBException e) {
@@ -88,6 +88,16 @@ public class GoogleMapsService {
                 throw io;
             }
         return null;
+    }
+
+    public GoogleMapsPosition getPositionFor(String address) throws IOException {
+        Kml kml = getKmlFor(address);
+        return kml != null ? extractHighestAccuracyPosition(kml, address) : null;
+    }
+
+    public List<GoogleMapsPosition> getPositionsFor(String address) throws IOException {
+        Kml kml = getKmlFor(address);
+        return kml != null ? extractPositions(kml) : null;
     }
 
     <T> T find(List elements, Class<T> resultClass) {
@@ -162,13 +172,25 @@ public class GoogleMapsService {
         return null;
     }
 
+    GoogleMapsPosition extractPosition(Placemark placemark, String comment) {
+        Point point = find(placemark.getDescriptionOrNameOrSnippet(), Point.class);
+        if (point != null)
+            return GoogleMapsPosition.parsePosition(point.getCoordinates(), comment);
+        else
+            return null;
+    }
+
     GoogleMapsPosition extractHighestAccuracyPosition(Kml kml, String comment) {
         Placemark placemark = extractHighestAccuracyPlacemark(kml);
-        if (placemark != null) {
-            Point point = find(placemark.getDescriptionOrNameOrSnippet(), Point.class);
-            if (point != null)
-                return GoogleMapsPosition.parsePosition(point.getCoordinates(), comment);
+        return placemark != null ? extractPosition(placemark, comment) : null;
+    }
+
+    List<GoogleMapsPosition> extractPositions(Kml kml) {
+        List<GoogleMapsPosition> result = new ArrayList<GoogleMapsPosition>();
+        List<Placemark> placemarks = extractPlacemarks(kml);
+        for (Placemark placemark : placemarks) {
+            result.add(extractPosition(placemark, find(placemark.getDescriptionOrNameOrSnippet(), String.class)));
         }
-        return null;
+        return result;
     }
 }
