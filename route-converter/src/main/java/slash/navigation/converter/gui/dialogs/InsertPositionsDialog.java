@@ -37,8 +37,6 @@ import slash.navigation.gui.SimpleDialog;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -49,7 +47,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for inserting {@link slash.navigation.BaseNavigationPosition}s into the current {@link slash.navigation.BaseRoute}.
+ * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
