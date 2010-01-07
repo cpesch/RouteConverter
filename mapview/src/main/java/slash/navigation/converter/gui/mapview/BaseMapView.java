@@ -1082,9 +1082,9 @@ public abstract class BaseMapView implements MapView {
                 BaseNavigationPosition before = successorPredecessor.get(0);
 
                 synchronized (notificationMutex) {
-                    int index = positions.indexOf(before);
-                    for (int i = 0; i < coordinates.size() - 1; i += 2) {
-                        positionsModel.add(index + 1, coordinates.get(i + 1), coordinates.get(i), null, null, null, null);
+                    int index = positions.indexOf(before) + 1;
+                    for (int i = coordinates.size() - 1; i > 0; i -= 2) {
+                        positionsModel.add(index, coordinates.get(i), coordinates.get(i - 1), null, null, null, null);
                     }
                 }
 
