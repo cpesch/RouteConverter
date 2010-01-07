@@ -1,0 +1,19 @@
+Who contributed to RouteConverter
+=================================
+
+Thank you to:
+
+all the users helping me with donations, feedback, files, testing...
+all the programmers sending me code
+
+My special thanks to:
+
+Malte Neumann for contributing code for KML, Wintec, Douglas-Peucker, Map and much more
+Matthias Pötzsch for the RouteCatalog maintenance
+Philippe Vandekerckhove for the dutch translation
+R.-Michael Teichert for the program icon
+Rainer Ippen for usuability improvements
+Vincent Di Sanzo for the french translation
+Xiaoming Huang for the chinese translation
+
+Of course a lot more people helped. If your name is missing drop me an email or a patch
