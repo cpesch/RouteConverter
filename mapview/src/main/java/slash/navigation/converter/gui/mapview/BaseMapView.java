@@ -932,8 +932,8 @@ public abstract class BaseMapView implements MapView {
                 if (i == positions.size() - 1)
                     continue;
                 List<BaseNavigationPosition> successorPredecessor = new ArrayList<BaseNavigationPosition>();
-                successorPredecessor.add(positions.get(i));
-                successorPredecessor.add(positions.get(i + 1));
+                successorPredecessor.add(positions.get(startPositions[i]));
+                successorPredecessor.add(positions.get(startPositions[i] + 1));
                 addToQueue.put(random.nextInt(), successorPredecessor);
            }
         }
