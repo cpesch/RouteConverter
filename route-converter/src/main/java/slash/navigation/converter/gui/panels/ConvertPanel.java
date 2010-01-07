@@ -310,6 +310,13 @@ public abstract class ConvertPanel {
         comboBoxChoosePositionListCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
         addDragAndDrop();
+
+        // make sure that Insert works directly after the program start on an empty position list
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                convertPanel.requestFocus();
+            }
+        });
     }
 
     protected abstract void addDragAndDrop();
