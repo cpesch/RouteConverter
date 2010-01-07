@@ -102,6 +102,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
+    private static final String SEARCH_POSITION_PREFERENCE = "searchPosition";
     private static final String DIVIDER_LOCATION_PREFERENCE = "dividerLocation";
 
     private static final String DEBUG_PREFERENCE = "debug";
@@ -360,6 +361,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void setSelectBySignificancePreference(int selectBySignificancePreference) {
         preferences.putInt(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
+    }
+
+    public String getSearchPositionPreference() {
+        return preferences.get(SEARCH_POSITION_PREFERENCE, "");
+    }
+
+    public void setSearchPositionPreference(String searchPositionPreference) {
+        preferences.put(SEARCH_POSITION_PREFERENCE, searchPositionPreference);
     }
 
     public String getUserNamePreference() {
