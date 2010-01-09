@@ -386,13 +386,13 @@ public abstract class ConvertPanel {
         setReadFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedSource());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-        getChooser().setMultiSelectionEnabled(false);
+        getChooser().setMultiSelectionEnabled(true);
         int open = getChooser().showOpenDialog(RouteConverter.getInstance().getFrame());
         if (open != JFileChooser.APPROVE_OPTION)
             return;
 
-        File selected = getChooser().getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        File[] selected = getChooser().getSelectedFiles();
+        if (selected == null || selected.length == 0)
             return;
 
         setReadFormatFileFilterPreference(getChooser());
