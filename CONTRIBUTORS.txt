@@ -8,6 +8,7 @@ all the programmers sending me code
 
 My special thanks to:
 
+Denny Baier for openSUSE packaging
 Malte Neumann for contributing code for KML, Wintec, Douglas-Peucker, Map and much more
 Matthias Pötzsch for the RouteCatalog maintenance
 Philippe Vandekerckhove for the dutch translation
