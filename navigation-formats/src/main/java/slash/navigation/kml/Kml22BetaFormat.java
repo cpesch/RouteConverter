@@ -196,6 +196,8 @@ public class Kml22BetaFormat extends KmlFormat {
 
     private List<KmlPosition> extractPositions(JAXBElement<? extends AbstractGeometryType> geometryType) {
         List<KmlPosition> positions = new ArrayList<KmlPosition>();
+        if (geometryType == null)
+            return positions;
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
         if (geometryTypeValue instanceof PointType) {
             PointType point = (PointType) geometryTypeValue;
