@@ -98,7 +98,7 @@ public abstract class ConvertPanel {
     private JButton buttonRevertPositionList;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
-    private JCheckBox checkboxDuplicateFirstPosition;
+    private JCheckBox checkBoxDuplicateFirstPosition;
     private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
@@ -290,7 +290,7 @@ public abstract class ConvertPanel {
             }
         });
 
-        new CheckBoxPreferencesSynchronizer(checkboxDuplicateFirstPosition, r.getPreferences(), RouteConverter.DUPLICATE_FIRST_POSITION_PREFERENCE, false);
+        new CheckBoxPreferencesSynchronizer(checkBoxDuplicateFirstPosition, r.getPreferences(), RouteConverter.DUPLICATE_FIRST_POSITION_PREFERENCE, false);
         new CheckBoxPreferencesSynchronizer(checkBoxSaveAsRouteTrackWaypoints, r.getPreferences(), RouteConverter.SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE, true);
 
         handleFormatUpdate();
@@ -587,7 +587,7 @@ public abstract class ConvertPanel {
 
         r.setTargetPreference(format, file.getParent());
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
-        int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(route, format, checkboxDuplicateFirstPosition.isSelected());
+        int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(route, format, checkBoxDuplicateFirstPosition.isSelected());
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"), Files.shortenPath(getSourceFileName()),
@@ -628,7 +628,7 @@ public abstract class ConvertPanel {
             if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
-                new NavigationFileParser().write(route, format, checkboxDuplicateFirstPosition.isSelected(), true, targets);
+                new NavigationFileParser().write(route, format, checkBoxDuplicateFirstPosition.isSelected(), true, targets);
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
@@ -744,7 +744,7 @@ public abstract class ConvertPanel {
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
-        checkboxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
+        checkBoxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
 
         buttonNewPositionList.setEnabled(supportsMultipleRoutes);
@@ -1054,9 +1054,9 @@ public abstract class ConvertPanel {
         buttonDeleteFromPositionList.setText("");
         buttonDeleteFromPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-from-positionlist-tooltip"));
         panel1.add(buttonDeleteFromPositionList, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkboxDuplicateFirstPosition = new JCheckBox();
-        this.$$$loadButtonText$$$(checkboxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
-        convertPanel.add(checkboxDuplicateFirstPosition, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxDuplicateFirstPosition = new JCheckBox();
+        this.$$$loadButtonText$$$(checkBoxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
+        convertPanel.add(checkBoxDuplicateFirstPosition, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel2, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

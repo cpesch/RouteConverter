@@ -156,7 +156,7 @@
           </component>
         </children>
       </grid>
-      <component id="31feb" class="javax.swing.JCheckBox" binding="checkboxDuplicateFirstPosition">
+      <component id="31feb" class="javax.swing.JCheckBox" binding="checkBoxDuplicateFirstPosition">
         <constraints>
           <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
