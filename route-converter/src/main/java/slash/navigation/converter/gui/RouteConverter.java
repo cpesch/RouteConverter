@@ -92,6 +92,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String ADD_POSITION_LATITUDE_PREFERENCE = "addPositionLatitude";
     public static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
     public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
+    public static final String SAVE_ONLY_THIS_POSITION_LIST_PREFERENCE = "saveOnlyThisPositionlist";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
     public static final String PREFIX_NUMBER_WITH_ZEROS = "prefixNumberWithZeros";

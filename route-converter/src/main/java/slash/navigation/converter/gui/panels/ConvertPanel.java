@@ -100,6 +100,7 @@ public abstract class ConvertPanel {
     private JButton buttonMovePositionToBottom;
     private JCheckBox checkBoxDuplicateFirstPosition;
     private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
+    private JCheckBox checkBoxSaveOnlyThisPositionList;
     private JComboBox comboBoxChooseFormat;
     private JButton buttonSaveFile;
 
@@ -292,6 +293,7 @@ public abstract class ConvertPanel {
 
         new CheckBoxPreferencesSynchronizer(checkBoxDuplicateFirstPosition, r.getPreferences(), RouteConverter.DUPLICATE_FIRST_POSITION_PREFERENCE, false);
         new CheckBoxPreferencesSynchronizer(checkBoxSaveAsRouteTrackWaypoints, r.getPreferences(), RouteConverter.SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxSaveOnlyThisPositionList, r.getPreferences(), RouteConverter.SAVE_ONLY_THIS_POSITION_LIST_PREFERENCE, false);
 
         handleFormatUpdate();
         handleRoutesUpdate();
@@ -624,8 +626,11 @@ public abstract class ConvertPanel {
         String targetsAsString = Files.printArrayToDialogString(targets);
         Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         try {
-            boolean saveAsRouteTrackWaypoints = checkBoxSaveAsRouteTrackWaypoints.isSelected();
-            if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
+            boolean saveAsRouteTrackWaypoints = checkBoxSaveAsRouteTrackWaypoints.isVisible() && checkBoxSaveAsRouteTrackWaypoints.isSelected();
+            boolean saveOnlyThisPositionList = checkBoxSaveOnlyThisPositionList.isVisible() && checkBoxSaveOnlyThisPositionList.isSelected();
+            if (format.isSupportsMultipleRoutes() && saveOnlyThisPositionList) {
+                new NavigationFileParser().write(Arrays.asList(formatAndRoutesModel.getSelectedRoute()), (MultipleRoutesFormat) format, targets[0]);
+            } else if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
                 new NavigationFileParser().write(route, format, checkBoxDuplicateFirstPosition.isSelected(), true, targets);
@@ -746,6 +751,7 @@ public abstract class ConvertPanel {
 
         checkBoxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
+        checkBoxSaveOnlyThisPositionList.setVisible(supportsMultipleRoutes && existsMoreThanOneRoute);
 
         buttonNewPositionList.setEnabled(supportsMultipleRoutes);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
@@ -763,6 +769,7 @@ public abstract class ConvertPanel {
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
         checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
+        checkBoxSaveOnlyThisPositionList.setVisible(supportsMultipleRoutes && existsMoreThanOneRoute);
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
         buttonNewPositionList.setEnabled(supportsMultipleRoutes);
@@ -983,7 +990,7 @@ public abstract class ConvertPanel {
      */
     private void $$$setupUI$$$() {
         convertPanel = new JPanel();
-        convertPanel.setLayout(new GridLayoutManager(11, 3, new Insets(3, 3, 0, 3), -1, -1));
+        convertPanel.setLayout(new GridLayoutManager(12, 3, new Insets(3, 3, 0, 3), -1, -1));
         convertPanel.setMinimumSize(new Dimension(-1, -1));
         convertPanel.setPreferredSize(new Dimension(560, 560));
         final JLabel label1 = new JLabel();
@@ -1056,7 +1063,7 @@ public abstract class ConvertPanel {
         panel1.add(buttonDeleteFromPositionList, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxDuplicateFirstPosition = new JCheckBox();
         this.$$$loadButtonText$$$(checkBoxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
-        convertPanel.add(checkBoxDuplicateFirstPosition, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        convertPanel.add(checkBoxDuplicateFirstPosition, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel2, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1176,6 +1183,10 @@ public abstract class ConvertPanel {
         comboBoxChoosePositionList = new JComboBox();
         comboBoxChoosePositionList.setVisible(true);
         convertPanel.add(comboBoxChoosePositionList, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxSaveOnlyThisPositionList = new JCheckBox();
+        checkBoxSaveOnlyThisPositionList.setSelected(false);
+        this.$$$loadButtonText$$$(checkBoxSaveOnlyThisPositionList, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-only-this-position-list"));
+        convertPanel.add(checkBoxSaveOnlyThisPositionList, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
