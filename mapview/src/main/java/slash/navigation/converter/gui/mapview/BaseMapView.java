@@ -923,8 +923,8 @@ public abstract class BaseMapView implements MapView {
 
     private final Map<Integer, List<BaseNavigationPosition>> insertWaypointsQueue = new HashMap<Integer, List<BaseNavigationPosition>>();
 
-    private void insertWaypoints(String mode, int[] startPositions) {
-        Map<Integer, List<BaseNavigationPosition>> addToQueue = new HashMap<Integer, List<BaseNavigationPosition>>();
+    private void insertWaypoints(final String mode, int[] startPositions) {
+        final Map<Integer, List<BaseNavigationPosition>> addToQueue = new HashMap<Integer, List<BaseNavigationPosition>>();
         Random random = new Random();
         synchronized (notificationMutex) {
             for (int i = 0; i < startPositions.length; i++) {
@@ -942,23 +942,32 @@ public abstract class BaseMapView implements MapView {
             insertWaypointsQueue.putAll(addToQueue);
         }
 
-        for(Integer key : insertWaypointsQueue.keySet()) {
-            List<BaseNavigationPosition> successorPredecessor = insertWaypointsQueue.get(key);
-            BaseNavigationPosition from = successorPredecessor.get(0);
-            BaseNavigationPosition to = successorPredecessor.get(1);
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("var latlngs = [");
-            buffer.append("new GLatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("),");
-            buffer.append("new GLatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append(")");
-            buffer.append("];\n");
-            buffer.append(mode).append("(").append(key).append(").loadFromWaypoints(latlngs, ").
-                   append("{ preserveViewport: true, getPolyline: true, getSteps: true, avoidHighways: ").
-                    append(avoidHighways).append(", travelMode: ").
-                    append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
-                    append(", locale: '").append(Locale.getDefault()).append("'").
-                    append(" });");
-            executeScript(buffer.toString());
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                for (Integer key : addToQueue.keySet()) {
+                    List<BaseNavigationPosition> successorPredecessor = addToQueue.get(key);
+                    BaseNavigationPosition from = successorPredecessor.get(0);
+                    BaseNavigationPosition to = successorPredecessor.get(1);
+                    StringBuffer buffer = new StringBuffer();
+                    buffer.append("var latlngs = [");
+                    buffer.append("new GLatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("),");
+                    buffer.append("new GLatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append(")");
+                    buffer.append("];\n");
+                    buffer.append(mode).append("(").append(key).append(").loadFromWaypoints(latlngs, ").
+                            append("{ preserveViewport: true, getPolyline: true, getSteps: true, avoidHighways: ").
+                            append(avoidHighways).append(", travelMode: ").
+                            append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
+                            append(", locale: '").append(Locale.getDefault()).append("'").
+                            append(" });");
+                    executeScript(buffer.toString());
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        // don't care if this happens
+                    }
+                }
+            }
+        }, "WaypointsInserter").start();
     }
 
     // call Google Maps API functions
@@ -1077,10 +1086,11 @@ public abstract class BaseMapView implements MapView {
                 synchronized (insertWaypointsQueue) {
                     successorPredecessor = insertWaypointsQueue.remove(key);
                 }
-                if(successorPredecessor == null)
-                   break;
-                BaseNavigationPosition before = successorPredecessor.get(0);
 
+                if(coordinates.size() < 2 || successorPredecessor == null)
+                   break;
+
+                BaseNavigationPosition before = successorPredecessor.get(0);
                 synchronized (notificationMutex) {
                     int index = positions.indexOf(before) + 1;
                     for (int i = coordinates.size() - 1; i > 0; i -= 2) {
