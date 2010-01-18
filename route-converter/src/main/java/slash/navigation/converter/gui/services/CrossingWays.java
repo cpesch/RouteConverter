@@ -26,25 +26,22 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import slash.common.hex.HexEncoder;
-import slash.common.io.Files;
-import slash.navigation.NavigationFileParser;
-import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.rest.Post;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * The {@link RouteService} at http://crossingways.com
+ *
+ * Documented at http://www.crossingways.com/services/LiveTracking.asmx?op=UploadGPX
  *
  * @author Christian Pesch
  */
@@ -65,8 +62,7 @@ public class CrossingWays implements RouteService {
         try {
             messageDigest = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
-            // Java6: throw new IOException(e);
-            throw createIOException(e);
+            throw new IOException(e);
         }
         messageDigest.update(text.getBytes("UTF-8"), 0, text.length());
         byte[] bytes = messageDigest.digest();
@@ -80,16 +76,14 @@ public class CrossingWays implements RouteService {
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            // Java6: throw new IOException(e);
-            throw createIOException(e);
+            throw new IOException(e);
         }
 
         Document document;
         try {
             document = builder.parse(new InputSource(new StringReader(result)));
         } catch (SAXException e) {
-            // Java6: throw new IOException(e);
-            throw createIOException(e);
+            throw new IOException(e);
         }
 
         NodeList nodeList = document.getChildNodes();
@@ -100,23 +94,8 @@ public class CrossingWays implements RouteService {
         return null;
     }
 
-    private static IOException createIOException(Exception e) {
-        IOException exception = new IOException();
-        exception.setStackTrace(e.getStackTrace());
-        return exception;
-    }
-
     public void upload(String userName, String password, String url, String name, String description) throws IOException {
-        NavigationFileParser parser = new NavigationFileParser();
-        List<URL> urls = Files.toUrls(url);
-        if (urls.size() == 0)
-            throw new IOException("Cannot read url " + url);
-        if (!parser.read(urls.iterator().next()))
-            throw new IOException("Cannot parse url " + url);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        parser.write(parser.getTheRoute(), new Gpx10Format(), false, false, baos);
-
+        OutputStream baos = UploadHelper.parseUrlToGpx(url);
         Post post = new Post("http://www.crossingways.com/services/LiveTracking.asmx/UploadGPX");
         String body = "username=" + userName + "&password=" + sha1(password) + "&trackname=" + name + "&gpx=" + baos.toString();
         post.setBody(body);

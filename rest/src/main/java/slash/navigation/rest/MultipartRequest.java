@@ -28,6 +28,8 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper for a HTTP Multipart Request.
@@ -36,20 +38,24 @@ import java.io.IOException;
  */
 
 abstract class MultipartRequest extends HttpRequest {
+    private List<Part> parts = new ArrayList<Part>();
 
     MultipartRequest(HttpMethod method) {
         super(method);
     }
 
-    private void setParameter(Part[] parts) {
-        ((EntityEnclosingMethod) method).setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
+    public void addParameter(String name, String value) {
+        parts.add(new StringPart(name, value));
     }
 
-    public void setParameter(String name, String value) {
-        setParameter(new Part[]{new StringPart(name, value)});
+    public void addParameter(String name, File file) throws IOException {
+        parts.add(new FilePart(name, Helper.encodeUri(file.getName()), file, "application/octet-stream", "UTF-8"));
     }
 
-    public void setParameter(String name, File file) throws IOException {
-        setParameter(new Part[]{new FilePart(name, Helper.encodeUri(file.getName()), file)});
+    protected void doExecute() throws IOException {
+        ((EntityEnclosingMethod) method).setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), method.getParams()));
+        ((EntityEnclosingMethod) method).addRequestHeader("Connection", "close");
+        ((EntityEnclosingMethod) method).addRequestHeader("Expect", "");
+        super.doExecute();
     }
 }

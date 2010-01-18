@@ -26,7 +26,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
@@ -53,15 +52,20 @@ public abstract class HttpRequest {
         this.method = method;
     }
 
+    private void setAuthentication(String userName, String password, AuthScope authScope) {
+        client.getState().setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
+        client.getParams().setAuthenticationPreemptive(true);
+        method.setDoAuthentication(true);
+    }
+
+    public void setAuthentication(String userName, String password, String authScopeUrl, String authScopeScheme) {
+        setAuthentication(userName, password, new AuthScope(authScopeUrl, 80, AuthScope.ANY_REALM, authScopeScheme));
+    }
+
     public void setAuthentication(String userName, String password) {
         try {
             URI uri = method.getURI();
-            client.getState().setCredentials(
-                    new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"),
-                    new UsernamePasswordCredentials(userName, password)
-            );
-            client.getParams().setAuthenticationPreemptive(true);
-            method.setDoAuthentication(true);
+            setAuthentication(userName, password, new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
         } catch (URIException e) {
             log.severe("Cannot set authentication: " + e.getMessage());
         }
@@ -75,13 +79,8 @@ public abstract class HttpRequest {
         }
     }
 
-    public InputStream executeAsStream() throws IOException {
+    protected void doExecute() throws IOException {
         statusCode = client.executeMethod(method);
-        return method.getResponseBodyAsStream();
-    }
-
-    void release() {
-        method.releaseConnection();
     }
 
     public String execute() throws IOException {
@@ -90,7 +89,7 @@ public abstract class HttpRequest {
 
     public String execute(boolean logUnsuccessful) throws IOException {
         try {
-            statusCode = client.executeMethod(method);
+            doExecute();
             // no response body then
             if (isUnAuthorized())
                 return null;
@@ -102,6 +101,10 @@ public abstract class HttpRequest {
         finally {
             release();
         }
+    }
+
+    void release() {
+        method.releaseConnection();
     }
 
     public int getResult() throws IOException {
