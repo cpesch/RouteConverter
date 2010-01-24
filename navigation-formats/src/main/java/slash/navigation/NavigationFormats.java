@@ -230,8 +230,7 @@ public final class NavigationFormats {
             Method method = position.getClass().getMethod("as" + formatName, new Class[0]);
             result = (BaseNavigationPosition) method.invoke(position);
         } catch (Exception e) {
-            // Java6: throw new IOException("Cannot call as" + formatName + "() on " + position, e);
-            throw createIOException(position, formatName, e);
+            throw new IOException("Cannot call as" + formatName + "() on " + position, e);
         }
         return result;
     }
@@ -245,16 +244,9 @@ public final class NavigationFormats {
             RouteComments.commentPositions(result.getPositions(), false);
             RouteComments.commentRouteName(result);
         } catch (Exception e) {
-            // Java6: throw new IOException("Cannot call as" + formatName + "() on " + position, e);
-            throw createIOException(route, formatName, e);
+            throw new IOException("Cannot call as" + formatName + "() on " + route, e);
         }
         return result;
-    }
-
-    private static IOException createIOException(Object object, String formatName, Exception e) {
-        IOException exception = new IOException("Cannot call as" + formatName + "() on " + object);
-        exception.setStackTrace(e.getStackTrace());
-        return exception;
     }
 
     private static String getFormatName(NavigationFormat format) {

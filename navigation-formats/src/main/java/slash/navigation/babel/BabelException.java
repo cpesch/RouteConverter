@@ -32,9 +32,7 @@ public class BabelException extends IOException {
     private final String babelPath;
 
     public BabelException(String message, String babelPath, Throwable cause) {
-        // Java6: super(message, cause);
-        super(message);
-        setStackTrace(cause.getStackTrace());
+        super(message, cause);
         this.babelPath = babelPath;
     }
 
