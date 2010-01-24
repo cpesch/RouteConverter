@@ -30,7 +30,7 @@ public class GoogleMapsServiceIT extends TestCase {
         assertEquals("8638 Goldingen, Switzerland", service.getLocationFor(9.0, 47.3));
         assertEquals("Bühlstraße, 97506 Grafenrheinfeld, Germany", service.getLocationFor(10.2, 50.001));
         assertEquals("82467 Garmisch-Partenkirchen, Germany", service.getLocationFor(11.06561, 47.42428));
-        assertEquals("23208 Glenbrook St, St Clair Shores, Michigan, USA", service.getLocationFor(0.0, 0.0));
+        assertEquals("23208 Glenbrook St, St Clair Shores, Michigan 48082, USA", service.getLocationFor(0.0, 0.0));
         assertEquals("Antarctica", service.getLocationFor(0.0, -90.0));
         assertEquals("Calderstones Park", service.getLocationFor(0.0, 90.0));
         assertEquals("Calderstones Park", service.getLocationFor(90.0, 90.0));
