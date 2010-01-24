@@ -26,13 +26,15 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
-import slash.navigation.gui.SimpleDialog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
 import slash.navigation.converter.gui.services.CrossingWays;
+import slash.navigation.converter.gui.services.GPSies;
+import slash.navigation.converter.gui.services.OpenStreetMap;
 import slash.navigation.converter.gui.services.RouteService;
+import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,6 +57,7 @@ public class UploadDialog extends SimpleDialog {
 
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 
+    private static final String SERVICE_PREFERENCE = "service";
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String REMEMBER_PASSWORD_PREFERENCE = "rememberPassword";
@@ -82,9 +85,9 @@ public class UploadDialog extends SimpleDialog {
         List<RouteService> services = new ArrayList<RouteService>();
         // TODO implement these:
         // services.add(new RouteCatalog());
-        // services.add(new OpenStreetMap());
-        // services.add(new GPSies());
+        services.add(new OpenStreetMap());
         services.add(new CrossingWays());
+        services.add(new GPSies());
 
         comboBoxChooseRouteService.setModel(new DefaultComboBoxModel(services.toArray()));
         comboBoxChooseRouteService.setRenderer(new RouteServiceListCellRenderer());
@@ -94,6 +97,11 @@ public class UploadDialog extends SimpleDialog {
                 handleRouteServiceUpdate(routeService);
             }
         });
+        String preferredService = preferences.get(SERVICE_PREFERENCE, "");
+        for (RouteService service : services) {
+            if (service.getName().equals(preferredService))
+                comboBoxChooseRouteService.setSelectedItem(service);
+        }
 
         RouteService serviceForRouteUrl = null;
         for (RouteService service : services) {
@@ -174,6 +182,7 @@ public class UploadDialog extends SimpleDialog {
         textFieldUserName.setText(preferences.get(USERNAME_PREFERENCE + routeService.getName(), ""));
         textFieldPassword.setText(new String(preferences.getByteArray(PASSWORD_PREFERENCE + routeService.getName(), new byte[0])));
         checkBoxRememberPassword.setSelected(preferences.getBoolean(REMEMBER_PASSWORD_PREFERENCE + routeService.getName(), true));
+        preferences.put(SERVICE_PREFERENCE, routeService.getName());
     }
 
     private void upload() {
