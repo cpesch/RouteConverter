@@ -23,7 +23,8 @@ package slash.navigation.converter.gui.models;
 import slash.navigation.BaseRoute;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.mapview.MapViewListener;
+import slash.navigation.converter.gui.helper.LengthCalculator;
+import slash.navigation.converter.gui.helper.LengthCalculatorListener;
 
 import javax.swing.*;
 import java.text.MessageFormat;
@@ -42,18 +43,19 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     private final JLabel labelDuration;
 
     public LengthToJLabelAdapter(PositionsModel positionsModel,
+                                 LengthCalculator lengthCalculator,
                                  JLabel labelLength, JLabel labelDuration) {
         super(positionsModel);
         this.labelLength = labelLength;
         this.labelDuration = labelDuration;
 
-        RouteConverter r = RouteConverter.getInstance();
-        r.addMapViewListener(new MapViewListener() {
-            public void calculatedDistance(int meters, int seconds) {
-                updateLabel(meters, seconds * 1000);
-            }
-
-            public void receivedCallback(int port) {
+        lengthCalculator.addLengthCalculatorListener(new LengthCalculatorListener() {
+            public void calculatedDistance(final int meters, final int seconds) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        updateLabel(meters, seconds * 1000);
+                    }
+                });
             }
         });
     }
@@ -67,7 +69,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.add(Calendar.MILLISECOND, (int)milliSeconds);
+        calendar.add(Calendar.MILLISECOND, (int) milliSeconds);
         Date date = calendar.getTime();
         labelDuration.setText(MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date));
     }

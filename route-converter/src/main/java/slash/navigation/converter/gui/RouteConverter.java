@@ -22,26 +22,26 @@ package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import slash.common.io.Files;
+import slash.common.io.Platform;
+import slash.common.io.Version;
+import slash.common.log.LoggingHelper;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.NavigationFormat;
 import slash.navigation.Wgs84Position;
-import slash.common.log.LoggingHelper;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.panels.AnalysePanel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.MiscPanel;
-import slash.navigation.converter.gui.panels.AnalysePanel;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.SingleFrameApplication;
-import slash.common.io.Files;
-import slash.common.io.Platform;
-import slash.common.io.Version;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -211,9 +211,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
                 );
-
-                for (MapViewListener mapViewListener : mapViewListeners)
-                    mapView.addMapViewListener(mapViewListener);
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();
@@ -579,10 +576,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return isMapViewAvailable() ? mapView.getCenter() : getLastMapCenter();
     }
 
-    private List<MapViewListener> mapViewListeners = new ArrayList<MapViewListener>();
-
-    public void addMapViewListener(MapViewListener listener) {
-        mapViewListeners.add(listener);
+    public void addMapViewListener(MapViewListener mapViewListener) {
+        mapView.addMapViewListener(mapViewListener);
     }
 
     public void setPedestrians(boolean pedestrians) {

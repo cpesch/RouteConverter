@@ -111,10 +111,13 @@ public abstract class ConvertPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
+        LengthCalculator lengthCalculator = new LengthCalculator();
+        lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
+
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
         new PositionsCountToJLabelAdapter(getPositionsModel(), labelPositions);
-        new LengthToJLabelAdapter(getPositionsModel(), labelLength, labelDuration);
+        new LengthToJLabelAdapter(getPositionsModel(), lengthCalculator, labelLength, labelDuration);
 
         buttonOpenFile.addActionListener(new FrameAction() {
             public void run() {

@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import slash.common.io.Transfer;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
@@ -27,8 +28,6 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Positions;
 import slash.navigation.util.RouteComments;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -796,47 +795,7 @@ public abstract class BaseMapView implements MapView {
             executeScript(buffer.toString());
         }
         removeOverlays();
-
-        new Thread(new Runnable() {
-            public void run() {
-                calculatedDistance(0, 0);
-
-                int meters = 0;
-                long delta = 0;
-                Calendar minimumTime = null, maximumTime = null;
-                BaseNavigationPosition previous = null;
-                for (int i = 0; i < positions.size(); i++) {
-                    BaseNavigationPosition next = positions.get(i);
-                    if (previous != null) {
-                        Double distance = previous.calculateDistance(next);
-                        if (distance != null)
-                            meters += distance;
-                        Long time = previous.calculateTime(next);
-                        if (time != null)
-                            delta += time;
-                    }
-
-                    CompactCalendar time = next.getTime();
-                    if (time != null) {
-                        Calendar calendar = time.getCalendar();
-                        if (minimumTime == null || calendar.before(minimumTime))
-                            minimumTime = calendar;
-                        if (maximumTime == null || calendar.after(maximumTime))
-                            maximumTime = calendar;
-                    }
-
-                    if (i % 100 == 0)
-                        calculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
-
-                    previous = next;
-                }
-
-                int summedUp = delta > 0 ? (int) delta / 1000 : 0;
-                int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-                calculatedDistance(meters, Math.max(maxMinusMin, summedUp));
-            }
-        }, "PolylineDistanceCalculator").start();
-    }
+   }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
         int markersCount = Transfer.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
@@ -1035,7 +994,7 @@ public abstract class BaseMapView implements MapView {
             if (directionsLoadMatcher.matches()) {
                 meters += Transfer.parseInt(directionsLoadMatcher.group(1));
                 seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
-                calculatedDistance(meters, seconds);
+                fireCalculatedDistance(meters, seconds);
             }
 
             Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
@@ -1074,7 +1033,7 @@ public abstract class BaseMapView implements MapView {
             Matcher testMatcher = CALLBACK_PATTERN.matcher(line);
             if (testMatcher.matches()) {
                 int port = Transfer.parseInt(testMatcher.group(1));
-                receivedCallback(port);
+                fireReceivedCallback(port);
             }
 
             Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(line);
@@ -1179,13 +1138,13 @@ public abstract class BaseMapView implements MapView {
         mapViewListeners.remove(listener);
     }
 
-    private void calculatedDistance(int meters, int seconds) {
+    private void fireCalculatedDistance(int meters, int seconds) {
         for (MapViewListener listener : mapViewListeners) {
             listener.calculatedDistance(meters, seconds);
         }
     }
 
-    private void receivedCallback(int port) {
+    private void fireReceivedCallback(int port) {
         for (MapViewListener listener : mapViewListeners) {
             listener.receivedCallback(port);
         }
