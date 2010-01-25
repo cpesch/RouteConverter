@@ -51,11 +51,7 @@ public class GPSies implements RouteService {
         Post post = new Post("http://www.gpsies.com/upload.do");
         post.addString("device", "RouteConverter");
         post.addString("authenticateHash", encryptedString);
-        // TODO currently hard coded
-        post.addString("trackTypes", "car");
-        post.addString("trackTypes", "biking");
         post.addString("trackTypes", "miscellaneous");
-        post.addString("trackTypes", "motorbiking");
         post.addString("filename", name);
         post.addString("fileDescription", description);
         post.addString("startpointCountry", "DE");
