@@ -21,10 +21,12 @@
 package slash.navigation.converter.gui.services;
 
 import slash.common.io.Files;
+import slash.common.io.InputOutput;
 import slash.navigation.NavigationFileParser;
 import slash.navigation.gpx.Gpx10Format;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -48,5 +50,13 @@ public class UploadHelper {
         OutputStream baos = new ByteArrayOutputStream();
         parser.write(parser.getTheRoute(), new Gpx10Format(), false, false, baos);
         return baos;
+    }
+
+    public static File toFile(String url) throws IOException {
+        File file = new File(url);
+        if(file.exists())
+            return file;
+        byte[] bytes = InputOutput.readBytes(new URL(url));
+        return Files.writeToTempFile(bytes);
     }
 }

@@ -20,6 +20,13 @@
 
 package slash.navigation.converter.gui.services;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
+import slash.navigation.rest.Post;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+
 /**
  * The {@link RouteService} at http://gpsies.com
  *
@@ -27,6 +34,8 @@ package slash.navigation.converter.gui.services;
  */
 
 public class GPSies implements RouteService {
+    private static final Logger log = Logger.getLogger(GPSies.class.getName());
+
     public String getName() {
         return "GPSies";
     }
@@ -35,8 +44,30 @@ public class GPSies implements RouteService {
         return url.startsWith("http://www.gpsies.com/api.do");
     }
 
-    public void upload(String userName, String password, String url, String name, String description) {
-        throw new UnsupportedOperationException();
-        // TODO HTTP POST to http://www.gpsies.com/upload.do
+    public void upload(String username, String password, String url, String name, String description) throws IOException {
+        String validationString = username + "|" + DigestUtils.md5Hex(password);
+        String encryptedString = new String(Base64.encodeBase64(validationString.getBytes()));
+
+        Post post = new Post("http://www.gpsies.com/upload.do");
+        post.addString("device", "RouteConverter");
+        post.addString("authenticateHash", encryptedString);
+        // TODO currently hard coded
+        post.addString("trackTypes", "car");
+        post.addString("trackTypes", "biking");
+        post.addString("trackTypes", "miscellaneous");
+        post.addString("trackTypes", "motorbiking");
+        post.addString("filename", name);
+        post.addString("fileDescription", description);
+        post.addString("startpointCountry", "DE");
+        post.addString("endpointCountry", "DE");
+        post.addString("uploadButton", "speichern");
+        post.addFile("formFile", UploadHelper.toFile(url));
+        post.addString("status", "3"); // 1=public, 3=private
+        // post.addString("websiteUrl", url); has to be a valid URL
+        String result = post.execute();
+        log.info("Result: " + result);
+        // OK RouteConverter [http://www.gpsies.com/map.do?fileId=mvfkkkoeteyxfnqz]
+        if (!result.startsWith("OK RouteConverter"))
+            throw new IOException("Cannot upload url: " + result);
     }
 }

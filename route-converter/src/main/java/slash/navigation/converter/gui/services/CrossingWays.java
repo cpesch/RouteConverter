@@ -20,22 +20,20 @@
 
 package slash.navigation.converter.gui.services;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import slash.common.hex.HexEncoder;
 import slash.navigation.rest.Post;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.StringReader;
 import java.util.logging.Logger;
 
 /**
@@ -55,18 +53,6 @@ public class CrossingWays implements RouteService {
 
     public boolean isOriginOf(String url) {
         return url.startsWith("http://www.crossingways.com/services/");
-    }
-
-    private String sha1(String text) throws IOException {
-        MessageDigest messageDigest;
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IOException(e);
-        }
-        messageDigest.update(text.getBytes("UTF-8"), 0, text.length());
-        byte[] bytes = messageDigest.digest();
-        return HexEncoder.encodeBytes(bytes);
     }
 
     String extractResult(String result) throws IOException {
@@ -94,12 +80,11 @@ public class CrossingWays implements RouteService {
         return null;
     }
 
-    public void upload(String userName, String password, String url, String name, String description) throws IOException {
+    public void upload(String username, String password, String url, String name, String description) throws IOException {
         OutputStream baos = UploadHelper.parseUrlToGpx(url);
         Post post = new Post("http://www.crossingways.com/services/LiveTracking.asmx/UploadGPX");
-        String body = "username=" + userName + "&password=" + sha1(password) + "&trackname=" + name + "&gpx=" + baos.toString();
+        String body = "username=" + username + "&password=" + new String(DigestUtils.sha(password)) + "&trackname=" + name + "&gpx=" + baos.toString();
         post.setBody(body);
-        log.info("Body: " + body);
         String resultBody = post.execute();
         log.info("ResultBody: " + resultBody);
         String result = extractResult(resultBody);

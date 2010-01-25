@@ -192,7 +192,7 @@ public abstract class CatalogClientBase extends TestCase {
 
         Post request = new Post(ROUTES_URL);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -204,7 +204,7 @@ public abstract class CatalogClientBase extends TestCase {
                               String authenticationUserName, String authenticationPassword) throws IOException {
         Post request = new Post(USERS_URL);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", new File(TEST_PATH + fileName));
+        request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
 
@@ -219,7 +219,7 @@ public abstract class CatalogClientBase extends TestCase {
 
         Post request = new Post(USERS_URL);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -247,7 +247,7 @@ public abstract class CatalogClientBase extends TestCase {
                               String authenticationUserName, String authenticationPassword) throws IOException {
         Post request = new Post(FILES_URL);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", new File(TEST_PATH + fileName));
+        request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
 

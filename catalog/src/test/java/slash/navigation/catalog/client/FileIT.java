@@ -21,7 +21,7 @@ public class FileIT extends CatalogClientBase {
     private Put updateFile(int key, String fileName, String userName, String password) throws IOException {
         Put request = new Put(FILES_URL + key + "/");
         request.setAuthentication(userName, password);
-        request.setParameter("file", new File(TEST_PATH + fileName));
+        request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
 

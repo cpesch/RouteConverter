@@ -14,7 +14,7 @@ public class CategoryIT extends CatalogClientBase {
                                         String authenticationUserName, String authenticationPassword) throws IOException {
         Post request = new Post(CATEGORIES_URL);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", new File(TEST_PATH + fileName));
+        request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
 
@@ -28,7 +28,7 @@ public class CategoryIT extends CatalogClientBase {
 
         Post request = new Post(CATEGORIES_URL + Helper.encodeUri(parent) + "/");
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -46,7 +46,7 @@ public class CategoryIT extends CatalogClientBase {
 
         Put request = new Put(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 

@@ -40,8 +40,8 @@ public class RouteCatalog implements RouteService {
         return url.startsWith("http://www.routeconverter.de/catalog/");
     }
 
-    public void upload(String userName, String password, String fileUrl, String name, String description) throws IOException {
-        routeCatalog.setAuthentication(userName, password);
+    public void upload(String username, String password, String fileUrl, String name, String description) throws IOException {
+        routeCatalog.setAuthentication(username, password);
         String categoryUrl = "?", routeUrl = "?"; // TODO fix me
         if (isOriginOf(fileUrl))
             routeCatalog.addRoute(categoryUrl, description, fileUrl);

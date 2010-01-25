@@ -44,18 +44,17 @@ abstract class MultipartRequest extends HttpRequest {
         super(method);
     }
 
-    public void addParameter(String name, String value) {
+    public void addString(String name, String value) {
         parts.add(new StringPart(name, value));
     }
 
-    public void addParameter(String name, File file) throws IOException {
-        parts.add(new FilePart(name, Helper.encodeUri(file.getName()), file, "application/octet-stream", "UTF-8"));
+    public void addFile(String name, File value) throws IOException {
+        parts.add(new FilePart(name, Helper.encodeUri(value.getName()), value, "application/octet-stream", "UTF-8"));
     }
 
     protected void doExecute() throws IOException {
-        ((EntityEnclosingMethod) method).setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), method.getParams()));
-        ((EntityEnclosingMethod) method).addRequestHeader("Connection", "close");
-        ((EntityEnclosingMethod) method).addRequestHeader("Expect", "");
+        if (parts.size() > 0)
+            ((EntityEnclosingMethod) method).setRequestEntity(new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), method.getParams()));
         super.doExecute();
     }
 }

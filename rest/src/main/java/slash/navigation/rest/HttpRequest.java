@@ -48,7 +48,7 @@ public abstract class HttpRequest {
         client.getParams().setIntParameter("http.connection.timeout", 15 * 1000);
         client.getParams().setIntParameter("http.socket.timeout", 60 * 1000);
         client.getParams().setParameter("http.method.retry-handler", new DefaultHttpMethodRetryHandler(0, false));
-        client.getParams().setParameter("http.useragent", "RouteConverter Catalog Client/0.1");
+        client.getParams().setParameter("http.useragent", "RouteConverter Web Client/0.2");
         this.method = method;
     }
 
@@ -59,13 +59,13 @@ public abstract class HttpRequest {
     }
 
     public void setAuthentication(String userName, String password, String authScopeUrl, String authScopeScheme) {
-        setAuthentication(userName, password, new AuthScope(authScopeUrl, 80, AuthScope.ANY_REALM, authScopeScheme));
+        setAuthentication(userName, password, new AuthScope(authScopeUrl, 80, AuthScope.ANY_REALM, authScopeScheme));  // TODO required?
     }
 
     public void setAuthentication(String userName, String password) {
         try {
             URI uri = method.getURI();
-            setAuthentication(userName, password, new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
+            setAuthentication(userName, password, new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access")); // TODO required?
         } catch (URIException e) {
             log.severe("Cannot set authentication: " + e.getMessage());
         }

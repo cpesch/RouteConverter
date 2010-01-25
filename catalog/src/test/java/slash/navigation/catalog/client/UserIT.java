@@ -43,7 +43,7 @@ public class UserIT extends CatalogClientBase {
                            String authenticationUserName, String authenticationPassword) throws IOException {
         Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", new File(TEST_PATH + fileName));
+        request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
 
@@ -55,7 +55,7 @@ public class UserIT extends CatalogClientBase {
 
         Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 

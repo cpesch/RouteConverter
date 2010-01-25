@@ -20,9 +20,7 @@
 
 package slash.common.io;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -198,6 +196,20 @@ public class Files {
         name = setExtension(name, extension);
         String path = file.getParentFile().getPath();
         return new File(path, name).getAbsolutePath();
+    }
+
+
+    public static File writeToTempFile(byte[] bytes) throws IOException {
+        File tempFile = File.createTempFile("routeconverter", ".xml");
+        tempFile.deleteOnExit();
+        OutputStream outputStream = new FileOutputStream(tempFile);
+        outputStream.write(bytes);
+        outputStream.close();
+        return tempFile;
+    }
+
+    public static File writeToTempFile(String string) throws IOException {
+        return writeToTempFile(string.getBytes());
     }
 
     /**

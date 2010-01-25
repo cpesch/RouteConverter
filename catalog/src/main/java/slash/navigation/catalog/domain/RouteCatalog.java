@@ -28,6 +28,7 @@ import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.*;
+import slash.common.io.Files;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -152,15 +153,6 @@ public class RouteCatalog {
         return writer.toString();
     }
 
-    private File writeToTempFile(String string) throws IOException {
-        File tempFile = File.createTempFile("rcclient", ".xml");
-        tempFile.deleteOnExit();
-        FileWriter fileWriter = new FileWriter(tempFile);
-        fileWriter.write(string);
-        fileWriter.close();
-        return tempFile;
-    }
-
     private String ensureEndsWithSlash(String url) {
         if (!url.endsWith("/"))
             url += "/";
@@ -186,7 +178,7 @@ public class RouteCatalog {
         String xml = createCategoryXml(null, name);
         Post request = new Post(categoryUrl);
         request.setAuthentication(userName, password);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
 
@@ -209,7 +201,7 @@ public class RouteCatalog {
         String xml = createCategoryXml(parentUrl, name);
         Put request = new Put(categoryUrl);
         request.setAuthentication(userName, password);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
 
@@ -248,7 +240,7 @@ public class RouteCatalog {
         log.fine(System.currentTimeMillis() + " adding " + file.getAbsolutePath());
         Post request = new Post(getFilesUrl());
         request.setAuthentication(userName, password);
-        request.setParameter("file", file);
+        request.addFile("file", file);
         return request;
     }
 
@@ -291,7 +283,7 @@ public class RouteCatalog {
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         Post request = new Post(getRoutesUrl());
         request.setAuthentication(userName, password);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
 
@@ -300,7 +292,7 @@ public class RouteCatalog {
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         Put request = new Put(routeUrl);
         request.setAuthentication(userName, password);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
 
@@ -360,7 +352,7 @@ public class RouteCatalog {
         String xml = createUserXml(userName, password, firstName, lastName, email);
         Post request = new Post(getUsersUrl());
         request.setAuthentication(userName, password);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
 

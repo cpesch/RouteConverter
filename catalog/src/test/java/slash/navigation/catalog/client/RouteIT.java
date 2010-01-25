@@ -29,7 +29,7 @@ public class RouteIT extends CatalogClientBase {
 
         Put request = new Put(ROUTES_URL + routeKey + GPX_URL_POSTFIX);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.setParameter("file", writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 

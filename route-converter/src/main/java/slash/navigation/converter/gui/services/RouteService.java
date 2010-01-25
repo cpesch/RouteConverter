@@ -31,5 +31,5 @@ import java.io.IOException;
 public interface RouteService {
     String getName();
     boolean isOriginOf(String url);
-    void upload(String userName, String password, String url, String name, String description) throws IOException;
+    void upload(String username, String password, String url, String name, String description) throws IOException;
 }
