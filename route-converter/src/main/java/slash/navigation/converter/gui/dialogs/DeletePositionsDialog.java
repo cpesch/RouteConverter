@@ -40,7 +40,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
+ * Dialog for selecting and deleting {@link slash.navigation.BaseNavigationPosition}s from the current {@link slash.navigation.BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -302,13 +302,13 @@ public class DeletePositionsDialog extends SimpleDialog {
         panel9.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel2.add(panel9, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
-        this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-duplicates"));
+        this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-significance"));
         panel9.add(label7);
         textFieldSignificance = new JTextField();
         textFieldSignificance.setColumns(3);
         panel9.add(textFieldSignificance);
         final JLabel label8 = new JLabel();
-        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-duplicates-meter"));
+        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-significance-meter"));
         panel9.add(label8);
         buttonSelectBySignificance = new JButton();
         this.$$$loadButtonText$$$(buttonSelectBySignificance, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select"));

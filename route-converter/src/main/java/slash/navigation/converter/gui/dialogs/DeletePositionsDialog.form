@@ -195,7 +195,7 @@
                   <component id="b6b7d" class="javax.swing.JLabel">
                     <constraints/>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-duplicates"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-significance"/>
                     </properties>
                   </component>
                   <component id="4df3d" class="javax.swing.JTextField" binding="textFieldSignificance">
@@ -207,7 +207,7 @@
                   <component id="33bd4" class="javax.swing.JLabel">
                     <constraints/>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-duplicates-meter"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-significance-meter"/>
                     </properties>
                   </component>
                 </children>
