@@ -130,17 +130,21 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     void closeFrame() {
-        log.info("Storing frame location as " + frame.getLocation());
-        log.info("Storing frame size as " + frame.getSize());
-        preferences.putInt(X_PREFERENCE, frame.getLocation().x);
-        preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
-        preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
-        preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
+        int state = frame.getExtendedState();
+        if ((state & Frame.MAXIMIZED_BOTH) != Frame.MAXIMIZED_BOTH) {
+            log.info("Storing frame location as " + frame.getLocation());
+            log.info("Storing frame size as " + frame.getSize());
+            preferences.putInt(X_PREFERENCE, frame.getLocation().x);
+            preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
+            preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
+            preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
+        }
 
-        log.info("Storing frame state as " + frame.getExtendedState());
-        log.info("Storing graphics device as " + frame.getGraphicsConfiguration().getDevice().getIDstring());
-        preferences.putInt(STATE_PREFERENCE, frame.getExtendedState());
-        preferences.put(DEVICE_PREFERENCE, frame.getGraphicsConfiguration().getDevice().getIDstring());
+        String deviceId = frame.getGraphicsConfiguration().getDevice().getIDstring();
+        log.info("Storing frame state as " + state);
+        log.info("Storing graphics device as " + deviceId);
+        preferences.putInt(STATE_PREFERENCE, state);
+        preferences.put(DEVICE_PREFERENCE, deviceId);
 
         frame.dispose();
     }
