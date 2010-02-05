@@ -17,4 +17,6 @@ Rainer Ippen for usuability improvements
 Vincent Di Sanzo for the french translation
 Xiaoming Huang for the chinese translation
 
-Of course a lot more people helped. If your name is missing drop me an email or a patch
+Of course a lot more people helped. If your name is missing drop me an email or a patch!
+
+Christian
