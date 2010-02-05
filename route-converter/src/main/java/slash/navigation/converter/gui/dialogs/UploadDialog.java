@@ -85,7 +85,7 @@ public class UploadDialog extends SimpleDialog {
         List<RouteService> services = new ArrayList<RouteService>();
         // TODO implement these:
         // services.add(new RouteCatalog());
-        services.add(new OpenStreetMap());
+        // services.add(new OpenStreetMap());
         services.add(new CrossingWays());
         services.add(new GPSies());
 
