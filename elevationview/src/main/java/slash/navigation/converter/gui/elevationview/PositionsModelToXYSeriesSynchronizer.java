@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.elevationview;
 
-import slash.navigation.converter.gui.models.PositionsModel;
 import org.jfree.data.xy.XYSeries;
+import slash.navigation.converter.gui.models.PositionsModel;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 /**
  * Synchronizes changes at a {@link PositionsModel} with a {@link XYSeries}.
@@ -79,13 +79,21 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     private void handleUpdate(int firstRow, int lastRow) {
         // special treatment for fireTableDataChanged() notifications
         if (firstRow == 0 && lastRow == Integer.MAX_VALUE) {
-            handleDelete(firstRow, series.getItemCount() - 1);
-            if (positions.getRowCount() > 0)
-                handleAdd(firstRow, positions.getRowCount() - 1);
+            handleFullUpdate();
         } else {
-            handleDelete(firstRow, lastRow);
-            handleAdd(firstRow, lastRow);
+            handleIntervalUpdate(firstRow, lastRow);
         }
+    }
+
+    private void handleFullUpdate() {
+        handleDelete(0, series.getItemCount() - 1);
+        if (positions.getRowCount() > 0)
+            handleAdd(0, positions.getRowCount() - 1);
+    }
+
+    protected void handleIntervalUpdate(int firstRow, int lastRow) {
+        handleDelete(firstRow, lastRow);
+        handleAdd(firstRow, lastRow);
     }
 
     private void handleDelete(int firstRow, int lastRow) {
