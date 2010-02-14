@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
     <artifactId>catalog</artifactId>
@@ -8,31 +7,31 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.32-SNAPSHOT</version>
+        <version>1.32</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.32-SNAPSHOT</version>
+            <version>1.32</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.32-SNAPSHOT</version>
+            <version>1.32</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>navigation-formats</artifactId>
-            <version>1.32-SNAPSHOT</version>
+            <version>1.32</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>rest</artifactId>
-            <version>1.32-SNAPSHOT</version>
+            <version>1.32</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
