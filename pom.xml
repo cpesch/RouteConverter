@@ -4,7 +4,7 @@
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>
     <packaging>pom</packaging>
-    <version>1.32</version>
+    <version>1.33-SNAPSHOT</version>
     <name>RouteConverter</name>
     <url>http://www.routeconverter.de</url>
 
@@ -38,8 +38,8 @@
     </distributionManagement>
 
     <scm>
-      <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/RouteConverter-1.32</connection>
-      <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/RouteConverter-1.32</developerConnection>
+      <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</connection>
+      <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</developerConnection>
     </scm>
 
     <build>

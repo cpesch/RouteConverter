@@ -7,24 +7,24 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.32</version>
+        <version>1.33-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.32</version>
+            <version>1.33-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>mapview</artifactId>
-            <version>1.32</version>
+            <version>1.33-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>navigation-formats</artifactId>
-            <version>1.32</version>
+            <version>1.33-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sun</groupId>

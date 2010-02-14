@@ -7,7 +7,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>1.32</version>
+        <version>1.33-SNAPSHOT</version>
     </parent>
 
     <build>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>route-converter6</artifactId>
-            <version>1.32</version>
+            <version>1.33-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
