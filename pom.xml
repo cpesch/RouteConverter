@@ -23,8 +23,8 @@
             <id>routeconverter-thirdparty</id>
             <url>http://www.routeconverter.de/svn/RouteThirdParty</url>
         </repository>
-    </repositories>                                  K
-
+    </repositories>
+    
     <distributionManagement>
         <repository>
             <id>routeconverter-release</id>
@@ -37,6 +37,11 @@
             <url>scpexe://www.routeconverter.de:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <scm>
+      <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</connection>
+      <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</developerConnection>
+    </scm>
 
     <build>
         <extensions>
