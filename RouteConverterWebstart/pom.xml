@@ -59,7 +59,14 @@
             <artifactId>RouteConverterBase</artifactId>
             <version>1.32-SNAPSHOT</version>
         </dependency>
-
+        <!-- mvn package does not need this but mvn release:perform stops claiming there's no artifact
+             containing the main class if this is omitted -->
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>route-converter6</artifactId>
+            <version>1.32-SNAPSHOT</version>
+        </dependency>
+ 
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>jna</artifactId>
