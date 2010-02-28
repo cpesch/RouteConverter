@@ -110,7 +110,7 @@ public abstract class RouteComments {
     private static final GoogleMapsService googleMapsService = new GoogleMapsService();
 
     private static void locatePosition(BaseNavigationPosition position) {
-        if (!position.hasCoordinates() && position.getComment() != null) {
+        if (!position.hasCoordinates() && position.getComment() != null && !isPositionComment(position.getComment())) {
             try {
                 GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
                 if(coordinates != null) {
