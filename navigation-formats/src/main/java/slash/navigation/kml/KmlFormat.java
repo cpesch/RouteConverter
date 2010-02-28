@@ -181,12 +181,17 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     private static final Pattern TAVELLOG_SPEED_PATTERN = Pattern.compile(".*Speed:\\s*(\\d+\\.\\d+).*");
+    private static final Pattern WBT201LOG_SPEED_PATTERN = Pattern.compile(".*Speed=\\s*(\\d+)\\s*Km.*", Pattern.DOTALL); // dot captures line terminators, too
 
     Double parseSpeed(String description) {
         if (description != null) {
-            Matcher matcher = TAVELLOG_SPEED_PATTERN.matcher(description);
-            if (matcher.matches()) {
-                return Transfer.parseDouble(matcher.group(1));
+            Matcher travelLogMatcher = TAVELLOG_SPEED_PATTERN.matcher(description);
+            if (travelLogMatcher.matches()) {
+                return Transfer.parseDouble(travelLogMatcher.group(1));
+            }
+            Matcher wbt201LogMatcher = WBT201LOG_SPEED_PATTERN.matcher(description);
+            if (wbt201LogMatcher.matches()) {
+                return Transfer.parseDouble(wbt201LogMatcher.group(1));
             }
         }
         return null;
