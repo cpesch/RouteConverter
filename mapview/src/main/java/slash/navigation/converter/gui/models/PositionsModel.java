@@ -191,8 +191,11 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     private String formatDistance(double distance) {
-        double rounded = Transfer.roundFraction(distance / 1000.0, 1);
-        return rounded > 0.0 ? rounded + " Km" : "";
+        if(distance <= 0.0)
+            return "";
+        if (Math.abs(distance) < 10000.0)
+            return Math.round(distance) + " m";
+        return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
     }
 
     /*
