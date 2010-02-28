@@ -48,8 +48,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     private static final char SEPARATOR_CHAR = '|';
     private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
     private static final Pattern POSITION_PATTERN = Pattern.
-            compile("([+-]?\\d+)" + SEPARATOR + "([+-]?\\d+)" + SEPARATOR +
-                    "(.*)" + SEPARATOR + "\\d" + SEPARATOR + "?");
+            compile("\\s*([+-]?\\d+)" + SEPARATOR + "([+-]?\\d+)" + SEPARATOR +
+                    "(.*)" + SEPARATOR + "\\d" + SEPARATOR + "?\\s*");
     private static final Pattern NAME_PATTERN = Pattern.
             compile("^\"([^\"]*)\"$");
 
