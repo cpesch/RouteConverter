@@ -28,7 +28,7 @@ import java.text.DateFormat;
 
 public class TripmasterTest extends NavigationTestCase {
 
-    private void checkTripmaster1dot4Position(TomTomPosition position) {
+    private void checkTripmaster14Position(TomTomPosition position) {
         assertEquals("Richtung 316", position.getReason());
         assertEquals("Bahrenfeld", position.getCity());
         assertEquals(34.0, position.getElevation());
@@ -36,21 +36,53 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 11, 32, 26).getTime(), position.getTime().getTime());
     }
 
-    public void testTripmaster1dot4Position() {
+    public void testTripmaster14Position() {
         TomTomPosition position = new TomTomPosition(0, 0, "Richtung 316 - 11:32:26 - 34 m - Bahrenfeld");
-        checkTripmaster1dot4Position(position);
+        checkTripmaster14Position(position);
     }
 
-    public void testTripmaster1dot4PositionByConvertingFromOtherFormat() {
+    public void testTripmaster14PositionByConvertingFromOtherFormat() {
         TomTomPosition position = new TomTomPosition(null, null, null, null, null, "Richtung 316 - 11:32:26 - 34 m - Bahrenfeld");
-        checkTripmaster1dot4Position(position);
+        checkTripmaster14Position(position);
     }
 
-    public void testTripmasterShortPosition() {
+    public void testTripmaster18ShortPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "09:02:43 - 47.5 m");
         assertEquals("Waypoint", position.getReason());
         assertEquals(47.5, position.getElevation());
         assertEquals(calendar(1970, 1, 1, 9, 2, 43), position.getTime());
+    }
+
+    public void testTripmaster25ShortStartPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "15:01:20 - Start : 26/02/2010 15:01:20 - 10.2 m");
+        assertEquals("Start : 26/02/2010 15:01:20", position.getReason());
+        assertEquals(10.2, position.getElevation());
+        assertEquals(calendar(2010, 2, 26, 15, 1, 20), position.getTime());
+    }
+
+    public void testTripmaster25ShortIntermediatePosition() {
+        TomTomPosition position1 = new TomTomPosition(0, 0, "15:05:00 - Kurs 173 - 10.4 m");
+        assertEquals("Kurs 173", position1.getReason());
+        assertEquals(173.0, position1.getHeading());
+        assertEquals(10.4, position1.getElevation());
+        assertEquals(calendar(1970, 1, 1, 15, 5, 0), position1.getTime());
+
+        TomTomPosition position2 = new TomTomPosition(0, 0, "15:06:20 - Distanz 6 - 11.3 m");
+        assertEquals("Distanz 6", position2.getReason());
+        assertEquals(11.3, position2.getElevation());
+        assertEquals(calendar(1970, 1, 1, 15, 6, 20), position2.getTime());
+
+        TomTomPosition position3 = new TomTomPosition(0, 0, "15:08:43 - Dauer 0:07:33 - 23.5 m");
+        assertEquals("Dauer 0:07:33", position3.getReason());
+        assertEquals(23.5, position3.getElevation());
+        assertEquals(calendar(1970, 1, 1, 15, 8, 43), position3.getTime());
+    }
+
+    public void testTripmaster25ShortEndPosition() {
+        TomTomPosition position = new TomTomPosition(0, 0, "16:22:22 - Ende : 26/02/2010 16:22:22 - 9.8 m");
+        assertEquals("Ende : 26/02/2010 16:22:22", position.getReason());
+        assertEquals(9.8, position.getElevation());
+        assertEquals(calendar(2010, 2, 26, 16, 22, 22), position.getTime());
     }
 
     public void testTripmasterMiddlePosition() {
@@ -181,7 +213,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(expectedComment, position.getComment());
     }
 
-    public void testTripmaster1dot4GpxComments() {
+    public void testTripmaster14GpxComments() {
         checkTripmasterGpxComment("Deven (Gross Plasten)", "Richtung 358", "Richtung 358 - Deven (Gross Plasten)");
         checkTripmasterGpxComment("Gross Gievitz", "Abstand 10", "Abstand 10 - Gross Gievitz");
         checkTripmasterGpxComment("Malchin", "Punkt", "Punkt - Malchin");

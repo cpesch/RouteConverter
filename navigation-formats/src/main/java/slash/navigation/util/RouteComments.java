@@ -222,7 +222,8 @@ public abstract class RouteComments {
     public static final SimpleDateFormat TRIPMASTER_DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     private static final String TIME = "\\d{1,2}:\\d{2}:\\d{2}";
-    private static final String DATE = "\\d{6}";
+    private static final String DATE = "\\d{2}/\\d{2}/\\d{4}";
+    private static final String DATE_WITHOUT_SEPARATOR = "\\d{6}";
     private static final String DOUBLE = "[-\\d\\.]+";
     private static final String TRIPMASTER_REASONS = "Dur. " + TIME + "|Dauer " + TIME + "|" +
             "Abstand \\d+|Dist. \\d+|Distanz \\d+|Km " + DOUBLE + "|" +
@@ -230,10 +231,14 @@ public abstract class RouteComments {
             "Waypoint|Wpt|Punkt|Pause";
 
     private static final Pattern TRIPMASTER_HEADING_PATTERN = Pattern.compile("(Course|Cape|Kurs|Richtung) (\\d+)");
-    private static final Pattern TRIPMASTER_1dot4_PATTERN = Pattern.compile("(" + TRIPMASTER_REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
-    private static final Pattern TRIPMASTER_SHORT_STARTEND_PATTERN = Pattern.compile(
+    private static final Pattern TRIPMASTER_14_PATTERN = Pattern.compile("(" + TRIPMASTER_REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
+    private static final Pattern TRIPMASTER_18_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
-    private static final Pattern TRIPMASTER_SHORT_WAYPOINT_PATTERN = Pattern.compile("(" + TIME + ") - (" + DOUBLE + ") m");
+    private static final Pattern TRIPMASTER_18_SHORT_WAYPOINT_PATTERN = Pattern.compile("(" + TIME + ") - (" + DOUBLE + ") m");
+    private static final Pattern TRIPMASTER_25_SHORT_STARTEND_PATTERN = Pattern.compile(
+            "(" + TIME + ") - ((Start|Ende|Finish) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m");
+    private static final Pattern TRIPMASTER_25_SHORT_WAYPOINT_PATTERN = Pattern.compile(
+            "(" + TIME + ") - (.+) - (" + DOUBLE + ") m");
     private static final Pattern TRIPMASTER_MIDDLE_PATTERN = Pattern.compile(
             "(" + TIME + ") - (" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
     private static final Pattern TRIPMASTER_LONG_NO_REASON_PATTERN = Pattern.compile(
@@ -255,9 +260,9 @@ public abstract class RouteComments {
      */
     private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
     private static final SimpleDateFormat LOGPOS_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
-    private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
+    private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+) d=(\\d+))?.*)\\)");
-    private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE + " " + TIME + "): " +
+    private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\((s=(\\d+) d=(\\d+))\\)");
 
 
@@ -282,11 +287,11 @@ public abstract class RouteComments {
         }
     }
 
-    private static CompactCalendar parseTripmaster1dot4Time(String string) {
+    private static CompactCalendar parseTripmaster14Time(String string) {
         return parse(string, TRIPMASTER_TIME);
     }
 
-    private static CompactCalendar parseTripmaster1dot8Date(String string) {
+    private static CompactCalendar parseTripmaster18Date(String string) {
         return parse(string, TRIPMASTER_DATE);
     }
 
@@ -305,14 +310,14 @@ public abstract class RouteComments {
     private static CompactCalendar parseTTTracklogTime(String string) {
         if (string.length() == 5)
             string += ":00";
-        return parseTripmaster1dot4Time(string);
+        return parseTripmaster14Time(string);
     }
 
 
     public static void parseComment(BaseNavigationPosition position, String comment) {
-        Matcher matcher = TRIPMASTER_1dot4_PATTERN.matcher(comment);
+        Matcher matcher = TRIPMASTER_14_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot4Time(matcher.group(2)));
+            position.setTime(parseTripmaster14Time(matcher.group(2)));
             position.setElevation(Transfer.parseDouble(matcher.group(3)));
 
             if (position instanceof TomTomPosition) {
@@ -330,13 +335,13 @@ public abstract class RouteComments {
             }
         }
 
-        matcher = TRIPMASTER_SHORT_STARTEND_PATTERN.matcher(comment);
+        matcher = TRIPMASTER_18_SHORT_STARTEND_PATTERN.matcher(comment);
         if (matcher.matches()) {
             String dateStr = Transfer.trim(matcher.group(4));
             String timeStr = Transfer.trim(matcher.group(5));
-            position.setTime(parseTripmaster1dot8Date(dateStr + " " + timeStr));
+            position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
             if (position.getTime() == null)
-                position.setTime(parseTripmaster1dot4Time(timeStr));
+                position.setTime(parseTripmaster14Time(timeStr));
             position.setElevation(Transfer.parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
@@ -351,9 +356,9 @@ public abstract class RouteComments {
             }
         }
 
-        matcher = TRIPMASTER_SHORT_WAYPOINT_PATTERN.matcher(comment);
+        matcher = TRIPMASTER_18_SHORT_WAYPOINT_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot4Time(matcher.group(1)));
+            position.setTime(parseTripmaster14Time(matcher.group(1)));
             position.setElevation(Transfer.parseDouble(matcher.group(2)));
 
             if (position instanceof TomTomPosition) {
@@ -364,9 +369,44 @@ public abstract class RouteComments {
 
         }
 
+        matcher = TRIPMASTER_25_SHORT_WAYPOINT_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            position.setTime(parseTripmaster14Time(Transfer.trim(matcher.group(1))));
+            position.setElevation(Transfer.parseDouble(matcher.group(3)));
+
+            if (position instanceof TomTomPosition) {
+                TomTomPosition tomTomPosition = (TomTomPosition) position;
+                String reason = Transfer.trim(matcher.group(2));
+                tomTomPosition.setReason(reason);
+                tomTomPosition.setHeading(parseTripmasterHeading(reason));
+                tomTomPosition.setCity(null);
+            }
+
+            if  (position instanceof Wgs84Position) {
+                Wgs84Position wgs84Position = (Wgs84Position) position;
+                String reason = Transfer.trim(matcher.group(2));
+                wgs84Position.setHeading(parseTripmasterHeading(reason));
+            }
+        }
+
+        matcher = TRIPMASTER_25_SHORT_STARTEND_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            String dateStr = Transfer.trim(matcher.group(4));
+            String timeStr = Transfer.trim(matcher.group(5));
+            position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
+            position.setElevation(Transfer.parseDouble(matcher.group(6)));
+
+            if (position instanceof TomTomPosition) {
+                TomTomPosition tomTomPosition = (TomTomPosition) position;
+                String reason = Transfer.trim(matcher.group(2));
+                tomTomPosition.setReason(reason);
+                tomTomPosition.setCity(null);
+            }
+        }
+
         matcher = TRIPMASTER_MIDDLE_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot4Time(Transfer.trim(matcher.group(1))));
+            position.setTime(parseTripmaster14Time(Transfer.trim(matcher.group(1))));
             position.setElevation(Transfer.parseDouble(matcher.group(4)));
 
             if (position instanceof TomTomPosition) {
@@ -384,7 +424,7 @@ public abstract class RouteComments {
 
         matcher = TRIPMASTER_LONG_NO_REASON_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot4Time(Transfer.trim(matcher.group(1))));
+            position.setTime(parseTripmaster14Time(Transfer.trim(matcher.group(1))));
             position.setSpeed(Transfer.parseDouble(matcher.group(6)));
             position.setElevation(Transfer.parseDouble(matcher.group(3)));
 
@@ -400,9 +440,9 @@ public abstract class RouteComments {
 
         matcher = TRIPMASTER_LONG_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            position.setTime(parseTripmaster1dot8Date(matcher.group(3)));
+            position.setTime(parseTripmaster18Date(matcher.group(3)));
             if (position.getTime() == null)
-                position.setTime(parseTripmaster1dot4Time(matcher.group(1)));
+                position.setTime(parseTripmaster14Time(matcher.group(1)));
             position.setSpeed(Transfer.parseDouble(matcher.group(9)));
             position.setElevation(Transfer.parseDouble(matcher.group(6)));
 
