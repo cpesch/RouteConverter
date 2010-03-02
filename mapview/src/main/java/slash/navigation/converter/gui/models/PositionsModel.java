@@ -104,7 +104,17 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        switch (columnIndex) {
+            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
+            case PositionColumns.TIME_COLUMN_INDEX:
+            case PositionColumns.LONGITUDE_COLUMN_INDEX:
+            case PositionColumns.LATITUDE_COLUMN_INDEX:
+            case PositionColumns.ELEVATION_COLUMN_INDEX:
+            case PositionColumns.SPEED_COLUMN_INDEX:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -149,11 +159,14 @@ public class PositionsModel extends AbstractTableModel {
                     // intentionally left empty
                 }
                 break;
-
-            // only computed values
-            case PositionColumns.DISTANCE_COLUMN_INDEX:
-            case PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX:
-            case PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX:
+            case PositionColumns.SPEED_COLUMN_INDEX:
+                try {
+                    if (value != null)
+                        value = value.replaceAll("Km/h", "");
+                    position.setSpeed(Transfer.parseDouble(value));
+                } catch (NumberFormatException e) {
+                    // intentionally left empty
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
