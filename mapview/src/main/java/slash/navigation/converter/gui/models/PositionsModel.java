@@ -60,6 +60,42 @@ public class PositionsModel extends AbstractTableModel {
         throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
     }
 
+    private String formatElevation(Double elevation) {
+        return elevation != null ? Math.round(elevation) + " m" : "";
+    }
+
+    private String formatSpeed(Double speed) {
+        if (speed == null || speed == 0.0)
+            return "";
+        String speedStr;
+        if (Math.abs(speed) < 10.0)
+            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
+        else
+            speedStr = Long.toString(Math.round(speed));
+        return speedStr + " Km/h";
+    }
+
+    private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
+        if (longitudeOrLatitude == null)
+            return "";
+        String result = Double.toString(longitudeOrLatitude) + " ";
+        if (Math.abs(longitudeOrLatitude) < 10.0)
+            result = " " + result;
+        if (Math.abs(longitudeOrLatitude) < 100.0)
+            result = " " + result;
+        if (result.length() > 12)
+            result = result.substring(0, 12 - 1);
+        return result;
+    }
+
+    private String formatDistance(double distance) {
+        if(distance <= 0.0)
+            return "";
+        if (Math.abs(distance) < 10000.0)
+            return Math.round(distance) + " m";
+        return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
+    }
+
     public Object getValueAt(int rowIndex, int columnIndex) {
         BaseNavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
@@ -173,53 +209,6 @@ public class PositionsModel extends AbstractTableModel {
         }
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
-
-
-    private String formatElevation(Double elevation) {
-        return elevation != null ? Math.round(elevation) + " m" : "";
-    }
-
-    private String formatSpeed(Double speed) {
-        if (speed == null || speed == 0.0)
-            return "";
-        String speedStr;
-        if (Math.abs(speed) < 10.0)
-            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
-        else
-            speedStr = Long.toString(Math.round(speed));
-        return speedStr + " Km/h";
-    }
-
-    private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (longitudeOrLatitude == null)
-            return "";
-        String result = Double.toString(longitudeOrLatitude) + " ";
-        if (Math.abs(longitudeOrLatitude) < 10.0)
-            result = " " + result;
-        if (Math.abs(longitudeOrLatitude) < 100.0)
-            result = " " + result;
-        if (result.length() > 12)
-            result = result.substring(0, 12 - 1);
-        return result;
-    }
-
-    private String formatDistance(double distance) {
-        if(distance <= 0.0)
-            return "";
-        if (Math.abs(distance) < 10000.0)
-            return Math.round(distance) + " m";
-        return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
-    }
-
-    /*
-    private String formatSectionDistance(double distance) {
-        if (distance < 1000) {
-            double rounded = Transfer.roundFraction(distance, 1);
-            return rounded > 0.0 ? rounded + " m" : "";
-        } else
-            return formatDistance(distance);
-    }
-    */
 
 
     public void top(int[] rows) {
