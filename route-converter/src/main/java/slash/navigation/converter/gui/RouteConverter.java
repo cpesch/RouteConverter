@@ -139,8 +139,16 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected void startup() {
         log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
         show();
+        checkJreVersion();
         new Updater().implicitCheck(frame);
         parseArgs(args);
+    }
+
+    private void checkJreVersion() {
+        String currentVersion = System.getProperty("java.version");
+        String minimumVersion = "1.6.0_14";
+        if(!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion))
+            JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
     }
 
     private void parseArgs(String[] args) {

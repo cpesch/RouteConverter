@@ -56,7 +56,7 @@ public class Kml21Format extends KmlFormat {
         try {
             return internalRead(source);
         } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            log.fine("Error reading KML 2.1 from " + source + ": " + e.getMessage());
             return null;
         }
     }

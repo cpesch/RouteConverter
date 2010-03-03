@@ -52,7 +52,7 @@ public class BrokenKml21LittleEndianFormat extends Kml21Format {
             KmlType kmlType = KmlUtil.unmarshal21(reader);
             return process(kmlType);
         } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            log.fine("Error reading broken KML 2.1 in little endian from " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();

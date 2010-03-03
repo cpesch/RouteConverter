@@ -52,7 +52,7 @@ public class BrokenKml21Format extends Kml21Format {
             KmlType kmlType = KmlUtil.unmarshal21(reader);
             return process(kmlType);
         } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            log.fine("Error reading broken KML 2.1 from " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();

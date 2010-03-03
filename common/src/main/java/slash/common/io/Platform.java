@@ -39,9 +39,11 @@ public class Platform {
         return getOsName().indexOf("windows") != -1;
     }
 
+    /*
     private static boolean isWebStarted() {
         return System.getProperty("javawebstart.version") != null;
     }
+    */
 
     public static String getPlatform() {
         return System.getProperty("os.name") + " " +
@@ -51,6 +53,10 @@ public class Platform {
 
     public static String getJvm() {
         return "Java " + System.getProperty("java.version");
+    }
+
+    public static boolean isCurrentAtLeastMinimumVersion(String currentVersion, String minimumVersion) {
+        return currentVersion.compareTo(minimumVersion) >= 0;
     }
 
     private static String canonical(String value) {

@@ -52,7 +52,7 @@ public class BrokenKml22Format extends Kml22Format {
             KmlType kmlType = KmlUtil.unmarshal22(reader);
             return process(kmlType);
         } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            log.fine("Error reading broken KML 2.2 rom " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();

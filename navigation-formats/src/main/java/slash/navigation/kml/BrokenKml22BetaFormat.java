@@ -52,7 +52,7 @@ public class BrokenKml22BetaFormat extends Kml22BetaFormat {
             KmlType kmlType = KmlUtil.unmarshal22Beta(reader);
             return process(kmlType);
         } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            log.fine("Error reading broken KML 2.2 Beta from " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();
