@@ -31,6 +31,8 @@ import slash.navigation.gui.SimpleDialog;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -118,29 +120,48 @@ public class ComplementPositionsDialog extends SimpleDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        updateSelectionCount();
-        RouteConverter.getInstance().getPositionsModel().addTableModelListener(new TableModelListener() {
+        RouteConverter r = RouteConverter.getInstance();
+        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                handlePositionsUpdate();
+            }
+        });
+        r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 updatedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("complement-updated-positions"), updatedPositionsCount));
             }
         });
+
+        handlePositionsUpdate();
     }
 
-    private void updateSelectionCount() {
-        int selectedPositionCount = RouteConverter.getInstance().getSelectedPositions().length;
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedPositionCount));
+    private void handlePositionsUpdate() {
+        RouteConverter r = RouteConverter.getInstance();
+        int selectedRowCount = r.getPositionsView().getSelectedRowCount();
+        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
+
+        boolean existsSelectedPosition = selectedRowCount > 0;
+        buttonAddCoordinatesToPositions.setEnabled(existsSelectedPosition);
+        buttonAddPopulatedPlaceToPositions.setEnabled(existsSelectedPosition);
+        buttonAddElevationToPositions.setEnabled(existsSelectedPosition);
+        buttonAddPostalAddressToPositions.setEnabled(existsSelectedPosition);
+        buttonAddSpeedToPositions.setEnabled(existsSelectedPosition);
+        buttonClearSelection.setEnabled(existsSelectedPosition);
+
+        boolean notAllPositionsSelected = r.getPositionsView().getRowCount() > selectedRowCount;
+        buttonSelectAll.setEnabled(notAllPositionsSelected);
     }
 
     private void selectAll() {
         RouteConverter.getInstance().selectAll();
-        int selectedPositionCount = RouteConverter.getInstance().getSelectedPositions().length;
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedPositionCount));
+        int selectedRowCount = RouteConverter.getInstance().getPositionsView().getSelectedRowCount();
+        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
     }
 
     private void clearSelection() {
         RouteConverter.getInstance().clearSelection();
-        updateSelectionCount();
+        handlePositionsUpdate();
     }
 
     private void addCoordinatesToPositions() {

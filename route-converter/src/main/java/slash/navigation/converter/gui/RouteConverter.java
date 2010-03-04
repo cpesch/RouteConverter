@@ -147,7 +147,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void checkJreVersion() {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.6.0_14";
-        if(!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion))
+        if (!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion))
             JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
     }
 
@@ -496,17 +496,17 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void insertAllWaypoints() {
         if (isMapViewAvailable()) {
-            int[] selectedPositions = getSelectedPositions();
+            int[] selectedRows = getPositionsView().getSelectedRows();
             getConvertPanel().clearSelection();
-            mapView.insertAllWaypoints(selectedPositions);
+            mapView.insertAllWaypoints(selectedRows);
         }
     }
 
     public void insertOnlyTurnpoints() {
         if (isMapViewAvailable()) {
-            int[] selectedPositions = getSelectedPositions();
+            int[] selectedRows = getPositionsView().getSelectedRows();
             getConvertPanel().clearSelection();
-            mapView.insertOnlyTurnpoints(selectedPositions);
+            mapView.insertOnlyTurnpoints(selectedRows);
         }
     }
 
@@ -518,8 +518,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getAnalysePanel().print();
     }
 
-    public int[] getSelectedPositions() {
-        return getConvertPanel().getSelectedPositions();
+    public JTable getPositionsView() {
+        return getConvertPanel().getPositionsView();
     }
 
     public void selectAll() {

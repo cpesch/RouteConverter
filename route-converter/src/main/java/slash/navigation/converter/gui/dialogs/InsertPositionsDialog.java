@@ -37,6 +37,8 @@ import slash.navigation.gui.SimpleDialog;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -126,32 +128,56 @@ public class InsertPositionsDialog extends SimpleDialog {
         RouteConverter r = RouteConverter.getInstance();
         textFieldSearch.setText(r.getSearchPositionPreference());
 
-        updateSelectionCount();
-
+        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                handlePositionsUpdate();
+            }
+        });
         r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 insertedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("insert-added-positions"), insertedPositionsCount));
             }
         });
+        listResult.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                handleSearchUpdate();
+            }
+        });
+
+        handlePositionsUpdate();
+        handleSearchUpdate();
     }
 
-    private void updateSelectionCount() {
+    private void handlePositionsUpdate() {
         RouteConverter r = RouteConverter.getInstance();
-        int selectedPositionCount = r.getSelectedPositions().length;
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedPositionCount));
+        int selectedRowCount = r.getPositionsView().getSelectedRowCount();
+        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
+
+        boolean existsSelectedPosition = selectedRowCount > 0;
+        buttonInsertAllWaypoints.setEnabled(existsSelectedPosition);
+        buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition);
+        buttonClearSelection.setEnabled(existsSelectedPosition);
+
+        boolean notAllPositionsSelected = r.getPositionsView().getRowCount() > selectedRowCount;
+        buttonSelectAll.setEnabled(notAllPositionsSelected);
+    }
+
+    private void handleSearchUpdate() {
+        boolean existsSelectedResult = listResult.getSelectedIndices().length > 0;
+        buttonInsertSinglePosition.setEnabled(existsSelectedResult);
     }
 
     private void selectAll() {
         RouteConverter r = RouteConverter.getInstance();
         r.selectAll();
-        int selectedPositionCount = r.getSelectedPositions().length;
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedPositionCount));
+        int selectedRowCount = r.getPositionsView().getSelectedRowCount();
+        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
     }
 
     private void clearSelection() {
         RouteConverter.getInstance().clearSelection();
-        updateSelectionCount();
+        handlePositionsUpdate();
     }
 
     private void insertAllWaypoints() {
@@ -173,8 +199,10 @@ public class InsertPositionsDialog extends SimpleDialog {
             for (GoogleMapsPosition position : positions) {
                 listModel.addElement(position);
             }
-            if (listModel.getSize() > 0)
+            if (listModel.getSize() > 0) {
                 listResult.setSelectedIndex(0);
+                listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
+            }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getMessage()), getTitle(), JOptionPane.ERROR_MESSAGE);
         }
@@ -186,7 +214,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         RouteConverter r = RouteConverter.getInstance();
         PositionsModel positionsModel = r.getPositionsModel();
 
-        int[] selectedRows = r.getSelectedPositions();
+        int[] selectedRows = r.getPositionsView().getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : positionsModel.getRowCount();
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
         Object[] objects = listResult.getSelectedValues();

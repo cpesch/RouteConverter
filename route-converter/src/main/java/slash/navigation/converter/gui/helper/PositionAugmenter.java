@@ -32,7 +32,6 @@ import slash.navigation.gui.Constants;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.text.MessageFormat;
 
@@ -145,10 +144,8 @@ public class PositionAugmenter {
                                 public void run() {
                                     positionsModel.fireTableRowsUpdated(firstIndex, lastIndex);
 
-                                    if (positionsTable != null) {
-                                        Rectangle rectangle = positionsTable.getCellRect(Math.min(lastIndex + SLOW_OPERATIONS_IN_A_ROW, positionsModel.getRowCount()), 1, true);
-                                        positionsTable.scrollRectToVisible(rectangle);
-                                    }
+                                    if (positionsTable != null)
+                                        JTableHelper.scrollToPosition(positionsTable, Math.min(lastIndex + SLOW_OPERATIONS_IN_A_ROW, positionsModel.getRowCount()));
                                 }
                             });
                         }

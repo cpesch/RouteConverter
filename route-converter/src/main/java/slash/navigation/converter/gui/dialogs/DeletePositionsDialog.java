@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.*;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.NumberDocument;
@@ -32,6 +31,8 @@ import slash.navigation.gui.SimpleDialog;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -130,18 +131,28 @@ public class DeletePositionsDialog extends SimpleDialog {
         significance = new NumberDocument(r.getSelectBySignificancePreference());
         textFieldSignificance.setDocument(significance);
 
-        updateSelectionCount();
-        RouteConverter.getInstance().getPositionsModel().addTableModelListener(new TableModelListener() {
+        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                handlePositionsUpdate();
+            }
+        });
+        r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 removedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-removed-positions"), removedPositionsCount));
             }
         });
+
+        handlePositionsUpdate();
     }
 
-    private void updateSelectionCount() {
-        int selectedPositionCount = RouteConverter.getInstance().getSelectedPositions().length;
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedPositionCount));
+    private void handlePositionsUpdate() {
+        int selectedRowCount = RouteConverter.getInstance().getPositionsView().getSelectedRowCount();
+        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
+
+        boolean existsSelectedPosition = selectedRowCount > 0;
+        buttonDeletePositions.setEnabled(existsSelectedPosition);
+        buttonClearSelection.setEnabled(existsSelectedPosition);
     }
 
     private void resetDeleteCount() {
@@ -190,14 +201,14 @@ public class DeletePositionsDialog extends SimpleDialog {
 
     private void clearSelection() {
         RouteConverter.getInstance().clearSelection();
-        updateSelectionCount();
+        handlePositionsUpdate();
         resetDeleteCount();
     }
 
     private void deletePositions() {
         removedPositionsCount = 0;
         RouteConverter.getInstance().deletePositions();
-        updateSelectionCount();
+        handlePositionsUpdate();
     }
 
     private void savePreferences() {
