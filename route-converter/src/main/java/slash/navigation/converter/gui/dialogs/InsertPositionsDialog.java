@@ -74,8 +74,6 @@ public class InsertPositionsDialog extends SimpleDialog {
         setTitle(RouteConverter.getBundle().getString("insert-positions-title"));
         setContentPane(contentPane);
 
-        listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
-
         buttonSelectAll.addActionListener(new DialogAction(this) {
             public void run() {
                 selectAll();
@@ -139,6 +137,7 @@ public class InsertPositionsDialog extends SimpleDialog {
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("insert-added-positions"), insertedPositionsCount));
             }
         });
+        listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
         listResult.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 handleSearchUpdate();
