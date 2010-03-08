@@ -96,11 +96,6 @@
         <properties/>
         <border type="none"/>
         <children>
-          <hspacer id="92569">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
           <component id="a175d" class="javax.swing.JLabel">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -114,7 +109,7 @@
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="um Höheninformationen"/>
+              <text value="um Höheninformationen, Adresse, Koordinaten"/>
             </properties>
           </component>
           <component id="55937" class="javax.swing.JButton" binding="buttonInsertIntoPositionList">
@@ -173,6 +168,19 @@
               <text value="mittels Geocoding"/>
             </properties>
           </component>
+          <component id="f836" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="um eine Route in umgekehrter Richtung zu fahren"/>
+            </properties>
+          </component>
+          <hspacer id="92569">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
         </children>
       </grid>
       <xy id="a0116" layout-manager="XYLayout" hgap="-1" vgap="-1">
