@@ -23,29 +23,22 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.CompactCalendar;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
-import slash.navigation.googlemaps.GoogleMapsPosition;
-import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -63,10 +56,6 @@ public class InsertPositionsDialog extends SimpleDialog {
     private JButton buttonInsertAllWaypoints;
     private JButton buttonInsertOnlyTurnpoints;
     private JLabel labelProgress;
-    private JTextField textFieldSearch;
-    private JButton buttonSearchPositions;
-    private JList listResult;
-    private JButton buttonInsertSinglePosition;
     private int insertedPositionsCount = 0;
 
     public InsertPositionsDialog() {
@@ -98,18 +87,6 @@ public class InsertPositionsDialog extends SimpleDialog {
             }
         });
 
-        buttonSearchPositions.addActionListener(new DialogAction(this) {
-            public void run() {
-                searchPositions();
-            }
-        });
-
-        buttonInsertSinglePosition.addActionListener(new DialogAction(this) {
-            public void run() {
-                insertSinglePosition();
-            }
-        });
-
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -124,28 +101,22 @@ public class InsertPositionsDialog extends SimpleDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
-        textFieldSearch.setText(r.getSearchPositionPreference());
-
         r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
                 handlePositionsUpdate();
             }
         });
         r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                handlePositionsUpdate();
                 insertedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("insert-added-positions"), insertedPositionsCount));
             }
         });
-        listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
-        listResult.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                handleSearchUpdate();
-            }
-        });
 
         handlePositionsUpdate();
-        handleSearchUpdate();
     }
 
     private void handlePositionsUpdate() {
@@ -160,11 +131,6 @@ public class InsertPositionsDialog extends SimpleDialog {
 
         boolean notAllPositionsSelected = r.getPositionsView().getRowCount() > selectedRowCount;
         buttonSelectAll.setEnabled(notAllPositionsSelected);
-    }
-
-    private void handleSearchUpdate() {
-        boolean existsSelectedResult = listResult.getSelectedIndices().length > 0;
-        buttonInsertSinglePosition.setEnabled(existsSelectedResult);
     }
 
     private void selectAll() {
@@ -189,48 +155,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         RouteConverter.getInstance().insertOnlyTurnpoints();
     }
 
-    private void searchPositions() {
-        DefaultListModel listModel = new DefaultListModel();
-        listResult.setModel(listModel);
-        GoogleMapsService service = new GoogleMapsService();
-        try {
-            List<GoogleMapsPosition> positions = service.getPositionsFor(textFieldSearch.getText());
-            for (GoogleMapsPosition position : positions) {
-                listModel.addElement(position);
-            }
-            if (listModel.getSize() > 0) {
-                listResult.setSelectedIndex(0);
-                listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getMessage()), getTitle(), JOptionPane.ERROR_MESSAGE);
-        }
-        savePreferences();
-    }
-
-    private void insertSinglePosition() {
-        insertedPositionsCount = 0;
-        RouteConverter r = RouteConverter.getInstance();
-        PositionsModel positionsModel = r.getPositionsModel();
-
-        int[] selectedRows = r.getPositionsView().getSelectedRows();
-        int row = selectedRows.length > 0 ? selectedRows[0] : positionsModel.getRowCount();
-        int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-        Object[] objects = listResult.getSelectedValues();
-        for (Object object : objects) {
-            GoogleMapsPosition position = (GoogleMapsPosition) object;
-            positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(), position.getElevation(),
-                    null, CompactCalendar.getInstance(), position.getComment());
-        }
-    }
-
-    private void savePreferences() {
-        RouteConverter r = RouteConverter.getInstance();
-        r.setSearchPositionPreference(textFieldSearch.getText());
-    }
-
     private void close() {
-        savePreferences();
         dispose();
     }
 
@@ -252,7 +177,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(10, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -295,43 +220,14 @@ public class InsertPositionsDialog extends SimpleDialog {
         panel6.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel6, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 30), null, null, 0, false));
         final JPanel panel7 = new JPanel();
-        panel7.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel7.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("Einfügen von einzelnen Positionen per Suche nach:");
-        panel7.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textFieldSearch = new JTextField();
-        panel7.add(textFieldSearch, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        buttonSearchPositions = new JButton();
-        buttonSearchPositions.setText("Suchen");
-        panel7.add(buttonSearchPositions, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel8 = new JPanel();
-        panel8.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel8, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonInsertSinglePosition = new JButton();
-        buttonInsertSinglePosition.setText("Einfügen");
-        panel8.add(buttonInsertSinglePosition, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer3 = new Spacer();
-        panel8.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel9, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        panel9.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        listResult = new JList();
-        scrollPane1.setViewportView(listResult);
-        final JPanel panel10 = new JPanel();
-        panel10.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel10, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelProgress = new JLabel();
         labelProgress.setText("-");
-        panel10.add(labelProgress, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("progress"));
-        panel10.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel11 = new JPanel();
-        panel11.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel11, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
+        panel7.add(labelProgress, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("progress"));
+        panel7.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

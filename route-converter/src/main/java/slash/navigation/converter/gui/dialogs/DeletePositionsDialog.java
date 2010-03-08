@@ -133,11 +133,14 @@ public class DeletePositionsDialog extends SimpleDialog {
 
         r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
                 handlePositionsUpdate();
             }
         });
         r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                handlePositionsUpdate();
                 removedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-removed-positions"), removedPositionsCount));
             }

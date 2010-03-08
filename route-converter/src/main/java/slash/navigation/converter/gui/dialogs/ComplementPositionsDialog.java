@@ -123,11 +123,14 @@ public class ComplementPositionsDialog extends SimpleDialog {
         RouteConverter r = RouteConverter.getInstance();
         r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting())
+                    return;
                 handlePositionsUpdate();
             }
         });
         r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                handlePositionsUpdate();
                 updatedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
                 labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("complement-updated-positions"), updatedPositionsCount));
             }

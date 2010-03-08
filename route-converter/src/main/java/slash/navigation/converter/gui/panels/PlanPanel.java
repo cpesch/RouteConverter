@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.ComplementPositionsDialog;
 import slash.navigation.converter.gui.dialogs.DeletePositionsDialog;
+import slash.navigation.converter.gui.dialogs.GeocodePositionDialog;
 import slash.navigation.converter.gui.dialogs.InsertPositionsDialog;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helper.FrameAction;
@@ -51,6 +52,7 @@ public class PlanPanel {
     private JCheckBox checkBoxPrefixNumberWithZeros;
     private JCheckBox checkBoxSpaceBetweenNumberAndComment;
     private JButton buttonInsertIntoPositionList;
+    private JButton buttonGeocodePosition;
     private JButton buttonComplementPositionList;
     private JButton buttonDeleteFromPositionList;
     private JButton buttonRevertPositionList;
@@ -65,6 +67,15 @@ public class PlanPanel {
         buttonInsertIntoPositionList.addActionListener(new FrameAction() {
             public void run() {
                 InsertPositionsDialog options = new InsertPositionsDialog();
+                options.pack();
+                options.restoreLocation();
+                options.setVisible(true);
+            }
+        });
+
+        buttonGeocodePosition.addActionListener(new FrameAction() {
+            public void run() {
+                GeocodePositionDialog options = new GeocodePositionDialog();
                 options.pack();
                 options.restoreLocation();
                 options.setVisible(true);
@@ -181,34 +192,37 @@ public class PlanPanel {
         checkBoxPrefixNumberWithZeros.setText("");
         panel1.add(checkBoxPrefixNumberWithZeros, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(4, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel2.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
         planPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel2.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        buttonInsertIntoPositionList = new JButton();
-        buttonInsertIntoPositionList.setText("Neue Positionen einfügen");
-        panel2.add(buttonInsertIntoPositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
-        label5.setText("Routen in Tracks verwandeln:");
-        panel2.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label5.setText("durch das Einfügen neuer Positionen");
+        panel2.add(label5, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
-        label6.setText("Positionslisten anreichern:");
-        panel2.add(label6, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label6.setText("um Höheninformationen");
+        panel2.add(label6, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonInsertIntoPositionList = new JButton();
+        buttonInsertIntoPositionList.setText("Routen in Tracks verwandeln");
+        panel2.add(buttonInsertIntoPositionList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonComplementPositionList = new JButton();
-        buttonComplementPositionList.setText("Positionsdaten vervollständigen");
-        panel2.add(buttonComplementPositionList, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonComplementPositionList.setText("Positionen vervollständigen");
+        panel2.add(buttonComplementPositionList, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeleteFromPositionList = new JButton();
-        buttonDeleteFromPositionList.setText("Positionen löschen");
-        panel2.add(buttonDeleteFromPositionList, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonDeleteFromPositionList.setText("Tracks in Routen verwandeln");
+        panel2.add(buttonDeleteFromPositionList, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
-        label7.setText("Tracks in Routen verwandeln:");
-        panel2.add(label7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label7.setText("durch das Löschen von Positionen");
+        panel2.add(label7, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRevertPositionList = new JButton();
         this.$$$loadButtonText$$$(buttonRevertPositionList, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("revert"));
-        panel2.add(buttonRevertPositionList, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(buttonRevertPositionList, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonGeocodePosition = new JButton();
+        buttonGeocodePosition.setText("Bekannte Positionen einfügen");
+        panel2.add(buttonGeocodePosition, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label8 = new JLabel();
-        label8.setText("Richtung der Route umkehren:");
-        panel2.add(label8, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label8.setText("mittels Geocoding");
+        panel2.add(label8, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         planPanel.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 20), null, null, 0, false));
         final JPanel panel4 = new JPanel();
