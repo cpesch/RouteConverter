@@ -50,7 +50,7 @@ import java.util.ResourceBundle;
  * @author Christian Pesch
  */
 
-public class MiscPanel {
+public class OptionsPanel {
     private JPanel miscPanel;
     private JLabel labelBrowse;
     private JLabel labelMail;
@@ -66,7 +66,7 @@ public class MiscPanel {
     private JButton buttonPrintMapAndRoute;
     private JButton buttonPrintElevationProfile;
 
-    public MiscPanel() {
+    public OptionsPanel() {
         initialize();
     }
 

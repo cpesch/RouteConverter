@@ -729,7 +729,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
             lazyInitializers.put(optionsPanel, new Runnable() {
                 public void run() {
-                    MiscPanel panel = new MiscPanel();
+                    OptionsPanel panel = new OptionsPanel();
                     optionsPanel.add(panel.getRootComponent());
                     initialized.put(optionsPanel, panel);
                 }
