@@ -34,10 +34,7 @@ import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.panels.AnalysePanel;
-import slash.navigation.converter.gui.panels.BrowsePanel;
-import slash.navigation.converter.gui.panels.ConvertPanel;
-import slash.navigation.converter.gui.panels.MiscPanel;
+import slash.navigation.converter.gui.panels.*;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
@@ -121,7 +118,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
 
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel, analysePanel, miscPanel, browsePanel;
+    private JPanel convertPanel, planPanel, analysePanel, browsePanel, optionsPanel;
     private LazyTabInitializer tabInitializer;
 
     private String[] args;
@@ -566,6 +563,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().addPopulatedPlaceToPositions();
     }
 
+    public void revertPositions() {
+        getPositionsModel().revert();
+        getConvertPanel().clearSelection();
+    }
+
     public void deletePositions() {
         getConvertPanel().deletePositions();
     }
@@ -667,15 +669,18 @@ public abstract class RouteConverter extends SingleFrameApplication {
         convertPanel = new JPanel();
         convertPanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("convert-tab"), convertPanel);
+        planPanel = new JPanel();
+        planPanel.setLayout(new BorderLayout(0, 0));
+        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("plan-tab"), planPanel);
         analysePanel = new JPanel();
         analysePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("analyse-tab"), analysePanel);
-        miscPanel = new JPanel();
-        miscPanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("misc-tab"), miscPanel);
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
+        optionsPanel = new JPanel();
+        optionsPanel.setLayout(new BorderLayout(0, 0));
+        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-tab"), optionsPanel);
     }
 
     /**
@@ -698,11 +703,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 }
             });
 
-            lazyInitializers.put(miscPanel, new Runnable() {
+            lazyInitializers.put(planPanel, new Runnable() {
                 public void run() {
-                    MiscPanel panel = new MiscPanel();
-                    miscPanel.add(panel.getRootComponent());
-                    initialized.put(miscPanel, panel);
+                    PlanPanel panel = new PlanPanel();
+                    planPanel.add(panel.getRootComponent());
+                    initialized.put(planPanel, panel);
                 }
             });
 
@@ -719,6 +724,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     BrowsePanel panel = createBrowsePanel();
                     browsePanel.add(panel.getRootComponent());
                     initialized.put(browsePanel, panel);
+                }
+            });
+
+            lazyInitializers.put(optionsPanel, new Runnable() {
+                public void run() {
+                    MiscPanel panel = new MiscPanel();
+                    optionsPanel.add(panel.getRootComponent());
+                    initialized.put(optionsPanel, panel);
                 }
             });
         }

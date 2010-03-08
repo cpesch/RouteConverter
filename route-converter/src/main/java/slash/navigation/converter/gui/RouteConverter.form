@@ -55,6 +55,14 @@
                 <border type="none"/>
                 <children/>
               </grid>
+              <grid id="539be" binding="planPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints>
+                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="plan-tab"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children/>
+              </grid>
               <grid id="36b54" binding="analysePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
                   <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="analyse-tab"/>
@@ -63,17 +71,17 @@
                 <border type="none"/>
                 <children/>
               </grid>
-              <grid id="64361" binding="miscPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+              <grid id="bffe3" binding="browsePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
-                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="misc-tab"/>
+                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="browse-tab"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children/>
               </grid>
-              <grid id="bffe3" binding="browsePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+              <grid id="64361" binding="optionsPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
-                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="browse-tab"/>
+                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="options-tab"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>

@@ -93,9 +93,7 @@ public abstract class ConvertPanel {
     private JButton buttonMovePositionToTop;
     private JButton buttonMovePositionUp;
     private JButton buttonInsertIntoPositionList;
-    private JButton buttonComplementPositionList;
     private JButton buttonDeleteFromPositionList;
-    private JButton buttonRevertPositionList;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
     private JCheckBox checkBoxDuplicateFirstPosition;
@@ -183,39 +181,8 @@ public abstract class ConvertPanel {
             }
         });
 
-        buttonInsertIntoPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                InsertPositionsDialog options = new InsertPositionsDialog();
-                options.pack();
-                options.restoreLocation();
-                options.setVisible(true);
-            }
-        });
-
-        buttonComplementPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                ComplementPositionsDialog options = new ComplementPositionsDialog();
-                options.pack();
-                options.restoreLocation();
-                options.setVisible(true);
-            }
-        });
-
-        buttonDeleteFromPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                DeletePositionsDialog options = new DeletePositionsDialog();
-                options.pack();
-                options.restoreLocation();
-                options.setVisible(true);
-            }
-        });
-
-        buttonRevertPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                getPositionsModel().revert();
-                clearSelection();
-            }
-        });
+        buttonInsertIntoPositionList.addActionListener(new InsertPosition(tablePositions, getPositionsModel()));
+        buttonDeleteFromPositionList.addActionListener(new DeletePositions(tablePositions, getPositionsModel()));
 
         buttonMovePositionDown.addActionListener(new FrameAction() {
             public void run() {
@@ -791,9 +758,7 @@ public abstract class ConvertPanel {
         buttonMovePositionUp.setEnabled(existsMoreThanOnePosition);
         buttonMovePositionDown.setEnabled(existsMoreThanOnePosition);
         buttonMovePositionToBottom.setEnabled(existsMoreThanOnePosition);
-        buttonComplementPositionList.setEnabled(existsAPosition);
         buttonDeleteFromPositionList.setEnabled(existsAPosition);
-        buttonRevertPositionList.setEnabled(existsMoreThanOnePosition);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -1022,13 +987,8 @@ public abstract class ConvertPanel {
         buttonSaveFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-file-tooltip"));
         convertPanel.add(buttonSaveFile, new GridConstraints(8, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel1, new GridConstraints(7, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonRevertPositionList = new JButton();
-        buttonRevertPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/revert.png")));
-        buttonRevertPositionList.setText("");
-        buttonRevertPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("revert-tooltip"));
-        panel1.add(buttonRevertPositionList, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionUp = new JButton();
         buttonMovePositionUp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/up.png")));
         buttonMovePositionUp.setText("");
@@ -1038,7 +998,7 @@ public abstract class ConvertPanel {
         buttonMovePositionDown.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/down.png")));
         buttonMovePositionDown.setText("");
         buttonMovePositionDown.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-down-tooltip"));
-        panel1.add(buttonMovePositionDown, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(buttonMovePositionDown, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionToTop = new JButton();
         buttonMovePositionToTop.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/top.png")));
         buttonMovePositionToTop.setText("");
@@ -1048,22 +1008,17 @@ public abstract class ConvertPanel {
         buttonMovePositionToBottom.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/bottom.png")));
         buttonMovePositionToBottom.setText("");
         buttonMovePositionToBottom.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-bottom-tooltip"));
-        panel1.add(buttonMovePositionToBottom, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonComplementPositionList = new JButton();
-        buttonComplementPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/complement-positions.png")));
-        buttonComplementPositionList.setText("");
-        buttonComplementPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complement-positionlist-tooltip"));
-        panel1.add(buttonComplementPositionList, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(buttonMovePositionToBottom, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonInsertIntoPositionList = new JButton();
-        buttonInsertIntoPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/insert-positions.png")));
+        buttonInsertIntoPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/insert-position.png")));
         buttonInsertIntoPositionList.setText("");
         buttonInsertIntoPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-into-positionlist-tooltip"));
         panel1.add(buttonInsertIntoPositionList, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeleteFromPositionList = new JButton();
-        buttonDeleteFromPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/delete-positions.png")));
+        buttonDeleteFromPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/delete-position.png")));
         buttonDeleteFromPositionList.setText("");
         buttonDeleteFromPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-from-positionlist-tooltip"));
-        panel1.add(buttonDeleteFromPositionList, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(buttonDeleteFromPositionList, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxDuplicateFirstPosition = new JCheckBox();
         this.$$$loadButtonText$$$(checkBoxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
         convertPanel.add(checkBoxDuplicateFirstPosition, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

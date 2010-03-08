@@ -66,7 +66,7 @@
           <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-file-tooltip"/>
         </properties>
       </component>
-      <grid id="479f3" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="479f3" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -74,16 +74,6 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="fb2bf" class="javax.swing.JButton" binding="buttonRevertPositionList">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/revert.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="revert-tooltip"/>
-            </properties>
-          </component>
           <component id="4ba64" class="javax.swing.JButton" binding="buttonMovePositionUp">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
@@ -96,7 +86,7 @@
           </component>
           <component id="7c7e4" class="javax.swing.JButton" binding="buttonMovePositionDown">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="slash/navigation/converter/gui/down.png"/>
@@ -116,7 +106,7 @@
           </component>
           <component id="82808" class="javax.swing.JButton" binding="buttonMovePositionToBottom">
             <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="slash/navigation/converter/gui/bottom.png"/>
@@ -124,32 +114,22 @@
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-bottom-tooltip"/>
             </properties>
           </component>
-          <component id="9d4d0" class="javax.swing.JButton" binding="buttonComplementPositionList">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/complement-positions.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-positionlist-tooltip"/>
-            </properties>
-          </component>
           <component id="354f7" class="javax.swing.JButton" binding="buttonInsertIntoPositionList">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="slash/navigation/converter/gui/insert-positions.png"/>
+              <icon value="slash/navigation/converter/gui/insert-position.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-into-positionlist-tooltip"/>
             </properties>
           </component>
           <component id="cc095" class="javax.swing.JButton" binding="buttonDeleteFromPositionList">
             <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="slash/navigation/converter/gui/delete-positions.png"/>
+              <icon value="slash/navigation/converter/gui/delete-position.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-from-positionlist-tooltip"/>
             </properties>
