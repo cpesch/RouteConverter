@@ -22,8 +22,6 @@ package slash.navigation.converter.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 
@@ -60,25 +58,6 @@ class ExternalPrograms6 extends ExternalPrograms {
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    protected void openFile(Window window, File file) {
-        if (Desktop.isDesktopSupported())
-            try {
-                Desktop.getDesktop().open(file);
-            } catch (IOException ie) {
-                log.severe("Open File error " + file + ": " + ie.getMessage());
-
-                try {
-                    Runtime.getRuntime().exec("cmd /c \"" + file.getAbsolutePath() + "\"");
-                } catch (IOException e) {
-                    log.severe("Open File error " + file + ": " + e.getMessage());
-
-                    JOptionPane.showMessageDialog(window,
-                            MessageFormat.format(RouteConverter.getBundle().getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
-                            RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-            }
     }
 
 }

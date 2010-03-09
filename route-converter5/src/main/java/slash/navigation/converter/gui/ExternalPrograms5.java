@@ -83,35 +83,4 @@ public class ExternalPrograms5 extends ExternalPrograms {
     protected void startMail(Window window, String uri) {
         internalStartBrowser(window, uri);
     }
-
-    private void openFileByCmd(File file, Window window) {
-        try {
-            Runtime.getRuntime().exec("cmd /c \"" + file.getAbsolutePath() + "\"");
-        } catch (IOException e) {
-            log.severe("Open file by cmd error " + file + ": " + e.getMessage());
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(window,
-                    MessageFormat.format(RouteConverter.getBundle().getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
-                    RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void openFileByRun(File file, Window window) {
-        try {
-            Runtime.getRuntime().exec("run \"" + file.getAbsolutePath() + "\"");
-        } catch (IOException e) {
-            log.severe("Open file by run error " + file + ": " + e.getMessage());
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(window,
-                    MessageFormat.format(RouteConverter.getBundle().getString("start-google-earth-error"), file.getAbsolutePath(), e.getMessage()),
-                    RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    protected void openFile(Window window, File file) {
-        if (Platform.isWindows())
-            openFileByCmd(file, window);
-        else
-            openFileByRun(file, window);
-    }
 }

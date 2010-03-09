@@ -29,7 +29,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Einfügen von einzelnen Positionen per Suche nach:"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="search-term"/>
                 </properties>
               </component>
               <component id="f696b" class="javax.swing.JTextField" binding="textFieldSearch" default-binding="true">
@@ -45,7 +45,7 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Suchen"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="search-position"/>
                 </properties>
               </component>
             </children>
@@ -63,7 +63,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Einfügen"/>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-position"/>
                 </properties>
               </component>
               <hspacer id="d9dd0">

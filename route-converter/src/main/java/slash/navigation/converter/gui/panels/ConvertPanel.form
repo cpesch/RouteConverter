@@ -116,12 +116,12 @@
           </component>
           <component id="354f7" class="javax.swing.JButton" binding="buttonInsertIntoPositionList">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="slash/navigation/converter/gui/insert-position.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-into-positionlist-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-position-tooltip"/>
             </properties>
           </component>
           <component id="cc095" class="javax.swing.JButton" binding="buttonDeleteFromPositionList">
@@ -131,7 +131,7 @@
             <properties>
               <icon value="slash/navigation/converter/gui/delete-position.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-from-positionlist-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positions-tooltip"/>
             </properties>
           </component>
         </children>
@@ -141,6 +141,7 @@
           <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <horizontalTextPosition value="10"/>
           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="duplicate-first-position"/>
         </properties>
       </component>
@@ -339,6 +340,7 @@
           <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <horizontalTextPosition value="10"/>
           <selected value="false"/>
           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-as-route-track-waypoints"/>
         </properties>
@@ -428,6 +430,7 @@
           <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <horizontalTextPosition value="10"/>
           <selected value="false"/>
           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-only-this-position-list"/>
         </properties>

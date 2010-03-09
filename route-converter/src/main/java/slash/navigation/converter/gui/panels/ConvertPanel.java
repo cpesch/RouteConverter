@@ -227,7 +227,7 @@ public abstract class ConvertPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                handleSelectionUpdate();
+                handlePositionsUpdate();
             }
         });
 
@@ -269,7 +269,6 @@ public abstract class ConvertPanel {
         handleFormatUpdate();
         handleRoutesUpdate();
         handlePositionsUpdate();
-        handleSelectionUpdate();
 
         comboBoxChoosePositionList.setModel(formatAndRoutesModel);
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
@@ -751,33 +750,16 @@ public abstract class ConvertPanel {
     }
 
     private void handlePositionsUpdate() {
-        final boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
-        final boolean existsAPosition = getPositionsModel().getRowCount() > 0;
-        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
-
-        buttonMovePositionToTop.setEnabled(existsMoreThanOnePosition);
-        buttonMovePositionUp.setEnabled(existsMoreThanOnePosition);
-        buttonMovePositionDown.setEnabled(existsMoreThanOnePosition);
-        buttonMovePositionToBottom.setEnabled(existsMoreThanOnePosition);
-        buttonDeleteFromPositionList.setEnabled(existsAPosition);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                popupTable.handlePositionsUpdate(supportsMultipleRoutes, existsAPosition, tablePositions.getSelectedRowCount() > 0);
-            }
-        });
-    }
-
-    private void handleSelectionUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
-        if (selectedRows.length > 0) {
-            boolean firstRowNotSelected = selectedRows[0] != 0;
-            buttonMovePositionToTop.setEnabled(firstRowNotSelected);
-            buttonMovePositionUp.setEnabled(firstRowNotSelected);
-            boolean lastRowNotSelected = selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
-            buttonMovePositionDown.setEnabled(lastRowNotSelected);
-            buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
-        }
+        boolean existsSelectedPosition = selectedRows.length > 0;
+        boolean firstRowNotSelected = existsSelectedPosition && selectedRows[0] != 0;
+
+        buttonMovePositionToTop.setEnabled(firstRowNotSelected);
+        buttonMovePositionUp.setEnabled(firstRowNotSelected);
+        boolean lastRowNotSelected = existsSelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
+        buttonMovePositionDown.setEnabled(lastRowNotSelected);
+        buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
+        buttonDeleteFromPositionList.setEnabled(existsSelectedPosition);
 
         RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
 
@@ -1013,14 +995,15 @@ public abstract class ConvertPanel {
         buttonInsertIntoPositionList = new JButton();
         buttonInsertIntoPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/insert-position.png")));
         buttonInsertIntoPositionList.setText("");
-        buttonInsertIntoPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-into-positionlist-tooltip"));
-        panel1.add(buttonInsertIntoPositionList, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonInsertIntoPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-position-tooltip"));
+        panel1.add(buttonInsertIntoPositionList, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeleteFromPositionList = new JButton();
         buttonDeleteFromPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/delete-position.png")));
         buttonDeleteFromPositionList.setText("");
-        buttonDeleteFromPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-from-positionlist-tooltip"));
+        buttonDeleteFromPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positions-tooltip"));
         panel1.add(buttonDeleteFromPositionList, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxDuplicateFirstPosition = new JCheckBox();
+        checkBoxDuplicateFirstPosition.setHorizontalTextPosition(10);
         this.$$$loadButtonText$$$(checkBoxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
         convertPanel.add(checkBoxDuplicateFirstPosition, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
@@ -1103,6 +1086,7 @@ public abstract class ConvertPanel {
         buttonNewFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-file-tooltip"));
         panel7.add(buttonNewFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxSaveAsRouteTrackWaypoints = new JCheckBox();
+        checkBoxSaveAsRouteTrackWaypoints.setHorizontalTextPosition(10);
         checkBoxSaveAsRouteTrackWaypoints.setSelected(false);
         this.$$$loadButtonText$$$(checkBoxSaveAsRouteTrackWaypoints, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-as-route-track-waypoints"));
         convertPanel.add(checkBoxSaveAsRouteTrackWaypoints, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -1143,6 +1127,7 @@ public abstract class ConvertPanel {
         comboBoxChoosePositionList.setVisible(true);
         convertPanel.add(comboBoxChoosePositionList, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxSaveOnlyThisPositionList = new JCheckBox();
+        checkBoxSaveOnlyThisPositionList.setHorizontalTextPosition(10);
         checkBoxSaveOnlyThisPositionList.setSelected(false);
         this.$$$loadButtonText$$$(checkBoxSaveOnlyThisPositionList, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-only-this-position-list"));
         convertPanel.add(checkBoxSaveOnlyThisPositionList, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -1332,6 +1317,7 @@ public abstract class ConvertPanel {
         void handlePositionsUpdate(final boolean supportsMultipleRoutes, boolean existsAPosition, boolean existsASelectedPosition) {
             buttonDeletePositions.setEnabled(existsASelectedPosition);
             buttonSelectAll.setEnabled(existsAPosition);
+            buttonAddCoordinates.setEnabled(existsASelectedPosition);
             buttonAddElevation.setEnabled(existsASelectedPosition);
             buttonAddPostalAddress.setEnabled(existsASelectedPosition);
             buttonAddPopulatedPlace.setEnabled(existsASelectedPosition);

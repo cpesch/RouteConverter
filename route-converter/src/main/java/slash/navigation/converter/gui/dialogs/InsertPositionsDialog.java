@@ -42,7 +42,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
+ * Dialog for inserting {@link slash.navigation.BaseNavigationPosition}s into the current {@link slash.navigation.BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -55,8 +55,6 @@ public class InsertPositionsDialog extends SimpleDialog {
     private JButton buttonClearSelection;
     private JButton buttonInsertAllWaypoints;
     private JButton buttonInsertOnlyTurnpoints;
-    private JLabel labelProgress;
-    private int insertedPositionsCount = 0;
 
     public InsertPositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "insert-positions");
@@ -111,8 +109,6 @@ public class InsertPositionsDialog extends SimpleDialog {
         r.getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 handlePositionsUpdate();
-                insertedPositionsCount += e.getLastRow() - e.getFirstRow() + 1;
-                labelProgress.setText(MessageFormat.format(RouteConverter.getBundle().getString("insert-added-positions"), insertedPositionsCount));
             }
         });
 
@@ -146,12 +142,10 @@ public class InsertPositionsDialog extends SimpleDialog {
     }
 
     private void insertAllWaypoints() {
-        insertedPositionsCount = 0;
         RouteConverter.getInstance().insertAllWaypoints();
     }
 
     private void insertOnlyTurnpoints() {
-        insertedPositionsCount = 0;
         RouteConverter.getInstance().insertOnlyTurnpoints();
     }
 
@@ -177,7 +171,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -206,28 +200,16 @@ public class InsertPositionsDialog extends SimpleDialog {
         panel5.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonInsertAllWaypoints = new JButton();
-        buttonInsertAllWaypoints.setText("alle Wegpunkte");
+        this.$$$loadButtonText$$$(buttonInsertAllWaypoints, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-all-waypoints"));
         panel5.add(buttonInsertAllWaypoints, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonInsertOnlyTurnpoints = new JButton();
-        buttonInsertOnlyTurnpoints.setText("nur Abbiegepunkte");
+        this.$$$loadButtonText$$$(buttonInsertOnlyTurnpoints, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-only-turnpoints"));
         panel5.add(buttonInsertOnlyTurnpoints, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel5.add(spacer2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        label2.setText("Einfügen der Wegpunkte aus der Routenberechnung zwischen den markierten Positionen...");
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-positions"));
         panel5.add(label2, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel6, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 30), null, null, 0, false));
-        final JPanel panel7 = new JPanel();
-        panel7.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        labelProgress = new JLabel();
-        labelProgress.setText("-");
-        panel7.add(labelProgress, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("progress"));
-        panel7.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

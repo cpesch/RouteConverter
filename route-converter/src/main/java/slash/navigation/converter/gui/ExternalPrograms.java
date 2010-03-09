@@ -21,9 +21,8 @@
 package slash.navigation.converter.gui;
 
 import java.awt.*;
-import java.io.File;
-import java.util.logging.Logger;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -57,13 +56,5 @@ public abstract class ExternalPrograms {
     }
 
     protected abstract void startMail(Window window, String uri);
-
-    public void startGoogleEarth(Window window, File[] files) {
-        for (File file : files) {
-            openFile(window, file);
-        }
-    }
-
-    protected abstract void openFile(Window window, File file);
 
 }
