@@ -23,8 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseRoute;
+import slash.navigation.*;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.gui.SimpleDialog;
@@ -42,7 +41,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for inserting {@link slash.navigation.BaseNavigationPosition}s into the current {@link slash.navigation.BaseRoute}.
+ * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
