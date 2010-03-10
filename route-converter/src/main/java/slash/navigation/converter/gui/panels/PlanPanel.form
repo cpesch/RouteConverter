@@ -91,7 +91,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Planungseinstellungen"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="options"/>
             </properties>
           </component>
           <component id="faf33" class="javax.swing.JSeparator">
@@ -115,7 +115,8 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Route in Track verwandeln"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-into-positionlist"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-into-positionlist-tooltip"/>
             </properties>
           </component>
           <hspacer id="667df">
@@ -128,7 +129,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Planung und Erweiterung"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="plan-tab"/>
             </properties>
           </component>
           <component id="6ebc4" class="javax.swing.JSeparator">
@@ -142,7 +143,8 @@
               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value=" Position per Suche einfügen"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="geocode-position"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="geocode-position-tooltip"/>
             </properties>
           </component>
           <component id="9ec2e" class="javax.swing.JButton" binding="buttonRevertPositionList">
@@ -151,6 +153,7 @@
             </constraints>
             <properties>
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="revert"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="revert-tooltip"/>
             </properties>
           </component>
           <component id="4bb77" class="javax.swing.JButton" binding="buttonComplementPositionList">
@@ -158,7 +161,8 @@
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Positionensdaten vervollständigen"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-positionlist"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="complement-positionlist-tooltip"/>
             </properties>
           </component>
           <component id="9e8eb" class="javax.swing.JButton" binding="buttonDeleteFromPositionList">
@@ -166,7 +170,8 @@
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Track in Route verwandeln"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-from-positionlist"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-from-positionlist-tooltip"/>
             </properties>
           </component>
         </children>
