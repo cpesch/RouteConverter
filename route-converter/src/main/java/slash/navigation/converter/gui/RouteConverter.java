@@ -94,6 +94,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
     public static final String PREFIX_NUMBER_WITH_ZEROS = "prefixNumberWithZeros";
     public static final String SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE = "spaceBetweenNumberAndComment";
+    public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String PEDESTRIANS_PREFERENCE = "pedestrians";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
     private static final String SELECT_DUPLICATE_PREFERENCE = "selectDuplicate";
@@ -598,6 +599,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public void setAvoidHighways(boolean avoidHighways) {
         if (mapView != null)
             mapView.setAvoidHighways(avoidHighways);
+    }
+
+    public void setRecenterAfterZooming(boolean recenterAfterZooming) {
+        if (mapView != null)
+            mapView.setRecenterAfterZooming(recenterAfterZooming);
     }
 
     // elevation view related helpers

@@ -44,6 +44,7 @@ public interface MapView extends PositionsSelectionModel {
     Component getComponent();
 
     void resize();
+    void setRecenterAfterZooming(boolean recenterAfterZooming);
     void setPedestrians(boolean pedestrians);
     void setAvoidHighways(boolean avoidHighways);
     BaseNavigationPosition getCenter();

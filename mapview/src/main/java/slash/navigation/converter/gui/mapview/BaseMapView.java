@@ -101,7 +101,7 @@ public abstract class BaseMapView implements MapView {
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
-    private boolean running = true, pedestrians, avoidHighways,
+    private boolean running = true, recenterAfterZooming, pedestrians, avoidHighways,
             haveToInitializeMapOnFirstStart = true,
             haveToRepaintImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
@@ -554,6 +554,10 @@ public abstract class BaseMapView implements MapView {
             notificationMutex.notifyAll();
         }
     }
+
+    public void setRecenterAfterZooming(boolean recenterAfterZooming) {
+        this.recenterAfterZooming = recenterAfterZooming;
+     }
 
     public void setPedestrians(boolean pedestrians) {
         this.pedestrians = pedestrians;
@@ -1015,7 +1019,9 @@ public abstract class BaseMapView implements MapView {
                     else
                         // only repaint immediately if the user zooms into the map and needs more details
                         haveToRepaintImmediately = startZoomLevel < endZoomLevel;
-                    haveToRecenterMap = true;
+                    // if enabled, recenter map to selected positions after zooming
+                    if (recenterAfterZooming)
+                        haveToRecenterMap = true;
                     notificationMutex.notifyAll();
                 }
             }
