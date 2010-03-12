@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -312,7 +313,7 @@ public class Gpx10Format extends GpxFormat {
         return gpx;
     }
 
-    private Gpx createGpx(GpxRoute route, int startIndex, int endIndex) {
+    private Gpx createGpx(GpxRoute route, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {
         Gpx gpx = recycleGpx(route);
         if (gpx == null || !reuseReadObjectsForWriting)
             gpx = new ObjectFactory().createGpx();
@@ -321,9 +322,21 @@ public class Gpx10Format extends GpxFormat {
         gpx.setName(route.getName());
         gpx.setDesc(asDescription(route.getDescription()));
 
-        gpx.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
-        gpx.getRte().addAll(createRoute(route, startIndex, endIndex));
-        gpx.getTrk().addAll(createTrack(route, startIndex, endIndex));
+        for (RouteCharacteristics characteristic : characteristics) {
+            switch (characteristic) {
+                case Waypoints:
+                    gpx.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
+                    break;
+                case Route:
+                    gpx.getRte().addAll(createRoute(route, startIndex, endIndex));
+                    break;
+                case Track:
+                    gpx.getTrk().addAll(createTrack(route, startIndex, endIndex));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + characteristic);
+            }
+        }
         return gpx;
     }
 
@@ -359,8 +372,12 @@ public class Gpx10Format extends GpxFormat {
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
+        write(route, target, startIndex, endIndex, Arrays.asList(RouteCharacteristics.Route, RouteCharacteristics.Track, RouteCharacteristics.Waypoints));
+    }
+
+    public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {
         try {
-            GpxUtil.marshal10(createGpx(route, startIndex, endIndex), target);
+            GpxUtil.marshal10(createGpx(route, startIndex, endIndex, characteristics), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

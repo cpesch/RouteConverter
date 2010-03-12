@@ -22,12 +22,14 @@ package slash.navigation.babel;
 
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.RouteCharacteristics;
 import slash.common.io.CompactCalendar;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Reads and writes Garmin POI Database (.xcsv) files.
@@ -46,6 +48,10 @@ public class GarminPoiDbFormat extends BabelFormat {
 
     protected String getBabelFormatName() {
         return "garmin_poi";
+    }
+
+    protected List<RouteCharacteristics> getBabelCharacteristics() {
+        return Arrays.asList(RouteCharacteristics.Waypoints);
     }
 
     public boolean isSupportsMultipleRoutes() {

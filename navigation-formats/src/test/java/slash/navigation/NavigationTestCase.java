@@ -743,11 +743,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     public static void comparePositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute, NavigationFormat sourceFormat,
                                         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat, boolean commentPositionNames) {
-        if (targetFormat instanceof GarminPoiDbFormat) {
-            int targetPositionCount = targetRoute.getPositionCount() / 3;
-            assertEquals(sourceRoute.getPositionCount(), targetPositionCount);
-            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions().subList(0, targetPositionCount), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
-        } else if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
+        if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
             // both formats support no ordering
         } else if (targetFormat instanceof TomTomPoiFormat) {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
@@ -755,10 +751,6 @@ public abstract class NavigationTestCase extends TestCase {
             comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
             // TomTomPoiFormat has no order of the positions except for first and second
             // comparePositions(sourceRoute.getPositions().subList(1, sourceRoute.getPositionCount() - 1), sourceFormat, targetRoute.getPositions().subList(2, targetRoute.getPositionCount() - 2), targetFormat, false, targetRoute.getCharacteristics());
-        } else if (sourceFormat instanceof GarminPoiDbFormat) {
-            int sourcePositionCount = targetRoute.getPositionCount(); // sourceRoute.getPositionCount() / 3;
-            assertEquals(sourcePositionCount, targetRoute.getPositionCount());
-            comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else if (sourceFormat instanceof MicrosoftAutoRouteFormat &&
                 (targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format || targetFormat instanceof KmlFormat) &&
                 targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
