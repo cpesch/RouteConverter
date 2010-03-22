@@ -30,7 +30,7 @@ public class Wbt201LogTest extends NavigationTestCase {
     private static final String WBT201LOG_DESCRIPTION2 = "<descripti6&deg;</br><br>Alt.=390m (1279ft)</br><br>Speed=4Km/h (2ion>";
 
     public void testParseSpeed() {
-//        assertEquals(4.0, format.parseSpeed(WBT201LOG_DESCRIPTION2));
         assertEquals(4.0, format.parseSpeed(WBT201LOG_DESCRIPTION));
+        assertEquals(4.0, format.parseSpeed(WBT201LOG_DESCRIPTION2));
     }
 }
