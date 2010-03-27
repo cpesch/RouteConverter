@@ -123,6 +123,7 @@ public final class NavigationFormats {
         addFormat(KlickTelRouteFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
+        addFormat(NavilinkFormat.class);
         addFormat(KienzleGpsFormat.class);
 
         // BabelFormats

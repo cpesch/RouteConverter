@@ -178,6 +178,10 @@ public class ReadIT extends NavigationTestCase {
         readFiles(".rte");
     }
 
+    public void testNavilinkFilesAreValid() throws IOException {
+        readFiles(".sbp");
+    }
+
     public void testTourExchangeFilesAreValid() throws IOException {
         readFiles(".tef");
     }
