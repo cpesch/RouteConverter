@@ -203,8 +203,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     private static final long SECOND_MASK = Long.parseLong("00000000000000000000000000111111", 2);
     private static final double FACTOR = 10000000.0;
 
-    private BaseNavigationPosition createWaypoint(long time, long latitude, long longitude,
-                                                  int altitude, int pointNo, boolean isTrackpoint) {
+    protected BaseNavigationPosition createWaypoint(long time, long latitude, long longitude,
+                                                    int altitude, int pointNo, boolean isTrackpoint) {
         int year = (int) ((time & YEAR_MASK) >> 26);
         int month = (int) ((time & MONTH_MASK) >> 22);
         int day = (int) ((time & DAY_MASK) >> 17);

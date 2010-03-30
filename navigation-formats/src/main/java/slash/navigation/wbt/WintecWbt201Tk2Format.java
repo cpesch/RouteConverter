@@ -51,7 +51,7 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
         return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 
-    protected List<Wgs84Route> read(ByteBuffer source) throws IOException {
+    protected List<Wgs84Route> read(ByteBuffer buffer) throws IOException {
         /*
            char pHeader[16];//="WintecLogTk2";   //16
            float f32LogVersion;                  //20
@@ -76,24 +76,23 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
            char pResever1[548];                  //1024
          */
 
-        source.order(ByteOrder.LITTLE_ENDIAN);
-        source.position(0);
-        String formatDescriptor = extractFormatDescriptor(source);
-        /*float logVersion =*/ source.getFloat();
-        /*float swVersion =*/ source.getFloat();
-        /*float hwVersion =*/ source.getFloat();
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.position(0);
+        String formatDescriptor = extractFormatDescriptor(buffer);
+        /*float logVersion*/ buffer.getFloat();
+        /*float swVersion*/ buffer.getFloat();
+        /*float hwVersion*/ buffer.getFloat();
 
-        source.position(40);
-        source.get(new byte[20]);
+        buffer.position(40);
+        buffer.get(new byte[20]);
 
-        source.position(140);
-        // Tk2 has no TrackInfo Structure, set position to end of file
+        buffer.position(140);
+        // .tk2 has no TrackInfo Structure, set position to end of file
         // readPositions processes this correctly
-        long startTrackInfoStruct = source.capacity();
-
+        long startTrackInfoStruct = buffer.capacity();
         if (!formatDescriptor.equals(FORMAT_DESCRIPTOR))
             return null;
 
-        return readPositions(source, startTrackInfoStruct);
+        return readPositions(buffer, startTrackInfoStruct);
     }
 }

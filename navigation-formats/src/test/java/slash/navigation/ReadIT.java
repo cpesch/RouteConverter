@@ -229,6 +229,10 @@ public class ReadIT extends NavigationTestCase {
         readFiles(".url");
     }
 
+    public void testWintecWbt202TesFilesAreValid() throws IOException {
+        readFiles(".tes");
+    }
+
     public void testWintecWbt201Tk1FilesAreValid() throws IOException {
         readFiles(".tk1");
     }

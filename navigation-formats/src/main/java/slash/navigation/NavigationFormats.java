@@ -54,6 +54,7 @@ import slash.common.io.Transfer;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
+import slash.navigation.wbt.WintecWbt202TesFormat;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -123,6 +124,7 @@ public final class NavigationFormats {
         addFormat(KlickTelRouteFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
+        addFormat(WintecWbt202TesFormat.class);
         addFormat(NavilinkFormat.class);
         addFormat(KienzleGpsFormat.class);
 
