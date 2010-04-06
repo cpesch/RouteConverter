@@ -21,9 +21,11 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.io.Transfer;
+import slash.common.io.CompactCalendar;
 import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.Wgs84Position;
+import slash.navigation.gui.Application;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Positions;
@@ -411,10 +413,7 @@ public abstract class BaseMapView implements MapView {
         final Boolean[] receivedCallback = new Boolean[1];
         receivedCallback[0] = false;
 
-        final MapViewListener callbackWaiter = new MapViewListener() {
-            public void calculatedDistance(int meters, int seconds) {
-            }
-
+        final MapViewListener callbackWaiter = new AbstractMapViewListener() {
             public void receivedCallback(int port) {
                 synchronized (receivedCallback) {
                     receivedCallback[0] = true;
@@ -870,8 +869,8 @@ public abstract class BaseMapView implements MapView {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
             buffer.append("var selected").append(i).append(" = ");
             buffer.append("new GMarker(new GLatLng(").append(selectedPosition.getLatitude()).append(",")
-                    .append(selectedPosition.getLongitude()).append("), { title: \"")
-                    .append(escape(selectedPosition.getComment())).append("\", draggable: true });\n");
+                    .append(selectedPosition.getLongitude()).append("), { icon: square, title: \"")
+                    .append(escape(selectedPosition.getComment())).append("\", draggable: true, bouncy: false, dragCrossMove: true });\n");
             buffer.append("addMarker(selected").append(i).append(",").append(i).append(");\n");
         }
 
@@ -973,8 +972,10 @@ public abstract class BaseMapView implements MapView {
 
     // browser callbacks
 
-    private static final Pattern DRAG_END_PATTERN = Pattern.compile("^GET /dragend/(.*)/(.*)/(.*) .*$");
     private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^GET /load/(\\d*)/(\\d*) .*$");
+    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^GET /insert-position/(.*)/(.*) .*$");
+    private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^GET /move-position/(.*)/(.*)/(.*) .*$");
+    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^GET /remove-position/(.*) .*$");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^GET /maptypechanged/(.*) .*$");
     private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^GET /zoomend/(.*)/(.*) .*$");
     private static final Pattern MOVE_END_PATTERN = Pattern.compile("^GET /moveend/(.*)/(.*) .*$");
@@ -986,19 +987,32 @@ public abstract class BaseMapView implements MapView {
             return;
 
         for (String line : lines) {
-            Matcher dragEndMatcher = DRAG_END_PATTERN.matcher(line);
-            if (dragEndMatcher.matches()) {
-                int index = Transfer.parseInt(dragEndMatcher.group(1));
-                Double latitude = Transfer.parseDouble(dragEndMatcher.group(2));
-                Double longitude = Transfer.parseDouble(dragEndMatcher.group(3));
-                movedPosition(index, longitude, latitude);
-            }
-
             Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
             if (directionsLoadMatcher.matches()) {
                 meters += Transfer.parseInt(directionsLoadMatcher.group(1));
                 seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
                 fireCalculatedDistance(meters, seconds);
+            }
+
+            Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
+            if (insertPositionMatcher.matches()) {
+                Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
+                Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+                insertPosition(longitude, latitude);
+            }
+
+            Matcher moePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
+            if (moePositionMatcher.matches()) {
+                int index = Transfer.parseInt(moePositionMatcher.group(1));
+                Double latitude = Transfer.parseDouble(moePositionMatcher.group(2));
+                Double longitude = Transfer.parseDouble(moePositionMatcher.group(3));
+                movePosition(index, longitude, latitude);
+            }
+
+            Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(line);
+            if (removePositionMatcher.matches()) {
+                int index = Transfer.parseInt(removePositionMatcher.group(1));
+                removePosition(index);
             }
 
             Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
@@ -1082,17 +1096,29 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private void movedPosition(int index, Double longitude, Double latitude) {
-        BaseNavigationPosition modify = lastSelectedPositions.get(index);
-        modify.setLatitude(latitude);
-        modify.setLongitude(longitude);
+    private void insertPosition(Double longitude, Double latitude) {
+        BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
+        // TODO crude logic, or?
+        if (position == null && positionsModel.getRowCount() > 0)
+            position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
+        int row = 0;
+        if (position != null)
+            row = positionsModel.getIndex(position) + 1;
+        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.getInstance(), Application.getInstance().getContext().getBundle().getString("insert-position-comment"));
+        fireSelectedPosition(row);
+    }
+
+    private void movePosition(int index, Double longitude, Double latitude) {
+        BaseNavigationPosition position = lastSelectedPositions.get(index);
+        position.setLatitude(latitude);
+        position.setLongitude(longitude);
 
         updateButDontRecenter();
 
         // notify views about change, leads to update(false)
         int row;
         synchronized (notificationMutex) {
-           row = positions.indexOf(modify);
+           row = positions.indexOf(position);
         }
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
@@ -1109,6 +1135,19 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             haveToUpdatePosition = true;
             notificationMutex.notifyAll();
+        }
+    }
+
+    private void removePosition(int index) {
+        BaseNavigationPosition position = lastSelectedPositions.size() > index ? lastSelectedPositions.get(index) : null;
+        if (position != null) {
+            int row = positionsModel.getIndex(position);
+            positionsModel.remove(row - 1, row);
+
+            synchronized (notificationMutex) {
+                haveToRepaintImmediately = true;
+                notificationMutex.notifyAll();
+            }
         }
     }
 
@@ -1153,6 +1192,12 @@ public abstract class BaseMapView implements MapView {
     private void fireReceivedCallback(int port) {
         for (MapViewListener listener : mapViewListeners) {
             listener.receivedCallback(port);
+        }
+    }
+
+    private void fireSelectedPosition(int index) {
+        for (MapViewListener listener : mapViewListeners) {
+            listener.selectedPosition(index);
         }
     }
 }

@@ -868,6 +868,11 @@ public abstract class ConvertPanel {
         new SelectAll(tablePositions).actionPerformed(null);
     }
 
+    public void selectPosition(int index) {
+        tablePositions.getSelectionModel().addSelectionInterval(index, index);
+        JTableHelper.scrollToPosition(tablePositions, index);
+    }
+
     public int selectDuplicatesWithinDistance(int distance) {
         clearSelection();
         int[] indices = getPositionsModel().getDuplicatesWithinDistance(distance);

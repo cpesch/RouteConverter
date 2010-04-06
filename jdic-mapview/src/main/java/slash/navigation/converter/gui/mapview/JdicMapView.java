@@ -88,6 +88,9 @@ public class JdicMapView extends BaseMapView {
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html");
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/square.png");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/mouse-over-square.png");
             webBrowser.setURL(html.toURI().toURL());
             log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {

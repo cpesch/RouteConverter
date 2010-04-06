@@ -73,6 +73,9 @@ public class EclipseSWTMapView extends BaseMapView {
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html");
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/square.png");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/mouse-over-square.png");
             webBrowser.navigate(html.toURI().toURL().toExternalForm());
             log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {

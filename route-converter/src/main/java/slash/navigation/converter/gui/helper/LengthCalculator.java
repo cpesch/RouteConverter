@@ -25,6 +25,7 @@ import slash.navigation.BaseNavigationPosition;
 import slash.navigation.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.MapViewListener;
+import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 
@@ -63,12 +64,9 @@ public class LengthCalculator {
             }
         });
 
-        RouteConverter.getInstance().addMapViewListener(new MapViewListener() {
+        RouteConverter.getInstance().addMapViewListener(new AbstractMapViewListener() {
             public void calculatedDistance(int meters, int seconds) {
                 fireCalculatedDistance(meters, seconds);
-            }
-
-            public void receivedCallback(int port) {
             }
         });
     }

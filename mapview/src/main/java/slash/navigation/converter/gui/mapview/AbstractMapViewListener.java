@@ -18,30 +18,21 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helper;
-
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+package slash.navigation.converter.gui.mapview;
 
 /**
- * A {@link DocumentListener} that treats all events the same.
+ * A {@link MapViewListener} that does nothing.
  *
  * @author Christian Pesch
  */
 
-public abstract class AbstractDocumentListener implements DocumentListener {
-
-    public abstract void process(DocumentEvent e);
-
-    public void insertUpdate(DocumentEvent e) {
-        process(e);
+public abstract class AbstractMapViewListener implements MapViewListener {
+    public void calculatedDistance(int meters, int seconds) {
     }
 
-    public void removeUpdate(DocumentEvent e) {
-        process(e);
+    public void receivedCallback(int port) {
     }
 
-    public void changedUpdate(DocumentEvent e) {
-        process(e);
+    public void selectedPosition(int index) {
     }
 }

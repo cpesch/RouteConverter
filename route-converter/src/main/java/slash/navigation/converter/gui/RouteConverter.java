@@ -32,6 +32,7 @@ import slash.navigation.Wgs84Position;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
+import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.panels.*;
@@ -217,6 +218,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
                 );
+                addMapViewListener(new AbstractMapViewListener() {
+                    public void selectedPosition(int index) {
+                        getConvertPanel().selectPosition(index);
+                    }
+                });
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();
