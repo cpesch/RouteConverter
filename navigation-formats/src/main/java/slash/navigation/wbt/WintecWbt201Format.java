@@ -154,12 +154,12 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         int trackPointNo = 1;
         int pushPointNo = 1;
 
-        while ((source.position() < trackInfoAddress) && (source.position() < source.capacity())) {
-            int trackFlag = source.getShort();
-            long time = source.getInt();
-            long latitude = source.getInt();
-            long longitude = source.getInt();
-            int altitude = source.getShort();
+        while ((source.position() < trackInfoAddress) && (source.position() + 2+4+4+4+2 < source.capacity())) {
+            short trackFlag = source.getShort();
+            int time = source.getInt();
+            int latitude = source.getInt();
+            int longitude = source.getInt();
+            short altitude = source.getShort();
 
             // if internal gps memory is full, the first points will override and no trackflag is set
             if ((trackPoints == null) && (trackFlag == 0))

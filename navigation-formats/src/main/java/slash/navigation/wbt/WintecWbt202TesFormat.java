@@ -51,13 +51,13 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.position(0);
 
-        /*int trackFlag*/ buffer.getShort();
+        /*short trackFlag*/ buffer.getShort();
 
         // read first position and validate the data
-        long time = buffer.getInt();
-        long latitude = buffer.getInt();
-        long longitude = buffer.getInt();
-        int altitude = buffer.getShort();
+        int time = buffer.getInt();
+        int latitude = buffer.getInt();
+        int longitude = buffer.getInt();
+        short altitude = buffer.getShort();
         BaseNavigationPosition firstPosition = createWaypoint(time, latitude, longitude, altitude, 1, false);
         return firstPosition.getLatitude() < 90 && firstPosition.getLatitude() > -90 &&
                 firstPosition.getLongitude() < 180 && firstPosition.getLongitude() > -180 &&

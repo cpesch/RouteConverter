@@ -148,19 +148,19 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return CompactCalendar.fromCalendar(calendar);
     }
 
-    private boolean isTrackStart(ByteBuffer sbpByteBuffer) {
-        short bitFlags = sbpByteBuffer.get(30);
+    private boolean isTrackStart(ByteBuffer buffer) {
+        short bitFlags = buffer.get(30);
         /*
           this is the behaviour of gpsbabel:
-          short reserved = sbpByteBuffer.get(31);
+          short reserved = buffer.get(31);
           return (((bitFlags & 0x01) == 1) && (reserved == 0x14));
           but I like it that every poweron starts a new track:
         */
         return (bitFlags & 0x01) == 1;
     }
 
-    private Wgs84Position decodePosition(ByteBuffer sbpByteBuffer) {
-        sbpByteBuffer.position(0);
+    private Wgs84Position decodePosition(ByteBuffer buffer) {
+        buffer.position(0);
 
         /*
         typedef __packed struct
@@ -181,16 +181,16 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         } T_SBP;   
         */
 
-        byte hdop = sbpByteBuffer.get();
-        int satellites = sbpByteBuffer.get();
-        sbpByteBuffer.getShort(); //Second resolution 0.001  --> ignore
-        CompactCalendar dateTime = decodeDateTime(sbpByteBuffer.getInt());
-        sbpByteBuffer.getInt(); //SVs in solution --> ignore
-        long latitude = sbpByteBuffer.getInt();
-        long longitude = sbpByteBuffer.getInt();
-        long altitudeCm = sbpByteBuffer.getInt();
-        int speedMeterPerSecond = sbpByteBuffer.getShort();
-        int heading = sbpByteBuffer.getShort();
+        byte hdop = buffer.get();
+        byte satellites = buffer.get();
+        buffer.getShort(); //Second resolution 0.001  --> ignore
+        CompactCalendar dateTime = decodeDateTime(buffer.getInt());
+        buffer.getInt(); //SVs in solution --> ignore
+        int latitude = buffer.getInt();
+        int longitude = buffer.getInt();
+        int altitudeCm = buffer.getInt();
+        short speedMeterPerSecond = buffer.getShort();
+        short heading = buffer.getShort();
 
         Wgs84Position position = new Wgs84Position(longitude / 10000000.0,
                 latitude / 10000000.0,
@@ -199,7 +199,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
                 dateTime,
                 null);
         position.setHdop(hdop * 0.2);
-        position.setSatellites(satellites);
+        position.setSatellites((int) satellites);
         position.setHeading(heading * 0.01);
         return position;
     }
