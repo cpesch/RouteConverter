@@ -110,7 +110,15 @@ public class RouteConverterCmdLine {
         if (format.isSupportsMultipleRoutes()) {
             parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) format, target);
         } else {
-            parser.write(parser.getTheRoute(), format, false, true, target);
+            int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(parser.getTheRoute(), format, false);
+            File[] targets = Files.createTargetFiles(target, fileCount, format.getExtension(), format.getMaximumFileNameLength());
+            for (File t : targets) {
+                if (t.exists()) {
+                    log.severe("Target '" + t.getAbsolutePath() + "' already exists; stopping.");
+                    System.exit(13);
+                }
+            }
+            parser.write(parser.getTheRoute(), format, false, false, targets);
         }
     }
 

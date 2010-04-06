@@ -199,6 +199,18 @@ public class Files {
     }
 
 
+    public static File[] createTargetFiles(File pattern, int fileCount, String extension, int fileNameLength) {
+        File[] files = new File[fileCount];
+        if (fileCount == 1) {
+            files[0] = new File(calculateConvertFileName(pattern, extension, fileNameLength));
+        } else {
+            for (int i = 0; i < fileCount; i++) {
+                files[i] = new File(calculateConvertFileName(pattern, i + 1, fileCount, extension, fileNameLength));
+            }
+        }
+        return files;
+    }
+
     public static File writeToTempFile(byte[] bytes) throws IOException {
         File tempFile = File.createTempFile("routeconverter", ".xml");
         tempFile.deleteOnExit();

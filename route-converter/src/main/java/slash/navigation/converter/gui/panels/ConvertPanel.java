@@ -583,7 +583,7 @@ public abstract class ConvertPanel {
     private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount) {
         RouteConverter r = RouteConverter.getInstance();
 
-        File[] targets = createTargetFiles(file, fileCount, format.getExtension(), format.getMaximumFileNameLength());
+        File[] targets = Files.createTargetFiles(file, fileCount, format.getExtension(), format.getMaximumFileNameLength());
         for (File target : targets) {
             if (target.exists()) {
                 String path = Files.createReadablePath(target);
@@ -830,18 +830,6 @@ public abstract class ConvertPanel {
             preference = ((NavigationFormatFileFilter) fileFilter).getFormat().getClass().getName();
         RouteConverter.getInstance().setSourceFormatPreference(preference);
 
-    }
-
-    private File[] createTargetFiles(File pattern, int fileCount, String extension, int fileNameLength) {
-        File[] files = new File[fileCount];
-        if (fileCount == 1) {
-            files[0] = new File(Files.calculateConvertFileName(pattern, extension, fileNameLength));
-        } else {
-            for (int i = 0; i < fileCount; i++) {
-                files[i] = new File(Files.calculateConvertFileName(pattern, i + 1, fileCount, extension, fileNameLength));
-            }
-        }
-        return files;
     }
 
     private NavigationFormat getFormat() {
