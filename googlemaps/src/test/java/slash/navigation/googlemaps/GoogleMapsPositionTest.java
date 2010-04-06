@@ -22,6 +22,7 @@ package slash.navigation.googlemaps;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class GoogleMapsPositionTest extends TestCase {
 
@@ -78,7 +79,10 @@ public class GoogleMapsPositionTest extends TestCase {
     }
 
     public void testParsePositions() {
-        assertEquals(Arrays.asList(new GoogleMapsPosition(1.0, 2.0, 3.0, null), new GoogleMapsPosition(4.0, 5.0, 6.0, null), new GoogleMapsPosition(7.0, 8.0, 9.0, null)),
-                GoogleMapsPosition.parsePositions("1,2,3 4,5,6 7,8,9"));
+        List<GoogleMapsPosition> expected = Arrays.asList(new GoogleMapsPosition(1.1, 2.0, 3.0, null), new GoogleMapsPosition(4.0, 5.0, 6.6, null), new GoogleMapsPosition(7.0, 8.8, 9.0, null));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2,3 4,5,6.6 7,8.8,9"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2 3 4,5 6.6 7,8.8 9"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1 2,3 4 5,6.6 7 8.8,9"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1 2 3 4 5 6.6 7 8.8 9"));
     }
 }

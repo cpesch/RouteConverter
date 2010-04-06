@@ -34,7 +34,8 @@ import java.util.ArrayList;
  */
 
 public class GoogleMapsPosition {
-    private static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*[[-|+]|\\d|\\.|E]*\\s*),(\\s*[[-|+]|\\d|\\.|E]*\\s*),?,?(\\s*[[-|+]|\\d|\\.|E]+\\s*)?");
+    private static final String NUMBER = "[[-|+]|\\d|\\.|E]";
+    private static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*" + NUMBER + "*\\s*)[\\s|,](\\s*" + NUMBER + "*\\s*),?,?(\\s*" + NUMBER + "+\\s*)?");
 
     private Double longitude, latitude, elevation;
     private String location;
