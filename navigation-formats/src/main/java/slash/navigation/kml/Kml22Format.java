@@ -20,15 +20,15 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.common.hex.HexDecoder;
-import slash.common.io.ISO8601;
 import slash.common.io.CompactCalendar;
+import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
+import slash.navigation.RouteCharacteristics;
 import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.bindingatom.Link;
-import slash.navigation.util.*;
+import slash.navigation.util.Bearing;
+import slash.navigation.util.RouteComments;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -201,13 +201,11 @@ public class Kml22Format extends KmlFormat {
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
         if (geometryTypeValue instanceof PointType) {
             PointType point = (PointType) geometryTypeValue;
-            for (String coordinates : point.getCoordinates())
-                positions.add(asKmlPosition(GoogleMapsPosition.parsePosition(coordinates, null)));
+            positions.addAll(asKmlPositions(point.getCoordinates()));
         }
         if (geometryTypeValue instanceof LineStringType) {
             LineStringType lineString = (LineStringType) geometryTypeValue;
-            for (String coordinates : lineString.getCoordinates())
-                positions.add(asKmlPosition(GoogleMapsPosition.parsePosition(coordinates, null)));
+            positions.addAll(asKmlPositions(lineString.getCoordinates()));
         }
         if (geometryTypeValue instanceof MultiGeometryType) {
             MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;

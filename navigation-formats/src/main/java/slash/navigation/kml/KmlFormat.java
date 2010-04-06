@@ -96,6 +96,19 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());
     }
 
+    protected List<KmlPosition> asKmlPositions(List<String> strings) {
+        StringBuffer buffer = new StringBuffer();
+        for (String string : strings) {
+            buffer.append(string);
+            // to make sure the numbers are separated if they were already parsed by the XML parse
+            buffer.append(' ');
+        }
+        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        for (GoogleMapsPosition position : GoogleMapsPosition.parsePositions(buffer.toString()))
+            result.add(asKmlPosition(position));
+        return result;
+    }
+
     protected String createDocumentName(KmlRoute route) {
         // some kind of crude workaround since the route carries the name of the
         // plus and divided by a slash the route of the track

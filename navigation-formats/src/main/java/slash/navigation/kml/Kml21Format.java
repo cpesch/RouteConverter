@@ -24,7 +24,6 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
 import slash.navigation.RouteCharacteristics;
-import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding21.*;
 import slash.navigation.util.RouteComments;
 
@@ -189,13 +188,11 @@ public class Kml21Format extends KmlFormat {
             GeometryType geometryTypeValue = geometryType.getValue();
             if (geometryTypeValue instanceof PointType) {
                 PointType point = (PointType) geometryTypeValue;
-                for (String coordinates : point.getCoordinates())
-                    positions.add(asKmlPosition(GoogleMapsPosition.parsePosition(coordinates, null)));
+                positions.addAll(asKmlPositions(point.getCoordinates()));
             }
             if (geometryTypeValue instanceof LineStringType) {
                 LineStringType lineString = (LineStringType) geometryTypeValue;
-                for (String coordinates : lineString.getCoordinates())
-                    positions.add(asKmlPosition(GoogleMapsPosition.parsePosition(coordinates, null)));
+                positions.addAll(asKmlPositions(lineString.getCoordinates()));
             }
             if (geometryTypeValue instanceof MultiGeometryType) {
                 MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
