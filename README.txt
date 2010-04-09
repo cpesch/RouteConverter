@@ -11,7 +11,8 @@ How to develop for RouteConverter
    Choose "File/Open Project..." and the root pom.xml.
 
    Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
-   Choose "File/Import..." and "Maven Projects" and the root directory.
+   Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e
+   Choose "File/Import..." and "General/Maven Projects" and the root directory.
 
 4. Build RouteConverter
 
