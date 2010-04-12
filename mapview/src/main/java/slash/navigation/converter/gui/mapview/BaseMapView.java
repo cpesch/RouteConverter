@@ -869,7 +869,7 @@ public abstract class BaseMapView implements MapView {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
             buffer.append("var selected").append(i).append(" = ");
             buffer.append("new GMarker(new GLatLng(").append(selectedPosition.getLatitude()).append(",")
-                    .append(selectedPosition.getLongitude()).append("), { icon: square, title: \"")
+                    .append(selectedPosition.getLongitude()).append("), { title: \"")
                     .append(escape(selectedPosition.getComment())).append("\", draggable: true, bouncy: false, dragCrossMove: true });\n");
             buffer.append("addMarker(selected").append(i).append(",").append(i).append(");\n");
         }

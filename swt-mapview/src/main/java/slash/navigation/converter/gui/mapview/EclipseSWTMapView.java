@@ -74,8 +74,6 @@ public class EclipseSWTMapView extends BaseMapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/square.png");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/mouse-over-square.png");
             webBrowser.navigate(html.toURI().toURL().toExternalForm());
             log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
@@ -125,15 +123,6 @@ public class EclipseSWTMapView extends BaseMapView {
                     // get out of the listener callback
                     new Thread(new Runnable() {
                         public void run() {
-                            if (Platform.isLinux()) {
-                                log.info(System.currentTimeMillis() + " started sleeping for 2s on Linux");
-                                try {
-                                    Thread.sleep(2000);
-                                } catch (InterruptedException e1) {
-                                    // intentionally left empty
-                                }
-                                log.info(System.currentTimeMillis() + " stopped sleeping for 2s on Linux");
-                            }
                             tryToInitialize(startCount++);
                         }
                     }, "MapViewInitializer").start();
@@ -148,8 +137,8 @@ public class EclipseSWTMapView extends BaseMapView {
                 log.fine(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
             }
 
-            public void commandReceived(WebBrowserEvent e, String command, String[] args) {
-                log.fine(System.currentTimeMillis() + " commandReceived " + command + " thread " + Thread.currentThread());
+            public void commandReceived(WebBrowserCommandEvent e) {
+                log.fine(System.currentTimeMillis() + " commandReceived " + e + " thread " + Thread.currentThread());
             }
         });
 
@@ -172,20 +161,15 @@ public class EclipseSWTMapView extends BaseMapView {
             checkLocalhostResolution();
             checkCallback();
         } else {
-            if (counter++ < 2) {
-                log.info(System.currentTimeMillis() + " WAITING " + counter * 2000 + " seconds");
+            if (counter++ < 50) {
+                log.info(System.currentTimeMillis() + " WAITING " + counter * 100 + " milliseconds");
                 try {
-                    Thread.sleep(counter * 2000);
+                    Thread.sleep(counter * 100);
                 } catch (InterruptedException e) {
                     // intentionally left empty
                 }
 
-                log.info(System.currentTimeMillis() + " LOADING page again");
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        loadWebPage(webBrowser);
-                    }
-                });
+                tryToInitialize(counter);
             }
         }
     }
@@ -261,12 +245,12 @@ public class EclipseSWTMapView extends BaseMapView {
                 append(southWest.getLongitude()).append(")").append("));");
 
         String zoomLevel = executeScriptWithResult(buffer.toString());
-        return zoomLevel != null ? Transfer.parseInt(zoomLevel) : 1;
+        return zoomLevel != null ? Transfer.parseDouble(zoomLevel).intValue() : 1;
     }
 
     protected int getCurrentZoomLevel() {
         String zoomLevel = executeScriptWithResult("return map.getZoom();");
-        return zoomLevel != null ? Transfer.parseInt(zoomLevel) : 1;
+        return zoomLevel != null ? Transfer.parseDouble(zoomLevel).intValue() : 1;
     }
 
     protected BaseNavigationPosition getNorthEastBounds() {
