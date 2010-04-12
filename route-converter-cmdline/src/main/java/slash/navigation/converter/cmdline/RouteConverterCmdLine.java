@@ -62,7 +62,8 @@ public class RouteConverterCmdLine {
     }
 
     private void run(String[] args) {
-        log.info("Started RouteConverter on " + Platform.getOsName() + " with " + Platform.getJvm());
+        Version version = Version.parseVersionFromManifest();
+        log.info("Started RouteConverter " + version.getVersion() + " from " + version.getDate() + " on " + Platform.getOsName() + " with " + Platform.getJvm());
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
             logFormatNames(NavigationFormats.getWriteFormatsSortedByName());
