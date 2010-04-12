@@ -148,9 +148,9 @@ ContextMenuControl.prototype.createContextMenu_ = function () {
     me.menuList.appendChild(me.createListItem_("Insert", "insert"));
     me.menuList.appendChild(me.createListItem_("Remove", "remove"));
     me.menuList.appendChild(me.createRuler_());
+    me.menuList.appendChild(me.createListItem_("Center map", "center"));
     me.menuList.appendChild(me.createListItem_("Zoom in", "in"));
     me.menuList.appendChild(me.createListItem_("Zoom out", "out"));
-    me.menuList.appendChild(me.createListItem_("Center map", "center"));
     me.hideMenu_();
     // Adds context menu to the map container
   me.map_.getContainer().appendChild(me.menuList);

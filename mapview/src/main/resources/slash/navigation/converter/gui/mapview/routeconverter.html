@@ -112,14 +112,6 @@
            var ll = marker.getLatLng();
            callJava("move-position/" + index + "/" + ll.lat() + "/" + ll.lng());
        });
-       /* TODO
-       GEvent.addListener(marker, "mouseover", function() {
-           marker.setImage("mouse-over-square.png");
-       });
-       GEvent.addListener(marker, "mouseout", function() {
-           marker.setImage("square.png");
-       });
-       */
    }
 
    function addMarker(marker, index) {
