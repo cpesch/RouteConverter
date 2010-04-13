@@ -87,6 +87,6 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
         if (!formatDescriptor.equals(FORMAT_DESCRIPTOR))
             return null;
 
-        return readPositions(buffer, startTrackInfoStruct);
+        return readPositions(buffer, 1024, startTrackInfoStruct);
     }
 }

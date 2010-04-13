@@ -65,7 +65,6 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
     }
 
     protected List<Wgs84Route> read(ByteBuffer buffer) throws IOException {
-        buffer.position(0);
-        return readPositions(buffer, buffer.capacity());
+        return readPositions(buffer, 0, buffer.capacity());
     }
 }

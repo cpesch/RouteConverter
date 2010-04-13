@@ -116,7 +116,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return new String(bytes, 0, 15, DEFAULT_ENCODING);
     }
 
-    List<Wgs84Route> readPositions(ByteBuffer source, long trackInfoAddress) {
+    List<Wgs84Route> readPositions(ByteBuffer source, int startDataAddress, long trackInfoAddress) {
         /* http://forum.pocketnavigation.de/attachment.php?attachmentid=1082953
            2 byte Trackflag
                00001 = 1 --> That point is the start point of a trajectory
@@ -144,7 +144,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         */
 
         // seek to begin of trackpoints
-        source.position(1024);
+        source.position(startDataAddress);
         source.order(ByteOrder.LITTLE_ENDIAN);
 
         List<Wgs84Route> result = new ArrayList<Wgs84Route>();
@@ -154,7 +154,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         int trackPointNo = 1;
         int pushPointNo = 1;
 
-        while ((source.position() < trackInfoAddress) && (source.position() + 2+4+4+4+2 < source.capacity())) {
+        while ((source.position() < trackInfoAddress) && (source.position() + 2+4+4+4+2 <= source.capacity())) {
             short trackFlag = source.getShort();
             int time = source.getInt();
             int latitude = source.getInt();
