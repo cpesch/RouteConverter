@@ -52,20 +52,32 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
         buffer.position(0);
 
         // read first positions and validate the data
-        while ((buffer.position() + 16) < buffer.capacity()){ //16: one Record
-            /*short trackFlag*/ buffer.getShort();
+        BaseNavigationPosition previousPosition = null;
+        while ((buffer.position() + 16) < buffer.capacity()) { //16: one Record
+            /*short trackFlag*/
+            buffer.getShort();
             int time = buffer.getInt();
             int latitude = buffer.getInt();
             int longitude = buffer.getInt();
             short altitude = buffer.getShort();
             BaseNavigationPosition position = createWaypoint(time, latitude, longitude, altitude, 1, false);
-            
-            boolean valid = position.getLatitude() < 90 && position.getLatitude() > -90 &&
-                            position.getLongitude() < 180 && position.getLongitude() > -180 &&
-                            position.getElevation() < 20000;
-                            
-            if (! valid)
-                return false;                  
+
+            boolean valid = position.getLatitude() < 90.0 && position.getLatitude() > -90.0 &&
+                    position.getLongitude() < 180.0 && position.getLongitude() > -180.0 &&
+                    position.getElevation() < 20000.0 &&
+                    Math.abs(position.getLatitude()) > 0.00001 &&
+                    Math.abs(position.getLongitude()) > 0.00001 &&
+                    Math.abs(position.getElevation()) > 0.000001;
+
+            if (valid && previousPosition != null) {
+                Double speed = position.calculateSpeed(previousPosition);
+                valid = speed != null && speed < 1500.0;
+            }
+
+            if (!valid)
+                return false;
+
+            previousPosition = position;
         }
         return true;
     }
