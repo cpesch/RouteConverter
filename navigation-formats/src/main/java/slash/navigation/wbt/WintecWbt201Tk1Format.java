@@ -47,7 +47,9 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
 
     protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
         buffer.position(0);
-        String formatDescriptor = extractFormatDescriptor(buffer);
+        byte[] bytes = new byte[16];
+        buffer.get(bytes, 0, 16);
+        String formatDescriptor = new String(bytes, 0, 15, DEFAULT_ENCODING);
         return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 
@@ -73,20 +75,8 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
          */
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.position(0);
-        String formatDescriptor = extractFormatDescriptor(buffer);
-        /*float logVersion*/ buffer.getFloat();
-        /*float swVersion*/ buffer.getFloat();
-        /*float hwVersion*/ buffer.getFloat();
-
-        buffer.position(40);
-        buffer.get(new byte[20]);
-
         buffer.position(140);
-        int startTrackInfoStruct = buffer.getInt();
-        if (!formatDescriptor.equals(FORMAT_DESCRIPTOR))
-            return null;
-
-        return readPositions(buffer, 1024, startTrackInfoStruct);
+        int trackInfoAddress = buffer.getInt();
+        return readPositions(buffer, 1024, trackInfoAddress);
     }
 }

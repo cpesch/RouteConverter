@@ -39,7 +39,7 @@ import java.util.List;
  */
 
 public class WintecWbt201Tk2Format extends WintecWbt201Format {
-    private static final String FORMAT_DESCRIPTOR = "WintecLogTk2\u0000\u0000\u0000";
+    private static final String FORMAT_DESCRIPTOR = "WintecLogTk2".toLowerCase(); // or WintecLogTK2
 
     public String getExtension() {
         return ".tk2";
@@ -47,7 +47,9 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
 
     protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
         buffer.position(0);
-        String formatDescriptor = extractFormatDescriptor(buffer);
+        byte[] bytes = new byte[16];
+        buffer.get(bytes, 0, 16);
+        String formatDescriptor = new String(bytes, 0, 12, DEFAULT_ENCODING).toLowerCase();
         return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 
@@ -77,22 +79,10 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
          */
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.position(0);
-        String formatDescriptor = extractFormatDescriptor(buffer);
-        /*float logVersion*/ buffer.getFloat();
-        /*float swVersion*/ buffer.getFloat();
-        /*float hwVersion*/ buffer.getFloat();
-
-        buffer.position(40);
-        buffer.get(new byte[20]);
-
         buffer.position(140);
         // .tk2 has no TrackInfo Structure, set position to end of file
         // readPositions processes this correctly
-        long startTrackInfoStruct = buffer.capacity();
-        if (!formatDescriptor.equals(FORMAT_DESCRIPTOR))
-            return null;
-
-        return readPositions(buffer, 1024, startTrackInfoStruct);
+        long trackInfoAddress = buffer.capacity();
+        return readPositions(buffer, 1024, trackInfoAddress);
     }
 }

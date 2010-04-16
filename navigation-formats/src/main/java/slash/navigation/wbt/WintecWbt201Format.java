@@ -93,7 +93,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             headerBuffer.put(header);
 
             if (checkFormatDescriptor(headerBuffer)) {
-                // read whole file in ByteBuffer. Max. size ca. 2 MB
+                // read whole file in ByteBuffer with a size limit of about 2 MB
                 ByteBuffer sourceData = ByteBuffer.allocate(header.length + source.available());
                 int available = source.available();
                 byte[] data = new byte[available];
@@ -108,12 +108,6 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             }
         }
         return result;
-    }
-
-    protected String extractFormatDescriptor(ByteBuffer buffer) throws UnsupportedEncodingException {
-        byte[] bytes = new byte[16];
-        buffer.get(bytes, 0, 16);
-        return new String(bytes, 0, 15, DEFAULT_ENCODING);
     }
 
     List<Wgs84Route> readPositions(ByteBuffer source, int startDataAddress, long trackInfoAddress) {
