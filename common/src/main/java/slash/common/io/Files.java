@@ -194,7 +194,8 @@ public class Files {
         }
 
         name = setExtension(name, extension);
-        String path = file.getParentFile().getPath();
+        File parentFile = file.getParentFile();
+        String path = parentFile != null ? parentFile.getPath() : ".";
         return new File(path, name).getAbsolutePath();
     }
 
