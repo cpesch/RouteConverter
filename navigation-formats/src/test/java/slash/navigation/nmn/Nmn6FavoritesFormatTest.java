@@ -20,8 +20,8 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.Wgs84Position;
 
 public class Nmn6FavoritesFormatTest extends NavigationTestCase {
     Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();

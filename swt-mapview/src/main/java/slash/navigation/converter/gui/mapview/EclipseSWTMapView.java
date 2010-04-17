@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.mapview;
 
 import chrriis.dj.nativeswing.swtimpl.components.*;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.util.*;
 import slash.common.io.Platform;
 import slash.common.io.Externalization;

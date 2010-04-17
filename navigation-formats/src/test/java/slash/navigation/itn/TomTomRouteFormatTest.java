@@ -20,7 +20,7 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 
 import java.io.IOException;
 

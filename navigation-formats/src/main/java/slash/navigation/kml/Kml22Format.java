@@ -24,7 +24,7 @@ import slash.common.hex.HexDecoder;
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.bindingatom.Link;
 import slash.navigation.util.Bearing;

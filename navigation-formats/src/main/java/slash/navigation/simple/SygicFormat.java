@@ -19,9 +19,9 @@
 */
 package slash.navigation.simple;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.*;
 
 import java.util.List;
 import java.util.regex.Matcher;

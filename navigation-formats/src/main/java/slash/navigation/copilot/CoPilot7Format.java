@@ -20,8 +20,8 @@
 
 package slash.navigation.copilot;
 
-import slash.navigation.Wgs84Position;
-import slash.navigation.Wgs84Route;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 

@@ -22,8 +22,8 @@ package slash.navigation.gpx;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 import slash.navigation.util.Conversion;

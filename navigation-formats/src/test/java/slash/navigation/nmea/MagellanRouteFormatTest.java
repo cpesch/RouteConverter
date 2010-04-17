@@ -20,8 +20,8 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.NavigationTestCase;
 
 import java.io.*;
 import java.util.List;

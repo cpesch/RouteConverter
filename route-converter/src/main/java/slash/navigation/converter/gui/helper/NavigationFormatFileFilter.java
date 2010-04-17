@@ -20,15 +20,14 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.NavigationFormat;
+import slash.navigation.base.NavigationFormat;
 import slash.common.io.Files;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
 /**
- * Filters files by the extension of a given {@link BaseNavigationFormat}.
+ * Filters files by the extension of a given {@link slash.navigation.base.BaseNavigationFormat}.
  *
  * @author Christian Pesch
  */

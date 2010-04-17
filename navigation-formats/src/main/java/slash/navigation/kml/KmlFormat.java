@@ -23,10 +23,10 @@ package slash.navigation.kml;
 import slash.common.hex.HexDecoder;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseRoute;
-import slash.navigation.NavigationFileParser;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 
 import javax.xml.bind.JAXBException;

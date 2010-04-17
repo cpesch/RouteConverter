@@ -21,8 +21,8 @@
 package slash.navigation.itn;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;

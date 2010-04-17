@@ -20,8 +20,8 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
 import slash.common.io.CompactCalendar;

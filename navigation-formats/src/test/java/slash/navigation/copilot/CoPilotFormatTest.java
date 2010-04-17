@@ -20,8 +20,8 @@
 
 package slash.navigation.copilot;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.Wgs84Position;
 
 import java.util.HashMap;
 import java.util.Map;

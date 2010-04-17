@@ -20,15 +20,15 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.BaseRoute;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 
 import javax.swing.*;
 
 /**
- * Acts as a {@link ComboBoxModel} for the characteristics of a {@link BaseRoute}.
+ * Acts as a {@link ComboBoxModel} for the characteristics of a {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */

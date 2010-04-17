@@ -20,10 +20,10 @@
 
 package slash.navigation.mm;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.GkPosition;
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.SimpleFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.GkPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 

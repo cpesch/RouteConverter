@@ -20,12 +20,9 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TourFormatTest extends NavigationTestCase {

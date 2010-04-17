@@ -20,8 +20,8 @@
 
 package slash.navigation.ovl;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.Wgs84Position;
 
 public class OvlFormatTest extends NavigationTestCase {
     OvlFormat format = new OvlFormat();

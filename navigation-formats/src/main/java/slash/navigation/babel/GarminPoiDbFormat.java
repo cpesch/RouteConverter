@@ -20,9 +20,9 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.RouteCharacteristics;
 import slash.common.io.CompactCalendar;
 
 import java.io.IOException;

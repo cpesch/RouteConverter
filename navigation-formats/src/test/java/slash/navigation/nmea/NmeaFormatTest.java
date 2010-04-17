@@ -20,9 +20,9 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.NavigationTestCase;
-import slash.navigation.SimpleRoute;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.SimpleRoute;
 import slash.navigation.util.Conversion;
 import slash.common.io.CompactCalendar;
 

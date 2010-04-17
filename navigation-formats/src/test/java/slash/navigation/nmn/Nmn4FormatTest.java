@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 
 public class Nmn4FormatTest extends NavigationTestCase {
     Nmn4Format format = new Nmn4Format();

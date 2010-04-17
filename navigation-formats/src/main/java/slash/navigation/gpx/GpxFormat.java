@@ -20,11 +20,11 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.XmlNavigationFormat;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.common.io.Transfer;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.MultipleRoutesFormat;
 
 import java.util.List;
 import java.util.prefs.Preferences;

@@ -20,8 +20,8 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -20,8 +20,8 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxRoute;
 
 import java.io.IOException;

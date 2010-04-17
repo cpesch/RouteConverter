@@ -22,9 +22,9 @@ package slash.navigation.converter.gui.mapview;
 
 import slash.common.io.Transfer;
 import slash.common.io.CompactCalendar;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.gui.Application;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;

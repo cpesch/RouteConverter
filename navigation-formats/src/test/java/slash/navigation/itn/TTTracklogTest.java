@@ -20,7 +20,7 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 
 public class TTTracklogTest extends NavigationTestCase {
 

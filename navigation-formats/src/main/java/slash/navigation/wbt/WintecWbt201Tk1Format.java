@@ -20,7 +20,7 @@
 
 package slash.navigation.wbt;
 
-import slash.navigation.Wgs84Route;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

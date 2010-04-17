@@ -22,10 +22,10 @@ package slash.navigation.util;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseRoute;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.itn.TomTomPosition;

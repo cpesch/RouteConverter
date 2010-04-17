@@ -20,7 +20,7 @@
 
 package slash.navigation.tcx;
 
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gpx.GpxFormat;

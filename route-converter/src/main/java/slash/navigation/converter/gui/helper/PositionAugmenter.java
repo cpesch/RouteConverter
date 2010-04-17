@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.helper;
 
 import slash.common.io.ContinousRange;
 import slash.common.io.Transfer;
-import slash.navigation.BaseNavigationPosition;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;

@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.*;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;

@@ -20,12 +20,11 @@
 
 package slash.navigation.viamichelin;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.Wgs84Position;
-import slash.navigation.XmlNavigationFormat;
+import slash.navigation.base.*;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;

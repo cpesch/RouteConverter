@@ -21,8 +21,8 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;

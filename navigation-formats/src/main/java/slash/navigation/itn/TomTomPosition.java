@@ -20,8 +20,8 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.gpx.GpxPosition;
 import slash.common.io.CompactCalendar;

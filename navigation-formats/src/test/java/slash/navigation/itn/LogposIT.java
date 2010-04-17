@@ -20,8 +20,8 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.RouteCharacteristics;
 
 import java.io.IOException;
 

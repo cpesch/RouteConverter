@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.navigation.BaseNavigationPosition;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;

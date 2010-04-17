@@ -20,7 +20,7 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 import slash.navigation.util.RouteComments;
 import slash.common.io.Transfer;
 

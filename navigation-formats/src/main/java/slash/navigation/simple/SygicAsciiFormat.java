@@ -19,7 +19,7 @@
 */
 package slash.navigation.simple;
 
-import slash.navigation.*;
+import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
 

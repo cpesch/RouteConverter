@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.MultipleRoutesFormat;
+import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.gpx.GpxRoute;
 
 import java.util.prefs.Preferences;

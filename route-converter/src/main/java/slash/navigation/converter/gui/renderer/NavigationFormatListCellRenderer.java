@@ -20,14 +20,13 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.NavigationFormat;
+import slash.navigation.base.NavigationFormat;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link BaseNavigationFormat} labels of the format combo box.
+ * Renders the {@link slash.navigation.base.BaseNavigationFormat} labels of the format combo box.
  *
  * @author Christian Pesch
  */

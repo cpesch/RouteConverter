@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.*;
+import slash.navigation.base.*;
 
 import java.util.List;
 import java.util.regex.Pattern;

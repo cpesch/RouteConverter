@@ -21,10 +21,10 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
-import slash.navigation.NavigationFileParser;
-import slash.navigation.ReadWriteBase;
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.RteType;

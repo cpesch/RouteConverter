@@ -20,8 +20,8 @@
 
 package slash.navigation.ovl;
 
-import slash.navigation.NavigationFileParser;
-import slash.navigation.ReadWriteBase;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.ReadWriteBase;
 
 import java.io.IOException;
 

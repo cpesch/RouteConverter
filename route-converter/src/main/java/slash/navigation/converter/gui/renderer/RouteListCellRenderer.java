@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.BaseRoute;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.util.RouteComments;
 import slash.navigation.converter.gui.RouteConverter;
 

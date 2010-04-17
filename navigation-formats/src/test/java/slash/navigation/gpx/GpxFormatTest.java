@@ -21,7 +21,7 @@
 package slash.navigation.gpx;
 
 import slash.common.io.Transfer;
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.ObjectFactory;

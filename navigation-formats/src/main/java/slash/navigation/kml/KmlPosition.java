@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.Wgs84Position;
 import slash.common.io.CompactCalendar;
 
 /**

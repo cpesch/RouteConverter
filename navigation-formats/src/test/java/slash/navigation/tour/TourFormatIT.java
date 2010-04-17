@@ -20,7 +20,7 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 
 import java.io.FileInputStream;
 import java.io.IOException;

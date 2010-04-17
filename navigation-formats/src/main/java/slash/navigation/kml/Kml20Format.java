@@ -23,7 +23,7 @@ package slash.navigation.kml;
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding20.*;
 import slash.navigation.util.RouteComments;

@@ -24,15 +24,14 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseRoute;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
 import slash.navigation.converter.gui.services.CrossingWays;
 import slash.navigation.converter.gui.services.GPSies;
-import slash.navigation.converter.gui.services.OpenStreetMap;
 import slash.navigation.converter.gui.services.RouteService;
 import slash.navigation.gui.SimpleDialog;
 

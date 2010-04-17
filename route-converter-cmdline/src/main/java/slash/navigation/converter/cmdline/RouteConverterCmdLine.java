@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.cmdline;
 
-import slash.navigation.*;
 import slash.common.io.*;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;

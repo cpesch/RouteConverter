@@ -23,7 +23,7 @@ package slash.navigation.klicktel;
 import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
-import slash.navigation.XmlNavigationFormat;
+import slash.navigation.base.XmlNavigationFormat;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;

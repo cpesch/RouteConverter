@@ -20,9 +20,9 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.IniFileFormat;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.RouteCharacteristics;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 

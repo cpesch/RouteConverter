@@ -22,7 +22,7 @@ package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.*;
+import slash.navigation.base.*;
 
 import java.io.PrintWriter;
 import java.util.List;

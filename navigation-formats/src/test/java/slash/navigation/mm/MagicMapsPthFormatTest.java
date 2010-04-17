@@ -20,8 +20,8 @@
 
 package slash.navigation.mm;
 
-import slash.navigation.GkPosition;
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.GkPosition;
+import slash.navigation.base.NavigationTestCase;
 
 public class MagicMapsPthFormatTest extends NavigationTestCase {
     MagicMapsPthFormat format = new MagicMapsPthFormat();

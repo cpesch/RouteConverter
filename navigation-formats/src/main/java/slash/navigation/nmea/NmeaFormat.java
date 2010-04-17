@@ -20,8 +20,8 @@
 
 package slash.navigation.nmea;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
 import slash.common.io.CompactCalendar;
 import slash.navigation.util.Conversion;
 import slash.common.io.Transfer;

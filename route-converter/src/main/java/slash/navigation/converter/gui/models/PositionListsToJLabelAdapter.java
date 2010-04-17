@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.BaseRoute;
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;

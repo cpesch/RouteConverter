@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.BaseRoute;
+import slash.navigation.base.BaseRoute;
 
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableCellRenderer;

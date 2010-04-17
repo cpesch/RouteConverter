@@ -20,8 +20,8 @@
 
 package slash.navigation.mm;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.Wgs84Position;
 
 public class MagicMaps2GoFormatTest extends NavigationTestCase {
     MagicMaps2GoFormat format = new MagicMaps2GoFormat();

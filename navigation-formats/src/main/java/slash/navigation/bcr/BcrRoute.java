@@ -20,7 +20,7 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.*;
+import slash.navigation.base.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.GoPalPosition;

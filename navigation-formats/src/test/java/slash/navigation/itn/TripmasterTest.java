@@ -21,7 +21,7 @@
 package slash.navigation.itn;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 import slash.navigation.gpx.GpxPosition;
 
 import java.text.DateFormat;

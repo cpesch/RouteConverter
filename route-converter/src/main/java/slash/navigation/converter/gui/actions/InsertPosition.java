@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.BaseNavigationPosition;
 import slash.navigation.util.Positions;
 import slash.common.io.CompactCalendar;
 

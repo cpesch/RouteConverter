@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 
 public class TavellogTest extends NavigationTestCase {
     private Kml20Format format = new Kml20Format();

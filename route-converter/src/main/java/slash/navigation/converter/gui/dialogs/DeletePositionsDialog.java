@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.*;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.NumberDocument;
@@ -42,7 +41,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
+ * Dialog for selecting and deleting {@link slash.navigation.base.BaseNavigationPosition}s from the current {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */

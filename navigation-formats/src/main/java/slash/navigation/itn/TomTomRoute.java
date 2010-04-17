@@ -19,7 +19,7 @@
 */
 package slash.navigation.itn;
 
-import slash.navigation.*;
+import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;

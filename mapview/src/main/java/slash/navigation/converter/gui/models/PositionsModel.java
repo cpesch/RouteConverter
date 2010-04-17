@@ -20,11 +20,14 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.common.io.ContinousRange;
 import slash.common.io.Range;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormats;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;

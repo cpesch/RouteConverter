@@ -20,8 +20,8 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.*;
 import slash.navigation.ovl.OvlRoute;
 
 import java.util.ArrayList;

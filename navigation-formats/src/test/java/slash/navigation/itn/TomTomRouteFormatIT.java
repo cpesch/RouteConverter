@@ -21,7 +21,7 @@
 package slash.navigation.itn;
 
 import slash.common.io.Files;
-import slash.navigation.*;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;

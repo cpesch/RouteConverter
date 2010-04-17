@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.*;
+import slash.navigation.base.*;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
 
 import javax.swing.*;
@@ -174,7 +174,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     public void setSelectedItem(Object anItem) {
         if ((getSelectedItem() != null && !getSelectedItem().equals(anItem)) ||
                 getSelectedItem() == null && anItem != null) {
-            BaseRoute<BaseNavigationPosition,BaseNavigationFormat> route = (BaseRoute<BaseNavigationPosition,BaseNavigationFormat>) anItem;
+            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = (BaseRoute<BaseNavigationPosition,BaseNavigationFormat>) anItem;
             getPositionsModel().setRoute(route);
             getCharacteristicsModel().setRoute(route);
             fireContentsChanged(this, -1, -1);

@@ -20,7 +20,7 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.IniFileSection;
+import slash.navigation.base.IniFileSection;
 
 import java.util.HashSet;
 

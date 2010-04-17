@@ -20,9 +20,9 @@
 
 package slash.navigation.mm;
 
-import slash.navigation.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;

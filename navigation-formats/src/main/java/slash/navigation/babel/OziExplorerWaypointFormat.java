@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.RouteCharacteristics;
+import slash.navigation.base.RouteCharacteristics;
 
 /**
  * Writes OziExplorer Waypoint (.wpt) files.

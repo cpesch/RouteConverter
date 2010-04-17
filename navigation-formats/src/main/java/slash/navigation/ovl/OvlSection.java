@@ -20,8 +20,8 @@
 
 package slash.navigation.ovl;
 
-import slash.navigation.IniFileSection;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.IniFileSection;
+import slash.navigation.base.Wgs84Position;
 import slash.common.io.Transfer;
 
 import java.util.HashSet;

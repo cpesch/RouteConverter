@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.services;
 
 import slash.common.io.Files;
 import slash.common.io.InputOutput;
-import slash.navigation.NavigationFileParser;
+import slash.navigation.base.NavigationFileParser;
 import slash.navigation.gpx.Gpx10Format;
 
 import java.io.ByteArrayOutputStream;

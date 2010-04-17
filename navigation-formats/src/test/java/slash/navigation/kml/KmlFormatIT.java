@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationTestCase;
 import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;

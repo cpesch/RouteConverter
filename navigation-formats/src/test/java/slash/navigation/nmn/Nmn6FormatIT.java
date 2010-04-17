@@ -20,8 +20,8 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.NavigationFileParser;
-import slash.navigation.NavigationTestCase;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationTestCase;
 
 import java.io.File;
 import java.io.IOException;

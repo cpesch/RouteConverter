@@ -20,9 +20,9 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.RouteCharacteristics;
-import slash.navigation.TextNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.TextNavigationFormat;
 import slash.navigation.util.RouteComments;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;

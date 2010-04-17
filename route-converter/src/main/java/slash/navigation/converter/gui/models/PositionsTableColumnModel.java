@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.BaseRoute;
 import slash.navigation.converter.gui.renderer.PositionsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.PositionsTableCellRenderer;
 
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
+ * Acts as a {@link TableColumnModel} for the positions of a {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */

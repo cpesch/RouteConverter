@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.NavigationFormat;
+import slash.navigation.base.NavigationFormat;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.AbstractDocumentListener;

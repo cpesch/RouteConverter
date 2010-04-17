@@ -20,10 +20,10 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.NavigationFileParser;
-import slash.navigation.ReadWriteBase;
-import slash.navigation.SimpleRoute;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 

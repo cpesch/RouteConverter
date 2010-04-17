@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.NavigationFileParser;
+import slash.navigation.base.NavigationFileParser;
 import slash.navigation.babel.BabelException;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;

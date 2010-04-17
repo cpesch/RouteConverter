@@ -20,8 +20,8 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.Wgs84Position;
 import slash.common.io.CompactCalendar;
 
 import java.text.DateFormat;

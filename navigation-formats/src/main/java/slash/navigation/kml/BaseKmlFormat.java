@@ -20,8 +20,8 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.MultipleRoutesFormat;
-import slash.navigation.XmlNavigationFormat;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.XmlNavigationFormat;
 
 /**
  * The base of all compressed and uncompressed Google Earth formats.

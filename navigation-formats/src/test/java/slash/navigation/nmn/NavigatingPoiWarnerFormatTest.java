@@ -19,8 +19,8 @@
 */
 package slash.navigation.nmn;
 
-import slash.navigation.NavigationTestCase;
-import slash.navigation.Wgs84Position;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.Wgs84Position;
 
 public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
     NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();

@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.BaseNavigationFormat;
-import slash.navigation.BaseNavigationPosition;
-import slash.navigation.BaseRoute;
-import slash.navigation.NavigationFormat;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Constants;
