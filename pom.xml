@@ -68,7 +68,35 @@
                     <encoding>Cp1252</encoding>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <encoding>Cp1252</encoding>
+                    <header>RouteConverter API</header>
+                    <bottom>Created by Christian Pesch</bottom>
+                    <links>
+                        <link href="http://java.sun.com/javase/6/docs/api/"/>
+                        <link href="http://jakarta.apache.org/commons/logging/apidocs/"/>
+                    </links>
+                    <excludePackageNames>slash.navigation.catalog*:slash.navigation.converter*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.rest*:*binding*</excludePackageNames>
+                    <groups>
+                        <group>
+                            <title>Base</title>
+                            <packages>slash.navigation.base</packages>
+                        </group>
+                        <group>
+                            <title>Formats</title>
+                            <packages>slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.viamichelin:slash.navigation.wbt</packages>
+                        </group>
+                        <group>
+                            <title>Utilities</title>
+                            <packages>slash.common.io:slash.common.hex:slash.common.log:slash.common.util:slash.navigation.jaxb:slash.navigation.util</packages>
+                        </group>
+                    </groups>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.vineetmanohar</groupId>
                 <artifactId>maven-twitter-plugin</artifactId>
@@ -106,6 +134,7 @@
         <module>RouteConverterBase</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinux</module>
+        <module>RouteConverterLinux64</module>
         <module>RouteConverterMac</module>
         <module>RouteConverterWindows</module>
         <module>RouteConverterWebstart</module>
