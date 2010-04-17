@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.ContinousRange;
 import slash.common.io.Files;
 import slash.common.io.Range;
+import slash.common.io.RangeOperation;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
 import slash.navigation.converter.gui.RouteConverter;
@@ -845,7 +846,7 @@ public abstract class ConvertPanel {
     public PositionsSelectionModel getPositionsSelectionModel() {
         return new PositionsSelectionModel() {
             public void setSelectedPositions(int[] selectedPositions) {
-                new ContinousRange(selectedPositions, new ContinousRange.RangeOperation() {
+                new ContinousRange(selectedPositions, new RangeOperation() {
                     public void performOnIndex(int index) {
                         tablePositions.getSelectionModel().addSelectionInterval(index, index);
                     }

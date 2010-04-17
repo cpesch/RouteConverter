@@ -23,11 +23,13 @@ package slash.common.io;
 import java.util.List;
 
 /**
- * Allows to perform customizable operations on indexed elements
+ * Allows to perform customizable {@link RangeOperation}s on indexed elements
  * with another customizable operation after a continuous range.
  * Use to reduce the number of notifications that Swing UI Models fire.
  *
  * @author Christian Pesch
+ *
+ * @see RangeOperation
  */
 
 public class ContinousRange {
@@ -58,10 +60,5 @@ public class ContinousRange {
             int to = Math.max(firstValue, lastValue);
             operation.performOnRange(from, to);
         }
-    }
-
-    public interface RangeOperation {
-        void performOnIndex(int index);
-        void performOnRange(int firstIndex, int lastIndex);
     }
 }

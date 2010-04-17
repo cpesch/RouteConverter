@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.common.io.ContinousRange;
+import slash.common.io.RangeOperation;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
@@ -125,7 +126,7 @@ public class PositionAugmenter {
                     final Exception[] lastException = new Exception[1];
                     lastException[0] = null;
 
-                    new ContinousRange(rows, new ContinousRange.RangeOperation() {
+                    new ContinousRange(rows, new RangeOperation() {
                         public void performOnIndex(int index) {
                             BaseNavigationPosition position = positionsModel.getPosition(index);
                             if (predicate.shouldOverwrite(position)) {

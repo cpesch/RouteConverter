@@ -20,10 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.common.io.ContinousRange;
-import slash.common.io.Range;
+import slash.common.io.*;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -267,7 +264,7 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public void remove(int[] rows) {
-        new ContinousRange(rows, new ContinousRange.RangeOperation() {
+        new ContinousRange(rows, new RangeOperation() {
             public void performOnIndex(int index) {
                 getRoute().remove(index);
             }
