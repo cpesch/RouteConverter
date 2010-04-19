@@ -563,8 +563,8 @@ public abstract class ConvertPanel {
         int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(route, format, checkBoxDuplicateFirstPosition.isSelected());
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"), Files.shortenPath(getSourceFileName()),
-                            route.getPositionCount(), format.getName(),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
+                            Files.shortenPath(file.getPath()), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     r.getFrame().getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
             switch (confirm) {
@@ -623,8 +623,7 @@ public abstract class ConvertPanel {
         NavigationFormat format = getFormat();
 
         getChooser().setDialogTitle(RouteConverter.getBundle().getString("save-target"));
-        getChooser().resetChoosableFileFilters();
-        getChooser().setFileFilter(new NavigationFormatFileFilter(format));
+        setWriteFormatFileFilters(getChooser(), format.getClass().getName());
         getChooser().setSelectedFile(createSelectedTarget());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
         getChooser().setMultiSelectionEnabled(false);
@@ -636,7 +635,11 @@ public abstract class ConvertPanel {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        saveFile(selected, format);
+        FileFilter fileFilter = chooser.getFileFilter();
+        NavigationFormat selectedFormat = format;
+        if (fileFilter instanceof NavigationFormatFileFilter)
+            selectedFormat = ((NavigationFormatFileFilter) fileFilter).getFormat();
+        saveFile(selected, selectedFormat);
     }
 
     private void saveToWeb() {
@@ -687,9 +690,11 @@ public abstract class ConvertPanel {
         if (formatAndRoutesModel.isModified()) {
             int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
                     RouteConverter.getBundle().getString("confirm-discard"),
-                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_OPTION);
-            if (confirm != JOptionPane.YES_OPTION)
+                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
+            if (confirm == JOptionPane.CANCEL_OPTION)
                 return false;
+            if (confirm == JOptionPane.YES_OPTION)
+                save();
         }
         return true;
     }
@@ -811,17 +816,21 @@ public abstract class ConvertPanel {
         return chooser;
     }
 
-    private void setReadFormatFileFilters(JFileChooser chooser) {
+    private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat> formats, String selectedFormat) {
         chooser.resetChoosableFileFilters();
-        String preferredFormat = RouteConverter.getInstance().getSourceFormatPreference();
         FileFilter fileFilter = chooser.getFileFilter();
-        for (NavigationFormat format : NavigationFormats.getReadFormatsSortedByName()) {
+        for (NavigationFormat format : formats) {
             NavigationFormatFileFilter navigationFormatFileFilter = new NavigationFormatFileFilter(format);
-            if (format.getClass().getName().equals(preferredFormat))
+            if (format.getClass().getName().equals(selectedFormat))
                 fileFilter = navigationFormatFileFilter;
             chooser.addChoosableFileFilter(navigationFormatFileFilter);
         }
         chooser.setFileFilter(fileFilter);
+    }
+
+    private void setReadFormatFileFilters(JFileChooser chooser) {
+        setFormatFileFilters(chooser, NavigationFormats.getReadFormatsSortedByName(),
+                RouteConverter.getInstance().getSourceFormatPreference());
     }
 
     private void setReadFormatFileFilterPreference(JFileChooser chooser) {
@@ -831,6 +840,10 @@ public abstract class ConvertPanel {
             preference = ((NavigationFormatFileFilter) fileFilter).getFormat().getClass().getName();
         RouteConverter.getInstance().setSourceFormatPreference(preference);
 
+    }
+
+    private void setWriteFormatFileFilters(JFileChooser chooser, String selectedFormat) {
+        setFormatFileFilters(chooser, NavigationFormats.getWriteFormatsSortedByName(), selectedFormat);
     }
 
     private NavigationFormat getFormat() {
