@@ -20,12 +20,14 @@
 
 package slash.navigation.base;
 
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFileParser;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTomRouteFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NavigationFileParserIT extends NavigationTestCase {
@@ -69,6 +71,37 @@ public class NavigationFileParserIT extends NavigationTestCase {
         readRouteCharacteristics(testFileName, RouteCharacteristics.Track, trackCount, positionCount);
     }
 
+    public void testNavigationFileParserListener() throws IOException {
+        final NavigationFormat[] found = new NavigationFormat[1];
+        found[0] = null;
+        NavigationFileParserListener listener = new NavigationFileParserListener() {
+            public void reading(NavigationFormat<BaseRoute> format) {
+                found[0] = format;
+            }
+        };
+        try {
+            parser.addNavigationFileParserListener(listener);
+            read(TEST_PATH + "from.itn");
+            assertTrue(found[0] instanceof TomTomRouteFormat);
+            found[0] = null;
+            parser.removeNavigationFileParserListener(listener);
+            read(TEST_PATH + "from.itn");
+            assertNull(found[0]);
+        }
+        finally {
+            parser.removeNavigationFileParserListener(listener);
+        }
+    }
+
+    public void testReadWithFormatList() throws IOException {
+        NavigationFileParser parser = new NavigationFileParser();
+        List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
+        assertFalse(parser.read(new File(TEST_PATH + "from.itn"), formats));
+        formats.add(new TomTom8RouteFormat());
+        assertFalse(parser.read(new File(TEST_PATH + "from.itn"), formats));
+        formats.add(new TomTom5RouteFormat());
+        assertTrue(parser.read(new File(TEST_PATH + "from.itn"), formats));
+    }
 
     public void testIsValidMicrosoftAutoRoute() throws IOException {
         read(TEST_PATH + "from.axe");

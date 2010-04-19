@@ -41,7 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 /**
- * Parses files with navigation information via BaseNavigationFormat plugins.
+ * Parses files with navigation information via NavigationFormat classes.
  *
  * @author Christian Pesch
  */
@@ -74,25 +74,13 @@ public class NavigationFileParser {
     }
 
 
-    public List<BaseRoute> getRouteCharacteristics(RouteCharacteristics characteristics) {
+    List<BaseRoute> getRouteCharacteristics(RouteCharacteristics characteristics) {
         List<BaseRoute> result = new ArrayList<BaseRoute>();
         for (BaseRoute route : getAllRoutes()) {
             if (route.getCharacteristics().equals(characteristics))
                 result.add(route);
         }
         return result.size() > 0 ? result : null;
-    }
-
-    public List<BaseRoute> getWaypoints() {
-        return getRouteCharacteristics(RouteCharacteristics.Waypoints);
-    }
-
-    public List<BaseRoute> getRoutes() {
-        return getRouteCharacteristics(RouteCharacteristics.Route);
-    }
-
-    public List<BaseRoute> getTracks() {
-        return getRouteCharacteristics(RouteCharacteristics.Track);
     }
 
     private List<Integer> getPositionCounts(List<BaseRoute> routes) {
@@ -108,12 +96,13 @@ public class NavigationFileParser {
         }
     }
 
-    private FormatAndRoutes internalRead(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
+    private FormatAndRoutes internalRead(InputStream source, int readBufferSize, Calendar startDate,
+                                         List<NavigationFormat> formats) throws IOException {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
             buffer.mark(readBufferSize + 1);
             CompactCalendar compactStartDate = startDate != null ? CompactCalendar.fromCalendar(startDate) : null;
-            for (NavigationFormat<BaseRoute> format : NavigationFormats.getReadFormats()) {
+            for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
 
                 List<BaseRoute> routes = format.read(buffer, compactStartDate);
@@ -146,18 +135,22 @@ public class NavigationFileParser {
         }
     }
 
-    public boolean read(File source) throws IOException {
-        log.info("Reading '" + source.getAbsolutePath() + "'");
+    public boolean read(File source, List<NavigationFormat> formats) throws IOException {
+        log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
         try {
-            this.formatAndRoutes = internalRead(fis, (int) source.length(), startDate);
+            this.formatAndRoutes = internalRead(fis, (int) source.length(), startDate, formats);
             return formatAndRoutes != null;
         }
         finally {
             fis.close();
         }
+    }
+
+    public boolean read(File source) throws IOException {
+        return read(source, NavigationFormats.getReadFormats());
     }
 
     private int getSize(URL url) throws IOException {
@@ -184,7 +177,23 @@ public class NavigationFileParser {
         }
     }
 
-    public boolean read(URL url) throws IOException {
+    public boolean read(InputStream source, int readBufferSize, Calendar startDate,
+                        List<NavigationFormat> formats) throws IOException {
+        log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
+        try {
+            this.formatAndRoutes = internalRead(source, readBufferSize, startDate, formats);
+            return formatAndRoutes != null;
+        }
+        finally {
+            source.close();
+        }
+    }
+
+    public boolean read(InputStream source) throws IOException {
+        return read(source, READ_BUFFER_SIZE, null, NavigationFormats.getReadFormats());
+    }
+
+    public boolean read(URL url, List<NavigationFormat> formats) throws IOException {
         InputStream in;
         int readBufferSize;
         Calendar startDate;
@@ -199,22 +208,11 @@ public class NavigationFileParser {
             startDate = getStartDate(url);
         }
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-        return read(in, readBufferSize, startDate);
+        return read(in, readBufferSize, startDate, formats);
     }
 
-    public boolean read(InputStream source, int readBufferSize, Calendar startDate) throws IOException {
-        log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes");
-        try {
-            this.formatAndRoutes = internalRead(source, readBufferSize, startDate);
-            return formatAndRoutes != null;
-        }
-        finally {
-            source.close();
-        }
-    }
-
-    public boolean read(InputStream source) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null);
+    public boolean read(URL url) throws IOException {
+        return read(url, NavigationFormats.getReadFormats());
     }
 
 

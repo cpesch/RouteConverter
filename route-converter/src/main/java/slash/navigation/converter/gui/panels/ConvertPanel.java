@@ -368,11 +368,16 @@ public abstract class ConvertPanel {
         if (selected == null || selected.length == 0)
             return;
 
-        setReadFormatFileFilterPreference(getChooser());
-        openPositionList(Files.toUrls(selected));
+        NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
+        setReadFormatFileFilterPreference(selectedFormat);
+        openPositionList(Files.toUrls(selected), selectedFormat);
     }
 
     public void openPositionList(final List<URL> urls) {
+        openPositionList(urls, null);
+    }
+
+    public void openPositionList(final List<URL> urls, final NavigationFormat preferredFormat) {
         final RouteConverter r = RouteConverter.getInstance();
 
         final URL url = urls.get(0);
@@ -402,7 +407,13 @@ public abstract class ConvertPanel {
                             });
                         }
                     });
-                    if (parser.read(url)) {
+                    List<NavigationFormat> formats = new ArrayList<NavigationFormat>(NavigationFormats.getReadFormats());
+                    if(preferredFormat != null) {
+                        formats.remove(preferredFormat);
+                        formats.add(0, preferredFormat);
+                    }
+
+                    if (parser.read(url, formats)) {
                         log.info("Opened: " + path);
 
                         SwingUtilities.invokeLater(new Runnable() {
@@ -536,7 +547,8 @@ public abstract class ConvertPanel {
         if (selected == null || selected.length == 0)
             return null;
 
-        setReadFormatFileFilterPreference(getChooser());
+        NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
+        setReadFormatFileFilterPreference(selectedFormat);
         return selected;
     }
 
@@ -635,11 +647,17 @@ public abstract class ConvertPanel {
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        FileFilter fileFilter = chooser.getFileFilter();
-        NavigationFormat selectedFormat = format;
-        if (fileFilter instanceof NavigationFormatFileFilter)
-            selectedFormat = ((NavigationFormatFileFilter) fileFilter).getFormat();
+        NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
+        if(selectedFormat == null)
+            selectedFormat = format;
         saveFile(selected, selectedFormat);
+    }
+
+    private NavigationFormat getSelectedFormat(FileFilter fileFilter) {
+        NavigationFormat result = null;
+        if (fileFilter instanceof NavigationFormatFileFilter)
+            result = ((NavigationFormatFileFilter) fileFilter).getFormat();
+        return result;
     }
 
     private void saveToWeb() {
@@ -833,13 +851,9 @@ public abstract class ConvertPanel {
                 RouteConverter.getInstance().getSourceFormatPreference());
     }
 
-    private void setReadFormatFileFilterPreference(JFileChooser chooser) {
-        FileFilter fileFilter = chooser.getFileFilter();
-        String preference = "";
-        if (fileFilter instanceof NavigationFormatFileFilter)
-            preference = ((NavigationFormatFileFilter) fileFilter).getFormat().getClass().getName();
+    private void setReadFormatFileFilterPreference(NavigationFormat selectedFormat) {
+        String preference = selectedFormat != null ? selectedFormat.getClass().getName() : "";
         RouteConverter.getInstance().setSourceFormatPreference(preference);
-
     }
 
     private void setWriteFormatFileFilters(JFileChooser chooser, String selectedFormat) {
