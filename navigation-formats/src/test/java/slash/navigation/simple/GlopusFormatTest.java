@@ -26,12 +26,15 @@ public class GlopusFormatTest extends NavigationTestCase {
     GlopusFormat format = new GlopusFormat();
 
     public void testIsPosition() {
+        assertTrue(format.isPosition("51.04503,7.05083"));
         assertTrue(format.isPosition("51.0450383,7.0508300,"));
         assertTrue(format.isPosition("51.0450383,7.0508300,100"));
         assertTrue(format.isPosition("51.0450383,7.0508300,100,"));
         assertTrue(format.isPosition("51.0450383,7.0508300,100.0"));
         assertTrue(format.isPosition("51.0450383,7.0508300,Comment"));
 
+        assertFalse(format.isPosition("51.0450,7.0508"));
+        assertFalse(format.isPosition("51.045038,7.050830"));
         assertFalse(format.isPosition("51.0450383,7.0508300"));
         assertFalse(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\""));
         assertFalse(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));

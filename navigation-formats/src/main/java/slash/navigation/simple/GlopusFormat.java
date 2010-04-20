@@ -42,13 +42,20 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ',';
 
     // special position format to avoid detection of GarminPoiDbFormat where longitude and latitude are swapped
-    private static final String POSITION = "-?\\d+\\.\\d{7}";
+    private static final String POSITION5 = "-?\\d+\\.\\d{5}";
+    private static final String POSITION7 = "-?\\d+\\.\\d{7}";
 
-    private static final Pattern LINE_PATTERN = Pattern.
+    private static final Pattern SIMPLE_LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "([^\"]*)" + WHITE_SPACE + 
+                    WHITE_SPACE + "(" + POSITION5 + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION5 + ")" + WHITE_SPACE +
+                    END_OF_LINE);
+
+    private static final Pattern COMMENT_LINE_PATTERN = Pattern.
+            compile(BEGIN_OF_LINE +
+                    WHITE_SPACE + "(" + POSITION7 + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION7 + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "([^\"]*)" + WHITE_SPACE +
                     END_OF_LINE);
 
 
@@ -65,19 +72,32 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isPosition(String line) {
-        Matcher matcher = LINE_PATTERN.matcher(line);
-        return matcher.matches();
+        Matcher commentMatcher = COMMENT_LINE_PATTERN.matcher(line);
+        if(commentMatcher.matches())
+            return true;
+        Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
+        return simpleMatcher.matches();
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
-        Matcher lineMatcher = LINE_PATTERN.matcher(line);
-        if (!lineMatcher.matches())
-            throw new IllegalArgumentException("'" + line + "' does not match");
-        String latitude = lineMatcher.group(1);
-        String longitude = lineMatcher.group(2);
-        String comment = lineMatcher.group(3);
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                null, null, null, Transfer.trim(comment));
+        Matcher commentMatcher = COMMENT_LINE_PATTERN.matcher(line);
+        if (commentMatcher.matches()) {
+            String latitude = commentMatcher.group(1);
+            String longitude = commentMatcher.group(2);
+            String comment = commentMatcher.group(3);
+            return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                    null, null, null, Transfer.trim(comment));
+        }
+
+        Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
+        if (simpleMatcher.matches()) {
+            String latitude = simpleMatcher.group(1);
+            String longitude = simpleMatcher.group(2);
+            return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+                    null, null, null, null);
+        }
+
+        throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
