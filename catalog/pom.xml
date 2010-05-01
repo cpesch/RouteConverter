@@ -7,31 +7,31 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.33-SNAPSHOT</version>
+        <version>1.33</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>navigation-formats</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>rest</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>

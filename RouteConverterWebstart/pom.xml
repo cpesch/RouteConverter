@@ -7,7 +7,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>1.33-SNAPSHOT</version>
+        <version>1.33</version>
     </parent>
 
     <build>
@@ -56,14 +56,14 @@
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>RouteConverterBase</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
         </dependency>
         <!-- mvn package does not need this but mvn release:perform stops claiming there's no artifact
              containing the main class if this is omitted -->
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>route-converter6</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
         </dependency>
  
         <dependency>

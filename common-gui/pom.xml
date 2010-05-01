@@ -7,14 +7,14 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.33-SNAPSHOT</version>
+        <version>1.33</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.33</version>
         </dependency>
     </dependencies>
 </project>
