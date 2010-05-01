@@ -7,49 +7,49 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.33</version>
+        <version>1.34-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>catalog</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>common-gui</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>elevationview</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>geonames</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>googlemaps</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>mapview</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>swt-mapview</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>

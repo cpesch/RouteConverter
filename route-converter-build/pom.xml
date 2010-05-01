@@ -7,7 +7,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>1.33</version>
+        <version>1.34-SNAPSHOT</version>
     </parent>
 
     <pluginRepositories>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>route-converter-license</artifactId>
-            <version>1.33</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -4,7 +4,7 @@
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>
     <packaging>pom</packaging>
-    <version>1.33</version>
+    <version>1.34-SNAPSHOT</version>
     <name>RouteConverter</name>
     <url>http://www.routeconverter.de</url>
 
@@ -38,8 +38,8 @@
     </distributionManagement>
 
     <scm>
-      <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/1.33</connection>
-      <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/1.33</developerConnection>
+      <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</connection>
+      <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</developerConnection>
     </scm>
 
     <build>
@@ -77,8 +77,8 @@
                     <header>RouteConverter API</header>
                     <bottom>Created by Christian Pesch</bottom>
                     <links>
-                        <link href="http://java.sun.com/javase/6/docs/api/" />
-                        <link href="http://jakarta.apache.org/commons/logging/apidocs/" />
+                        <link href="http://java.sun.com/javase/6/docs/api/"/>
+                        <link href="http://jakarta.apache.org/commons/logging/apidocs/"/>
                     </links>
                     <excludePackageNames>slash.navigation.catalog*:slash.navigation.converter*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.rest*:*binding*</excludePackageNames>
                     <groups>
