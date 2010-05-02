@@ -18,39 +18,24 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui;
+package slash.navigation.converter.gui.actions;
 
+import slash.navigation.gui.Application;
+import slash.navigation.gui.FrameAction;
+
+import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.help.HelpSetException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
- * The context of an application.
+ * Open the {@link HelpSet help}.
  *
  * @author Christian Pesch
  */
 
-public class ApplicationContext {
-    private ResourceBundle bundle = null;
-    private HelpBroker broker = null;
-
-    public ResourceBundle getBundle() {
-        return bundle;
-    }
-
-    public void setBundle(ResourceBundle bundle) {
-        this.bundle = bundle;
-    }
-
-    public HelpBroker getBroker() {
-        return broker;
-    }
-
-    public void setBroker(String helpSetUrl) throws HelpSetException {
-        URL hsURL = HelpSet.findHelpSet(null, helpSetUrl);
-        HelpSet helpSet = new HelpSet(null, hsURL);
-        this.broker = helpSet.createHelpBroker();
+public class HelpTopicsAction extends FrameAction {
+    public void run() {
+        HelpBroker broker = Application.getInstance().getContext().getBroker();
+        new CSH.DisplayHelpFromSource(broker).actionPerformed(getEvent());
     }
 }

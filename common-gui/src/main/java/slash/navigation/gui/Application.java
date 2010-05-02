@@ -142,6 +142,9 @@ public abstract class Application {
         if (bundle == null)
             bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
         ctx.setBundle(bundle);
+        String helpSetUrl = bundle.getString("help-set");
+        if (helpSetUrl != null)
+            ctx.setBroker(helpSetUrl);
 
         return application;
     }

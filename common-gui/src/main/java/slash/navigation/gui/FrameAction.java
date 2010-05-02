@@ -35,6 +35,8 @@ import java.awt.event.ActionListener;
  */
 
 public abstract class FrameAction extends AbstractAction implements ActionListener {
+    private static ThreadLocal<ActionEvent> ACTION_EVENT = new ThreadLocal<ActionEvent>();
+
     protected JFrame getFrame() {
         Application application = Application.getInstance();
         if (application instanceof SingleFrameApplication)
@@ -42,7 +44,12 @@ public abstract class FrameAction extends AbstractAction implements ActionListen
         throw new UnsupportedOperationException("FrameAction only works on SingleFrameApplication");
     }
 
+    protected ActionEvent getEvent() {
+        return ACTION_EVENT.get();
+    }
+
     public final void actionPerformed(ActionEvent e) {
+        ACTION_EVENT.set(e);
         Constants.startWaitCursor(getFrame().getRootPane());
         try {
             run();

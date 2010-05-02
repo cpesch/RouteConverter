@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helper;
 import slash.common.io.Transfer;
 import slash.navigation.gui.Application;
 
+import javax.help.CSH;
 import javax.swing.*;
 import java.util.ResourceBundle;
 
@@ -47,6 +48,7 @@ public class JMenuHelper {
         String mnemonic = Transfer.trim(getOptionalString(name + "-menu-mnemonic"));
         if (mnemonic != null && mnemonic.length() > 0)
             menu.setMnemonic(mnemonic.charAt(0));
+        CSH.setHelpIDString(menu, name + "-menu");
         return menu;
     }
 
@@ -63,6 +65,7 @@ public class JMenuHelper {
         String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
         if (keystroke != null)
             item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+        CSH.setHelpIDString(item, name + "-action");
         return item;
     }
 }

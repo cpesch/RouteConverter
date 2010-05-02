@@ -30,8 +30,8 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.converter.gui.actions.HelpTopicsAction;
 import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
-import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.mapview.MapView;
@@ -162,7 +162,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void show() {
-        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, createMenuBar());
+        createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, createMenuBar());
 
         addExitListener(new ExitListener() {
             public boolean canExit(EventObject event) {
@@ -799,6 +799,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         fileMenu.add(JMenuHelper.createItem("exit", new ExitAction()));
 
         JMenu helpMenu = JMenuHelper.createMenu("help");
+        helpMenu.add(JMenuHelper.createItem("help-topics", new HelpTopicsAction()));
         helpMenu.add(JMenuHelper.createItem("search-for-updates", new SearchForUpdatesAction()));
 
         JMenuBar menuBar = new JMenuBar();

@@ -79,7 +79,7 @@ public class Constants {
     }
 
     public static ImageIcon loadIcon(Object object, String name) {
-        URL iconURL = object.getClass().getResource(name);
+        URL iconURL = object.getClass().getClassLoader().getResource(name);
         return new ImageIcon(iconURL);
     }
 
