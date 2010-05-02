@@ -50,7 +50,8 @@ public abstract class SingleFrameApplication extends Application {
         return frame;
     }
 
-    protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton) {
+    protected void createFrame(String frameTitle, String iconName, JPanel contentPane, JButton defaultButton,
+                               JMenuBar menuBar) {
         GraphicsConfiguration gc = null;
         String deviceId = preferences.get(DEVICE_PREFERENCE, null);
         if (deviceId != null) {
@@ -69,6 +70,8 @@ public abstract class SingleFrameApplication extends Application {
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
+        if (menuBar != null)
+            frame.getRootPane().setJMenuBar(menuBar);
     }
 
     protected void openFrame(JPanel contentPane) {

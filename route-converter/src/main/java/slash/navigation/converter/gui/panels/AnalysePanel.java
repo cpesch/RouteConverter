@@ -23,9 +23,9 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.elevationview.ElevationView;
-import slash.navigation.converter.gui.helper.FrameAction;
 import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
 

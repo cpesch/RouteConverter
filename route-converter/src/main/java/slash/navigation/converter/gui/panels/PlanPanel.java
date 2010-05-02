@@ -23,13 +23,13 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.ComplementPositionsDialog;
 import slash.navigation.converter.gui.dialogs.DeletePositionsDialog;
 import slash.navigation.converter.gui.dialogs.GeocodePositionDialog;
 import slash.navigation.converter.gui.dialogs.InsertPositionsDialog;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
-import slash.navigation.converter.gui.helper.FrameAction;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;

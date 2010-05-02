@@ -25,9 +25,9 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelFormat;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.Updater;
+import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
-import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
@@ -133,11 +133,7 @@ public class OptionsPanel {
         new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, r.getPreferences(), RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
         new CheckBoxPreferencesSynchronizer(checkBoxStartWithLastFile, r.getPreferences(), RouteConverter.START_WITH_LAST_FILE_PREFERENCE, true);
 
-        buttonCheckForUpdate.addActionListener(new FrameAction() {
-            public void run() {
-                new Updater().explicitCheck(r.getFrame());
-            }
-        });
+        buttonCheckForUpdate.addActionListener(new SearchForUpdatesAction());
 
         buttonPrintMap.addActionListener(new FrameAction() {
             public void run() {
@@ -354,4 +350,5 @@ public class OptionsPanel {
     public JComponent $$$getRootComponent$$$() {
         return miscPanel;
     }
+
 }

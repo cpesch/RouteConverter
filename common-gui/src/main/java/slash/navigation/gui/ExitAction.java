@@ -18,34 +18,17 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helper;
-
-import slash.navigation.gui.Constants;
-import slash.navigation.converter.gui.RouteConverter;
-
-import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+package slash.navigation.gui;
 
 /**
- * An {@link ActionListener} that starts and stops the wait cursor on the application frame.
+ * Exit the {@link SingleFrameApplication}.
  *
  * @author Christian Pesch
  */
 
-public abstract class FrameAction implements ActionListener {
-    protected JFrame getFrame() {
-        return RouteConverter.getInstance().getFrame();
+public class ExitAction extends FrameAction {
+    public void run() {
+        Application.getInstance().exit(null);
     }
-
-    public final void actionPerformed(ActionEvent e) {
-        Constants.startWaitCursor(getFrame().getRootPane());
-        try {
-            run();
-        } finally {
-            Constants.stopWaitCursor(getFrame().getRootPane());
-        }
-    }
-
-    public abstract void run();
 }
+

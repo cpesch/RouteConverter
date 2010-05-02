@@ -29,6 +29,7 @@ import slash.common.io.Range;
 import slash.common.io.RangeOperation;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.RenameDialog;
@@ -351,7 +352,7 @@ public abstract class ConvertPanel {
         }
     }
 
-    private void openFile() {
+    public void openFile() {
         if (!confirmDiscard())
             return;
 
@@ -631,7 +632,7 @@ public abstract class ConvertPanel {
         }
     }
 
-    private void saveFile() {
+    public void saveFile() {
         NavigationFormat format = getFormat();
 
         getChooser().setDialogTitle(RouteConverter.getBundle().getString("save-target"));

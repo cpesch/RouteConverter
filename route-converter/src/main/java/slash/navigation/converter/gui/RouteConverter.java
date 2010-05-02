@@ -26,20 +26,21 @@ import slash.common.io.Files;
 import slash.common.io.Platform;
 import slash.common.io.Version;
 import slash.common.log.LoggingHelper;
+import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.babel.BabelException;
+import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
+import slash.navigation.gui.FrameAction;
+import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
-import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.panels.*;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.gui.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -161,7 +162,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void show() {
-        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null);
+        createFrame(getTitle(), "/slash/navigation/converter/gui/RouteConverter.png", contentPane, null, createMenuBar());
 
         addExitListener(new ExitListener() {
             public boolean canExit(EventObject event) {
@@ -789,4 +790,39 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    private JMenuBar createMenuBar() {
+        JMenu fileMenu = JMenuHelper.createMenu("file");
+        fileMenu.add(JMenuHelper.createItem("new", new NewAction()));
+        fileMenu.add(JMenuHelper.createItem("open", new OpenAction()));
+        fileMenu.add(JMenuHelper.createItem("save", new SaveAction()));
+        fileMenu.addSeparator();
+        fileMenu.add(JMenuHelper.createItem("exit", new ExitAction()));
+
+        JMenu helpMenu = JMenuHelper.createMenu("help");
+        helpMenu.add(JMenuHelper.createItem("search-for-updates", new SearchForUpdatesAction()));
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(fileMenu);
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(helpMenu);
+        return menuBar;
+    }
+
+    private class NewAction extends FrameAction {
+        public void run() {
+            getConvertPanel().newFile();
+        }
+    }
+
+    private class OpenAction extends FrameAction {
+        public void run() {
+            getConvertPanel().openFile();
+        }
+    }
+
+    private class SaveAction extends FrameAction {
+        public void run() {
+            getConvertPanel().saveFile();
+        }
+    }
 }

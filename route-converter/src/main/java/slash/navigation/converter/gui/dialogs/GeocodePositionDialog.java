@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.converter.gui.helper.FrameAction;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsPosition;
