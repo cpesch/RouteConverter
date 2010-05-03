@@ -30,7 +30,7 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.converter.gui.actions.HelpTopicsAction;
+import slash.navigation.gui.HelpTopicsAction;
 import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
@@ -78,7 +78,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return getInstance().getContext().getBundle();
     }
 
-    static String getTitle() {
+    public static String getTitle() {
         Version version = Version.parseVersionFromManifest();
         return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
     }

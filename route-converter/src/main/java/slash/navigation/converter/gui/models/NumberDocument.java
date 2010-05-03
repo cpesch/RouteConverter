@@ -22,10 +22,11 @@ package slash.navigation.converter.gui.models;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 /**
- * A number document
+ * Acts as a {@link Document} for numbers.
  *
  * @author Christian Pesch
  */

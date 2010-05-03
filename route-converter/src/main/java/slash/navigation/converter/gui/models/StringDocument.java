@@ -18,24 +18,35 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.actions;
+package slash.navigation.converter.gui.models;
 
-import slash.navigation.gui.Application;
-import slash.navigation.gui.FrameAction;
-
-import javax.help.CSH;
-import javax.help.HelpBroker;
-import javax.help.HelpSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 
 /**
- * Open the {@link HelpSet help}.
+ * Acts as a {@link Document} for strings.
  *
  * @author Christian Pesch
  */
 
-public class HelpTopicsAction extends FrameAction {
-    public void run() {
-        HelpBroker broker = Application.getInstance().getContext().getBroker();
-        new CSH.DisplayHelpFromSource(broker).actionPerformed(getEvent());
+public class StringDocument extends PlainDocument {
+
+    public String getString() {
+        try {
+            return getText(0, getLength());
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setString(String string) {
+        try {
+            remove(0, getLength());
+            if(string != null)
+                insertString(0, string, null);
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

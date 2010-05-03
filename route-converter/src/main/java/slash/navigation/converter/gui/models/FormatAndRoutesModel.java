@@ -28,7 +28,6 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -103,14 +102,6 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     public void addRoute(int index, BaseRoute route) {
         getRoutes().add(index, route);
         fireIntervalAdded(this, index, index);
-    }
-
-    public void addRoutes(List<BaseRoute> routes) throws IOException {
-        for (BaseRoute route : routes) {
-            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = NavigationFormats.asFormat(route, getFormat());
-            addRoute(getRoutes().size(), targetRoute);
-            setSelectedItem(targetRoute);
-        }
     }
 
     public void removeRoute(BaseRoute route) {

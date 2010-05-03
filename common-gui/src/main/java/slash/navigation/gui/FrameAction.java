@@ -20,10 +20,6 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.SingleFrameApplication;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
