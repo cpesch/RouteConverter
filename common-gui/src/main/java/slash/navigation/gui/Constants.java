@@ -78,8 +78,8 @@ public class Constants {
         component.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
-    public static ImageIcon loadIcon(Object object, String name) {
-        URL iconURL = object.getClass().getClassLoader().getResource(name);
+    public static ImageIcon loadIcon(String name) {
+        URL iconURL = Constants.class.getClassLoader().getResource(name);
         return new ImageIcon(iconURL);
     }
 

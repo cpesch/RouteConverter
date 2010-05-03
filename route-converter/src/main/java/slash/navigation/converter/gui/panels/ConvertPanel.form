@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.panels.ConvertPanel">
-  <grid id="4972b" binding="convertPanel" layout-manager="GridLayoutManager" row-count="10" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="4972b" binding="convertPanel" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="3" left="3" bottom="0" right="3"/>
     <constraints>
       <xy x="0" y="0" width="567" height="675"/>
@@ -28,135 +28,6 @@
           </component>
         </children>
       </scrollpane>
-      <component id="e7465" class="javax.swing.JButton" binding="buttonSaveFile">
-        <constraints>
-          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <icon value="slash/navigation/converter/gui/save.png"/>
-          <text value=""/>
-          <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-file-tooltip"/>
-        </properties>
-      </component>
-      <grid id="479f3" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="4ba64" class="javax.swing.JButton" binding="buttonMovePositionUp">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/up.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-up-tooltip"/>
-            </properties>
-          </component>
-          <component id="7c7e4" class="javax.swing.JButton" binding="buttonMovePositionDown">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/down.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-down-tooltip"/>
-            </properties>
-          </component>
-          <component id="f418b" class="javax.swing.JButton" binding="buttonMovePositionToTop">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/top.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-top-tooltip"/>
-            </properties>
-          </component>
-          <component id="82808" class="javax.swing.JButton" binding="buttonMovePositionToBottom">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/bottom.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-bottom-tooltip"/>
-            </properties>
-          </component>
-          <component id="354f7" class="javax.swing.JButton" binding="buttonInsertIntoPositionList">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/insert-position.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-position-tooltip"/>
-            </properties>
-          </component>
-          <component id="cc095" class="javax.swing.JButton" binding="buttonDeleteFromPositionList">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/delete-position.png"/>
-              <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positions-tooltip"/>
-            </properties>
-          </component>
-        </children>
-      </grid>
-      <component id="31feb" class="javax.swing.JCheckBox" binding="checkBoxDuplicateFirstPosition">
-        <constraints>
-          <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <horizontalTextPosition value="10"/>
-          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="duplicate-first-position"/>
-        </properties>
-      </component>
-      <grid id="e97b7" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <grid id="ce305" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="8d193" class="javax.swing.JComboBox" binding="comboBoxChooseFormat">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="dafa0" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <horizontalAlignment value="4"/>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="target-format"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <hspacer id="15cf0">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
-        </children>
-      </grid>
       <grid id="1e157" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
@@ -275,16 +146,6 @@
           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="positions"/>
         </properties>
       </component>
-      <component id="c1eb2" class="javax.swing.JCheckBox" binding="checkBoxSaveAsRouteTrackWaypoints">
-        <constraints>
-          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <horizontalTextPosition value="10"/>
-          <selected value="false"/>
-          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-as-route-track-waypoints"/>
-        </properties>
-      </component>
       <component id="b138f" class="javax.swing.JLabel">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -365,16 +226,76 @@
           <visible value="true"/>
         </properties>
       </component>
-      <component id="95200" class="javax.swing.JCheckBox" binding="checkBoxSaveOnlyThisPositionList">
+      <grid id="479f3" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <horizontalTextPosition value="10"/>
-          <selected value="false"/>
-          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="save-only-this-position-list"/>
-        </properties>
-      </component>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="f418b" class="javax.swing.JButton" binding="buttonMovePositionToTop">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="slash/navigation/converter/gui/top.png"/>
+              <text value=""/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-top-tooltip"/>
+            </properties>
+          </component>
+          <component id="4ba64" class="javax.swing.JButton" binding="buttonMovePositionUp">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="slash/navigation/converter/gui/up.png"/>
+              <text value=""/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-up-tooltip"/>
+            </properties>
+          </component>
+          <component id="354f7" class="javax.swing.JButton" binding="buttonInsertIntoPositionList">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="slash/navigation/converter/gui/insert-position.png"/>
+              <text value=""/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-position-tooltip"/>
+            </properties>
+          </component>
+          <component id="cc095" class="javax.swing.JButton" binding="buttonDeleteFromPositionList">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="slash/navigation/converter/gui/delete-position.png"/>
+              <text value=""/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positions-tooltip"/>
+            </properties>
+          </component>
+          <component id="7c7e4" class="javax.swing.JButton" binding="buttonMovePositionDown">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="slash/navigation/converter/gui/down.png"/>
+              <text value=""/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-down-tooltip"/>
+            </properties>
+          </component>
+          <component id="82808" class="javax.swing.JButton" binding="buttonMovePositionToBottom">
+            <constraints>
+              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="slash/navigation/converter/gui/bottom.png"/>
+              <text value=""/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-bottom-tooltip"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>

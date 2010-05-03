@@ -36,10 +36,8 @@ import slash.navigation.converter.gui.dialogs.UploadDialog;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.models.*;
-import slash.navigation.converter.gui.renderer.NavigationFormatListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
-import slash.navigation.converter.gui.services.RouteServiceNavigationFormat;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -79,11 +77,11 @@ public abstract class ConvertPanel {
     private final FormatAndRoutesModel formatAndRoutesModel = new FormatAndRoutesModel();
 
     protected JPanel convertPanel;
+    private JLabel labelFormat;
     private JLabel labelPositionLists;
     private JLabel labelPositions;
     private JLabel labelLength;
     private JLabel labelDuration;
-    private JLabel labelFormat;
     protected JTable tablePositions;
     private PositionTablePopupMenu popupTable;
     private JComboBox comboBoxChoosePositionList;
@@ -97,11 +95,6 @@ public abstract class ConvertPanel {
     private JButton buttonDeleteFromPositionList;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
-    private JCheckBox checkBoxDuplicateFirstPosition;
-    private JCheckBox checkBoxSaveAsRouteTrackWaypoints;
-    private JCheckBox checkBoxSaveOnlyThisPositionList;
-    private JComboBox comboBoxChooseFormat;
-    private JButton buttonSaveFile;
 
     public ConvertPanel() {
         initialize();
@@ -135,12 +128,6 @@ public abstract class ConvertPanel {
                 BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
                 if (selectedRoute != null)
                     formatAndRoutesModel.removeRoute(selectedRoute);
-            }
-        });
-
-        buttonSaveFile.addActionListener(new FrameAction() {
-            public void run() {
-                save();
             }
         });
 
@@ -221,7 +208,7 @@ public abstract class ConvertPanel {
         });
 
         tablePositions.setModel(getPositionsModel());
-        final PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
+        PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
@@ -233,29 +220,7 @@ public abstract class ConvertPanel {
         new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
         popupTable = new PositionTablePopupMenu();
 
-        Vector<NavigationFormat> formats = new Vector<NavigationFormat>();
-        formats.addAll(NavigationFormats.getWriteFormatsSortedByName());
-        formats.add(new RouteServiceNavigationFormat());
-        Vector<Object> formatsAndServices = new Vector<Object>(formats);
-        formatsAndServices.insertElementAt(new JSeparator(JSeparator.HORIZONTAL), formatsAndServices.size() - 1);
-        comboBoxChooseFormat.setModel(new DefaultComboBoxModel(formatsAndServices));
-        comboBoxChooseFormat.setRenderer(new NavigationFormatListCellRenderer());
-        String preferredFormat = r.getTargetFormatPreference();
-        for (NavigationFormat format : formats) {
-            if (format.getClass().getName().equals(preferredFormat))
-                comboBoxChooseFormat.setSelectedItem(format);
-        }
-        comboBoxChooseFormat.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                handleFormatUpdate();
-            }
-        });
-
-        new CheckBoxPreferencesSynchronizer(checkBoxDuplicateFirstPosition, r.getPreferences(), RouteConverter.DUPLICATE_FIRST_POSITION_PREFERENCE, false);
-        new CheckBoxPreferencesSynchronizer(checkBoxSaveAsRouteTrackWaypoints, r.getPreferences(), RouteConverter.SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE, true);
-        new CheckBoxPreferencesSynchronizer(checkBoxSaveOnlyThisPositionList, r.getPreferences(), RouteConverter.SAVE_ONLY_THIS_POSITION_LIST_PREFERENCE, false);
-
-        handleFormatUpdate();
+        handleFormatUpdate(); // TODO do we need this?
         handleRoutesUpdate();
         handlePositionsUpdate();
 
@@ -287,7 +252,7 @@ public abstract class ConvertPanel {
     }
 
     public JButton getDefaultButton() {
-        return buttonSaveFile;
+        return buttonNewPositionList;
     }
 
     // action methods
@@ -370,7 +335,7 @@ public abstract class ConvertPanel {
 
         final URL url = urls.get(0);
         final String path = Files.createReadablePath(url);
-        r.setSourcePreference(path);
+        r.setOpenPathPreference(path);
 
         Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         new Thread(new Runnable() {
@@ -542,7 +507,7 @@ public abstract class ConvertPanel {
     }
 
     private void renamePositionList() {
-        RenameDialog renameDialog = new RenameDialog(getPositionsModel().getRoute().getName(), getFormat());
+        RenameDialog renameDialog = new RenameDialog(getPositionsModel().getRoute().getName(), formatAndRoutesModel.getFormat());
         renameDialog.pack();
         renameDialog.restoreLocation();
         renameDialog.setVisible(true);
@@ -559,9 +524,11 @@ public abstract class ConvertPanel {
     private void saveFile(File file, NavigationFormat format) {
         RouteConverter r = RouteConverter.getInstance();
 
-        r.setTargetPreference(format, file.getParent());
+        r.setSavePathPreference(format, file.getParent());
+
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
-        int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(route, format, checkBoxDuplicateFirstPosition.isSelected());
+        boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
+        int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
@@ -598,14 +565,11 @@ public abstract class ConvertPanel {
         String targetsAsString = Files.printArrayToDialogString(targets);
         Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         try {
-            boolean saveAsRouteTrackWaypoints = checkBoxSaveAsRouteTrackWaypoints.isVisible() && checkBoxSaveAsRouteTrackWaypoints.isSelected();
-            boolean saveOnlyThisPositionList = checkBoxSaveOnlyThisPositionList.isVisible() && checkBoxSaveOnlyThisPositionList.isSelected();
-            if (format.isSupportsMultipleRoutes() && saveOnlyThisPositionList) {
-                new NavigationFileParser().write(Arrays.asList(formatAndRoutesModel.getSelectedRoute()), (MultipleRoutesFormat) format, targets[0]);
-            } else if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1 || !saveAsRouteTrackWaypoints)) {
+            if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1)) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
-                new NavigationFileParser().write(route, format, checkBoxDuplicateFirstPosition.isSelected(), true, targets);
+                boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
+                new NavigationFileParser().write(route, format, duplicateFirstPosition, true, targets);
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
@@ -621,10 +585,8 @@ public abstract class ConvertPanel {
     }
 
     public void saveFile() {
-        NavigationFormat format = getFormat();
-
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("save-target"));
-        setWriteFormatFileFilters(getChooser(), format.getClass().getName());
+        getChooser().setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
+        setWriteFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedTarget());
         getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
         getChooser().setMultiSelectionEnabled(false);
@@ -638,7 +600,8 @@ public abstract class ConvertPanel {
 
         NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
         if (selectedFormat == null)
-            selectedFormat = format;
+            selectedFormat = formatAndRoutesModel.getFormat();
+        setWriteFormatFileFilterPreference(selectedFormat);
         saveFile(selected, selectedFormat);
     }
 
@@ -649,20 +612,12 @@ public abstract class ConvertPanel {
         return result;
     }
 
-    private void saveToWeb() {
+    public void saveToWeb() {
         UploadDialog uploadDialog = new UploadDialog(formatAndRoutesModel, urlModel.getString());
         uploadDialog.pack();
         uploadDialog.restoreLocation();
         uploadDialog.setVisible(true);
         formatAndRoutesModel.setModified(false);
-
-    }
-
-    private void save() {
-        if (getFormat() instanceof RouteServiceNavigationFormat)
-            saveToWeb();
-        else
-            saveFile();
     }
 
     private final PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
@@ -697,11 +652,11 @@ public abstract class ConvertPanel {
         if (formatAndRoutesModel.isModified()) {
             int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
                     RouteConverter.getBundle().getString("confirm-discard"),
-                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
+                    urlModel.getShortUrl(), JOptionPane.YES_NO_CANCEL_OPTION);
             if (confirm == JOptionPane.CANCEL_OPTION)
                 return false;
             if (confirm == JOptionPane.YES_OPTION)
-                save();
+                saveFile();
         }
         return true;
     }
@@ -727,32 +682,23 @@ public abstract class ConvertPanel {
     // handle notifications
 
     private void handleFormatUpdate() {
-        boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
+        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
         boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
-
-        checkBoxDuplicateFirstPosition.setVisible(getFormat() instanceof NmnFormat && !(getFormat() instanceof Nmn7Format));
-        checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
-        checkBoxSaveOnlyThisPositionList.setVisible(supportsMultipleRoutes && existsMoreThanOneRoute);
 
         buttonNewPositionList.setEnabled(supportsMultipleRoutes);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
         popupTable.handleFormatUpdate(supportsMultipleRoutes, existsMoreThanOnePosition);
-
-        RouteConverter.getInstance().setTargetFormatPreference(getFormat().getClass().getName());
     }
 
     private void handleRoutesUpdate() {
-        boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
+        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
         boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
-
-        checkBoxSaveAsRouteTrackWaypoints.setVisible(supportsMultipleRoutes && existsOneRoute);
-        checkBoxSaveOnlyThisPositionList.setVisible(supportsMultipleRoutes && existsMoreThanOneRoute);
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
         buttonNewPositionList.setEnabled(supportsMultipleRoutes);
@@ -777,7 +723,7 @@ public abstract class ConvertPanel {
         RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
 
         if (selectedRows.length > 0) {
-            boolean supportsMultipleRoutes = getFormat() instanceof MultipleRoutesFormat;
+            boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
             boolean existsAPosition = getPositionsModel().getRowCount() > 0;
             popupTable.handlePositionsUpdate(supportsMultipleRoutes, existsAPosition, selectedRows.length > 0);
         }
@@ -788,7 +734,7 @@ public abstract class ConvertPanel {
     private File createSelectedSource() {
         File source = new File(urlModel.getString());
         source = Files.findExistingPath(source);
-        File path = new File(RouteConverter.getInstance().getSourcePreference());
+        File path = new File(RouteConverter.getInstance().getOpenPathPreference());
         path = Files.findExistingPath(path);
         if (path == null)
             return source;
@@ -800,13 +746,16 @@ public abstract class ConvertPanel {
 
     private File createSelectedTarget() {
         File file = new File(urlModel.getString());
-        File path = new File(RouteConverter.getInstance().getTargetPreference(getFormat()));
+        NavigationFormat format = formatAndRoutesModel.getFormat();
+        File path = new File(RouteConverter.getInstance().getSavePathPreference(format));
         if (!path.exists())
             path = file.getParentFile();
         String fileName = file.getName();
-        if (getFormat() instanceof GoPalRouteFormat)
+        if (format instanceof GoPalRouteFormat)
             fileName = Files.createGoPalFileName(fileName);
-        return new File(Files.calculateConvertFileName(new File(path, fileName), getFormat().getExtension(), getFormat().getMaximumFileNameLength()));
+        return new File(Files.calculateConvertFileName(new File(path, fileName),
+                format.getExtension(),
+                format.getMaximumFileNameLength()));
     }
 
     // create this only once to make users choices stable at least for one program start
@@ -832,20 +781,22 @@ public abstract class ConvertPanel {
 
     private void setReadFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, NavigationFormats.getReadFormatsSortedByName(),
-                RouteConverter.getInstance().getSourceFormatPreference());
+                RouteConverter.getInstance().getOpenFormatPreference());
     }
 
     private void setReadFormatFileFilterPreference(NavigationFormat selectedFormat) {
         String preference = selectedFormat != null ? selectedFormat.getClass().getName() : "";
-        RouteConverter.getInstance().setSourceFormatPreference(preference);
+        RouteConverter.getInstance().setOpenFormatPreference(preference);
     }
 
-    private void setWriteFormatFileFilters(JFileChooser chooser, String selectedFormat) {
-        setFormatFileFilters(chooser, NavigationFormats.getWriteFormatsSortedByName(), selectedFormat);
+    private void setWriteFormatFileFilters(JFileChooser chooser) {
+        setFormatFileFilters(chooser, NavigationFormats.getWriteFormatsSortedByName(),
+                RouteConverter.getInstance().getSaveFormatPreference());
     }
 
-    private NavigationFormat getFormat() {
-        return (NavigationFormat) comboBoxChooseFormat.getSelectedItem();
+    private void setWriteFormatFileFilterPreference(NavigationFormat selectedFormat) {
+        String preference = selectedFormat.getClass().getName();
+        RouteConverter.getInstance().setSaveFormatPreference(preference);
     }
 
     // map view related helpers
@@ -946,7 +897,7 @@ public abstract class ConvertPanel {
      */
     private void $$$setupUI$$$() {
         convertPanel = new JPanel();
-        convertPanel.setLayout(new GridLayoutManager(10, 3, new Insets(3, 3, 0, 3), -1, -1));
+        convertPanel.setLayout(new GridLayoutManager(7, 2, new Insets(3, 3, 0, 3), -1, -1));
         convertPanel.setMinimumSize(new Dimension(-1, -1));
         convertPanel.setPreferredSize(new Dimension(560, 560));
         final JScrollPane scrollPane1 = new JScrollPane();
@@ -956,162 +907,129 @@ public abstract class ConvertPanel {
         tablePositions.setShowHorizontalLines(false);
         tablePositions.setShowVerticalLines(false);
         scrollPane1.setViewportView(tablePositions);
-        buttonSaveFile = new JButton();
-        buttonSaveFile.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/save.png")));
-        buttonSaveFile.setText("");
-        buttonSaveFile.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-file-tooltip"));
-        convertPanel.add(buttonSaveFile, new GridConstraints(6, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel1, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonMovePositionUp = new JButton();
-        buttonMovePositionUp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/up.png")));
-        buttonMovePositionUp.setText("");
-        buttonMovePositionUp.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-up-tooltip"));
-        panel1.add(buttonMovePositionUp, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonMovePositionDown = new JButton();
-        buttonMovePositionDown.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/down.png")));
-        buttonMovePositionDown.setText("");
-        buttonMovePositionDown.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-down-tooltip"));
-        panel1.add(buttonMovePositionDown, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonMovePositionToTop = new JButton();
-        buttonMovePositionToTop.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/top.png")));
-        buttonMovePositionToTop.setText("");
-        buttonMovePositionToTop.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-top-tooltip"));
-        panel1.add(buttonMovePositionToTop, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonMovePositionToBottom = new JButton();
-        buttonMovePositionToBottom.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/bottom.png")));
-        buttonMovePositionToBottom.setText("");
-        buttonMovePositionToBottom.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-bottom-tooltip"));
-        panel1.add(buttonMovePositionToBottom, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonInsertIntoPositionList = new JButton();
-        buttonInsertIntoPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/insert-position.png")));
-        buttonInsertIntoPositionList.setText("");
-        buttonInsertIntoPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-position-tooltip"));
-        panel1.add(buttonInsertIntoPositionList, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonDeleteFromPositionList = new JButton();
-        buttonDeleteFromPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/delete-position.png")));
-        buttonDeleteFromPositionList.setText("");
-        buttonDeleteFromPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positions-tooltip"));
-        panel1.add(buttonDeleteFromPositionList, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxDuplicateFirstPosition = new JCheckBox();
-        checkBoxDuplicateFirstPosition.setHorizontalTextPosition(10);
-        this.$$$loadButtonText$$$(checkBoxDuplicateFirstPosition, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duplicate-first-position"));
-        convertPanel.add(checkBoxDuplicateFirstPosition, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel2, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(panel3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        comboBoxChooseFormat = new JComboBox();
-        panel3.add(comboBoxChooseFormat, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setHorizontalAlignment(4);
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("target-format"));
-        panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel2.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        convertPanel.add(panel1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelFormat = new JLabel();
         labelFormat.setHorizontalAlignment(2);
         labelFormat.setHorizontalTextPosition(2);
         labelFormat.setText("-");
-        panel4.add(labelFormat, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(labelFormat, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("content"));
+        convertPanel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("content"));
-        convertPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setHorizontalAlignment(10);
-        label3.setHorizontalTextPosition(11);
-        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("format"));
-        convertPanel.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel5, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        label2.setHorizontalAlignment(10);
+        label2.setHorizontalTextPosition(11);
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("format"));
+        convertPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
+        convertPanel.add(panel2, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelPositions = new JLabel();
         labelPositions.setHorizontalAlignment(2);
         labelPositions.setHorizontalTextPosition(2);
         labelPositions.setText("-");
-        panel5.add(labelPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(labelPositions, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelLength = new JLabel();
         labelLength.setHorizontalAlignment(2);
         labelLength.setHorizontalTextPosition(2);
         labelLength.setText("-");
         labelLength.setVisible(true);
-        panel5.add(labelLength, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(labelLength, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setHorizontalAlignment(4);
+        label3.setHorizontalTextPosition(4);
+        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("length"));
+        label3.setVisible(true);
+        panel2.add(label3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setHorizontalAlignment(4);
         label4.setHorizontalTextPosition(4);
-        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("length"));
-        label4.setVisible(true);
-        panel5.add(label4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setHorizontalAlignment(4);
-        label5.setHorizontalTextPosition(4);
-        this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duration"));
-        panel5.add(label5, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("duration"));
+        panel2.add(label4, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelDuration = new JLabel();
         labelDuration.setHorizontalAlignment(2);
         labelDuration.setHorizontalTextPosition(2);
         labelDuration.setText("-");
-        panel5.add(labelDuration, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(labelDuration, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositionLists = new JLabel();
         labelPositionLists.setHorizontalAlignment(2);
         labelPositionLists.setHorizontalTextPosition(2);
         labelPositionLists.setText("-");
         convertPanel.add(labelPositionLists, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("positions"));
+        convertPanel.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
-        this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("positions"));
-        convertPanel.add(label6, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxSaveAsRouteTrackWaypoints = new JCheckBox();
-        checkBoxSaveAsRouteTrackWaypoints.setHorizontalTextPosition(10);
-        checkBoxSaveAsRouteTrackWaypoints.setSelected(false);
-        this.$$$loadButtonText$$$(checkBoxSaveAsRouteTrackWaypoints, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-as-route-track-waypoints"));
-        convertPanel.add(checkBoxSaveAsRouteTrackWaypoints, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label7 = new JLabel();
-        this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("position-list"));
-        label7.setVerticalAlignment(1);
-        label7.setVerticalTextPosition(0);
-        label7.setVisible(true);
-        convertPanel.add(label7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel6, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("position-list"));
+        label6.setVerticalAlignment(1);
+        label6.setVerticalTextPosition(0);
+        label6.setVisible(true);
+        convertPanel.add(label6, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
+        convertPanel.add(panel3, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonNewPositionList = new JButton();
         buttonNewPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-route.png")));
         buttonNewPositionList.setText("");
         buttonNewPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-positionlist-tooltip"));
-        panel6.add(buttonNewPositionList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(buttonNewPositionList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenamePositionList = new JButton();
         buttonRenamePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/rename-route.png")));
         buttonRenamePositionList.setText("");
         buttonRenamePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename-positionlist-tooltip"));
-        panel6.add(buttonRenamePositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(buttonRenamePositionList, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRemovePositionList = new JButton();
         buttonRemovePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/remove-route.png")));
         buttonRemovePositionList.setText("");
         buttonRemovePositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("remove-position-list-tooltip"));
-        panel6.add(buttonRemovePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel6.add(spacer2, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JLabel label8 = new JLabel();
-        label8.setHorizontalAlignment(4);
-        label8.setHorizontalTextPosition(4);
-        this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("characteristics"));
-        panel6.add(label8, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(buttonRemovePositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel3.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JLabel label7 = new JLabel();
+        label7.setHorizontalAlignment(4);
+        label7.setHorizontalTextPosition(4);
+        this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("characteristics"));
+        panel3.add(label7, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxChoosePositionListCharacteristics = new JComboBox();
-        panel6.add(comboBoxChoosePositionListCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(comboBoxChoosePositionListCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxChoosePositionList = new JComboBox();
         comboBoxChoosePositionList.setVisible(true);
         convertPanel.add(comboBoxChoosePositionList, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxSaveOnlyThisPositionList = new JCheckBox();
-        checkBoxSaveOnlyThisPositionList.setHorizontalTextPosition(10);
-        checkBoxSaveOnlyThisPositionList.setSelected(false);
-        this.$$$loadButtonText$$$(checkBoxSaveOnlyThisPositionList, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("save-only-this-position-list"));
-        convertPanel.add(checkBoxSaveOnlyThisPositionList, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
+        convertPanel.add(panel4, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonMovePositionToTop = new JButton();
+        buttonMovePositionToTop.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/top.png")));
+        buttonMovePositionToTop.setText("");
+        buttonMovePositionToTop.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-top-tooltip"));
+        panel4.add(buttonMovePositionToTop, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonMovePositionUp = new JButton();
+        buttonMovePositionUp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/up.png")));
+        buttonMovePositionUp.setText("");
+        buttonMovePositionUp.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-up-tooltip"));
+        panel4.add(buttonMovePositionUp, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonInsertIntoPositionList = new JButton();
+        buttonInsertIntoPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/insert-position.png")));
+        buttonInsertIntoPositionList.setText("");
+        buttonInsertIntoPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("insert-position-tooltip"));
+        panel4.add(buttonInsertIntoPositionList, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonDeleteFromPositionList = new JButton();
+        buttonDeleteFromPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/delete-position.png")));
+        buttonDeleteFromPositionList.setText("");
+        buttonDeleteFromPositionList.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-positions-tooltip"));
+        panel4.add(buttonDeleteFromPositionList, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonMovePositionDown = new JButton();
+        buttonMovePositionDown.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/down.png")));
+        buttonMovePositionDown.setText("");
+        buttonMovePositionDown.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-down-tooltip"));
+        panel4.add(buttonMovePositionDown, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonMovePositionToBottom = new JButton();
+        buttonMovePositionToBottom.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/bottom.png")));
+        buttonMovePositionToBottom.setText("");
+        buttonMovePositionToBottom.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-to-bottom-tooltip"));
+        panel4.add(buttonMovePositionToBottom, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -1137,33 +1055,6 @@ public abstract class ConvertPanel {
         component.setText(result.toString());
         if (haveMnemonic) {
             component.setDisplayedMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setMnemonic(mnemonic);
             component.setDisplayedMnemonicIndex(mnemonicIndex);
         }
     }

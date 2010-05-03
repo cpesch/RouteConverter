@@ -30,7 +30,6 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.gui.HelpTopicsAction;
 import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
@@ -83,17 +82,13 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
     }
 
-    private static final String SOURCE_PREFERENCE = "source";
-    private static final String SOURCE_FORMAT_PREFERENCE = "sourceFormat";
-    private static final String TARGET_PREFERENCE = "target";
+    private static final String OPEN_PATH_PREFERENCE = "source";
+    private static final String OPEN_FORMAT_PREFERENCE = "sourceFormat";
+    private static final String SAVE_PATH_PREFERENCE = "target";
     private static final String TARGET_FORMAT_PREFERENCE = "targetFormat";
     private static final String ADD_POSITION_LONGITUDE_PREFERENCE = "addPositionLongitude";
     private static final String ADD_POSITION_LATITUDE_PREFERENCE = "addPositionLatitude";
-    public static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
-    public static final String SAVE_AS_ROUTE_TRACK_WAYPOINTS_PREFERENCE = "saveAsRouteTrackWaypoints";
-    public static final String SAVE_ONLY_THIS_POSITION_LIST_PREFERENCE = "saveOnlyThisPositionlist";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
-    public static final String START_WITH_LAST_FILE_PREFERENCE = "startWithLastFile";
     public static final String PREFIX_NUMBER_WITH_ZEROS = "prefixNumberWithZeros";
     public static final String SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE = "spaceBetweenNumberAndComment";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
@@ -154,8 +149,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void parseArgs(String[] args) {
         if (args.length > 0) {
             getConvertPanel().openUrls(Files.toUrls(args));
-        } else if (getStartWithLastFilePreference()) {
-            getConvertPanel().openUrls(Files.toUrls(getSourcePreference()));
         } else {
             getConvertPanel().newFile();
         }
@@ -283,36 +276,36 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return preferences;
     }
 
-    public String getSourceFormatPreference() {
-        return preferences.get(SOURCE_FORMAT_PREFERENCE, "");
+    public String getOpenFormatPreference() {
+        return preferences.get(OPEN_FORMAT_PREFERENCE, Gpx11Format.class.getName());
     }
 
-    public void setSourceFormatPreference(String format) {
-        preferences.put(SOURCE_FORMAT_PREFERENCE, format);
+    public void setOpenFormatPreference(String format) {
+        preferences.put(OPEN_FORMAT_PREFERENCE, format);
     }
 
-    public String getSourcePreference() {
-        return preferences.get(SOURCE_PREFERENCE, "");
+    public String getOpenPathPreference() {
+        return preferences.get(OPEN_PATH_PREFERENCE, "");
     }
 
-    public void setSourcePreference(String file) {
-        preferences.put(SOURCE_PREFERENCE, file);
+    public void setOpenPathPreference(String file) {
+        preferences.put(OPEN_PATH_PREFERENCE, file);
     }
 
-    public String getTargetFormatPreference() {
+    public String getSaveFormatPreference() {
         return preferences.get(TARGET_FORMAT_PREFERENCE, Gpx11Format.class.getName());
     }
 
-    public void setTargetFormatPreference(String format) {
+    public void setSaveFormatPreference(String format) {
         preferences.put(TARGET_FORMAT_PREFERENCE, format);
     }
 
-    public String getTargetPreference(NavigationFormat format) {
-        return preferences.get(TARGET_PREFERENCE + format.getName(), "");
+    public String getSavePathPreference(NavigationFormat format) {
+        return preferences.get(SAVE_PATH_PREFERENCE + format.getName(), "");
     }
 
-    public void setTargetPreference(NavigationFormat format, String parent) {
-        preferences.put(TARGET_PREFERENCE + format.getName(), parent);
+    public void setSavePathPreference(NavigationFormat format, String parent) {
+        preferences.put(SAVE_PATH_PREFERENCE + format.getName(), parent);
     }
 
     private BaseNavigationPosition getLastMapCenter() {
@@ -328,10 +321,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     boolean isAutomaticUpdateCheck() {
         return preferences.getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
-    }
-
-    boolean getStartWithLastFilePreference() {
-        return preferences.getBoolean(START_WITH_LAST_FILE_PREFERENCE, true);
     }
 
     public boolean getPrefixNumberWithZerosPreference() {
@@ -794,9 +783,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
         JMenu fileMenu = JMenuHelper.createMenu("file");
         fileMenu.add(JMenuHelper.createItem("new", new NewAction()));
         fileMenu.add(JMenuHelper.createItem("open", new OpenAction()));
-        fileMenu.add(JMenuHelper.createItem("save", new SaveAction()));
+        SaveAction save = new SaveAction();
+        // TODO disable save action for disabled icon save.setEnabled(false);
+        fileMenu.add(JMenuHelper.createItem("save", save));
+        // TODO add item for uploading to web
         fileMenu.addSeparator();
+        // TODO add items for last used files
         fileMenu.add(JMenuHelper.createItem("exit", new ExitAction()));
+
+        // TODO add option to convert file without saving it
 
         JMenu helpMenu = JMenuHelper.createMenu("help");
         helpMenu.add(JMenuHelper.createItem("help-topics", new HelpTopicsAction()));

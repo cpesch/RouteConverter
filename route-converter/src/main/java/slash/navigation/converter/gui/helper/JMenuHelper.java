@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helper;
 
 import slash.common.io.Transfer;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.Constants;
 
 import javax.help.CSH;
 import javax.swing.*;
@@ -65,6 +66,12 @@ public class JMenuHelper {
         String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
         if (keystroke != null)
             item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+        String iconUrl = Transfer.trim(getOptionalString(name + "-action-icon"));
+        if (iconUrl != null)
+            item.setIcon(Constants.loadIcon(iconUrl));
+        String disabledIconUrl = Transfer.trim(getOptionalString(name + "-action-disabled-icon"));
+        if (disabledIconUrl != null)
+            item.setDisabledIcon(Constants.loadIcon(disabledIconUrl));
         CSH.setHelpIDString(item, name + "-action");
         return item;
     }
