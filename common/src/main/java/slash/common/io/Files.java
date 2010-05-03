@@ -106,6 +106,15 @@ public class Files {
         return path;
     }
 
+    public static String lastPathFragment(String path) {
+        int index = path.lastIndexOf('/');
+        if (index == -1)
+            index = path.lastIndexOf('\\');
+        if (index != -1)
+            path = path.substring(index + 1);
+        return shortenPath(path);
+    }
+
     public static File toFile(URL url) {
         if ("file".equals(url.getProtocol())) {
             try {
