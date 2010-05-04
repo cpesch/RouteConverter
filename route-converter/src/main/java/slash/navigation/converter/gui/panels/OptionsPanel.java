@@ -25,12 +25,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelFormat;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
-import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -38,8 +37,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -52,17 +49,10 @@ import java.util.ResourceBundle;
 
 public class OptionsPanel {
     private JPanel miscPanel;
-    private JLabel labelBrowse;
-    private JLabel labelMail;
-    private JLabel labelCp;
-    private JLabel labelCredit;
     private JComboBox comboBoxLocale;
     private JTextField textFieldBabelPath;
     private JButton buttonChooseGPSBabel;
     private JCheckBox checkBoxAutomaticUpdateCheck;
-    private JButton buttonPrintMap;
-    private JButton buttonPrintMapAndRoute;
-    private JButton buttonPrintElevationProfile;
 
     public OptionsPanel() {
         initialize();
@@ -70,30 +60,6 @@ public class OptionsPanel {
 
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
-
-        labelBrowse.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startBrowserForHomepage(r.getFrame());
-            }
-        });
-
-        labelMail.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startBrowserForForum(r.getFrame());
-            }
-        });
-
-        labelCredit.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startBrowserForHomepage(r.getFrame());
-            }
-        });
-
-        labelCp.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startMail(r.getFrame());
-            }
-        });
 
         buttonChooseGPSBabel.addActionListener(new FrameAction() {
             public void run() {
@@ -129,28 +95,6 @@ public class OptionsPanel {
         textFieldBabelPath.setText(BabelFormat.getBabelPathPreference());
 
         new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, r.getPreferences(), RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
-
-        buttonPrintMap.addActionListener(new FrameAction() {
-            public void run() {
-                if (r.isMapViewAvailable())
-                    r.printMap(false);
-            }
-        });
-        buttonPrintMap.setEnabled(r.isMapViewAvailable());
-
-        buttonPrintMapAndRoute.addActionListener(new FrameAction() {
-            public void run() {
-                if (r.isMapViewAvailable())
-                    r.printMap(true);
-            }
-        });
-        buttonPrintMapAndRoute.setEnabled(r.isMapViewAvailable());
-
-        buttonPrintElevationProfile.addActionListener(new FrameAction() {
-            public void run() {
-                r.printElevationProfile();
-            }
-        });
     }
 
     public Component getRootComponent() {
@@ -189,10 +133,10 @@ public class OptionsPanel {
      */
     private void $$$setupUI$$$() {
         miscPanel = new JPanel();
-        miscPanel.setLayout(new GridLayoutManager(6, 1, new Insets(3, 3, 3, 3), -1, -1));
+        miscPanel.setLayout(new GridLayoutManager(2, 1, new Insets(3, 3, 3, 3), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(5, 3, new Insets(3, 3, 3, 3), -1, -1));
-        miscPanel.add(panel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        miscPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("preferred-locale"));
         panel1.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -223,52 +167,6 @@ public class OptionsPanel {
         panel1.add(separator1, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         miscPanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 20), null, null, 0, false));
-        final JPanel panel3 = new JPanel();
-        miscPanel.add(panel3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 20), null, null, 0, false));
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
-        miscPanel.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        labelBrowse = new JLabel();
-        this.$$$loadLabelText$$$(labelBrowse, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-www"));
-        panel4.add(labelBrowse, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelMail = new JLabel();
-        this.$$$loadLabelText$$$(labelMail, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-mail"));
-        panel4.add(labelMail, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelCp = new JLabel();
-        labelCp.setForeground(UIManager.getColor("Label.background"));
-        labelCp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/cp.png")));
-        labelCp.setInheritsPopupMenu(true);
-        labelCp.setOpaque(false);
-        labelCp.setText("");
-        panel4.add(labelCp, new GridConstraints(0, 1, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        labelCredit = new JLabel();
-        this.$$$loadLabelText$$$(labelCredit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-credit"));
-        panel4.add(labelCredit, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel5 = new JPanel();
-        miscPanel.add(panel5, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(3, 4, new Insets(3, 3, 3, 3), -1, -1));
-        miscPanel.add(panel6, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonPrintMap = new JButton();
-        buttonPrintMap.setAlignmentY(0.0f);
-        this.$$$loadButtonText$$$(buttonPrintMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map"));
-        buttonPrintMap.setVerifyInputWhenFocusTarget(false);
-        panel6.add(buttonPrintMap, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel6.add(spacer1, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        buttonPrintMapAndRoute = new JButton();
-        buttonPrintMapAndRoute.setAlignmentY(0.0f);
-        this.$$$loadButtonText$$$(buttonPrintMapAndRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-map-and-route"));
-        buttonPrintMapAndRoute.setVerifyInputWhenFocusTarget(false);
-        panel6.add(buttonPrintMapAndRoute, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonPrintElevationProfile = new JButton();
-        this.$$$loadButtonText$$$(buttonPrintElevationProfile, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print-elevation-profile"));
-        panel6.add(buttonPrintElevationProfile, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("print"));
-        panel6.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JSeparator separator2 = new JSeparator();
-        panel6.add(separator2, new GridConstraints(1, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
     /**
@@ -294,33 +192,6 @@ public class OptionsPanel {
         component.setText(result.toString());
         if (haveMnemonic) {
             component.setDisplayedMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setMnemonic(mnemonic);
             component.setDisplayedMnemonicIndex(mnemonicIndex);
         }
     }

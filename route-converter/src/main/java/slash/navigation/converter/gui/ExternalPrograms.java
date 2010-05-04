@@ -49,6 +49,10 @@ public abstract class ExternalPrograms {
         startBrowser(window, "www.routeconverter.de/forum/");
     }
 
+    public void startBrowserForGeonames(Window window) {
+        startBrowser(window, "www.geonames.org");
+    }
+
     protected abstract void startBrowser(Window window, String uri);
 
     public void startMail(Window window) {

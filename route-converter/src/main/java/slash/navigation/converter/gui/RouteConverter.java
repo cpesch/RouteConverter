@@ -30,6 +30,7 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.converter.gui.actions.AboutAction;
 import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
@@ -143,7 +144,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.6.0_14";
         if (!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion))
-            JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion), frame.getTitle(), JOptionPane.WARNING_MESSAGE);
     }
 
     private void parseArgs(String[] args) {
@@ -504,11 +505,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    public void printMap(boolean withRoute) {
+    private void printMap(boolean withRoute) {
         mapView.print(withRoute);
     }
 
-    public void printElevationProfile() {
+    private void printElevationProfile() {
         getAnalysePanel().print();
     }
 
@@ -787,6 +788,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
         // TODO disable save action for disabled icon save.setEnabled(false);
         fileMenu.add(JMenuHelper.createItem("save", save));
         // TODO add item for uploading to web
+        JMenu printMenu = JMenuHelper.createMenu("print");
+        printMenu.add(JMenuHelper.createItem("print-map", new PrintMapAction(false)));
+        printMenu.add(JMenuHelper.createItem("print-map-and-route", new PrintMapAction(true)));
+        printMenu.add(JMenuHelper.createItem("print-elevation-profile", new PrintElevationProfileAction()));
+        fileMenu.add(printMenu);
         fileMenu.addSeparator();
         // TODO add items for last used files
         fileMenu.add(JMenuHelper.createItem("exit", new ExitAction()));
@@ -796,6 +802,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         JMenu helpMenu = JMenuHelper.createMenu("help");
         helpMenu.add(JMenuHelper.createItem("help-topics", new HelpTopicsAction()));
         helpMenu.add(JMenuHelper.createItem("search-for-updates", new SearchForUpdatesAction()));
+        helpMenu.add(JMenuHelper.createItem("about", new AboutAction()));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -819,6 +826,24 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private class SaveAction extends FrameAction {
         public void run() {
             getConvertPanel().saveFile();
+        }
+    }
+
+    private class PrintMapAction extends FrameAction {
+        private boolean withRoute;
+
+        private PrintMapAction(boolean withRoute) {
+            this.withRoute = withRoute;
+        }
+
+        public void run() {
+            printMap(withRoute);
+        }
+    }
+
+    private class PrintElevationProfileAction extends FrameAction {
+        public void run() {
+            printElevationProfile();
         }
     }
 }
