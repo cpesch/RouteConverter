@@ -17,20 +17,16 @@
 <div id="error"></div>
 <div id="map"></div>
 <div id="directions"></div>
-
 <script type="text/javascript">
-   <!--
-   //<![CDATA[
-
-   function GetTileUrl_Mapnik(a, b) {
+   function getTileUrlMapnik(a, b) {
        return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
    }
 
-   function GetTileUrl_TaH(a, b) {
+   function getTileUrlTaH(a, b) {
        return "http://tah.openstreetmap.org/Tiles/tile/" + b + "/" + a.x + "/" + a.y + ".png";
    }
 
-   function GetTileUrl_Cyc(a, b) {
+   function getTileUrlCyc(a, b) {
        return "http://a.andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
    }
 
@@ -240,19 +236,19 @@
                copyrightCollection.addCopyright(copyright);
                var tilelayers_mapnik = new Array();
                tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
-               tilelayers_mapnik[0].getTileUrl = GetTileUrl_Mapnik;
+               tilelayers_mapnik[0].getTileUrl = getTileUrlMapnik;
                tilelayers_mapnik[0].getOpacity = function () {
                    return 1.0;
                };
                var tilelayers_tah = new Array();
                tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
-               tilelayers_tah[0].getTileUrl = GetTileUrl_TaH;
+               tilelayers_tah[0].getTileUrl = getTileUrlTaH;
                tilelayers_tah[0].getOpacity = function () {
                    return 1.0;
                };
                var tilelayers_cyc = new Array();
                tilelayers_cyc[0] = new GTileLayer(copyrightCollection, 0, 17);
-               tilelayers_cyc[0].getTileUrl = GetTileUrl_Cyc;
+               tilelayers_cyc[0].getTileUrl = getTileUrlCyc;
                tilelayers_cyc[0].getOpacity = function () {
                    return 1.0;
                };
@@ -308,9 +304,6 @@
    } else {
        setError("<p>Sorry, could not access Google Maps.</p><p>Please check your Internet connection.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
    }
-
-   //]]>
-//-->
 </script>
 </body>
 </html>

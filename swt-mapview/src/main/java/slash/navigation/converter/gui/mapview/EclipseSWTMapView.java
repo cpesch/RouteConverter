@@ -21,12 +21,12 @@
 package slash.navigation.converter.gui.mapview;
 
 import chrriis.dj.nativeswing.swtimpl.components.*;
+import slash.common.io.Externalization;
+import slash.common.io.Platform;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.util.*;
-import slash.common.io.Platform;
-import slash.common.io.Externalization;
-import slash.common.io.Transfer;
+import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import java.awt.*;
@@ -138,7 +138,7 @@ public class EclipseSWTMapView extends BaseMapView {
             }
 
             public void commandReceived(WebBrowserCommandEvent e) {
-                log.fine(System.currentTimeMillis() + " commandReceived " + e + " thread " + Thread.currentThread());
+                log.fine(System.currentTimeMillis() + " commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
             }
         });
 
@@ -162,6 +162,18 @@ public class EclipseSWTMapView extends BaseMapView {
             checkCallback();
         } else {
             if (counter++ < 50) {
+                if (!Platform.isWindows()) {
+                    try {
+                        SwingUtilities.invokeAndWait(new Runnable() {
+                            public void run() {
+                                log.info("Loaded HTML: " + webBrowser.getHTMLContent());
+                            }
+                        });
+                    } catch (Exception e) {
+                        // ignored intentionally
+                    }
+                }
+
                 log.info(System.currentTimeMillis() + " WAITING " + counter * 100 + " milliseconds");
                 try {
                     Thread.sleep(counter * 100);
