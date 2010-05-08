@@ -23,6 +23,7 @@ package slash.navigation.gui;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
+import javax.swing.*;
 
 /**
  * Open the {@link HelpSet help}.
@@ -32,7 +33,11 @@ import javax.help.HelpSet;
 
 public class HelpTopicsAction extends FrameAction {
     public void run() {
-        HelpBroker broker = Application.getInstance().getContext().getBroker();
-        new CSH.DisplayHelpFromSource(broker).actionPerformed(getEvent());
+        try {
+            HelpBroker broker = Application.getInstance().getContext().getBroker();
+            new CSH.DisplayHelpFromSource(broker).actionPerformed(getEvent());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Could not initialize help: " + e.getMessage(), "JavaHelp", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

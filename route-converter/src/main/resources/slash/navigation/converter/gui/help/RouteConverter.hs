@@ -13,28 +13,11 @@
         <type>javax.help.TOCView</type>
         <data>TOC.xml</data>
     </view>
-    <view mergetype="javax.help.SortMerge">
-        <name>index</name>
-        <label>Index</label>
-        <type>javax.help.IndexView</type>
-        <data>Index.xml</data>
-    </view>
     <view>
         <name>search</name>
         <label>Search</label>
         <type>javax.help.SearchView</type>
         <data engine="com.sun.java.help.search.DefaultSearchEngine">JavaHelpSearch</data>
-    </view>
-    <view mergetype="javax.help.SortMerge">
-        <name>glossary</name>
-        <label>Glossary</label>
-        <type>javax.help.GlossaryView</type>
-        <data>Glossary.xml</data>
-    </view>
-    <view>
-        <name>favorites</name>
-        <label>Favorites</label>
-        <type>javax.help.FavoritesView</type>
     </view>
     <presentation default="true">
         <name>main window</name>
@@ -50,6 +33,5 @@
     <impl>
         <helpsetregistry helpbrokerclass="javax.help.DefaultHelpBroker"/>
         <viewerregistry viewertype="text/html" viewerclass="com.sun.java.help.impl.CustomKit"/>
-        <viewerregistry viewertype="text/xml" viewerclass="com.sun.java.help.impl.CustomXMLKit"/>
     </impl>
 </helpset>
