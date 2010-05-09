@@ -38,12 +38,13 @@ import java.util.List;
 
 public class Category {
     private final RouteCatalog routeCatalog;
-    private String url;
+    private String url, name;
     private GpxType gpx;
 
-    public Category(RouteCatalog routeCatalog, String url) {
+    public Category(RouteCatalog routeCatalog, String url, String name) {
         this.routeCatalog = routeCatalog;
         this.url = url;
+        this.name = name;
     }
 
     private synchronized GpxType getGpx() throws IOException {
@@ -55,6 +56,7 @@ public class Category {
 
     private synchronized void invalidate() {
         gpx = null;
+        name = null;
     }
 
     private synchronized void recursiveInvalidate() {
@@ -67,13 +69,15 @@ public class Category {
         List<Category> categories = new ArrayList<Category>();
         if (gpx != null)
             for (LinkType linkType : gpx.getMetadata().getLink()) {
-                categories.add(new Category(routeCatalog, linkType.getHref()));
+                categories.add(new Category(routeCatalog, linkType.getHref(), linkType.getText()));
             }
         return categories;
     }
 
 
     public String getName() throws IOException {
+        if(name != null)
+            return name;
         return getGpx().getMetadata().getName();
     }
 
@@ -84,7 +88,7 @@ public class Category {
     public List<Category> getSubCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (LinkType linkType : getGpx().getMetadata().getLink()) {
-            categories.add(new Category(routeCatalog, linkType.getHref()));
+            categories.add(new Category(routeCatalog, linkType.getHref(), linkType.getText()));
         }
         return categories;
     }
@@ -107,6 +111,7 @@ public class Category {
 
     public void updateCategory(Category parent, String name) throws IOException {
         url = routeCatalog.updateCategory(url, parent != null ? parent.url : null, name);
+        this.name = name;
         recursiveInvalidate();
     }
 
@@ -117,7 +122,7 @@ public class Category {
     public Category addSubCategory(String name) throws IOException {
         String resultUrl = routeCatalog.addCategory(url, name);
         invalidate();
-        return new Category(routeCatalog, resultUrl);
+        return new Category(routeCatalog, resultUrl, name);
     }
 
     public Route addRoute(String description, File file) throws IOException {

@@ -30,7 +30,7 @@ import java.io.IOException;
 
 public class RouteCatalog implements RouteService {
     // todo share with the one in BrowsePanel?
-    private final slash.navigation.catalog.domain.RouteCatalog routeCatalog = new slash.navigation.catalog.domain.RouteCatalog("http://localhost:8000/catalog/");// System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+    private final slash.navigation.catalog.domain.RouteCatalog routeCatalog = new slash.navigation.catalog.domain.RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
 
     public String getName() {
         return "RouteCatalog";

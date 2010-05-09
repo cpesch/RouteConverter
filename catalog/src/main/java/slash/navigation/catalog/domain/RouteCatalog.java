@@ -66,7 +66,7 @@ public class RouteCatalog {
     }
 
     public Category getRootCategory() {
-        return new Category(this, rootUrl + ROOT_CATEGORY_URI);
+        return new Category(this, rootUrl + ROOT_CATEGORY_URI, "");
     }
 
     GpxType fetchGpx(String url) throws IOException {

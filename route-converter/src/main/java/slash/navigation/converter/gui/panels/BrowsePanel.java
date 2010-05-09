@@ -212,7 +212,10 @@ public abstract class BrowsePanel {
                 routeCatalog.setAuthentication(r.getUserNamePreference(), r.getPasswordPreference());
                 final CategoryTreeNode root = new CategoryTreeNode(routeCatalog.getRootCategory());
                 final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
-
+                // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
+                // would do it in the AWT EventQueue
+                categoryTreeModel.getChildCount(root);
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         treeCategories.setModel(categoryTreeModel);
