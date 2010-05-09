@@ -25,9 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.ComplementPositionsDialog;
-import slash.navigation.converter.gui.dialogs.DeletePositionsDialog;
 import slash.navigation.converter.gui.dialogs.GeocodePositionDialog;
-import slash.navigation.converter.gui.dialogs.InsertPositionsDialog;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
@@ -42,10 +40,8 @@ import java.util.ResourceBundle;
 
 public class PlanPanel {
     private JPanel planPanel;
-    private JButton buttonInsertIntoPositionList;
     private JButton buttonGeocodePosition;
     private JButton buttonComplementPositionList;
-    private JButton buttonDeleteFromPositionList;
     private JButton buttonRevertPositionList;
 
     public PlanPanel() {
@@ -54,15 +50,6 @@ public class PlanPanel {
 
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
-
-        buttonInsertIntoPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                InsertPositionsDialog options = new InsertPositionsDialog();
-                options.pack();
-                options.restoreLocation();
-                options.setVisible(true);
-            }
-        });
 
         buttonGeocodePosition.addActionListener(new FrameAction() {
             public void run() {
@@ -76,15 +63,6 @@ public class PlanPanel {
         buttonComplementPositionList.addActionListener(new FrameAction() {
             public void run() {
                 ComplementPositionsDialog options = new ComplementPositionsDialog();
-                options.pack();
-                options.restoreLocation();
-                options.setVisible(true);
-            }
-        });
-
-        buttonDeleteFromPositionList.addActionListener(new FrameAction() {
-            public void run() {
-                DeletePositionsDialog options = new DeletePositionsDialog();
                 options.pack();
                 options.restoreLocation();
                 options.setVisible(true);
