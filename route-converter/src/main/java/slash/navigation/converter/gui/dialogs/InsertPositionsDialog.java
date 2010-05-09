@@ -95,7 +95,7 @@ public class InsertPositionsDialog extends SimpleDialog {
             public void run() {
                 close();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         RouteConverter r = RouteConverter.getInstance();
         r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
