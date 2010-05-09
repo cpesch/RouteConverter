@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.NumberDocument;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.base.*;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -41,7 +42,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for selecting and deleting {@link slash.navigation.base.BaseNavigationPosition}s from the current {@link slash.navigation.base.BaseRoute}.
+ * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */

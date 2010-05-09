@@ -30,15 +30,17 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.converter.gui.actions.AboutAction;
-import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.panels.*;
+import slash.navigation.converter.gui.panels.AnalysePanel;
+import slash.navigation.converter.gui.panels.BrowsePanel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.panels.PlanPanel;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.*;
 
@@ -117,7 +119,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
 
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel, planPanel, analysePanel, browsePanel, optionsPanel;
+    private JPanel convertPanel, planPanel, analysePanel, browsePanel;
     private LazyTabInitializer tabInitializer;
 
     private String[] args;
@@ -681,9 +683,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
-        optionsPanel = new JPanel();
-        optionsPanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-tab"), optionsPanel);
     }
 
     /**
@@ -727,14 +726,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     BrowsePanel panel = createBrowsePanel();
                     browsePanel.add(panel.getRootComponent());
                     initialized.put(browsePanel, panel);
-                }
-            });
-
-            lazyInitializers.put(optionsPanel, new Runnable() {
-                public void run() {
-                    OptionsPanel panel = new OptionsPanel();
-                    optionsPanel.add(panel.getRootComponent());
-                    initialized.put(optionsPanel, panel);
                 }
             });
         }
@@ -785,7 +776,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         fileMenu.add(JMenuHelper.createItem("new", new NewAction()));
         fileMenu.add(JMenuHelper.createItem("open", new OpenAction()));
         SaveAction save = new SaveAction();
-        // TODO disable save action for disabled icon save.setEnabled(false);
+        // TODO disable action if file is not modified
         fileMenu.add(JMenuHelper.createItem("save", save));
         // TODO add item for uploading to web
         JMenu printMenu = JMenuHelper.createMenu("print");
@@ -797,7 +788,13 @@ public abstract class RouteConverter extends SingleFrameApplication {
         // TODO add items for last used files
         fileMenu.add(JMenuHelper.createItem("exit", new ExitAction()));
 
+        JMenu toolsMenu = JMenuHelper.createMenu("tools");
+        toolsMenu.add(JMenuHelper.createItem("insert-positions", new InsertPositionsAction()));
+        toolsMenu.add(JMenuHelper.createItem("delete-positions", new DeletePositionsAction()));
         // TODO add option to convert file without saving it
+        
+        JMenu extrasMenu = JMenuHelper.createMenu("extras");
+        extrasMenu.add(JMenuHelper.createItem("options", new OptionsAction()));
 
         JMenu helpMenu = JMenuHelper.createMenu("help");
         helpMenu.add(JMenuHelper.createItem("help-topics", new HelpTopicsAction()));
@@ -806,6 +803,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
+        menuBar.add(toolsMenu);
+        menuBar.add(extrasMenu);
         menuBar.add(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
         return menuBar;
