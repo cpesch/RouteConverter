@@ -38,7 +38,7 @@ public class Externalization {
 
     public synchronized static File getTempDirectory() {
         if (!tempDirectory.exists())
-            if(!tempDirectory.mkdirs())
+            if (!tempDirectory.mkdirs())
                 log.severe("Could not create temp directory " + tempDirectory);
         return tempDirectory;
     }
@@ -62,7 +62,9 @@ public class Externalization {
 
     public static File extractFile(String fileName) throws IOException {
         File target = getTempFile(fileName);
-        if (target.exists() && target.lastModified() >= getLastModified(fileName))
+        long lastModifiedInClassPath = getLastModified(fileName);
+        long lastModifiedTarget = target.lastModified();
+        if (target.exists() && lastModifiedTarget / 1000 == lastModifiedInClassPath / 1000)
             return target;
 
         InputStream in = Externalization.class.getClassLoader().getResourceAsStream(fileName);
@@ -73,15 +75,8 @@ public class Externalization {
         InputOutput inout = new InputOutput(in, new FileOutputStream(target));
         inout.start();
         inout.close();
+        //noinspection ResultOfMethodCallIgnored
+        target.setLastModified(lastModifiedInClassPath);
         return target;
-    }
-
-    public static void loadLibrary(String libName) throws IOException {
-        String path = "bin/" + Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/" + System.mapLibraryName(libName);
-        File lib = extractFile(path);
-        if (lib == null)
-            throw new FileNotFoundException("Native library " + path + " not in class path");
-        System.load(lib.getAbsolutePath());
-        log.info("Loaded system library " + lib);
     }
 }
