@@ -71,7 +71,7 @@ public abstract class BaseMapView implements MapView {
     private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength", 22);
     private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount", 500);
     private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength", 5);
-    private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount", 50);
+    private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount", 40);
     private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount", 10);
     private static final int[] ZOOMLEVEL_SCALE = {
             400000000,

@@ -23,17 +23,18 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.NavigationFileParser;
+import slash.common.io.Files;
+import slash.common.io.Transfer;
 import slash.navigation.babel.BabelException;
+import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.domain.RouteCatalog;
 import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
-import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
@@ -45,9 +46,8 @@ import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
 import slash.navigation.gui.Constants;
-import slash.common.io.Files;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.util.RouteComments;
-import slash.common.io.Transfer;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -63,8 +63,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 /**
@@ -215,12 +217,18 @@ public abstract class BrowsePanel {
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
                 categoryTreeModel.getChildCount(root);
-                
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        treeCategories.setModel(categoryTreeModel);
-                        String selected = RouteConverter.getInstance().getCategoryPreference();
-                        selectTreePath(TreePathStringConversion.fromString(root, selected));
+                        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                        try {
+                            treeCategories.setModel(categoryTreeModel);
+                            String selected = RouteConverter.getInstance().getCategoryPreference();
+                            selectTreePath(TreePathStringConversion.fromString(root, selected));
+                        }
+                        finally {
+                            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                        }
                     }
                 });
             }
