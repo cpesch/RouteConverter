@@ -34,8 +34,9 @@ import java.util.ResourceBundle;
 
 public class ApplicationContext {
     private ResourceBundle bundle;
-    private String helpSetUrl;
-    private HelpBroker broker;
+    private ActionManager actionManager = new ActionManager();
+    private String helpBrokerUrl = null;
+    private HelpBroker broker = null;
 
     public ResourceBundle getBundle() {
         return bundle;
@@ -45,16 +46,20 @@ public class ApplicationContext {
         this.bundle = bundle;
     }
 
-    public HelpBroker getBroker() throws HelpSetException {
+    public ActionManager getActionManager() {
+        return actionManager;
+    }
+
+    public HelpBroker getHelpBroker() throws HelpSetException {
         if (broker == null) {
-            URL url = HelpSet.findHelpSet(null, helpSetUrl);
+            URL url = HelpSet.findHelpSet(null, helpBrokerUrl);
             HelpSet helpSet = new HelpSet(null, url);
             broker = helpSet.createHelpBroker();
         }
         return broker;
     }
 
-    public void setBroker(String helpSetUrl) {
-        this.helpSetUrl = helpSetUrl;
+    public void setHelpBrokerUrl(String helpBrokerUrl) {
+        this.helpBrokerUrl = helpBrokerUrl;
     }
 }

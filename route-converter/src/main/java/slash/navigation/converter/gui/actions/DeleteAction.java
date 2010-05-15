@@ -22,27 +22,26 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.helper.JTableHelper;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
- * {@link ActionListener} that deletes the selected rows of a {@link JTable}.
+ * {@link Action} that deletes the selected rows of a {@link JTable}.
  *
  * @author Christian Pesch
  */
 
-public class DeletePositions implements ActionListener {
+public class DeleteAction extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
 
-    public DeletePositions(JTable table, PositionsModel positionsModel) {
+    public DeleteAction(JTable table, PositionsModel positionsModel) {
         this.table = table;
         this.positionsModel = positionsModel;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             positionsModel.remove(selectedRows);

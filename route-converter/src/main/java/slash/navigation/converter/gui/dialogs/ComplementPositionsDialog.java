@@ -152,8 +152,9 @@ public class ComplementPositionsDialog extends SimpleDialog {
     }
 
     private void selectAll() {
-        RouteConverter.getInstance().selectAll();
-        int selectedRowCount = RouteConverter.getInstance().getPositionsView().getSelectedRowCount();
+        RouteConverter r = RouteConverter.getInstance();
+        r.getContext().getActionManager().run("select-all");
+        int selectedRowCount = r.getPositionsView().getSelectedRowCount();
         labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
     }
 

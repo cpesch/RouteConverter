@@ -144,7 +144,7 @@ public abstract class Application {
         ctx.setBundle(bundle);
         String helpSetUrl = bundle.getString("help-set");
         if (helpSetUrl != null)
-            ctx.setBroker(helpSetUrl);
+            ctx.setHelpBrokerUrl(helpSetUrl);
 
         return application;
     }

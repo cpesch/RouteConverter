@@ -18,17 +18,26 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui;
+package slash.navigation.converter.gui.actions;
+
+import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.gui.FrameAction;
+import javax.swing.*;
 
 /**
- * Exit the {@link SingleFrameApplication}.
+ * {@link Action} that initializes a new file.
  *
  * @author Christian Pesch
  */
 
-public class ExitAction extends FrameAction {
+public class NewFileAction extends FrameAction {
+    private final ConvertPanel convertPanel;
+
+    public NewFileAction(ConvertPanel convertPanel) {
+        this.convertPanel = convertPanel;
+    }
+
     public void run() {
-        Application.getInstance().exit(getEvent());
+        convertPanel.newFile();
     }
 }
-

@@ -20,30 +20,29 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.util.Positions;
-import slash.common.io.CompactCalendar;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
 /**
- * {@link ActionListener} that inserts a new {@link BaseNavigationPosition} after
+ * {@link Action} that inserts a new {@link BaseNavigationPosition} after
  * the last selected row of a {@link JTable}.
  *
  * @author Christian Pesch
  */
 
-public class InsertPosition implements ActionListener {
+public class NewPositionAction extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
 
-    public InsertPosition(JTable table, PositionsModel positionsModel) {
+    public NewPositionAction(JTable table, PositionsModel positionsModel) {
         this.table = table;
         this.positionsModel = positionsModel;
     }
@@ -53,14 +52,14 @@ public class InsertPosition implements ActionListener {
         // if there is only one position or it is the first row, choose the map center
         if (row >= positionsModel.getRowCount() - 1)
             return null;
-        // otherwhise center between given positions
+        // otherwise center between given positions
         BaseNavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
         return Positions.center(Arrays.asList(second, position));
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : table.getRowCount();
         BaseNavigationPosition center = selectedRows.length > 0 ? calculateCenter(row) :
@@ -75,7 +74,7 @@ public class InsertPosition implements ActionListener {
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(),
                 center.getTime() != null ? center.getTime() : CompactCalendar.getInstance(),
-                RouteConverter.getBundle().getString("insert-position-comment"));
+                RouteConverter.getBundle().getString("new-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JTableHelper.scrollToPosition(table, insertRow);

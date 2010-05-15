@@ -197,7 +197,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        RouteConverter.getInstance().deletePositions();
+        RouteConverter.getInstance().getContext().getActionManager().run("delete-position");
         handlePositionsUpdate();
     }
 

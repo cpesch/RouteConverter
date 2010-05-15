@@ -182,6 +182,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         } else {
             mapPanel.setVisible(false);
         }
+
+        initializeActions();
     }
 
     private void openFrame() {
@@ -222,12 +224,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();
+                boolean enablePrintActions = false;
                 if (mapView.getComponent() == null || cause != null) {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
                     mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
+                    enablePrintActions = true;
                 }
 
                 int location = preferences.getInt(DIVIDER_LOCATION_PREFERENCE, -1);
@@ -252,6 +256,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
                         }
                     }
                 });
+
+                ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+                actionManager.enable("print-map", enablePrintActions);
+                actionManager.enable("print-map-and-route", enablePrintActions);
+                actionManager.enable("print-elevation-profile", enablePrintActions);
             }
         });
     }
@@ -518,10 +527,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return getConvertPanel().getPositionsView();
     }
 
-    public void selectAll() {
-        getConvertPanel().selectAll();
-    }
-
     public int selectDuplicatesWithinDistance(int duplicate) {
         return getConvertPanel().selectDuplicatesWithinDistance(duplicate);
     }
@@ -565,10 +570,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public void revertPositions() {
         getPositionsModel().revert();
         getConvertPanel().clearSelection();
-    }
-
-    public void deletePositions() {
-        getConvertPanel().deletePositions();
     }
 
     public void renameRoute(String name) {
@@ -761,20 +762,31 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private JMenuBar createMenuBar() {
         JMenu fileMenu = JMenuHelper.createMenu("file");
-        fileMenu.add(JMenuHelper.createItem("new", new NewAction()));
-        fileMenu.add(JMenuHelper.createItem("open", new OpenAction()));
-        SaveAction save = new SaveAction();
-        // TODO disable action if file is not modified
-        fileMenu.add(JMenuHelper.createItem("save", save));
-        // TODO add item for uploading to web
+        fileMenu.add(JMenuHelper.createItem("new"));
+        fileMenu.add(JMenuHelper.createItem("open"));
+        fileMenu.add(JMenuHelper.createItem("save"));
+        fileMenu.add(JMenuHelper.createItem("upload"));
         JMenu printMenu = JMenuHelper.createMenu("print");
-        printMenu.add(JMenuHelper.createItem("print-map", new PrintMapAction(false)));
-        printMenu.add(JMenuHelper.createItem("print-map-and-route", new PrintMapAction(true)));
-        printMenu.add(JMenuHelper.createItem("print-elevation-profile", new PrintElevationProfileAction()));
+        printMenu.add(JMenuHelper.createItem("print-map"));
+        printMenu.add(JMenuHelper.createItem("print-map-and-route"));
+        printMenu.add(JMenuHelper.createItem("print-elevation-profile"));
         fileMenu.add(printMenu);
         fileMenu.addSeparator();
         // TODO add items for last used files
-        fileMenu.add(JMenuHelper.createItem("exit", new ExitAction()));
+        fileMenu.add(JMenuHelper.createItem("exit"));
+
+        JMenu editMenu = JMenuHelper.createMenu("edit");
+        // TODO add cut, copy, paste menu items here
+        editMenu.add(JMenuHelper.createItem("select-all"));
+        editMenu.addSeparator();
+        editMenu.add(JMenuHelper.createItem("new-position"));
+        editMenu.add(JMenuHelper.createItem("delete-position"));
+
+        JMenu viewMenu = JMenuHelper.createMenu("view");
+        // viewMenu.add(JMenuHelper.createItem("show-map", new ShowMap()));
+        // viewMenu.add(JMenuHelper.createItem("show-positionlist", new ShowPositionList()));
+        viewMenu.addSeparator();
+        // TODO add table menu items here
 
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
         toolsMenu.add(JMenuHelper.createItem("insert-positions", new InsertPositionsAction()));
@@ -794,6 +806,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        menuBar.add(viewMenu);
         menuBar.add(toolsMenu);
         menuBar.add(extrasMenu);
         menuBar.add(Box.createHorizontalGlue());
@@ -801,22 +815,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return menuBar;
     }
 
-    private class NewAction extends FrameAction {
-        public void run() {
-            getConvertPanel().newFile();
-        }
-    }
-
-    private class OpenAction extends FrameAction {
-        public void run() {
-            getConvertPanel().openFile();
-        }
-    }
-
-    private class SaveAction extends FrameAction {
-        public void run() {
-            getConvertPanel().saveFile();
-        }
+    private void initializeActions() {
+        ActionManager actionManager = getInstance().getContext().getActionManager();
+        actionManager.register("exit", new ExitAction());
+        actionManager.register("print-map", new PrintMapAction(false));
+        actionManager.register("print-map-and-route", new PrintMapAction(true));
+        actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
     }
 
     private class PrintMapAction extends FrameAction {
@@ -831,7 +835,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private class PrintElevationProfileAction extends FrameAction {
+    private class PrintElevationProfileAction extends FrameAction { // TODO move to analyse panel
         public void run() {
             printElevationProfile();
         }

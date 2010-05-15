@@ -24,10 +24,7 @@ import slash.navigation.base.*;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
 
 import javax.swing.*;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import java.util.List;
 
 /**
@@ -41,7 +38,6 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     private FormatAndRoutes formatAndRoutes;
     private PositionsModel positionsModel = new PositionsModel();
     private CharacteristicsModel characteristicsModel = new CharacteristicsModel();
-
 
     public FormatAndRoutesModel() {
         getPositionsModel().addTableModelListener(new TableModelListener() {
@@ -156,6 +152,22 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
 
     public void setModified(boolean modified) {
         this.modified = modified;
+        fireModified();
+    }
+
+    protected transient ChangeEvent changeEvent = null;
+
+    protected void fireModified() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
+                ((ChangeListener) listeners[i + 1]).stateChanged(null);
+            }
+        }
+    }
+
+    public void addModifiedListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
     }
 
     public Object getSelectedItem() {

@@ -20,24 +20,24 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.gui.FrameAction;
+
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
- * {@link ActionListener} that selects all rows of a {@link JTable}.
+ * {@link Action} that selects all rows of a {@link JTable}.
  *
  * @author Christian Pesch
  */
 
-public class SelectAll implements ActionListener {
+public class SelectAllAction extends FrameAction {
     private final JTable table;
 
-    public SelectAll(JTable table) {
+    public SelectAllAction(JTable table) {
         this.table = table;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         table.getSelectionModel().addSelectionInterval(0, table.getRowCount() - 1);
     }
 }

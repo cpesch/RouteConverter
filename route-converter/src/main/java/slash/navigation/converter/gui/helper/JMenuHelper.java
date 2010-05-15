@@ -43,7 +43,7 @@ public class JMenuHelper {
         ResourceBundle bundle = Application.getInstance().getContext().getBundle();
         return bundle.containsKey(key) ? bundle.getString(key) : null;
     }
-    
+
     public static JMenu createMenu(String name) {
         JMenu menu = new JMenu(getString(name + "-menu"));
         String mnemonic = Transfer.trim(getOptionalString(name + "-menu-mnemonic"));
@@ -53,7 +53,7 @@ public class JMenuHelper {
         return menu;
     }
 
-    public static JMenuItem createItem(String name, Action action) {
+    public static JMenuItem createItem(String name, Action action) {  // TODO remove me later
         action.putValue(Action.NAME, name);
         JMenuItem item = new JMenuItem(action);
         item.setText(getString(name + "-action"));
@@ -74,5 +74,9 @@ public class JMenuHelper {
             item.setDisabledIcon(Constants.loadIcon(disabledIconUrl));
         CSH.setHelpIDString(item, name + "-action");
         return item;
+    }
+
+    public static JMenuItem createItem(String name) {
+        return createItem(name, Application.getInstance().getContext().getActionManager().get(name));
     }
 }

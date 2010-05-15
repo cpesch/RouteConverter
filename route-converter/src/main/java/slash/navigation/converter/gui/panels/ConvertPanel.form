@@ -254,24 +254,24 @@
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-up-tooltip"/>
             </properties>
           </component>
-          <component id="354f7" class="javax.swing.JButton" binding="buttonInsertIntoPositionList">
+          <component id="354f7" class="javax.swing.JButton" binding="buttonNewPosition">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="slash/navigation/converter/gui/insert-position.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="insert-position-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-position-action-tooltip"/>
             </properties>
           </component>
-          <component id="cc095" class="javax.swing.JButton" binding="buttonDeleteFromPositionList">
+          <component id="cc095" class="javax.swing.JButton" binding="buttonDeletePosition">
             <constraints>
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="slash/navigation/converter/gui/delete-position.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positions-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-position-action-tooltip"/>
             </properties>
           </component>
           <component id="7c7e4" class="javax.swing.JButton" binding="buttonMovePositionDown">

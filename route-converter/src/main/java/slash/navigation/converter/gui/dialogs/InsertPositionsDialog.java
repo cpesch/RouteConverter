@@ -130,7 +130,7 @@ public class InsertPositionsDialog extends SimpleDialog {
 
     private void selectAll() {
         RouteConverter r = RouteConverter.getInstance();
-        r.selectAll();
+        r.getContext().getActionManager().run("select-all");
         int selectedRowCount = r.getPositionsView().getSelectedRowCount();
         labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
     }
