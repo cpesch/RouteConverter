@@ -91,7 +91,7 @@ public abstract class BaseMapView implements MapView {
             25000,
             12500,
             6400,
-            6400
+            3200
     };
     private static final int MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION = 16;
 
@@ -1072,7 +1072,8 @@ public abstract class BaseMapView implements MapView {
                 synchronized (notificationMutex) {
                     int index = positions.indexOf(before) + 1;
                     for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-                        positionsModel.add(index, coordinates.get(i - 2), coordinates.get(i - 3), null, null, null, "Seconds: " + coordinates.get(i) + " Meters: " + coordinates.get(i - 1));
+                        positionsModel.add(index, coordinates.get(i - 2), coordinates.get(i - 3), null, null, null,
+                                "Seconds: " + coordinates.get(i) + " Meters: " + coordinates.get(i - 1)); // TODO silly comment for now
                     }
                 }
 
