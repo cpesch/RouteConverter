@@ -227,6 +227,7 @@ public abstract class ConvertPanel {
         actionManager.register("new", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
         actionManager.register("save", new SaveAction(this));
+        actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
         actionManager.register("upload", new UploadAction(this));
 
@@ -538,7 +539,7 @@ public abstract class ConvertPanel {
         formatAndRoutesModel.setSelectedItem(gpxRoute);
     }
 
-    private void saveFile(File file, NavigationFormat format) {
+    private void saveFile(File file, NavigationFormat format, boolean confirmOverwrite, boolean openAfterSave) {
         RouteConverter r = RouteConverter.getInstance();
 
         r.setSavePathPreference(format, file.getParent());
@@ -563,26 +564,28 @@ public abstract class ConvertPanel {
             }
         }
 
-        saveFile(file, format, route, fileCount);
+        saveFile(file, format, route, fileCount, confirmOverwrite, openAfterSave);
     }
 
-    private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount) {
-        RouteConverter r = RouteConverter.getInstance();
-
+    private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount,
+                          boolean confirmOverwrite, boolean openAfterSave) {
         File[] targets = Files.createTargetFiles(file, fileCount, format.getExtension(), format.getMaximumFileNameLength());
-        for (File target : targets) {
-            if (target.exists()) {
-                String path = Files.createReadablePath(target);
-                if (confirmOverwrite(path))
-                    return;
-                break;
+        if (confirmOverwrite) {
+            for (File target : targets) {
+                if (target.exists()) {
+                    String path = Files.createReadablePath(target);
+                    if (confirmOverwrite(path))
+                        return;
+                    break;
+                }
             }
         }
 
+        RouteConverter r = RouteConverter.getInstance();
         String targetsAsString = Files.printArrayToDialogString(targets);
-        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        Constants.startWaitCursor(r.getFrame().getRootPane());
         try {
-            if (format.isSupportsMultipleRoutes() && (formatAndRoutesModel.getRoutes().size() > 1)) {
+            if (format.isSupportsMultipleRoutes()) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
                 boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
@@ -590,6 +593,11 @@ public abstract class ConvertPanel {
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
+
+            if (openAfterSave) {
+                openPositionList(Files.toUrls(targets[0]), format);
+                log.info("Open after save: " + targets[0]);
+            }
         } catch (Throwable t) {
             log.severe("Save error " + file + "," + format + ": " + t.getMessage());
 
@@ -602,6 +610,10 @@ public abstract class ConvertPanel {
     }
 
     public void saveFile() {
+        saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false);
+    }
+
+    public void saveAsFile() {
         getChooser().setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
         setWriteFormatFileFilters(getChooser());
         getChooser().setSelectedFile(createSelectedTarget());
@@ -619,7 +631,7 @@ public abstract class ConvertPanel {
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
-        saveFile(selected, selectedFormat);
+        saveFile(selected, selectedFormat, true, true);
     }
 
     private NavigationFormat getSelectedFormat(FileFilter fileFilter) {

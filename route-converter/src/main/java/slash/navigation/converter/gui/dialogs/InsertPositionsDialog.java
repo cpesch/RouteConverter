@@ -41,7 +41,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
+ * Dialog for inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -185,7 +185,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         panel3.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonSelectAll = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectAll, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select-all"));
+        this.$$$loadButtonText$$$(buttonSelectAll, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select-all-action"));
         panel3.add(buttonSelectAll, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonClearSelection = new JButton();
         this.$$$loadButtonText$$$(buttonClearSelection, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("clear-selection"));

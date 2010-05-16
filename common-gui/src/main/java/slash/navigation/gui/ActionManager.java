@@ -55,6 +55,7 @@ public class ActionManager {
         if (found != null)
             throw new IllegalArgumentException("action '" + found + "' for '" + actionName + "' already registered");
         actionMap.put(actionName, action);
+        action.putValue(Action.NAME, actionName);
         ProxyAction proxyAction = proxyActionMap.get(actionName);
         if (proxyAction != null)
             proxyAction.setDelegate(action);

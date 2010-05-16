@@ -25,19 +25,19 @@ import slash.navigation.gui.FrameAction;
 import javax.swing.*;
 
 /**
- * {@link Action} that saves the file.
+ * {@link Action} that saves as a file.
  *
  * @author Christian Pesch
  */
 
-public class SaveAction extends FrameAction {
+public class SaveAsAction extends FrameAction {
     private final ConvertPanel convertPanel;
 
-    public SaveAction(ConvertPanel convertPanel) {
+    public SaveAsAction(ConvertPanel convertPanel) {
         this.convertPanel = convertPanel;
     }
 
     public void run() {
-        convertPanel.saveFile();
+        convertPanel.saveAsFile();
     }
 }

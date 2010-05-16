@@ -765,6 +765,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         fileMenu.add(JMenuHelper.createItem("new"));
         fileMenu.add(JMenuHelper.createItem("open"));
         fileMenu.add(JMenuHelper.createItem("save"));
+        fileMenu.add(JMenuHelper.createItem("save-as"));
         fileMenu.add(JMenuHelper.createItem("upload"));
         JMenu printMenu = JMenuHelper.createMenu("print");
         printMenu.add(JMenuHelper.createItem("print-map"));
@@ -783,9 +784,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         editMenu.add(JMenuHelper.createItem("delete-position"));
 
         JMenu viewMenu = JMenuHelper.createMenu("view");
-        // viewMenu.add(JMenuHelper.createItem("show-map", new ShowMap()));
-        // viewMenu.add(JMenuHelper.createItem("show-positionlist", new ShowPositionList()));
-        viewMenu.addSeparator();
+        viewMenu.add(JMenuHelper.createItem("hide-map"));
+        viewMenu.add(JMenuHelper.createItem("hide-positionlist"));
+        // viewMenu.addSeparator();
         // TODO add table menu items here
 
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
@@ -821,6 +822,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
         actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
+        actionManager.register("hide-map", new MoveSplitPaneDividerAction(splitPane, 0));
+        actionManager.register("hide-positionlist", new MoveSplitPaneDividerAction(splitPane, Integer.MAX_VALUE));
+
     }
 
     private class PrintMapAction extends FrameAction {

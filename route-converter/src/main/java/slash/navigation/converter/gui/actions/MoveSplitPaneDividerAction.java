@@ -20,24 +20,25 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.FrameAction;
 import javax.swing.*;
 
 /**
- * {@link Action} that saves the file.
+ * {@link Action} that moves the divider location of a given split pane.
  *
  * @author Christian Pesch
  */
 
-public class SaveAction extends FrameAction {
-    private final ConvertPanel convertPanel;
+public class MoveSplitPaneDividerAction extends FrameAction {
+    private JSplitPane splitPane;
+    private int dividerLocation;
 
-    public SaveAction(ConvertPanel convertPanel) {
-        this.convertPanel = convertPanel;
+    public MoveSplitPaneDividerAction(JSplitPane splitPane, int dividerLocation) {
+        this.splitPane = splitPane;
+        this.dividerLocation = dividerLocation;
     }
 
     public void run() {
-        convertPanel.saveFile();
+        splitPane.setDividerLocation(dividerLocation);
     }
 }
