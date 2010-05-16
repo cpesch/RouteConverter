@@ -86,7 +86,7 @@
 
    function setMapType(mapType) {
        var types = map.getMapTypes();
-       for (i=0; i < types.length; i++) {
+       for (var i=0; i < types.length; i++) {
            var type = types[i];
            if(type.getName() == mapType) {
                map.setMapType(type);
@@ -126,10 +126,12 @@
        GEvent.addListener(directions, "load", function() {
            var polyline = directions.getPolyline();
            var result = [];
-           for (i = 0; i < polyline.getVertexCount(); i++) {
+           for (var i = 0; i < polyline.getVertexCount(); i++) {
                var vertex = polyline.getVertex(i);
                result.push(vertex.lat());
                result.push(vertex.lng());
+               result.push(0);
+               result.push(0);
            }
            callJavaWithPost("Insert-All-Waypoints: " + index + "/" + result.join("/") + "\n\n");
        });
@@ -139,13 +141,15 @@
    function insertOnlyTurnpoints(index) {
        var directions = new GDirections(null, null);
        GEvent.addListener(directions, "load", function() {
-           if (directions.getNumRoutes() > 0) {
-               var route = directions.getRoute(0);
+           for (var i = 0; i < directions.getNumRoutes(); i++) {
+               var route = directions.getRoute(i);
                var result = [];
-               for (i = 0; i < route.getNumSteps(); i++) {
-                   var step = route.getStep(i).getLatLng();
-                   result.push(step.lat());
-                   result.push(step.lng());
+               for (var j = 0; j < route.getNumSteps(); j++) {
+                   var step = route.getStep(j);
+                   result.push(step.getLatLng().lat());
+                   result.push(step.getLatLng().lng());
+                   result.push(step.getDistance().meters);
+                   result.push(step.getDuration().seconds);
                }
                callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + result.join("/") + "\n\n");
            }
@@ -157,8 +161,7 @@
        var directions = new GDirections(null, document.getElementById("directions"));
        GEvent.addListener(directions, "load", function() {
            callJava("load/" + directions.getDistance().meters + "/" + directions.getDuration().seconds);
-
-           for (i = 0; i < directions.getNumGeocodes(); i++) {
+           for (var i = 0; i < directions.getNumGeocodes(); i++) {
                directions.getMarker(i).hide();
            }
            addDirection(directions);

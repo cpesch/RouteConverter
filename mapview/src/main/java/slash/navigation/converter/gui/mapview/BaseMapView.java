@@ -91,7 +91,7 @@ public abstract class BaseMapView implements MapView {
             25000,
             12500,
             6400,
-            3200
+            6400
     };
     private static final int MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION = 16;
 
@@ -669,11 +669,16 @@ public abstract class BaseMapView implements MapView {
         southWest.setLatitude(southWest.getLatitude() + height);
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        for (BaseNavigationPosition position : positions) {
+        result.add(positions.get(0));
+
+        for (int i = 1; i < positions.size() - 1; i += 1) {
+            BaseNavigationPosition position = positions.get(i);
             if (Positions.contains(northEast, southWest, position)) {
                 result.add(position);
             }
         }
+
+        result.add(positions.get(positions.size() - 1));
 
         log.info("filtered visible positions to reduce " + positions.size() + " positions to " + result.size());
         return result;
@@ -1021,16 +1026,12 @@ public abstract class BaseMapView implements MapView {
 
             Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
             if (zoomEndMatcher.matches()) {
-                int startZoomLevel = Transfer.parseInt(zoomEndMatcher.group(1));
-                int endZoomLevel = Transfer.parseInt(zoomEndMatcher.group(2));
-
                 synchronized (notificationMutex) {
                     // since setCenter() leads to a callback and thus paints the track twice
                     if (ignoreNextZoomCallback)
                         ignoreNextZoomCallback = false;
                     else
-                        // only repaint immediately if the user zooms into the map and needs more details
-                        haveToRepaintImmediately = startZoomLevel < endZoomLevel;
+                        haveToRepaintImmediately = true;
                     // if enabled, recenter map to selected positions after zooming
                     if (recenterAfterZooming)
                         haveToRecenterMap = true;
@@ -1064,14 +1065,14 @@ public abstract class BaseMapView implements MapView {
                     successorPredecessor = insertWaypointsQueue.remove(key);
                 }
 
-                if(coordinates.size() < 2 || successorPredecessor == null)
+                if(coordinates.size() < 4 || successorPredecessor == null)
                    break;
 
                 BaseNavigationPosition before = successorPredecessor.get(0);
                 synchronized (notificationMutex) {
                     int index = positions.indexOf(before) + 1;
-                    for (int i = coordinates.size() - 1; i > 0; i -= 2) {
-                        positionsModel.add(index, coordinates.get(i), coordinates.get(i - 1), null, null, null, null);
+                    for (int i = coordinates.size() - 1; i > 0; i -= 4) {
+                        positionsModel.add(index, coordinates.get(i - 2), coordinates.get(i - 3), null, null, null, "Seconds: " + coordinates.get(i) + " Meters: " + coordinates.get(i - 1));
                     }
                 }
 
@@ -1083,12 +1084,20 @@ public abstract class BaseMapView implements MapView {
     private List<Double> parseCoordinates(String coordinates) {
         List<Double> result = new ArrayList<Double>();
         StringTokenizer tokenizer = new StringTokenizer(coordinates, "/");
-        while(tokenizer.hasMoreTokens()) {
+        while (tokenizer.hasMoreTokens()) {
             Double longitude = Transfer.parseDouble(tokenizer.nextToken());
-            if(tokenizer.hasMoreTokens()) {
+            if (tokenizer.hasMoreTokens()) {
                 Double latitude = Transfer.parseDouble(tokenizer.nextToken());
-                result.add(longitude);
-                result.add(latitude);
+                if (tokenizer.hasMoreTokens()) {
+                    Double meters = Transfer.parseDouble(tokenizer.nextToken());
+                    if (tokenizer.hasMoreTokens()) {
+                        Double seconds = Transfer.parseDouble(tokenizer.nextToken());
+                        result.add(longitude);
+                        result.add(latitude);
+                        result.add(meters);
+                        result.add(seconds);
+                    }
+                }
             }
         }
         return result;
