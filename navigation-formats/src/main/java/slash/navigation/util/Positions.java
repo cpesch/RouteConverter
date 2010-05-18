@@ -138,7 +138,7 @@ public class Positions {
             if (time == null)
                 continue;
             Calendar calendar = time.getCalendar();
-            if (maximumTime == null || calendar.before(maximumTime))
+            if (maximumTime == null || calendar.after(maximumTime))
                 maximumTime = calendar;
         }
         return new Wgs84Position(maximumLongitude, maximumLatitude, null, null,
