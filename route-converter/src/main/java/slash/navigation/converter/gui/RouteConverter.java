@@ -762,7 +762,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private JMenuBar createMenuBar() {
         JMenu fileMenu = JMenuHelper.createMenu("file");
-        fileMenu.add(JMenuHelper.createItem("new"));
+        fileMenu.add(JMenuHelper.createItem("new-file"));
         fileMenu.add(JMenuHelper.createItem("open"));
         fileMenu.add(JMenuHelper.createItem("save"));
         fileMenu.add(JMenuHelper.createItem("save-as"));
@@ -777,17 +777,21 @@ public abstract class RouteConverter extends SingleFrameApplication {
         fileMenu.add(JMenuHelper.createItem("exit"));
 
         JMenu editMenu = JMenuHelper.createMenu("edit");
-        // TODO add cut, copy, paste menu items here
+        editMenu.add(JMenuHelper.createItem("cut"));
+        editMenu.add(JMenuHelper.createItem("copy"));
+        editMenu.add(JMenuHelper.createItem("paste"));
         editMenu.add(JMenuHelper.createItem("select-all"));
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("new-position"));
-        editMenu.add(JMenuHelper.createItem("delete-position"));
+        editMenu.add(JMenuHelper.createItem("delete"));
 
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("hide-map"));
         viewMenu.add(JMenuHelper.createItem("hide-positionlist"));
-        // viewMenu.addSeparator();
+        viewMenu.addSeparator();
+        JMenu columnMenu = JMenuHelper.createMenu("show-column");
         // TODO add table menu items here
+        viewMenu.add(columnMenu);
 
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
         toolsMenu.add(JMenuHelper.createItem("insert-positions", new InsertPositionsAction()));
@@ -795,7 +799,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         toolsMenu.add(JMenuHelper.createItem("complement-positions", new ComplementPositionsAction()));
         toolsMenu.add(JMenuHelper.createItem("delete-positions", new DeletePositionsAction()));
         toolsMenu.add(JMenuHelper.createItem("revert-positions", new RevertPositionListAction()));
-        // TODO add option to convert file without saving it
 
         JMenu extrasMenu = JMenuHelper.createMenu("extras");
         extrasMenu.add(JMenuHelper.createItem("options", new OptionsAction()));

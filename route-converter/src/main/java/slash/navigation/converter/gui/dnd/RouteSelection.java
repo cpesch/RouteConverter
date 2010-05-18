@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Acts as a container for drag and drop operations with routes.
+ * Acts as a container for drag and drop operations with {@link Route}s.
  *
  * @author Christian Pesch
  */

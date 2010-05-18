@@ -33,6 +33,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.RenameDialog;
 import slash.navigation.converter.gui.dialogs.UploadDialog;
+import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.models.*;
@@ -54,7 +55,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -153,7 +153,7 @@ public abstract class ConvertPanel {
         });
 
         buttonNewPosition.addActionListener(r.getContext().getActionManager().get("new-position"));
-        buttonDeletePosition.addActionListener(r.getContext().getActionManager().get("delete-position"));
+        buttonDeletePosition.addActionListener(r.getContext().getActionManager().get("delete"));
 
         buttonMovePositionDown.addActionListener(new FrameAction() {
             public void run() {
@@ -188,18 +188,6 @@ public abstract class ConvertPanel {
             }
         });
 
-        convertPanel.registerKeyboardAction(new FrameAction() {
-            public void run() {
-                r.getContext().getActionManager().run("new-position");
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-        tablePositions.registerKeyboardAction(new FrameAction() {
-            public void run() {
-                r.getContext().getActionManager().run("delete-position");
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
         tablePositions.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
@@ -221,19 +209,26 @@ public abstract class ConvertPanel {
         new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
         popupTable = new PositionTablePopupMenu();
 
-        ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("delete-position", new DeleteAction(getPositionsView(), getPositionsModel()));
+        ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
+        final ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
+        actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
+        actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));
         actionManager.register("new-position", new NewPositionAction(getPositionsView(), getPositionsModel()));
-        actionManager.register("new", new NewFileAction(this));
+        actionManager.register("new-file", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
+        actionManager.register("paste", new PasteAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("save", new SaveAction(this));
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
         actionManager.register("upload", new UploadAction(this));
 
+        JMenuHelper.registerKeyStroke(tablePositions, "copy");
+        JMenuHelper.registerKeyStroke(tablePositions, "cut");
+        JMenuHelper.registerKeyStroke(tablePositions, "paste");
+
         formatAndRoutesModel.addModifiedListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
                 actionManager.enable("save", formatAndRoutesModel.isModified());
             }
         });
@@ -261,6 +256,8 @@ public abstract class ConvertPanel {
                 convertPanel.requestFocus();
             }
         });
+
+        actionManager.enable("paste", false);
     }
 
     protected abstract void addDragAndDrop();
@@ -750,7 +747,9 @@ public abstract class ConvertPanel {
         buttonDeletePosition.setEnabled(existsASelectedPosition);
 
         ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
-        actionManager.enable("delete-position", existsASelectedPosition);
+        actionManager.enable("cut", existsASelectedPosition);
+        actionManager.enable("copy", existsASelectedPosition);
+        actionManager.enable("delete", existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
 
         RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
@@ -1039,14 +1038,14 @@ public abstract class ConvertPanel {
         buttonMovePositionUp.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("move-up-tooltip"));
         panel4.add(buttonMovePositionUp, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonNewPosition = new JButton();
-        buttonNewPosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/insert-position.png")));
+        buttonNewPosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/new-position.png")));
         buttonNewPosition.setText("");
         buttonNewPosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("new-position-action-tooltip"));
         panel4.add(buttonNewPosition, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePosition = new JButton();
         buttonDeletePosition.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/delete-position.png")));
         buttonDeletePosition.setText("");
-        buttonDeletePosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-position-action-tooltip"));
+        buttonDeletePosition.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-action-tooltip"));
         panel4.add(buttonDeletePosition, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonMovePositionDown = new JButton();
         buttonMovePositionDown.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/down.png")));
@@ -1095,7 +1094,7 @@ public abstract class ConvertPanel {
     }
 
     public class PositionTablePopupMenu extends TablePopupMenu {
-        private JMenuItem buttonDeletePositions, buttonAddCoordinates, buttonAddElevation,
+        private JMenuItem buttonAddCoordinates, buttonAddElevation,
                 buttonAddPostalAddress, buttonAddPopulatedPlace, buttonAddSpeed, buttonAddIndex,
                 buttonSplitPositionlist;
 
@@ -1106,11 +1105,13 @@ public abstract class ConvertPanel {
         protected JPopupMenu createPopupMenu() {
             JPopupMenu popupMenu = new JPopupMenu();
 
-            // TODO add cut, copy, paste menu items here
+            popupMenu.add(JMenuHelper.createItem("cut"));
+            popupMenu.add(JMenuHelper.createItem("copy"));
+            popupMenu.add(JMenuHelper.createItem("paste"));
             popupMenu.add(JMenuHelper.createItem("select-all"));
             popupMenu.addSeparator();
             popupMenu.add(JMenuHelper.createItem("new-position"));
-            popupMenu.add(JMenuHelper.createItem("delete-position"));
+            popupMenu.add(JMenuHelper.createItem("delete"));
             popupMenu.addSeparator();
 
             buttonAddCoordinates = new JMenuItem(RouteConverter.getBundle().getString("add-coordinates"));

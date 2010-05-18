@@ -62,7 +62,7 @@ public class JMenuHelper {
             item.setToolTipText(tooltip);
         String mnemonic = Transfer.trim(getOptionalString(name + "-action-mnemonic"));
         if (mnemonic != null && mnemonic.length() > 0)
-            item.setMnemonic(mnemonic.charAt(0));
+            setMnemonic(item, mnemonic.charAt(0));
         String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
         if (keystroke != null)
             item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
@@ -76,7 +76,42 @@ public class JMenuHelper {
         return item;
     }
 
+    private static int getMnemonicAmpersandIndex(String text) {
+        int i = -1;
+        do {
+            i = text.indexOf('&', i + 1);
+            if (i >= 0 && (i + 1) < text.length()) {
+                // before ' '
+                if (text.charAt(i + 1) == ' ') {
+                    continue;
+                    // before ', and after '
+                } else if (text.charAt(i + 1) == '\'' && i > 0 && text.charAt(i - 1) == '\'') {
+                    continue;
+                }
+                // ampersand is marking mnemonics
+                return i;
+            }
+        } while (i >= 0);
+        return -1;
+    }
+
+    private static void setMnemonic(JMenuItem item, char mnemonic) {
+        item.setMnemonic(mnemonic);
+        String text = item.getText();
+        int ampersandIndex = getMnemonicAmpersandIndex(text);
+        if (ampersandIndex != -1) {
+            item.setText(text.substring(0, ampersandIndex) + text.substring(ampersandIndex + 1));
+            item.setDisplayedMnemonicIndex(ampersandIndex);
+        }
+    }
+
     public static JMenuItem createItem(String name) {
         return createItem(name, Application.getInstance().getContext().getActionManager().get(name));
+    }
+
+    public static void registerKeyStroke(JComponent component, String name) {
+        String keystroke = getString(name + "-action-keystroke");
+        component.getInputMap().put(KeyStroke.getKeyStroke(keystroke), name);
+        component.getActionMap().put(name, Application.getInstance().getContext().getActionManager().get(name));
     }
 }

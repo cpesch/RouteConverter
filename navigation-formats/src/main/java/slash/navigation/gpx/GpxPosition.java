@@ -103,8 +103,7 @@ public class GpxPosition extends Wgs84Position {
 
     public <T> T getOrigin(Class<T> resultClass) {
         if (resultClass.isInstance(origin))
-            //noinspection unchecked
-            return (T) origin;
+            return resultClass.cast(origin);
         else
             return null;
     }

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.base.BaseNavigationPosition;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -29,31 +29,31 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Acts as a container for drag and drop operations with {@link CategoryTreeNode}s.
+ * Acts as a container for drag and drop operations with {@link BaseNavigationPosition}s.
  *
  * @author Christian Pesch
  */
 
-public class CategorySelection implements Transferable {
-    public static final DataFlavor categoryFlavor = new DataFlavor(CategorySelection.class, "List of Categories");
+public class PositionSelection implements Transferable {
+    public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
 
-    private final List<CategoryTreeNode> categories;
+    private final List<BaseNavigationPosition> positions;
 
-    public CategorySelection(List<CategoryTreeNode> categories) {
-        this.categories = categories;
+    public PositionSelection(List<BaseNavigationPosition> positions) {
+        this.positions = positions;
     }
 
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{categoryFlavor};
+        return new DataFlavor[]{positionFlavor};
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return categoryFlavor.equals(flavor);
+        return positionFlavor.equals(flavor);
     }
 
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if (!isDataFlavorSupported(flavor))
-            throw new UnsupportedFlavorException(categoryFlavor);
-        return categories;
+            throw new UnsupportedFlavorException(positionFlavor);
+        return positions;
     }
 }
