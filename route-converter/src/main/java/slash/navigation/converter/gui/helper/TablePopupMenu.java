@@ -64,7 +64,7 @@ public abstract class TablePopupMenu {
         if (e.isPopupTrigger()) {
             if (!table.hasFocus())
                 table.requestFocus();
-            if (table.getSelectedRowCount() == 0) {
+            if (table.getSelectedRowCount() < 2) {
                 // dispatch event again as a left mouse click for selections
                 // (do not try to spare one of the three events)
                 table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(),
