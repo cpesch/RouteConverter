@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
+import slash.common.io.TokenResolver;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
@@ -33,6 +34,7 @@ import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -70,7 +72,12 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private boolean loadWebPage(JWebBrowser webBrowser) {
         try {
-            File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html");
+            final String language = Locale.getDefault().getLanguage();
+            File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", language, new TokenResolver() {
+                public String resolveToken(String tokenName) {
+                    return tokenName.equals("locale") ? language : tokenName;
+                }
+            });
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");

@@ -20,17 +20,11 @@
 
 package slash.common.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 
 /**
- * Reads from input and writes to output. If start is called this
- * class' instances will read all available data from the InputStream
- * and write it to the OutputStream. Think of it as a U-pipe with a
- * buffer.
+ * As a pipe reads from input and writes to output.
  *
  * @author Christian Pesch
  */
@@ -38,48 +32,30 @@ import java.net.URL;
 public class InputOutput {
     private static final int CHUNK_SIZE = (4 * 1024);
 
-    private int chunkSize = CHUNK_SIZE;
-    private final InputStream input;
-    private final OutputStream output;
-
-    public InputOutput(InputStream input, OutputStream output) {
-        this.input = input;
-        this.output = output;
-    }
-
-    public int getChunkSize() {
-        return chunkSize;
-    }
-
-    public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
-    }
-
-    /**
-     * When started this read all available data from the
-     * InputStream and write it to the OutputStream.
-     * @throws IOException is forwared
-     */
-    public void start() throws IOException {
-        byte[] chunk = new byte[chunkSize];
-
-        while (true) {
-            int read = input.read(chunk);
-            if (read == -1) {
-                // no more data available
-                break;
-            }
-
-            output.write(chunk, 0, read);
+    public static int copy(InputStream input, OutputStream output) throws IOException {
+        byte[] buffer = new byte[CHUNK_SIZE];
+        int count = 0;
+        int read;
+        while ((read = input.read(buffer)) != -1) {
+            output.write(buffer, 0, read);
+            count += read;
         }
-
         input.close();
         output.close();
+        return count;
     }
 
-    public void close() throws IOException {
+    public static int copy(Reader input, Writer output) throws IOException {
+        char[] buffer = new char[CHUNK_SIZE];
+        int count = 0;
+        int read;
+        while ((read = input.read(buffer)) != -1) {
+            output.write(buffer, 0, read);
+            count += read;
+        }
         input.close();
         output.close();
+        return count;
     }
 
     public static byte[] readBytes(URL url) throws IOException {
@@ -88,9 +64,7 @@ public class InputOutput {
 
     public static byte[] readBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        InputOutput pipe = new InputOutput(in, out);
-        pipe.start();
-        pipe.close();
+        copy(in, out);
         return out.toByteArray();
     }
 }

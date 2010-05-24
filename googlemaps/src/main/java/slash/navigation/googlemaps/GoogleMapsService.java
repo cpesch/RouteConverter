@@ -30,10 +30,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 /**
@@ -47,8 +44,9 @@ public class GoogleMapsService {
     private static final String GOOGLE_MAPS_URL_PREFERENCE = "googleMapsUrl";
 
     private static String getGoogleMapsUrl(String payload) {
+        String language = Locale.getDefault().getLanguage();
         return preferences.get(GOOGLE_MAPS_URL_PREFERENCE, "http://maps.google.com/") +
-                "maps/geo?q=" + payload + "&output=kml&oe=utf8&sensor=false&key=ABQIAAAA3C3cggohQH044oJU10p9hRSfCfkamzr65RA-A3ZfXmc8dgIhVxTusI-8RzngggpTq0xoW5B1StZwug";
+                "maps/geo?q=" + payload + "&output=kml&oe=utf8&sensor=false&key=ABQIAAAA3C3cggohQH044oJU10p9hRSfCfkamzr65RA-A3ZfXmc8dgIhVxTusI-8RzngggpTq0xoW5B1StZwug&hl=" + language;
     }
 
 

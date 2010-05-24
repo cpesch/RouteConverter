@@ -17,9 +17,7 @@ public class FilesIT extends RouteServiceBase {
         File in = File.createTempFile("дцья", ".file");
         FileInputStream fis = new FileInputStream(new File(TEST_PATH + "filestest.gpx"));
         FileOutputStream fos = new FileOutputStream(in);
-        InputOutput output = new InputOutput(fis, fos);
-        output.start();
-        output.close();
+        InputOutput.copy(fis, fos);
         long inLength = in.length();
 
         Route route = category.addRoute("File with umlauts", in);
