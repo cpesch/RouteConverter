@@ -208,7 +208,7 @@ public abstract class ConvertPanel {
         });
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
-        new TableHeaderPopupMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
+        new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
         popupTable = new PositionTablePopupMenu();
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();

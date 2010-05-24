@@ -23,9 +23,8 @@ package slash.navigation.converter.gui.helper;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.ToggleColumnVisibilityAction;
 import slash.navigation.converter.gui.models.PositionTableColumn;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.converter.gui.models.PositionTableColumnButtonModel;
+import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.gui.ActionManager;
 import slash.navigation.gui.Application;
 
@@ -39,16 +38,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Creates a {@link JPopupMenu} for the {@link JTableHeader} of the {@link PositionsModel}.
+ * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PositionsTableColumnModel}.
  *
  * @author Christian Pesch
  */
 
-public class TableHeaderPopupMenu {
+public class TableHeaderMenu {
     private JPopupMenu popupMenu = new JPopupMenu();
     private PositionsTableColumnModel columnModel;
 
-    public TableHeaderPopupMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
+    public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
         this.columnModel = columnModel;
 
         JMenu viewMenu = JMenuHelper.findMenu(menuBar, "view");
