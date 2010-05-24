@@ -53,29 +53,6 @@ public class JMenuHelper {
         return menu;
     }
 
-    public static JMenuItem createItem(String name, Action action) {  // TODO remove me later
-        action.putValue(Action.NAME, name);
-        JMenuItem item = new JMenuItem(action);
-        item.setText(getString(name + "-action"));
-        String tooltip = Transfer.trim(getOptionalString(name + "-action-tooltip"));
-        if (tooltip != null)
-            item.setToolTipText(tooltip);
-        String mnemonic = Transfer.trim(getOptionalString(name + "-action-mnemonic"));
-        if (mnemonic != null && mnemonic.length() > 0)
-            setMnemonic(item, mnemonic.charAt(0));
-        String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
-        if (keystroke != null)
-            item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
-        String iconUrl = Transfer.trim(getOptionalString(name + "-action-icon"));
-        if (iconUrl != null)
-            item.setIcon(Constants.loadIcon(iconUrl));
-        String disabledIconUrl = Transfer.trim(getOptionalString(name + "-action-disabled-icon"));
-        if (disabledIconUrl != null)
-            item.setDisabledIcon(Constants.loadIcon(disabledIconUrl));
-        CSH.setHelpIDString(item, name + "-action");
-        return item;
-    }
-
     private static int getMnemonicAmpersandIndex(String text) {
         int i = -1;
         do {
@@ -106,7 +83,26 @@ public class JMenuHelper {
     }
 
     public static JMenuItem createItem(String name) {
-        return createItem(name, Application.getInstance().getContext().getActionManager().get(name));
+        Action action = Application.getInstance().getContext().getActionManager().get(name);
+        JMenuItem item = new JMenuItem(action);
+        item.setText(getString(name + "-action"));
+        String tooltip = Transfer.trim(getOptionalString(name + "-action-tooltip"));
+        if (tooltip != null)
+            item.setToolTipText(tooltip);
+        String mnemonic = Transfer.trim(getOptionalString(name + "-action-mnemonic"));
+        if (mnemonic != null && mnemonic.length() > 0)
+            setMnemonic(item, mnemonic.charAt(0));
+        String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
+        if (keystroke != null)
+            item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+        String iconUrl = Transfer.trim(getOptionalString(name + "-action-icon"));
+        if (iconUrl != null)
+            item.setIcon(Constants.loadIcon(iconUrl));
+        String disabledIconUrl = Transfer.trim(getOptionalString(name + "-action-disabled-icon"));
+        if (disabledIconUrl != null)
+            item.setDisabledIcon(Constants.loadIcon(disabledIconUrl));
+        CSH.setHelpIDString(item, name + "-action");
+        return item;
     }
 
     public static void registerKeyStroke(JComponent component, String name) {

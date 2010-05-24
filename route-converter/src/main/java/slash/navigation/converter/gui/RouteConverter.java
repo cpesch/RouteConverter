@@ -794,19 +794,19 @@ public abstract class RouteConverter extends SingleFrameApplication {
         viewMenu.add(columnMenu);
 
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
-        toolsMenu.add(JMenuHelper.createItem("insert-positions", new InsertPositionsAction()));
-        toolsMenu.add(JMenuHelper.createItem("geocode-position", new GeocodePositionAction()));
-        toolsMenu.add(JMenuHelper.createItem("complement-positions", new ComplementPositionsAction()));
-        toolsMenu.add(JMenuHelper.createItem("delete-positions", new DeletePositionsAction()));
-        toolsMenu.add(JMenuHelper.createItem("revert-positions", new RevertPositionListAction()));
+        toolsMenu.add(JMenuHelper.createItem("insert-positions"));
+        toolsMenu.add(JMenuHelper.createItem("geocode-position"));
+        toolsMenu.add(JMenuHelper.createItem("complement-positions"));
+        toolsMenu.add(JMenuHelper.createItem("delete-positions"));
+        toolsMenu.add(JMenuHelper.createItem("revert-positions"));
 
         JMenu extrasMenu = JMenuHelper.createMenu("extras");
-        extrasMenu.add(JMenuHelper.createItem("options", new OptionsAction()));
+        extrasMenu.add(JMenuHelper.createItem("options"));
 
         JMenu helpMenu = JMenuHelper.createMenu("help");
-        helpMenu.add(JMenuHelper.createItem("help-topics", new HelpTopicsAction()));
-        helpMenu.add(JMenuHelper.createItem("search-for-updates", new SearchForUpdatesAction()));
-        helpMenu.add(JMenuHelper.createItem("about", new AboutAction()));
+        helpMenu.add(JMenuHelper.createItem("help-topics"));
+        helpMenu.add(JMenuHelper.createItem("search-for-updates"));
+        helpMenu.add(JMenuHelper.createItem("about"));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -827,7 +827,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
         actionManager.register("hide-map", new MoveSplitPaneDividerAction(splitPane, 0));
         actionManager.register("hide-positionlist", new MoveSplitPaneDividerAction(splitPane, Integer.MAX_VALUE));
-
+        actionManager.register("insert-positions", new InsertPositionsAction());
+        actionManager.register("geocode-position", new GeocodePositionAction());
+        actionManager.register("complement-positions", new ComplementPositionsAction());
+        actionManager.register("delete-positions", new DeletePositionsAction());
+        actionManager.register("revert-positions", new RevertPositionListAction());
+        actionManager.register("options", new OptionsAction());
+        actionManager.register("help-topics", new HelpTopicsAction());
+        actionManager.register("search-for-updates", new SearchForUpdatesAction());
+        actionManager.register("about", new AboutAction());
     }
 
     private class PrintMapAction extends FrameAction {

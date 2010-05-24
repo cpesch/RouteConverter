@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.converter.gui.renderer.PositionsTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.PositionsTableCellRenderer;
+import slash.navigation.base.*;
 
 import javax.swing.*;
 import javax.swing.event.TableColumnModelEvent;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * Acts as a {@link TableColumnModel} for the positions of a {@link slash.navigation.base.BaseRoute}.
+ * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.
  *
  * @author Christian Pesch
  */

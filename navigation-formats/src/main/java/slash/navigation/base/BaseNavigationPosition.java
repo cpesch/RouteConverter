@@ -368,6 +368,10 @@ public abstract class BaseNavigationPosition {
         return new NmnPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
+    public Wgs84Position asNokiaLandmarkExchangePosition() {
+        return asWgs84Position();
+    }
+
     public Wgs84Position asOvlPosition() {
         return asWgs84Position();
     }
