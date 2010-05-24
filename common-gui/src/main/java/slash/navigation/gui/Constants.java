@@ -40,7 +40,8 @@ public class Constants {
     // for Java 5 compatibility
     public static final Locale ROOT_LOCALE = new Locale("", "", "");
 
-    // for dutch support which is not defined by a constant in Locale
+    // for Arabic Dutch support which is not defined by a constant in Locale
+    public static final Locale ARABIC = new Locale("ar", "SA");
     public static final Locale NL = new Locale("nl", "NL");
 
 
