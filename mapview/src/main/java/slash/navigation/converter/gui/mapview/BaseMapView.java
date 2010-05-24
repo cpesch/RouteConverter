@@ -64,7 +64,6 @@ public abstract class BaseMapView implements MapView {
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
     private static final String MAP_TYPE_PREFERENCE = "mapType";
-    protected static final String SCALE_CONTROL_PREFERENCE = "scaleControl";
 
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);

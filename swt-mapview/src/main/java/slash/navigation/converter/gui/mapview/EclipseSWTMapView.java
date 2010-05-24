@@ -194,8 +194,6 @@ public class EclipseSWTMapView extends BaseMapView {
     private void initializeAfterLoading() {
         resize();
         update(true);
-        if (preferences.getBoolean(SCALE_CONTROL_PREFERENCE, false))
-            executeScript("map.addControl(new GScaleControl());");
     }
 
     protected void disposeBrowser() {
