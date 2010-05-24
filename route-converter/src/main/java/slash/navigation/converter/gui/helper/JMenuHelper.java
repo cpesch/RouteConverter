@@ -46,6 +46,7 @@ public class JMenuHelper {
 
     public static JMenu createMenu(String name) {
         JMenu menu = new JMenu(getString(name + "-menu"));
+        menu.setName(name);
         String mnemonic = Transfer.trim(getOptionalString(name + "-menu-mnemonic"));
         if (mnemonic != null && mnemonic.length() > 0)
             menu.setMnemonic(mnemonic.charAt(0));
@@ -109,5 +110,14 @@ public class JMenuHelper {
         String keystroke = getString(name + "-action-keystroke");
         component.getInputMap().put(KeyStroke.getKeyStroke(keystroke), name);
         component.getActionMap().put(name, Application.getInstance().getContext().getActionManager().get(name));
+    }
+
+    public static JMenu findMenu(JMenuBar menuBar, String menuName) {
+        for (int i = 0; i < menuBar.getMenuCount(); i++) {
+            JMenu menu = menuBar.getMenu(i);
+            if (menu.getName().equals(menuName))
+                return menu;
+        }
+        return null;
     }
 }

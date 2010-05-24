@@ -21,17 +21,20 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.ToggleColumnVisibilityAction;
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
+import slash.navigation.converter.gui.models.PositionTableColumnButtonModel;
 import slash.navigation.gui.ActionManager;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,24 +45,36 @@ import java.util.List;
  */
 
 public class TableHeaderPopupMenu {
-    private final List<JCheckBoxMenuItem> menuItems = new ArrayList<JCheckBoxMenuItem>();
-    private final JPopupMenu popupMenu = new JPopupMenu();
+    private JPopupMenu popupMenu = new JPopupMenu();
+    private PositionsTableColumnModel columnModel;
 
-    public TableHeaderPopupMenu(JTableHeader tableHeader, PositionsTableColumnModel columnModel) {
+    public TableHeaderPopupMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
+        this.columnModel = columnModel;
+
+        JMenu viewMenu = JMenuHelper.findMenu(menuBar, "view");
+        viewMenu.addSeparator();
+        JMenu columnMenu = JMenuHelper.createMenu("show-column");
+        viewMenu.add(columnMenu);
+
+        VisibleListener visibleListener = new VisibleListener();
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
-            String text = RouteConverter.getBundle().getString("show-column") + " " + RouteConverter.getBundle().getString(column.getName());
-            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text, column.isVisible());
-            ShowColumnAction action = new ShowColumnAction(columnModel, column, menuItems);
-            actionManager.register("show-column-" + column.getName(), action);
-            // TODO en/disable actions
-            menuItem.addActionListener(action);
-            menuItems.add(menuItem);
-            popupMenu.add(menuItem);
-        }
+            column.addPropertyChangeListener(visibleListener);
 
-        // Action -> ColumnModel -> Column
-        // MenuItem -> ButtonModel -> Column
+            ToggleColumnVisibilityAction action = new ToggleColumnVisibilityAction(column);
+            actionManager.register("show-column-" + column.getName(), action);
+
+            String text = RouteConverter.getBundle().getString("show-column-prefix") + " " + RouteConverter.getBundle().getString(column.getName());
+            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text);
+            menuItem.setModel(new PositionTableColumnButtonModel(column, action));
+
+            popupMenu.add(menuItem);
+
+            String menuBarText = RouteConverter.getBundle().getString(column.getName());
+            JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuBarText);
+            menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
+            columnMenu.add(menuBarItem);
+        }
 
         tableHeader.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -72,43 +87,6 @@ public class TableHeaderPopupMenu {
         });
     }
 
-    static class ShowColumnAction extends FrameAction {
-        private PositionsTableColumnModel columnModel;
-        private PositionTableColumn column;
-        private List<JCheckBoxMenuItem> menuItems;
-
-        ShowColumnAction(PositionsTableColumnModel columnModel, PositionTableColumn column, List<JCheckBoxMenuItem> menuItems) {
-            this.columnModel = columnModel;
-            this.column = column;
-            this.menuItems = menuItems;
-        }
-
-        public void run() {
-            columnModel.toggleVisibility(column);
-
-            // TODO move this logic to model level
-            if (columnModel.getVisibleColumnCount() > 1)
-                enableMenuItems();
-            else
-                disableLastSelectedMenuItem();
-        }
-
-        private void enableMenuItems() {
-            for (JCheckBoxMenuItem menuItem : menuItems) {
-                if (!menuItem.isEnabled())
-                    menuItem.setEnabled(true);
-            }
-        }
-
-        private void disableLastSelectedMenuItem() {
-            for (JCheckBoxMenuItem menuItem : menuItems) {
-                if (menuItem.isSelected())
-                    menuItem.setEnabled(false);
-            }
-        }
-    }
-
-
     public JPopupMenu getPopupMenu() {
         return popupMenu;
     }
@@ -118,4 +96,42 @@ public class TableHeaderPopupMenu {
             popupMenu.show(e.getComponent(), e.getX(), e.getY());
         }
     }
+
+    private void visibilityChanged() {
+        if (columnModel.getVisibleColumnCount() > 1)
+            enableActions();
+        else
+            disableLastSelectedAction();
+    }
+
+    private List<ToggleColumnVisibilityAction> getActions() {
+        List<ToggleColumnVisibilityAction> result = new ArrayList<ToggleColumnVisibilityAction>();
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        for (PositionTableColumn column : columnModel.getPreparedColumns()) {
+            result.add((ToggleColumnVisibilityAction) actionManager.get("show-column-" + column.getName()));
+        }
+        return result;
+    }
+
+    private void enableActions() {
+        for (Action action : getActions()) {
+            if (!action.isEnabled())
+                action.setEnabled(true);
+        }
+    }
+
+    private void disableLastSelectedAction() {
+        for (ToggleColumnVisibilityAction action : getActions()) {
+            if (action.isSelected())
+                action.setEnabled(false);
+        }
+    }
+
+    private class VisibleListener implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getPropertyName().equals("visible"))
+                visibilityChanged();
+        }
+    }
+
 }

@@ -20,17 +20,27 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.FrameAction;
 
 /**
- * Reverts positions of the position list
+ * Toggles the visibilty of {@link PositionTableColumn} of a {@link PositionsTableColumnModel}.
  *
  * @author Christian Pesch
  */
 
-public class RevertPositionListAction extends FrameAction {
+public class ToggleColumnVisibilityAction extends FrameAction {
+    private PositionTableColumn column;
+
+    public ToggleColumnVisibilityAction(PositionTableColumn column) {
+        this.column = column;
+    }
+
     public void run() {
-        RouteConverter.getInstance().revertPositions();
+        column.toggleVisibility();
+    }
+
+    public boolean isSelected() {
+        return column.isVisible();
     }
 }

@@ -137,7 +137,6 @@ public abstract class Application {
         T application = ctor.newInstance();
 
         ApplicationContext ctx = application.getContext();
-        /* TODO Load the application resource map, notably the Application.* properties. */
         ResourceBundle bundle = tryToLoadBundleFor(applicationClass);
         if (bundle == null)
             bundle = tryToLoadBundleFor(applicationClass.getSuperclass());
@@ -145,7 +144,6 @@ public abstract class Application {
         String helpSetUrl = bundle.getString("help-set");
         if (helpSetUrl != null)
             ctx.setHelpBrokerUrl(helpSetUrl);
-
         return application;
     }
 

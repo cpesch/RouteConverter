@@ -30,6 +30,8 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -61,6 +63,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         predefineColumn(PositionColumns.LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_COLUMN_INDEX, "elevation", 40, true, rightAligned, headerRenderer);
 
+        VisibleListener visibleListener = new VisibleListener();
         PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size()];
         for (int i = 0; i < predefinedColumns.size(); i++) {
             PositionTableColumn column = predefinedColumns.get(i);
@@ -71,6 +74,8 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
                 columns[i] = column;
             else if(column.isVisible())
                 column.toggleVisibility();
+
+            column.addPropertyChangeListener(visibleListener);
         }
 
         for (PositionTableColumn column : columns) {
@@ -127,15 +132,6 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         return result;
     }
 
-    public void toggleVisibility(PositionTableColumn column) {
-        column.toggleVisibility();
-        if (column.isVisible())
-            addColumn(indexOf(column), column);
-        else
-            removeColumn(column);
-        preferences.putBoolean(VISIBLE_PREFERENCE + column.getName(), column.isVisible());
-    }
-
     public void moveColumn(int columnIndex, int newIndex) {
         super.moveColumn(columnIndex, newIndex);
         if (columnIndex == newIndex)
@@ -144,6 +140,21 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         for (int i = 0; i < getColumnCount(); i++) {
             PositionTableColumn column = (PositionTableColumn) getColumn(i);
             preferences.putInt(ORDER_PREFERENCE + column.getName(), i);
+        }
+    }
+
+    private void visibilityChanged(PositionTableColumn column) {
+        if (column.isVisible())
+            addColumn(indexOf(column), column);
+        else
+            removeColumn(column);
+        preferences.putBoolean(VISIBLE_PREFERENCE + column.getName(), column.isVisible());
+    }
+
+    private class VisibleListener implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getPropertyName().equals("visible"))
+                visibilityChanged((PositionTableColumn) evt.getSource());
         }
     }
 }

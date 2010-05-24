@@ -22,9 +22,11 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
 
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Acts as a {@link TableColumn} for the positions of a {@link BaseRoute}.
@@ -51,7 +53,17 @@ public class PositionTableColumn extends TableColumn {
         return visible;
     }
 
+    public void setVisible(boolean newVisible) {
+        boolean oldVisibile = this.visible;
+        this.visible = newVisible;
+
+        PropertyChangeEvent changeEvent = new PropertyChangeEvent(this, "visible", oldVisibile, newVisible);
+        for(PropertyChangeListener changeListener : getPropertyChangeListeners()) {
+            changeListener.propertyChange(changeEvent);
+        }
+    }
+
     public void toggleVisibility() {
-        visible = !visible;
+        setVisible(!isVisible());
     }
 }

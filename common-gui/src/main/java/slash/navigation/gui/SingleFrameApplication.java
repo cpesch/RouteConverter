@@ -70,8 +70,10 @@ public abstract class SingleFrameApplication extends Application {
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
-        if (menuBar != null)
+        if (menuBar != null) {
             frame.getRootPane().setJMenuBar(menuBar);
+            getContext().setMenuBar(menuBar);
+        }
     }
 
     protected void openFrame(JPanel contentPane) {

@@ -43,6 +43,7 @@ import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.ActionManager;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.FrameAction;
 import slash.navigation.nmn.Nmn7Format;
@@ -206,7 +207,8 @@ public abstract class ConvertPanel {
             }
         });
 
-        new TableHeaderPopupMenu(tablePositions.getTableHeader(), tableColumnModel);
+        JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
+        new TableHeaderPopupMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
         popupTable = new PositionTablePopupMenu();
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();

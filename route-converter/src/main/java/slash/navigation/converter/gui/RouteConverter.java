@@ -239,23 +239,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     splitPane.setDividerLocation(location);
                 else
                     splitPane.setDividerLocation(300);
-
-                splitPane.addPropertyChangeListener(new PropertyChangeListener() {
-                    private int location = 0;
-
-                    public void propertyChange(PropertyChangeEvent e) {
-                        if (!isMapViewAvailable())
-                            return;
-
-                        if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
-                            if (splitPane.getDividerLocation() != location) {
-                                location = splitPane.getDividerLocation();
-                                mapView.resize();
-                                preferences.putInt(DIVIDER_LOCATION_PREFERENCE, splitPane.getDividerLocation());
-                            }
-                        }
-                    }
-                });
+                splitPane.addPropertyChangeListener(new SplitPaneListener());
 
                 ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                 actionManager.enable("print-map", enablePrintActions);
@@ -760,6 +744,27 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    private class SplitPaneListener implements PropertyChangeListener {
+        private int location = 0;
+
+        public void propertyChange(PropertyChangeEvent e) {
+            if (!isMapViewAvailable())
+                return;
+
+            if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+                if (splitPane.getDividerLocation() != location) {
+                    location = splitPane.getDividerLocation();
+                    mapView.resize();
+                    preferences.putInt(DIVIDER_LOCATION_PREFERENCE, splitPane.getDividerLocation());
+
+                    ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+                    actionManager.enable("maximize-map", location < splitPane.getMaximumDividerLocation() - 10);
+                    actionManager.enable("maximize-positionlist", location > splitPane.getMinimumDividerLocation() + 10);
+                }
+            }
+        }
+    }
+
     private JMenuBar createMenuBar() {
         JMenu fileMenu = JMenuHelper.createMenu("file");
         fileMenu.add(JMenuHelper.createItem("new-file"));
@@ -786,12 +791,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         editMenu.add(JMenuHelper.createItem("delete"));
 
         JMenu viewMenu = JMenuHelper.createMenu("view");
-        viewMenu.add(JMenuHelper.createItem("hide-map"));
-        viewMenu.add(JMenuHelper.createItem("hide-positionlist"));
-        viewMenu.addSeparator();
-        JMenu columnMenu = JMenuHelper.createMenu("show-column");
-        // TODO add table menu items here
-        viewMenu.add(columnMenu);
+        viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
+        viewMenu.add(JMenuHelper.createItem("maximize-map"));
+        viewMenu.add(JMenuHelper.createItem("maximize-positionlist"));
 
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
         toolsMenu.add(JMenuHelper.createItem("insert-positions"));
@@ -825,8 +827,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
         actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
-        actionManager.register("hide-map", new MoveSplitPaneDividerAction(splitPane, 0));
-        actionManager.register("hide-positionlist", new MoveSplitPaneDividerAction(splitPane, Integer.MAX_VALUE));
+        actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
+        actionManager.register("maximize-map", new MoveSplitPaneDividerAction(splitPane, Integer.MAX_VALUE));
+        actionManager.register("maximize-positionlist", new MoveSplitPaneDividerAction(splitPane, 0));
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("geocode-position", new GeocodePositionAction());
         actionManager.register("complement-positions", new ComplementPositionsAction());
@@ -847,6 +850,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         public void run() {
             printMap(withRoute);
+        }
+    }
+
+    private class ShowMapAndPositionListAction extends FrameAction {
+        public void run() {
+            splitPane.setDividerLocation(getConvertPanel().getRootComponent().getMinimumSize().width);
         }
     }
 

@@ -23,6 +23,7 @@ package slash.navigation.gui;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.HelpSetException;
+import javax.swing.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,6 +36,7 @@ import java.util.ResourceBundle;
 public class ApplicationContext {
     private ResourceBundle bundle;
     private ActionManager actionManager = new ActionManager();
+    private JMenuBar menuBar = null;
     private String helpBrokerUrl = null;
     private HelpBroker broker = null;
 
@@ -48,6 +50,14 @@ public class ApplicationContext {
 
     public ActionManager getActionManager() {
         return actionManager;
+    }
+
+    public JMenuBar getMenuBar() {
+        return menuBar;
+    }
+
+    void setMenuBar(JMenuBar menuBar) {
+        this.menuBar = menuBar;
     }
 
     public HelpBroker getHelpBroker() throws HelpSetException {
