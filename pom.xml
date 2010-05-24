@@ -119,9 +119,10 @@
         <module>common</module>
         <module>common-gui</module>
         <module>elevationview</module>
-        <module>jaxb6</module>
         <module>geonames</module>
         <module>googlemaps</module>
+        <module>hgt</module>
+        <module>jaxb6</module>
         <module>mapview</module>
         <module>navigation-formats</module>
         <module>rest</module>
