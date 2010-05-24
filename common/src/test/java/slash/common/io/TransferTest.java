@@ -90,15 +90,15 @@ public class TransferTest extends TestCase {
     }
 
     public void testFormatDoubleAsBigDecimal() {
-        assertEquals(new BigDecimal("1.0"), Transfer.formatDouble(1.0, 5));
-        assertEquals(new BigDecimal("1.5"), Transfer.formatDouble(1.5, 5));
-        assertEquals(new BigDecimal("1.05"), Transfer.formatDouble(1.05, 5));
-        assertEquals(new BigDecimal("1.005"), Transfer.formatDouble(1.005, 5));
-        assertEquals(new BigDecimal("1.00004"), Transfer.formatDouble(1.00004, 5));
-        assertEquals(new BigDecimal("1.000044"), Transfer.formatDouble(1.000044, 5));
-        assertEquals(new BigDecimal("1.000045"), Transfer.formatDouble(1.000045, 5));
-        assertEquals(new BigDecimal("1.00005"), Transfer.formatDouble(1.00005, 5));
-        assertEquals(new BigDecimal("1.000004"), Transfer.formatDouble(1.000004, 5));
-        assertEquals(new BigDecimal("1.000005"), Transfer.formatDouble(1.000005, 5));
+        assertEquals(new BigDecimal("1.0"), Transfer.formatBigDecimal(1.0, 5));
+        assertEquals(new BigDecimal("1.5"), Transfer.formatBigDecimal(1.5, 5));
+        assertEquals(new BigDecimal("1.05"), Transfer.formatBigDecimal(1.05, 5));
+        assertEquals(new BigDecimal("1.005"), Transfer.formatBigDecimal(1.005, 5));
+        assertEquals(new BigDecimal("1.00004"), Transfer.formatBigDecimal(1.00004, 5));
+        assertEquals(new BigDecimal("1.000044"), Transfer.formatBigDecimal(1.000044, 5));
+        assertEquals(new BigDecimal("1.000045"), Transfer.formatBigDecimal(1.000045, 5));
+        assertEquals(new BigDecimal("1.00005"), Transfer.formatBigDecimal(1.00005, 5));
+        assertEquals(new BigDecimal("1.000004"), Transfer.formatBigDecimal(1.000004, 5));
+        assertEquals(new BigDecimal("1.000005"), Transfer.formatBigDecimal(1.000005, 5));
     }
 }

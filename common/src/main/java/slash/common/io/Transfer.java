@@ -91,7 +91,7 @@ public class Transfer {
         return buffer.toString();
     }
 
-    public static BigDecimal formatDouble(Double aDouble, int maximumFractionCount) {
+    public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
         if(aDouble == null)
             return null;
         if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
@@ -99,20 +99,32 @@ public class Transfer {
         return BigDecimal.valueOf(aDouble);
     }
 
+    public static double formatDouble(Double aDouble, int maximumFractionCount) {
+        if(aDouble == null)
+            return Double.NaN;
+        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+            aDouble = roundFraction(aDouble, maximumFractionCount);
+        return aDouble;
+    }
+
     public static BigDecimal formatPosition(Double longitudeOrLatitude) {
+        return formatBigDecimal(longitudeOrLatitude, 7);
+    }
+
+    public static double formatPositionAsDouble(Double longitudeOrLatitude) {
         return formatDouble(longitudeOrLatitude, 7);
     }
 
     public static BigDecimal formatElevation(Double elevation) {
-        return formatDouble(elevation, 2);
+        return formatBigDecimal(elevation, 2);
     }
 
     public static BigDecimal formatHeading(Double heading) {
-        return formatDouble(heading, 1);
+        return formatBigDecimal(heading, 1);
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        return formatDouble(speed, 2);
+        return formatBigDecimal(speed, 2);
     }
 
     public static Double formatDouble(BigDecimal aBigDecimal) {
@@ -192,6 +204,12 @@ public class Transfer {
         if(anInteger == null)
             return null;
         return BigInteger.valueOf(anInteger);
+    }
+
+    public static Float formatFloat(Double aDouble) {
+        if(aDouble == null)
+            return null;
+        return aDouble.floatValue();
     }
 
     public static Double parseDouble(String string) {
