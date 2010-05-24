@@ -31,6 +31,7 @@ import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.*;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -132,6 +133,10 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public GpxRoute asTcx2Format() {
         return asGpxFormat(new Tcx2Format());
+    }
+
+    public GpxRoute asNokiaLandmarkExchangeFormat() {
+        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {

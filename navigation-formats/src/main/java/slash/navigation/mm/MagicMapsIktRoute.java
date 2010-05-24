@@ -31,6 +31,7 @@ import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.*;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
@@ -159,6 +160,10 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
     public GpxRoute asTcx2Format() {
         return asGpxFormat(new Tcx2Format());
+    }
+
+    public GpxRoute asNokiaLandmarkExchangeFormat() {
+        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {

@@ -20,6 +20,8 @@
 
 package slash.navigation.base;
 
+import org.junit.ComparisonFailure;
+import org.junit.Test;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
@@ -33,6 +35,7 @@ import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
@@ -640,12 +643,33 @@ public class ConvertIT extends ConvertBase {
     }
 
 
-    public void testConvertNokiaLandmarkExchangeToNavigatingPoiWarner() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.lmx", new NokiaLandmarkExchangeFormat(), new NavigatingPoiWarnerFormat());
+    public void testConvertNokiaLandmarkExchangeToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.lmx", new NokiaLandmarkExchangeFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.lmx", new NokiaLandmarkExchangeFormat(), new Gpx11Format());
+    }
+
+    public void testConvertNokiaLandmarkExchangeUtf8ToNavigatingPoiWarnerIso88591Fails() throws IOException {
+        // source is UTF8 while target is only ISO8859-1
+        assertTestFails(new ThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from.lmx", new NokiaLandmarkExchangeFormat(), new NavigatingPoiWarnerFormat());
+            }
+        });
+    }
+
+    public void testConvertNokiaLandmarkExchangeUtf8ToNavigatingPoiWarnerIso88591() throws IOException {
+        convertRoundtrip(SAMPLE_PATH + "file1.lmx", new NokiaLandmarkExchangeFormat(), new NavigatingPoiWarnerFormat());
+        convertRoundtrip(SAMPLE_PATH + "file2.lmx", new NokiaLandmarkExchangeFormat(), new NavigatingPoiWarnerFormat());
+        convertRoundtrip(SAMPLE_PATH + "file3.lmx", new NokiaLandmarkExchangeFormat(), new NavigatingPoiWarnerFormat());
     }
 
     public void testConvertOvlToNokiaLandmarkExchange() throws IOException {
         convertRoundtrip(TEST_PATH + "from.ovl", new OvlFormat(), new NokiaLandmarkExchangeFormat());
+    }
+
+    public void testConvertViaMichelinToNokiaLandmarkExchange() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new NokiaLandmarkExchangeFormat());
+        convertRoundtrip(TEST_PATH + "from-itinerary.xvm", new ViaMichelinFormat(), new NokiaLandmarkExchangeFormat());
     }
 
 

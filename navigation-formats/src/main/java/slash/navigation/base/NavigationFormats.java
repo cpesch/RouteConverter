@@ -35,6 +35,7 @@ import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
@@ -121,6 +122,7 @@ public final class NavigationFormats {
         addFormat(Tcx1Format.class);
         addFormat(Tcx2Format.class);
         addFormat(Crs1Format.class);
+        addFormat(NokiaLandmarkExchangeFormat.class);
         addFormat(KlickTelRouteFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
@@ -129,7 +131,6 @@ public final class NavigationFormats {
         addFormat(KienzleGpsFormat.class);
 
         // BabelFormats
-        addFormat(NokiaLandmarkExchangeFormat.class);
         addFormat(GarminMapSource6Format.class);
         addFormat(GarminMapSource5Format.class);
         addFormat(MicrosoftAutoRouteFormat.class);

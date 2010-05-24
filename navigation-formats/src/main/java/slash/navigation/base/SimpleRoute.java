@@ -29,6 +29,7 @@ import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
 import slash.navigation.kml.*;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
 import slash.navigation.mm.MagicMaps2GoFormat;
@@ -311,6 +312,10 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     public GpxRoute asTcx2Format() {
         return asGpxFormat(new Tcx2Format());
+    }
+
+    public GpxRoute asNokiaLandmarkExchangeFormat() {
+        return asGpxFormat(new NokiaLandmarkExchangeFormat());
     }
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {

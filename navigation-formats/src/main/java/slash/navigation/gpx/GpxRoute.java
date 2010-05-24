@@ -20,6 +20,7 @@
 
 package slash.navigation.gpx;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
@@ -30,6 +31,7 @@ import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.*;
 import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.*;
+import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
@@ -41,7 +43,6 @@ import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.common.io.CompactCalendar;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.ArrayList;
@@ -60,9 +61,9 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     private final List<GpxPosition> positions;
     private final List<Object> origins;
 
-    GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
-             String name, List<String> description, List<GpxPosition> positions,
-             Object... origins) {
+    public GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
+                    String name, List<String> description, List<GpxPosition> positions,
+                    Object... origins) {
         super(format, characteristics);
         this.name = name;
         this.description = description;
@@ -96,12 +97,12 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return positions;
     }
 
-    List<Object> getOrigins() {
+    public/* for tests */ List<Object> getOrigins() {
         return origins;
     }
 
     @SuppressWarnings({"unchecked"})
-    <T> T getOrigin(Class<T> resultClass) {
+    public <T> T getOrigin(Class<T> resultClass) {
         for (Object origin : origins) {
             if (resultClass.isInstance(origin))
                 return (T) origin;
@@ -237,6 +238,12 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asGpxFormat(new Tcx2Format());
     }
 
+    public GpxRoute asNokiaLandmarkExchangeFormat() {
+        if (getFormat() instanceof NokiaLandmarkExchangeFormat)
+            return this;
+        return asGpxFormat(new NokiaLandmarkExchangeFormat());
+    }
+
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GpxPosition position : positions) {
@@ -309,7 +316,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
-    
+
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();

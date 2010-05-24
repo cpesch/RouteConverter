@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Landmarks Exchange Format XML Schema. Copyright @ 2004 Nokia.-->
+<xsd:schema targetNamespace="http://www.nokia.com/schemas/location/landmarks/1/0" elementFormDefault="qualified"
+            attributeFormDefault="qualified" xmlns="http://www.nokia.com/schemas/location/landmarks/1/0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="lmx">
+        <xsd:annotation>
+            <xsd:documentation>Root element of landmarks XML exchange file. May contain either a single landmark or a
+                collection of landmarks.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:choice>
+                <xsd:annotation>
+                    <xsd:documentation>Choice</xsd:documentation>
+                </xsd:annotation>
+                <xsd:element name="landmark" type="landmarkType">
+                    <xsd:annotation>
+                        <xsd:documentation>A single landmark.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="landmarkCollection" type="landmarkCollectionType">
+                    <xsd:annotation>
+                        <xsd:documentation>Collection of landmarks.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:complexType name="landmarkCollectionType">
+        <xsd:annotation>
+            <xsd:documentation>The landmark collection type. The landmark collection includes a set of landmarks. At
+                least one landmark is required. The landmark collection may have name and description, which both are
+                mostly intended for displaying purposes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:annotation>
+                <xsd:documentation>Sequence</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="name" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The name of the collection. Optional data, used for displaying purposes.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="description" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The description of the collection. Optional data, used for displaying purposes.
+                        Usually it's more detailed than name or provides some additional information about the
+                        collection.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="landmark" type="landmarkType" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>A landmark.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="landmarkType">
+        <xsd:annotation>
+            <xsd:documentation>The landmark type. The landmark is a point on map or place in the world, which position
+                is defined by coordinates. The landmarks may belong to a set of landmark categories. It also may have
+                additional address information of the place this landmark points to. The landmark also may have
+                additional information, like description, coverage radius and a list of media links.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:annotation>
+                <xsd:documentation>Sequence</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="name" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The name of the landmark. Optional data, used for displaying purposes.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="description" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The description of the landmark. Optional data, used for displaying purposes.
+                        Usually it's more detailed than name or provides some additional information about the landmark.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="coordinates" type="coordinatesType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The landmark's coordinates.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="coverageRadius" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The coverage radius of the landmark in meters. The landmark's coordinates are the
+                        center of the area this landmark covers.
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:float">
+                        <xsd:minInclusive value="0"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="addressInfo" type="addressInfoType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The landmark's address information.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="mediaLink" type="mediaLinkType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>A media link associated with this place.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="category" type="categoryType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>Landmark category.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="coordinatesType">
+        <xsd:annotation>
+            <xsd:documentation>The landmarks coordinates type. Landmark coordinates must be specified in WGS84 format.
+                Latitude and longitude values are required. Restrictions applied to coordinate values.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:annotation>
+                <xsd:documentation>Sequence</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="latitude">
+                <xsd:annotation>
+                    <xsd:documentation>The Latitude part of WGS84 coordinate in degrees. Must be in the range [-90;+90].
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:double">
+                        <xsd:minInclusive value="-90"/>
+                        <xsd:maxInclusive value="90"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="longitude">
+                <xsd:annotation>
+                    <xsd:documentation>The Longitude part of WGS84 coordinate in degrees. Must be in the range
+                        [-180;+180).
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:double">
+                        <xsd:minInclusive value="-180"/>
+                        <xsd:maxExclusive value="180"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="altitude" type="xsd:float" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The Altitude part of WGS84 coordinate in meters.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="horizontalAccuracy" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Horizontal accuracy of the coordinates in meters.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:float">
+                        <xsd:minInclusive value="0"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="verticalAccuracy" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Vertical accuracy of the coordinate in meters.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:float">
+                        <xsd:minInclusive value="0"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="timeStamp" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The timestamp of the moment the coordinates were calculated. May contain date,
+                        time and time zone information.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="categoryType">
+        <xsd:annotation>
+            <xsd:documentation>The landmark category type. Category is a name and optional global landmark category ID.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:annotation>
+                <xsd:documentation>Sequence</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="id" type="xsd:unsignedShort" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The ID of a global landmark category.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>The name of the landmark category. Must be non-empty.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="addressInfoType">
+        <xsd:annotation>
+            <xsd:documentation>The landmark address information type. Address is divided into fields, each of which
+                represent a part of address information. The order of fields is not specified.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:all>
+            <xsd:annotation>
+                <xsd:documentation>All</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="country" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting country.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="countryCode" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting country as two-letter ISO-3166-1 code.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:length value="2"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="state" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting state or province.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="county" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting county, an entity between state and city.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="city" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting city or town name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="district" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting municipal district.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="postalCode" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting zip or postal code.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="crossing1" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting a street in a crossing.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="crossing2" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting another street in a crossing.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="street" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting street name and number.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="buildingName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting a building name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="buildingZone" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting a building zone.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="buildingFloor" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting a building floor.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="buildingRoom" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting a building room.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="extension" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting address extension, e.g. flat number.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="phoneNumber" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Address field denoting a phone number for this place.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:all>
+    </xsd:complexType>
+    <xsd:complexType name="mediaLinkType">
+        <xsd:annotation>
+            <xsd:documentation>The media link information type. A media link is a URI and optional displayable name.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:annotation>
+                <xsd:documentation>Sequence</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="name" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Displayable name of the media link.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="mime" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>MIME type of the referenced data.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="url" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the media link.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

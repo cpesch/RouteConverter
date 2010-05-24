@@ -14,4 +14,5 @@ bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\p4\RouteConver
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\nmn\nmn7.xsd
 bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\klicktel\klicktel.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.trekbuddy c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\trekBuddyExtensions0984.xsd
+bin\xjc -verbose -d generated -p slash.navigation.lmx.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\lmx\lmx.xsd
 

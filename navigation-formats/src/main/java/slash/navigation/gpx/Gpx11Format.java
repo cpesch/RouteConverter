@@ -302,9 +302,9 @@ public class Gpx11Format extends GpxFormat {
         wptType.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
         wptType.setName(isWriteName() ? asName(position.getComment()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getComment(), wptType.getDesc()) : null);
-        wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatDouble(position.getHdop(), 6) : null);
-        wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatDouble(position.getPdop(), 6) : null);
-        wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatDouble(position.getVdop(), 6) : null);
+        wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatBigDecimal(position.getHdop(), 6) : null);
+        wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatBigDecimal(position.getPdop(), 6) : null);
+        wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatBigDecimal(position.getVdop(), 6) : null);
         wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
         return wptType;
     }
