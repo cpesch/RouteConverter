@@ -118,6 +118,7 @@
         <module>catalog</module>
         <module>common</module>
         <module>common-gui</module>
+        <module>earthtools</module>
         <module>elevationview</module>
         <module>geonames</module>
         <module>googlemaps</module>
