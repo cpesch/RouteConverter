@@ -34,6 +34,7 @@ import javax.swing.event.TableModelListener;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 /**
  * Helps to calculate the length of position list of type route and track.
@@ -42,7 +43,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public class LengthCalculator {
+    private static final Logger log = Logger.getLogger(LengthCalculator.class.getName());
+
     private PositionsModel positionsModel;
+    private Thread lengthCalculator;
+    private final Object notificationMutex = new Object();
+    private boolean running = true, recalculate = false;
+
+    public LengthCalculator() {
+        initialize();
+    }
 
     private RouteCharacteristics getCharacteristics() {
         return positionsModel.getRoute().getCharacteristics();
@@ -92,47 +102,92 @@ public class LengthCalculator {
             return;
         }
 
-        if(getCharacteristics().equals(RouteCharacteristics.Route) && RouteConverter.getInstance().isMapViewAvailable())
+        if (getCharacteristics().equals(RouteCharacteristics.Route) && RouteConverter.getInstance().isMapViewAvailable())
             return;
 
-        new Thread(new Runnable() {
-            public void run() {
-                fireCalculatedDistance(0, 0);
+        synchronized (notificationMutex) {
+            recalculate = true;
+            notificationMutex.notifyAll();
+        }
+    }
 
-                int meters = 0;
-                long delta = 0;
-                Calendar minimumTime = null, maximumTime = null;
-                BaseNavigationPosition previous = null;
-                for (int i = 0; i < positionsModel.getRowCount(); i++) {
-                    BaseNavigationPosition next = positionsModel.getPosition(i);
-                    if (previous != null) {
-                        Double distance = previous.calculateDistance(next);
-                        if (distance != null)
-                            meters += distance;
-                        Long time = previous.calculateTime(next);
-                        if (time != null)
-                            delta += time;
-                    }
+    private void recalculateDistance() {
+        fireCalculatedDistance(0, 0);
 
-                    CompactCalendar time = next.getTime();
-                    if (time != null) {
-                        Calendar calendar = time.getCalendar();
-                        if (minimumTime == null || calendar.before(minimumTime))
-                            minimumTime = calendar;
-                        if (maximumTime == null || calendar.after(maximumTime))
-                            maximumTime = calendar;
-                    }
-
-                    if (i % 100 == 0)
-                        fireCalculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
-
-                    previous = next;
-                }
-
-                int summedUp = delta > 0 ? (int) delta / 1000 : 0;
-                int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-                fireCalculatedDistance(meters, Math.max(maxMinusMin, summedUp));
+        int meters = 0;
+        long delta = 0;
+        Calendar minimumTime = null, maximumTime = null;
+        BaseNavigationPosition previous = null;
+        for (int i = 0; i < positionsModel.getRowCount(); i++) {
+            BaseNavigationPosition next = positionsModel.getPosition(i);
+            if (previous != null) {
+                Double distance = previous.calculateDistance(next);
+                if (distance != null)
+                    meters += distance;
+                Long time = previous.calculateTime(next);
+                if (time != null)
+                    delta += time;
             }
-        }, "BeelineLengthCalculator").start();
+
+            CompactCalendar time = next.getTime();
+            if (time != null) {
+                Calendar calendar = time.getCalendar();
+                if (minimumTime == null || calendar.before(minimumTime))
+                    minimumTime = calendar;
+                if (maximumTime == null || calendar.after(maximumTime))
+                    maximumTime = calendar;
+            }
+
+            if (i % 100 == 0)
+                fireCalculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
+
+            previous = next;
+        }
+
+        int summedUp = delta > 0 ? (int) delta / 1000 : 0;
+        int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
+        fireCalculatedDistance(meters, Math.max(maxMinusMin, summedUp));
+    }
+
+    private void initialize() {
+        lengthCalculator = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    synchronized (notificationMutex) {
+                        try {
+                            notificationMutex.wait(1000);
+                        } catch (InterruptedException e) {
+                            // ignore this
+                        }
+
+                        if (!running)
+                            return;
+                        if (!recalculate)
+                            continue;
+                        recalculate = false;
+                    }
+                    recalculateDistance();
+                }
+            }
+        }, "BeelineLengthCalculator");
+        lengthCalculator.start();
+    }
+
+    public void dispose() {
+        long start = System.currentTimeMillis();
+        synchronized (notificationMutex) {
+            running = false;
+            notificationMutex.notifyAll();
+        }
+
+        if (lengthCalculator != null) {
+            try {
+                lengthCalculator.join();
+            } catch (InterruptedException e) {
+                // intentionally left empty
+            }
+            long end = System.currentTimeMillis();
+            log.info("BeelineLengthCalculator stopped after " + (end - start) + " ms");
+        }
     }
 }

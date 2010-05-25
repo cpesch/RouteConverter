@@ -252,6 +252,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected void shutdown() {
         if (mapView != null)
             mapView.dispose();
+        getConvertPanel().dispose();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());

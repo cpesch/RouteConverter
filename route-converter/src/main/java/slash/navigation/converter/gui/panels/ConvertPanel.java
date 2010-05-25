@@ -97,6 +97,7 @@ public abstract class ConvertPanel {
     private JButton buttonDeletePosition;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
+    private LengthCalculator lengthCalculator;
 
     public ConvertPanel() {
         initialize();
@@ -105,7 +106,7 @@ public abstract class ConvertPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        LengthCalculator lengthCalculator = new LengthCalculator();
+        lengthCalculator = new LengthCalculator();
         lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
@@ -261,6 +262,11 @@ public abstract class ConvertPanel {
 
         actionManager.enable("paste", false);
     }
+
+    public void dispose() {
+        lengthCalculator.dispose();
+    }
+
 
     protected abstract void addDragAndDrop();
 

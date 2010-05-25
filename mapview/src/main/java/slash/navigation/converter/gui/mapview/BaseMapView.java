@@ -853,8 +853,9 @@ public abstract class BaseMapView implements MapView {
     private int[] selectedPositionIndices = new int[0];
 
     private void selectPositions(List<BaseNavigationPosition> selectedPositions) {
-        if (selectedPositions.size() > MAXIMUM_SELECTION_COUNT)
+        if (selectedPositions.size() > MAXIMUM_SELECTION_COUNT) {
             selectedPositions = filterEveryNthPosition(selectedPositions, MAXIMUM_SELECTION_COUNT);
+        }
 
         // delete old
         if (lastSelectedPositionCount >= 0) {
