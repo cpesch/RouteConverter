@@ -48,6 +48,9 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("$GPGSV,2,1,08,05,40,250,50,09,85,036,51,22,16,285,36,17,,,00*4F"));
         assertTrue(format.isValidLine("$GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,,A*76"));
         assertTrue(format.isValidLine("$GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,,A*76"));
+        assertTrue(format.isValidLine("$GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d"));
+        assertTrue(format.isValidLine("$GPRMC,132713,A,5509.7861,N,00140.5854,W,2.1,278.3,010110,,*e"));
+
         assertTrue(format.isValidLine("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
         assertTrue(format.isValidLine("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
 
@@ -98,9 +101,11 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22"));
         assertTrue(format.isPosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
         assertTrue(format.isPosition("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
+        assertTrue(format.isPosition("$GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d"));
 
         assertFalse(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertFalse(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
+        assertFalse(format.isPosition("$GPRMC,132713,A,5509.7861,N,00140.5854,W,2.1,278.3,010110,,*e"));
 
         assertFalse(format.isPosition("$GPGSV,2,1,08,05,40,250,50,09,85,036,51,22,16,285,36,17,,,00*4F"));
         assertFalse(format.isPosition("@Sonygps/ver1.0/wgs-84"));
@@ -227,7 +232,7 @@ public class NmeaFormatTest extends NavigationTestCase {
     public void testMerging() throws IOException {
         StringReader reader = new StringReader(
                 "$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D\n" +
-                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160600,,,A*79\n" +
+                        "$GPRMC,180114,A,4837.4374,N,00903.4036,E,000.0,000.0,160600,,,A*7B\n" +
                         "$GPZDA,032910,07,08,2004,00,00*48\n" +
                         "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );

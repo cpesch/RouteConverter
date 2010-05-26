@@ -49,7 +49,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
 
     static final String SEPARATOR = ",";
     static final String BEGIN_OF_LINE = "^\\$GP";
-    static final String END_OF_LINE = "\\*[0-9A-F][0-9A-F]$";
+    static final String END_OF_LINE = "\\*[0-9A-Fa-f][0-9A-Fa-f]$";
 
     private static final Pattern LINE_PATTERN = Pattern.compile("(^@.*|^\\$.*|" + BEGIN_OF_LINE + ".*" + END_OF_LINE + ")");
 
@@ -135,13 +135,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (position.getComment() == null)
+        if (position.getComment() == null || position.getComment().length() == 0)
             position.setComment(toBeMergedInto.getComment());
-        if (position.getElevation() == null)
+        if (position.getElevation() == null || position.getElevation() == 0.0)
             position.setElevation(toBeMergedInto.getElevation());
-        if (position.getSpeed() == null)
+        if (position.getSpeed() == null || position.getSpeed() == 0.0)
             position.setSpeed(toBeMergedInto.getSpeed());
-        if (position.getHeading() == null)
+        if (position.getHeading() == null || position.getHeading() == 0.0)
             position.setHeading(toBeMergedInto.getHeading());
         if (position.getLatitude() == null)
             position.setLatitude(toBeMergedInto.getLatitude());
@@ -151,13 +151,13 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                 (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
                         position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
-        if (position.getHdop() == null)
+        if (position.getHdop() == null || position.getHdop() == 0.0)
             position.setHdop(toBeMergedInto.getHdop());
-        if (position.getPdop() == null)
+        if (position.getPdop() == null || position.getPdop() == 0.0)
             position.setPdop(toBeMergedInto.getPdop());
-        if (position.getVdop() == null)
+        if (position.getVdop() == null || position.getVdop() == 0.0)
             position.setVdop(toBeMergedInto.getVdop());
-        if (position.getSatellites() == null)
+        if (position.getSatellites() == null || position.getSatellites() == 0)
             position.setSatellites(toBeMergedInto.getSatellites());
     }
 
