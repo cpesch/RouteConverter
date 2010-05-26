@@ -29,6 +29,11 @@
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
+            <artifactId>earthtools</artifactId>
+            <version>1.34-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
             <artifactId>elevationview</artifactId>
             <version>1.34-SNAPSHOT</version>
         </dependency>
@@ -40,6 +45,11 @@
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>googlemaps</artifactId>
+            <version>1.34-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>hgt</artifactId>
             <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
