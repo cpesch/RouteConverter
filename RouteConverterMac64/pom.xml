@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
-    <artifactId>RouteConverterLinux64</artifactId>
+    <artifactId>RouteConverterMac64</artifactId>
     <packaging>jar</packaging>
-    <name>The RouteConverter UI tool for Linux (64-bit)</name>
+    <name>The RouteConverter UI tool for Mac OS X (64-bit)</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -23,7 +23,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>RouteConverterLinux64</finalName>
+                            <finalName>RouteConverterMac64</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -40,6 +40,31 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>osxappbundle-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <bundleName>RouteConverter</bundleName>
+                    <buildDirectory>${project.build.directory}/RouteConverter</buildDirectory>
+                    <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
+                    <jvmVersion>1.6+</jvmVersion>
+                    <vmOptions>-Xmx256m</vmOptions>
+                    <javaApplicationStub>${basedir}/src/main/app-resources/JavaApplicationStub</javaApplicationStub>
+                    <iconFile>${basedir}/src/main/app-resources/RouteConverter.icns</iconFile>
+                    <!-- <dictionaryFile>${basedir}/src/main/app-resources/RouteConverter.plist</dictionaryFile> -->
+                    <zipFile>${project.build.directory}/RouteConverterMac.zip</zipFile>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -58,13 +83,18 @@
         </dependency>
         <dependency>
             <groupId>com.sun.jna</groupId>
-            <artifactId>linux.unknown.x86_64</artifactId>
+            <artifactId>mac.os_x.x86</artifactId>
             <version>3.0.7</version>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
-            <artifactId>gtk.linux.x86_64</artifactId>
+            <artifactId>cocoa.macosx.x86_64</artifactId>
             <version>3.6M6</version>
+        </dependency>
+        <dependency>
+            <groupId>gpsbabel.gpsbabel</groupId>
+            <artifactId>mac.os_x.x86</artifactId>
+            <version>1.3.6</version>
         </dependency>
     </dependencies>
 </project>

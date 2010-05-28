@@ -20,15 +20,8 @@
 
 package slash.navigation.hgt;
 
-import slash.common.io.Externalization;
-
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.prefs.Preferences;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * A tile with elevation data.
@@ -37,133 +30,20 @@ import java.util.zip.ZipInputStream;
  */
 
 public class ElevationTile {
-    private static final Preferences preferences = Preferences.userNodeForPackage(HgtFiles.class);
-    private static final String HGT_FILES_URL_PREFERENCE = "hgtFilesUrl";
+    private RandomAccessFile elevationFile;
 
-    private static String getHgtFilesUrl() {
-        return preferences.get(HGT_FILES_URL_PREFERENCE, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/");
-    }
-
-    private RandomAccessFile elevationFile = null;
-    private int nLon;
-    private int nLat;
-    private String strFullFilename = "";
-
-    public ElevationTile(double longitude, double latitude) {
-
-        this.nLon = (int) longitude;
-        this.nLat = (int) latitude;
-
-        String strFilename = String.format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
-                (latitude < 0) ? ((this.nLat - 1) * -1) : this.nLat,
-                (longitude < 0) ? "W" : "E",
-                (longitude < 0) ? ((this.nLon - 1) * -1) : this.nLon);
-
-        this.strFullFilename = String.format("%s/%s", Externalization.getTempDirectory(), strFilename);
-
-
-        File hgtFile = new File(strFullFilename);
-
-        if (!hgtFile.exists()) {
-            readHgtFile(strFilename);
-        }
-
-        try {
-            elevationFile = new RandomAccessFile(strFullFilename, "r");
-        }
-        catch (Exception e) {
-            // TODO
-        }
-    }
-
-    private void readHgtFile(String strFilename) {
-        URL u;
-        URLConnection uc = null;
-        String contentType;
-        int contentLength;
-        String strFolder = "";
-
-        try {
-            String destinationname = String.format("%s/", Externalization.getTempDirectory());
-            byte[] buf = new byte[1024];
-            ZipInputStream zipinputstream = null;
-            ZipEntry zipentry;
-
-            for (int nIndex = 0; nIndex < 6; nIndex++) {
-                switch (nIndex) {
-                    case 0:
-                        strFolder = "Eurasia";
-                        break;
-                    case 1:
-                        strFolder = "North_America";
-                        break;
-                    case 2:
-                        strFolder = "Australia";
-                        break;
-                    case 3:
-                        strFolder = "South_America";
-                        break;
-                    case 4:
-                        strFolder = "Africa";
-                        break;
-                    case 5:
-                        strFolder = "Islands";
-                        break;
-                }
-
-                u = new URL(String.format("%s/%s/%s.zip", getHgtFilesUrl(), strFolder, strFilename));
-                System.out.println(u);
-                uc = u.openConnection();
-                contentType = uc.getContentType();
-                contentLength = uc.getContentLength();
-
-                if (contentType.startsWith("application/") &&
-                        contentLength != -1) {
-                    break;
-                }
-            }
-
-            InputStream raw = uc.getInputStream();
-            InputStream in = new BufferedInputStream(raw);
-
-            zipinputstream = new ZipInputStream(in);
-            zipentry = zipinputstream.getNextEntry();
-
-            while (zipentry != null) { // for each entry to be extracted
-                int n;
-                FileOutputStream fileoutputstream;
-                String entryName = zipentry.getName();
-                File newFile = new File(entryName);
-                String directory = newFile.getParent();
-
-                if (directory == null) {
-                    if (newFile.isDirectory()) {
-                        break;
-                    }
-                }
-
-                fileoutputstream = new FileOutputStream(destinationname + entryName);
-
-                while ((n = zipinputstream.read(buf, 0, 1024)) > -1) {
-                    fileoutputstream.write(buf, 0, n);
-                }
-
-                fileoutputstream.close();
-                zipinputstream.closeEntry();
-                zipentry = zipinputstream.getNextEntry();
-            }
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
-        }
+    public ElevationTile(RandomAccessFile elevationFile) {
+        this.elevationFile = elevationFile;
     }
 
     /**
-     * @param dHeight12 The delta height/elevation of two sub tile positions
-     * @param dLength12 The length of an sub tile interval (1 / 1200)
-     * @param dDiff     The distance of the real point from the sub tile position
-     * @return The delta elevation (relative to sub tile position)
-     * @brief Calculate the elevation (for the destination position) according the
+     * Calculate the elevation for the destination position) according the
      * theorem on intersecting lines (Strahlensatz).
+     *
+     * @param dHeight12 the delta height/elevation of two sub tile positions
+     * @param dLength12 the length of an sub tile interval (1 / 1200)
+     * @param dDiff     the distance of the real point from the sub tile position
+     * @return the delta elevation (relative to sub tile position)
      */
     private double calculateElevation(double dHeight12, double dLength12, double dDiff) {
         return (dHeight12 * dDiff) / dLength12;
@@ -173,7 +53,7 @@ public class ElevationTile {
         if (elevationFile == null)
             return null;
 
-        double dElevation = 0;
+        double dElevation;
         double dLon = longitude;
         double dLat = latitude;
         int nLon = (int) dLon;                    // Cut off the decimal places
@@ -190,8 +70,17 @@ public class ElevationTile {
             dLat = ((double) nLat + dLat) + (double) nLat;    // Make positive double latitude (needed for later calculation)
         }
 
-        int nLonIndex = (int) ((dLon - (double) nLon) * 1200.0);    // Calculate the interval index for longitude
+        int nLonIndex = (int) ((dLon - (double) nLon) * 1200.0); // Calculate the interval index for longitude
         int nLatIndex = (int) ((dLat - (double) nLat) * 1200.0); // Calculate the interval index for latitude
+
+        if (nLonIndex >= 1200) {
+            nLonIndex = 1200 - 1;
+        }
+
+        if (nLatIndex >= 1200) {
+            nLatIndex = 1200 - 1;
+        }
+
         double dOffLon = dLon - (double) nLon;                      // The lon value offset within a tile
         double dOffLat = dLat - (double) nLat;                      // The lat value offset within a tile
 
@@ -202,20 +91,20 @@ public class ElevationTile {
         int pos;                                                    // The index of the elevation into the hgt file
 
         pos = (((nAS - nLatIndex) - 1) * (nAS + 1)) + nLonIndex;    // The index for the left top elevation
-        this.elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
-        dLeftTop = this.elevationFile.readShort();                // Now read the left top elevation from hgt file
+        elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
+        dLeftTop = elevationFile.readShort();                // Now read the left top elevation from hgt file
 
         pos = ((nAS - nLatIndex) * (nAS + 1)) + nLonIndex;            // The index for the left bottom elevation
-        this.elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
-        dLeftBottom = this.elevationFile.readShort();                // Now read the left bottom elevation from hgt file
+        elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
+        dLeftBottom = elevationFile.readShort();                // Now read the left bottom elevation from hgt file
 
         pos = (((nAS - nLatIndex) - 1) * (nAS + 1)) + nLonIndex + 1;// The index for the right top elevation
-        this.elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
-        dRightTop = this.elevationFile.readShort();                // Now read the right top elevation from hgt file
+        elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
+        dRightTop = elevationFile.readShort();                // Now read the right top elevation from hgt file
 
         pos = ((nAS - nLatIndex) * (nAS + 1)) + nLonIndex + 1;         // The index for the right bottom elevation
-        this.elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
-        dRightBottom = this.elevationFile.readShort();                // Now read the right bottom top elevation from hgt file
+        elevationFile.seek(pos * 2);                            // We have 16-bit values for elevation, so multiply by 2
+        dRightBottom = elevationFile.readShort();                // Now read the right bottom top elevation from hgt file
 
         if ((dLeftTop < 0) ||                                        // If one of the elevation values
                 (dLeftBottom < 0) ||                                    // we read from

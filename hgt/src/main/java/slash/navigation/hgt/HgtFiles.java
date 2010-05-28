@@ -20,7 +20,9 @@
 
 package slash.navigation.hgt;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,17 +34,65 @@ import java.util.Map;
 
 public class HgtFiles {
     private Map<Integer, ElevationTile> tileCache = new HashMap<Integer, ElevationTile>();
+    private static HgtFileCache fileCache = new HgtFileCache();
+    private Map<String, RandomAccessFile> randomAccessFileCache = new HashMap<String, RandomAccessFile>();
+    private static HgtFileDownloader downloader;
 
-    public Integer getElevationFor(double longitude, double latitude) throws IOException {
+    public HgtFiles() {
+        downloader = new HgtFileDownloader(fileCache);
+    }
+
+    private Integer createTileKey(double longitude, double latitude) {
         int longitudeAsInteger = (int) longitude;   // values from -180 to +180: 0 - 360
         int latitudeAsInteger = (int) latitude;     // values from  -90 to  +90: 0 - 180
-        Integer key = latitudeAsInteger * 100000 + longitudeAsInteger;
+        return (latitudeAsInteger + 180) * 100000 + (longitudeAsInteger + 90);
+    }
 
-        ElevationTile tile = tileCache.get(key);
+    private String createFileKey(double longitude, double latitude) {
+        int longitudeAsInteger = (int) longitude;
+        int latitudeAsInteger = (int) latitude;
+
+        return String.format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
+                (latitude < 0) ? ((latitudeAsInteger - 1) * -1) : latitudeAsInteger,
+                (longitude < 0) ? "W" : "E",
+                (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);
+    }
+
+    public Integer getElevationFor(double longitude, double latitude) throws IOException {
+        Integer tileKey = createTileKey(longitude, latitude);
+        ElevationTile tile = tileCache.get(tileKey);
         if (tile == null) {
-            tile = new ElevationTile(longitude, latitude);
-            tileCache.put(key, tile);
+
+            String fileKey = createFileKey(longitude, latitude);
+            RandomAccessFile randomAccessFile = randomAccessFileCache.get(fileKey);
+            if (randomAccessFile == null) {
+
+                File file = fileCache.get(fileKey);
+                if (file == null) {
+                    file = downloader.download(fileKey);
+                    if (file == null)
+                        return null;
+                    fileCache.put(fileKey, file);
+                }
+
+                randomAccessFile = new RandomAccessFile(file, "r");
+                randomAccessFileCache.put(fileKey, randomAccessFile);
+            }
+
+            tile = new ElevationTile(randomAccessFile);
+            tileCache.put(tileKey, tile);
         }
         return tile.getElevationFor(longitude, latitude);
+    }
+
+    public void close() {
+        for (RandomAccessFile randomAccessFile : randomAccessFileCache.values())
+            try {
+                randomAccessFile.close();
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Cannot close random access file" + randomAccessFile);
+            }
+        randomAccessFileCache.clear();
+        tileCache.clear();
     }
 }

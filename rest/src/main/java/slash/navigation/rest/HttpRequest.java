@@ -26,6 +26,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
@@ -95,7 +96,7 @@ public abstract class HttpRequest {
                 return null;
             String body = method.getResponseBodyAsString();
             if (!isSuccessful() && logUnsuccessful)
-                log.info(body);
+                log.warning(body);
             return body;
         }
         finally {
@@ -103,18 +104,29 @@ public abstract class HttpRequest {
         }
     }
 
+    public InputStream executeAsStream(boolean logUnsuccessful) throws IOException {
+        doExecute();
+        // no response body then
+        if (isUnAuthorized())
+            return null;
+        InputStream body = method.getResponseBodyAsStream();
+        if (!isSuccessful() && logUnsuccessful)
+            log.warning("Cannot read response body");
+        return body;
+    }
+
     void release() {
         method.releaseConnection();
     }
 
     public int getResult() throws IOException {
-        if(statusCode == null)
+        if (statusCode == null)
             throw new HttpException("No method executed yet");
         return statusCode;
     }
 
     public boolean isSuccessful() throws IOException {
-        return getResult() >= HttpStatus.SC_OK && getResult() < HttpStatus.SC_MULTIPLE_CHOICES; 
+        return getResult() >= HttpStatus.SC_OK && getResult() < HttpStatus.SC_MULTIPLE_CHOICES;
     }
 
     public boolean isUnAuthorized() throws IOException {

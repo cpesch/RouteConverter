@@ -26,10 +26,12 @@ import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
+import slash.navigation.hgt.HgtFiles;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
@@ -110,6 +112,7 @@ public class PositionAugmenter {
         String getName();
         boolean run(BaseNavigationPosition position) throws Exception;
         String getErrorMessage();
+        void postRunning();
     }
 
     private void executeOperation(final JTable positionsTable,
@@ -158,6 +161,8 @@ public class PositionAugmenter {
                                 frame.getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
                 finally {
+                    operation.postRunning();
+
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             Constants.stopWaitCursor(frame.getRootPane());
@@ -197,6 +202,8 @@ public class PositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-coordinates-error");
                     }
+
+                    public void postRunning() {}
                 }
         );
     }
@@ -214,8 +221,14 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addElevation(GeoNamesService service, BaseNavigationPosition position) throws IOException {
-        Integer elevation = service.getElevationFor(position.getLongitude(), position.getLatitude());
+    private boolean addElevation(HgtFiles hgtFiles, GeoNamesService geoNamesService, EarthToolsService earthToolsService,
+                                 BaseNavigationPosition position) throws IOException {
+        Integer elevation = hgtFiles.getElevationFor(position.getLongitude(), position.getLatitude());
+        if (elevation == null)
+            elevation = geoNamesService.getElevationFor(position.getLongitude(), position.getLatitude());
+        if (elevation == null)
+            elevation = earthToolsService.getElevationFor(position.getLongitude(), position.getLatitude());
+
         if (elevation != null)
             position.setElevation(elevation.doubleValue());
         return elevation != null;
@@ -227,18 +240,24 @@ public class PositionAugmenter {
                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
-                    private GeoNamesService service = new GeoNamesService();
+                    private HgtFiles hgtFiles = new HgtFiles();
+                    private GeoNamesService geoNamesService = new GeoNamesService();
+                    private EarthToolsService earthToolsService = new EarthToolsService();
 
                     public String getName() {
                         return "ElevationPositionAugmenter";
                     }
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
-                        return addElevation(service, position);
+                        return addElevation(hgtFiles, geoNamesService, earthToolsService, position);
                     }
 
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-elevation-error");
+                    }
+
+                    public void postRunning() {
+                        hgtFiles.close();
                     }
                 }
         );
@@ -283,6 +302,8 @@ public class PositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-populated-place-error");
                     }
+
+                    public void postRunning() {}
                 }
         );
     }
@@ -322,6 +343,8 @@ public class PositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-postal-address-error");
                     }
+
+                    public void postRunning() {}
                 }
         );
     }
@@ -358,6 +381,8 @@ public class PositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-speed-error");
                     }
+
+                    public void postRunning() {}
                 }
         );
     }
@@ -392,6 +417,8 @@ public class PositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-index-error");
                     }
+
+                    public void postRunning() {}
                 }
         );
     }

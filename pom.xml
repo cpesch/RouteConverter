@@ -138,6 +138,7 @@
         <module>RouteConverterLinux</module>
         <module>RouteConverterLinux64</module>
         <module>RouteConverterMac</module>
+        <module>RouteConverterMac64</module>
         <module>RouteConverterWindows</module>
         <module>RouteConverterWebstart</module>
     </modules>
