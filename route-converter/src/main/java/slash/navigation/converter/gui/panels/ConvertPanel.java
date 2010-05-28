@@ -310,7 +310,7 @@ public abstract class ConvertPanel {
         for (Iterator<URL> it = copy.iterator(); it.hasNext();) {
             URL url = it.next();
             File file = Files.toFile(url);
-            if (file != null && !file.exists() && !file.isFile()) {
+            if (file == null || !file.exists() || !file.isFile()) {
                 log.warning(file + " does not exist or is not a file");
                 it.remove();
             }
