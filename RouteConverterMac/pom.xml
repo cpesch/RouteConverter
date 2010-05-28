@@ -55,8 +55,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <bundleName>RouteConverter.XY</bundleName>
-                    <buildDirectory>${project.build.directory}/RouteConverterAC</buildDirectory>
+                    <bundleName>RouteConverter</bundleName>
+                    <buildDirectory>${project.build.directory}/RouteConverter</buildDirectory>
                     <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
                     <jvmVersion>1.6+</jvmVersion>
                     <vmOptions>-Xmx256m</vmOptions>

@@ -55,15 +55,15 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <bundleName>RouteConverter</bundleName>
-                    <buildDirectory>${project.build.directory}/RouteConverter</buildDirectory>
+                    <bundleName>RouteConverter64</bundleName>
+                    <buildDirectory>${project.build.directory}/RouteConverter64</buildDirectory>
                     <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
                     <jvmVersion>1.6+</jvmVersion>
                     <vmOptions>-Xmx256m</vmOptions>
                     <javaApplicationStub>${basedir}/src/main/app-resources/JavaApplicationStub</javaApplicationStub>
                     <iconFile>${basedir}/src/main/app-resources/RouteConverter.icns</iconFile>
                     <!-- <dictionaryFile>${basedir}/src/main/app-resources/RouteConverter.plist</dictionaryFile> -->
-                    <zipFile>${project.build.directory}/RouteConverterMac.zip</zipFile>
+                    <zipFile>${project.build.directory}/RouteConverterMac64.zip</zipFile>
                 </configuration>
             </plugin>
         </plugins>
