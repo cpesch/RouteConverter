@@ -24,16 +24,16 @@ import junit.framework.TestCase;
 import java.io.IOException;
 
 public class GoogleMapsServiceIT extends TestCase {
-    private final GoogleMapsService service = new GoogleMapsService();
+    private GoogleMapsService service = new GoogleMapsService();
 
     public void testLocationLookup() throws IOException {
-        assertEquals("8638 Goldingen, Switzerland", service.getLocationFor(9.0, 47.3));
-        assertEquals("Bühlstraße, 97506 Grafenrheinfeld, Germany", service.getLocationFor(10.2, 50.001));
-        assertEquals("82467 Garmisch-Partenkirchen, Germany", service.getLocationFor(11.06561, 47.42428));
-        assertEquals("23208 Glenbrook St, St Clair Shores, Michigan 48082, USA", service.getLocationFor(0.0, 0.0));
-        assertEquals("Antarctica", service.getLocationFor(0.0, -90.0));
-        assertEquals("Calderstones Park", service.getLocationFor(0.0, 90.0));
-        assertEquals("Calderstones Park", service.getLocationFor(90.0, 90.0));
+        assertEquals("8638 Goldingen, Schweiz", service.getLocationFor(9.0, 47.3));
+        assertEquals("Bühlstraße 21, 97506 Grafenrheinfeld, Deutschland", service.getLocationFor(10.2, 50.001));
+        assertEquals("82467 Garmisch-Partenkirchen, Deutschland", service.getLocationFor(11.06561, 47.42428));
+        assertEquals("North Atlantic Ocean", service.getLocationFor(0.0, 0.0));
+        assertEquals("Antarktis", service.getLocationFor(0.0, -90.0));
+        assertEquals("North Pole", service.getLocationFor(0.0, 90.0));
+        assertEquals("North Pole", service.getLocationFor(90.0, 90.0));
     }
 
     public void testPositionLookup() throws IOException {

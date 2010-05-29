@@ -135,29 +135,29 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (position.getComment() == null || position.getComment().length() == 0)
+        if (Transfer.isEmpty(position.getComment()) && !Transfer.isEmpty(toBeMergedInto.getComment()))
             position.setComment(toBeMergedInto.getComment());
-        if (position.getElevation() == null || position.getElevation() == 0.0)
+        if (Transfer.isEmpty(position.getElevation()) && !Transfer.isEmpty(toBeMergedInto.getElevation()))
             position.setElevation(toBeMergedInto.getElevation());
-        if (position.getSpeed() == null || position.getSpeed() == 0.0)
+        if (Transfer.isEmpty(position.getSpeed()) && !Transfer.isEmpty(toBeMergedInto.getSpeed()))
             position.setSpeed(toBeMergedInto.getSpeed());
-        if (position.getHeading() == null || position.getHeading() == 0.0)
+        if (Transfer.isEmpty(position.getHeading()) && !Transfer.isEmpty(toBeMergedInto.getHeading()))
             position.setHeading(toBeMergedInto.getHeading());
-        if (position.getLatitude() == null)
+        if (Transfer.isEmpty(position.getLatitude()) && !Transfer.isEmpty(toBeMergedInto.getLatitude()))
             position.setLatitude(toBeMergedInto.getLatitude());
-        if (position.getLongitude() == null)
+        if (Transfer.isEmpty(position.getLongitude()) && !Transfer.isEmpty(toBeMergedInto.getLongitude()))
             position.setLongitude(toBeMergedInto.getLongitude());
         if ((toBeMergedInto.getTime() != null) &&
                 (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
                         position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
-        if (position.getHdop() == null || position.getHdop() == 0.0)
+        if (Transfer.isEmpty(position.getHdop()) && !Transfer.isEmpty(toBeMergedInto.getHdop()))
             position.setHdop(toBeMergedInto.getHdop());
-        if (position.getPdop() == null || position.getPdop() == 0.0)
+        if (Transfer.isEmpty(position.getPdop()) && !Transfer.isEmpty(toBeMergedInto.getPdop()))
             position.setPdop(toBeMergedInto.getPdop());
-        if (position.getVdop() == null || position.getVdop() == 0.0)
+        if (Transfer.isEmpty(position.getVdop()) && !Transfer.isEmpty(toBeMergedInto.getVdop()))
             position.setVdop(toBeMergedInto.getVdop());
-        if (position.getSatellites() == null || position.getSatellites() == 0)
+        if (Transfer.isEmpty(position.getSatellites()) && !Transfer.isEmpty(toBeMergedInto.getSatellites()))
             position.setSatellites(toBeMergedInto.getSatellites());
     }
 

@@ -24,7 +24,7 @@ import slash.common.TestCase;
 import java.io.IOException;
 
 public class HgtFilesIT extends TestCase {
-    private final HgtFiles files = new HgtFiles();
+    private HgtFiles files = new HgtFiles();
 
     protected void setUp() throws Exception {
         HgtFileCache hgtFileCache = new HgtFileCache();
@@ -32,7 +32,6 @@ public class HgtFilesIT extends TestCase {
     }
 
     public void testElevationFor() throws IOException {
-        assertEquals(40, files.getElevationFor(11.2, 59.0).intValue());
         assertEquals(40, files.getElevationFor(11.2, 59.0).intValue());
         assertEquals(190, files.getElevationFor(11.2, 60.0).intValue());
         assertNull(files.getElevationFor(11.2, 61.0));

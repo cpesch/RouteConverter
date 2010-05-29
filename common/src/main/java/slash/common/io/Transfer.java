@@ -20,13 +20,13 @@
 
 package slash.common.io;
 
-import java.util.prefs.Preferences;
-import java.util.Locale;
-import java.util.StringTokenizer;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.StringTokenizer;
+import java.util.prefs.Preferences;
 
 /**
  * Provides value transfer functionality.
@@ -37,7 +37,8 @@ import java.math.BigInteger;
 public class Transfer {
     public static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
 
-    private Transfer() {}
+    private Transfer() {
+    }
 
     public static double roundFraction(double number, int fractionCount) {
         double factor = Math.pow(10, fractionCount);
@@ -92,17 +93,17 @@ public class Transfer {
     }
 
     public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
-        if(aDouble == null)
+        if (aDouble == null)
             return null;
-        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+        if (preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return BigDecimal.valueOf(aDouble);
     }
 
     public static double formatDouble(Double aDouble, int maximumFractionCount) {
-        if(aDouble == null)
+        if (aDouble == null)
             return Double.NaN;
-        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+        if (preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return aDouble;
     }
@@ -136,6 +137,7 @@ public class Transfer {
     }
 
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
+
     static {
         Transfer.DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
         Transfer.DECIMAL_NUMBER_FORMAT.setMinimumFractionDigits(1);
@@ -162,7 +164,7 @@ public class Transfer {
     }
 
     public static String formatDoubleAsStringWithMaximumFractionCount(Double aDouble, int maximumFractionCount) {
-        if(preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+        if (preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return formatDoubleAsString(aDouble);
     }
@@ -201,13 +203,13 @@ public class Transfer {
     }
 
     public static BigInteger formatInt(Integer anInteger) {
-        if(anInteger == null)
+        if (anInteger == null)
             return null;
         return BigInteger.valueOf(anInteger);
     }
 
     public static Float formatFloat(Double aDouble) {
-        if(aDouble == null)
+        if (aDouble == null)
             return null;
         return aDouble.floatValue();
     }
@@ -219,7 +221,7 @@ public class Transfer {
             try {
                 return Double.parseDouble(trimmed);
             } catch (NumberFormatException e) {
-                if(trimmed.equals("\u221e"))
+                if (trimmed.equals("\u221e"))
                     return Double.POSITIVE_INFINITY;
                 throw e;
             }
@@ -245,5 +247,17 @@ public class Transfer {
             return Long.parseLong(trimmed);
         } else
             return null;
+    }
+
+    public static boolean isEmpty(String string) {
+        return string == null || string.length() == 0;
+    }
+
+    public static boolean isEmpty(Integer integer) {
+        return integer == null || integer == 0;
+    }
+
+    public static boolean isEmpty(Double aDouble) {
+        return aDouble == null || aDouble == 0.0;
     }
 }

@@ -21,7 +21,6 @@
 package slash.navigation.base;
 
 import slash.common.io.Files;
-import slash.navigation.base.NavigationFileParser;
 
 import java.io.File;
 import java.io.IOException;

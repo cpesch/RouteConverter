@@ -24,7 +24,7 @@ import slash.common.TestCase;
 import java.io.IOException;
 
 public class GeoNamesServiceIT extends TestCase {
-    private final GeoNamesService service = new GeoNamesService();
+    private GeoNamesService service = new GeoNamesService();
 
     public void testSrtm3ElevationFor() throws IOException {
         assertEquals(209, service.getSrtm3ElevationFor(10.2, 50.001).intValue());
@@ -79,7 +79,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals("Earth", service.getNearByFor(0.0, 0.0));
         // was: assertEquals("Antarctica (general)", service.getNearByFor(0.0, -90.0));
         // was: assertEquals("Amundsen-Scott /USA/", service.getNearByFor(0.0, -90.0));
-        assertEquals("Antarctica", service.getNearByFor(0.0, -90.0));
+        assertEquals("South Pole", service.getNearByFor(0.0, -90.0));
         assertEquals("North Pole", service.getNearByFor(0.0, 90.0));
         assertEquals(null, service.getNearByFor(90.0, 90.0));
         assertEquals(null, service.getNearByFor(-90.0, -90.0));
