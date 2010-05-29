@@ -34,11 +34,10 @@ import java.util.List;
 /**
  * The base of all Wintec WBT-201 formats.
  *
- * @author Malte Neumann
+ * @author Malte Neumann, Christian Pesch
  */
 
 public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
-    private static final int HEADER_SIZE = 1024;
     private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public String getName() {
@@ -60,6 +59,8 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     public boolean isSupportsMultipleRoutes() {
         return true;
     }
+
+    protected abstract int getHeaderSize();
 
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
@@ -84,11 +85,11 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         List<Wgs84Route> result = null;
 
-        byte[] header = new byte[HEADER_SIZE];
-        if (source.read(header) == HEADER_SIZE) {
+        byte[] header = new byte[getHeaderSize()];
+        if (source.read(header) == getHeaderSize()) {
 
             // copy headerbytes in ByteBuffer, because header contains little endian int
-            ByteBuffer headerBuffer = ByteBuffer.allocate(HEADER_SIZE);
+            ByteBuffer headerBuffer = ByteBuffer.allocate(getHeaderSize());
             headerBuffer.position(0);
             headerBuffer.put(header);
 

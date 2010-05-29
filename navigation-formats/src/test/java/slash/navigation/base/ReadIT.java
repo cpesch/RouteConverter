@@ -271,7 +271,9 @@ public class ReadIT extends NavigationTestCase {
     public void testDontReadUnrecognizedFiles() throws IOException {
         dontReadFiles(UNRECOGNIZED_PATH, new TestFileCallback() {
             public void test(File file) throws IOException {
-                assertFalse("Can read route from " + file, parser.read(file));
+                boolean success = parser.read(file);
+                NavigationFormat format = success ? parser.getFormat() : null;
+                assertFalse("Can read route from " + file + " as " + format, success);
             }
         });
     }
@@ -279,7 +281,9 @@ public class ReadIT extends NavigationTestCase {
     public void testReadFalseDetectsFiles() throws IOException {
         dontReadFiles(FALSE_DETECTS_PATH, new TestFileCallback() {
             public void test(File file) throws IOException {
-                assertTrue("Cannot read route from " + file, parser.read(file));
+                boolean success = parser.read(file);
+                NavigationFormat format = success ? parser.getFormat() : null;
+                assertTrue("Cannot read route from " + file + " as " + format, success);
             }
         });
     }

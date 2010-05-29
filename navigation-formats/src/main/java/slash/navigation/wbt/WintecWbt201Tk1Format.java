@@ -45,6 +45,10 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
         return ".tk1";
     }
 
+    protected int getHeaderSize() {
+        return 1024;
+    }
+
     protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
         buffer.position(0);
         byte[] bytes = new byte[16];

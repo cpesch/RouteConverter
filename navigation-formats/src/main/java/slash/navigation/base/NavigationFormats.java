@@ -126,7 +126,6 @@ public final class NavigationFormats {
         addFormat(KlickTelRouteFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
-        addFormat(WintecWbt202TesFormat.class);
         addFormat(NavilinkFormat.class);
         addFormat(KienzleGpsFormat.class);
 
@@ -148,6 +147,7 @@ public final class NavigationFormats {
         addFormat(GoPalTrackFormat.class);
         addFormat(TomTomPoiFormat.class);
         addFormat(HoluxM241BinaryFormat.class);
+        addFormat(WintecWbt202TesFormat.class);
 
         // second try for broken files
         addFormat(BrokenNmeaFormat.class);

@@ -59,7 +59,7 @@
                     <buildDirectory>${project.build.directory}/RouteConverter64</buildDirectory>
                     <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
                     <jvmVersion>1.6+</jvmVersion>
-                    <vmOptions>-Xmx256m</vmOptions>
+                    <vmOptions>-Xmx256m -XstartOnFirstThread</vmOptions>
                     <javaApplicationStub>${basedir}/src/main/app-resources/JavaApplicationStub</javaApplicationStub>
                     <iconFile>${basedir}/src/main/app-resources/RouteConverter.icns</iconFile>
                     <!-- <dictionaryFile>${basedir}/src/main/app-resources/RouteConverter.plist</dictionaryFile> -->

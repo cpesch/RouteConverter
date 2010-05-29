@@ -47,6 +47,11 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
         return ".tes";
     }
 
+    protected int getHeaderSize() {
+        // this means files with less than 3 positions are not recognized
+        return 3 * 16; 
+    }
+
     protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.position(0);
