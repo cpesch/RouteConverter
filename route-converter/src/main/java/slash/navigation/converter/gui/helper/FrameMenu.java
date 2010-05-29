@@ -54,6 +54,15 @@ public class FrameMenu {
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("new-position"));
         editMenu.add(JMenuHelper.createItem("delete"));
+        editMenu.addSeparator();
+        JMenu completeMenu = JMenuHelper.createMenu("complete");
+        completeMenu.add(JMenuHelper.createItem("add-coordinates"));
+        completeMenu.add(JMenuHelper.createItem("add-elevation"));
+        completeMenu.add(JMenuHelper.createItem("add-postal-address"));
+        completeMenu.add(JMenuHelper.createItem("add-populated-place"));
+        completeMenu.add(JMenuHelper.createItem("add-speed"));
+        completeMenu.add(JMenuHelper.createItem("add-index"));
+        editMenu.add(completeMenu);
 
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
@@ -63,7 +72,6 @@ public class FrameMenu {
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
         toolsMenu.add(JMenuHelper.createItem("insert-positions"));
         toolsMenu.add(JMenuHelper.createItem("geocode-position"));
-        toolsMenu.add(JMenuHelper.createItem("complement-positions"));
         toolsMenu.add(JMenuHelper.createItem("delete-positions"));
         toolsMenu.add(JMenuHelper.createItem("revert-positions"));
 

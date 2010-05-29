@@ -777,7 +777,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("maximize-positionlist", new MoveSplitPaneDividerAction(splitPane, 0));
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("geocode-position", new GeocodePositionAction());
-        actionManager.register("complement-positions", new ComplementPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
         actionManager.register("options", new OptionsAction());

@@ -22,10 +22,10 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * {@link ActionListener} that adds coordinates to the selected rows of a {@link JTable}
@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
  * @author Christian Pesch
  */
 
-public class AddCoordinatesToPositions implements ActionListener {
+public class AddCoordinatesToPositions extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
     private final PositionAugmenter augmenter;
@@ -45,7 +45,7 @@ public class AddCoordinatesToPositions implements ActionListener {
         this.augmenter = augmenter;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             augmenter.addCoordinates(table, positionsModel, selectedRows);

@@ -22,10 +22,10 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * {@link ActionListener} that adds postal addresses from Google Maps as comments to
@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
  * @author Christian Pesch
  */
 
-public class AddPostalAddressToPositions implements ActionListener {
+public class AddPostalAddressToPositions extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
     private final PositionAugmenter augmenter;
@@ -45,7 +45,7 @@ public class AddPostalAddressToPositions implements ActionListener {
         this.augmenter = augmenter;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             augmenter.addPostalAddresses(table, positionsModel, selectedRows);

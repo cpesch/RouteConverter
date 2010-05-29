@@ -22,10 +22,10 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * {@link ActionListener} that adds elevations to the selected rows of a {@link JTable}
@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
  * @author Christian Pesch
  */
 
-public class AddElevationToPositions implements ActionListener {
+public class AddElevationToPositions extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
     private final PositionAugmenter augmenter;
@@ -45,7 +45,7 @@ public class AddElevationToPositions implements ActionListener {
         this.augmenter = augmenter;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             augmenter.addElevations(table, positionsModel, selectedRows);

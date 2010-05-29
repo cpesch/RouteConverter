@@ -20,13 +20,13 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * {@link ActionListener} that adds indices to the selected rows of a {@link JTable}
@@ -35,7 +35,7 @@ import java.awt.event.ActionEvent;
  * @author Christian Pesch
  */
 
-public class AddIndicesToPositions implements ActionListener {
+public class AddIndicesToPositions extends FrameAction {
     private final RouteConverter routeConverter;
     private final JTable table;
     private final PositionsModel positionsModel;
@@ -48,7 +48,7 @@ public class AddIndicesToPositions implements ActionListener {
         this.augmenter = augmenter;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             augmenter.addIndices(table, positionsModel, selectedRows, 
