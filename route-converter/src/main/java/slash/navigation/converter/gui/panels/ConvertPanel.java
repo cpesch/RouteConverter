@@ -224,13 +224,15 @@ public abstract class ConvertPanel {
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
         actionManager.register("upload", new UploadAction(this));
+        final PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
         actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-index", new AddIndicesToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("split-positionlist", new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, getPositionsModel(), formatAndRoutesModel));
+        actionManager.register("split-positionlist", new SplitPositionList(tablePositions, getPositionsModel(), formatAndRoutesModel));
+        actionManager.register("import-positionlist", new ImportPositionList(RouteConverter.getInstance(), tablePositions, getPositionsModel()));
 
         JMenuHelper.registerKeyStroke(tablePositions, "copy");
         JMenuHelper.registerKeyStroke(tablePositions, "cut");
@@ -658,28 +660,6 @@ public abstract class ConvertPanel {
         uploadDialog.restoreLocation();
         uploadDialog.setVisible(true);
         formatAndRoutesModel.setModified(false);
-    }
-
-    private final PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
-
-    public void addCoordinatesToPositions() {
-        new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter).actionPerformed(null);
-    }
-
-    public void addElevationToPositions() {
-        new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter).actionPerformed(null);
-    }
-
-    public void addSpeedToPositions() {
-        new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter).actionPerformed(null);
-    }
-
-    public void addPostalAddressToPositions() {
-        new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter).actionPerformed(null);
-    }
-
-    public void addPopulatedPlaceToPositions() {
-        new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter).actionPerformed(null);
     }
 
     // helpers for actions
@@ -1181,11 +1161,7 @@ public abstract class ConvertPanel {
                 }
             });
 
-            editMenu.addSeparator();
-
-            JMenuItem buttonImportPositionlist = new JMenuItem(RouteConverter.getBundle().getString("import-positionlist"));
-            buttonImportPositionlist.addActionListener(new ImportPositionList(RouteConverter.getInstance().getFrame(), ConvertPanel.this, tablePositions, getPositionsModel()));
-            editMenu.add(buttonImportPositionlist);
+            editMenu.add(JMenuHelper.createItem("import-positionlist"));
 
             return editMenu;
         }

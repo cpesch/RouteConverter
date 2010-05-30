@@ -66,6 +66,7 @@ public class FrameMenu {
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("split-positionlist"));
         // TODO add merge menu items
+        editMenu.add(JMenuHelper.createItem("import-positionlist"));
         
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));

@@ -20,16 +20,14 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.common.io.Files;
 import slash.navigation.babel.BabelException;
+import slash.navigation.base.NavigationFileParser;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.panels.ConvertPanel;
-import slash.navigation.gui.Constants;
-import slash.common.io.Files;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -45,34 +43,28 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public class ImportPositionList implements ActionListener {
+public class ImportPositionList extends FrameAction {
     private static final Logger log = Logger.getLogger(ImportPositionList.class.getName());
 
-    private final JFrame frame;
-    private final ConvertPanel panel;
+    private final RouteConverter routeConverter;
     private final JTable table;
     private final PositionsModel model;
 
-    public ImportPositionList(JFrame frame, ConvertPanel panel, JTable table, PositionsModel model) {
-        this.frame = frame;
-        this.panel = panel;
+    public ImportPositionList(RouteConverter routeConverter, JTable table, PositionsModel model) {
+        this.routeConverter = routeConverter;
         this.table = table;
         this.model = model;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int selectedRow = table.getSelectedRow() + 1;
 
-        Constants.startWaitCursor(frame.getRootPane());
-        try {
-            File[] files = panel.selectFilesToImport();
-            if (files == null)
-                return;
+        File[] files = routeConverter.selectFilesToImport();
+        if (files == null)
+            return;
 
-            importPositionList(selectedRow, Files.toUrls(files));
-        } finally {
-            Constants.stopWaitCursor(frame.getRootPane());
-        }
+        importPositionList(selectedRow, Files.toUrls(files));
+
     }
 
 
@@ -84,8 +76,6 @@ public class ImportPositionList implements ActionListener {
     }
 
     private void importPositionList(final int row, final List<URL> urls) {
-        final RouteConverter r = RouteConverter.getInstance();
-
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -101,22 +91,22 @@ public class ImportPositionList implements ActionListener {
                                     try {
                                         model.add(row, parser.getTheRoute());
                                     } catch (IOException e) {
-                                        r.handleOpenError(e, path);
+                                        routeConverter.handleOpenError(e, path);
                                     }
                                 }
                             });
 
                         } else {
-                            r.handleUnsupportedFormat(path);
+                            routeConverter.handleUnsupportedFormat(path);
                         }
                     }
                 } catch (BabelException e) {
-                    r.handleBabelError(e);
+                    routeConverter.handleBabelError(e);
                 } catch (OutOfMemoryError e) {
-                    r.handleOutOfMemoryError();
+                    routeConverter.handleOutOfMemoryError();
                 } catch (Throwable t) {
                     log.severe("Import error: " + t.getMessage());
-                    r.handleOpenError(t, urls);
+                    routeConverter.handleOpenError(t, urls);
                 }
             }
         }, "FileImporter").start();

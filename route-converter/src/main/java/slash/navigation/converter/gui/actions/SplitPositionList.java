@@ -26,7 +26,6 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.Constants;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
@@ -42,13 +41,11 @@ import java.util.List;
  */
 
 public class SplitPositionList extends FrameAction {
-    private final JFrame frame;
     private final JTable table;
     private final PositionsModel positionsModel;
     private final FormatAndRoutesModel formatAndRoutesModel;
 
-    public SplitPositionList(JFrame frame, JTable table, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
-        this.frame = frame;
+    public SplitPositionList(JTable table, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.formatAndRoutesModel = formatAndRoutesModel;
@@ -57,30 +54,24 @@ public class SplitPositionList extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            Constants.startWaitCursor(frame.getRootPane());
+            BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
+            int routeInsertIndex = formatAndRoutesModel.getSize();
 
-            try {
-                BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
-                int routeInsertIndex = formatAndRoutesModel.getSize();
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                int fromIndex = selectedRows[i] - 1;
+                fromIndex = Math.max(fromIndex, 0);
+                int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
+                toIndex--;
+                toIndex = Math.max(toIndex, 0);
+                if (fromIndex == 0 && toIndex == 0)
+                    break;
 
-                for (int i = selectedRows.length - 1; i >= 0; i--) {
-                    int fromIndex = selectedRows[i] - 1;
-                    fromIndex = Math.max(fromIndex, 0);
-                    int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
-                    toIndex--;
-                    toIndex = Math.max(toIndex, 0);
-                    if (fromIndex == 0 && toIndex == 0)
-                        break;
-
-                    List<BaseNavigationPosition> positions = positionsModel.remove(fromIndex, toIndex);
-                    NavigationFormat format = formatAndRoutesModel.getFormat();
-                    @SuppressWarnings({"unchecked"})
-                    BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =
-                            format.createRoute(selectedRoute.getCharacteristics(), selectedRoute.getName() + "(" + (i + 1) + ")", positions);
-                    formatAndRoutesModel.addRoute(routeInsertIndex, target);
-                }
-            } finally {
-                Constants.stopWaitCursor(frame.getRootPane());
+                List<BaseNavigationPosition> positions = positionsModel.remove(fromIndex, toIndex);
+                NavigationFormat format = formatAndRoutesModel.getFormat();
+                @SuppressWarnings({"unchecked"})
+                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =
+                        format.createRoute(selectedRoute.getCharacteristics(), selectedRoute.getName() + "(" + (i + 1) + ")", positions);
+                formatAndRoutesModel.addRoute(routeInsertIndex, target);
             }
 
             final int selectedRow = Math.max(selectedRows[selectedRows.length - 1] - 1, 0);

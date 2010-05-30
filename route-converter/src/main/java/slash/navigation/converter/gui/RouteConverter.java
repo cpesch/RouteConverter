@@ -479,6 +479,19 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().openPositionList(urls);
     }
 
+    public File[] selectFilesToImport() {
+        return getConvertPanel().selectFilesToImport();
+    }
+
+    public void revertPositions() {
+        getPositionsModel().revert();
+        getConvertPanel().clearSelection();
+    }
+
+    public void renameRoute(String name) {
+        getConvertPanel().renameRoute(name);
+    }
+
     public void selectPositionsOnMap(int[] selectPositions) {
         if (isMapViewAvailable())
             mapView.setSelectedPositions(selectPositions);
@@ -530,35 +543,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void clearSelection() {
         getConvertPanel().clearSelection();
-    }
-
-    public void addCoordinatesToPositions() {
-        getConvertPanel().addCoordinatesToPositions();
-    }
-
-    public void addElevationToPositions() {
-        getConvertPanel().addElevationToPositions();
-    }
-
-    public void addSpeedToPositions() {
-        getConvertPanel().addSpeedToPositions();
-    }
-
-    public void addPostalAddressToPositions() {
-        getConvertPanel().addPostalAddressToPositions();
-    }
-
-    public void addPopulatedPlaceToPositions() {
-        getConvertPanel().addPopulatedPlaceToPositions();
-    }
-
-    public void revertPositions() {
-        getPositionsModel().revert();
-        getConvertPanel().clearSelection();
-    }
-
-    public void renameRoute(String name) {
-        getConvertPanel().renameRoute(name);
     }
 
     // map view related helpers
