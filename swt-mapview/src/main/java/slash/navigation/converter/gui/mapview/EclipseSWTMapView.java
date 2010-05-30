@@ -169,18 +169,6 @@ public class EclipseSWTMapView extends BaseMapView {
             checkCallback();
         } else {
             if (counter++ < 50) {
-                if (!Platform.isWindows()) {
-                    try {
-                        SwingUtilities.invokeAndWait(new Runnable() {
-                            public void run() {
-                                log.info("Loaded HTML: " + webBrowser.getHTMLContent());
-                            }
-                        });
-                    } catch (Exception e) {
-                        // ignored intentionally
-                    }
-                }
-
                 log.info(System.currentTimeMillis() + " WAITING " + counter * 100 + " milliseconds");
                 try {
                     Thread.sleep(counter * 100);
