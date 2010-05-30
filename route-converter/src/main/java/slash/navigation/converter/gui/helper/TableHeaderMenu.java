@@ -86,10 +86,6 @@ public class TableHeaderMenu {
         });
     }
 
-    public JPopupMenu getPopupMenu() {
-        return popupMenu;
-    }
-
     private void showPopup(MouseEvent e) {
         if (e.isPopupTrigger()) {
             popupMenu.show(e.getComponent(), e.getX(), e.getY());

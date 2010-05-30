@@ -32,11 +32,11 @@ import java.awt.event.MouseEvent;
  * @author Christian Pesch
  */
 
-public abstract class TablePopupMenu {
+public abstract class AbstractTablePopupMenu {
     private final JTable table;
     private final JPopupMenu popupMenu;
 
-    public TablePopupMenu(JTable table) {
+    public AbstractTablePopupMenu(JTable table) {
         this.table = table;
         this.popupMenu = createPopupMenu();
         initialize();

@@ -21,15 +21,15 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Constants;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class SplitPositionList implements ActionListener {
+public class SplitPositionList extends FrameAction {
     private final JFrame frame;
     private final JTable table;
     private final PositionsModel positionsModel;
@@ -54,7 +54,7 @@ public class SplitPositionList implements ActionListener {
         this.formatAndRoutesModel = formatAndRoutesModel;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             Constants.startWaitCursor(frame.getRootPane());

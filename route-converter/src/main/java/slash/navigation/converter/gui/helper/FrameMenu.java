@@ -63,7 +63,10 @@ public class FrameMenu {
         completeMenu.add(JMenuHelper.createItem("add-speed"));
         completeMenu.add(JMenuHelper.createItem("add-index"));
         editMenu.add(completeMenu);
-
+        editMenu.addSeparator();
+        editMenu.add(JMenuHelper.createItem("split-positionlist"));
+        // TODO add merge menu items
+        
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
         viewMenu.add(JMenuHelper.createItem("maximize-map"));

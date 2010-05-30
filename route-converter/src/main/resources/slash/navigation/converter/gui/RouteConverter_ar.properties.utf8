@@ -55,6 +55,8 @@ add-speed-action=السرعة
 add-speed-mnemonic=S
 add-index-action=Number
 add-index-mnemonic=N
+split-positionlist-action=قطع المواقع
+split-positionlist-mnemonic=S
 
 view-menu=عرض
 view-menu-mnemonic=V
@@ -153,7 +155,6 @@ jre-too-old-warning=<html>Your Java version {0} has bugs that prevent reading Go
 
 new-positionlist-tooltip=إنشاء قائمة مواقع
 rename-positionlist-tooltip=تغير اسم قائمة المواقع
-split-positionlist=قطع المواقع
 merge-positionlist=قائمة مواقع الملحق
 import-positionlist=استيراد ملف
 import-positionlist-source=فتح ملف من

@@ -85,7 +85,6 @@ public abstract class ConvertPanel {
     private JLabel labelLength;
     private JLabel labelDuration;
     protected JTable tablePositions;
-    private PositionTablePopupMenu popupTable;
     private JComboBox comboBoxChoosePositionList;
     private JComboBox comboBoxChoosePositionListCharacteristics;
     private JButton buttonNewPositionList;
@@ -210,7 +209,7 @@ public abstract class ConvertPanel {
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
         new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
-        popupTable = new PositionTablePopupMenu();
+        new PositionTablePopupMenu();
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         final ActionManager actionManager = r.getContext().getActionManager();
@@ -231,6 +230,7 @@ public abstract class ConvertPanel {
         actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-index", new AddIndicesToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
+        actionManager.register("split-positionlist", new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, getPositionsModel(), formatAndRoutesModel));
 
         JMenuHelper.registerKeyStroke(tablePositions, "copy");
         JMenuHelper.registerKeyStroke(tablePositions, "cut");
@@ -719,20 +719,19 @@ public abstract class ConvertPanel {
 
     private void handleFormatUpdate() {
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-        boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
         buttonNewPositionList.setEnabled(supportsMultipleRoutes);
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
-        popupTable.handleFormatUpdate(supportsMultipleRoutes, existsMoreThanOnePosition);
+        ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
+        actionManager.enable("split-positionlist", supportsMultipleRoutes && existsMoreThanOnePosition);
     }
 
     private void handleRoutesUpdate() {
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
-        boolean existsOneRoute = formatAndRoutesModel.getSize() == 1;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
 
@@ -742,8 +741,7 @@ public abstract class ConvertPanel {
         buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
 
         ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
-
-        popupTable.handleRoutesUpdate(supportsMultipleRoutes, existsARoute, existsMoreThanOnePosition);
+        actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
     }
 
     private void handlePositionsUpdate() {
@@ -752,6 +750,7 @@ public abstract class ConvertPanel {
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
+        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
         buttonMovePositionUp.setEnabled(firstRowNotSelected);
@@ -771,13 +770,9 @@ public abstract class ConvertPanel {
         actionManager.enable("add-populated-place", existsASelectedPosition);
         actionManager.enable("add-speed", existsASelectedPosition);
         actionManager.enable("add-index", existsASelectedPosition);
+        actionManager.enable("split-positionlist", supportsMultipleRoutes && existsASelectedPosition);
 
         RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
-
-        if (selectedRows.length > 0) {
-            boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-            popupTable.handlePositionsUpdate(supportsMultipleRoutes, selectedRows.length > 0);
-        }
     }
 
     // helpers
@@ -1113,8 +1108,7 @@ public abstract class ConvertPanel {
         return convertPanel;
     }
 
-    public class PositionTablePopupMenu extends TablePopupMenu {
-        private JMenuItem buttonSplitPositionlist;
+    public class PositionTablePopupMenu extends AbstractTablePopupMenu {
 
         public PositionTablePopupMenu() {
             super(tablePositions);
@@ -1131,7 +1125,6 @@ public abstract class ConvertPanel {
             editMenu.add(JMenuHelper.createItem("new-position"));
             editMenu.add(JMenuHelper.createItem("delete"));
             editMenu.addSeparator();
-
             JMenu completeMenu = JMenuHelper.createMenu("complete");
             completeMenu.add(JMenuHelper.createItem("add-coordinates"));
             completeMenu.add(JMenuHelper.createItem("add-elevation"));
@@ -1140,12 +1133,8 @@ public abstract class ConvertPanel {
             completeMenu.add(JMenuHelper.createItem("add-speed"));
             completeMenu.add(JMenuHelper.createItem("add-index"));
             editMenu.add(completeMenu);
-
             editMenu.addSeparator();
-
-            buttonSplitPositionlist = new JMenuItem(RouteConverter.getBundle().getString("split-positionlist"));
-            buttonSplitPositionlist.addActionListener(new SplitPositionList(RouteConverter.getInstance().getFrame(), tablePositions, getPositionsModel(), formatAndRoutesModel));
-            editMenu.add(buttonSplitPositionlist);
+            editMenu.add(JMenuHelper.createItem("split-positionlist"));
 
             final JMenu menuMergePositionlist = new JMenu(RouteConverter.getBundle().getString("merge-positionlist"));
             final Map<JMenuItem, MergePositionList> menuItem2MergePositonList = new HashMap<JMenuItem, MergePositionList>();
@@ -1199,18 +1188,6 @@ public abstract class ConvertPanel {
             editMenu.add(buttonImportPositionlist);
 
             return editMenu;
-        }
-
-        void handleFormatUpdate(boolean supportsMultipleRoutes, boolean existsMoreThanOnePosition) {
-            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsMoreThanOnePosition);
-        }
-
-        void handleRoutesUpdate(boolean supportsMultipleRoutes, boolean existsARoute, boolean existsMoreThanOnePosition) {
-            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
-        }
-
-        void handlePositionsUpdate(final boolean supportsMultipleRoutes, boolean existsASelectedPosition) {
-            buttonSplitPositionlist.setEnabled(supportsMultipleRoutes && existsASelectedPosition);
         }
     }
 }
