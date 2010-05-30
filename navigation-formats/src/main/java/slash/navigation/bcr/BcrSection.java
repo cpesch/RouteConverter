@@ -56,6 +56,9 @@ class BcrSection extends IniFileSection {
         }
     }
 
+    public void put(String name, String value) {
+        super.put(name.toUpperCase(), value);
+    }
 
     public boolean equals(Object o) {
         if (this == o) return true;
