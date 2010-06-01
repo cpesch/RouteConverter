@@ -303,7 +303,7 @@
                setError("<p>Sorry, Google Maps is not compatible</p><p>with this browser.</p>");
            }
        } catch (e) {
-           setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p></div>");
+           setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
        }
    } else {
        setError("<p>Sorry, could not access Google Maps.</p><p>Please check your Internet connection.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
