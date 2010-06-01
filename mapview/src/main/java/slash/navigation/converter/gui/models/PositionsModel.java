@@ -142,10 +142,6 @@ public class PositionsModel extends AbstractTableModel {
         return result;
     }
 
-    public BaseNavigationPosition getSuccessor(BaseNavigationPosition position) {
-        return getRoute().getSuccessor(position);
-    }
-
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case PositionColumns.DESCRIPTION_COLUMN_INDEX:
