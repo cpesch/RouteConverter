@@ -780,7 +780,7 @@ public abstract class ConvertPanel {
         if (format instanceof GoPalRouteFormat)
             fileName = Files.createGoPalFileName(fileName);
         return new File(Files.calculateConvertFileName(new File(path, fileName),
-                format.getExtension(),
+                "",
                 format.getMaximumFileNameLength()));
     }
 
