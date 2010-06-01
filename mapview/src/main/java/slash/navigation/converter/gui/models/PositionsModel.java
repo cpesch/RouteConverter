@@ -295,7 +295,8 @@ public class PositionsModel extends AbstractTableModel {
 
     public void revert() {
         getRoute().revert();
-        fireTableDataChanged();
+        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
+        fireTableRowsUpdated(-1, -1);
     }
 
     public void down(int[] rows) {
