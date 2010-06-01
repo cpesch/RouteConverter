@@ -61,6 +61,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     private static final Pattern CLIENT_VALUE_PATTERN = Pattern.compile("(Town|TOWN|Standort|STANDORT|)" + VALUE_SEPARATOR + "([^,]+),?.*");
 
     static final String ROUTE_NAME = "ROUTENAME";
+    static final String EXPECTED_DISTANCE = "EXP_DISTANCE";
     static final String DESCRIPTION_LINE_COUNT = "DESCRIPTIONLINES";
     static final String DESCRIPTION = "DESCRIPTION";
     static final String CREATOR = "CREATOR";
@@ -205,7 +206,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             writer.println(SECTION_PREFIX + section.getTitle() + SECTION_POSTFIX);
 
             for (String name : section.keySet()) {
-                if (!name.equals(CREATOR)) {
+                if (!name.equals(CREATOR) && !name.equals(ROUTE_NAME) && !name.equals(EXPECTED_DISTANCE)) {
                     String value = section.get(name);
                     if (value == null)
                         value = "";
@@ -215,6 +216,11 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
 
             if (CLIENT_TITLE.equals(section.getTitle())) {
                 writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
+                writer.println(ROUTE_NAME + NAME_VALUE_SEPARATOR + route.getName());
+                double length = route.getLength();
+                if(length > 0)
+                    length = length / 1000.0;
+                writer.println(EXPECTED_DISTANCE + NAME_VALUE_SEPARATOR + (int)length);
 
                 int index = 1;
                 int maxIndex = positions.size();
