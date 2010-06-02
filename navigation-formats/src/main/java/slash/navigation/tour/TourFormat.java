@@ -102,6 +102,10 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                         // ignore everything else from the [TOUR] section
                         map.clear();
                     } else {
+                        // if there is no PositionInList key, use the sectionTitle to order the positions
+                        if(!map.containsKey(POSITION_IN_LIST))
+                            map.put(POSITION_IN_LIST, sectionTitle);
+
                         TourPosition position = parsePosition(map, sectionTitle);
                         if (position != null)
                             positions.add(position);
