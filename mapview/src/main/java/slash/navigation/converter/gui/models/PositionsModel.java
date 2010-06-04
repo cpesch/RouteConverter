@@ -157,6 +157,9 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (rowIndex == getRowCount())
+            return;
+
         BaseNavigationPosition position = getPosition(rowIndex);
         String value = Transfer.trim(aValue.toString());
         switch(columnIndex) {
