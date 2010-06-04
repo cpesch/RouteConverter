@@ -149,7 +149,11 @@ public class Kml22Format extends KmlFormat {
             String placemarkName = asComment(Transfer.trim(placemarkTypeValue.getName()),
                     Transfer.trim(placemarkTypeValue.getDescription()));
 
-            List<KmlPosition> positions = extractPositions(placemarkTypeValue.getAbstractGeometryGroup());
+            JAXBElement<? extends AbstractGeometryType> abstractGeometryGroup = placemarkTypeValue.getAbstractGeometryGroup();
+            if (abstractGeometryGroup == null)
+                continue;
+
+            List<KmlPosition> positions = extractPositions(abstractGeometryGroup);
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
