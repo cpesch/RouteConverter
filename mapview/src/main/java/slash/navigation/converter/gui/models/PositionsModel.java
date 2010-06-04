@@ -93,7 +93,9 @@ public class PositionsModel extends AbstractTableModel {
             return "";
         if (Math.abs(distance) < 10000.0)
             return Math.round(distance) + " m";
-        return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
+        if (Math.abs(distance) < 200000.0)
+            return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
+        return Transfer.roundFraction(distance / 1000.0, 0) + " Km";
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
