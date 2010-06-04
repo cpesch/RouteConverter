@@ -75,7 +75,11 @@ public class EclipseSWTMapView extends BaseMapView {
             final String language = Locale.getDefault().getLanguage();
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", language, new TokenResolver() {
                 public String resolveToken(String tokenName) {
-                    return tokenName.equals("locale") ? language : tokenName;
+                    if(tokenName.equals("locale"))
+                        return language;
+                    if(tokenName.equals("percent"))
+                        return Platform.isWindows() ? "99" : "100";
+                    return tokenName;
                 }
             });
             if (html == null)
