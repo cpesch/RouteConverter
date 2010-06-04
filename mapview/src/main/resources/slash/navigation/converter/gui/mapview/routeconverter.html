@@ -60,7 +60,7 @@
 
    function callJava(uri) {
        if (xmlhttp) {
-           xmlhttp.open("GET", "http://localhost:" + dragListenerPort + "/" + uri);
+           xmlhttp.open("GET", "http://127.0.0.1:" + dragListenerPort + "/" + uri);
            xmlhttp.setRequestHeader("id", "Jx3dQUv4");
            xmlhttp.send();
        }
@@ -68,7 +68,7 @@
 
    function callJavaWithPost(body) {
        if (xmlhttp) {
-           xmlhttp.open("POST", "http://localhost:" + dragListenerPort + "/generic-post-url/", true);
+           xmlhttp.open("POST", "http://127.0.0.1:" + dragListenerPort + "/generic-post-url/", true);
            xmlhttp.setRequestHeader("id", "Jx3dQUv4");
            xmlhttp.send(body);
        }

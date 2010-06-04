@@ -1163,7 +1163,7 @@ public abstract class BaseMapView implements MapView {
         Map<String, String> map = asMap(lines);
         String host = Transfer.trim(map.get("Host"));
         String id = Transfer.trim(map.get("id"));
-        return host != null && host.equals("localhost:" + dragListenerServerSocket.getLocalPort()) &&
+        return host != null && host.equals("127.0.0.1:" + dragListenerServerSocket.getLocalPort()) &&
                 id != null && id.equals("Jx3dQUv4");
     }
 
