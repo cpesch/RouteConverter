@@ -32,6 +32,8 @@ import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.helper.FrameMenu;
+import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.converter.gui.helper.MergePositionListMenu;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -211,7 +213,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void openMapView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                mapView.initialize(getConvertPanel().getPositionsModel(),
+                mapView.initialize(getPositionsModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
@@ -577,7 +579,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     // elevation view related helpers
 
     public PositionsModel getPositionsModel() {
-        return getConvertPanel().getPositionsModel();
+        return getConvertPanel().getFormatAndRoutesModel().getPositionsModel();
     }
 
     public PositionsSelectionModel getPositionsSelectionModel() {
@@ -767,6 +769,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("search-for-updates", new SearchForUpdatesAction());
         actionManager.register("about", new AboutAction());
+        JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(getContext().getMenuBar(), "edit", "merge-positionlist");
+        new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
     }
 
     private class PrintMapAction extends FrameAction {

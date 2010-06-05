@@ -48,7 +48,6 @@ import slash.navigation.gui.Constants;
 import slash.navigation.gui.FrameAction;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -209,7 +208,9 @@ public abstract class ConvertPanel {
 
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
         new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
-        new PositionTablePopupMenu();
+        JPopupMenu menu = new TablePopupMenu(tablePositions).createMenu();
+        JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(menu, "merge-positionlist");
+        new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         final ActionManager actionManager = r.getContext().getActionManager();
@@ -827,8 +828,12 @@ public abstract class ConvertPanel {
 
     // map view related helpers
 
-    public PositionsModel getPositionsModel() {
-        return formatAndRoutesModel.getPositionsModel();
+    public FormatAndRoutesModel getFormatAndRoutesModel() {
+        return formatAndRoutesModel;
+    }
+
+    private PositionsModel getPositionsModel() {
+        return getFormatAndRoutesModel().getPositionsModel();
     }
 
     public PositionsSelectionModel getPositionsSelectionModel() {
@@ -1086,84 +1091,5 @@ public abstract class ConvertPanel {
      */
     public JComponent $$$getRootComponent$$$() {
         return convertPanel;
-    }
-
-    public class PositionTablePopupMenu extends AbstractTablePopupMenu {
-
-        public PositionTablePopupMenu() {
-            super(tablePositions);
-        }
-
-        protected JPopupMenu createPopupMenu() {
-            JPopupMenu editMenu = new JPopupMenu();
-
-            editMenu.add(JMenuHelper.createItem("cut"));
-            editMenu.add(JMenuHelper.createItem("copy"));
-            editMenu.add(JMenuHelper.createItem("paste"));
-            editMenu.add(JMenuHelper.createItem("select-all"));
-            editMenu.addSeparator();
-            editMenu.add(JMenuHelper.createItem("new-position"));
-            editMenu.add(JMenuHelper.createItem("delete"));
-            editMenu.addSeparator();
-            JMenu completeMenu = JMenuHelper.createMenu("complete");
-            completeMenu.add(JMenuHelper.createItem("add-coordinates"));
-            completeMenu.add(JMenuHelper.createItem("add-elevation"));
-            completeMenu.add(JMenuHelper.createItem("add-postal-address"));
-            completeMenu.add(JMenuHelper.createItem("add-populated-place"));
-            completeMenu.add(JMenuHelper.createItem("add-speed"));
-            completeMenu.add(JMenuHelper.createItem("add-index"));
-            editMenu.add(completeMenu);
-            editMenu.addSeparator();
-            editMenu.add(JMenuHelper.createItem("split-positionlist"));
-
-            final JMenu menuMergePositionlist = new JMenu(RouteConverter.getBundle().getString("merge-positionlist"));
-            final Map<JMenuItem, MergePositionList> menuItem2MergePositonList = new HashMap<JMenuItem, MergePositionList>();
-            editMenu.add(menuMergePositionlist);
-
-            formatAndRoutesModel.addListDataListener(new ListDataListener() {
-                public void intervalAdded(ListDataEvent e) {
-                    for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                        BaseRoute route = formatAndRoutesModel.getRoute(i);
-                        // initialization code
-                        MergePositionList mergePositionList = new MergePositionList(RouteConverter.getInstance().getFrame(), tablePositions, comboBoxChoosePositionList, route, getPositionsModel(), formatAndRoutesModel);
-                        JMenuItem menuItem = new JMenuItem(mergePositionList);
-                        menuItem2MergePositonList.put(menuItem, mergePositionList);
-                        // end of initialization code
-                        menuItem.setText(RouteComments.shortenRouteName(route));
-                        menuMergePositionlist.add(menuItem, i);
-                    }
-                }
-
-                public void intervalRemoved(ListDataEvent e) {
-                    for (int i = e.getIndex1(); i >= e.getIndex0(); i--) {
-                        // clean up code
-                        JMenuItem menuItem = i < menuMergePositionlist.getMenuComponentCount() ? (JMenuItem) menuMergePositionlist.getMenuComponent(i) : null;
-                        if (menuItem != null) {
-                            MergePositionList mergePositionList = menuItem2MergePositonList.get(menuItem);
-                            if (mergePositionList != null)
-                                mergePositionList.cleanup();
-                            menuItem2MergePositonList.remove(menuItem);
-                            menuItem.setAction(null);
-                        }
-                        // end of clean up code
-                        menuMergePositionlist.remove(i);
-                    }
-                }
-
-                public void contentsChanged(ListDataEvent e) {
-                    for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                        if (i >= 0 && i < menuMergePositionlist.getMenuComponentCount()) {
-                            BaseRoute route = formatAndRoutesModel.getRoute(i);
-                            JMenuItem menuItem = (JMenuItem) menuMergePositionlist.getMenuComponent(i);
-                            menuItem.setText(RouteComments.shortenRouteName(route));
-                        }
-                    }
-                }
-            });
-
-            editMenu.add(JMenuHelper.createItem("import-positionlist"));
-
-            return editMenu;
-        }
     }
 }

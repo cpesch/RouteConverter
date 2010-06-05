@@ -20,7 +20,8 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.converter.gui.*;
+import slash.navigation.converter.gui.RouteConverter;
+
 import javax.swing.*;
 
 /**
@@ -65,7 +66,7 @@ public class FrameMenu {
         editMenu.add(completeMenu);
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("split-positionlist"));
-        // TODO add merge menu items
+        editMenu.add(JMenuHelper.createMenu("merge-positionlist"));
         editMenu.add(JMenuHelper.createItem("import-positionlist"));
         
         JMenu viewMenu = JMenuHelper.createMenu("view");

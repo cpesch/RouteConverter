@@ -21,15 +21,14 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseRoute;
+import slash.navigation.converter.gui.helper.AbstractListDataListener;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.Constants;
+import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
+import javax.swing.event.ListDataEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * {@link ActionListener} that inserts the position list of a {@link PositionsModel} at
@@ -38,50 +37,32 @@ import java.awt.event.ItemListener;
  * @author Christian Pesch
  */
 
-public class MergePositionList extends AbstractAction {
-    private final JFrame frame;
+public class MergePositionList extends FrameAction {
     private final JTable table;
-    private final JComboBox combobox;
     private final BaseRoute sourceRoute;
-    private final PositionsModel positionsModel;
     private final FormatAndRoutesModel formatAndRoutesModel;
 
-    public MergePositionList(JFrame frame, JTable table, JComboBox combobox, BaseRoute sourceRoute, PositionsModel positionsModel, FormatAndRoutesModel formatAndRoutesModel) {
-        this.frame = frame;
+    public MergePositionList(JTable table, BaseRoute sourceRoute, FormatAndRoutesModel formatAndRoutesModel) {
         this.table = table;
-        this.combobox = combobox;
         this.sourceRoute = sourceRoute;
-        this.positionsModel = positionsModel;
         this.formatAndRoutesModel = formatAndRoutesModel;
         initialize();
     }
 
-    private final ItemListener itemListener = new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-            BaseRoute route = (BaseRoute) e.getItem();
-            setEnabled(!sourceRoute.equals(route));
-        }
-    };
-
     protected void initialize() {
-        setEnabled(!sourceRoute.equals(combobox.getSelectedItem()));
-        combobox.addItemListener(itemListener);
+        setEnabled(!sourceRoute.equals(formatAndRoutesModel.getSelectedRoute()));
+        formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {
+            public void process(ListDataEvent e) {
+                setEnabled(!sourceRoute.equals(formatAndRoutesModel.getSelectedRoute()));
+            }
+        });
     }
 
-    public void cleanup() {
-        combobox.removeItemListener(itemListener);
-    }
-
-    public void actionPerformed(ActionEvent e) {
+    public void run() {
         int selectedRow = table.getSelectedRow() + 1;
-
-        Constants.startWaitCursor(frame.getRootPane());
-        try {
-            positionsModel.add(selectedRow, sourceRoute.getPositions());
-            formatAndRoutesModel.removeRoute(sourceRoute);
-        }
-        finally {
-            Constants.stopWaitCursor(frame.getRootPane());
-        }
+        System.out.println("MPL: sourceRoute " + sourceRoute);
+        System.out.println("FRM: getSelectedRoute " + formatAndRoutesModel.getSelectedRoute());
+        formatAndRoutesModel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
+        formatAndRoutesModel.removeRoute(sourceRoute);
     }
 }

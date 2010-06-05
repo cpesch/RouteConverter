@@ -26,6 +26,7 @@ import slash.navigation.gui.Constants;
 
 import javax.help.CSH;
 import javax.swing.*;
+import java.awt.*;
 import java.util.ResourceBundle;
 
 /**
@@ -115,8 +116,34 @@ public class JMenuHelper {
     public static JMenu findMenu(JMenuBar menuBar, String menuName) {
         for (int i = 0; i < menuBar.getMenuCount(); i++) {
             JMenu menu = menuBar.getMenu(i);
-            if (menu.getName().equals(menuName))
+            if (menuName.equals(menu.getName()))
                 return menu;
+        }
+        return null;
+    }
+
+    public static Component findMenuComponent(JPopupMenu menu, String menuComponentName) {
+        for (int i = 0; i < menu.getComponentCount(); i++) {
+            Component component = menu.getComponent(i);
+            if (menuComponentName.equals(component.getName()))
+                return component;
+        }
+        return null;
+    }
+
+    public static Component findMenuComponent(JMenu menu, String menuComponentName) {
+        for (int i = 0; i < menu.getMenuComponentCount(); i++) {
+            Component component = menu.getMenuComponent(i);
+            if (menuComponentName.equals(component.getName()))
+                return component;
+        }
+        return null;
+    }
+
+    public static Component findMenuComponent(JMenuBar menuBar, String menuName, String menuComponentName) {
+        JMenu menu = findMenu(menuBar, menuName);
+        if(menu != null) {
+            return findMenuComponent(menu, menuComponentName);
         }
         return null;
     }
