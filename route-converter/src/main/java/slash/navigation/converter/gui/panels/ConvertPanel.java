@@ -607,8 +607,8 @@ public abstract class ConvertPanel {
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
 
-            if (openAfterSave) {
-                openPositionList(Files.toUrls(targets[0]), format);
+            if (openAfterSave && format.isSupportsReading()) {
+                openPositionList(Files.toUrls(targets), format);
                 log.info("Open after save: " + targets[0]);
             }
         } catch (Throwable t) {
