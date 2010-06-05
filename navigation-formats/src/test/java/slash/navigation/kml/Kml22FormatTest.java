@@ -20,20 +20,19 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.base.NavigationTestCase;
+import junit.framework.TestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
-public class Kml22FormatTest extends NavigationTestCase {
+public class Kml22FormatTest extends TestCase {
     Kml22Format format = new Kml22Format();
 
     public void testAsPositions() throws IOException {
-        List<String> strings = Arrays.asList("151.2393322528181","-33.59862693992532","0",
-                                             "151.2274390264927","-33.59631160091919","1.5");
-
+        List<String> strings = Arrays.asList("151.2393322528181,-33.59862693992532,0",
+                                             "151.2274390264927,-33.59631160091919,1.5");
         List<KmlPosition> positions = format.asKmlPositions(strings);
         assertEquals(2, positions.size());
         KmlPosition position1= positions.get(0);

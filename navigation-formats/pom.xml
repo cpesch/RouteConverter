@@ -21,7 +21,7 @@
             <artifactId>common</artifactId>
             <version>1.34-SNAPSHOT</version>
             <scope>test</scope>
-            <classifier>tests</classifier>
+            <classifier>test</classifier>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>

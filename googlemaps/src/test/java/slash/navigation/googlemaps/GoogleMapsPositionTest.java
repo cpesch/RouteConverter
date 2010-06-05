@@ -81,8 +81,14 @@ public class GoogleMapsPositionTest extends TestCase {
     public void testParsePositions() {
         List<GoogleMapsPosition> expected = Arrays.asList(new GoogleMapsPosition(1.1, 2.0, 3.0, null), new GoogleMapsPosition(4.0, 5.0, 6.6, null), new GoogleMapsPosition(7.0, 8.8, 9.0, null));
         assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2,3 4,5,6.6 7,8.8,9"));
-        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2 3 4,5 6.6 7,8.8 9"));
-        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1 2,3 4 5,6.6 7 8.8,9"));
-        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1 2 3 4 5 6.6 7 8.8 9"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2,3\t4,5,6.6\t7,8.8,9"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2,3\n4,5,6.6\n7,8.8,9"));
     }
-}
+
+    public void testParsePositionsWithoutElevation() {
+        List<GoogleMapsPosition> expected = Arrays.asList(new GoogleMapsPosition(1.1, 2.0, null, null), new GoogleMapsPosition(4.0, 5.0, null, null), new GoogleMapsPosition(7.0, 8.8, null, null));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2 4,5 7,8.8"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2\t4,5\t7,8.8"));
+        assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2\n4,5\n7,8.8"));
+    }
+}                                                                          
