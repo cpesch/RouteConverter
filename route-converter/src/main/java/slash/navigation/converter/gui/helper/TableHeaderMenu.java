@@ -49,8 +49,10 @@ public class TableHeaderMenu {
 
     public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
         this.columnModel = columnModel;
+        initialize(tableHeader, JMenuHelper.findMenu(menuBar, "view"));
+    }
 
-        JMenu viewMenu = JMenuHelper.findMenu(menuBar, "view");
+    private void initialize(JTableHeader tableHeader, JMenu viewMenu) {
         viewMenu.addSeparator();
         JMenu columnMenu = JMenuHelper.createMenu("show-column");
         viewMenu.add(columnMenu);
