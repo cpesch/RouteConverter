@@ -29,8 +29,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 /**
  * Writes a Web Page (*.html).
@@ -39,9 +37,7 @@ import java.util.prefs.Preferences;
  */
 
 public class WebPageFormat extends SimpleFormat<Wgs84Route> {
-    private static final Logger log = Logger.getLogger(WebPageFormat.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(WebPageFormat.class);
-
+ 
     public String getExtension() {
         return ".html";
     }
@@ -94,7 +90,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
                 waypointsBuffer.append("new GMarker(new GLatLng(").append(position.getLatitude()).append(",").
-                        append(position.getLongitude()).append("), , { title: \")").
+                        append(position.getLongitude()).append("), { title: \")").
                         append(position.getComment()).append("\", clickable: false, icon: markerIcon }),");
             }
         }
