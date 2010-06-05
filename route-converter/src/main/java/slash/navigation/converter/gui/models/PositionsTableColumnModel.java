@@ -30,6 +30,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         predefineColumn(PositionColumns.DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
         predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", 108, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
-        predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", 54, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km"), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", 40, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", 40, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
@@ -82,6 +83,13 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
             if (column != null && column.isVisible())
                 addColumn(column);
         }
+    }
+
+    private int getMaxWidth(String string) {
+        JLabel label = new JLabel();
+        FontMetrics fm = label.getFontMetrics(label.getFont());
+        int width = fm.stringWidth(string);
+        return width + 7;
     }
 
     private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
