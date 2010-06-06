@@ -602,8 +602,7 @@ public abstract class ConvertPanel {
             if (format.isSupportsMultipleRoutes()) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
-                boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
-                new NavigationFileParser().write(route, format, duplicateFirstPosition, true, targets);
+                new NavigationFileParser().write(route, format, false, true, targets);
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
