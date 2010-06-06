@@ -51,8 +51,7 @@ public class MergePositionListMenu {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     BaseRoute route = formatAndRoutesModel.getRoute(i);
-                    MergePositionList mergePositionList = new MergePositionList(table, route, formatAndRoutesModel);
-                    JMenuItem menuItem = new JMenuItem(mergePositionList);
+                    JMenuItem menuItem = new JMenuItem(new MergePositionList(table, route, formatAndRoutesModel));
                     menuItem.setText(RouteComments.shortenRouteName(route));
                     menu.add(menuItem, i);
                 }

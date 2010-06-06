@@ -34,11 +34,10 @@ import java.awt.event.MouseEvent;
 
 public abstract class AbstractTablePopupMenu {
     private final JTable table;
-    private final JPopupMenu popupMenu;
+    private JPopupMenu popupMenu;
 
     public AbstractTablePopupMenu(JTable table) {
         this.table = table;
-        this.popupMenu = createPopupMenu();
     }
 
     protected abstract JPopupMenu createPopupMenu();
@@ -48,7 +47,8 @@ public abstract class AbstractTablePopupMenu {
         MouseListener mouseListener = new MouseListener();
         table.addMouseListener(mouseListener);
         table.getParent().addMouseListener(mouseListener);
-        return createPopupMenu();
+        this.popupMenu = createPopupMenu();
+        return popupMenu;
     }
 
     private void showPopup(final MouseEvent e) {
