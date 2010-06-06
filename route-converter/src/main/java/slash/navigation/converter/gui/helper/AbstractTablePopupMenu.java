@@ -45,8 +45,9 @@ public abstract class AbstractTablePopupMenu {
 
     public JPopupMenu createMenu() {
         // cannot use tablePositions.setComponentPopupMenu(popupMenu); since it does ensure a selection
-        table.addMouseListener(new MouseListener());
-        table.getParent().addMouseListener(new MouseListener());
+        MouseListener mouseListener = new MouseListener();
+        table.addMouseListener(mouseListener);
+        table.getParent().addMouseListener(mouseListener);
         return createPopupMenu();
     }
 
