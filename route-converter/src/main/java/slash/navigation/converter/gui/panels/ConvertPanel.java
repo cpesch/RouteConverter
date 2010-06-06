@@ -730,6 +730,7 @@ public abstract class ConvertPanel {
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
+        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
@@ -751,6 +752,9 @@ public abstract class ConvertPanel {
         actionManager.enable("add-speed", existsASelectedPosition);
         actionManager.enable("add-index", existsASelectedPosition);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsASelectedPosition);
+        actionManager.enable("insert-positions", existsAPosition);
+        actionManager.enable("delete-positions", existsAPosition);
+        actionManager.enable("revert-positions", existsMoreThanOnePosition);
 
         RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
     }

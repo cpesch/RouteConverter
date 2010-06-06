@@ -34,8 +34,6 @@ import slash.navigation.gui.FrameAction;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -103,12 +101,6 @@ public class OptionsPanel {
 
         new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, r.getPreferences(), RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
 
-        r.getPositionsModel().addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                handlePositionsUpdate();
-            }
-        });
-
         new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, r.getPreferences(), RouteConverter.RECENTER_AFTER_ZOOMING_PREFERENCE, false);
         checkBoxRecenterAfterZooming.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -152,17 +144,6 @@ public class OptionsPanel {
             return;
 
         textFieldBabelPath.setText(selected.getAbsolutePath());
-    }
-
-    private void handlePositionsUpdate() {
-        final RouteConverter r = RouteConverter.getInstance();
-        boolean existsAPosition = r.getPositionsModel().getRowCount() > 0;
-        boolean existsMoreThanOnePosition = r.getPositionsModel().getRowCount() > 1;
-
-        // TODO disable actions
-        // buttonComplementPositionList.setEnabled(existsAPosition);
-        // buttonDeleteFromPositionList.setEnabled(existsAPosition);
-        // buttonRevertPositionList.setEnabled(existsMoreThanOnePosition);
     }
 
     {
