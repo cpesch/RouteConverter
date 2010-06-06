@@ -60,8 +60,6 @@ public class MergePositionList extends FrameAction {
 
     public void run() {
         int selectedRow = table.getSelectedRow() + 1;
-        System.out.println("MPL: sourceRoute " + sourceRoute);
-        System.out.println("FRM: getSelectedRoute " + formatAndRoutesModel.getSelectedRoute());
         formatAndRoutesModel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
         formatAndRoutesModel.removeRoute(sourceRoute);
     }
