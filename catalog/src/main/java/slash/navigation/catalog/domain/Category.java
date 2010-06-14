@@ -22,6 +22,7 @@ package slash.navigation.catalog.domain;
 
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.LinkType;
+import slash.navigation.gpx.binding11.MetadataType;
 import slash.navigation.gpx.binding11.RteType;
 
 import java.io.IOException;
@@ -50,6 +51,12 @@ public class Category {
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
             gpx = routeCatalog.fetchGpx(url);
+
+            // avoid subsequent NullPointerExceptions on server errors
+            if (gpx == null) {
+                gpx = new GpxType();
+                gpx.setMetadata(new MetadataType());
+            }
         }
         return gpx;
     }
