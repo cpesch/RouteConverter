@@ -42,6 +42,7 @@
                 </executions>
             </plugin>
 
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>osxappbundle-maven-plugin</artifactId>
@@ -59,13 +60,15 @@
                     <buildDirectory>${project.build.directory}/RouteConverter</buildDirectory>
                     <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
                     <jvmVersion>1.6+</jvmVersion>
-                    <vmOptions>-Xmx256m -XstartOnFirstThread</vmOptions>
+                    <vmOptions>-Xmx256m</vmOptions>
+                    <key>StartOnMainThread</key><true/>
                     <javaApplicationStub>${basedir}/src/main/app-resources/JavaApplicationStub</javaApplicationStub>
                     <iconFile>${basedir}/src/main/app-resources/RouteConverter.icns</iconFile> 
-                    <!-- <dictionaryFile>${basedir}/src/main/app-resources/RouteConverter.plist</dictionaryFile> -->
+                    <dictionaryFile>${basedir}/src/main/app-resources/RouteConverter.plist</dictionaryFile> 
                     <zipFile>${project.build.directory}/RouteConverterMac.zip</zipFile>
                 </configuration>
             </plugin>
+            -->
         </plugins>
     </build>
 

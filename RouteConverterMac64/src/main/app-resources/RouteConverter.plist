@@ -30,6 +30,8 @@
       ${classpath}
       <key>VMOptions</key>
       <string>-Xmx256m</string>
+      <key>StartOnMainThread</key>
+      <true/>
       <key>Properties</key>
             <dict>
                 <key>apple.laf.useScreenMenuBar</key>
