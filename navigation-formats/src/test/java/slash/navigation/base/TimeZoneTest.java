@@ -20,7 +20,6 @@
 
 package slash.navigation.base;
 
-import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.common.io.CompactCalendar;
 
