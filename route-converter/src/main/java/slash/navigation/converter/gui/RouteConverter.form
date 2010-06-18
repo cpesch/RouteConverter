@@ -8,71 +8,90 @@
     <properties/>
     <border type="none"/>
     <children>
-      <splitpane id="df294" binding="splitPane">
+      <splitpane id="405af" binding="bottomSplitPane">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="880" height="580"/>
-          </grid>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <continuousLayout value="true"/>
-          <dividerLocation value="341"/>
+          <dividerLocation value="888"/>
           <dividerSize value="10"/>
           <oneTouchExpandable value="true"/>
-          <opaque value="true"/>
-          <resizeWeight value="1.0"/>
+          <orientation value="0"/>
+          <resizeWeight value="0.0"/>
         </properties>
-        <border type="empty"/>
+        <border type="none"/>
         <children>
-          <grid id="d0653" binding="mapPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
+          <splitpane id="df294" binding="mapSplitPane">
             <constraints>
               <splitpane position="left"/>
             </constraints>
             <properties>
-              <minimumSize width="-1" height="-1"/>
-              <preferredSize width="300" height="560"/>
+              <continuousLayout value="true"/>
+              <dividerLocation value="341"/>
+              <dividerSize value="10"/>
+              <oneTouchExpandable value="true"/>
+              <opaque value="true"/>
+              <resizeWeight value="1.0"/>
             </properties>
             <border type="none"/>
-            <children/>
-          </grid>
-          <tabbedpane id="d4ed6" binding="tabbedPane">
+            <children>
+              <grid id="d0653" binding="mapPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <splitpane position="left"/>
+                </constraints>
+                <properties>
+                  <minimumSize width="-1" height="-1"/>
+                  <preferredSize width="300" height="560"/>
+                </properties>
+                <border type="none"/>
+                <children/>
+              </grid>
+              <tabbedpane id="d4ed6" binding="tabbedPane">
+                <constraints>
+                  <splitpane position="right"/>
+                </constraints>
+                <properties>
+                  <tabPlacement value="1"/>
+                </properties>
+                <border type="none">
+                  <font/>
+                </border>
+                <children>
+                  <grid id="4972c" binding="convertPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                    <constraints>
+                      <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="convert-tab"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children/>
+                  </grid>
+                  <grid id="bffe3" binding="browsePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                    <constraints>
+                      <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="browse-tab"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children/>
+                  </grid>
+                </children>
+              </tabbedpane>
+            </children>
+          </splitpane>
+          <grid id="585f3" binding="bottomPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <splitpane position="right"/>
             </constraints>
             <properties>
-              <tabPlacement value="3"/>
+              <minimumSize width="0" height="0"/>
+              <preferredSize width="0" height="0"/>
+              <visible value="false"/>
             </properties>
-            <border type="none">
-              <font/>
-            </border>
-            <children>
-              <grid id="4972c" binding="convertPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
-                <constraints>
-                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="convert-tab"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children/>
-              </grid>
-              <grid id="36b54" binding="analysePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
-                <constraints>
-                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="analyse-tab"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children/>
-              </grid>
-              <grid id="bffe3" binding="browsePanel" layout-manager="BorderLayout" hgap="0" vgap="0">
-                <constraints>
-                  <tabbedpane title-resource-bundle="slash/navigation/converter/gui/RouteConverter" title-key="browse-tab"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children/>
-              </grid>
-            </children>
-          </tabbedpane>
+            <border type="none"/>
+            <children/>
+          </grid>
         </children>
       </splitpane>
     </children>

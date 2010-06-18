@@ -21,11 +21,13 @@
 package slash.navigation.converter.gui.elevationview;
 
 import org.jfree.chart.*;
-import org.jfree.chart.entity.XYItemEntity;
-import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
@@ -38,6 +40,8 @@ import slash.navigation.gui.Application;
 import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -48,10 +52,14 @@ import java.util.ResourceBundle;
 
 public class ElevationView {
     private ChartPanel chartPanel;
+    private XYPlot plot;
+    private PositionsModel positionsModel;
 
     public ElevationView(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel) {
+        this.positionsModel = positionsModel;
         XYSeriesCollection dataset = createDataset(positionsModel);
         JFreeChart chart = createChart(dataset);
+        plot = createPlot(chart);
         chartPanel = new ChartPanel(chart, false, true, true, true, true);
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             public void chartMouseClicked(ChartMouseEvent e) {
@@ -61,7 +69,9 @@ public class ElevationView {
                 int index = ((XYItemEntity) entity).getItem();
                 positionsSelectionModel.setSelectedPositions(new int[]{index});
             }
-            public void chartMouseMoved(ChartMouseEvent e) {}
+
+            public void chartMouseMoved(ChartMouseEvent e) {
+            }
         });
     }
 
@@ -77,14 +87,17 @@ public class ElevationView {
 
     private JFreeChart createChart(XYDataset dataset) {
         JFreeChart chart = ChartFactory.createXYAreaChart(
-                getBundle().getString("elevation-profile"),
+                null,
                 getBundle().getString("distance-axis"),
                 getBundle().getString("elevation-axis"),
                 dataset,
                 PlotOrientation.VERTICAL, false, true, false
         );
         chart.setBackgroundPaint(new JPanel().getBackground());
+        return chart;
+    }
 
+    private XYPlot createPlot(JFreeChart chart) {
         XYPlot plot = chart.getXYPlot();
         plot.setForegroundAlpha(0.65F);
 
@@ -99,12 +112,26 @@ public class ElevationView {
         XYItemRenderer renderer = plot.getRenderer();
         renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{2}m @ {1} Km",
                 NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance()));
-
-        return chart;
+        return plot;
     }
 
     public Component getComponent() {
         return chartPanel;
+    }
+
+    private List<Marker> markers = new ArrayList<Marker>();
+
+    public void setSelectedPositions(int[] selectPositions) {
+        for (Marker marker : markers) {
+            plot.removeDomainMarker(marker);
+        }
+        markers.clear();
+
+        for (int selectPosition : selectPositions) {
+            ValueMarker marker = new ValueMarker(positionsModel.getRoute().getDistance(0, selectPosition) / 1000.0);
+            plot.addDomainMarker(marker);
+            markers.add(marker);
+        }
     }
 
     public void print() {

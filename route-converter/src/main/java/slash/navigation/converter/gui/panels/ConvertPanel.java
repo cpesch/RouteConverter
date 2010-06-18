@@ -83,6 +83,8 @@ public abstract class ConvertPanel {
     private JLabel labelPositions;
     private JLabel labelLength;
     private JLabel labelDuration;
+    private JLabel labelOverallAscend;
+    private JLabel labelOverallDescend;
     protected JTable tablePositions;
     private JComboBox comboBoxChoosePositionList;
     private JComboBox comboBoxChoosePositionListCharacteristics;
@@ -111,6 +113,7 @@ public abstract class ConvertPanel {
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
         new PositionsCountToJLabelAdapter(getPositionsModel(), labelPositions);
         new LengthToJLabelAdapter(getPositionsModel(), lengthCalculator, labelLength, labelDuration);
+        new ElevationToJLabelAdapter(getPositionsModel(), labelOverallAscend, labelOverallDescend);
 
         buttonNewPositionList.addActionListener(new FrameAction() {
             public void run() {
@@ -756,7 +759,7 @@ public abstract class ConvertPanel {
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
 
-        RouteConverter.getInstance().selectPositionsOnMap(selectedRows);
+        RouteConverter.getInstance().selectPositions(selectedRows);
     }
 
     // helpers
