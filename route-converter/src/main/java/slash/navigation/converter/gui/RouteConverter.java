@@ -637,6 +637,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        bottomSplitPane = new JSplitPane();
+        bottomSplitPane.setContinuousLayout(true);
+        bottomSplitPane.setDividerLocation(888);
+        bottomSplitPane.setDividerSize(10);
+        bottomSplitPane.setOneTouchExpandable(true);
+        bottomSplitPane.setOrientation(0);
+        bottomSplitPane.setResizeWeight(0.0);
+        contentPane.add(bottomSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         mapSplitPane = new JSplitPane();
         mapSplitPane.setContinuousLayout(true);
         mapSplitPane.setDividerLocation(341);
@@ -644,15 +652,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
         mapSplitPane.setOneTouchExpandable(true);
         mapSplitPane.setOpaque(true);
         mapSplitPane.setResizeWeight(1.0);
-        contentPane.add(mapSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(880, 580), null, 0, false));
-        mapSplitPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
+        bottomSplitPane.setLeftComponent(mapSplitPane);
         mapPanel = new JPanel();
         mapPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mapPanel.setMinimumSize(new Dimension(-1, -1));
         mapPanel.setPreferredSize(new Dimension(300, 560));
         mapSplitPane.setLeftComponent(mapPanel);
         tabbedPane = new JTabbedPane();
-        tabbedPane.setTabPlacement(3);
+        tabbedPane.setTabPlacement(1);
         mapSplitPane.setRightComponent(tabbedPane);
         convertPanel = new JPanel();
         convertPanel.setLayout(new BorderLayout(0, 0));
@@ -660,6 +667,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
+        bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        bottomPanel.setMinimumSize(new Dimension(0, 0));
+        bottomPanel.setPreferredSize(new Dimension(0, 0));
+        bottomPanel.setVisible(false);
+        bottomSplitPane.setRightComponent(bottomPanel);
     }
 
     /**
@@ -758,6 +771,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     if (isMapViewAvailable())
                         mapView.resize();
                     preferences.putInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, bottomSplitPane.getDividerLocation());
+
+                    ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+                    actionManager.enable("maximize-map", location < frame.getHeight() - 10);
+                    actionManager.enable("maximize-positionlist", location < frame.getHeight() - 10);
                 }
             }
         }
@@ -770,8 +787,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("print-map-and-route", new PrintMapAction(true));
         actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
-        actionManager.register("maximize-map", new MoveSplitPaneDividerAction(mapSplitPane, Integer.MAX_VALUE));
-        actionManager.register("maximize-positionlist", new MoveSplitPaneDividerAction(mapSplitPane, 0));
+        actionManager.register("show-elevation-profile", new ShowElevationProfileAction());
+        actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, Integer.MAX_VALUE, bottomSplitPane, Integer.MAX_VALUE));
+        actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, bottomSplitPane, Integer.MAX_VALUE));
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("geocode-position", new GeocodePositionAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
@@ -796,9 +814,19 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private class ShowMapAndPositionListAction extends FrameAction {
+    private class ShowMapAndPositionListAction extends ShowElevationProfileAction {
         public void run() {
             mapSplitPane.setDividerLocation(getConvertPanel().getRootComponent().getMinimumSize().width);
+            super.run();
+        }
+    }
+
+    private class ShowElevationProfileAction extends FrameAction {
+        public void run() {
+            int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
+            if (location > frame.getHeight() - 200)
+                location = frame.getHeight() - 200;
+            bottomSplitPane.setDividerLocation(location);
         }
     }
 

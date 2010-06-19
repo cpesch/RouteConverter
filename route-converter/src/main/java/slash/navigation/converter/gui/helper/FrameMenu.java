@@ -71,6 +71,7 @@ public class FrameMenu {
         
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
+        viewMenu.add(JMenuHelper.createItem("show-elevation-profile"));
         viewMenu.add(JMenuHelper.createItem("maximize-map"));
         viewMenu.add(JMenuHelper.createItem("maximize-positionlist"));
 
