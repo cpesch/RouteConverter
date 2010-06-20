@@ -299,7 +299,7 @@ public abstract class BaseMapView implements MapView {
 
     private ServerSocket createDragListenerServerSocket() {
         try {
-            ServerSocket serverSocket = new ServerSocket(0);
+            ServerSocket serverSocket = new ServerSocket(0, 0, InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
             serverSocket.setSoTimeout(1000);
             int port = serverSocket.getLocalPort();
             log.info("MapView listens on port " + port + " for dragging");
