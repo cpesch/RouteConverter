@@ -62,6 +62,7 @@ public class EclipseSWTMapView extends BaseMapView {
         try {
             JWebBrowser browser = new JWebBrowser();
             browser.setBarsVisible(false);
+            browser.setJavascriptEnabled(true);
             return browser;
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
@@ -70,7 +71,7 @@ public class EclipseSWTMapView extends BaseMapView {
         }
     }
 
-    private boolean loadWebPage(JWebBrowser webBrowser) {
+    private boolean loadWebPage(final JWebBrowser webBrowser) {
         try {
             final String language = Locale.getDefault().getLanguage();
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", language, new TokenResolver() {
@@ -85,7 +86,13 @@ public class EclipseSWTMapView extends BaseMapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
-            webBrowser.navigate(html.toURI().toURL().toExternalForm());
+
+            final String url = html.toURI().toURL().toExternalForm();
+            webBrowser.runInSequence(new Runnable() {
+                public void run() {
+                    webBrowser.navigate(url);
+                }
+            });
             log.fine(System.currentTimeMillis() + " loadWebPage thread " + Thread.currentThread());
         } catch (Throwable t) {
             log.severe("Cannot create WebBrowser: " + t.getMessage());
@@ -279,7 +286,11 @@ public class EclipseSWTMapView extends BaseMapView {
         if (!SwingUtilities.isEventDispatchThread()) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    webBrowser.executeJavascript(script);
+                    webBrowser.runInSequence(new Runnable() {
+                        public void run() {
+                            webBrowser.executeJavascript(script);
+                        }
+                    });
                     logExecuteScript(script, null);
                 }
             });
@@ -298,7 +309,12 @@ public class EclipseSWTMapView extends BaseMapView {
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
                     public void run() {
-                        result[0] = webBrowser.executeJavascriptWithResult(script);
+                        webBrowser.runInSequence(new Runnable() {
+                            public void run() {
+                                result[0] = webBrowser.executeJavascriptWithResult(script);
+                                log.info("After invokeLater, executeJavascriptWithResult " + result[0]); // TODO logging
+                            }
+                        });
                     }
                 });
             } catch (InterruptedException e) {
@@ -307,7 +323,12 @@ public class EclipseSWTMapView extends BaseMapView {
                 log.severe("Cannot execute script with result: " + e.getMessage());
             }
         } else {
-            result[0] = webBrowser.executeJavascriptWithResult(script);
+            webBrowser.runInSequence(new Runnable() {
+                public void run() {
+                    result[0] = webBrowser.executeJavascriptWithResult(script);
+                    log.info("After executeJavascriptWithResult " + result[0]); // TODO logging
+                }
+            });
         }
 
         logExecuteScript(script, result[0]);
