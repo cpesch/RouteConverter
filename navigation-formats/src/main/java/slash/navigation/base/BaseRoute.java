@@ -37,10 +37,7 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Positions;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * The base of all routes formats.
@@ -255,6 +252,30 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 result[i - startIndex] = (i > startIndex ? result[i - startIndex - 1] : 0) + (distance != null ? distance : 0);
             }
             previous = next;
+        }
+        return result;
+    }
+
+    public double[] getDistancesFromStart(int[] indices) {
+        double[] result = new double[indices.length];
+        if (indices.length > 0) {
+            List<P> positions = getPositions();
+            Arrays.sort(indices);
+
+            BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+            int count = 0;
+            
+            for (int i = 0; i < indices.length; i++) {
+                if(indices[i] >= positions.size())
+                    continue;
+                BaseNavigationPosition next = positions.get(indices[i]);
+                if (previous != null) {
+                    Double distance = previous.calculateDistance(next);
+                    result[count] = (i > 0 ? result[count - 1] : 0) + (distance != null ? distance : 0);
+                    count++;
+                }
+                previous = next;
+            }
         }
         return result;
     }

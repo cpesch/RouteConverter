@@ -127,8 +127,9 @@ public class ElevationView {
         }
         markers.clear();
 
-        for (int selectPosition : selectPositions) {
-            ValueMarker marker = new ValueMarker(positionsModel.getRoute().getDistance(0, selectPosition) / 1000.0);
+        double[] distances = positionsModel.getRoute().getDistancesFromStart(selectPositions);
+        for (double distance : distances) {
+            ValueMarker marker = new ValueMarker(distance / 1000.0);
             plot.addDomainMarker(marker);
             markers.add(marker);
         }

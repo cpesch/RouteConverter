@@ -869,21 +869,26 @@ public abstract class ConvertPanel {
         JTableHelper.scrollToPosition(tablePositions, index);
     }
 
+    private void selectPositions(int[] selectedPositions) {
+        new ContinousRange(selectedPositions, new RangeOperation() {
+            public void performOnIndex(int index) {}
+            public void performOnRange(int firstIndex, int lastIndex) {
+                tablePositions.getSelectionModel().addSelectionInterval(firstIndex, lastIndex);
+            }
+        }).performMonotonicallyIncreasing();
+    }
+
     public int selectDuplicatesWithinDistance(int distance) {
         clearSelection();
         int[] indices = getPositionsModel().getDuplicatesWithinDistance(distance);
-        for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
-        }
+        selectPositions(indices);
         return indices.length;
     }
 
     public int selectPositionsThatRemainingHaveDistance(int distance) {
         clearSelection();
         int[] indices = getPositionsModel().getPositionsThatRemainingHaveDistance(distance);
-        for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
-        }
+        selectPositions(indices);
         return indices.length;
     }
 
@@ -891,18 +896,14 @@ public abstract class ConvertPanel {
         clearSelection();
         int rowCount = getPositionsModel().getRowCount();
         int[] indices = Range.allButEveryNthAndFirstAndLast(rowCount, order);
-        for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
-        }
+        selectPositions(indices);
         return new int[]{indices.length, rowCount - indices.length};
     }
 
     public int selectInsignificantPositions(int threshold) {
         clearSelection();
         int[] indices = getPositionsModel().getInsignificantPositions(threshold);
-        for (int index : indices) {
-            tablePositions.getSelectionModel().addSelectionInterval(index, index);
-        }
+        selectPositions(indices);
         return indices.length;
     }
 
