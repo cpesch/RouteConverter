@@ -29,6 +29,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class TimeZoneTest extends NavigationTestCase {
@@ -50,7 +51,7 @@ public class TimeZoneTest extends NavigationTestCase {
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar("2007-06-07T14:04:42Z");
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        String javaTime = DateFormat.getInstance().format(java.getTime().getTime());
+        String javaTime = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.GERMAN).format(java.getTime().getTime());
         assertEquals("07.06.07 14:04", javaTime);
         Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
         assertCalendarEquals(parsed, java);
