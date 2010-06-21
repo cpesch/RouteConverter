@@ -25,7 +25,6 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
-import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -33,6 +32,7 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.Layer;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.Application;
@@ -40,8 +40,6 @@ import slash.navigation.gui.Application;
 import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -119,20 +117,15 @@ public class ElevationView {
         return chartPanel;
     }
 
-    private List<Marker> markers = new ArrayList<Marker>();
-
     public void setSelectedPositions(int[] selectPositions) {
-        for (Marker marker : markers) {
-            plot.removeDomainMarker(marker);
-        }
-        markers.clear();
+        plot.clearDomainMarkers();
 
         double[] distances = positionsModel.getRoute().getDistancesFromStart(selectPositions);
         for (double distance : distances) {
-            ValueMarker marker = new ValueMarker(distance / 1000.0);
-            plot.addDomainMarker(marker);
-            markers.add(marker);
+            plot.addDomainMarker(0, new ValueMarker(distance / 1000.0), Layer.FOREGROUND, false);
         }
+        // make sure the protected fireChangeEvent() is called without any side effects
+        plot.setWeight(plot.getWeight());
     }
 
     public void print() {

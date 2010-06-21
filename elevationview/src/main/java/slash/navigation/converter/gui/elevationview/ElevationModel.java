@@ -37,8 +37,9 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
     protected void handleAdd(int firstRow, int lastRow) {
         double[] distances = getPositions().getRoute().getDistancesFromStart(firstRow, lastRow);
         for (int i = firstRow; i < lastRow + 1; i++) {
-            getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation());
+            getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
         }
+        getSeries().fireSeriesChanged();
     }
 
     protected void handleIntervalUpdate(int firstRow, int lastRow) {
