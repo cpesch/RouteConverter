@@ -174,7 +174,9 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
                     data[ox++] = (byte) ' ';
                     break;
                 case'%':
-                    data[ox++] = (byte) ((convertHexDigit(data[ix++]) << 4) + convertHexDigit(data[ix++]));
+                    int leftNibble = convertHexDigit(data[ix++]) << 4;
+                    byte rightNibble = ix < data.length ? convertHexDigit(data[ix++]) : 0;
+                    data[ox++] = (byte) (leftNibble + rightNibble);
                     break;
                 default:
                     data[ox++] = c;
