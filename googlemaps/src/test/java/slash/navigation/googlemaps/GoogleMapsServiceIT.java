@@ -28,7 +28,7 @@ public class GoogleMapsServiceIT extends TestCase {
 
     public void testLocationLookup() throws IOException {
         assertEquals("8638 Goldingen, Schweiz", service.getLocationFor(9.0, 47.3));
-        assertEquals("Bühlstraße 21, 97506 Grafenrheinfeld, Deutschland", service.getLocationFor(10.2, 50.001));
+        assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Deutschland", service.getLocationFor(10.2, 50.001));
         assertEquals("82467 Garmisch-Partenkirchen, Deutschland", service.getLocationFor(11.06561, 47.42428));
         assertEquals("North Atlantic Ocean", service.getLocationFor(0.0, 0.0));
         assertEquals("Antarktis", service.getLocationFor(0.0, -90.0));
@@ -37,8 +37,8 @@ public class GoogleMapsServiceIT extends TestCase {
     }
 
     public void testPositionLookup() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2003632, 50.0004554, 0.0, "Bühlstraße, 97506 Grafenrheinfeld, Germany");
-        GoogleMapsPosition actual = service.getPositionFor("Bühlstraße, 97506 Grafenrheinfeld, Germany");
+        GoogleMapsPosition expected = new GoogleMapsPosition(10.2003632, 50.0004554, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        GoogleMapsPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
     }
 }
