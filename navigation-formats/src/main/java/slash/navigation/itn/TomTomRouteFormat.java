@@ -99,7 +99,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             // in ISO-8859-1 mode we filter like this:
             if (line.startsWith("\357\273\277"))
                 line = line.substring(3);
-            line = line.replaceAll("\u0080", "€");
+            line = line.replaceAll("\u0080", "\u20ac");
 
             if (isPosition(line)) {
                 TomTomPosition position = parsePosition(line);
@@ -205,7 +205,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                     comment = formatIntermediateName(position, distance);
             }
             if (comment != null)
-                comment = comment.replaceAll(SEPARATOR, ";").replaceAll("€", "\u0080");
+                comment = comment.replaceAll(SEPARATOR, ";").replaceAll("\u20ac", "\u0080");
             writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + comment + SEPARATOR_CHAR + type + SEPARATOR_CHAR);
         }
     }
