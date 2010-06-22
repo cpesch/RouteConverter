@@ -29,14 +29,14 @@ import java.io.IOException;
 public class Nmn6FormatIT extends NavigationTestCase {
 
     public void testIsNmn6FavoritesWithValidPositionsOnly() throws IOException {
-        File source = new File(SAMPLE_PATH + "MÜ GÖ A38-stripped.rte");
+        File source = new File(SAMPLE_PATH + "Mue Goe A38-stripped.rte");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
         assertEquals(Nmn6Format.class, parser.getFormat().getClass());
     }
 
     public void testIsNmn6WithFirstValidLineButNotPosition() throws IOException {
-        File source = new File(SAMPLE_PATH + "MÜ GÖ A38.rte");
+        File source = new File(SAMPLE_PATH + "Mue Goe A38.rte");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
         assertEquals(Nmn6Format.class, parser.getFormat().getClass());
