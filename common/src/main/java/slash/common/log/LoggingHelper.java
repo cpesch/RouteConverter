@@ -21,7 +21,6 @@
 package slash.common.log;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.*;
 
@@ -69,11 +68,7 @@ public class LoggingHelper {
     }
 
     public static void logAsDefault() {
-        try {
-            LogManager.getLogManager().readConfiguration();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        LogManager.getLogManager().reset();
     }
 
     private static void redirectStdOutAndErrToLog() {
