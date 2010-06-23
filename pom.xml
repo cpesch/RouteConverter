@@ -140,6 +140,7 @@
         <module>RouteConverterMac</module>
         <module>RouteConverterMac64</module>
         <module>RouteConverterWindows</module>
+        <module>RouteConverterWindows64</module>
         <module>RouteConverterWebstart</module>
     </modules>
 </project>
