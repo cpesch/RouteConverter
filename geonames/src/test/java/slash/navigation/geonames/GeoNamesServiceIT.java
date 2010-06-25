@@ -116,7 +116,7 @@ public class GeoNamesServiceIT extends TestCase {
     }
 
     public void testPositionFor() throws IOException {
-        assertDoubleArrayEquals(new double[]{9.05, 47.3166667}, service.getPositionFor("CH", "9622"));
+        assertDoubleArrayEquals(new double[]{9.05, 47.31667}, service.getPositionFor("CH", "9622"));
         assertDoubleArrayEquals(new double[]{10.1982, 50.0002}, service.getPositionFor("DE", "97506"));
         assertDoubleArrayEquals(new double[]{11.1603, 47.3694}, service.getPositionFor("AT", "6105"));
         assertDoubleArrayEquals(new double[]{8.64415, 49.30075}, service.getPositionFor("DE", "69190"));
