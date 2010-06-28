@@ -42,35 +42,6 @@
                 </executions>
             </plugin>
 
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <copy file="target/${project.build.finalName}.jar" tofile="target/${project.artifactId}.jar" preservelastmodified="true" verbose="true" failonerror="true"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-            
-            <plugin>
-                <groupId>com.mindtree.techworks.insight.releng</groupId>
-                <artifactId>maven-jsmooth-plugin</artifactId>
-                <version>0.2.0</version>
-                <configuration>
-                    <jsmoothFile>RouteConverter.jsmooth</jsmoothFile>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
                 <artifactId>launch4j-plugin</artifactId>
@@ -88,6 +59,12 @@
                             <jar>target/RouteConverterWindows.jar</jar>
                             <errTitle>RouteConverter</errTitle>
                             <icon>RouteConverter.ico</icon>
+                            <!--
+                            <splash>
+                                <file>RouteConverter.bmp</file>
+                                <timeout>10</timeout>
+                            </splash>
+                            -->
                             <classPath>
                                 <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
                             </classPath>
@@ -106,11 +83,6 @@
                                 <internalName>RouteConverter for Windows as Executable</internalName>
                                 <originalFilename>RouteConverterWindows.exe</originalFilename>
                             </versionInfo>
-                            <!--
-                            <splash>
-                                <file>RouteConverter.bmp</file>
-                            </splash>
-                            -->
                         </configuration>
                     </execution>
                 </executions>

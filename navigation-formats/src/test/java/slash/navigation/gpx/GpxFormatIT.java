@@ -117,7 +117,8 @@ public class GpxFormatIT extends NavigationTestCase {
         StringWriter writer = new StringWriter();
         GpxUtil.marshal11(gpx, writer);
         String string = writer.toString();
-        assertTrue(string.contains("<gpx version"));
+        assertTrue(string.contains("<gpx"));
+        assertTrue(string.contains("version=\"1.1\""));
         assertFalse(string.contains("ns1"));
         assertFalse(string.contains("ns2"));
         assertFalse(string.contains("ns3"));

@@ -77,11 +77,6 @@
                                 <internalName>RouteConverter for Windows as Executable</internalName>
                                 <originalFilename>RouteConverterWindows64.exe</originalFilename>
                             </versionInfo>
-                            <!--
-                            <splash>
-                                <file>RouteConverter.bmp</file>
-                            </splash>
-                            -->
                         </configuration>
                     </execution>
                 </executions>
