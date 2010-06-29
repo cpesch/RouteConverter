@@ -58,13 +58,15 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals("Eis essen in Ratzeburg", parser.getTheRoute().getName());
     }
 
+    private static final char EURO = '\u20ac';
+
     public void testTomTomRoute5() throws IOException {
         File source = new File(TEST_PATH + "from5.itn");
         NavigationFileParser parser = new NavigationFileParser();
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abcäöüß€", first.getComment());
+        assertEquals("abcäöüß" + EURO, first.getComment());
     }
 
     public void testTomTomRoute8() throws IOException {
@@ -73,7 +75,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abcäöüß€", first.getComment());
+        assertEquals("abcäöüß" + EURO, first.getComment());
     }
 
     public void testTomTomRoute8FromDevice() throws IOException {
