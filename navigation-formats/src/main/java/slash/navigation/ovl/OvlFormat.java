@@ -272,6 +272,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     private void writeMapLage(OvlRoute route, PrintWriter writer) {
         writer.println(SECTION_PREFIX + MAPLAGE_TITLE + SECTION_POSTFIX);
         writeSection(route.getMapLage(), writer, Arrays.asList(CREATOR));
+        // Top. Karte 1:50.000 Hessen
         // Top. Karte 1:50.000 Nieders.
         writeMissingAttribute(route.getMapLage(), writer, "MapName", "Top. Karte 1:50000 Sh/HH");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
