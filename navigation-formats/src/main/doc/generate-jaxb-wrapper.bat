@@ -3,6 +3,7 @@ bin\xjc -verbose -d generated -p slash.navigation.gpx.binding11 c:\p4\RouteConve
 bin\xjc -verbose -d generated -p slash.navigation.gpx.garmin3 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\GpxExtensionsv3.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.routecatalog10 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\RouteCatalog10.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.trekbuddy c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\trekBuddyExtensions0984.xsd
+bin\xjc -verbose -d generated -p slash.navigation.lmx.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\lmx\lmx.xsd
 
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding20 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\kml20.xsd
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding21 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\kml21.xsd
@@ -15,6 +16,5 @@ bin\xjc -verbose -d generated -p slash.navigation.tcx.binding1 c:\p4\RouteConver
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\tcx\TrainingCenterDatabasev2.xsd
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\nmn\nmn7.xsd
 bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\klicktel\klicktel.xsd
-bin\xjc -verbose -d generated -p slash.navigation.lmx.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\lmx\lmx.xsd
 bin\xjc -verbose -d generated -p slash.navigation.earthtools.binding c:\p4\RouteConverter\trunk\earthtools\src\main\doc\height.xsd
 
