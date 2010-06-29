@@ -274,7 +274,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeSection(route.getMapLage(), writer, Arrays.asList(CREATOR));
         // Top. Karte 1:50.000 Hessen
         // Top. Karte 1:50.000 Nieders.
-        writeMissingAttribute(route.getMapLage(), writer, "MapName", "Top. Karte 1:50000 Sh/HH");
+        // Top. Karte 1:50000 Sh/HH
+        writeMissingAttribute(route.getMapLage(), writer, "MapName", "Bundesrepublik 1:1 Mio");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
         Wgs84Position center = Positions.center(route.getPositions());
