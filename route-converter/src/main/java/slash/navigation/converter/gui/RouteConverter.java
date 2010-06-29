@@ -325,7 +325,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public void setSavePathPreference(NavigationFormat format, String parent) {
-        preferences.put(SAVE_PATH_PREFERENCE + format.getName(), parent);
+        if (parent != null)
+            preferences.put(SAVE_PATH_PREFERENCE + format.getName(), parent);
     }
 
     private BaseNavigationPosition getLastMapCenter() {
