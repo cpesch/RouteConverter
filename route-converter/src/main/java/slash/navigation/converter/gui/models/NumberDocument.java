@@ -45,6 +45,8 @@ public class NumberDocument extends PlainDocument {
             return Integer.parseInt(getText(0, getLength()));
         } catch (BadLocationException e) {
             return 0;
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 
