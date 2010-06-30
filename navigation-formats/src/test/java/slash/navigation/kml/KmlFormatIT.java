@@ -142,7 +142,7 @@ public class KmlFormatIT extends NavigationTestCase {
     }
 
     public void testNoKmlRoot20() throws IOException {
-        List<KmlRoute> routes = new Kml20Format().read(new FileInputStream(new File(SAMPLE_PATH + "MIK-Tour - Nürburgring 7.10.2007.kml")));
+        List<KmlRoute> routes = new Kml20Format().read(new FileInputStream(new File(SAMPLE_PATH + "MIK-Tour - Nuerburgring 7.10.2007.kml")));
         assertNotNull(routes);
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
