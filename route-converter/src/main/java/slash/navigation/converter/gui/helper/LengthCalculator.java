@@ -86,10 +86,6 @@ public class LengthCalculator {
         lengthCalculatorListeners.add(listener);
     }
 
-    public void removeLengthCalculatorListener(LengthCalculatorListener listener) {
-        lengthCalculatorListeners.remove(listener);
-    }
-
     private void fireCalculatedDistance(int meters, int seconds) {
         for (LengthCalculatorListener listener : lengthCalculatorListeners) {
             listener.calculatedDistance(meters, seconds);
@@ -114,7 +110,7 @@ public class LengthCalculator {
     private void recalculateDistance() {
         fireCalculatedDistance(0, 0);
 
-        int meters = 0;
+        double meters = 0.0;
         long delta = 0;
         Calendar minimumTime = null, maximumTime = null;
         BaseNavigationPosition previous = null;
@@ -139,14 +135,14 @@ public class LengthCalculator {
             }
 
             if (i % 100 == 0)
-                fireCalculatedDistance(meters, delta > 0 ? (int) (delta / 1000) : 0);
+                fireCalculatedDistance(new Double(meters).intValue(), delta > 0 ? (int) (delta / 1000) : 0);
 
             previous = next;
         }
 
         int summedUp = delta > 0 ? (int) delta / 1000 : 0;
         int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance(meters, Math.max(maxMinusMin, summedUp));
+        fireCalculatedDistance(new Double(meters).intValue(), Math.max(maxMinusMin, summedUp));
     }
 
     private void initialize() {
