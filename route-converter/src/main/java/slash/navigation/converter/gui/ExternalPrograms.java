@@ -53,6 +53,13 @@ public abstract class ExternalPrograms {
         startBrowser(window, "www.geonames.org");
     }
 
+    public void startBrowserForDouglasPeucker(Window window) {
+        String url = Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()) ?
+                "http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
+                "http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm";
+        startBrowser(window, url);
+    }
+
     protected abstract void startBrowser(Window window, String uri);
 
     public void startMail(Window window) {
@@ -60,5 +67,4 @@ public abstract class ExternalPrograms {
     }
 
     protected abstract void startMail(Window window, String uri);
-
 }

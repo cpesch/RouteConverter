@@ -86,7 +86,7 @@ public class LoginDialog extends SimpleDialog {
 
         checkBoxAcceptTerms.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                createExternalPrograms().startBrowserForTerms(LoginDialog.this);
+                RouteConverter.getInstance().createExternalPrograms().startBrowserForTerms(LoginDialog.this);
             }
         });
 
@@ -135,10 +135,6 @@ public class LoginDialog extends SimpleDialog {
             getRootPane().setDefaultButton(buttonLogin);
         else
             getRootPane().setDefaultButton(buttonRegister);
-    }
-
-    private ExternalPrograms createExternalPrograms() {
-        return RouteConverter.getInstance().createExternalPrograms();
     }
 
     private boolean successful = false;

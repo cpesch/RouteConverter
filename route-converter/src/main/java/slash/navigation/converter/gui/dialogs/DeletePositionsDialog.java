@@ -35,9 +35,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -61,6 +59,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JButton buttonSelectBySignificance;
     private JButton buttonDeletePositions;
     private JButton buttonClearSelection;
+    private JLabel labelDouglasPeucker;
     private NumberDocument duplicate;
     private NumberDocument distance;
     private NumberDocument order;
@@ -70,6 +69,12 @@ public class DeletePositionsDialog extends SimpleDialog {
         super(RouteConverter.getInstance().getFrame(), "delete-positions");
         setTitle(RouteConverter.getBundle().getString("delete-positions-title"));
         setContentPane(contentPane);
+
+        labelDouglasPeucker.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                RouteConverter.getInstance().createExternalPrograms().startBrowserForDouglasPeucker(DeletePositionsDialog.this);
+            }
+        });
 
         buttonSelectDuplicates.addActionListener(new DialogAction(this) {
             public void run() {

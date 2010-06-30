@@ -204,7 +204,7 @@
                       <columns value="3"/>
                     </properties>
                   </component>
-                  <component id="33bd4" class="javax.swing.JLabel">
+                  <component id="33bd4" class="javax.swing.JLabel" binding="labelDouglasPeucker">
                     <constraints/>
                     <properties>
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-significance-meter"/>
