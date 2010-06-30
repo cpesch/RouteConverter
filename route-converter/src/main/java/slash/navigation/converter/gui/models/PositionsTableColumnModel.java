@@ -55,9 +55,9 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         PositionsTableCellRenderer rightAligned = new PositionsTableCellRenderer(SwingConstants.RIGHT);
         PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
         predefineColumn(PositionColumns.DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
-        predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", 108, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", getMaxWidth("12.34.56 78:90:12", 10), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
-        predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km"), false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", 40, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", 40, false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
@@ -85,11 +85,11 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         }
     }
 
-    private int getMaxWidth(String string) {
+    private int getMaxWidth(String string, int extraWidth) {
         JLabel label = new JLabel();
         FontMetrics fm = label.getFontMetrics(label.getFont());
         int width = fm.stringWidth(string);
-        return width + 7;
+        return width + extraWidth;
     }
 
     private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
