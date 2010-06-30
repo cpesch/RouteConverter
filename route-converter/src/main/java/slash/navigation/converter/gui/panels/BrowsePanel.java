@@ -247,8 +247,11 @@ public abstract class BrowsePanel {
 
     protected CategoryTreeNode getSelectedTreeNode() {
         TreePath treePath = treeCategories.getSelectionPath();
-        return (CategoryTreeNode) (treePath != null ?
-                treePath.getLastPathComponent() : treeCategories.getModel().getRoot());
+        Object treeNode = treePath != null ?
+                treePath.getLastPathComponent() : treeCategories.getModel().getRoot();
+        if (!(treeNode instanceof CategoryTreeNode))
+            return null;
+        return (CategoryTreeNode) treeNode;
     }
 
     protected List<CategoryTreeNode> getSelectedTreeNodes() {
@@ -388,7 +391,7 @@ public abstract class BrowsePanel {
     }
 
     protected void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
-        if (category.getParent() == null) {
+        if (category == null || category.getParent() == null) {
             JOptionPane.showMessageDialog(RouteConverter.getInstance().getFrame(),
                     "Please choose a category for your files!",           // TODO make nicer
                     RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
