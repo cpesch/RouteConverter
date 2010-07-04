@@ -871,23 +871,18 @@ public abstract class ConvertPanel {
 
     private void selectPositions(int[] selectedPositions) {
         new ContinousRange(selectedPositions, new RangeOperation() {
-            public void performOnIndex(int index) {}
+            public void performOnIndex(int index) {
+            }
+
             public void performOnRange(int firstIndex, int lastIndex) {
                 tablePositions.getSelectionModel().addSelectionInterval(firstIndex, lastIndex);
             }
         }).performMonotonicallyIncreasing();
     }
 
-    public int selectDuplicatesWithinDistance(int distance) {
+    public int selectPositionsWithinDistanceToPredecessor(int distance) {
         clearSelection();
-        int[] indices = getPositionsModel().getDuplicatesWithinDistance(distance);
-        selectPositions(indices);
-        return indices.length;
-    }
-
-    public int selectPositionsThatRemainingHaveDistance(int distance) {
-        clearSelection();
-        int[] indices = getPositionsModel().getPositionsThatRemainingHaveDistance(distance);
+        int[] indices = getPositionsModel().getPositionsWithinDistanceToPredecessor(distance);
         selectPositions(indices);
         return indices.length;
     }

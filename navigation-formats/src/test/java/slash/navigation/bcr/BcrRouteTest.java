@@ -303,31 +303,7 @@ public class BcrRouteTest {
     }
 
     @Test
-    public void testDuplicatesWithinDistance() {
-        List<BcrPosition> positions = route.getPositions();
-        positions.clear();
-        positions.add(c);
-        positions.add(a);
-        positions.add(a);
-        positions.add(a);
-        positions.add(a);
-        positions.add(c);
-        positions.add(b);
-        positions.add(b);
-        positions.add(b);
-        positions.add(a);
-        positions.add(c);
-        positions.add(c);
-        positions.add(a);
-        assertPositions(c, a, a, a, a, c, b, b, b, a, c, c, a);
-        int[] in1mDistance = route.getDuplicatesWithinDistance(1.0);
-        assertIntArrayEquals(new int[]{2, 3, 4, 7, 8, 11}, in1mDistance);
-        int[] in5mDistance = route.getDuplicatesWithinDistance(5.0);
-        assertIntArrayEquals(new int[]{2, 3, 4, 6, 7, 8, 9, 11}, in5mDistance);
-    }
-
-    @Test
-    public void testPositionsThatRemainingHaveDistance() {
+    public void testPositionsWithinDistanceToPredecessor() {
         List<BcrPosition> positions = route.getPositions();
         positions.clear();
         positions.add(a);
@@ -336,13 +312,13 @@ public class BcrRouteTest {
         positions.add(d);
         positions.add(e);
         assertPositions(a, b, c, d, e);
-        int[] in1mDistance = route.getPositionsThatRemainingHaveDistance(1.0);
+        int[] in1mDistance = route.getPositionsWithinDistanceToPredecessor(1.0);
         assertIntArrayEquals(new int[0], in1mDistance);
-        int[] in3mDistance = route.getPositionsThatRemainingHaveDistance(3.0);
+        int[] in3mDistance = route.getPositionsWithinDistanceToPredecessor(3.0);
         assertIntArrayEquals(new int[0], in3mDistance);
-        int[] in3m50Distance = route.getPositionsThatRemainingHaveDistance(3.5);
+        int[] in3m50Distance = route.getPositionsWithinDistanceToPredecessor(3.5);
         assertIntArrayEquals(new int[]{1, 3}, in3m50Distance);
-        int[] in5mDistance = route.getPositionsThatRemainingHaveDistance(5.0);
+        int[] in5mDistance = route.getPositionsWithinDistanceToPredecessor(5.0);
         assertIntArrayEquals(new int[]{1, 3}, in5mDistance);
     }
 

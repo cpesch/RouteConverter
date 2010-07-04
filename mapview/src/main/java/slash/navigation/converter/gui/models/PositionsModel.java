@@ -282,12 +282,8 @@ public class PositionsModel extends AbstractTableModel {
         }).performMonotonicallyDecreasing();
     }
 
-    public int[] getDuplicatesWithinDistance(double distance) {
-        return getRoute().getDuplicatesWithinDistance(distance);
-    }
-
-    public int[] getPositionsThatRemainingHaveDistance(double distance) {
-        return getRoute().getPositionsThatRemainingHaveDistance(distance);
+    public int[] getPositionsWithinDistanceToPredecessor(double distance) {
+        return getRoute().getPositionsWithinDistanceToPredecessor(distance);
     }
 
     public int[] getInsignificantPositions(double threshold) {

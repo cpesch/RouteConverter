@@ -16,7 +16,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="e384a" layout-manager="GridLayoutManager" row-count="9" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="e384a" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -26,7 +26,7 @@
             <children>
               <grid id="e0bea" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
                 <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -51,55 +51,9 @@
                   </component>
                 </children>
               </grid>
-              <grid id="daa43" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="2537d" class="javax.swing.JLabel">
-                    <constraints/>
-                    <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-distance"/>
-                    </properties>
-                  </component>
-                  <component id="71bad" class="javax.swing.JTextField" binding="textFieldDuplicates">
-                    <constraints/>
-                    <properties>
-                      <columns value="5"/>
-                    </properties>
-                  </component>
-                  <component id="11dfc" class="javax.swing.JLabel">
-                    <constraints/>
-                    <properties>
-                      <maximumSize width="-1" height="14"/>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-distance-meter"/>
-                    </properties>
-                  </component>
-                </children>
-              </grid>
-              <grid id="96036" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="5" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="10"/>
-                  </grid>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="476be" class="javax.swing.JSeparator">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                  </component>
-                </children>
-              </grid>
               <grid id="fb7ba" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -107,7 +61,7 @@
                   <component id="af11c" class="javax.swing.JLabel">
                     <constraints/>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-duplicates"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-distance"/>
                     </properties>
                   </component>
                   <component id="f4c12" class="javax.swing.JTextField" binding="textFieldDistance">
@@ -120,12 +74,12 @@
                     <constraints/>
                     <properties>
                       <maximumSize width="-1" height="14"/>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-duplicates-meter"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-distance-meter"/>
                     </properties>
                   </component>
                 </children>
               </grid>
-              <component id="b394" class="javax.swing.JButton" binding="buttonSelectDuplicates">
+              <component id="8b2ef" class="javax.swing.JButton" binding="buttonSelectByDistance">
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -133,17 +87,9 @@
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
                 </properties>
               </component>
-              <component id="8b2ef" class="javax.swing.JButton" binding="buttonSelectByDistance">
-                <constraints>
-                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
-                </properties>
-              </component>
               <component id="7a0e" class="javax.swing.JButton" binding="buttonSelectByOrder">
                 <constraints>
-                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
@@ -152,7 +98,7 @@
               <grid id="6c848" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="5" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                  <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <minimum-size width="-1" height="10"/>
                   </grid>
                 </constraints>
@@ -170,7 +116,7 @@
               <grid id="94afc" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="5" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                  <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <minimum-size width="-1" height="10"/>
                   </grid>
                 </constraints>
@@ -187,7 +133,7 @@
               </grid>
               <grid id="c2b86" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
                 <constraints>
-                  <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -214,7 +160,7 @@
               </grid>
               <component id="e66e5" class="javax.swing.JButton" binding="buttonSelectBySignificance">
                 <constraints>
-                  <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
@@ -223,7 +169,7 @@
               <grid id="99561" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="5" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                  <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <minimum-size width="-1" height="10"/>
                   </grid>
                 </constraints>
@@ -240,7 +186,7 @@
               </grid>
               <component id="9111c" class="javax.swing.JButton" binding="buttonClearSelection" default-binding="true">
                 <constraints>
-                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="clear-selection"/>
@@ -248,7 +194,7 @@
               </component>
               <component id="39d95" class="javax.swing.JButton" binding="buttonDeletePositions">
                 <constraints>
-                  <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-selected-positions"/>
@@ -256,7 +202,7 @@
               </component>
               <hspacer id="ab7b6">
                 <constraints>
-                  <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
             </children>

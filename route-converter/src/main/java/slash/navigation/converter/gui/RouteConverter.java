@@ -98,7 +98,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String PEDESTRIANS_PREFERENCE = "pedestrians";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
-    private static final String SELECT_DUPLICATE_PREFERENCE = "selectDuplicate";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
@@ -352,14 +351,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return preferences.getBoolean(SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE, false);
     }
 
-    public int getSelectDuplicatePreference() {
-        return preferences.getInt(SELECT_DUPLICATE_PREFERENCE, 5);
-    }
-
-    public void setSelectDuplicatePreference(int selectDuplicatePreference) {
-        preferences.putInt(SELECT_DUPLICATE_PREFERENCE, selectDuplicatePreference);
-    }
-
     public int getSelectByDistancePreference() {
         return preferences.getInt(SELECT_BY_DISTANCE_PREFERENCE, 1000);
     }
@@ -544,12 +535,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return getConvertPanel().getPositionsView();
     }
 
-    public int selectDuplicatesWithinDistance(int duplicate) {
-        return getConvertPanel().selectDuplicatesWithinDistance(duplicate);
-    }
-
-    public int selectPositionsThatRemainingHaveDistance(int distance) {
-        return getConvertPanel().selectPositionsThatRemainingHaveDistance(distance);
+    public int selectPositionsWithinDistanceToPredecessor(int distance) {
+        return getConvertPanel().selectPositionsWithinDistanceToPredecessor(distance);
     }
 
     public int[] selectAllButEveryNthPosition(int order) {

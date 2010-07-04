@@ -120,20 +120,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
     }
 
-    public int[] getDuplicatesWithinDistance(double distance) {
-        List<Integer> result = new ArrayList<Integer>();
-        List<P> positions = getPositions();
-        P previous = null;
-        for (int i = 0; i < positions.size(); i++) {
-            P next = positions.get(i);
-            if (previous != null && (!next.hasCoordinates() || next.calculateDistance(previous) <= distance))
-                result.add(i);
-            previous = next;
-        }
-        return Range.toArray(result);
-    }
-
-    public int[] getPositionsThatRemainingHaveDistance(double distance) {
+    public int[] getPositionsWithinDistanceToPredecessor(double distance) {
         List<Integer> result = new ArrayList<Integer>();
         List<P> positions = getPositions();
         if (positions.size() <= 2)
@@ -146,6 +133,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             else
                 previous = next;
         }
+        System.out.println(result);
         return Range.toArray(result);
     }
 
