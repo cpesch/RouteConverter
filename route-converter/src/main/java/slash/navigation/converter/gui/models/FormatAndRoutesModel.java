@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.helper.AbstractListDataListener;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.undo.UndoableEditSupport;
 import java.util.List;
 
 /**
@@ -36,10 +37,11 @@ import java.util.List;
 public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxModel {
     private boolean modified = false;
     private FormatAndRoutes formatAndRoutes;
-    private PositionsModel positionsModel = new PositionsModel();
+    private PositionsModel positionsModel;
     private CharacteristicsModel characteristicsModel = new CharacteristicsModel();
 
-    public FormatAndRoutesModel() {
+    public FormatAndRoutesModel(UndoableEditSupport undoSupport) {
+        positionsModel = new PositionsModel(undoSupport);
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedItem()

@@ -27,15 +27,14 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormats;
 import slash.navigation.converter.gui.undo.AddPosition;
 import slash.navigation.converter.gui.undo.RemovePosition;
-import slash.navigation.gui.Application;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.undo.UndoableEditSupport;
 import java.io.IOException;
-import java.util.*;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.*;
 
 /**
  * Acts as a {@link TableModel} for the positions of a {@link BaseRoute}.
@@ -46,6 +45,11 @@ import java.text.ParseException;
 public class PositionsModel extends AbstractTableModel {
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
+    private UndoableEditSupport undoSupport;
+
+    public PositionsModel(UndoableEditSupport undoSupport) {
+        this.undoSupport = undoSupport;
+    }
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
         return route;
@@ -169,10 +173,6 @@ public class PositionsModel extends AbstractTableModel {
         }
     }
 
-    private UndoableEditSupport getUndoSupport() {
-        return Application.getInstance().getContext().getUndoableEditSupport();
-    }
-
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (rowIndex == getRowCount())
             return;
@@ -275,7 +275,7 @@ public class PositionsModel extends AbstractTableModel {
             getRoute().add(row, position);
         }
         fireTableRowsInserted(row, row - 1 + positions.size());
-        getUndoSupport().postEdit(new AddPosition(this, row, positions));
+        undoSupport.postEdit(new AddPosition(this, row, positions));
     }
 
     public void remove(int from, int to) {
@@ -288,12 +288,14 @@ public class PositionsModel extends AbstractTableModel {
 
     public void remove(int[] rows) {
         new ContinousRange(rows, new RangeOperation() {
+            private List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
             public void performOnIndex(int index) {
-                getRoute().remove(index);
+                removed.add(getRoute().remove(index));
             }
             public void performOnRange(int firstIndex, int lastIndex) {
                 fireTableRowsDeleted(firstIndex, lastIndex);
-                getUndoSupport().postEdit(new RemovePosition(PositionsModel.this, firstIndex, getPositions(firstIndex, lastIndex)));
+                undoSupport.postEdit(new RemovePosition(PositionsModel.this, firstIndex, new ArrayList<BaseNavigationPosition>(removed)));
+                removed.clear();
             }
         }).performMonotonicallyDecreasing();
     }

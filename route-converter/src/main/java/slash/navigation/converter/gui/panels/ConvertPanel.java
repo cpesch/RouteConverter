@@ -72,7 +72,7 @@ public abstract class ConvertPanel {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
 
     private final UrlDocument urlModel = new UrlDocument();
-    private final FormatAndRoutesModel formatAndRoutesModel = new FormatAndRoutesModel();
+    private FormatAndRoutesModel formatAndRoutesModel;
 
     protected JPanel convertPanel;
     private JLabel labelFormat;
@@ -102,6 +102,8 @@ public abstract class ConvertPanel {
 
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
+
+        formatAndRoutesModel = new FormatAndRoutesModel(r.getContext().getUndoableEditSupport());
 
         lengthCalculator = new LengthCalculator();
         lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());

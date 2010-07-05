@@ -27,13 +27,14 @@ import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.converter.gui.models.PositionsModel;
 
+import javax.swing.undo.UndoableEditSupport;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class PositionsModelTest {
-    PositionsModel model = new PositionsModel();
+    PositionsModel model = new PositionsModel(new UndoableEditSupport());
     BaseRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
     BcrPosition a = new BcrPosition(1, 1, 0, "a");
     BcrPosition b = new BcrPosition(3, 3, 0, "b");
