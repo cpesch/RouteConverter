@@ -51,7 +51,6 @@ public class CutAction extends FrameAction {
             clipboardInteractor.putIntoClipboard(new PositionSelection(positionsModel.getPositions(selectedRows)));
 
             positionsModel.remove(selectedRows);
-
             final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
             if (table.getRowCount() > 0) {
                 SwingUtilities.invokeLater(new Runnable() {
