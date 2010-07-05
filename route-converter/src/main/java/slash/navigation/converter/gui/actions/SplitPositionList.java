@@ -66,7 +66,8 @@ public class SplitPositionList extends FrameAction {
                 if (fromIndex == 0 && toIndex == 0)
                     break;
 
-                List<BaseNavigationPosition> positions = positionsModel.remove(fromIndex, toIndex);
+                List<BaseNavigationPosition> positions = positionsModel.getPositions(fromIndex, toIndex);
+                positionsModel.remove(fromIndex, toIndex);
                 NavigationFormat format = formatAndRoutesModel.getFormat();
                 @SuppressWarnings({"unchecked"})
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =

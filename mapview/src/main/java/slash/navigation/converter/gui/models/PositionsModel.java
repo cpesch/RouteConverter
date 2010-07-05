@@ -25,9 +25,13 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormats;
+import slash.navigation.converter.gui.undo.AddPosition;
+import slash.navigation.converter.gui.undo.RemovePosition;
+import slash.navigation.gui.Application;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.undo.UndoableEditSupport;
 import java.io.IOException;
 import java.util.*;
 import java.text.DateFormat;
@@ -89,7 +93,7 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     private String formatDistance(double distance) {
-        if(distance <= 0.0)
+        if (distance <= 0.0)
             return "";
         if (Math.abs(distance) < 10000.0)
             return Math.round(distance) + " m";
@@ -139,8 +143,15 @@ public class PositionsModel extends AbstractTableModel {
 
     public List<BaseNavigationPosition> getPositions(int[] rowIndices) {
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(rowIndices.length);
-        for(int rowIndex : rowIndices)
+        for (int rowIndex : rowIndices)
             result.add(getPosition(rowIndex));
+        return result;
+    }
+
+    public List<BaseNavigationPosition> getPositions(int from, int to) {
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(to - from);
+        for (int i = from; i < to; i++)
+            result.add(getPosition(i));
         return result;
     }
 
@@ -158,13 +169,17 @@ public class PositionsModel extends AbstractTableModel {
         }
     }
 
+    private UndoableEditSupport getUndoSupport() {
+        return Application.getInstance().getContext().getUndoableEditSupport();
+    }
+
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (rowIndex == getRowCount())
             return;
 
         BaseNavigationPosition position = getPosition(rowIndex);
         String value = Transfer.trim(aValue.toString());
-        switch(columnIndex) {
+        switch (columnIndex) {
             case PositionColumns.DESCRIPTION_COLUMN_INDEX:
                 position.setComment(value);
                 break;
@@ -175,7 +190,7 @@ public class PositionsModel extends AbstractTableModel {
                     calendar.setTime(date);
                     position.setTime(CompactCalendar.fromCalendar(calendar));
                 }
-                catch(ParseException e) {
+                catch (ParseException e) {
                     // intentionally left empty
                 }
                 break;
@@ -183,7 +198,7 @@ public class PositionsModel extends AbstractTableModel {
                 try {
                     position.setLongitude(Transfer.parseDouble(value));
                 }
-                catch(NumberFormatException e) {
+                catch (NumberFormatException e) {
                     // intentionally left empty
                 }
                 break;
@@ -241,16 +256,7 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public void add(int row, BaseNavigationPosition position) {
-        getRoute().add(row, position);
-        fireTableRowsInserted(row, row);
-    }
-
-    public void add(int row, List<BaseNavigationPosition> positions) {
-        for (int i = positions.size() - 1; i >= 0; i--) {
-            BaseNavigationPosition position = positions.get(i);
-            getRoute().add(row, position);
-        }
-        fireTableRowsInserted(row, row - 1 + positions.size());
+        add(row, Arrays.asList(position));
     }
 
     public void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
@@ -263,12 +269,21 @@ public class PositionsModel extends AbstractTableModel {
         add(row, positions);
     }
 
-    public List<BaseNavigationPosition> remove(int from, int to) {
-        List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
-        for (int i = to; i > from; i--)
-            removed.add(0, getRoute().remove(i));
-        fireTableRowsDeleted(from, to);
-        return removed;
+    public void add(int row, List<BaseNavigationPosition> positions) {
+        for (int i = positions.size() - 1; i >= 0; i--) {
+            BaseNavigationPosition position = positions.get(i);
+            getRoute().add(row, position);
+        }
+        fireTableRowsInserted(row, row - 1 + positions.size());
+        getUndoSupport().postEdit(new AddPosition(this, row, positions));
+    }
+
+    public void remove(int from, int to) {
+        int[] rows = new int[to - from];
+        int count = 0;
+        for (int i = to - 1; i >= from; i--)
+            rows[count++] = i;
+        remove(rows);
     }
 
     public void remove(int[] rows) {
@@ -278,6 +293,7 @@ public class PositionsModel extends AbstractTableModel {
             }
             public void performOnRange(int firstIndex, int lastIndex) {
                 fireTableRowsDeleted(firstIndex, lastIndex);
+                getUndoSupport().postEdit(new RemovePosition(PositionsModel.this, firstIndex, getPositions(firstIndex, lastIndex)));
             }
         }).performMonotonicallyDecreasing();
     }

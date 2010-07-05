@@ -42,10 +42,7 @@ import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gui.ActionManager;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.*;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 
@@ -217,6 +214,8 @@ public abstract class ConvertPanel {
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         final ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.register("undo", new UndoAction());
+        actionManager.register("redo", new RedoAction());
         actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));

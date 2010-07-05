@@ -1150,7 +1150,7 @@ public abstract class BaseMapView implements MapView {
         BaseNavigationPosition position = lastSelectedPositions.size() > index ? lastSelectedPositions.get(index) : null;
         if (position != null) {
             int row = positionsModel.getIndex(position);
-            positionsModel.remove(row - 1, row);
+            positionsModel.remove(new int[]{row});
 
             synchronized (notificationMutex) {
                 haveToRepaintImmediately = true;

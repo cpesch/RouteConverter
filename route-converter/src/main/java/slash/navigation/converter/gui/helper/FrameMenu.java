@@ -21,8 +21,13 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.gui.Application;
 
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.UndoableEditSupport;
 
 /**
  * Creates a {@link JMenuBar} for a {@link RouteConverter}.
@@ -48,6 +53,37 @@ public class FrameMenu {
         fileMenu.add(JMenuHelper.createItem("exit"));
 
         JMenu editMenu = JMenuHelper.createMenu("edit");
+        /* TODO extract from here
+        final JMenuItem undoMenuItem = JMenuHelper.createItem("undo");
+        editMenu.add(undoMenuItem);
+        final JMenuItem redoMenuItem = JMenuHelper.createItem("redo");
+        editMenu.add(redoMenuItem);
+        UndoableEditSupport editSupport = Application.getInstance().getContext().getUndoableEditSupport();
+        editSupport.addUndoableEditListener(new UndoableEditListener() {
+            private void setText(JMenuItem menuItem, String undoText) {
+                String text = menuItem.getText();
+                int index = text.indexOf(": ");
+                if (index == -1)
+                    text = text + ": ";
+                else
+                    text = text.substring(0, index - 1);
+                text = text + undoText;
+                menuItem.setText(text);
+            }
+
+            public void undoableEditHappened(UndoableEditEvent e) {
+                UndoableEdit edit = e.getEdit();
+                if (edit.canUndo()) {
+                    setText(undoMenuItem, edit.getUndoPresentationName());
+                }
+                if (edit.canRedo()) {
+                    setText(redoMenuItem, edit.getRedoPresentationName());   
+                }
+            }
+        });
+        // TODO extract from here
+        editMenu.addSeparator();
+        */
         editMenu.add(JMenuHelper.createItem("cut"));
         editMenu.add(JMenuHelper.createItem("copy"));
         editMenu.add(JMenuHelper.createItem("paste"));
@@ -68,7 +104,7 @@ public class FrameMenu {
         editMenu.add(JMenuHelper.createItem("split-positionlist"));
         editMenu.add(JMenuHelper.createMenu("merge-positionlist"));
         editMenu.add(JMenuHelper.createItem("import-positionlist"));
-        
+
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
         viewMenu.add(JMenuHelper.createItem("show-elevation-profile"));

@@ -28,10 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.assertDoubleArrayEquals;
-import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.TestCase.assertIntArrayEquals;
-import static slash.common.TestCase.assertNull;
+import static slash.common.TestCase.*;
 
 public class BcrRouteTest {
     BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
@@ -423,5 +420,11 @@ public class BcrRouteTest {
         assertEquals(a, route.getPredecessor(b));
         assertEquals(b, route.getPredecessor(c));
         assertNull(route.getPredecessor(d));
+    }
+
+    @Test
+    public void testGetPosition() {
+        initialize();
+        assertEquals(b, route.getPosition(1));
     }
 }
