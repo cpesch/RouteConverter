@@ -190,10 +190,6 @@ public abstract class Application {
         exitListeners.add(listener);
     }
 
-    public void removeExitListener(ExitListener listener) {
-        exitListeners.remove(listener);
-    }
-
     protected void shutdown() {
     }
 
