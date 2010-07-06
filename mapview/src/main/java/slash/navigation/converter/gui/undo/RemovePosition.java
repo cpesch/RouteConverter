@@ -54,10 +54,12 @@ public class RemovePosition extends AbstractUndoableEdit {
     }
 
     public void undo() throws CannotUndoException {
-        positionsModel.remove(row, row + positions.size());
+        super.undo();
+        positionsModel.add(row, positions, false);
     }
 
     public void redo() throws CannotRedoException {
-        positionsModel.add(row, positions);
+        super.redo();
+        positionsModel.remove(row, row + positions.size(), false);
     }
 }

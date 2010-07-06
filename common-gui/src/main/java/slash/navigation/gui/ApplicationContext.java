@@ -24,8 +24,6 @@ import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.HelpSetException;
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEditSupport;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -39,14 +37,9 @@ public class ApplicationContext {
     private ResourceBundle bundle;
     private ActionManager actionManager = new ActionManager();
     private UndoManager undoManager = new UndoManager();
-    private UndoableEditSupport undoableEditSupport = new UndoableEditSupport();
     private JMenuBar menuBar = null;
     private String helpBrokerUrl = null;
     private HelpBroker broker = null;
-
-    public ApplicationContext() {
-        undoableEditSupport.addUndoableEditListener(undoManager);
-    }
 
     public ResourceBundle getBundle() {
         return bundle;
@@ -62,10 +55,6 @@ public class ApplicationContext {
 
     public UndoManager getUndoManager() {
         return undoManager;
-    }
-
-    public UndoableEditSupport getUndoableEditSupport() {
-        return undoableEditSupport;
     }
 
     public JMenuBar getMenuBar() {

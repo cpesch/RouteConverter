@@ -22,12 +22,11 @@ package slash.navigation.converter.gui.helper;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.UndoManager;
 
 import javax.swing.*;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoableEdit;
-import javax.swing.undo.UndoableEditSupport;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Creates a {@link JMenuBar} for a {@link RouteConverter}.
@@ -53,37 +52,30 @@ public class FrameMenu {
         fileMenu.add(JMenuHelper.createItem("exit"));
 
         JMenu editMenu = JMenuHelper.createMenu("edit");
-        /* TODO extract from here
+        /* TODO extract from here */
         final JMenuItem undoMenuItem = JMenuHelper.createItem("undo");
         editMenu.add(undoMenuItem);
         final JMenuItem redoMenuItem = JMenuHelper.createItem("redo");
         editMenu.add(redoMenuItem);
-        UndoableEditSupport editSupport = Application.getInstance().getContext().getUndoableEditSupport();
-        editSupport.addUndoableEditListener(new UndoableEditListener() {
+        final UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+        undoManager.addChangeListener(new ChangeListener() {
             private void setText(JMenuItem menuItem, String undoText) {
                 String text = menuItem.getText();
                 int index = text.indexOf(": ");
-                if (index == -1)
-                    text = text + ": ";
-                else
-                    text = text.substring(0, index - 1);
-                text = text + undoText;
+                if (index != -1)
+                    text = text.substring(0, index);
+                if (undoText != null)
+                    text = text + ": " + undoText;
                 menuItem.setText(text);
             }
 
-            public void undoableEditHappened(UndoableEditEvent e) {
-                UndoableEdit edit = e.getEdit();
-                if (edit.canUndo()) {
-                    setText(undoMenuItem, edit.getUndoPresentationName());
-                }
-                if (edit.canRedo()) {
-                    setText(redoMenuItem, edit.getRedoPresentationName());   
-                }
+            public void stateChanged(ChangeEvent e) {
+                setText(undoMenuItem, undoManager.canUndo() ? undoManager.getUndoPresentationName() : null);
+                setText(redoMenuItem, undoManager.canRedo() ? undoManager.getRedoPresentationName() : null);
             }
         });
         // TODO extract from here
         editMenu.addSeparator();
-        */
         editMenu.add(JMenuHelper.createItem("cut"));
         editMenu.add(JMenuHelper.createItem("copy"));
         editMenu.add(JMenuHelper.createItem("paste"));

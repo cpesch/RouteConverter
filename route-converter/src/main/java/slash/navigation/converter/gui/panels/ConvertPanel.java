@@ -103,7 +103,7 @@ public abstract class ConvertPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        formatAndRoutesModel = new FormatAndRoutesModel(r.getContext().getUndoableEditSupport());
+        formatAndRoutesModel = new FormatAndRoutesModel(r.getContext().getUndoManager());
 
         lengthCalculator = new LengthCalculator();
         lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
@@ -249,6 +249,14 @@ public abstract class ConvertPanel {
             }
         });
 
+        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+        undoManager.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                handleUndoUpdate();
+            }
+        });
+
+        handleUndoUpdate();
         handleFormatUpdate(); // TODO do we need this?
         handleRoutesUpdate();
         handlePositionsUpdate();
@@ -383,6 +391,8 @@ public abstract class ConvertPanel {
                             //noinspection unchecked
                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
                             urlModel.setString(null);
+                            UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+                            undoManager.discardAllEdits();
                         }
                     });
 
@@ -517,6 +527,8 @@ public abstract class ConvertPanel {
             //noinspection unchecked
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             urlModel.setString(null);
+            UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+            undoManager.discardAllEdits();
         }
         finally {
             Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
@@ -700,6 +712,13 @@ public abstract class ConvertPanel {
     }
 
     // handle notifications
+
+    private void handleUndoUpdate() {
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+        actionManager.enable("undo", undoManager.canUndo());
+        actionManager.enable("redo", undoManager.canRedo());
+    }
 
     private void handleFormatUpdate() {
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;

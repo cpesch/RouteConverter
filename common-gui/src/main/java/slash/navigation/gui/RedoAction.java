@@ -21,7 +21,6 @@
 package slash.navigation.gui;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
 
 /**
  * {@link Action} that redos the last undone operation.
