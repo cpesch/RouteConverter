@@ -31,7 +31,6 @@ import slash.navigation.gui.UndoManager;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.undo.CompoundEdit;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -271,55 +270,57 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public void add(int row, List<BaseNavigationPosition> positions) {
-        add(row, positions, true);
+        add(row, positions, true, true);
     }
 
-    public void add(int row, List<BaseNavigationPosition> positions, boolean trackUndo) {
+    public void add(int row, List<BaseNavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
         for (int i = positions.size() - 1; i >= 0; i--) {
             BaseNavigationPosition position = positions.get(i);
             getRoute().add(row, position);
         }
-        fireTableRowsInserted(row, row - 1 + positions.size());
+        if (fireEvent)
+            fireTableRowsInserted(row, row - 1 + positions.size());
         if (trackUndo)
             undoManager.addEdit(new AddPosition(this, row, positions));
     }
 
     public void remove(int from, int to) {
-        remove(from, to, true);
+        remove(from, to, true, true);
     }
 
-    public void remove(int from, int to, boolean trackUndo) {
+    public void remove(int from, int to, boolean fireEvent, boolean trackUndo) {
         int[] rows = new int[to - from];
         int count = 0;
         for (int i = to - 1; i >= from; i--)
             rows[count++] = i;
-        remove(rows, trackUndo);
+        remove(rows, fireEvent, trackUndo);
     }
 
     public void remove(int[] rows) {
-        remove(rows, true);
+        remove(rows, true, true);
     }
 
-    public void remove(int[] rows, final boolean trackUndo) {
-        final CompoundEdit edit = new CompoundEdit();
+    public void remove(int[] rows, final boolean fireEvent, final boolean trackUndo) {
+        final RemovePosition edit = new RemovePosition(this);
 
         new ContinousRange(rows, new RangeOperation() {
             private List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
+
             public void performOnIndex(int index) {
-                removed.add(getRoute().remove(index));
+                removed.add(0, getRoute().remove(index));
             }
+
             public void performOnRange(int firstIndex, int lastIndex) {
-                fireTableRowsDeleted(firstIndex, lastIndex);
+                if (fireEvent)
+                    fireTableRowsDeleted(firstIndex, lastIndex);
                 if (trackUndo)
-                    edit.addEdit(new RemovePosition(PositionsModel.this, firstIndex, new ArrayList<BaseNavigationPosition>(removed)));
+                    edit.add(firstIndex, new ArrayList<BaseNavigationPosition>(removed));
                 removed.clear();
             }
         }).performMonotonicallyDecreasing();
 
-        if (trackUndo) {
-            edit.end();
+        if (trackUndo)
             undoManager.addEdit(edit);
-        }
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {

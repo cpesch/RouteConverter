@@ -26,6 +26,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import javax.swing.undo.*;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,13 +37,16 @@ import java.util.List;
 
 public class RemovePosition extends AbstractUndoableEdit {
     private PositionsModel positionsModel;
-    private int row;
-    private List<BaseNavigationPosition> positions;
+    private List<Integer> rowList = new ArrayList<Integer>();
+    private List<List<BaseNavigationPosition>> positionsList = new ArrayList<List<BaseNavigationPosition>>();
 
-    public RemovePosition(PositionsModel positionsModel, int row, List<BaseNavigationPosition> positions) {
+    public RemovePosition(PositionsModel positionsModel) {
         this.positionsModel = positionsModel;
-        this.row = row;
-        this.positions = positions;
+    }
+
+    public void add(int row, List<BaseNavigationPosition> positions) {
+        rowList.add(0, row);
+        positionsList.add(0, positions);
     }
 
     public String getUndoPresentationName() {
@@ -55,11 +59,21 @@ public class RemovePosition extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.add(row, positions, false);
+        for (int i = 0; i < rowList.size(); i++) {
+            int row = rowList.get(i);
+            List<BaseNavigationPosition> positions = positionsList.get(i);
+            positionsModel.add(row, positions, false, false);
+        }
+        positionsModel.fireTableDataChanged();
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.remove(row, row + positions.size(), false);
+        for (int i = rowList.size() - 1; i >= 0; i--) {
+            int row = rowList.get(i);
+            List<BaseNavigationPosition> positions = positionsList.get(i);
+            positionsModel.remove(row, row + positions.size(), false, false);
+        }
+        positionsModel.fireTableDataChanged();
     }
 }
