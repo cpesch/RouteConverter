@@ -20,14 +20,12 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
-import java.util.List;
 
 /**
  * Acts as a {@link UndoableEdit} for adding positions to {@link PositionsModel}.
@@ -35,32 +33,28 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class AddPosition extends AbstractUndoableEdit {
+public class RevertPositions extends AbstractUndoableEdit {
     private PositionsModel positionsModel;
-    private int row;
-    private List<BaseNavigationPosition> positions;
 
-    public AddPosition(PositionsModel positionsModel, int row, List<BaseNavigationPosition> positions) {
+    public RevertPositions(PositionsModel positionsModel) {
         this.positionsModel = positionsModel;
-        this.row = row;
-        this.positions = positions;
     }
 
     public String getUndoPresentationName() {
-        return "add-undo"; 
+        return "revert-undo";
     }
 
     public String getRedoPresentationName() {
-        return "add-redo";
+        return "revert-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.remove(row, row + positions.size(), true, false);
+        positionsModel.revert(false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.add(row, positions, true, false);
+        positionsModel.revert(false);
     }
 }

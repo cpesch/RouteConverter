@@ -25,8 +25,9 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormats;
-import slash.navigation.converter.gui.undo.AddPosition;
-import slash.navigation.converter.gui.undo.RemovePosition;
+import slash.navigation.converter.gui.undo.AddPositions;
+import slash.navigation.converter.gui.undo.RemovePositions;
+import slash.navigation.converter.gui.undo.RevertPositions;
 import slash.navigation.gui.UndoManager;
 
 import javax.swing.table.AbstractTableModel;
@@ -281,7 +282,7 @@ public class PositionsModel extends AbstractTableModel {
         if (fireEvent)
             fireTableRowsInserted(row, row - 1 + positions.size());
         if (trackUndo)
-            undoManager.addEdit(new AddPosition(this, row, positions));
+            undoManager.addEdit(new AddPositions(this, row, positions));
     }
 
     public void remove(int from, int to) {
@@ -301,7 +302,7 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public void remove(int[] rows, final boolean fireEvent, final boolean trackUndo) {
-        final RemovePosition edit = new RemovePosition(this);
+        final RemovePositions edit = new RemovePositions(this);
 
         new ContinousRange(rows, new RangeOperation() {
             private List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
@@ -332,9 +333,15 @@ public class PositionsModel extends AbstractTableModel {
     }
 
     public void revert() {
+        revert(true);
+    }
+
+    public void revert(boolean trackUndo) {
         getRoute().revert();
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableRowsUpdated(-1, -1);
+        if (trackUndo)
+            undoManager.addEdit(new RevertPositions(this));
     }
 
     public void down(int[] rows) {

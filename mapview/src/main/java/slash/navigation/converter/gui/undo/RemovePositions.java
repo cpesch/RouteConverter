@@ -35,12 +35,12 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class RemovePosition extends AbstractUndoableEdit {
+public class RemovePositions extends AbstractUndoableEdit {
     private PositionsModel positionsModel;
     private List<Integer> rowList = new ArrayList<Integer>();
     private List<List<BaseNavigationPosition>> positionsList = new ArrayList<List<BaseNavigationPosition>>();
 
-    public RemovePosition(PositionsModel positionsModel) {
+    public RemovePositions(PositionsModel positionsModel) {
         this.positionsModel = positionsModel;
     }
 
