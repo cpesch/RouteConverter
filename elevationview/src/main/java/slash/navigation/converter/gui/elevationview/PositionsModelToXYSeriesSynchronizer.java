@@ -78,7 +78,9 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
 
     private void handleUpdate(int firstRow, int lastRow) {
         // special treatment for fireTableDataChanged() notifications
-        if (firstRow == 0 && lastRow == Integer.MAX_VALUE) {
+        if (firstRow == 0 && lastRow == Integer.MAX_VALUE ||
+                // since PositionsModel#revert fires fireTableRowsUpdated(-1, -1) for a complete update
+                firstRow == -1 && lastRow == -1) {
             handleFullUpdate();
         } else {
             handleIntervalUpdate(firstRow, lastRow);
