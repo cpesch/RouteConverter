@@ -184,9 +184,9 @@ public class PositionAugmenter {
     }
 
     private void processCoordinates(final JTable positionsTable,
-                                   final PositionsModel positionsModel,
-                                   final int[] rows,
-                                   final OverwritePredicate predicate) {
+                                    final PositionsModel positionsModel,
+                                    final int[] rows,
+                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
                 new Operation() {
                     private GoogleMapsService service = new GoogleMapsService();

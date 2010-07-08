@@ -21,12 +21,8 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.UndoManager;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * Creates a {@link JMenuBar} for a {@link RouteConverter}.
@@ -52,29 +48,9 @@ public class FrameMenu {
         fileMenu.add(JMenuHelper.createItem("exit"));
 
         JMenu editMenu = JMenuHelper.createMenu("edit");
-        /* TODO extract from here */
-        final JMenuItem undoMenuItem = JMenuHelper.createItem("undo");
-        editMenu.add(undoMenuItem);
-        final JMenuItem redoMenuItem = JMenuHelper.createItem("redo");
-        editMenu.add(redoMenuItem);
-        final UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-        undoManager.addChangeListener(new ChangeListener() {
-            private void setText(JMenuItem menuItem, String undoText) {
-                String text = menuItem.getText();
-                int index = text.indexOf(": ");
-                if (index != -1)
-                    text = text.substring(0, index);
-                if (undoText != null)
-                    text = text + ": " + undoText;
-                menuItem.setText(text);
-            }
-
-            public void stateChanged(ChangeEvent e) {
-                setText(undoMenuItem, undoManager.canUndo() ? undoManager.getUndoPresentationName() : null);
-                setText(redoMenuItem, undoManager.canRedo() ? undoManager.getRedoPresentationName() : null);
-            }
-        });
-        // TODO extract from here
+        JMenuItem undoMenuItem = editMenu.add(JMenuHelper.createItem("undo"));
+        JMenuItem redoMenuItem = editMenu.add(JMenuHelper.createItem("redo"));
+        new UndoMenuSynchronizer(undoMenuItem, redoMenuItem);
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("cut"));
         editMenu.add(JMenuHelper.createItem("copy"));

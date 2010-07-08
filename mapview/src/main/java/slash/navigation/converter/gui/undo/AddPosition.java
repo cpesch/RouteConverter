@@ -47,11 +47,11 @@ public class AddPosition extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "Remove added positions";        // TODO localize
+        return "add-undo"; 
     }
 
     public String getRedoPresentationName() {
-        return "Add removed positions";       // TODO localize
+        return "add-redo";
     }
 
     public void undo() throws CannotUndoException {

@@ -50,11 +50,11 @@ public class RemovePosition extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "Add removed positions";        // TODO localize
+        return "remove-undo";
     }
 
     public String getRedoPresentationName() {
-        return "Removed added positions";       // TODO localize
+        return "remove-redo"; 
     }
 
     public void undo() throws CannotUndoException {
