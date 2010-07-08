@@ -43,7 +43,8 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
                 buffer.append(string).append(",\n");
             }
         }
-        buffer.append(GENERATED_BY);
+        if (buffer.indexOf(GENERATED_BY) == -1)
+            buffer.append(GENERATED_BY);
         return buffer.toString();
     }
 
