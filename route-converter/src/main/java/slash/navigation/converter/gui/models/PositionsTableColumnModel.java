@@ -56,13 +56,13 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
         predefineColumn(PositionColumns.DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
         predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", getMaxWidth("12.34.56 78:90:12", 10), false, rightAligned, headerRenderer);
-        predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", 60, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, rightAligned, headerRenderer);
-        predefineColumn(PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", 40, false, rightAligned, headerRenderer);
-        predefineColumn(PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", 40, false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", getMaxWidth("9999 m", 5), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.LONGITUDE_COLUMN_INDEX, "longitude", 68, true, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.LATITUDE_COLUMN_INDEX, "latitude", 68, true, rightAligned, headerRenderer);
-        predefineColumn(PositionColumns.ELEVATION_COLUMN_INDEX, "elevation", 40, true, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.ELEVATION_COLUMN_INDEX, "elevation", getMaxWidth("9999 m", 5), true, rightAligned, headerRenderer);
 
         VisibleListener visibleListener = new VisibleListener();
         PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size()];
@@ -98,7 +98,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, null);
         column.setHeaderRenderer(headerRenderer);
         if (maxWidth != null) {
-            column.setMaxWidth(maxWidth);
+            column.setMaxWidth(maxWidth * 2);
             column.setPreferredWidth(maxWidth);
         }
         predefinedColumns.add(column);
