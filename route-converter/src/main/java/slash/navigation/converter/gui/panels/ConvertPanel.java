@@ -367,10 +367,14 @@ public abstract class ConvertPanel {
 
         NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
+        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+        undoManager.discardAllEdits();
         openPositionList(Files.toUrls(selected), selectedFormat);
     }
 
     public void openPositionList(final List<URL> urls) {
+        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
+        undoManager.discardAllEdits();
         openPositionList(urls, null);
     }
 
@@ -391,8 +395,6 @@ public abstract class ConvertPanel {
                             //noinspection unchecked
                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
                             urlModel.setString(null);
-                            UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-                            undoManager.discardAllEdits();
                         }
                     });
 
