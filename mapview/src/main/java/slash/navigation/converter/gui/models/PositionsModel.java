@@ -25,9 +25,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormats;
-import slash.navigation.converter.gui.undo.AddPositions;
-import slash.navigation.converter.gui.undo.RemovePositions;
-import slash.navigation.converter.gui.undo.RevertPositions;
+import slash.navigation.converter.gui.undo.*;
 import slash.navigation.gui.UndoManager;
 
 import javax.swing.table.AbstractTableModel;
@@ -235,22 +233,6 @@ public class PositionsModel extends AbstractTableModel {
     }
 
 
-    public void top(int[] rows) {
-        for (int i = 0; i < rows.length; i++) {
-            getRoute().top(rows[i], i);
-            fireTableRowsUpdated(i, rows[i]);
-        }
-    }
-
-    public void up(int[] rows) {
-        Arrays.sort(rows);
-
-        for (int row : rows) {
-            getRoute().up(row);
-            fireTableRowsUpdated(row - 1, row);
-        }
-    }
-
     public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
         add(row, position);
@@ -344,13 +326,41 @@ public class PositionsModel extends AbstractTableModel {
             undoManager.addEdit(new RevertPositions(this));
     }
 
+    public void top(int[] rows) {
+        for (int i = 0; i < rows.length; i++) {
+            getRoute().top(rows[i], i);
+            fireTableRowsUpdated(i, rows[i]);
+        }
+    }
+
+    public void up(int[] rows) {
+        up(rows, true);
+    }
+
+    public void up(int[] rows, boolean trackUndo) {
+        Arrays.sort(rows);
+
+        for (int row : rows) {
+            getRoute().up(row);
+            fireTableRowsUpdated(row - 1, row);
+        }
+        if(trackUndo)
+            undoManager.addEdit(new UpPositions(this, rows));
+    }
+
     public void down(int[] rows) {
+        down(rows, true);
+    }
+
+    public void down(int[] rows, boolean trackUndo) {
         int[] reverted = Range.revert(rows);
 
         for (int row : reverted) {
             getRoute().down(row);
             fireTableRowsUpdated(row, row + 1);
         }
+        if(trackUndo)
+            undoManager.addEdit(new DownPositions(this, reverted));
     }
 
     public void bottom(int[] rows) {
