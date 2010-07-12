@@ -27,7 +27,6 @@ import slash.navigation.gui.UndoManager;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.undo.UndoableEditSupport;
 import java.util.List;
 
 /**

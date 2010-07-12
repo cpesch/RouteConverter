@@ -31,7 +31,7 @@ import javax.swing.undo.CannotUndoException;
  * @author Christian Pesch
  */
 
-public class TopPositions extends AbstractUndoableEdit {
+class TopPositions extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
     private int[] rows;
 

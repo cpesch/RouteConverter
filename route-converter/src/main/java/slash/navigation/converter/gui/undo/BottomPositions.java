@@ -20,47 +20,42 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
-
-import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.*;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
-import java.util.List;
+
 
 /**
- * Acts as a {@link UndoableEdit} for adding positions to {@link PositionsModel}.
+ * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} upwards.
  *
  * @author Christian Pesch
  */
 
-public class AddPositions extends AbstractUndoableEdit {
+class BottomPositions extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
-    private int row;
-    private List<BaseNavigationPosition> positions;
+    private int[] rows;
 
-    public AddPositions(UndoPositionsModel positionsModel, int row, List<BaseNavigationPosition> positions) {
+    public BottomPositions(UndoPositionsModel positionsModel, int[] rows) {
         this.positionsModel = positionsModel;
-        this.row = row;
-        this.positions = positions;
+        this.rows = rows;
     }
 
     public String getUndoPresentationName() {
-        return "add-undo"; 
+        return "bottom-undo";
     }
 
     public String getRedoPresentationName() {
-        return "add-redo";
+        return "bottom-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.remove(row, row + positions.size(), true, false);
+        positionsModel.bottomUp(rows);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.add(row, positions, true, false);
+        positionsModel.bottom(rows, false);
     }
 }
