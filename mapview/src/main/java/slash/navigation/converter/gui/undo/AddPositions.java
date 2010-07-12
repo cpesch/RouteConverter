@@ -36,11 +36,11 @@ import java.util.List;
  */
 
 public class AddPositions extends AbstractUndoableEdit {
-    private PositionsModel positionsModel;
+    private UndoPositionsModel positionsModel;
     private int row;
     private List<BaseNavigationPosition> positions;
 
-    public AddPositions(PositionsModel positionsModel, int row, List<BaseNavigationPosition> positions) {
+    public AddPositions(UndoPositionsModel positionsModel, int row, List<BaseNavigationPosition> positions) {
         this.positionsModel = positionsModel;
         this.row = row;
         this.positions = positions;

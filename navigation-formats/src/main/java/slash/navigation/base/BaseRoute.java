@@ -78,8 +78,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract int getPositionCount();
 
-    public abstract void add(int index, P position);
-
     private void move(int index, int upOrDown) {
         List<P> positions = getPositions();
         P move = positions.get(index);
@@ -89,13 +87,30 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public void top(int index, int topOffset) {
-        while (index > topOffset)
-            up(index--);
+        while (index > topOffset) {
+            up(index, index - 1);
+            index--;
+        }
     }
 
-    public void up(int index) {
-        move(index, -1);
+    public void down(int fromIndex, int toIndex) {
+        while (fromIndex < toIndex)
+            move(fromIndex++, +1);
     }
+
+    public void up(int fromIndex, int toIndex) {
+        while (fromIndex > toIndex)
+            move(fromIndex--, -1);
+    }
+
+    public void bottom(int index, int bottomOffset) {
+        while (index < getPositionCount() - 1 - bottomOffset) {
+            down(index, index + 1);
+            index++;
+        }
+    }
+
+    public abstract void add(int index, P position);
 
     public P remove(int index) {
         List<P> positions = getPositions();
@@ -316,15 +331,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         else
             routeName = routeName.substring(0, routeName.length() - REVERSE_ROUTE_NAME_POSTFIX.length());
         setName(routeName);
-    }
-
-    public void down(int index) {
-        move(index, +1);
-    }
-
-    public void bottom(int index, int bottomOffset) {
-        while (index < getPositionCount() - 1 - bottomOffset)
-            down(index++);
     }
 
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);

@@ -20,20 +20,14 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.*;
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormats;
-import slash.navigation.converter.gui.undo.*;
-import slash.navigation.gui.UndoManager;
 
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.*;
+import java.util.List;
 
 /**
  * Acts as a {@link TableModel} for the positions of a {@link BaseRoute}.
@@ -41,334 +35,32 @@ import java.util.*;
  * @author Christian Pesch
  */
 
-public class PositionsModel extends AbstractTableModel {
-    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
-    private UndoManager undoManager;
+public interface PositionsModel extends TableModel {
+    BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute();
+    void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route);
 
-    public PositionsModel(UndoManager undoManager) {
-        this.undoManager = undoManager;
-    }
+    BaseNavigationPosition getPredecessor(BaseNavigationPosition position);
+    BaseNavigationPosition getPosition(int rowIndex);
+    int getIndex(BaseNavigationPosition position);
+    List<BaseNavigationPosition> getPositions(int[] rowIndices);
+    List<BaseNavigationPosition> getPositions(int from, int to);
 
-    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
-        return route;
-    }
+    int[] getPositionsWithinDistanceToPredecessor(double distance);
+    int[] getInsignificantPositions(double threshold);
 
-    public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        this.route = route;
-        fireTableDataChanged();
-    }
+    void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
+    void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
+    void add(int row, List<BaseNavigationPosition> positions);
 
-    public int getRowCount() {
-        return getRoute() != null ? getRoute().getPositionCount() : 0;
-    }
+    void remove(int from, int to);
+    void remove(int[] rows);
 
-    public int getColumnCount() {
-        throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
-    }
+    void revert();
 
-    private String formatElevation(Double elevation) {
-        return elevation != null ? Math.round(elevation) + " m" : "";
-    }
+    void top(int[] rows);
+    void up(int[] rows);
+    void down(int[] rows);
+    void bottom(int[] rows);
 
-    private String formatSpeed(Double speed) {
-        if (speed == null || speed == 0.0)
-            return "";
-        String speedStr;
-        if (Math.abs(speed) < 10.0)
-            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
-        else
-            speedStr = Long.toString(Math.round(speed));
-        return speedStr + " Km/h";
-    }
-
-    private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (longitudeOrLatitude == null)
-            return "";
-        String result = Double.toString(longitudeOrLatitude) + " ";
-        if (Math.abs(longitudeOrLatitude) < 10.0)
-            result = " " + result;
-        if (Math.abs(longitudeOrLatitude) < 100.0)
-            result = " " + result;
-        if (result.length() > 12)
-            result = result.substring(0, 12 - 1);
-        return result;
-    }
-
-    private String formatDistance(double distance) {
-        if (distance <= 0.0)
-            return "";
-        if (Math.abs(distance) < 10000.0)
-            return Math.round(distance) + " m";
-        if (Math.abs(distance) < 200000.0)
-            return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
-        return Transfer.roundFraction(distance / 1000.0, 0) + " Km";
-    }
-
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        BaseNavigationPosition position = getPosition(rowIndex);
-        switch (columnIndex) {
-            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
-                return position.getComment();
-            case PositionColumns.TIME_COLUMN_INDEX:
-                CompactCalendar time = position.getTime();
-                return time != null ? TIME_FORMAT.format(time.getTime()) : "";
-            case PositionColumns.LONGITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLongitude());
-            case PositionColumns.LATITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLatitude());
-            case PositionColumns.ELEVATION_COLUMN_INDEX:
-                return formatElevation(position.getElevation());
-            case PositionColumns.SPEED_COLUMN_INDEX:
-                return formatSpeed(position.getSpeed());
-            case PositionColumns.DISTANCE_COLUMN_INDEX:
-                return formatDistance(getRoute().getDistance(0, rowIndex));
-            case PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX:
-                return formatElevation(getRoute().getElevationAscend(0, rowIndex));
-            case PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX:
-                return formatElevation(getRoute().getElevationDescend(0, rowIndex));
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
-        }
-    }
-
-    public BaseNavigationPosition getPredecessor(BaseNavigationPosition position) {
-        return getRoute().getPredecessor(position);
-    }
-
-    public BaseNavigationPosition getPosition(int rowIndex) {
-        return getRoute().getPosition(rowIndex);
-    }
-
-    public int getIndex(BaseNavigationPosition position) {
-        return getRoute().getIndex(position);
-    }
-
-    public List<BaseNavigationPosition> getPositions(int[] rowIndices) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(rowIndices.length);
-        for (int rowIndex : rowIndices)
-            result.add(getPosition(rowIndex));
-        return result;
-    }
-
-    public List<BaseNavigationPosition> getPositions(int from, int to) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(to - from);
-        for (int i = from; i < to; i++)
-            result.add(getPosition(i));
-        return result;
-    }
-
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
-            case PositionColumns.TIME_COLUMN_INDEX:
-            case PositionColumns.LONGITUDE_COLUMN_INDEX:
-            case PositionColumns.LATITUDE_COLUMN_INDEX:
-            case PositionColumns.ELEVATION_COLUMN_INDEX:
-            case PositionColumns.SPEED_COLUMN_INDEX:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (rowIndex == getRowCount())
-            return;
-
-        BaseNavigationPosition position = getPosition(rowIndex);
-        String value = Transfer.trim(aValue.toString());
-        switch (columnIndex) {
-            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
-                position.setComment(value);
-                break;
-            case PositionColumns.TIME_COLUMN_INDEX:
-                try {
-                    Date date = TIME_FORMAT.parse(value);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(date);
-                    position.setTime(CompactCalendar.fromCalendar(calendar));
-                }
-                catch (ParseException e) {
-                    // intentionally left empty
-                }
-                break;
-            case PositionColumns.LONGITUDE_COLUMN_INDEX:
-                try {
-                    position.setLongitude(Transfer.parseDouble(value));
-                }
-                catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
-                break;
-            case PositionColumns.LATITUDE_COLUMN_INDEX:
-                try {
-                    position.setLatitude(Transfer.parseDouble(value));
-                } catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
-                break;
-            case PositionColumns.ELEVATION_COLUMN_INDEX:
-                try {
-                    if (value != null)
-                        value = value.replaceAll("m", "");
-                    position.setElevation(Transfer.parseDouble(value));
-                } catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
-                break;
-            case PositionColumns.SPEED_COLUMN_INDEX:
-                try {
-                    if (value != null)
-                        value = value.replaceAll("Km/h", "");
-                    position.setSpeed(Transfer.parseDouble(value));
-                } catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
-        }
-        fireTableRowsUpdated(rowIndex, rowIndex);
-    }
-
-
-    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
-        add(row, position);
-    }
-
-    public void add(int row, BaseNavigationPosition position) {
-        add(row, Arrays.asList(position));
-    }
-
-    public void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
-        BaseNavigationFormat targetFormat = getRoute().getFormat();
-        List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
-        for (BaseNavigationPosition sourcePosition : route.getPositions()) {
-            BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetFormat);
-            positions.add(targetPosition);
-        }
-        add(row, positions);
-    }
-
-    public void add(int row, List<BaseNavigationPosition> positions) {
-        add(row, positions, true, true);
-    }
-
-    public void add(int row, List<BaseNavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
-        for (int i = positions.size() - 1; i >= 0; i--) {
-            BaseNavigationPosition position = positions.get(i);
-            getRoute().add(row, position);
-        }
-        if (fireEvent)
-            fireTableRowsInserted(row, row - 1 + positions.size());
-        if (trackUndo)
-            undoManager.addEdit(new AddPositions(this, row, positions));
-    }
-
-    public void remove(int from, int to) {
-        remove(from, to, true, true);
-    }
-
-    public void remove(int from, int to, boolean fireEvent, boolean trackUndo) {
-        int[] rows = new int[to - from];
-        int count = 0;
-        for (int i = to - 1; i >= from; i--)
-            rows[count++] = i;
-        remove(rows, fireEvent, trackUndo);
-    }
-
-    public void remove(int[] rows) {
-        remove(rows, true, true);
-    }
-
-    public void remove(int[] rows, final boolean fireEvent, final boolean trackUndo) {
-        final RemovePositions edit = new RemovePositions(this);
-
-        new ContinousRange(rows, new RangeOperation() {
-            private List<BaseNavigationPosition> removed = new ArrayList<BaseNavigationPosition>();
-
-            public void performOnIndex(int index) {
-                removed.add(0, getRoute().remove(index));
-            }
-
-            public void performOnRange(int firstIndex, int lastIndex) {
-                if (fireEvent)
-                    fireTableRowsDeleted(firstIndex, lastIndex);
-                if (trackUndo)
-                    edit.add(firstIndex, new ArrayList<BaseNavigationPosition>(removed));
-                removed.clear();
-            }
-        }).performMonotonicallyDecreasing();
-
-        if (trackUndo)
-            undoManager.addEdit(edit);
-    }
-
-    public int[] getPositionsWithinDistanceToPredecessor(double distance) {
-        return getRoute().getPositionsWithinDistanceToPredecessor(distance);
-    }
-
-    public int[] getInsignificantPositions(double threshold) {
-        return getRoute().getInsignificantPositions(threshold);
-    }
-
-    public void revert() {
-        revert(true);
-    }
-
-    public void revert(boolean trackUndo) {
-        getRoute().revert();
-        // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(-1, -1);
-        if (trackUndo)
-            undoManager.addEdit(new RevertPositions(this));
-    }
-
-    public void top(int[] rows) {
-        for (int i = 0; i < rows.length; i++) {
-            getRoute().top(rows[i], i);
-            fireTableRowsUpdated(i, rows[i]);
-        }
-    }
-
-    public void up(int[] rows) {
-        up(rows, true);
-    }
-
-    public void up(int[] rows, boolean trackUndo) {
-        Arrays.sort(rows);
-
-        for (int row : rows) {
-            getRoute().up(row);
-            fireTableRowsUpdated(row - 1, row);
-        }
-        if(trackUndo)
-            undoManager.addEdit(new UpPositions(this, rows));
-    }
-
-    public void down(int[] rows) {
-        down(rows, true);
-    }
-
-    public void down(int[] rows, boolean trackUndo) {
-        int[] reverted = Range.revert(rows);
-
-        for (int row : reverted) {
-            getRoute().down(row);
-            fireTableRowsUpdated(row, row + 1);
-        }
-        if(trackUndo)
-            undoManager.addEdit(new DownPositions(this, reverted));
-    }
-
-    public void bottom(int[] rows) {
-        int[] reverted = Range.revert(rows);
-
-        for (int i = 0; i < reverted.length; i++) {
-            getRoute().bottom(reverted[i], i);
-            fireTableRowsUpdated(reverted[i], getRowCount() - 1 - i);
-        }
-    }
+    void fireTableRowsUpdated(int from, int to);
 }

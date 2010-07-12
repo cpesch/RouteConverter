@@ -158,24 +158,28 @@ public class BcrRouteTest {
     public void testUp() {
         initialize();
         assertPositions(a, b, c);
-        route.up(2);
+        route.up(2, 1);
         assertPositions(a, c, b);
-        route.up(2);
+        route.up(2, 1);
         assertPositions(a, b, c);
-        route.up(1);
+        route.up(1, 0);
         assertPositions(b, a, c);
+        route.up(2, 0);
+        assertPositions(c, b, a);
     }
 
     @Test
     public void testDown() {
         initialize();
         assertPositions(a, b, c);
-        route.down(1);
+        route.down(1, 2);
         assertPositions(a, c, b);
-        route.down(1);
+        route.down(1, 2);
         assertPositions(a, b, c);
-        route.down(0);
+        route.down(0, 1);
         assertPositions(b, a, c);
+        route.down(0, 2);
+        assertPositions(a, c, b);
     }
 
     @Test

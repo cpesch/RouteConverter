@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.*;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
+import slash.navigation.converter.gui.undo.UndoPositionsModel;
 import slash.navigation.gui.UndoManager;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     private CharacteristicsModel characteristicsModel = new CharacteristicsModel();
 
     public FormatAndRoutesModel(UndoManager undoManager) {
-        positionsModel = new PositionsModel(undoManager);
+        positionsModel = new UndoPositionsModel(undoManager);
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedItem()

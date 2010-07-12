@@ -26,7 +26,7 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.converter.gui.models.PositionsModelImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class PositionsModelTest {
-    PositionsModel model = new PositionsModel(new UndoManager());
+    PositionsModel model = new PositionsModelImpl();
     BaseRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
     BcrPosition a = new BcrPosition(1, 1, 0, "a");
     BcrPosition b = new BcrPosition(3, 3, 0, "b");

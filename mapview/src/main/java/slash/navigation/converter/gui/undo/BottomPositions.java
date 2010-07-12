@@ -21,11 +21,10 @@
 package slash.navigation.converter.gui.undo;
 
 import slash.navigation.converter.gui.models.PositionsModel;
-
-import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.*;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
+
 
 /**
  * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} upwards.
@@ -33,34 +32,30 @@ import javax.swing.undo.UndoableEdit;
  * @author Christian Pesch
  */
 
-public class UpPositions extends AbstractUndoableEdit {
+public class BottomPositions extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
     private int[] rows;
 
-    public UpPositions(UndoPositionsModel positionsModel, int[] rows) {
+    public BottomPositions(UndoPositionsModel positionsModel, int[] rows) {
         this.positionsModel = positionsModel;
         this.rows = rows;
     }
 
     public String getUndoPresentationName() {
-        return "up-undo";
+        return "bottom-undo";
     }
 
     public String getRedoPresentationName() {
-        return "up-redo";
+        return "bottom-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        int[] up = new int[rows.length];
-        for (int i = 0; i < rows.length; i++) {
-            up[i] = rows[i] - 1;
-        }
-        positionsModel.down(up, false);
+        positionsModel.bottomUp(rows);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.up(rows, false);
+        positionsModel.bottom(rows, false);
     }
 }

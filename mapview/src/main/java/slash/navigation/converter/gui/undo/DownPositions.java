@@ -33,10 +33,10 @@ import javax.swing.undo.CannotUndoException;
  */
 
 public class DownPositions extends AbstractUndoableEdit {
-    private PositionsModel positionsModel;
+    private UndoPositionsModel positionsModel;
     private int[] rows;
 
-    public DownPositions(PositionsModel positionsModel, int[] rows) {
+    public DownPositions(UndoPositionsModel positionsModel, int[] rows) {
         this.positionsModel = positionsModel;
         this.rows = rows;
     }
