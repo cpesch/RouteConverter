@@ -23,6 +23,7 @@ package slash.common.io;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * The <code>ISO8601</code> utility class provides helper methods
@@ -91,6 +92,7 @@ public final class ISO8601 {
          * parsing because it can't handle years <= 0 and TZD's
          */
 
+        TimeZone timeZone;
         int year, month, day, hour, min, sec;
         try {
             // year (YYYY)
@@ -135,6 +137,19 @@ public final class ISO8601 {
             start++;
             // second (ss)
             sec = Integer.parseInt(text.substring(start, start + 2));
+            start += 2;
+
+            char tz = text.charAt(start++);
+            if (tz == 'Z')
+                timeZone = TimeZone.getTimeZone("GMT");
+            else if (tz == 'T') {
+                // hour (hh)
+                // delimiter ':'
+                // minute (mm)
+                String tzString = text.substring(start, start + 5);
+                timeZone = TimeZone.getTimeZone("GMT+"+tzString);
+            } else
+                return null;
         } catch (IndexOutOfBoundsException e) {
             return null;
         } catch (NumberFormatException e) {
@@ -142,7 +157,7 @@ public final class ISO8601 {
         }
 
         // initialize Calendar object
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(timeZone);
         cal.setLenient(false);
         // year and era
         if (sign == '-' || year == 0) {
