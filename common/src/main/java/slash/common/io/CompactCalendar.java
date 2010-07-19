@@ -39,8 +39,18 @@ public class CompactCalendar {
         return new CompactCalendar(calendar.getTimeInMillis(), calendar.getTimeZone().getID());
     }
 
+    public static CompactCalendar fromDate(Date date) {
+        Calendar calendar = Calendar.getInstance(GMT);
+        calendar.setTime(date);
+        return new CompactCalendar(calendar.getTimeInMillis(), calendar.getTimeZone().getID());
+    }
+
     public static CompactCalendar getInstance() {
         return fromCalendar(Calendar.getInstance());
+    }
+
+    public static CompactCalendar getInstance(String timeZoneId) {
+        return fromCalendar(Calendar.getInstance(TimeZone.getTimeZone(timeZoneId)));
     }
 
     private CompactCalendar(long timeInMillis, String timeZoneId) {

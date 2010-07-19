@@ -20,19 +20,24 @@
 
 package slash.navigation.nmea;
 
+import org.junit.Test;
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.util.Conversion;
-import slash.common.io.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;
 import java.util.List;
 
-public class NmeaFormatTest extends NavigationTestCase {
-    NmeaFormat format = new NmeaFormat();
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
 
+public class NmeaFormatTest {
+    private NmeaFormat format = new NmeaFormat();
+
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("@Sonygps/ver1.0/wgs-84"));
         assertTrue(format.isValidLine("$ADVER,3080,2.0"));
@@ -68,10 +73,11 @@ public class NmeaFormatTest extends NavigationTestCase {
 
         assertTrue(format.isValidLine("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertTrue(format.isValidLine("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
-        
+
         assertFalse(format.isValidLine("# Comment"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("$GPGGA,134012,4837.4374,N,903.4036,E,1,,,-48.0,M,,M,,*61"));
         assertTrue(format.isPosition("$GPWPL,4837.4374,N,903.4036,E,*4C"));
@@ -115,6 +121,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("$GPRMC,145524.054,V,,,,,,,300807,,*21"));
     }
 
+    @Test
     public void testHaveDifferentLongitudeAndLatitude() {
         NmeaPosition one = new NmeaPosition(1.0, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
         NmeaPosition two = new NmeaPosition(1.1, "E", 5159.971, "N", 22.0, 14.0, 12.0, null, null);
@@ -145,15 +152,16 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertFalse(format.haveDifferentLongitudeAndLatitude(eight, eight));
     }
 
+    @Test
     public void testParseGGA() {
         NmeaPosition position = format.parsePosition("$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D");
-        assertEquals(903.4036, position.getLongitudeAsDdmm());
-        assertEquals(4837.4374, position.getLatitudeAsDdmm());
+        assertDoubleEquals(903.4036, position.getLongitudeAsDdmm());
+        assertDoubleEquals(4837.4374, position.getLatitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
         assertEquals("E", position.getWestOrEast());
-        assertEquals(9.0567266, position.getLongitude());
-        assertEquals(48.6239566, position.getLatitude());
-        assertEquals(16.76, position.getElevation());
+        assertDoubleEquals(9.0567266, position.getLongitude());
+        assertDoubleEquals(48.6239566, position.getLatitude());
+        assertDoubleEquals(16.76, position.getElevation());
         assertEquals(new Integer(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 13, 4, 41, 89);
@@ -163,15 +171,16 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseGGAFromSonyLogger() {
         NmeaPosition position = format.parsePosition("$GPGGA,162611,3554.2367,N,10619.4966,W,1,03,06.7,02300.3,M,-022.4,M,,*7F");
-        assertEquals(10619.4966, position.getLongitudeAsDdmm());
-        assertEquals(3554.2367, position.getLatitudeAsDdmm());
+        assertDoubleEquals(10619.4966, position.getLongitudeAsDdmm());
+        assertDoubleEquals(3554.2367, position.getLatitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
         assertEquals("W", position.getWestOrEast());
-        assertEquals(-106.3249433, position.getLongitude());
-        assertEquals(35.9039449, position.getLatitude());
-        assertEquals(2300.3, position.getElevation());
+        assertDoubleEquals(-106.3249433, position.getLongitude());
+        assertDoubleEquals(35.9039449, position.getLatitude());
+        assertDoubleEquals(2300.3, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 26, 11);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -180,25 +189,32 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseRMC() {
         NmeaPosition position = format.parsePosition("$GPRMC,180114,A,4837.4374,N,00903.4036,E,14.32,000.0,160607,,,A*76");
-        assertEquals(9.0567266, position.getLongitude());
-        assertEquals(48.6239566, position.getLatitude());
-        assertEquals(calendar(2007, 6, 16, 18, 1, 14), position.getTime());
+        assertDoubleEquals(9.0567266, position.getLongitude());
+        assertDoubleEquals(48.6239566, position.getLatitude());
+        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+        CompactCalendar expectedCal = calendar(2007, 6, 16, 18, 1, 14);
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
-        assertEquals(Conversion.knotsToKilometers(14.32), position.getSpeed());
+        assertDoubleEquals(Conversion.knotsToKilometers(14.32), position.getSpeed());
     }
 
+    @Test
     public void testParseWPL() {
         NmeaPosition position = format.parsePosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22");
-        assertEquals(10.0319999, position.getLongitude());
-        assertEquals(53.5694833, position.getLatitude());
+        assertDoubleEquals(10.0319999, position.getLongitude());
+        assertDoubleEquals(53.5694833, position.getLatitude());
         assertNull(position.getTime());
         assertNull(position.getElevation());
         assertEquals("STATN1", position.getComment());
     }
 
+    @Test
     public void testParseZDA() {
         NmeaPosition position = format.parsePosition("$GPZDA,032910.542,07,08,2004,00,00*48");
         assertNull(position.getLongitude());
@@ -213,22 +229,25 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getSpeed());
     }
 
+    @Test
     public void testParseVTG() {
         NmeaPosition position = format.parsePosition("$GPVTG,32.19,T,,M,1.531,N,2.835,K,A*37");
-        assertEquals(2.835, position.getSpeed());
-        assertEquals(32.19, position.getHeading());
+        assertDoubleEquals(2.835, position.getSpeed());
+        assertDoubleEquals(32.19, position.getHeading());
         assertNull(position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseGSA() {
         NmeaPosition position = format.parsePosition("$GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F");
-        assertEquals(4.7, position.getPdop());
-        assertEquals(4.4, position.getHdop());
-        assertEquals(1.5, position.getVdop());
+        assertDoubleEquals(4.7, position.getPdop());
+        assertDoubleEquals(4.4, position.getHdop());
+        assertDoubleEquals(1.5, position.getVdop());
     }
 
+    @Test
     public void testMerging() throws IOException {
         StringReader reader = new StringReader(
                 "$GPGGA,130441.89,4837.4374,N,00903.4036,E,1,08,1.25,16.76,M,46.79,M,,*6D\n" +
@@ -241,10 +260,10 @@ public class NmeaFormatTest extends NavigationTestCase {
         SimpleRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         NmeaPosition position = (NmeaPosition) route.getPositions().get(0);
-        assertEquals(9.0567266, position.getLongitude());
-        assertEquals(48.6239566, position.getLatitude());
-        assertEquals(2.835, position.getSpeed());
-        assertEquals(16.76, position.getElevation());
+        assertDoubleEquals(9.0567266, position.getLongitude());
+        assertDoubleEquals(48.6239566, position.getLatitude());
+        assertDoubleEquals(2.835, position.getSpeed());
+        assertDoubleEquals(16.76, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2004, 8, 7, 3, 29, 10);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -253,6 +272,7 @@ public class NmeaFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
+    @Test
     public void testGGAAndRMCDateProblem() throws IOException {
         StringReader reader = new StringReader(
                 "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.7654,M,00.0,M,,*47\n" +
@@ -263,10 +283,10 @@ public class NmeaFormatTest extends NavigationTestCase {
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         NmeaPosition position = route.getPositions().get(0);
-        assertEquals(9.0567266, position.getLongitude());
-        assertEquals(48.6239566, position.getLatitude());
-        assertEquals(5.5560129, position.getSpeed());
-        assertEquals(-48.7654, position.getElevation());
+        assertDoubleEquals(9.0567266, position.getLongitude());
+        assertDoubleEquals(48.6239566, position.getLatitude());
+        assertDoubleEquals(5.5560129, position.getSpeed());
+        assertDoubleEquals(-48.7654, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 7, 26, 13, 40, 12);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -289,46 +309,48 @@ public class NmeaFormatTest extends NavigationTestCase {
         NmeaRoute route2 = routes2.get(0);
         assertEquals(1, route2.getPositionCount());
         NmeaPosition position2 = route2.getPositions().get(0);
-        assertEquals(9.0567266, position2.getLongitude());
-        assertEquals(48.6239566, position2.getLatitude());
-        assertEquals(-48.8, position2.getElevation());
+        assertDoubleEquals(9.0567266, position2.getLongitude());
+        assertDoubleEquals(48.6239566, position2.getLatitude());
+        assertDoubleEquals(-48.8, position2.getElevation());
         String actual2 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
         assertEquals(expected, actual2);
         assertEquals(expectedCal, position2.getTime());
         assertNull(position2.getComment());
     }
 
+    @Test
     public void testWestEastNorthSouthProblem() {
         NmeaPosition position = format.parsePosition("$GPRMC,062801.724,A,2608.6661,N,02758.8546,W,0.00,,160907,,,A*6B");
-        assertEquals(-27.98091, position.getLongitude());
-        assertEquals(26.1444349, position.getLatitude());
+        assertDoubleEquals(-27.98091, position.getLongitude());
+        assertDoubleEquals(26.1444349, position.getLatitude());
 
         position = format.parsePosition("$GPRMC,062801.724,A,2608.6661,N,02758.8546,E,0.00,,160907,,,A*6B");
-        assertEquals(27.98091, position.getLongitude());
-        assertEquals(26.1444349, position.getLatitude());
+        assertDoubleEquals(27.98091, position.getLongitude());
+        assertDoubleEquals(26.1444349, position.getLatitude());
 
         position = format.parsePosition("$GPRMC,062801.724,A,2608.6661,S,02758.8546,W,0.00,,160907,,,A*6B");
-        assertEquals(-27.98091, position.getLongitude());
-        assertEquals(-26.1444349, position.getLatitude());
+        assertDoubleEquals(-27.98091, position.getLongitude());
+        assertDoubleEquals(-26.1444349, position.getLatitude());
 
         position = format.parsePosition("$GPRMC,062801.724,A,2608.6661,S,02758.8546,E,0.00,,160907,,,A*6B");
-        assertEquals(27.98091, position.getLongitude());
-        assertEquals(-26.1444349, position.getLatitude());
+        assertDoubleEquals(27.98091, position.getLongitude());
+        assertDoubleEquals(-26.1444349, position.getLatitude());
     }
 
+    @Test
     public void testSetLongitudeAndLatitudeAndElevation() {
         NmeaPosition position = format.parsePosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22");
-        assertEquals(1001.92, position.getLongitudeAsDdmm());
-        assertEquals(5334.169, position.getLatitudeAsDdmm());
-        assertEquals(10.0319999, position.getLongitude());
-        assertEquals(53.5694833, position.getLatitude());
+        assertDoubleEquals(1001.92, position.getLongitudeAsDdmm());
+        assertDoubleEquals(5334.169, position.getLatitudeAsDdmm());
+        assertDoubleEquals(10.0319999, position.getLongitude());
+        assertDoubleEquals(53.5694833, position.getLatitude());
         assertNull(position.getElevation());
         position.setLongitude(19.02522);
         position.setLatitude(62.963395);
         position.setElevation(14.342);
-        assertEquals(19.0252216, position.getLongitude());
-        assertEquals(62.963395, position.getLatitude());
-        assertEquals(14.342, position.getElevation());
+        assertDoubleEquals(19.0252216, position.getLongitude());
+        assertDoubleEquals(62.963395, position.getLatitude());
+        assertDoubleEquals(14.342, position.getElevation());
         position.setLongitude(null);
         position.setLatitude(null);
         position.setElevation(null);

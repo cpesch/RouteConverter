@@ -149,7 +149,7 @@ public class Crs1Format extends GpxFormat {
 
         List<GpxPosition> positions = route.getPositions();
         GpxPosition first = null;
-        CompactCalendar lastTime = CompactCalendar.getInstance();
+        CompactCalendar lastTime = CompactCalendar.getInstance("GMT");
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();

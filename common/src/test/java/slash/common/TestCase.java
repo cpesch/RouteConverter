@@ -90,11 +90,19 @@ public abstract class TestCase extends junit.framework.TestCase {
         assertEquals(expectedString, actualString);
     }
 
-    public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond) {
-        Calendar result = Calendar.getInstance();
+    public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond, String timeZone) {
+        return calendar(year, month, day, hour, minute, second, millisecond, TimeZone.getTimeZone(timeZone));
+    }
+
+    public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond, TimeZone timeZone) {
+        Calendar result = Calendar.getInstance(timeZone);
         result.set(year, month - 1, day, hour, minute, second);
         result.set(Calendar.MILLISECOND, millisecond);
         return CompactCalendar.fromCalendar(result);
+    }
+
+    public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+        return calendar(year, month, day, hour, minute, second, millisecond, TimeZone.getTimeZone("GMT"));
     }
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second) {
@@ -113,8 +121,8 @@ public abstract class TestCase extends junit.framework.TestCase {
         return calendar(millisecond, TimeZone.getTimeZone(timeZone));
     }
 
-    private static CompactCalendar calendar(long millisecond, TimeZone zone) {
-        Calendar result = Calendar.getInstance(zone);
+    private static CompactCalendar calendar(long millisecond, TimeZone timeZone) {
+        Calendar result = Calendar.getInstance(timeZone);
         result.setTimeInMillis(millisecond);
         result.setLenient(false);
         return CompactCalendar.fromCalendar(result);

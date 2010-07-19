@@ -72,6 +72,11 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
+        PRECISE_DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
+        DATE_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
+        PRECISE_TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
     }
 
     public int getMaximumPositionCount() {
@@ -208,18 +213,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         // 130441.89
         try {
             Date parsed = PRECISE_TIME_FORMAT.parse(time);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parsed);
-            return CompactCalendar.fromCalendar(calendar);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // 130441
         try {
             Date parsed = TIME_FORMAT.parse(time);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parsed);
-            return CompactCalendar.fromCalendar(calendar);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse time '" + time + "'");
         }
@@ -235,18 +236,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         // date: 160607 time: 130441.89
         try {
             Date parsed = PRECISE_DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parsed);
-            return CompactCalendar.fromCalendar(calendar);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // date: 160607 time: 130441
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parsed);
-            return CompactCalendar.fromCalendar(calendar);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
