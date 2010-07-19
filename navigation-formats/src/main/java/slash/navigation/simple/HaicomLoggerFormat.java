@@ -52,6 +52,12 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yy/MM/dd");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    static {
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
+
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
 
@@ -64,9 +70,6 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
         LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
     private static final Pattern LINE_PATTERN = Pattern.

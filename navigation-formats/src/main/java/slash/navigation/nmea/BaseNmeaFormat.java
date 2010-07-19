@@ -58,9 +58,16 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyy");
     private static final DateFormat PRECISE_TIME_FORMAT = new SimpleDateFormat("HHmmss.SSS");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
+    static {
+        PRECISE_DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        PRECISE_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
+
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
     private static final NumberFormat LATITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-
     static {
         LONGITUDE_NUMBER_FORMAT.setGroupingUsed(false);
         LONGITUDE_NUMBER_FORMAT.setMinimumFractionDigits(4);
@@ -72,11 +79,6 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
-        PRECISE_DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        PRECISE_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
     public int getMaximumPositionCount() {

@@ -39,6 +39,9 @@ import java.util.List;
 
 public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static {
+        TRACK_NAME_DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     public String getName() {
         return "Wintec WBT-201 (*" + getExtension() + ")";

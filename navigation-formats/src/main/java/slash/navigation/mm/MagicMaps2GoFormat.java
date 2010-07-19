@@ -45,8 +45,12 @@ import java.util.regex.Pattern;
 
 public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Logger log = Logger.getLogger(MagicMaps2GoFormat.class.getName());
+    
     private static final char SEPARATOR_CHAR = ' ';
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
+    static {
+       DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
@@ -56,10 +60,6 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     "(\\d\\d\\.\\d\\d\\.\\d\\d)" + SEPARATOR_CHAR +
                     "(\\d\\d\\:\\d\\d\\:\\d\\d)" +
                     END_OF_LINE);
-
-    static {
-       DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-    }
 
     public String getExtension() {
         return ".txt";

@@ -43,15 +43,16 @@ import java.util.regex.Pattern;
 
 public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
     protected static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
+
     protected static final char SEPARATOR_CHAR = ',';
     protected static final String SPACE_OR_ZERO = "[\\s\u0000]*";
-    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyMMdd HHmmss");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
     protected static final String WAYPOINT_POSITION = "T";
     protected static final String VOICE_POSITION = "V";
     protected static final String POI_POSITION = "C";
 
+    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyMMdd HHmmss");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
+    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
     static {
         DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
         DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));

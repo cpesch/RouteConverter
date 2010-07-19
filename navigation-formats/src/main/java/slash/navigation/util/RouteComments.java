@@ -221,6 +221,7 @@ public abstract class RouteComments {
     public static final SimpleDateFormat TRIPMASTER_TIME = new SimpleDateFormat("HH:mm:ss");
     public static final SimpleDateFormat TRIPMASTER_DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     static {
+        TRIPMASTER_TIME.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
         TRIPMASTER_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
@@ -263,13 +264,13 @@ public abstract class RouteComments {
      */
     private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
     private static final SimpleDateFormat LOGPOS_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
+    static {
+        LOGPOS_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
     private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+) d=(\\d+))?.*)\\)");
     private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\((s=(\\d+) d=(\\d+))\\)");
-    static {
-        LOGPOS_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-    }
 
     private static final String TTTRACKLOG_NUMBER = "\\d+\\.?\\d?";
     private static final String TTTRACKLOG_REASONS = "Start|End|" +

@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -51,16 +52,22 @@ public class NmeaFormat extends BaseNmeaFormat {
     }
 
     private static final NumberFormat ALTITUDE_AND_SPEED_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-    private static final DateFormat DAY_FORMAT = new SimpleDateFormat("dd");
-    private static final DateFormat MONTH_FORMAT = new SimpleDateFormat("MM");
-    private static final DateFormat YEAR_FORMAT = new SimpleDateFormat("yy");
-
     static {
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setGroupingUsed(false);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumFractionDigits(1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumFractionDigits(1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMinimumIntegerDigits(1);
         ALTITUDE_AND_SPEED_NUMBER_FORMAT.setMaximumIntegerDigits(6);
+    }
+
+    private static final DateFormat DAY_FORMAT = new SimpleDateFormat("dd");
+    private static final DateFormat MONTH_FORMAT = new SimpleDateFormat("MM");
+    private static final DateFormat YEAR_FORMAT = new SimpleDateFormat("yy");
+
+    static {
+        DAY_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        MONTH_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        YEAR_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
     // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D

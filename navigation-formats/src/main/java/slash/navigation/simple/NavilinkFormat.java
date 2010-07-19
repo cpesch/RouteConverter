@@ -53,6 +53,9 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
     private static final int HEADER_SIZE = 64;
     private static final int SBP_RECORD_LENGTH = 32;
     private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static {
+        TRACK_NAME_DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     public String getName() {
         return "Navilink (*" + getExtension() + ")";
