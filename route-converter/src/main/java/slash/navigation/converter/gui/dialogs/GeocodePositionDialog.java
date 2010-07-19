@@ -40,6 +40,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -148,7 +149,7 @@ public class GeocodePositionDialog extends SimpleDialog {
         for (int i = objects.length - 1; i >= 0; i -= 1) {
             GoogleMapsPosition position = (GoogleMapsPosition) objects[i];
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(), position.getElevation(),
-                    null, CompactCalendar.getInstance(), position.getComment());
+                    null, CompactCalendar.fromCalendar(Calendar.getInstance()), position.getComment());
         }
     }
 

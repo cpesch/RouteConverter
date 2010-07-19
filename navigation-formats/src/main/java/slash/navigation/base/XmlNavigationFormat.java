@@ -52,7 +52,7 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         if (calendar == null)
             return null;
         // by using TimeZone default, the original hours are not corrupted
-        return CompactCalendar.fromCalendar(calendar.toGregorianCalendar(TimeZone.getDefault(), null, null));
+        return CompactCalendar.fromCalendar(calendar.toGregorianCalendar());
     }
 
     private static DatatypeFactory datatypeFactory = null;

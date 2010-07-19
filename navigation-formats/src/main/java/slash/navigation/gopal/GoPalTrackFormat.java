@@ -95,7 +95,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         time = Transfer.trim(time);
         if (time == null || time.length() != 6)
             return null;
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(CompactCalendar.GMT);
         calendar.set(1970, 0, 1, 0, 0, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         Integer hour = Transfer.parseInt(time.substring(0, 2));

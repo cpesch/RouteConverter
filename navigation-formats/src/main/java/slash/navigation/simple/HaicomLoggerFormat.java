@@ -64,6 +64,9 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         LATITUDE_NUMBER_FORMAT.setMinimumFractionDigits(5);
         LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(5);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(1);
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
     private static final Pattern LINE_PATTERN = Pattern.
@@ -112,9 +115,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String dateAndTime = Transfer.trim(date) + " " + Transfer.trim(time);
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parsed);
-            return CompactCalendar.fromCalendar(calendar);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }

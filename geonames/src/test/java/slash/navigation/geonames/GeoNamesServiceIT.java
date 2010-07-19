@@ -76,7 +76,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals("Grafenrheinfeld", service.getNearByFor(10.2, 50.001));
         // was: assertEquals("Hoher Gaif", service.getNearByFor(11.06561, 47.42428));
         assertEquals("Hammersbach", service.getNearByFor(11.06561, 47.42428));
-        assertEquals("Earth", service.getNearByFor(0.0, 0.0));
+        assertEquals(null, service.getNearByFor(0.0, 0.0));
         // was: assertEquals("Antarctica (general)", service.getNearByFor(0.0, -90.0));
         // was: assertEquals("Amundsen-Scott /USA/", service.getNearByFor(0.0, -90.0));
         assertEquals("South Pole", service.getNearByFor(0.0, -90.0));

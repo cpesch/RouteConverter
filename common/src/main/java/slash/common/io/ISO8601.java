@@ -141,7 +141,7 @@ public final class ISO8601 {
 
             char tz = text.charAt(start++);
             if (tz == 'Z')
-                timeZone = TimeZone.getTimeZone("GMT");
+                timeZone = CompactCalendar.GMT;
             else if (tz == 'T') {
                 // hour (hh)
                 // delimiter ':'

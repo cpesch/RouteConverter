@@ -171,8 +171,11 @@ public abstract class KmlFormat extends BaseKmlFormat {
             position.setSpeed(speed);
     }
 
-    private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
+    private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    static {
+        TAVELLOG_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     CompactCalendar parseTime(String description) {
         if (description != null) {
@@ -180,10 +183,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
             if (matcher.matches()) {
                 String timeString = matcher.group(1);
                 try {
-                    Date date = TAVELLOG_DATE.parse(timeString);
-                    Calendar time = Calendar.getInstance();
-                    time.setTime(date);
-                    return CompactCalendar.fromCalendar(time);
+                    Date parsed = TAVELLOG_DATE.parse(timeString);
+                    return CompactCalendar.fromDate(parsed);
                 }
                 catch (ParseException e) {
                     // intentionally left empty;

@@ -102,23 +102,19 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond) {
-        return calendar(year, month, day, hour, minute, second, millisecond, TimeZone.getTimeZone("GMT"));
+        return calendar(year, month, day, hour, minute, second, millisecond, CompactCalendar.GMT);
     }
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second) {
         return calendar(year, month, day, hour, minute, second, 0);
     }
 
-    public static CompactCalendar calendar(long millisecond) {
+    public static CompactCalendar localCalendar(long millisecond) {
         return calendar(millisecond, TimeZone.getDefault());
     }
 
     public static CompactCalendar utcCalendar(long millisecond) {
-        return calendar(millisecond, "GMT");
-    }
-
-    private static CompactCalendar calendar(long millisecond, String timeZone) {
-        return calendar(millisecond, TimeZone.getTimeZone(timeZone));
+        return calendar(millisecond, CompactCalendar.GMT);
     }
 
     private static CompactCalendar calendar(long millisecond, TimeZone timeZone) {

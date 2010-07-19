@@ -220,6 +220,9 @@ public abstract class RouteComments {
 
     public static final SimpleDateFormat TRIPMASTER_TIME = new SimpleDateFormat("HH:mm:ss");
     public static final SimpleDateFormat TRIPMASTER_DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    static {
+        TRIPMASTER_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     private static final String TIME = "\\d{1,2}:\\d{2}:\\d{2}";
     private static final String DATE = "\\d{2}/\\d{2}/\\d{4}";
@@ -264,7 +267,9 @@ public abstract class RouteComments {
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+) d=(\\d+))?.*)\\)");
     private static final Pattern LOGPOS_2_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\((s=(\\d+) d=(\\d+))\\)");
-
+    static {
+        LOGPOS_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     private static final String TTTRACKLOG_NUMBER = "\\d+\\.?\\d?";
     private static final String TTTRACKLOG_REASONS = "Start|End|" +
@@ -278,10 +283,8 @@ public abstract class RouteComments {
         if (string == null)
             return null;
         try {
-            Date date = dateFormat.parse(string);
-            Calendar time = Calendar.getInstance();
-            time.setTime(date);
-            return CompactCalendar.fromCalendar(time);
+            Date parsed = dateFormat.parse(string);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             return null;
         }

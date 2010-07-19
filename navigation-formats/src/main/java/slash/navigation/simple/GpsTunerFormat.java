@@ -25,7 +25,6 @@ import slash.common.io.Transfer;
 import slash.navigation.base.*;
 
 import java.io.PrintWriter;
-import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,9 +85,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Long milliseconds = Transfer.parseLong(time);
         if (milliseconds == null || milliseconds == 0)
             return null;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(milliseconds * 1000);
-        return CompactCalendar.fromCalendar(calendar);
+        return CompactCalendar.fromMillis(milliseconds * 1000);
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {

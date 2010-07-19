@@ -20,6 +20,7 @@
 
 package slash.navigation.gopal;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
 
@@ -56,7 +57,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertEquals(3.000001, position.getHdop());
         assertEquals(new Integer(4), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = Calendar.getInstance();
+        Calendar expectedCal = Calendar.getInstance(CompactCalendar.GMT);
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
         expectedCal.set(Calendar.HOUR_OF_DAY, 18);
         expectedCal.set(Calendar.MINUTE, 8);
@@ -73,7 +74,7 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertEquals(-52.34555, position.getLatitude());
         assertNull(position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        Calendar expectedCal = Calendar.getInstance();
+        Calendar expectedCal = Calendar.getInstance(CompactCalendar.GMT);
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
         expectedCal.set(Calendar.HOUR_OF_DAY, 18);
         expectedCal.set(Calendar.MINUTE, 8);

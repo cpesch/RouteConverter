@@ -1112,7 +1112,7 @@ public abstract class BaseMapView implements MapView {
         int row = 0;
         if (position != null)
             row = positionsModel.getIndex(position) + 1;
-        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.getInstance(), Application.getInstance().getContext().getBundle().getString("new-position-comment"));
+        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-comment"));
         fireSelectedPosition(row);
     }
 

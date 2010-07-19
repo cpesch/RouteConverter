@@ -86,11 +86,9 @@ public class Positions {
         double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         CompactCalendar time = null;
         if (northEast.getTime() != null && southWest.getTime() != null) {
-            Calendar calendar = Calendar.getInstance();
             long millis = northEast.getTime().getTimeInMillis() +
                     (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
-            calendar.setTimeInMillis(millis);
-            time = CompactCalendar.fromCalendar(calendar);
+            time = CompactCalendar.fromMillis(millis);
         }
         return new Wgs84Position(longitude, latitude, null, null, time, null);
     }

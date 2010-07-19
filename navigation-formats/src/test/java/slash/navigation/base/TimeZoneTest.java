@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
 import slash.navigation.gpx.GpxPosition;
 import slash.common.io.CompactCalendar;
 
@@ -32,31 +33,37 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class TimeZoneTest extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static slash.common.TestCase.*;
 
+public class TimeZoneTest {
+
+    @Test
     public void testGMTAndLocalTimeZone() {
         long now = System.currentTimeMillis();
-        Calendar local = calendar(now).getCalendar();
+        Calendar local = localCalendar(now).getCalendar();
         Calendar utc = utcCalendar(now).getCalendar();
 
         String localTime = DateFormat.getInstance().format(local.getTime().getTime());
         String utcTime = DateFormat.getInstance().format(utc.getTime().getTime());
         assertEquals(localTime, utcTime);
 
-        local.setTimeZone(TimeZone.getTimeZone("GMT"));
+        local.setTimeZone(CompactCalendar.GMT);
         assertCalendarEquals(local, utc);
     }
 
+    @Test
     public void testXMLGregorianCalendarViaDatatypeFactory() throws DatatypeConfigurationException {
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar("2007-06-07T14:04:42Z");
-        GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
-        String javaTime = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.GERMAN).format(java.getTime().getTime());
-        assertEquals("07.06.07 14:04", javaTime);
+        GregorianCalendar java = xml.toGregorianCalendar();
+        String javaTime = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH).format(java.getTime().getTime());
+        assertEquals("6/7/07 4:04 PM", javaTime);
         Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
         assertCalendarEquals(parsed, java);
     }
 
+    @Test
     public void testXMLGregorianCalendarWithZasTimeZone() throws DatatypeConfigurationException {
         String xmlString = "2007-06-07T14:04:42Z";
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
@@ -67,9 +74,10 @@ public class TimeZoneTest extends NavigationTestCase {
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
     }
 
+    @Test
     public void testTimeZone() {
         long now = System.currentTimeMillis();
-        Calendar local = calendar(now).getCalendar();
+        Calendar local = localCalendar(now).getCalendar();
         CompactCalendar compactLocal = CompactCalendar.fromCalendar(local);
         Calendar utc = utcCalendar(now).getCalendar();
         CompactCalendar compactUtc = CompactCalendar.fromCalendar(utc);

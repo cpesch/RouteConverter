@@ -20,15 +20,20 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.NavigationTestCase;
-import slash.navigation.base.Wgs84Position;
+import org.junit.Test;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-public class GpsTunerFormatTest extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.utcCalendar;
+
+public class GpsTunerFormatTest {
     GpsTunerFormat format = new GpsTunerFormat();
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("50.3965966666667;7.53247333333333;74.4000015258789;77.56176;1172932595;1;279"));
         assertTrue(format.isValidLine(" 50.3965966666667 ; 7.53247333333333 ; 74.4000015258789 ; 77.56176 ; 1172932595 ; 1 ; 279 "));
@@ -36,6 +41,7 @@ public class GpsTunerFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("50.3965966666667;7.53247333333333;74.4000015258789;77.56176;1172932595;1;279"));
 
@@ -43,26 +49,28 @@ public class GpsTunerFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("50.3965966666667;7.53247333333333;74.4000015258789;77.56176;1172932595;1;279", null);
-        assertEquals(7.53247333333333, position.getLongitude());
-        assertEquals(50.3965966666667, position.getLatitude());
-        assertEquals(74.4000015258789, position.getElevation());
+        assertDoubleEquals(7.53247333333333, position.getLongitude());
+        assertDoubleEquals(50.3965966666667, position.getLatitude());
+        assertDoubleEquals(74.4000015258789, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
-        CompactCalendar expectedCal = calendar(1172932595000L);
+        CompactCalendar expectedCal = utcCalendar(1172932595000L);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected,  actual);
         assertEquals(expectedCal, position.getTime());
-        assertEquals(77.56176, position.getSpeed());
-        assertEquals(279.0, position.getHeading());
+        assertDoubleEquals(77.56176, position.getSpeed());
+        assertDoubleEquals(279.0, position.getHeading());
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("-50.3965966666667;-7.53247333333333;-74.4000015258789;-77.56176;1172932595;1;279", null);
-        assertEquals(-7.53247333333333, position.getLongitude());
-        assertEquals(-50.3965966666667, position.getLatitude());
-        assertEquals(-74.4000015258789, position.getElevation());
-        assertEquals(-77.56176, position.getSpeed());
+        assertDoubleEquals(-7.53247333333333, position.getLongitude());
+        assertDoubleEquals(-50.3965966666667, position.getLatitude());
+        assertDoubleEquals(-74.4000015258789, position.getElevation());
+        assertDoubleEquals(-77.56176, position.getSpeed());
     }
 }

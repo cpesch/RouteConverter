@@ -72,11 +72,11 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         LATITUDE_NUMBER_FORMAT.setMaximumFractionDigits(4);
         LATITUDE_NUMBER_FORMAT.setMinimumIntegerDigits(4);
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
-        PRECISE_DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
-        DATE_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
-        PRECISE_TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
+        PRECISE_DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        PRECISE_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
     public int getMaximumPositionCount() {

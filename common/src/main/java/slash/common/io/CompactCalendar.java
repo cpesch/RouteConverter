@@ -42,11 +42,14 @@ public class CompactCalendar {
     public static CompactCalendar fromDate(Date date) {
         Calendar calendar = Calendar.getInstance(GMT);
         calendar.setTime(date);
-        return new CompactCalendar(calendar.getTimeInMillis(), calendar.getTimeZone().getID());
+        return fromCalendar(calendar);
     }
 
-    public static CompactCalendar getInstance() {
-        return fromCalendar(Calendar.getInstance());
+
+    public static CompactCalendar fromMillis(long millis) {
+        Calendar calendar = Calendar.getInstance(GMT);
+        calendar.setTimeInMillis(millis);
+        return fromCalendar(calendar);
     }
 
     public static CompactCalendar getInstance(String timeZoneId) {

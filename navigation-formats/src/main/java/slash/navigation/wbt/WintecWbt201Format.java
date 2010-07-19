@@ -207,7 +207,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         int minute = (int) ((time & MINUTE_MASK) >> 6);
         int second = (int) ((time & SECOND_MASK));
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(CompactCalendar.GMT);
         calendar.set(Calendar.YEAR, 2000 + year);
         calendar.set(Calendar.MONTH, month - 1); // Java month starts with 0
         calendar.set(Calendar.DAY_OF_MONTH, day);

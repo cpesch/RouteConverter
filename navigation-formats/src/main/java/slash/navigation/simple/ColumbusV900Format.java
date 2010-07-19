@@ -52,6 +52,12 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     protected static final String VOICE_POSITION = "V";
     protected static final String POI_POSITION = "C";
 
+    static {
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
+
     public String getExtension() {
         return ".csv";
     }
@@ -85,9 +91,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parsed);
-            return CompactCalendar.fromCalendar(calendar);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }

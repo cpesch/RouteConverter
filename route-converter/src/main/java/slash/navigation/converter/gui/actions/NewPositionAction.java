@@ -30,6 +30,7 @@ import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import java.util.Arrays;
+import java.util.Calendar;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after
@@ -73,7 +74,7 @@ public class NewPositionAction extends FrameAction {
 
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(),
-                center.getTime() != null ? center.getTime() : CompactCalendar.getInstance(),
+                center.getTime() != null ? center.getTime() : CompactCalendar.fromCalendar(Calendar.getInstance()),
                 RouteConverter.getBundle().getString("new-position-comment"));
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

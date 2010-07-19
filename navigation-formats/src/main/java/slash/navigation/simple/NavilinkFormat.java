@@ -137,7 +137,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         int month = months % 12;
         int year = 2000 + months / 12;
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(CompactCalendar.GMT);
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month - 1); // Java month starts with 0
         calendar.set(Calendar.DAY_OF_MONTH, day);

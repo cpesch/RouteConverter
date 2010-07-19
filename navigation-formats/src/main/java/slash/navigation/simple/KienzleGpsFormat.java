@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final String HEADER_LINE = "Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos";
     private static final char SEPARATOR_CHAR = ';';
-    private static final SimpleDateFormat TIME = new SimpleDateFormat("HH:mm");
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
@@ -62,6 +62,9 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     ".*" +
                     END_OF_LINE);
 
+    static {
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     public String getExtension() {
         return ".txt";
@@ -97,10 +100,8 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (string == null)
             return null;
         try {
-            Date date = TIME.parse(string);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            return CompactCalendar.fromCalendar(calendar);
+            Date parsed = TIME_FORMAT.parse(string);
+            return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
             return null;
         }
