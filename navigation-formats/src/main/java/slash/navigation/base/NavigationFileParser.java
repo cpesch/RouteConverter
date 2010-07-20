@@ -20,15 +20,15 @@
 
 package slash.navigation.base;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.common.io.Transfer;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.util.*;
 import slash.navigation.simple.GoogleMapsFormat;
-import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
+import slash.navigation.util.RouteComments;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -39,6 +39,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Parses files with navigation information via NavigationFormat classes.
@@ -96,11 +98,9 @@ public class NavigationFileParser {
         }
     }
 
-    private FormatAndRoutes internalRead(InputStream source, int readBufferSize, Calendar startDate,
+    private FormatAndRoutes internalRead(InputStream buffer, int readBufferSize, Calendar startDate,
                                          List<NavigationFormat> formats) throws IOException {
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         try {
-            buffer.mark(readBufferSize + 1);
             CompactCalendar compactStartDate = startDate != null ? CompactCalendar.fromCalendar(startDate) : null;
             for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
@@ -140,12 +140,14 @@ public class NavigationFileParser {
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int)source.length() + 1));
+        buffer.mark((int)source.length() + 1);
         try {
-            this.formatAndRoutes = internalRead(fis, (int) source.length(), startDate, formats);
+            this.formatAndRoutes = internalRead(buffer, (int) source.length(), startDate, formats);
             return formatAndRoutes != null;
         }
         finally {
-            fis.close();
+            buffer.closeUnderlyingInputStream();
         }
     }
 
@@ -177,15 +179,48 @@ public class NavigationFileParser {
         }
     }
 
+    private FormatAndRoutes zipRead(InputStream source, int readBufferSize, Calendar startDate,
+                                    List<NavigationFormat> formats) {
+        ZipInputStream zip = new ZipInputStream(source);
+        try {
+            ZipEntry entry;
+            while ((entry = zip.getNextEntry()) != null) {
+                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip, (int) entry.getSize() + 1));
+                buffer.mark(readBufferSize + 1);
+                FormatAndRoutes formatAndRoutes = internalRead(buffer, (int)entry.getSize() + 1, startDate, formats);
+                if (formatAndRoutes != null)
+                    return formatAndRoutes;
+                zip.closeEntry();
+            }
+        }
+        catch (IOException e) {
+            log.fine("Error reading invalid zip entry names from " + source + ": " + e.getMessage());
+            return null;
+        }
+        finally {
+            try {
+                zip.close();
+            } catch (IOException e) {
+                log.fine("Error closing zip from " + source + ": " + e.getMessage());
+            }
+        }
+        return null;
+    }
+
     public boolean read(InputStream source, int readBufferSize, Calendar startDate,
                         List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
+        buffer.mark(readBufferSize + 1);
         try {
-            this.formatAndRoutes = internalRead(source, readBufferSize, startDate, formats);
+            formatAndRoutes = internalRead(buffer, readBufferSize, startDate, formats);
+            if(formatAndRoutes == null) {
+                formatAndRoutes = zipRead(buffer, readBufferSize, startDate, formats);
+            }
             return formatAndRoutes != null;
         }
         finally {
-            source.close();
+            buffer.closeUnderlyingInputStream();
         }
     }
 
