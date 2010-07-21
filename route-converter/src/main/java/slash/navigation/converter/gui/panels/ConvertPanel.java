@@ -52,6 +52,7 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -201,6 +202,11 @@ public abstract class ConvertPanel {
         tablePositions.setModel(getPositionsModel());
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                r.getContext().getActionManager().run("delete");
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -229,7 +235,7 @@ public abstract class ConvertPanel {
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
         actionManager.register("upload", new UploadAction(this));
-        final PositionAugmenter augmenter = new PositionAugmenter(RouteConverter.getInstance().getFrame());
+        final PositionAugmenter augmenter = new PositionAugmenter(r.getFrame());
         actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
