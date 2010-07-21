@@ -271,6 +271,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <focusable value="false"/>
               <icon value="slash/navigation/converter/gui/top.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-top-tooltip"/>
@@ -281,6 +282,7 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <focusable value="false"/>
               <icon value="slash/navigation/converter/gui/up.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-up-tooltip"/>
@@ -291,6 +293,7 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <focusable value="false"/>
               <icon value="slash/navigation/converter/gui/new-position-action.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-position-action-tooltip"/>
@@ -301,6 +304,7 @@
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <focusable value="false"/>
               <icon value="slash/navigation/converter/gui/delete-action.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-action-tooltip"/>
@@ -311,6 +315,7 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <focusable value="false"/>
               <icon value="slash/navigation/converter/gui/down.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-down-tooltip"/>
@@ -321,6 +326,7 @@
               <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <focusable value="false"/>
               <icon value="slash/navigation/converter/gui/bottom.png"/>
               <text value=""/>
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="move-to-bottom-tooltip"/>
