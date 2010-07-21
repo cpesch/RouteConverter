@@ -45,7 +45,10 @@ public class DeleteAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             positionsModel.remove(selectedRows);
-            final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
+            // select position above deleted positions like this:
+            // final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
+            final int removeRow = selectedRows[selectedRows.length - 1] < table.getRowCount() ?
+                    selectedRows[selectedRows.length - 1] : table.getRowCount() - 1;
             if (table.getRowCount() > 0) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
