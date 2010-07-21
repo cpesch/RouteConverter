@@ -25,10 +25,17 @@ import slash.navigation.base.Wgs84Position;
 public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
     NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();
 
+    public void testIsValidLine() {
+        assertTrue(format.isValidLine("; Overnight stay for motorhomes in Europe with/without service"));        
+        assertTrue(format.isValidLine(";"));
+    }
+
     public void testIsPosition() {
         assertTrue(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\""));
         assertTrue(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));
         assertTrue(format.isPosition("11.107167,49.375783,\"HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5\""));
+
+        assertFalse(format.isPosition("; Overnight stay for motorhomes in Europe with/without service"));
     }
 
     public void testParsePosition() {

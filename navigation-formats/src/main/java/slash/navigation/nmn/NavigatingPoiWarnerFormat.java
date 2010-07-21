@@ -47,7 +47,6 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
                     WHITE_SPACE + "\"(.*)\"" + WHITE_SPACE +
                     END_OF_LINE);
 
-
     public String getExtension() {
         return ".asc";
     }
@@ -58,6 +57,10 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
     
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+    }
+
+    protected boolean isValidLine(String line) {
+        return isPosition(line) || line != null && line.trim().startsWith(";");
     }
 
     protected boolean isPosition(String line) {
