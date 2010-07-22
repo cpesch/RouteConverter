@@ -71,42 +71,6 @@ public class PositionAugmenter {
         }
     };
 
-    private static final OverwritePredicate NO_COORDINATE_PREDICATE = new OverwritePredicate() {
-        public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return !position.hasCoordinates();
-        }
-    };
-
-    private static final OverwritePredicate NO_ELEVATION_PREDICATE = new OverwritePredicate() {
-        public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return position.hasCoordinates() &&
-                    (position.getElevation() == null || position.getElevation() == 0.0);
-        }
-    };
-
-    private static final OverwritePredicate NO_COMMENT_PREDICATE = new OverwritePredicate() {
-        public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return position.hasCoordinates() &&
-                    (Transfer.trim(position.getComment()) == null ||
-                            RouteComments.isPositionComment(position.getComment()));
-        }
-    };
-
-    private static final OverwritePredicate NO_SPEED_PREDICATE = new OverwritePredicate() {
-        public boolean shouldOverwrite(BaseNavigationPosition position) {
-            return position.hasCoordinates() &&
-                    (position.getSpeed() == null || position.getSpeed() == 0.0);
-        }
-    };
-
-
-    private int[] selectAllRows(PositionsModel positionsModel) {
-        int[] selectedRows = new int[positionsModel.getRowCount()];
-        for (int i = 0; i < selectedRows.length; i++)
-            selectedRows[i] = i;
-        return selectedRows;
-    }
-
 
     private interface Operation {
         String getName();
@@ -212,14 +176,6 @@ public class PositionAugmenter {
         processCoordinates(positionsTable, positionsModel, selectedRows, TAUTOLOGY_PREDICATE);
     }
 
-    public void complementCoordinates(PositionsModel positionsModel) {
-        complementCoordinates(null, positionsModel);
-    }
-
-    public void complementCoordinates(JTable positionsTable, PositionsModel positionsModel) {
-        processCoordinates(positionsTable, positionsModel, selectAllRows(positionsModel), NO_COORDINATE_PREDICATE);
-    }
-
 
     private boolean addElevation(HgtFiles hgtFiles, GeoNamesService geoNamesService, EarthToolsService earthToolsService,
                                  BaseNavigationPosition position) throws IOException {
@@ -267,14 +223,6 @@ public class PositionAugmenter {
         processElevations(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
-    public void complementElevations(PositionsModel positionsModel) {
-        complementElevations(null, positionsModel);
-    }
-
-    public void complementElevations(JTable positionsTable, PositionsModel positionsModel) {
-        processElevations(positionsTable, positionsModel, selectAllRows(positionsModel), NO_ELEVATION_PREDICATE);
-    }
-
 
     private boolean addPopulatedPlace(GeoNamesService service, BaseNavigationPosition position) throws IOException {
         String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
@@ -310,10 +258,6 @@ public class PositionAugmenter {
 
     public void addPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
         addPopulatedPlaces(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
-    }
-
-    public void complementPopulatedPlaces(JTable positionsTable, PositionsModel positionsModel) {
-        addPopulatedPlaces(positionsTable, positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
     }
 
 
@@ -353,10 +297,6 @@ public class PositionAugmenter {
         addPostalAddresses(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
     }
 
-    public void complementPostalAddresses(JTable positionsTable, PositionsModel positionsModel) {
-        addPostalAddresses(positionsTable, positionsModel, selectAllRows(positionsModel), NO_COMMENT_PREDICATE);
-    }
-
 
     private void processSpeeds(final JTable positionsTable,
                                final PositionsModel positionsModel,
@@ -389,10 +329,6 @@ public class PositionAugmenter {
 
     public void addSpeeds(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
         processSpeeds(positionsTable, positionsModel, selectedRows, COORDINATE_PREDICATE);
-    }
-
-    public void complementSpeeds(JTable positionsTable, PositionsModel positionsModel) {
-        processSpeeds(positionsTable, positionsModel, selectAllRows(positionsModel), NO_SPEED_PREDICATE);
     }
 
 
