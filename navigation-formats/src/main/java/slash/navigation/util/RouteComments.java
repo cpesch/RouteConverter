@@ -103,7 +103,7 @@ public abstract class RouteComments {
         for (int i = 0; i < positions.size(); i++) {
             BaseNavigationPosition position = positions.get(i);
             locatePosition(position);
-            commentPosition(position, i, geocode);
+            position.setComment(getPositionComment(position, i, geocode));
         }
     }
 
@@ -123,7 +123,7 @@ public abstract class RouteComments {
         }
     }
 
-    private static void commentPosition(BaseNavigationPosition position, int index, boolean geocode) {
+    private static String getPositionComment(BaseNavigationPosition position, int index, boolean geocode) {
         if (position.getComment() == null || "(null)".equals(position.getComment())) {
             String comment = getPositionComment(index);
             if(geocode) {
@@ -133,26 +133,33 @@ public abstract class RouteComments {
                     log.warning("Cannot lookup comment for longitude: " + position.getLongitude() + ", latitude:" + position.getLatitude() + ": " + e.getMessage());
                 }
             }
-            position.setComment(comment);
+            return comment;
         } else {
             Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
             if (matcher.matches()) {
                 String prefix = matcher.group(1);
                 String postfix = matcher.group(3);
-                position.setComment(prefix + getPositionComment(index) + postfix);
+                return prefix + getPositionComment(index) + postfix;
             }
         }
+        return position.getComment();
+    }
+
+    public static String getNumberedPosition(BaseNavigationPosition position, int index,
+                                             int digitCount, boolean spaceBetweenNumberAndComment) {
+        String comment = getPositionComment(position, index, false);
+        Matcher matcher = NUMBER_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            String postfix = Transfer.trim(matcher.group(2));
+            String prefix = Transfer.formatIntAsString((index + 1), digitCount);
+            comment = prefix + (spaceBetweenNumberAndComment ? " " : "") + postfix;
+        }
+        return comment;
     }
 
     public static void numberPosition(BaseNavigationPosition position, int index,
                                       int digitCount, boolean spaceBetweenNumberAndComment) {
-        commentPosition(position, index, false);
-        Matcher matcher = NUMBER_PATTERN.matcher(position.getComment());
-        if (matcher.matches()) {
-            String postfix = Transfer.trim(matcher.group(2));
-            String prefix = Transfer.formatIntAsString((index + 1), digitCount);
-            position.setComment(prefix + (spaceBetweenNumberAndComment ? " " : "") + postfix);
-        }
+        position.setComment(getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment));
     }
 
     public static void commentRoutePositions(List<? extends BaseRoute> routes, boolean geocode) {

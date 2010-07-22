@@ -56,7 +56,17 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        setValueAt(aValue, rowIndex, columnIndex, true);
+    }
+
+    void setValueAt(Object aValue, int rowIndex, int columnIndex, boolean trackUndo) {
+        if (rowIndex == getRowCount())
+            return;
+
+        Object previousValue = trackUndo ? getValueAt(rowIndex, columnIndex) : null;
         delegate.setValueAt(aValue, rowIndex, columnIndex);
+        if (trackUndo)
+            undoManager.addEdit(new EditPosition(this, rowIndex, columnIndex, previousValue, aValue));
     }
 
     public void addTableModelListener(TableModelListener l) {

@@ -193,7 +193,7 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="recenter-after-zooming"/>
+              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="recenter-nextValue-zooming"/>
             </properties>
           </component>
           <component id="b5ca1" class="javax.swing.JCheckBox" binding="checkBoxRecenterAfterZooming">

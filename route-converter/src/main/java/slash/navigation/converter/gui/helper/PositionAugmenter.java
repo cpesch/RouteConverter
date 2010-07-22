@@ -25,6 +25,7 @@ import slash.common.io.RangeOperation;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.geonames.GeoNamesService;
@@ -35,7 +36,6 @@ import slash.navigation.hgt.HgtFiles;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
@@ -138,15 +138,6 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addCoordinates(GoogleMapsService service, BaseNavigationPosition position) throws IOException {
-        GoogleMapsPosition coordinates = service.getPositionFor(position.getComment());
-        if (coordinates != null) {
-            position.setLongitude(coordinates.getLongitude());
-            position.setLatitude(coordinates.getLatitude());
-        }
-        return coordinates != null;
-    }
-
     private void processCoordinates(final JTable positionsTable,
                                     final PositionsModel positionsModel,
                                     final int[] rows,
@@ -160,7 +151,12 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
-                        return addCoordinates(service, position);
+                        GoogleMapsPosition coordinates = service.getPositionFor(position.getComment());
+                        if (coordinates != null) {
+                            positionsModel.setValueAt(coordinates.getLongitude().toString(), positionsModel.getIndex(position), PositionColumns.LONGITUDE_COLUMN_INDEX);
+                            positionsModel.setValueAt(coordinates.getLatitude().toString(), positionsModel.getIndex(position), PositionColumns.LATITUDE_COLUMN_INDEX);
+                        }
+                        return coordinates != null;
                     }
 
                     public String getErrorMessage() {
@@ -177,19 +173,6 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addElevation(HgtFiles hgtFiles, GeoNamesService geoNamesService, EarthToolsService earthToolsService,
-                                 BaseNavigationPosition position) throws IOException {
-        Integer elevation = hgtFiles.getElevationFor(position.getLongitude(), position.getLatitude());
-        if (elevation == null)
-            elevation = geoNamesService.getElevationFor(position.getLongitude(), position.getLatitude());
-        if (elevation == null)
-            elevation = earthToolsService.getElevationFor(position.getLongitude(), position.getLatitude());
-
-        if (elevation != null)
-            position.setElevation(elevation.doubleValue());
-        return elevation != null;
-    }
-
     private void processElevations(final JTable positionsTable,
                                    final PositionsModel positionsModel,
                                    final int[] rows,
@@ -205,7 +188,14 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
-                        return addElevation(hgtFiles, geoNamesService, earthToolsService, position);
+                        Integer elevation = hgtFiles.getElevationFor(position.getLongitude(), position.getLatitude());
+                        if (elevation == null)
+                            elevation = geoNamesService.getElevationFor(position.getLongitude(), position.getLatitude());
+                        if (elevation == null)
+                            elevation = earthToolsService.getElevationFor(position.getLongitude(), position.getLatitude());
+                        if (elevation != null)
+                            positionsModel.setValueAt(elevation.toString(), positionsModel.getIndex(position), PositionColumns.ELEVATION_COLUMN_INDEX);
+                        return elevation != null;
                     }
 
                     public String getErrorMessage() {
@@ -224,13 +214,6 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addPopulatedPlace(GeoNamesService service, BaseNavigationPosition position) throws IOException {
-        String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
-        if (comment != null)
-            position.setComment(comment);
-        return comment != null;
-    }
-
     private void addPopulatedPlaces(final JTable positionsTable,
                                     final PositionsModel positionsModel,
                                     final int[] rows,
@@ -244,7 +227,10 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
-                        return addPopulatedPlace(service, position);
+                        String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
+                        if (comment != null)
+                            positionsModel.setValueAt(comment, positionsModel.getIndex(position), PositionColumns.DESCRIPTION_COLUMN_INDEX);
+                        return comment != null;
                     }
 
                     public String getErrorMessage() {
@@ -261,13 +247,6 @@ public class PositionAugmenter {
     }
 
 
-    private boolean addPostalAddress(GoogleMapsService service, BaseNavigationPosition position) throws IOException {
-        String comment = service.getLocationFor(position.getLongitude(), position.getLatitude());
-        if (comment != null)
-            position.setComment(comment);
-        return comment != null;
-    }
-
     private void addPostalAddresses(final JTable positionsTable,
                                     final PositionsModel positionsModel,
                                     final int[] rows,
@@ -281,7 +260,10 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
-                        return addPostalAddress(service, position);
+                        String comment = service.getLocationFor(position.getLongitude(), position.getLatitude());
+                        if (comment != null)
+                            positionsModel.setValueAt(comment, positionsModel.getIndex(position), PositionColumns.DESCRIPTION_COLUMN_INDEX);
+                        return comment != null;
                     }
 
                     public String getErrorMessage() {
@@ -311,9 +293,12 @@ public class PositionAugmenter {
                     public boolean run(BaseNavigationPosition position) throws Exception {
                         BaseNavigationPosition predecessor = positionsModel.getPredecessor(position);
                         if (predecessor != null) {
-                            Double speed = position.calculateSpeed(predecessor);
-                            position.setSpeed(speed);
-                            return true;
+                            Double previousSpeed = position.getSpeed();
+                            Double nextSpeed = position.calculateSpeed(predecessor);
+                            boolean changed = previousSpeed != null && !previousSpeed.equals(nextSpeed);
+                            if (changed)
+                                positionsModel.setValueAt(nextSpeed.toString(), positionsModel.getIndex(position), PositionColumns.SPEED_COLUMN_INDEX);
+                            return changed;
                         }
                         return false;
                     }
@@ -346,8 +331,12 @@ public class PositionAugmenter {
 
                     public boolean run(BaseNavigationPosition position) throws Exception {
                         int index = positionsModel.getIndex(position);
-                        RouteComments.numberPosition(position, index, digitCount, spaceBetweenNumberAndComment);
-                        return true;
+                        String previousComment = position.getComment();
+                        String nextComment = RouteComments.getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment);
+                        boolean changed = previousComment != null && !previousComment.equals(nextComment);
+                        if (changed)
+                            positionsModel.setValueAt(nextComment, positionsModel.getIndex(position), PositionColumns.DESCRIPTION_COLUMN_INDEX);
+                        return changed;
                     }
 
                     public String getErrorMessage() {
@@ -374,5 +363,4 @@ public class PositionAugmenter {
         processIndices(positionsTable, positionsModel, selectedRows,
                 digitCount, spaceBetweenNumberAndComment, COORDINATE_PREDICATE);
     }
-
 }
