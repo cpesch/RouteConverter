@@ -44,7 +44,6 @@ public class FrameMenu {
         printMenu.add(JMenuHelper.createItem("print-elevation-profile"));
         fileMenu.add(printMenu);
         fileMenu.addSeparator();
-        // TODO add items for last used files
         fileMenu.add(JMenuHelper.createItem("exit"));
 
         JMenu editMenu = JMenuHelper.createMenu("edit");
@@ -99,7 +98,7 @@ public class FrameMenu {
         menuBar.add(viewMenu);
         menuBar.add(toolsMenu);
         menuBar.add(extrasMenu);
-        menuBar.add(Box.createHorizontalGlue());
+        // menuBar.add(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
         return menuBar;
     }
