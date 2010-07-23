@@ -49,7 +49,7 @@ public abstract class RouteComments {
     private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
 
     private static final String POSITION = "Position";
-    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + " (\\d+)(.*)");
+    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + ".*(\\d+)(.*)");
     private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d*)(.*)");
 
     public static String shortenRouteName(BaseRoute route) {
@@ -137,9 +137,9 @@ public abstract class RouteComments {
         } else {
             Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
             if (matcher.matches()) {
-                String prefix = matcher.group(1);
-                String postfix = matcher.group(3);
-                return prefix + getPositionComment(index) + postfix;
+                String prefix = Transfer.trim(matcher.group(1));
+                String postfix = Transfer.trim(matcher.group(3));
+                return (prefix != null ? prefix : "") + getPositionComment(index) + (postfix != null ? postfix : "");
             }
         }
         return position.getComment();
@@ -150,9 +150,10 @@ public abstract class RouteComments {
         String comment = getPositionComment(position, index, false);
         Matcher matcher = NUMBER_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            String postfix = Transfer.trim(matcher.group(2));
             String prefix = Transfer.formatIntAsString((index + 1), digitCount);
-            comment = prefix + (spaceBetweenNumberAndComment ? " " : "") + postfix;
+            String postfix = Transfer.trim(matcher.group(2));
+            comment = (prefix != null ? prefix : "") +
+                    (postfix != null ? (spaceBetweenNumberAndComment ? " " : "") + postfix : "");
         }
         return comment;
     }

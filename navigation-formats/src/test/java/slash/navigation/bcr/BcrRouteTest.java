@@ -409,6 +409,15 @@ public class BcrRouteTest {
     }
 
     @Test
+    public void testGetNumberPositions() {
+        assertEquals("006 Position 6", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, true));
+        assertEquals("006 Position 6", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, " Position9 "), 5, 3, true));
+        assertEquals("006 aPosition 6a", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, "aPositiona9a"), 5, 3, true));
+        assertEquals("006 a", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, "09a"), 5, 3, true));
+        assertEquals("006", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, "09"), 5, 3, true));
+    }
+
+    @Test
     public void testSuccessor() {
         initialize();
         assertEquals(b, route.getSuccessor(a));
