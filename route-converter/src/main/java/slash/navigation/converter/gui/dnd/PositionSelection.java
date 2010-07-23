@@ -21,11 +21,16 @@
 package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -36,24 +41,42 @@ import java.util.List;
 
 public class PositionSelection implements Transferable {
     public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
+    public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
 
     private final List<BaseNavigationPosition> positions;
+    private final String string;
 
     public PositionSelection(List<BaseNavigationPosition> positions) {
         this.positions = positions;
+        this.string = createStringFor(positions);
+    }
+
+    private String createStringFor(List<BaseNavigationPosition> positions) {
+        NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();
+        SimpleRoute route = format.createRoute(RouteCharacteristics.Waypoints, null, positions);
+        StringWriter writer = new StringWriter();
+        format.write(route, new PrintWriter(writer), 0, positions.size());
+        return writer.toString();
     }
 
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{positionFlavor};
+        return new DataFlavor[]{positionFlavor, stringFlavor};
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return positionFlavor.equals(flavor);
+        for (DataFlavor f : getTransferDataFlavors()) {
+            if (f.equals(flavor)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        if (!isDataFlavorSupported(flavor))
-            throw new UnsupportedFlavorException(positionFlavor);
-        return positions;
+        if (positionFlavor.equals(flavor))
+            return positions;
+        if (stringFlavor.equals(flavor))
+            return string;
+        throw new UnsupportedFlavorException(flavor);
     }
 }

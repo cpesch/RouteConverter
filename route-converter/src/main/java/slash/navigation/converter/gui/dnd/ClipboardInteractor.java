@@ -4,9 +4,7 @@ import slash.navigation.gui.Application;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.*;
 
 public class ClipboardInteractor {
 
@@ -14,14 +12,30 @@ public class ClipboardInteractor {
         Application.getInstance().getContext().getActionManager().enable("paste", enable);
     }
 
+    public void watchClipboard() {
+        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(new FlavorListener() {
+            public void flavorsChanged(FlavorEvent e) {
+                enable(isSupportedFlavor());
+            }
+        });
+    }
+
+    private boolean isSupportedFlavor() {
+        for (DataFlavor f : Toolkit.getDefaultToolkit().getSystemClipboard().getAvailableDataFlavors()) {
+            if (f.equals(PositionSelection.positionFlavor) || f.equals(PositionSelection.stringFlavor))
+                return true;
+        }
+        return false;
+    }
+
     public void putIntoClipboard(final Transferable transferable) {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, new ClipboardOwner() {
             public void lostOwnership(Clipboard clipboard, Transferable contents) {
-                enable(false);
+                enable(isSupportedFlavor());
             }
         });
 
-        // invoke later to be behind the lost ownership notification that is sent if two or more 
+        // invoke later to be behind the lost ownership notification that is sent if two or more
         // cut or copy actions are executed by the user in a row
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

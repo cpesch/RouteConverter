@@ -221,6 +221,7 @@ public abstract class ConvertPanel {
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
+        clipboardInteractor.watchClipboard();
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("undo", new UndoAction());
         actionManager.register("redo", new RedoAction());
@@ -286,8 +287,6 @@ public abstract class ConvertPanel {
                 convertPanel.requestFocus();
             }
         });
-
-        actionManager.enable("paste", false);
     }
 
     public void dispose() {

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.*;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helper.JTableHelper;
@@ -30,6 +30,7 @@ import slash.navigation.gui.FrameAction;
 import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -55,17 +56,23 @@ public class PasteAction extends FrameAction {
         if (transferable == null)
             return;
 
-        Object data = null;
         try {
-            data = transferable.getTransferData(PositionSelection.positionFlavor);
+            if(transferable.isDataFlavorSupported(PositionSelection.positionFlavor)) {
+                Object positions = transferable.getTransferData(PositionSelection.positionFlavor);
+                if (positions != null) {
+                    paste((List<BaseNavigationPosition>) positions);
+                }
+
+            } else if(transferable.isDataFlavorSupported(PositionSelection.stringFlavor)) {
+                Object string = transferable.getTransferData(PositionSelection.stringFlavor);
+                if (string != null) {
+                    paste((String) string);
+                }
+            }
         } catch (UnsupportedFlavorException e) {
             // intentionally left empty
         } catch (IOException e) {
             // intentionally left empty
-        }
-
-        if (data != null) {
-            paste((List<BaseNavigationPosition>)data);
         }
     }
 
@@ -82,5 +89,20 @@ public class PasteAction extends FrameAction {
                 JTableHelper.selectPositions(table, insertRow, lastRow);
             }
         });
+    }
+
+    protected void paste(String string) {
+        NavigationFileParser parser = new NavigationFileParser();
+        try {
+            if(parser.read(new ByteArrayInputStream(string.getBytes()))) {
+                BaseRoute<BaseNavigationPosition,BaseNavigationFormat> route = parser.getTheRoute();
+                if(!route.getFormat().equals(positionsModel.getRoute().getFormat()))
+                    //noinspection UnusedAssignment
+                    route = NavigationFormats.asFormat(route, positionsModel.getRoute().getFormat());
+                paste(route.getPositions());
+            }
+        } catch (IOException e) {
+            // intentionally left empty
+        }
     }
 }
