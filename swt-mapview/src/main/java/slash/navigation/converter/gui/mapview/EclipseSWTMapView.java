@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
+import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
@@ -60,6 +61,8 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private JWebBrowser createWebBrowser() {
         try {
+            if(!NativeInterface.isOpen())
+                throw new Exception("Native Interface is not initialized");
             JWebBrowser browser = new JWebBrowser();
             browser.setBarsVisible(false);
             browser.setJavascriptEnabled(true);
