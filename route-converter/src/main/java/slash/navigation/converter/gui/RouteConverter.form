@@ -30,6 +30,7 @@
               <continuousLayout value="true"/>
               <dividerLocation value="341"/>
               <dividerSize value="10"/>
+              <minimumSize width="-1" height="-1"/>
               <oneTouchExpandable value="true"/>
               <opaque value="true"/>
               <resizeWeight value="1.0"/>

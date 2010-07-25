@@ -263,7 +263,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 bottomPanel.setVisible(true);
 
                 int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
-                if (location > 0)
+                if (location > 1)
                     bottomSplitPane.setDividerLocation(location);
                 else
                     bottomSplitPane.setDividerLocation(Integer.MAX_VALUE);
@@ -637,6 +637,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         mapSplitPane.setContinuousLayout(true);
         mapSplitPane.setDividerLocation(341);
         mapSplitPane.setDividerSize(10);
+        mapSplitPane.setMinimumSize(new Dimension(-1, -1));
         mapSplitPane.setOneTouchExpandable(true);
         mapSplitPane.setOpaque(true);
         mapSplitPane.setResizeWeight(1.0);
@@ -756,8 +757,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
             if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
                 if (bottomSplitPane.getDividerLocation() != location) {
                     location = bottomSplitPane.getDividerLocation();
-                    if (isMapViewAvailable())
+                    if (isMapViewAvailable()) {
+                        // make sure the one touch expandable to minimize the map works fine
+                        if (location == 1)
+                            mapView.getComponent().setVisible(false);
+                        else if ((Integer) e.getOldValue() == 1)
+                            mapView.getComponent().setVisible(true);
                         mapView.resize();
+                    }
                     preferences.putInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, bottomSplitPane.getDividerLocation());
 
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
