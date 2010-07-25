@@ -56,15 +56,15 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        setValueAt(aValue, rowIndex, columnIndex, true);
+        edit(aValue, rowIndex, columnIndex, true, true);
     }
 
-    void setValueAt(Object aValue, int rowIndex, int columnIndex, boolean trackUndo) {
+    public void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
         Object previousValue = trackUndo ? getValueAt(rowIndex, columnIndex) : null;
-        delegate.setValueAt(aValue, rowIndex, columnIndex);
+        delegate.edit(aValue, rowIndex, columnIndex, fireEvent, trackUndo);
         if (trackUndo)
             undoManager.addEdit(new EditPosition(this, rowIndex, columnIndex, previousValue, aValue));
     }
@@ -77,8 +77,8 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.removeTableModelListener(l);
     }
 
-    public void fireTableRowsUpdated(int from, int to) {
-        delegate.fireTableRowsUpdated(from, to);
+    public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
+        delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 
     public void fireTableDataChanged() {
@@ -95,10 +95,6 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.setRoute(route);
     }
 
-    public BaseNavigationPosition getPredecessor(BaseNavigationPosition position) {
-        return delegate.getPredecessor(position);
-    }
-
     public BaseNavigationPosition getPosition(int rowIndex) {
         return delegate.getPosition(rowIndex);
     }
@@ -111,8 +107,8 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getPositions(rowIndices);
     }
 
-    public List<BaseNavigationPosition> getPositions(int from, int to) {
-        return delegate.getPositions(from, to);
+    public List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex) {
+        return delegate.getPositions(firstIndex, lastIndex);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
@@ -125,19 +121,19 @@ public class UndoPositionsModel implements PositionsModel {
 
     // Undoable operations
 
-    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
-        add(row, Arrays.asList(position));
+        add(rowIndex, Arrays.asList(position));
 
     }
 
-    public void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         List<BaseNavigationPosition> positions = delegate.createPositions(route);
-        add(row, positions);
+        add(rowIndex, positions);
     }
 
-    public void add(int row, List<BaseNavigationPosition> positions) {
-        add(row, positions, true, true);
+    public void add(int rowIndex, List<BaseNavigationPosition> positions) {
+        add(rowIndex, positions, true, true);
     }
 
     void add(int row, List<BaseNavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
@@ -151,12 +147,12 @@ public class UndoPositionsModel implements PositionsModel {
             undoManager.addEdit(new AddPositions(this, row, positions));
     }
 
-    public void remove(int from, int to) {
-        remove(from, to, true, true);
+    public void remove(int firstIndex, int lastIndex) {
+        remove(firstIndex, lastIndex, true, true);
     }
 
-    public void remove(int[] rows) {
-        remove(rows, true, true);
+    public void remove(int[] rowIndices) {
+        remove(rowIndices, true, true);
     }
 
     void remove(int from, int to, boolean fireEvent, boolean trackUndo) {
@@ -197,8 +193,8 @@ public class UndoPositionsModel implements PositionsModel {
             undoManager.addEdit(new RevertPositions(this));
     }
 
-    public void top(int[] rows) {
-        top(rows, true);
+    public void top(int[] rowIndices) {
+        top(rowIndices, true);
     }
 
     void top(int[] rows, boolean trackUndo) {
@@ -211,8 +207,8 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.topDown(rows);
     }
 
-    public void up(int[] rows) {
-        up(rows, true);
+    public void up(int[] rowIndices) {
+        up(rowIndices, true);
     }
 
     void up(int[] rows, boolean trackUndo) {
@@ -221,8 +217,8 @@ public class UndoPositionsModel implements PositionsModel {
             undoManager.addEdit(new UpPositions(this, rows));
     }
 
-    public void down(int[] rows) {
-        down(rows, true);
+    public void down(int[] rowIndices) {
+        down(rowIndices, true);
     }
 
     void down(int[] rows, boolean trackUndo) {
@@ -231,8 +227,8 @@ public class UndoPositionsModel implements PositionsModel {
             undoManager.addEdit(new DownPositions(this, Range.revert(rows)));
     }
 
-    public void bottom(int[] rows) {
-        bottom(rows, true);
+    public void bottom(int[] rowIndices) {
+        bottom(rowIndices, true);
     }
 
     void bottom(int[] rows, boolean trackUndo) {

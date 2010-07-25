@@ -49,14 +49,14 @@ public abstract class PositionsModelToDocumentAdapter extends PlainDocument {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                updateAdapterFromDelegate();
+                updateAdapterFromDelegate(e);
             }
         });
     }
 
     protected abstract String getDelegateValue();
 
-    protected void updateAdapterFromDelegate() {
+    protected void updateAdapterFromDelegate(TableModelEvent event) {
         try {
             String myContent = getText(0, getLength());
             String delegateContent = getDelegateValue();
@@ -67,8 +67,8 @@ public abstract class PositionsModelToDocumentAdapter extends PlainDocument {
             remove(0, getLength());
             insertString(0, delegateContent, null);
         }
-        catch (BadLocationException e) {
-            log.severe("Error updating adapter:" + e.getMessage());
+        catch (BadLocationException exception) {
+            log.severe("Error updating adapter:" + exception.getMessage());
         }
     }
 }

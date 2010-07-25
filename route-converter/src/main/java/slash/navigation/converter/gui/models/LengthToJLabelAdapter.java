@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.helper.LengthCalculator;
 import slash.navigation.converter.gui.helper.LengthCalculatorListener;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -74,7 +75,13 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         labelDuration.setText(MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date));
     }
 
-    protected void updateAdapterFromDelegate() {
+    protected void updateAdapterFromDelegate(TableModelEvent e) {
+        // ignored updates on columns not displayed
+        if (e.getType() == TableModelEvent.UPDATE &&
+                !(e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
+                        e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX))
+            return;
+
         BaseRoute route = getDelegate().getRoute();
         if (route != null && route.getCharacteristics() == RouteCharacteristics.Waypoints) {
             updateLabel(0, 0);

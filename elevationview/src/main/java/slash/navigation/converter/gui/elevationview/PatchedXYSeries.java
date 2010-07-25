@@ -20,24 +20,27 @@
 
 package slash.navigation.converter.gui.elevationview;
 
-import slash.navigation.converter.gui.models.PositionsModel;
 import org.jfree.data.xy.XYSeries;
 
 /**
- * Provides a {@link XYSeries} model by extracting the speed from a {@link PositionsModel}.
+ * Patches {@link XYSeries} that allows to disable sending {@link #fireSeriesChanged()}.
  *
  * @author Christian Pesch
  */
 
-public class SpeedModel extends PositionsModelToXYSeriesSynchronizer {
-    public SpeedModel(PositionsModel positions, XYSeries series) {
-        super(positions, series);
+public class PatchedXYSeries extends XYSeries {
+    private boolean fireSeriesChanged = true;
+
+    public PatchedXYSeries(Comparable key) {
+        super(key);
     }
 
-    protected void handleAdd(int firstRow, int lastRow) {
-        double[] distances = getPositions().getRoute().getDistancesFromStart(firstRow, lastRow);
-        for (int i = firstRow; i < lastRow + 1; i++) {
-            getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getSpeed());
-        }
+    public void setFireSeriesChanged(boolean fireSeriesChanged) {
+        this.fireSeriesChanged = fireSeriesChanged;
+    }
+
+    public void fireSeriesChanged() {
+        if(fireSeriesChanged)
+            super.fireSeriesChanged();
     }
 }

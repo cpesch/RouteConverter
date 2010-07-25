@@ -26,6 +26,7 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.ListDataEvent;
@@ -63,6 +64,12 @@ public class LengthCalculator {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                // ignored updates on columns not relevant for length calculation
+                if (e.getType() == TableModelEvent.UPDATE &&
+                        !(e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
+                                e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX))
+                    return;
+
                 calculateDistance();
             }
         });

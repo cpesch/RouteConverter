@@ -30,7 +30,7 @@ import org.jfree.data.xy.XYSeries;
  */
 
 public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
-    public ElevationModel(PositionsModel positions, XYSeries series) {
+    public ElevationModel(PositionsModel positions, PatchedXYSeries series) {
         super(positions, series);
     }
 
@@ -43,8 +43,11 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     protected void handleIntervalUpdate(int firstRow, int lastRow) {
+        getSeries().setFireSeriesChanged(false);
         for (int i = firstRow; i < lastRow + 1; i++) {
             getSeries().updateByIndex(i, getPositions().getPosition(i).getElevation());
         }
+        getSeries().setFireSeriesChanged(true);
+        getSeries().fireSeriesChanged();
     }
 }

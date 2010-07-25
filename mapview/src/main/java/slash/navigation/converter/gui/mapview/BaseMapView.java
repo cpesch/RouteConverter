@@ -25,6 +25,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.gui.Application;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -133,8 +134,15 @@ public abstract class BaseMapView implements MapView {
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)
                     updateButDontRecenter();
-                else
+                else {
+                    // ignored updates on columns not displayed
+                    if(e.getType() == TableModelEvent.UPDATE &&
+                            !(e.getColumn() == PositionColumns.DESCRIPTION_COLUMN_INDEX ||
+                                    e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
+                                    e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX))
+                        return;
                     update(allRowsChanged || insertOrDelete);
+                }
             }
         });
         characteristicsModel.addListDataListener(new ListDataListener() {
@@ -734,7 +742,7 @@ public abstract class BaseMapView implements MapView {
                 significantPositionCache.clear();
             }
             log.fine(System.currentTimeMillis() + " haveToUpdateRoute: " + haveToUpdateRoute +
-                    " haveToReplaceRoute: " + haveToReplaceRoute + " positions: " + positions);
+                    " haveToReplaceRoute: " + haveToReplaceRoute + " positions: " + positions.size());
             notificationMutex.notifyAll();
         }
     }
@@ -1130,7 +1138,7 @@ public abstract class BaseMapView implements MapView {
         }
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
-        positionsModel.fireTableRowsUpdated(row, positions.size() - 1);
+        positionsModel.fireTableRowsUpdated(row, positions.size() - 1, PositionColumns.LONGITUDE_COLUMN_INDEX);
 
         // give time for repainting of the route
         try {

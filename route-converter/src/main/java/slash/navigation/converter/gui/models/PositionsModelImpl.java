@@ -26,6 +26,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormats;
 
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -124,10 +125,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
-    public BaseNavigationPosition getPredecessor(BaseNavigationPosition position) {
-        return getRoute().getPredecessor(position);
-    }
-
     public BaseNavigationPosition getPosition(int rowIndex) {
         return getRoute().getPosition(rowIndex);
     }
@@ -143,9 +140,9 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return result;
     }
 
-    public List<BaseNavigationPosition> getPositions(int from, int to) {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(to - from);
-        for (int i = from; i < to; i++)
+    public List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex) {
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(lastIndex - firstIndex);
+        for (int i = firstIndex; i < lastIndex; i++)
             result.add(getPosition(i));
         return result;
     }
@@ -173,6 +170,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        edit(aValue, rowIndex, columnIndex, true, true);
+    }
+
+    public void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
@@ -229,12 +230,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
-        fireTableRowsUpdated(rowIndex, rowIndex);
+        if (fireEvent)
+            fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
-    public void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+    public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         BaseNavigationPosition position = getRoute().createPosition(longitude, latitude, elevation, speed, time, comment);
-        add(row, Arrays.asList(position));
+        add(rowIndex, Arrays.asList(position));
     }
 
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
@@ -247,17 +249,17 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return positions;
     }
 
-    public void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         List<BaseNavigationPosition> positions = createPositions(route);
-        add(row, positions);
+        add(rowIndex, positions);
     }
 
-    public void add(int row, List<BaseNavigationPosition> positions) {
+    public void add(int rowIndex, List<BaseNavigationPosition> positions) {
         for (int i = positions.size() - 1; i >= 0; i--) {
             BaseNavigationPosition position = positions.get(i);
-            getRoute().add(row, position);
+            getRoute().add(rowIndex, position);
         }
-        fireTableRowsInserted(row, row - 1 + positions.size());
+        fireTableRowsInserted(rowIndex, rowIndex - 1 + positions.size());
     }
 
     public int[] createRowIndices(int from, int to) {
@@ -268,12 +270,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return rows;
     }
 
-    public void remove(int from, int to) {
-        remove(createRowIndices(from, to));
+    public void remove(int firstIndex, int lastIndex) {
+        remove(createRowIndices(firstIndex, lastIndex));
     }
 
-    public void remove(int[] rows) {
-        remove(rows, true);
+    public void remove(int[] rowIndices) {
+        remove(rowIndices, true);
     }
 
     public void remove(int[] rows, final boolean fireEvent) {
@@ -294,13 +296,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(-1, -1);
     }
 
-    public void top(int[] rows) {
-        Arrays.sort(rows);
+    public void top(int[] rowIndices) {
+        Arrays.sort(rowIndices);
 
-        for (int i = 0; i < rows.length; i++) {
-            getRoute().top(rows[i], i);
+        for (int i = 0; i < rowIndices.length; i++) {
+            getRoute().top(rowIndices[i], i);
         }
-        fireTableRowsUpdated(0, rows[rows.length - 1]);
+        fireTableRowsUpdated(0, rowIndices[rowIndices.length - 1]);
     }
 
     public void topDown(int[] rows) {
@@ -312,17 +314,17 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(0, reverted[0]);
     }
 
-    public void up(int[] rows) {
-        Arrays.sort(rows);
+    public void up(int[] rowIndices) {
+        Arrays.sort(rowIndices);
 
-        for (int row : rows) {
+        for (int row : rowIndices) {
             getRoute().up(row, row - 1);
             fireTableRowsUpdated(row - 1, row);
         }
     }
 
-    public void down(int[] rows) {
-        int[] reverted = Range.revert(rows);
+    public void down(int[] rowIndices) {
+        int[] reverted = Range.revert(rowIndices);
 
         for (int row : reverted) {
             getRoute().down(row, row + 1);
@@ -330,8 +332,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
-    public void bottom(int[] rows) {
-        int[] reverted = Range.revert(rows);
+    public void bottom(int[] rowIndices) {
+        int[] reverted = Range.revert(rowIndices);
 
         for (int i = 0; i < reverted.length; i++) {
             getRoute().bottom(reverted[i], i);
@@ -346,5 +348,9 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             getRoute().up(getRowCount() - rows.length + i, rows[i]);
         }
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
+    }
+
+    public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
+        fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, TableModelEvent.UPDATE));
     }
 }

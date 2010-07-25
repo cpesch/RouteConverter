@@ -46,7 +46,6 @@ import java.text.MessageFormat;
 
 public class PositionAugmenter {
     private static final int SLOW_OPERATIONS_IN_A_ROW = 10;
-    private static final int FAST_OPERATIONS_IN_A_ROW = 100;
 
     private final JFrame frame;
 
@@ -74,7 +73,8 @@ public class PositionAugmenter {
 
     private interface Operation {
         String getName();
-        boolean run(BaseNavigationPosition position) throws Exception;
+        int getColumnIndex();
+        boolean run(int index, BaseNavigationPosition position) throws Exception;
         String getErrorMessage();
         void postRunning();
     }
@@ -82,7 +82,7 @@ public class PositionAugmenter {
     private void executeOperation(final JTable positionsTable,
                                   final PositionsModel positionsModel,
                                   final int[] rows,
-                                  final int operationsInARow,
+                                  final boolean slowOperation,
                                   final OverwritePredicate predicate,
                                   final Operation operation) {
         Constants.startWaitCursor(frame.getRootPane());
@@ -92,6 +92,7 @@ public class PositionAugmenter {
                 try {
                     final Exception[] lastException = new Exception[1];
                     lastException[0] = null;
+                    final int maximumRangeLength = slowOperation ? SLOW_OPERATIONS_IN_A_ROW : rows.length / 10;
 
                     new ContinousRange(rows, new RangeOperation() {
                         public void performOnIndex(int index) {
@@ -100,7 +101,7 @@ public class PositionAugmenter {
                                 try {
                                     // ignoring the result since the performance boost of the continous
                                     // range operations outweights the possible optimization 
-                                    operation.run(position);
+                                    operation.run(index, position);
                                 } catch (Exception e) {
                                     lastException[0] = e;
                                 }
@@ -110,14 +111,13 @@ public class PositionAugmenter {
                         public void performOnRange(final int firstIndex, final int lastIndex) {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
-                                    positionsModel.fireTableRowsUpdated(firstIndex, lastIndex);
-
+                                    positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, operation.getColumnIndex());
                                     if (positionsTable != null)
-                                        JTableHelper.scrollToPosition(positionsTable, Math.min(lastIndex + SLOW_OPERATIONS_IN_A_ROW, positionsModel.getRowCount()));
+                                        JTableHelper.scrollToPosition(positionsTable, Math.min(lastIndex + maximumRangeLength, positionsModel.getRowCount()));
                                 }
                             });
                         }
-                    }).performMonotonicallyIncreasing(operationsInARow);
+                    }).performMonotonicallyIncreasing(maximumRangeLength);
 
                     if (lastException[0] != null)
                         JOptionPane.showMessageDialog(frame,
@@ -142,7 +142,7 @@ public class PositionAugmenter {
                                     final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
+        executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     private GoogleMapsService service = new GoogleMapsService();
 
@@ -150,11 +150,15 @@ public class PositionAugmenter {
                         return "CoordinatesPositionAugmenter";
                     }
 
-                    public boolean run(BaseNavigationPosition position) throws Exception {
+                    public int getColumnIndex() {
+                        return PositionColumns.LONGITUDE_COLUMN_INDEX;  // + PositionColumns.LATITUDE_COLUMN_INDEX
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         GoogleMapsPosition coordinates = service.getPositionFor(position.getComment());
                         if (coordinates != null) {
-                            positionsModel.setValueAt(coordinates.getLongitude().toString(), positionsModel.getIndex(position), PositionColumns.LONGITUDE_COLUMN_INDEX);
-                            positionsModel.setValueAt(coordinates.getLatitude().toString(), positionsModel.getIndex(position), PositionColumns.LATITUDE_COLUMN_INDEX);
+                            positionsModel.edit(coordinates.getLongitude().toString(), index, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
+                            positionsModel.edit(coordinates.getLatitude().toString(), index, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
                         }
                         return coordinates != null;
                     }
@@ -177,7 +181,7 @@ public class PositionAugmenter {
                                    final PositionsModel positionsModel,
                                    final int[] rows,
                                    final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
+        executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     private HgtFiles hgtFiles = new HgtFiles();
                     private GeoNamesService geoNamesService = new GeoNamesService();
@@ -187,14 +191,18 @@ public class PositionAugmenter {
                         return "ElevationPositionAugmenter";
                     }
 
-                    public boolean run(BaseNavigationPosition position) throws Exception {
+                    public int getColumnIndex() {
+                        return PositionColumns.ELEVATION_COLUMN_INDEX;
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         Integer elevation = hgtFiles.getElevationFor(position.getLongitude(), position.getLatitude());
                         if (elevation == null)
                             elevation = geoNamesService.getElevationFor(position.getLongitude(), position.getLatitude());
                         if (elevation == null)
                             elevation = earthToolsService.getElevationFor(position.getLongitude(), position.getLatitude());
                         if (elevation != null)
-                            positionsModel.setValueAt(elevation.toString(), positionsModel.getIndex(position), PositionColumns.ELEVATION_COLUMN_INDEX);
+                            positionsModel.edit(elevation.toString(), index, PositionColumns.ELEVATION_COLUMN_INDEX, false, true);
                         return elevation != null;
                     }
 
@@ -218,7 +226,7 @@ public class PositionAugmenter {
                                     final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
+        executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     private GeoNamesService service = new GeoNamesService();
 
@@ -226,10 +234,14 @@ public class PositionAugmenter {
                         return "PopulatedPlacePositionAugmenter";
                     }
 
-                    public boolean run(BaseNavigationPosition position) throws Exception {
+                    public int getColumnIndex() {
+                        return PositionColumns.DESCRIPTION_COLUMN_INDEX;
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
-                            positionsModel.setValueAt(comment, positionsModel.getIndex(position), PositionColumns.DESCRIPTION_COLUMN_INDEX);
+                            positionsModel.edit(comment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
                         return comment != null;
                     }
 
@@ -251,7 +263,7 @@ public class PositionAugmenter {
                                     final PositionsModel positionsModel,
                                     final int[] rows,
                                     final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, SLOW_OPERATIONS_IN_A_ROW, predicate,
+        executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     private GoogleMapsService service = new GoogleMapsService();
 
@@ -259,10 +271,14 @@ public class PositionAugmenter {
                         return "PostalAddressPositionAugmenter";
                     }
 
-                    public boolean run(BaseNavigationPosition position) throws Exception {
+                    public int getColumnIndex() {
+                        return PositionColumns.DESCRIPTION_COLUMN_INDEX;
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String comment = service.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
-                            positionsModel.setValueAt(comment, positionsModel.getIndex(position), PositionColumns.DESCRIPTION_COLUMN_INDEX);
+                            positionsModel.edit(comment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
                         return comment != null;
                     }
 
@@ -284,20 +300,24 @@ public class PositionAugmenter {
                                final PositionsModel positionsModel,
                                final int[] rows,
                                final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, FAST_OPERATIONS_IN_A_ROW, predicate,
+        executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
                     public String getName() {
                         return "SpeedPositionAugmenter";
                     }
 
-                    public boolean run(BaseNavigationPosition position) throws Exception {
-                        BaseNavigationPosition predecessor = positionsModel.getPredecessor(position);
+                    public int getColumnIndex() {
+                        return PositionColumns.SPEED_COLUMN_INDEX;
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
+                        BaseNavigationPosition predecessor = index > 0 && index < positionsModel.getRowCount() ? positionsModel.getPosition(index - 1) : null;
                         if (predecessor != null) {
                             Double previousSpeed = position.getSpeed();
                             Double nextSpeed = position.calculateSpeed(predecessor);
-                            boolean changed = previousSpeed != null && !previousSpeed.equals(nextSpeed);
+                            boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
                             if (changed)
-                                positionsModel.setValueAt(nextSpeed.toString(), positionsModel.getIndex(position), PositionColumns.SPEED_COLUMN_INDEX);
+                                positionsModel.edit(nextSpeed.toString(), index, PositionColumns.SPEED_COLUMN_INDEX, false, true);
                             return changed;
                         }
                         return false;
@@ -323,19 +343,22 @@ public class PositionAugmenter {
                                 final int digitCount,
                                 final boolean spaceBetweenNumberAndComment,
                                 final OverwritePredicate predicate) {
-        executeOperation(positionsTable, positionsModel, rows, FAST_OPERATIONS_IN_A_ROW, predicate,
+        executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
                     public String getName() {
                         return "IndexPositionAugmenter";
                     }
 
-                    public boolean run(BaseNavigationPosition position) throws Exception {
-                        int index = positionsModel.getIndex(position);
+                    public int getColumnIndex() {
+                        return PositionColumns.DESCRIPTION_COLUMN_INDEX;
+                    }
+
+                    public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String previousComment = position.getComment();
                         String nextComment = RouteComments.getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment);
-                        boolean changed = previousComment != null && !previousComment.equals(nextComment);
+                        boolean changed = nextComment != null && !nextComment.equals(previousComment);
                         if (changed)
-                            positionsModel.setValueAt(nextComment, positionsModel.getIndex(position), PositionColumns.DESCRIPTION_COLUMN_INDEX);
+                            positionsModel.edit(nextComment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
                         return changed;
                     }
 

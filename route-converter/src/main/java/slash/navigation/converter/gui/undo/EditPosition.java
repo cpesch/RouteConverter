@@ -57,11 +57,11 @@ class EditPosition extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.setValueAt(previousValue, row, column, false);
+        positionsModel.edit(previousValue, row, column, true, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.setValueAt(nextValue, row, column, false);
+        positionsModel.edit(nextValue, row, column, true, false);
     }
 }

@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.elevationview;
 
 import org.jfree.data.xy.XYSeries;
+import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.TableModelEvent;
@@ -34,9 +35,9 @@ import javax.swing.event.TableModelListener;
 
 public abstract class PositionsModelToXYSeriesSynchronizer {
     private PositionsModel positions;
-    private XYSeries series;
+    private PatchedXYSeries series;
 
-    protected PositionsModelToXYSeriesSynchronizer(PositionsModel positions, XYSeries series) {
+    protected PositionsModelToXYSeriesSynchronizer(PositionsModel positions, PatchedXYSeries series) {
         this.positions = positions;
         this.series = series;
         initialize();
@@ -46,7 +47,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         return positions;
     }
 
-    protected XYSeries getSeries() {
+    protected PatchedXYSeries getSeries() {
         return series;
     }
 
@@ -60,7 +61,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
                         handleAdd(e.getFirstRow(), e.getLastRow());
                         break;
                     case TableModelEvent.UPDATE:
-                        handleUpdate(e.getFirstRow(), e.getLastRow());
+                        handleUpdate(e.getFirstRow(), e.getLastRow(), e.getColumn());
                         break;
                     case TableModelEvent.DELETE:
                         handleDelete(e.getFirstRow(), e.getLastRow());
@@ -76,13 +77,16 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         }
     }
 
-    private void handleUpdate(int firstRow, int lastRow) {
+    private void handleUpdate(int firstRow, int lastRow, int columnIndex) {
         // special treatment for fireTableDataChanged() notifications
         if (firstRow == 0 && lastRow == Integer.MAX_VALUE ||
                 // since PositionsModel#revert fires fireTableRowsUpdated(-1, -1) for a complete update
                 firstRow == -1 && lastRow == -1) {
             handleFullUpdate();
         } else {
+            // ignored updates on columns not displayed
+            if(columnIndex != PositionColumns.ELEVATION_COLUMN_INDEX)
+                return;
             handleIntervalUpdate(firstRow, lastRow);
         }
     }

@@ -754,8 +754,15 @@ public abstract class ConvertPanel {
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
     }
 
+    private int[] selectedPositionIndices = new int[0];
+
     private void handlePositionsUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
+        // avoid firing events of the selection hasn't changed
+        if (Arrays.equals(this.selectedPositionIndices, selectedRows))
+            return;
+
+        this.selectedPositionIndices = selectedRows;
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;

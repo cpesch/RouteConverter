@@ -30,7 +30,6 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.Layer;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -74,7 +73,7 @@ public class ElevationView {
     }
 
     private XYSeriesCollection createDataset(PositionsModel model) {
-        XYSeries series = new XYSeries("Elevation");
+        PatchedXYSeries series = new PatchedXYSeries("Elevation");
         new ElevationModel(model, series);
         return new XYSeriesCollection(series);
     }

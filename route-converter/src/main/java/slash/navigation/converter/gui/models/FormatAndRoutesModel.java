@@ -48,6 +48,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
                 // ignore events following setSelectedItem()
                 if(e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE)
                     return;
+
                 setModified(true);
             }
         });
@@ -154,8 +155,10 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
     }
 
     public void setModified(boolean modified) {
-        this.modified = modified;
-        fireModified();
+        if (this.modified != modified) {
+            this.modified = modified;
+            fireModified();
+        }
     }
 
     protected void fireModified() {

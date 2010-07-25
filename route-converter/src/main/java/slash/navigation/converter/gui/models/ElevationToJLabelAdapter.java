@@ -24,6 +24,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.text.MessageFormat;
 
 /**
@@ -45,7 +46,7 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     public void initialize() {
-        updateAdapterFromDelegate();
+        updateAdapterFromDelegate(new TableModelEvent(getDelegate()));
     }
 
     protected String getDelegateValue() {
@@ -57,7 +58,12 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
         labelDescend.setText(descend > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), descend) : "-");
     }
 
-    protected void updateAdapterFromDelegate() {
+    protected void updateAdapterFromDelegate(TableModelEvent e) {
+        // ignored updates on columns not relevant for ascend and descent calculation
+        if (e.getType() == TableModelEvent.UPDATE &&
+                !(e.getColumn() == PositionColumns.ELEVATION_COLUMN_INDEX))
+            return;
+
         BaseRoute route = getDelegate().getRoute();
         if (route != null) {
             updateLabel(route.getElevationAscend(0, route.getPositionCount() - 1),

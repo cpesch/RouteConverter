@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 
 /**
  * A bidirectional adapter that extracts the route format name from the selected route
@@ -41,7 +42,11 @@ public class PositionsCountToJLabelAdapter extends PositionsModelToDocumentAdapt
         throw new UnsupportedOperationException();
     }
 
-    protected void updateAdapterFromDelegate() {
+    protected void updateAdapterFromDelegate(TableModelEvent e) {
+        // ignored updates on columns not relevant for row count
+        if (e.getType() == TableModelEvent.UPDATE)
+            return;
+        
         label.setText(Integer.toString(getDelegate().getRowCount()));
     }
 }
