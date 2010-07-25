@@ -39,28 +39,29 @@ public interface PositionsModel extends TableModel {
     BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute();
     void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route);
 
-    BaseNavigationPosition getPredecessor(BaseNavigationPosition position);
     BaseNavigationPosition getPosition(int rowIndex);
     int getIndex(BaseNavigationPosition position);
     List<BaseNavigationPosition> getPositions(int[] rowIndices);
-    List<BaseNavigationPosition> getPositions(int from, int to);
+    List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex);
 
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
 
-    void add(int row, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
-    void add(int row, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
-    void add(int row, List<BaseNavigationPosition> positions);
+    void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
+    void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException;
+    void add(int rowIndex, List<BaseNavigationPosition> positions);
 
-    void remove(int from, int to);
-    void remove(int[] rows);
+    void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo);
+
+    void remove(int firstIndex, int lastIndex);
+    void remove(int[] rowIndices);
 
     void revert();
 
-    void top(int[] rows);
-    void up(int[] rows);
-    void down(int[] rows);
-    void bottom(int[] rows);
+    void top(int[] rowIndices);
+    void up(int[] rowIndices);
+    void down(int[] rowIndices);
+    void bottom(int[] rowIndices);
 
-    void fireTableRowsUpdated(int from, int to);
+    void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex);
 }
