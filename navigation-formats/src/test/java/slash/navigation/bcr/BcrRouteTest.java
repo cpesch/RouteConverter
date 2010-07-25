@@ -427,15 +427,6 @@ public class BcrRouteTest {
     }
 
     @Test
-    public void testPredecessor() {
-        initialize();
-        assertNull(route.getPredecessor(a));
-        assertEquals(a, route.getPredecessor(b));
-        assertEquals(b, route.getPredecessor(c));
-        assertNull(route.getPredecessor(d));
-    }
-
-    @Test
     public void testGetPosition() {
         initialize();
         assertEquals(b, route.getPosition(1));

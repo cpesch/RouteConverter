@@ -166,12 +166,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
-    public P getPredecessor(P position) {
-        List<P> positions = getPositions();
-        int index = positions.indexOf(position);
-        return index > 0 && index < positions.size() ? positions.get(index - 1) : null;
-    }
-
     public P getPosition(int index) {
         return getPositions().get(index);
     }
