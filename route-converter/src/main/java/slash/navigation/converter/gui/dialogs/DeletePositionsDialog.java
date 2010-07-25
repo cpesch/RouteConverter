@@ -62,6 +62,20 @@ public class DeletePositionsDialog extends SimpleDialog {
     private NumberDocument order;
     private NumberDocument significance;
 
+    private ListSelectionListener listSelectionListener = new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+            if (e.getValueIsAdjusting())
+                return;
+            handlePositionsUpdate();
+        }
+    };
+
+    private TableModelListener tableModelListener = new TableModelListener() {
+        public void tableChanged(TableModelEvent e) {
+            handlePositionsUpdate();
+        }
+    };
+
     public DeletePositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "delete-positions");
         setTitle(RouteConverter.getBundle().getString("delete-positions-title"));
@@ -124,18 +138,8 @@ public class DeletePositionsDialog extends SimpleDialog {
         significance = new NumberDocument(r.getSelectBySignificancePreference());
         textFieldSignificance.setDocument(significance);
 
-        r.getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                handlePositionsUpdate();
-            }
-        });
-        r.getPositionsModel().addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                handlePositionsUpdate();
-            }
-        });
+        r.getPositionsView().getSelectionModel().addListSelectionListener(listSelectionListener);
+        r.getPositionsModel().addTableModelListener(tableModelListener);
 
         handlePositionsUpdate();
     }
@@ -194,6 +198,9 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void close() {
+        RouteConverter r = RouteConverter.getInstance();
+        r.getPositionsView().getSelectionModel().removeListSelectionListener(listSelectionListener);
+        r.getPositionsModel().removeTableModelListener(tableModelListener);
         savePreferences();
         dispose();
     }
