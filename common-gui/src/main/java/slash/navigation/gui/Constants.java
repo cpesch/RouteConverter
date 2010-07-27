@@ -47,11 +47,7 @@ public class Constants {
 
     public static void setLookAndFeel() {
         try {
-            if (Platform.isLinux()) {
-                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            } else {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            }
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             // intentionally do nothing
         }
