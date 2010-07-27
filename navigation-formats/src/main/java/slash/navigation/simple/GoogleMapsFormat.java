@@ -104,7 +104,7 @@ public class GoogleMapsFormat extends SimpleFormat<Wgs84Route> {
     }
 
     static String findURL(String text) {
-        text = text.replaceAll("[\n|\r]", "");
+        text = text.replaceAll("[\n|\r]", "&");
         Matcher bookmarkMatcher = BOOKMARK_PATTERN.matcher(text);
         if (bookmarkMatcher.matches())
             text = bookmarkMatcher.group(1);

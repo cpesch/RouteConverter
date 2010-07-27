@@ -50,4 +50,7 @@ public class GoogleMapsFormatIT extends NavigationTestCase {
         checkBookmark("4a-modified-by-ie.url");
     }
 
+    public void testBookmarkWrittenByOpera() throws IOException {
+        checkBookmark("4a-modified-by-opera.url");
+    }
 }
