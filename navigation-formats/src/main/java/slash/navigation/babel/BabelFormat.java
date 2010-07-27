@@ -190,6 +190,11 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return exitValue == 0;
     }
 
+    private File checkIfBabelExists(String path) {
+        File file = new File(path);
+        return file.exists() ? file : null;
+    }
+
     private String findBabel() throws IOException {
         // 1. check if there is a preference and try to find its file
         File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
@@ -197,15 +202,22 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             babelFile = null;
         }
 
-        // 2. look for "/usr/bin/gpsbabel" in path
-        if (babelFile == null) {
-            babelFile = new File("/usr/bin/gpsbabel");
-            if (!babelFile.exists()) {
-                babelFile = null;
-            }
+        // 2a. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
+        if (babelFile == null && Platform.isWindows()) {
+            babelFile = checkIfBabelExists("c:\\Program Files\\GPSBabel\\gpsbabel.exe");
         }
 
-        // 3. extract from classpath into temp directrory and execute there
+        // 2b. look for "c:\Program Files (x86)\GPSBabel\gpsbabel.exe"
+        if (babelFile == null && Platform.isWindows()) {
+            babelFile = checkIfBabelExists("c:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe");
+        }
+
+        // 3. look for "/usr/bin/gpsbabel" in path
+        if (babelFile == null && !Platform.isWindows()) {
+            babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
+        }
+
+        // 4. extract from classpath into temp directrory and execute there
         if (babelFile == null) {
             String path = Platform.getOsName() + "/" + Platform.getOsArchitecture() + "/";
             if (Platform.isWindows()) {
