@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
@@ -73,24 +74,28 @@ public class InsertPositionsDialog extends SimpleDialog {
         setTitle(RouteConverter.getBundle().getString("insert-positions-title"));
         setContentPane(contentPane);
 
+        JMenuHelper.setMnemonic(buttonSelectAll, "select-all-action-mnemonic");
         buttonSelectAll.addActionListener(new DialogAction(this) {
             public void run() {
                 selectAll();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonClearSelection, "clear-selection-mnemonic");
         buttonClearSelection.addActionListener(new DialogAction(this) {
             public void run() {
                 clearSelection();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonInsertAllWaypoints, "insert-all-waypoints-mnemonic");
         buttonInsertAllWaypoints.addActionListener(new DialogAction(this) {
             public void run() {
                 insertAllWaypoints();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonInsertOnlyTurnpoints, "insert-only-turnpoints-mnemonic");
         buttonInsertOnlyTurnpoints.addActionListener(new DialogAction(this) {
             public void run() {
                 insertOnlyTurnpoints();

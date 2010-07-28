@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.models.NumberDocument;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.base.*;
@@ -87,30 +88,35 @@ public class DeletePositionsDialog extends SimpleDialog {
             }
         });
 
+        JMenuHelper.setMnemonic(buttonSelectByDistance, "select-mnemonic");
         buttonSelectByDistance.addActionListener(new DialogAction(this) {
             public void run() {
                 selectByDistance();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonSelectByOrder, "select-mnemonic");
         buttonSelectByOrder.addActionListener(new DialogAction(this) {
             public void run() {
                 selectByOrder();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonSelectBySignificance, "select-mnemonic");
         buttonSelectBySignificance.addActionListener(new DialogAction(this) {
             public void run() {
                 selectBySignificance();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonClearSelection, "clear-selection-mnemonic");
         buttonClearSelection.addActionListener(new DialogAction(this) {
             public void run() {
                 clearSelection();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonDeletePositions, "delete-selected-positions-mnemonic");
         buttonDeletePositions.addActionListener(new DialogAction(this) {
             public void run() {
                 deletePositions();
