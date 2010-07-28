@@ -23,9 +23,10 @@ package slash.navigation.converter.gui.undo;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
-import javax.swing.undo.*;
+import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ class RemovePositions extends AbstractUndoableEdit {
     }
 
     public String getRedoPresentationName() {
-        return "remove-redo"; 
+        return "remove-redo";
     }
 
     public void undo() throws CannotUndoException {
@@ -62,9 +63,8 @@ class RemovePositions extends AbstractUndoableEdit {
         for (int i = 0; i < rowList.size(); i++) {
             int row = rowList.get(i);
             List<BaseNavigationPosition> positions = positionsList.get(i);
-            positionsModel.add(row, positions, false, false);
+            positionsModel.add(row, positions, true, false);
         }
-        positionsModel.fireTableDataChanged();
     }
 
     public void redo() throws CannotRedoException {
@@ -72,8 +72,7 @@ class RemovePositions extends AbstractUndoableEdit {
         for (int i = rowList.size() - 1; i >= 0; i--) {
             int row = rowList.get(i);
             List<BaseNavigationPosition> positions = positionsList.get(i);
-            positionsModel.remove(row, row + positions.size(), false, false);
+            positionsModel.remove(row, row + positions.size(), true, false);
         }
-        positionsModel.fireTableDataChanged();
     }
 }

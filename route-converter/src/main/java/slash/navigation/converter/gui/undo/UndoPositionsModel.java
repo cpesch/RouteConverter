@@ -81,10 +81,6 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 
-    public void fireTableDataChanged() {
-        delegate.fireTableDataChanged();
-    }
-
     // PositionsModel
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {

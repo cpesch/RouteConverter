@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helper.JTableHelper;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -61,6 +62,7 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for ascend and descent calculation
         if (e.getType() == TableModelEvent.UPDATE &&
+                !JTableHelper.isFirstToLastRow(e) &&
                 !(e.getColumn() == PositionColumns.ELEVATION_COLUMN_INDEX))
             return;
 

@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.awt.*;
 
 /**
@@ -41,5 +42,9 @@ public class JTableHelper {
                 table.getSelectionModel().setSelectionInterval(index0, index1);
             }
         });
+    }
+
+    public static boolean isFirstToLastRow(TableModelEvent e) {
+        return e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
     }
 }

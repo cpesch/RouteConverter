@@ -20,8 +20,6 @@
 
 package slash.navigation.gui;
 
-import slash.common.io.Platform;
-
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;

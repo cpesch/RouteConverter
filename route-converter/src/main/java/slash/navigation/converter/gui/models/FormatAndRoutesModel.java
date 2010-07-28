@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.*;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
+import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.undo.UndoPositionsModel;
 import slash.navigation.gui.UndoManager;
 
@@ -46,7 +47,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 // ignore events following setSelectedItem()
-                if(e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE)
+                if(JTableHelper.isFirstToLastRow(e))
                     return;
 
                 setModified(true);
