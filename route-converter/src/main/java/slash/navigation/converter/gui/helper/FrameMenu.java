@@ -59,6 +59,7 @@ public class FrameMenu {
         editMenu.add(JMenuHelper.createItem("new-position"));
         editMenu.add(JMenuHelper.createItem("delete"));
         editMenu.addSeparator();
+        editMenu.add(JMenuHelper.createItem("find-place"));
         JMenu completeMenu = JMenuHelper.createMenu("complete");
         completeMenu.add(JMenuHelper.createItem("add-coordinates"));
         completeMenu.add(JMenuHelper.createItem("add-elevation"));
@@ -80,7 +81,6 @@ public class FrameMenu {
 
         JMenu toolsMenu = JMenuHelper.createMenu("tools");
         toolsMenu.add(JMenuHelper.createItem("insert-positions"));
-        toolsMenu.add(JMenuHelper.createItem("geocode-position"));
         toolsMenu.add(JMenuHelper.createItem("delete-positions"));
         toolsMenu.add(JMenuHelper.createItem("revert-positions"));
 

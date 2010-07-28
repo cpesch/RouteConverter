@@ -20,18 +20,18 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.GeocodePositionDialog;
+import slash.navigation.converter.gui.dialogs.FindPlaceDialog;
 import slash.navigation.gui.FrameAction;
 
 /**
- * Geocode position to insert it into the position list
+ * Find a place via geocoding to insert it into the position list.
  *
  * @author Christian Pesch
  */
 
-public class GeocodePositionAction extends FrameAction {
+public class FindPlaceAction extends FrameAction {
     public void run() {
-        GeocodePositionDialog options = new GeocodePositionDialog();
+        FindPlaceDialog options = new FindPlaceDialog();
         options.pack();
         options.restoreLocation();
         options.setVisible(true);

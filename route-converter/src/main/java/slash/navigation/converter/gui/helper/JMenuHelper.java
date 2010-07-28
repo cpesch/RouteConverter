@@ -74,7 +74,7 @@ public class JMenuHelper {
         return -1;
     }
 
-    private static void setMnemonic(JMenuItem item, char mnemonic) {
+    private static void setMnemonic(AbstractButton item, char mnemonic) {
         item.setMnemonic(mnemonic);
         String text = item.getText();
         int ampersandIndex = getMnemonicAmpersandIndex(text);
@@ -84,6 +84,12 @@ public class JMenuHelper {
         }
     }
 
+    public static void setMnemonic(AbstractButton button, String key) {
+        String mnemonic = Transfer.trim(getOptionalString(key));
+        if (mnemonic != null && mnemonic.length() > 0)
+            setMnemonic(button, mnemonic.charAt(0));
+    }
+
     public static JMenuItem createItem(String name) {
         Action action = Application.getInstance().getContext().getActionManager().get(name);
         JMenuItem item = new JMenuItem(action);
@@ -91,9 +97,7 @@ public class JMenuHelper {
         String tooltip = Transfer.trim(getOptionalString(name + "-action-tooltip"));
         if (tooltip != null)
             item.setToolTipText(tooltip);
-        String mnemonic = Transfer.trim(getOptionalString(name + "-action-mnemonic"));
-        if (mnemonic != null && mnemonic.length() > 0)
-            setMnemonic(item, mnemonic.charAt(0));
+        setMnemonic(item, name + "-action-mnemonic");
         String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
         if (keystroke != null)
             item.setAccelerator(KeyStroke.getKeyStroke(keystroke));

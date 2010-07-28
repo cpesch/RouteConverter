@@ -24,13 +24,16 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
+import slash.navigation.gui.FrameAction;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
@@ -45,12 +48,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
+ * Dialog for finding and inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
 
-public class GeocodePositionDialog extends SimpleDialog {
+public class FindPlaceDialog extends SimpleDialog {
     private JPanel contentPane;
 
     private JTextField textFieldSearch;
@@ -58,17 +61,19 @@ public class GeocodePositionDialog extends SimpleDialog {
     private JList listResult;
     private JButton buttonInsertPosition;
 
-    public GeocodePositionDialog() {
-        super(RouteConverter.getInstance().getFrame(), "geocode-position");
-        setTitle(RouteConverter.getBundle().getString("geocode-position-title"));
+    public FindPlaceDialog() {
+        super(RouteConverter.getInstance().getFrame(), "find-place");
+        setTitle(RouteConverter.getBundle().getString("find-place-title"));
         setContentPane(contentPane);
 
+        JMenuHelper.setMnemonic(buttonSearchPositions, "search-position-mnemonic");
         buttonSearchPositions.addActionListener(new DialogAction(this) {
             public void run() {
                 searchPositions();
             }
         });
 
+        JMenuHelper.setMnemonic(buttonInsertPosition, "insert-mnemonic");
         buttonInsertPosition.addActionListener(new DialogAction(this) {
             public void run() {
                 insertPosition();

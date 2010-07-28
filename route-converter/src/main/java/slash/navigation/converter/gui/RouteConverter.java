@@ -781,12 +781,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
         actionManager.register("print-elevation-profile", new PrintElevationProfileAction());
+        actionManager.register("find-place", new FindPlaceAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
         actionManager.register("show-elevation-profile", new ShowElevationProfileAction());
         actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, Integer.MAX_VALUE, bottomSplitPane, Integer.MAX_VALUE));
         actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, bottomSplitPane, Integer.MAX_VALUE));
         actionManager.register("insert-positions", new InsertPositionsAction());
-        actionManager.register("geocode-position", new GeocodePositionAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
         actionManager.register("options", new OptionsAction());
