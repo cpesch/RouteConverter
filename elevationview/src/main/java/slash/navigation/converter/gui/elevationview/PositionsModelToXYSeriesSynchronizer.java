@@ -85,9 +85,12 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
             handleFullUpdate();
         } else {
             // ignored updates on columns not displayed
-            if(columnIndex != PositionColumns.ELEVATION_COLUMN_INDEX)
-                return;
-            handleIntervalUpdate(firstRow, lastRow);
+            if (columnIndex == PositionColumns.LONGITUDE_COLUMN_INDEX ||
+                    columnIndex == PositionColumns.LATITUDE_COLUMN_INDEX ||
+                    columnIndex == TableModelEvent.ALL_COLUMNS)
+                handleIntervalXUpdate(firstRow, lastRow);
+            else if(columnIndex == PositionColumns.ELEVATION_COLUMN_INDEX)
+                handleIntervalYUpdate(firstRow, lastRow);
         }
     }
 
@@ -97,9 +100,18 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
             handleAdd(0, positions.getRowCount() - 1);
     }
 
-    protected void handleIntervalUpdate(int firstRow, int lastRow) {
+    protected void handleIntervalXUpdate(int firstRow, int lastRow) {
+        getSeries().setFireSeriesChanged(false);
         handleDelete(firstRow, lastRow);
         handleAdd(firstRow, lastRow);
+        getSeries().setFireSeriesChanged(true);
+        getSeries().fireSeriesChanged();
+    }
+
+    protected void handleIntervalYUpdate(int firstRow, int lastRow) {
+        for (int i = firstRow; i < lastRow + 1; i++) {
+            series.update((double) i - firstRow, i);
+        }
     }
 
     private void handleDelete(int firstRow, int lastRow) {

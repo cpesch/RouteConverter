@@ -231,7 +231,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         if (fireEvent)
-            fireTableRowsUpdated(rowIndex, rowIndex);
+            fireTableRowsUpdated(rowIndex, rowIndex, columnIndex);
     }
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {

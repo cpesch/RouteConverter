@@ -20,6 +20,9 @@
 
 package slash.navigation.converter.gui.elevationview;
 
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.PositionsModel;
 import org.jfree.data.xy.XYSeries;
 
@@ -35,14 +38,18 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     protected void handleAdd(int firstRow, int lastRow) {
-        double[] distances = getPositions().getRoute().getDistancesFromStart(firstRow, lastRow);
+        BaseRoute<BaseNavigationPosition,BaseNavigationFormat> route = getPositions().getRoute();
+        if(route == null)
+            return;
+        
+        double[] distances = route.getDistancesFromStart(firstRow, lastRow);
         for (int i = firstRow; i < lastRow + 1; i++) {
             getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
         }
         getSeries().fireSeriesChanged();
     }
 
-    protected void handleIntervalUpdate(int firstRow, int lastRow) {
+    protected void handleIntervalYUpdate(int firstRow, int lastRow) {
         getSeries().setFireSeriesChanged(false);
         for (int i = firstRow; i < lastRow + 1; i++) {
             getSeries().updateByIndex(i, getPositions().getPosition(i).getElevation());
