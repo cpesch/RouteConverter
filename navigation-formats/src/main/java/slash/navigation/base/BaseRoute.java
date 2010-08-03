@@ -37,7 +37,11 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Positions;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * The base of all routes formats.
@@ -177,7 +181,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public P getSuccessor(P position) {
         List<P> positions = getPositions();
         int index = positions.indexOf(position);
-        return index != -1 && index < positions.size() -1 ? positions.get(index + 1) : null;
+        return index != -1 && index < positions.size() - 1 ? positions.get(index + 1) : null;
     }
 
     public double getLength() {
@@ -241,13 +245,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public double[] getDistancesFromStart(int startIndex, int endIndex) {
         double[] result = new double[endIndex - startIndex + 1];
         List<P> positions = getPositions();
+        int index = 0;
+        double distance = 0.0;
         BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
-        for (int i = startIndex; i <= endIndex; i++) {
-            BaseNavigationPosition next = positions.get(i);
+        while (index <= endIndex) {
+            BaseNavigationPosition next = positions.get(index);
             if (previous != null) {
-                Double distance = previous.calculateDistance(next);
-                result[i - startIndex] = (i > startIndex ? result[i - startIndex - 1] : 0) + (distance != null ? distance : 0);
+                Double delta = previous.calculateDistance(next);
+                if (delta != null)
+                    distance += delta;
+                if (index >= startIndex)
+                    result[index - startIndex] = distance;
             }
+            index++;
             previous = next;
         }
         return result;
@@ -258,9 +268,29 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (indices.length > 0) {
             List<P> positions = getPositions();
             Arrays.sort(indices);
+            int endIndex = indices[indices.length - 1];
 
+            int index = 0;
+            double distance = 0.0;
+            BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+            while (index <= endIndex) {
+                BaseNavigationPosition next = positions.get(index);
+                if (previous != null) {
+                    Double delta = previous.calculateDistance(next);
+                    if (delta != null)
+                        distance += delta;
+                    int indexInIndices = Arrays.binarySearch(indices, index);
+                    if (indexInIndices >= 0)
+                        result[indexInIndices] = distance;
+                }
+                index++;
+                previous = next;
+            }
+
+            /*
             BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
             int count = 0;
+            double sum = 0.0;
             
             for (int i = 0; i < indices.length; i++) {
                 if(indices[i] >= positions.size())
@@ -273,6 +303,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 }
                 previous = next;
             }
+            */
         }
         return result;
     }
@@ -330,9 +361,11 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     public abstract SimpleRoute asColumbusV900StandardFormat();
+
     public abstract SimpleRoute asColumbusV900ProfessionalFormat();
 
     public abstract SimpleRoute asCoPilot6Format();
+
     public abstract SimpleRoute asCoPilot7Format();
 
     public abstract SimpleRoute asGlopusFormat();
@@ -340,14 +373,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract SimpleRoute asGoogleMapsFormat();
 
     public abstract GoPalRoute asGoPalRouteFormat();
+
     public abstract SimpleRoute asGoPalTrackFormat();
 
     public abstract SimpleRoute asGpsTunerFormat();
 
     public abstract GpxRoute asGpx10Format();
+
     public abstract GpxRoute asGpx11Format();
+
     public abstract GpxRoute asCrs1Format();
+
     public abstract GpxRoute asTcx2Format();
+
     public abstract GpxRoute asNokiaLandmarkExchangeFormat();
 
     public abstract SimpleRoute asHaicomLoggerFormat();
@@ -355,24 +393,35 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract KlickTelRoute asKlickTelRouteFormat();
 
     public abstract KmlRoute asKml20Format();
+
     public abstract KmlRoute asKml21Format();
+
     public abstract KmlRoute asKml22BetaFormat();
+
     public abstract KmlRoute asKml22Format();
+
     public abstract KmlRoute asKmz20Format();
+
     public abstract KmlRoute asKmz21Format();
+
     public abstract KmlRoute asKmz22BetaFormat();
+
     public abstract KmlRoute asKmz22Format();
 
     public abstract SimpleRoute asKompassFormat();
 
     public abstract SimpleRoute asMagicMaps2GoFormat();
+
     public abstract MagicMapsIktRoute asMagicMapsIktFormat();
+
     public abstract MagicMapsPthRoute asMagicMapsPthFormat();
 
     public abstract NmeaRoute asMagellanExploristFormat();
+
     public abstract NmeaRoute asMagellanRouteFormat();
 
     public abstract BcrRoute asMTP0607Format();
+
     public abstract BcrRoute asMTP0809Format();
 
     public abstract SimpleRoute asNavigatingPoiWarnerFormat();
@@ -380,18 +429,25 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract NmeaRoute asNmeaFormat();
 
     public abstract NmnRoute asNmn4Format();
+
     public abstract NmnRoute asNmn5Format();
+
     public abstract NmnRoute asNmn6Format();
+
     public abstract NmnRoute asNmn6FavoritesFormat();
+
     public abstract NmnRoute asNmn7Format();
 
     public abstract OvlRoute asOvlFormat();
 
     public abstract SimpleRoute asRoute66Format();
+
     public abstract SimpleRoute asSygicUnicodeFormat();
+
     public abstract SimpleRoute asWebPageFormat();
 
     public abstract TomTomRoute asTomTom5RouteFormat();
+
     public abstract TomTomRoute asTomTom8RouteFormat();
 
     public abstract TourRoute asTourFormat();
