@@ -59,7 +59,7 @@ public class MergePositionList extends FrameAction {
     }
 
     public void run() {
-        int selectedRow = table.getSelectedRow() + 1;
+        int selectedRow = Math.min(table.getSelectedRow() + 1, table.getRowCount());
         formatAndRoutesModel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
         formatAndRoutesModel.removeRoute(sourceRoute);
     }

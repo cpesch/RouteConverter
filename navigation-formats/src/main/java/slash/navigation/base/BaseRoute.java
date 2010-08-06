@@ -265,14 +265,14 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public double[] getDistancesFromStart(int[] indices) {
         double[] result = new double[indices.length];
-        if (indices.length > 0) {
-            List<P> positions = getPositions();
+        if (indices.length > 0 && getPositionCount() > 0) {
             Arrays.sort(indices);
-            int endIndex = indices[indices.length - 1];
+            int endIndex = Math.min(indices[indices.length - 1], getPositionCount() - 1);
 
             int index = 0;
             double distance = 0.0;
-            BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+            List<P> positions = getPositions();
+            BaseNavigationPosition previous = positions.get(0);
             while (index <= endIndex) {
                 BaseNavigationPosition next = positions.get(index);
                 if (previous != null) {
@@ -286,24 +286,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 index++;
                 previous = next;
             }
-
-            /*
-            BaseNavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
-            int count = 0;
-            double sum = 0.0;
-            
-            for (int i = 0; i < indices.length; i++) {
-                if(indices[i] >= positions.size())
-                    continue;
-                BaseNavigationPosition next = positions.get(indices[i]);
-                if (previous != null) {
-                    Double distance = previous.calculateDistance(next);
-                    result[count] = (i > 0 ? result[count - 1] : 0) + (distance != null ? distance : 0);
-                    count++;
-                }
-                previous = next;
-            }
-            */
         }
         return result;
     }

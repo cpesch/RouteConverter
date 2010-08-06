@@ -58,10 +58,9 @@ public class SplitPositionList extends FrameAction {
             int routeInsertIndex = formatAndRoutesModel.getSize();
 
             for (int i = selectedRows.length - 1; i >= 0; i--) {
-                int fromIndex = selectedRows[i] - 1;
+                int fromIndex = selectedRows[i];
                 fromIndex = Math.max(fromIndex, 0);
                 int toIndex = i + 1 < selectedRows.length ? selectedRows[i + 1] : positionsModel.getRowCount();
-                toIndex--;
                 toIndex = Math.max(toIndex, 0);
                 if (fromIndex == 0 && toIndex == 0)
                     break;
