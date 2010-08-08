@@ -92,7 +92,8 @@ public class PositionAugmenter {
                 try {
                     final Exception[] lastException = new Exception[1];
                     lastException[0] = null;
-                    final int maximumRangeLength = slowOperation ? SLOW_OPERATIONS_IN_A_ROW : rows.length / 10;
+                    final int maximumRangeLength = slowOperation ? SLOW_OPERATIONS_IN_A_ROW :
+                            rows.length > 99 ? rows.length / 10 : rows.length;
 
                     new ContinousRange(rows, new RangeOperation() {
                         public void performOnIndex(int index) {
