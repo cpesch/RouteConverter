@@ -34,6 +34,10 @@ public class UndoManager {
     private javax.swing.undo.UndoManager delegate = new javax.swing.undo.UndoManager();
     private EventListenerList listenerList = new EventListenerList();
 
+    public UndoManager() {
+        delegate.setLimit(0);
+    }
+
     public boolean canUndo() {
         return delegate.canUndo();
     }
