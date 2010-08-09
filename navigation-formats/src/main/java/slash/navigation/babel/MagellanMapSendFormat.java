@@ -37,11 +37,11 @@ public class MagellanMapSendFormat extends BabelFormat {
         return "Magellan MapSend (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "mapsend";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-r -w";
     }
 

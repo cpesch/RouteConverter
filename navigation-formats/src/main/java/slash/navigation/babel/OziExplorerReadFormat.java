@@ -45,7 +45,7 @@ public class OziExplorerReadFormat extends BabelFormat implements MultipleRoutes
         return "OziExplorer (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "ozi";
     }
 

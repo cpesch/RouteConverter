@@ -37,7 +37,7 @@ public class OziExplorerWaypointFormat extends OziExplorerWriteFormat {
         return "OziExplorer Waypoint (*" + getExtension() + ")";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-w";
     }
 

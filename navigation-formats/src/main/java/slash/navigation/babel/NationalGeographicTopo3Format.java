@@ -35,7 +35,7 @@ public class NationalGeographicTopo3Format extends BabelFormat {
         return "National Geographic Topo 3 (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "tpo3";
     }
 

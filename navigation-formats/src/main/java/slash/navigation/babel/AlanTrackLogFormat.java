@@ -35,11 +35,11 @@ public class AlanTrackLogFormat extends BabelFormat {
         return "Alan Map 500 Tracklog (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "alantrl";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-t";
     }
 

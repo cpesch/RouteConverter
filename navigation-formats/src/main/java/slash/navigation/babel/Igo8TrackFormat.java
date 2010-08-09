@@ -43,7 +43,7 @@ public class Igo8TrackFormat extends BabelFormat {
         return "IGO8 Track (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "igo8";
     }
 

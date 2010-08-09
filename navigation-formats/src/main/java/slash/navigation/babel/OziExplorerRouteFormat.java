@@ -37,7 +37,7 @@ public class OziExplorerRouteFormat extends OziExplorerWriteFormat {
         return "OziExplorer Route (*" + getExtension() + ")";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-r";
     }
 

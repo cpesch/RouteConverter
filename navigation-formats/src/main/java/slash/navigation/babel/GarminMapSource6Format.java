@@ -38,7 +38,7 @@ public class GarminMapSource6Format extends BabelFormat implements MultipleRoute
         return "Garmin MapSource 6.x (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "gdb";
     }
 

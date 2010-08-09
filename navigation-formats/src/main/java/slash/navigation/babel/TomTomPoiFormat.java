@@ -45,7 +45,7 @@ public class TomTomPoiFormat extends BabelFormat {
         return preferences.getInt("maximumFileNameLength", 18);
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "tomtom";
     }
 

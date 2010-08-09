@@ -44,11 +44,11 @@ public class GarminPcx5Format extends BabelFormat {
         return "Garmin PCX5 (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "pcx";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-r -w";
     }
 

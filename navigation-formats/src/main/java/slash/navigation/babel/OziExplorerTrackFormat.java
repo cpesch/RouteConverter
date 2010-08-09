@@ -37,7 +37,7 @@ public class OziExplorerTrackFormat extends OziExplorerWriteFormat {
         return "OziExplorer Track (*" + getExtension() + ")";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-t";
     }
 

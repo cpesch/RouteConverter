@@ -35,7 +35,7 @@ public class GeoCachingFormat extends BabelFormat {
         return "Geocaching.com/EasyGPS (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "geo";
     }
 

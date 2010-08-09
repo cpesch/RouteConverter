@@ -46,7 +46,7 @@ public class GarminPoiDbFormat extends BabelFormat {
         return "Garmin POI Database (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "garmin_poi";
     }
 

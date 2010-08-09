@@ -42,11 +42,11 @@ public class AlanWaypointsAndRoutesFormat extends BabelFormat implements Multipl
         return "Alan Map 500 Waypoints and Routes (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "alanwpr";
     }
 
-    protected String getBabelOptions() {
+    protected String getGlobalOptions() {
         return "-r -w";
     }
 

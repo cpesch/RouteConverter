@@ -36,7 +36,7 @@ import java.util.List;
 
 public abstract class OziExplorerWriteFormat extends BabelFormat implements MultipleRoutesFormat<GpxRoute> {
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "ozi,pack";
     }
 

@@ -35,7 +35,7 @@ public class MicrosoftAutoRouteFormat extends BabelFormat {
         return "Microsoft AutoRoute 2002-2006 (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "msroute";
     }
 

@@ -20,6 +20,8 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.gpx.GpxRoute;
+
 /**
  * Reads and writes Garmin Points of Interest (.gpi) files.
  *
@@ -35,8 +37,12 @@ public class GarminPoiFormat extends BabelFormat {
         return "Garmin POI (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "garmin_gpi";
+    }
+
+    protected String getFormatOptions(GpxRoute route) {
+        return route != null ? ",category=\"" + route.getName() + "\"" : "";
     }
 
     public boolean isSupportsMultipleRoutes() {

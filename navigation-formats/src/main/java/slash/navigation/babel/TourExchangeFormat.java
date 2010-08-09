@@ -35,7 +35,7 @@ public class TourExchangeFormat extends BabelFormat {
         return "Tour Exchange Format (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "tef";
     }
 

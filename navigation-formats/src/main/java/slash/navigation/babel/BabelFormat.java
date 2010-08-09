@@ -48,6 +48,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(BabelFormat.class);
     private static final String BABEL_PATH_PREFERENCE = "babelPath";
     private static final String BABEL_INTERFACE_FORMAT_NAME = "gpx";
+    private static final String ROUTE_WAYPOINTS_TRACKS = "-r -w -t";
     private Gpx10Format gpxFormat;
 
     private Gpx10Format getGpxFormat() {
@@ -68,12 +69,17 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         preferences.put(BABEL_PATH_PREFERENCE, babelPathPreference);
     }
 
-    protected abstract String getBabelFormatName();
+    protected abstract String getFormatName();
 
     protected abstract boolean isStreamingCapable();
 
-    protected String getBabelOptions() {
-        return "-r -w -t";
+    protected String getGlobalOptions() {
+        return ROUTE_WAYPOINTS_TRACKS;
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    protected String getFormatOptions(GpxRoute route) {
+        return "";
     }
 
     protected List<RouteCharacteristics> getBabelCharacteristics() {
@@ -147,7 +153,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     int exitValue = process.exitValue();
                     log.info("gpsbabel process terminated with exit value " + exitValue);
                 } catch (IllegalThreadStateException itse) {
-                    log.info("gpsbabel process for format " + getBabelFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
+                    log.info("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
                     process.destroy();
                 }
             }
@@ -176,11 +182,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     private boolean startBabel(File source, String sourceFormat,
                                File target, String targetFormat,
-                               String commandLineFlags, int timeout) throws IOException {
+                               String globalFlags, String formatFlags,
+                               int timeout) throws IOException {
         String babel = findBabel();
-        String command = babel + " " + commandLineFlags +
+        String command = babel + " " + globalFlags +
                 " -i " + sourceFormat + " -f \"" + source.getAbsolutePath() + "\"" +
-                " -o " + targetFormat + " -F \"" + target.getAbsolutePath() + "\"";
+                " -o " + targetFormat + formatFlags +
+                " -F \"" + target.getAbsolutePath() + "\"";
         log.info("Executing '" + command + "'");
 
         command = considerShellScriptForBabel(babel, command);
@@ -324,19 +332,19 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     public List<GpxRoute> read(InputStream in, CompactCalendar startDate) throws IOException {
         if (isStreamingCapable()) {
-            InputStream target = startBabel(in, getBabelFormatName(), BABEL_INTERFACE_FORMAT_NAME, "-r -w -t", READ_COMMAND_EXECUTION_TIMEOUT);
+            InputStream target = startBabel(in, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, READ_COMMAND_EXECUTION_TIMEOUT);
             List<GpxRoute> result = getGpxFormat().read(target, startDate);
             if (result != null && result.size() > 0)
                 log.fine("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME + " stream");
             return result;
         } else {
             List<GpxRoute> result = null;
-            File source = File.createTempFile("babelsource", "." + getBabelFormatName());
+            File source = File.createTempFile("babelsource", "." + getFormatName());
             source.deleteOnExit();
             InputOutput.copy(in, new FileOutputStream(source));
             File target = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
             target.deleteOnExit();
-            boolean successful = startBabel(source, getBabelFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, "-r -w -t", READ_COMMAND_EXECUTION_TIMEOUT);
+            boolean successful = startBabel(source, getFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", READ_COMMAND_EXECUTION_TIMEOUT);
             if (successful) {
                 log.fine("Successfully converted " + source + " to " + target);
                 result = getGpxFormat().read(new FileInputStream(target), startDate);
@@ -357,7 +365,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
         getGpxFormat().write(route, new FileOutputStream(source), startIndex, endIndex, getBabelCharacteristics());
         File targetFile = File.createTempFile("babeltarget", getExtension());
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getBabelFormatName(), getBabelOptions(), WRITE_COMMAND_EXECUTION_TIMEOUT);
+        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), WRITE_COMMAND_EXECUTION_TIMEOUT);
         if (successful) {
             log.fine("Successfully converted " + source + " to " + target);
             InputOutput.copy(new FileInputStream(targetFile), target);
@@ -376,7 +384,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
         getGpxFormat().write(routes, new FileOutputStream(source));
         File targetFile = File.createTempFile("babeltarget", getExtension());
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getBabelFormatName(), getBabelOptions(), WRITE_COMMAND_EXECUTION_TIMEOUT);
+        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), WRITE_COMMAND_EXECUTION_TIMEOUT);
         if (successful) {
             log.fine("Successfully converted " + source + " to " + target);
             InputOutput.copy(new FileInputStream(targetFile), target);

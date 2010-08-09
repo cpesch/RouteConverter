@@ -35,7 +35,7 @@ public class HoluxM241BinaryFormat extends BabelFormat {
         return "Holux M-241 Binary (*" + getExtension() + ")";
     }
 
-    protected String getBabelFormatName() {
+    protected String getFormatName() {
         return "m241-bin";
     }
 
