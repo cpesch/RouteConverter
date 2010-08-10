@@ -35,7 +35,7 @@ public class UndoManager {
     private EventListenerList listenerList = new EventListenerList();
 
     public UndoManager() {
-        delegate.setLimit(0);
+        delegate.setLimit(-1);
     }
 
     public boolean canUndo() {
