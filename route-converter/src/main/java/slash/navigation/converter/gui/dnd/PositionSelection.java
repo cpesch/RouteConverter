@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationFormats;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
@@ -31,7 +32,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Acts as a container for drag and drop operations with {@link BaseNavigationPosition}s.
@@ -40,6 +43,7 @@ import java.util.List;
  */
 
 public class PositionSelection implements Transferable {
+    private static final Logger log = Logger.getLogger(PositionSelection.class.getName());
     public static final DataFlavor positionFlavor = new DataFlavor(PositionSelection.class, "List of Positions");
     public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
 
@@ -51,11 +55,20 @@ public class PositionSelection implements Transferable {
         this.string = createStringFor(positions);
     }
 
-    private String createStringFor(List<BaseNavigationPosition> positions) {
-        NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();
-        SimpleRoute route = format.createRoute(RouteCharacteristics.Waypoints, null, positions);
+    private String createStringFor(List<BaseNavigationPosition> sourcePositions) {
+        List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
+        NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
+        for (BaseNavigationPosition sourcePosition : sourcePositions) {
+            try {
+                targetPositions.add(NavigationFormats.asFormat(sourcePosition, targetFormat));
+            } catch (IOException e) {
+                log.severe("Cannot convert " + sourcePosition + " for selection: " + e.getMessage());
+            }
+        }
+        SimpleRoute targetRoute = targetFormat.createRoute(RouteCharacteristics.Waypoints, null, targetPositions);
+
         StringWriter writer = new StringWriter();
-        format.write(route, new PrintWriter(writer), 0, positions.size());
+        targetFormat.write(targetRoute, new PrintWriter(writer), 0, targetPositions.size());
         return writer.toString();
     }
 
