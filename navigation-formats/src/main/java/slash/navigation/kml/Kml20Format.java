@@ -89,7 +89,7 @@ public class Kml20Format extends KmlFormat {
             return null;
 
         List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements);
-        RouteComments.commentRoutePositions(routes, false);
+        RouteComments.commentRoutePositions(routes);
         return routes;
     }
 

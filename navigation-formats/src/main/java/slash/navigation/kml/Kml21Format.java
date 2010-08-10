@@ -109,7 +109,7 @@ public class Kml21Format extends KmlFormat {
         }
 
         if (routes != null)
-            RouteComments.commentRoutePositions(routes, false);
+            RouteComments.commentRoutePositions(routes);
         return routes;
     }
 

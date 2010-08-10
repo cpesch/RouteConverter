@@ -1085,7 +1085,7 @@ public abstract class BaseMapView implements MapView {
                     }
                 }
 
-                RouteComments.commentPositions(positions, false);
+                RouteComments.commentPositions(positions);
             }
         }
     }

@@ -108,7 +108,7 @@ public class Kml22BetaFormat extends KmlFormat {
         }
 
         if (routes != null)
-            RouteComments.commentRoutePositions(routes, false);
+            RouteComments.commentRoutePositions(routes);
         return routes;
     }
 

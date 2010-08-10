@@ -130,7 +130,7 @@ public class NavigationFileParser {
 
     private void commentRoutes(List<BaseRoute> routes) {
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            RouteComments.commentPositions(route.getPositions(), route.getFormat() instanceof GoogleMapsFormat);
+            RouteComments.commentPositions(route.getPositions());
             RouteComments.commentRouteName(route);
         }
     }
@@ -229,21 +229,12 @@ public class NavigationFileParser {
     }
 
     public boolean read(URL url, List<NavigationFormat> formats) throws IOException {
-        InputStream in;
-        int readBufferSize;
-        Calendar startDate;
         if (GoogleMapsFormat.isGoogleMapsUrl(url)) {
-            byte[] bytes = url.toExternalForm().getBytes();
-            in = new ByteArrayInputStream(bytes);
-            readBufferSize = bytes.length;
-            startDate = Calendar.getInstance();
-        } else {
-            in = url.openStream();
-            readBufferSize = getSize(url);
-            startDate = getStartDate(url);
+            url = new URL(url.toExternalForm() + "&output=kml");
         }
+        int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-        return read(in, readBufferSize, startDate, formats);
+        return read(url.openStream(), readBufferSize, getStartDate(url), formats);
     }
 
     public boolean read(URL url) throws IOException {

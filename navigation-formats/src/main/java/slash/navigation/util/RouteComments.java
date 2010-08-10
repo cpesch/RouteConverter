@@ -23,19 +23,15 @@ package slash.navigation.util;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.googlemaps.GoogleMapsPosition;
-import slash.navigation.googlemaps.GoogleMapsService;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.itn.TomTomPosition;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +41,6 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 public abstract class RouteComments {
-    private static final Logger log = Logger.getLogger(RouteComments.class.getName());
     private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
 
     private static final String POSITION = "Position";
@@ -94,46 +89,16 @@ public abstract class RouteComments {
         return POSITION + " " + (index + 1);
     }
 
-    public static boolean isPositionComment(String comment) {
-        Matcher matcher = POSITION_PATTERN.matcher(comment);
-        return matcher.matches();
-    }
-
-    public static void commentPositions(List<? extends BaseNavigationPosition> positions, boolean geocode) {
+    public static void commentPositions(List<? extends BaseNavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
             BaseNavigationPosition position = positions.get(i);
-            locatePosition(position);
-            position.setComment(getPositionComment(position, i, geocode));
+            position.setComment(getPositionComment(position, i));
         }
     }
 
-    private static final GoogleMapsService googleMapsService = new GoogleMapsService();
-
-    private static void locatePosition(BaseNavigationPosition position) {
-        if (!position.hasCoordinates() && position.getComment() != null && !isPositionComment(position.getComment())) {
-            try {
-                GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
-                if(coordinates != null) {
-                    position.setLongitude(coordinates.getLongitude());
-                    position.setLatitude(coordinates.getLatitude());
-                }
-            } catch (IOException e) {
-                log.warning("Cannot lookup coordinates for: " + position.getComment() + ": " + e.getMessage());
-            }
-        }
-    }
-
-    private static String getPositionComment(BaseNavigationPosition position, int index, boolean geocode) {
+    private static String getPositionComment(BaseNavigationPosition position, int index) {
         if (position.getComment() == null || "(null)".equals(position.getComment())) {
-            String comment = getPositionComment(index);
-            if(geocode) {
-                try {
-                    comment = Transfer.trim(googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude()));
-                } catch (IOException e) {
-                    log.warning("Cannot lookup comment for longitude: " + position.getLongitude() + ", latitude:" + position.getLatitude() + ": " + e.getMessage());
-                }
-            }
-            return comment;
+            return getPositionComment(index);
         } else {
             Matcher matcher = POSITION_PATTERN.matcher(position.getComment());
             if (matcher.matches()) {
@@ -147,7 +112,7 @@ public abstract class RouteComments {
 
     public static String getNumberedPosition(BaseNavigationPosition position, int index,
                                              int digitCount, boolean spaceBetweenNumberAndComment) {
-        String comment = getPositionComment(position, index, false);
+        String comment = getPositionComment(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(comment);
         if (matcher.matches()) {
             String prefix = Transfer.formatIntAsString((index + 1), digitCount);
@@ -163,7 +128,7 @@ public abstract class RouteComments {
         position.setComment(getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment));
     }
 
-    public static void commentRoutePositions(List<? extends BaseRoute> routes, boolean geocode) {
+    public static void commentRoutePositions(List<? extends BaseRoute> routes) {
         Map<LongitudeAndLatitude, String> comments = new HashMap<LongitudeAndLatitude, String>();
 
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
@@ -191,7 +156,7 @@ public abstract class RouteComments {
         }
 
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            commentPositions(route.getPositions(), geocode);
+            commentPositions(route.getPositions());
         }
     }
 
