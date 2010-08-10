@@ -23,6 +23,7 @@ package slash.navigation.gui;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.undo.UndoableEdit;
+import java.util.prefs.Preferences;
 
 /**
  * Manages the {@link UndoAction} and {@link RedoAction} of an {@link Application}.
@@ -31,11 +32,12 @@ import javax.swing.undo.UndoableEdit;
  */
 
 public class UndoManager {
+    private static final Preferences preferences = Preferences.userNodeForPackage(UndoManager.class);
     private javax.swing.undo.UndoManager delegate = new javax.swing.undo.UndoManager();
     private EventListenerList listenerList = new EventListenerList();
 
     public UndoManager() {
-        delegate.setLimit(-1);
+        delegate.setLimit(preferences.getInt("limit", -1));
     }
 
     public boolean canUndo() {
