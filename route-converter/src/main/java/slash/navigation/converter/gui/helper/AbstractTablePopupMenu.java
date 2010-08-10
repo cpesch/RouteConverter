@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.helper;
 
+import slash.navigation.gui.FrameAction;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 /**
  * Helps to make popups for tables useable.
@@ -43,53 +43,71 @@ public abstract class AbstractTablePopupMenu {
     protected abstract JPopupMenu createPopupMenu();
 
     public JPopupMenu createMenu() {
-        // cannot use tablePositions.setComponentPopupMenu(popupMenu); since it does ensure a selection
+        // cannot use table.setComponentPopupMenu(popupMenu); since it does ensure a selection
         MouseListener mouseListener = new MouseListener();
         table.addMouseListener(mouseListener);
         table.getParent().addMouseListener(mouseListener);
+        table.getParent().addMouseMotionListener(new MouseMotionListener());
+        table.registerKeyboardAction(new FrameAction() {
+            public void run() {
+                ensureSelection(lastMouseEvent, 1);
+                showPopup(lastMouseEvent);
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.popupMenu = createPopupMenu();
         return popupMenu;
     }
 
     private void showPopup(final MouseEvent e) {
-        if (e.isPopupTrigger()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            });
-        }
+        if (table.getCellEditor() != null)
+            table.getCellEditor().cancelCellEditing();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                popupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        });
     }
 
-    private void ensureSelection(MouseEvent e) {
-        if (e.isPopupTrigger()) {
-            if (!table.hasFocus())
-                table.requestFocus();
-            if (table.getSelectedRowCount() < 2) {
-                // dispatch event again as a left mouse click for selections
-                // (do not try to spare one of the three events)
-                table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(),
-                        InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
-                        e.getClickCount(), false));
-                table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(),
-                        InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
-                        e.getClickCount(), false));
-                table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_CLICKED, e.getWhen(),
-                        InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
-                        e.getClickCount(), false));
-            }
+    private void ensureSelection(MouseEvent e, int selectedRowCountMinimum) {
+        if (!table.hasFocus())
+            table.requestFocus();
+        if (table.getSelectedRowCount() < selectedRowCountMinimum) {
+            // dispatch event again as a left mouse click for selections
+            // (do not try to spare one of the three events)
+            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(),
+                    InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
+                    e.getClickCount(), false));
+            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(),
+                    InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
+                    e.getClickCount(), false));
+            table.dispatchEvent(new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_CLICKED, e.getWhen(),
+                    InputEvent.BUTTON1_MASK, e.getX(), e.getY(),
+                    e.getClickCount(), false));
         }
     }
 
     private class MouseListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
-            ensureSelection(e);
-            showPopup(e);
+            if (e.isPopupTrigger()) {
+                ensureSelection(e, 2);
+                showPopup(e);
+            }
         }
 
         public void mouseReleased(MouseEvent e) {
-            ensureSelection(e);
-            showPopup(e);
+            if (e.isPopupTrigger()) {
+                ensureSelection(e, 2);
+                showPopup(e);
+            }
+        }
+    }
+
+    private MouseEvent lastMouseEvent;
+
+    private class MouseMotionListener extends MouseMotionAdapter {
+        public void mouseMoved(MouseEvent e) {
+            lastMouseEvent = e;
         }
     }
 }
