@@ -20,36 +20,17 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.converter.gui.panels.BrowsePanel;
-import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.ElevationPanel;
 
 /**
- * A small graphical user interface for the route conversion
+ * The elevation panel of the route converter user interface when
  * running under Java 6.
  *
  * @author Christian Pesch
  */
 
-public class RouteConverter6 extends RouteConverter {
-
-    public ExternalPrograms createExternalPrograms() {
-        return new ExternalPrograms6();
-    }
-
-    protected BrowsePanel createBrowsePanel() {
-        return new BrowsePanel6();
-    }
-
-    protected ConvertPanel createConvertPanel() {
-        return new ConvertPanel6();
-    }
-
-    protected ElevationPanel createElevationPanel() {
-        return new ElevationPanel6();
-    }
-
-    public static void main(String[] args) {
-        launch(RouteConverter6.class, args);
+class ElevationPanel6 extends ElevationPanel {
+    protected void addDragAndDrop() {
+        elevationPanel.setTransferHandler(new PanelDropHandler());
     }
 }

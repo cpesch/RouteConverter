@@ -30,8 +30,14 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.converter.gui.actions.*;
-import slash.navigation.converter.gui.elevationview.ElevationView;
+import slash.navigation.converter.gui.actions.AboutAction;
+import slash.navigation.converter.gui.actions.DeletePositionsAction;
+import slash.navigation.converter.gui.actions.FindPlaceAction;
+import slash.navigation.converter.gui.actions.InsertPositionsAction;
+import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
+import slash.navigation.converter.gui.actions.OptionsAction;
+import slash.navigation.converter.gui.actions.RevertPositionListAction;
+import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.FrameMenu;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.helper.MergePositionListMenu;
@@ -42,8 +48,15 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.panels.ElevationPanel;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.gui.*;
+import slash.navigation.gui.ActionManager;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.Constants;
+import slash.navigation.gui.ExitAction;
+import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.HelpTopicsAction;
+import slash.navigation.gui.SingleFrameApplication;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -58,8 +71,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -114,13 +130,13 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, bottomSplitPane;
     private JTabbedPane tabbedPane;
-    private JPanel convertPanel, browsePanel, mapPanel, bottomPanel;
+    private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
     private MapView mapView;
-    private ElevationView elevationView;
+    private ElevationPanel elevationView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
-    private static final GridConstraints BOTTOM_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+    private static final GridConstraints ELEVATION_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 300), 0, true);
 
@@ -186,8 +202,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         } else {
             mapPanel.setVisible(false);
         }
-
-        openBottomView();
+        openElevationView();
 
         initializeActions();
     }
@@ -255,12 +270,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    private void openBottomView() {
+    private void openElevationView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                elevationView = new ElevationView(getPositionsModel(), getPositionsSelectionModel());
-                bottomPanel.add(elevationView.getComponent(), BOTTOM_PANEL_CONSTRAINTS);
-                bottomPanel.setVisible(true);
+                elevationView = createElevationPanel();
+                elevationPanel.add(elevationView.getRootComponent(), ELEVATION_PANEL_CONSTRAINTS);
+                elevationPanel.setVisible(true);
 
                 int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
                 if (location > 1)
@@ -288,6 +303,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected abstract BrowsePanel createBrowsePanel();
 
     protected abstract ConvertPanel createConvertPanel();
+
+    protected abstract ElevationPanel createElevationPanel();
 
     // Preferences handling
 
@@ -508,11 +525,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().renameRoute(name);
     }
 
-    public void selectPositions(int[] selectPositions) {
+    public void selectPositions(int[] selectedPositions) {
         if (isMapViewAvailable())
-            mapView.setSelectedPositions(selectPositions);
+            mapView.setSelectedPositions(selectedPositions);
         if (elevationView != null)
-            elevationView.setSelectedPositions(selectPositions);
+            elevationView.setSelectedPositions(selectedPositions);
     }
 
     public void insertAllWaypoints() {
@@ -656,12 +673,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
-        bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        bottomPanel.setMinimumSize(new Dimension(0, 0));
-        bottomPanel.setPreferredSize(new Dimension(0, 0));
-        bottomPanel.setVisible(false);
-        bottomSplitPane.setRightComponent(bottomPanel);
+        elevationPanel = new JPanel();
+        elevationPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        elevationPanel.setMinimumSize(new Dimension(0, 0));
+        elevationPanel.setPreferredSize(new Dimension(0, 0));
+        elevationPanel.setVisible(false);
+        bottomSplitPane.setRightComponent(elevationPanel);
     }
 
     /**
@@ -683,7 +700,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     initialized.put(convertPanel, panel);
                 }
             });
-
             lazyInitializers.put(browsePanel, new Runnable() {
                 public void run() {
                     BrowsePanel panel = createBrowsePanel();
@@ -701,6 +717,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
         private synchronized ConvertPanel getConvertPanel() {
             initialize(convertPanel);
             return (ConvertPanel) initialized.get(convertPanel);
+        }
+
+        private synchronized ElevationPanel getElevationPanel() {
+            initialize(elevationPanel);
+            return (ElevationPanel) initialized.get(elevationPanel);
         }
 
         private void initialize(Component selected) {

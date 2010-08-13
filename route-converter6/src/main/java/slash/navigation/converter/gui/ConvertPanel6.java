@@ -22,14 +22,6 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.panels.ConvertPanel;
 
-import javax.swing.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 /**
  * The convert panel of the route converter user interface when
  * running under Java 6.
@@ -41,40 +33,5 @@ class ConvertPanel6 extends ConvertPanel {
 
     protected void addDragAndDrop() {
         convertPanel.setTransferHandler(new PanelDropHandler());
-    }
-
-    private class PanelDropHandler extends TransferHandler {
-        public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                    support.isDataFlavorSupported(DataFlavor.stringFlavor);
-        }
-
-        public boolean importData(TransferSupport support) {
-            Transferable t = support.getTransferable();
-            try {
-                if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
-                    if (data != null) {
-                        List<File> files = (List<File>) data;
-                        handleDrop(files);
-                        return true;
-                    }
-                }
-
-                if (support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.stringFlavor);
-                    if (data != null) {
-                        String url = (String) data;
-                        handleDrop(url);
-                        return true;
-                    }
-                }
-            } catch (UnsupportedFlavorException e) {
-                // intentionally left empty
-            } catch (IOException e) {
-                // intentionally left empty
-            }
-            return false;
-        }
     }
 }
