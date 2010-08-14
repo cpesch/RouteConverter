@@ -20,7 +20,9 @@
 
 package slash.navigation.itn;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.util.RouteComments;
 
 import java.io.IOException;
 
@@ -141,6 +143,48 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
         assertNull(position.getElevation());
+    }
+
+    public void testFormatFirstName() {
+        TomTomPosition position = format.parsePosition("883644|4939999|Los|2|");
+        String comment = format.formatFirstOrLastName(position, "Start", null);
+        assertEquals("Start : Los - 0 m - 0 km - 0 Km/h - 6", comment);
+        RouteComments.parseComment(position, comment);
+        assertEquals("Los", position.getComment());
+
+        position.setTime(CompactCalendar.fromMillis(1234567890));
+        comment = format.formatFirstOrLastName(position, "Start", null);
+        assertEquals("06:56:07 - Start : 15/01/1970 06:56:07 : Los - 0 m - 0 km - 0 Km/h - 6", comment);
+        position.setTime(null);
+        RouteComments.parseComment(position, comment);
+        assertEquals("Los", position.getComment());
+        assertEquals(CompactCalendar.fromMillis(1234567890), position.getTime());
+
+        position = format.parsePosition("883644|4939999|Los|2|");
+        comment = format.formatFirstOrLastName(position, "Start", 123.45);
+        assertEquals("Start : Los", comment);
+        RouteComments.parseComment(position, comment);
+        assertEquals("Los", position.getComment());
+
+        // TODO elevation, speed, heading
+    }
+
+    public void testFormatLastName() {
+        TomTomPosition position = format.parsePosition("883644|4939999|Stop|2|");
+        assertEquals("Finish : Stop - 0 m - 0 km - 0 Km/h - 6", format.formatFirstOrLastName(position, "Finish", null));
+        assertEquals("?", format.formatFirstOrLastName(position, "Finish", 123.45));
+
+        // TODO continue
+    }
+
+    public void testFormatIntermediateName() {
+        TomTomPosition position = format.parsePosition("883644|4939999|Weiter|2|");
+        assertEquals("Weiter", format.formatIntermediateName(position, null));
+        position.setTime(CompactCalendar.fromMillis(1234567890));
+        assertEquals("Weiter", format.formatIntermediateName(position, null));
+        assertEquals("?", format.formatIntermediateName(position, 123.45));
+
+        // TODO continue
     }
 }
 

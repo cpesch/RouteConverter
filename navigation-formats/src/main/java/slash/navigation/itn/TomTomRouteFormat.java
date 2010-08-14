@@ -54,9 +54,9 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             compile("^\"([^\"]*)\"$");
 
     public static final int START_TYPE = 4;
-    public static final int END_TYPE_VISITED = 3;
+    // public static final int END_TYPE_VISITED = 3;
     public static final int END_TYPE = 2;
-    public static final int WAYPOINT_VISITED = 1;
+    // public static final int WAYPOINT_VISITED = 1;
     public static final int WAYPOINT = 0;
 
     public String getExtension() {
