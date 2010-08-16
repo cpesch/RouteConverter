@@ -423,11 +423,6 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-magellan.rte", new MagellanRouteFormat(), new Gpx10Format());
     }
 
-    public void testConvertNmn4ToNmn4() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-nmn4.rte", new Nmn4Format(), new Nmn4Format());
-        convertRoundtrip(TEST_PATH + "large-nmn4.rte", new Nmn4Format(), new Nmn4Format());
-    }
-
     public void testConvertGpx10ToNmn4() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Nmn4Format());
         convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new Nmn4Format());

@@ -108,7 +108,7 @@ public class Nmn4Format extends NmnFormat {
         String latitude = Transfer.formatPositionAsString(nmnPosition.getLatitude());
         String zip = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getZip());
         String city = formatForNmn4(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
-        String street = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
+        String street = formatForNmn4(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet() + (nmnPosition.getNumber() != null ? " " + nmnPosition.getNumber() : ""));
         writer.println(
                 "-" + SEPARATOR_CHAR +
                 "-" + SEPARATOR_CHAR +
