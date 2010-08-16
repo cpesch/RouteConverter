@@ -36,6 +36,7 @@ import java.util.ArrayList;
 public class GoogleMapsPosition {
     private static final String NUMBER = "[[-|+]|\\d|\\.|E]";
     private static final Pattern POSITION_PATTERN = Pattern.compile("(\\s*" + NUMBER + "*\\s*),(\\s*" + NUMBER + "*\\s*)(,\\s*" + NUMBER + "+\\s*)?\\s*");
+    private static final Pattern EXTENSION_POSITION_PATTERN = Pattern.compile("\\s*(" + NUMBER + "+)\\s+(" + NUMBER + "+)\\s+(" + NUMBER + "+)\\s*");
 
     private Double longitude, latitude, elevation;
     private String location;
@@ -85,6 +86,18 @@ public class GoogleMapsPosition {
         Matcher matcher = POSITION_PATTERN.matcher(listOfCoordinates);
         while (matcher.find()) {
             result.add(parsePosition(matcher.group(0), null));
+        }
+        return result;
+    }
+
+    public static List<GoogleMapsPosition> parseExtensionPositions(String listOfCoordinates) {
+        List<GoogleMapsPosition> result = new ArrayList<GoogleMapsPosition>();
+        Matcher matcher = EXTENSION_POSITION_PATTERN.matcher(listOfCoordinates);
+        while (matcher.find()) {
+            String longitude = matcher.group(1);
+            String latitude = matcher.group(2);
+            String elevation = matcher.group(3);
+            result.add(new GoogleMapsPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), Transfer.parseDouble(elevation), null));
         }
         return result;
     }

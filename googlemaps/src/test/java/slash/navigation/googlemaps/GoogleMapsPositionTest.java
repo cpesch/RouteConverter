@@ -85,6 +85,11 @@ public class GoogleMapsPositionTest extends TestCase {
         assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2,3\n4,5,6.6\n7,8.8,9"));
     }
 
+    public void testParseGoogleExtensionPositions() {
+        List<GoogleMapsPosition> expected = Arrays.asList(new GoogleMapsPosition(1.1, 2.2, 3.3, null), new GoogleMapsPosition(4.4, 5.5, 6.6, null), new GoogleMapsPosition(7.7, 8.8, 9.9, null));
+        assertEquals(expected, GoogleMapsPosition.parseExtensionPositions("1.1 2.2 3.3 4.4 5.5 6.6 7.7 8.8 9.9"));
+    }
+
     public void testParsePositionsWithoutElevation() {
         List<GoogleMapsPosition> expected = Arrays.asList(new GoogleMapsPosition(1.1, 2.0, null, null), new GoogleMapsPosition(4.0, 5.0, null, null), new GoogleMapsPosition(7.0, 8.8, null, null));
         assertEquals(expected, GoogleMapsPosition.parsePositions("1.1,2 4,5 7,8.8"));

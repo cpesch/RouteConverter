@@ -3,8 +3,8 @@ bin\xjc -verbose -d generated -p slash.navigation.gpx.binding11 c:\p4\RouteConve
 bin\xjc -verbose -d generated -p slash.navigation.gpx.garmin3 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\GpxExtensionsv3.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.routecatalog10 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\RouteCatalog10.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.trekbuddy c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gpx\trekBuddyExtensions0984.xsd
-bin\xjc -verbose -d generated c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\kml22gx.xsd -b c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\kml22gx.xjb
 bin\xjc -verbose -d generated c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\ogckml22.xsd -b c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\ogckml22.xjb
+bin\xjc -verbose -d generated c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\kml22gx.xsd -b c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\kml\kml22gx.xjb
 bin\xjc -verbose -d generated -p slash.navigation.lmx.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\lmx\lmx.xsd
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding1 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\tcx\TrainingCenterDatabasev1.xsd
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\tcx\TrainingCenterDatabasev2.xsd

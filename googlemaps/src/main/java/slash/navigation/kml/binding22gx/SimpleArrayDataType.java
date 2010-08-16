@@ -6,35 +6,32 @@
 //
 
 
-package slash.navigation.kml.binding22;
+package slash.navigation.kml.binding22gx;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import slash.navigation.kml.binding22gx.SimpleArrayDataType;
+import slash.navigation.kml.binding22.AbstractObjectType;
 
 
 /**
- * <p>Java class for SchemaDataType complex type.
+ * <p>Java class for SimpleArrayDataType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SchemaDataType">
+ * &lt;complexType name="SimpleArrayDataType">
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.opengis.net/kml/2.2}AbstractObjectType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.opengis.net/kml/2.2}SimpleData" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/kml/2.2}SchemaDataExtension" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.google.com/kml/ext/2.2}value" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.google.com/kml/ext/2.2}SimpleArrayDataExtension" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="schemaUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -43,103 +40,100 @@ import slash.navigation.kml.binding22gx.SimpleArrayDataType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SchemaDataType", propOrder = {
-    "simpleData",
-    "schemaDataExtension"
+@XmlType(name = "SimpleArrayDataType", propOrder = {
+    "value",
+    "simpleArrayDataExtension"
 })
-public class SchemaDataType
+public class SimpleArrayDataType
     extends AbstractObjectType
 {
 
-    @XmlElement(name = "SimpleData")
-    protected List<SimpleDataType> simpleData;
-    @XmlElementRef(name = "SchemaDataExtension", namespace = "http://www.opengis.net/kml/2.2", type = JAXBElement.class)
-    protected List<JAXBElement<?>> schemaDataExtension;
+    protected List<String> value;
+    @XmlElement(name = "SimpleArrayDataExtension")
+    protected List<Object> simpleArrayDataExtension;
     @XmlAttribute
-    @XmlSchemaType(name = "anyURI")
-    protected String schemaUrl;
+    protected String name;
 
     /**
-     * Gets the value of the simpleData property.
+     * Gets the value of the value property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the simpleData property.
+     * This is why there is not a <CODE>set</CODE> method for the value property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSimpleData().add(newItem);
+     *    getValue().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SimpleDataType }
+     * {@link String }
      * 
      * 
      */
-    public List<SimpleDataType> getSimpleData() {
-        if (simpleData == null) {
-            simpleData = new ArrayList<SimpleDataType>();
+    public List<String> getValue() {
+        if (value == null) {
+            value = new ArrayList<String>();
         }
-        return this.simpleData;
+        return this.value;
     }
 
     /**
-     * Gets the value of the schemaDataExtension property.
+     * Gets the value of the simpleArrayDataExtension property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the schemaDataExtension property.
+     * This is why there is not a <CODE>set</CODE> method for the simpleArrayDataExtension property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSchemaDataExtension().add(newItem);
+     *    getSimpleArrayDataExtension().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * {@link JAXBElement }{@code <}{@link SimpleArrayDataType }{@code >}
+     * {@link Object }
      * 
      * 
      */
-    public List<JAXBElement<?>> getSchemaDataExtension() {
-        if (schemaDataExtension == null) {
-            schemaDataExtension = new ArrayList<JAXBElement<?>>();
+    public List<Object> getSimpleArrayDataExtension() {
+        if (simpleArrayDataExtension == null) {
+            simpleArrayDataExtension = new ArrayList<Object>();
         }
-        return this.schemaDataExtension;
+        return this.simpleArrayDataExtension;
     }
 
     /**
-     * Gets the value of the schemaUrl property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSchemaUrl() {
-        return schemaUrl;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the schemaUrl property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSchemaUrl(String value) {
-        this.schemaUrl = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

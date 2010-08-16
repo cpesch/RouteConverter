@@ -25,7 +25,29 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.kml.binding22.*;
+import slash.navigation.googlemaps.GoogleMapsPosition;
+import slash.navigation.kml.binding22.AbstractContainerType;
+import slash.navigation.kml.binding22.AbstractFeatureType;
+import slash.navigation.kml.binding22.AbstractGeometryType;
+import slash.navigation.kml.binding22.AbstractTimePrimitiveType;
+import slash.navigation.kml.binding22.DocumentType;
+import slash.navigation.kml.binding22.FolderType;
+import slash.navigation.kml.binding22.KmlType;
+import slash.navigation.kml.binding22.LineStringType;
+import slash.navigation.kml.binding22.LineStyleType;
+import slash.navigation.kml.binding22.LinkType;
+import slash.navigation.kml.binding22.MultiGeometryType;
+import slash.navigation.kml.binding22.NetworkLinkType;
+import slash.navigation.kml.binding22.ObjectFactory;
+import slash.navigation.kml.binding22.PlacemarkType;
+import slash.navigation.kml.binding22.PointType;
+import slash.navigation.kml.binding22.ScreenOverlayType;
+import slash.navigation.kml.binding22.StyleType;
+import slash.navigation.kml.binding22.TimeSpanType;
+import slash.navigation.kml.binding22.TimeStampType;
+import slash.navigation.kml.binding22.UnitsEnumType;
+import slash.navigation.kml.binding22.Vec2Type;
+import slash.navigation.kml.binding22gx.TrackType;
 import slash.navigation.kml.bindingatom.Link;
 import slash.navigation.util.Bearing;
 import slash.navigation.util.RouteComments;
@@ -140,6 +162,20 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
+    private Calendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
+        if (timePrimitiveType != null) {
+            AbstractTimePrimitiveType timePrimitiveTypeValue = timePrimitiveType.getValue();
+            String time = "";
+            if (timePrimitiveTypeValue instanceof TimeSpanType) {
+                time = ((TimeSpanType) timePrimitiveTypeValue).getBegin();
+            } else if (timePrimitiveTypeValue instanceof TimeStampType) {
+                time = ((TimeStampType) timePrimitiveTypeValue).getWhen();
+            }
+            return ISO8601.parse(time);
+        }
+        return null;
+    }
+
     private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
@@ -200,6 +236,26 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
+    protected List<KmlPosition> asExtendedKmlPositions(List<String> strings) {
+        List<KmlPosition> result = new ArrayList<KmlPosition>();
+        for (String string : strings) {
+            for (GoogleMapsPosition position : GoogleMapsPosition.parseExtensionPositions(string)) {
+                result.add(asKmlPosition(position));
+            }
+        }
+        return result;
+    }
+
+    private List<KmlPosition> extractPositions(List<String> coords, List<String> whens) {
+        List<KmlPosition> result = asExtendedKmlPositions(coords);
+        for (int i = 0; i < whens.size(); i++) {
+            String when = whens.get(i);
+            if (when != null)
+                result.get(i).setTime(CompactCalendar.fromCalendar(ISO8601.parse(when)));
+        }
+        return result;
+    }
+
     private List<KmlPosition> extractPositions(JAXBElement<? extends AbstractGeometryType> geometryType) {
         List<KmlPosition> positions = new ArrayList<KmlPosition>();
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
@@ -218,22 +274,15 @@ public class Kml22Format extends KmlFormat {
                 positions.addAll(extractPositions(geometryType2));
             }
         }
+        if (geometryTypeValue instanceof TrackType) {
+            TrackType trackType = (TrackType) geometryTypeValue;
+            List<String> coord = trackType.getCoord();
+            List<String> when = trackType.getWhen();
+            positions.addAll(extractPositions(coord, when));
+        }
         return positions;
     }
 
-    private Calendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
-        if (timePrimitiveType != null) {
-            AbstractTimePrimitiveType timePrimitiveTypeValue = timePrimitiveType.getValue();
-            String time = "";
-            if (timePrimitiveTypeValue instanceof TimeSpanType) {
-                time = ((TimeSpanType) timePrimitiveTypeValue).getBegin();
-            } else if (timePrimitiveTypeValue instanceof TimeStampType) {
-                time = ((TimeStampType) timePrimitiveTypeValue).getWhen();
-            }
-            return ISO8601.parse(time);
-        }
-        return null;
-    }
 
 
     private FolderType createWayPoints(KmlRoute route) {

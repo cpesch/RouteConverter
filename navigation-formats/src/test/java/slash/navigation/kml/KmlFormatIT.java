@@ -148,4 +148,12 @@ public class KmlFormatIT extends NavigationTestCase {
         KmlRoute route = routes.get(0);
         assertEquals(1297, route.getPositionCount());
     }
+
+    public void testGxTrackExtension22() throws IOException {
+        List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(TEST_PATH + "from22gx.kml")));
+        assertNotNull(routes);
+        assertEquals(1, routes.size());
+        KmlRoute route = routes.get(0);
+        assertEquals(133, route.getPositionCount());
+    }
 }

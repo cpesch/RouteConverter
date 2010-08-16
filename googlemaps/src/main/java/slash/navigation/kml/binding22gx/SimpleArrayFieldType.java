@@ -6,7 +6,7 @@
 //
 
 
-package slash.navigation.kml.binding22;
+package slash.navigation.kml.binding22gx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +18,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for SimpleFieldType complex type.
+ * <p>Java class for SimpleArrayFieldType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SimpleFieldType">
+ * &lt;complexType name="SimpleArrayFieldType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element ref="{http://www.opengis.net/kml/2.2}displayName" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/kml/2.2}SimpleFieldExtension" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.google.com/kml/ext/2.2}SimpleArrayFieldExtension" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -40,15 +40,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SimpleFieldType", propOrder = {
+@XmlType(name = "SimpleArrayFieldType", propOrder = {
     "displayName",
-    "simpleFieldExtension"
+    "simpleArrayFieldExtension"
 })
-public class SimpleFieldType {
+public class SimpleArrayFieldType {
 
+    @XmlElement(namespace = "http://www.opengis.net/kml/2.2")
     protected String displayName;
-    @XmlElement(name = "SimpleFieldExtension")
-    protected List<Object> simpleFieldExtension;
+    @XmlElement(name = "SimpleArrayFieldExtension")
+    protected List<Object> simpleArrayFieldExtension;
     @XmlAttribute
     protected String type;
     @XmlAttribute
@@ -79,18 +80,18 @@ public class SimpleFieldType {
     }
 
     /**
-     * Gets the value of the simpleFieldExtension property.
+     * Gets the value of the simpleArrayFieldExtension property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the simpleFieldExtension property.
+     * This is why there is not a <CODE>set</CODE> method for the simpleArrayFieldExtension property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSimpleFieldExtension().add(newItem);
+     *    getSimpleArrayFieldExtension().add(newItem);
      * </pre>
      * 
      * 
@@ -100,11 +101,11 @@ public class SimpleFieldType {
      * 
      * 
      */
-    public List<Object> getSimpleFieldExtension() {
-        if (simpleFieldExtension == null) {
-            simpleFieldExtension = new ArrayList<Object>();
+    public List<Object> getSimpleArrayFieldExtension() {
+        if (simpleArrayFieldExtension == null) {
+            simpleArrayFieldExtension = new ArrayList<Object>();
         }
-        return this.simpleFieldExtension;
+        return this.simpleArrayFieldExtension;
     }
 
     /**
