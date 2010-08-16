@@ -37,7 +37,7 @@ public class UndoManager {
     private EventListenerList listenerList = new EventListenerList();
 
     public UndoManager() {
-        delegate.setLimit(preferences.getInt("limit", -1));
+        delegate.setLimit(preferences.getInt("undoLimit", -1));
     }
 
     public boolean canUndo() {
