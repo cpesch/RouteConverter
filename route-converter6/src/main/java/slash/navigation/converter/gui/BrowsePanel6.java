@@ -43,7 +43,6 @@ import java.io.IOException;
  */
 
 class BrowsePanel6 extends BrowsePanel {
-
     protected void addDragAndDrop() {
         treeCategories.setDragEnabled(true);
         treeCategories.setDropMode(DropMode.ON);

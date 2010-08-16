@@ -30,7 +30,6 @@ import slash.navigation.converter.gui.panels.ConvertPanel;
  */
 
 class ConvertPanel6 extends ConvertPanel {
-
     protected void addDragAndDrop() {
         convertPanel.setTransferHandler(new PanelDropHandler());
     }

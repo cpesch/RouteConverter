@@ -32,7 +32,6 @@ import slash.navigation.converter.gui.panels.ElevationPanel;
  */
 
 public class RouteConverter6 extends RouteConverter {
-
     public ExternalPrograms createExternalPrograms() {
         return new ExternalPrograms6();
     }
