@@ -20,28 +20,78 @@
 
 package slash.navigation.gopal;
 
-import slash.navigation.base.*;
-import slash.navigation.bcr.*;
+import slash.common.io.CompactCalendar;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.GkPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
+import slash.navigation.bcr.BcrFormat;
+import slash.navigation.bcr.BcrPosition;
+import slash.navigation.bcr.BcrRoute;
+import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.gopal.binding3.Tour;
-import slash.navigation.gpx.*;
-import slash.navigation.itn.*;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxFormat;
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTomPosition;
+import slash.navigation.itn.TomTomRoute;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
-import slash.navigation.kml.*;
+import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.Kml20Format;
+import slash.navigation.kml.Kml21Format;
+import slash.navigation.kml.Kml22BetaFormat;
+import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.KmlPosition;
+import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.Kmz20Format;
+import slash.navigation.kml.Kmz21Format;
+import slash.navigation.kml.Kmz22BetaFormat;
+import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.nmea.*;
-import slash.navigation.nmn.*;
+import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.NmeaPosition;
+import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
+import slash.navigation.nmn.NmnRoute;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.simple.*;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoogleMapsFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.SygicUnicodeFormat;
+import slash.navigation.simple.WebPageFormat;
 import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.common.io.CompactCalendar;
 import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
@@ -61,33 +111,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
 
 
     public GoPalRoute(String name, List<GoPalPosition> positions) {
-        this(name, defaultOptions(), positions);
-    }
-
-    private static Tour.Options defaultOptions() {
-        Tour.Options options = new Tour.Options();
-        /*
-            Fahrzeugtype:       Type="3"        => 0=PKW	1=Fussgaenger 2=Fahrrad   3=Motorrad
-            Art der Route:		Mode="2"        => 0=kurz   1=schnell   2=Oekonomisch
-            Mautstrassen:		TollRoad="1"    => 0= meiden    1=verwenden
-            Faehren:			Ferries="1"     => 0= meiden    1=verwenden
-            Tunnel:				Tunnels="1"     => 0= meiden    1=verwenden
-            Stauumfahrung:		TTIMode="0"     => 0= automatisch 1= manuell 2=keine
-            Autobahn:			MotorWays="0"   => 0= meiden    1=verwenden
-         */
-        options.setType((short) 3);
-        options.setMode((short) 2);
-        options.setTollRoad((short) 1);
-        options.setFerries((short) 1);
-        options.setTunnels((short) 1);
-        options.setTTIMode((short) 0);
-        options.setMotorWays((short) 0);
-        options.setVehicleSpeedMotorway((short) 33);
-        options.setVehicleSpeedNonMotorway((short) 27);
-        options.setPedestrianSpeed((short) 1);
-        options.setVehicleSpeedInPedestrianArea((short) 2);
-        options.setCyclistSpeed((short) 4);
-        return options;
+        this(name, null, positions);
     }
 
     public GoPalRoute(String name, Tour.Options options, List<GoPalPosition> positions) {
