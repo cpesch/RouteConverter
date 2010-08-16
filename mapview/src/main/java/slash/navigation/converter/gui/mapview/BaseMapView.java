@@ -104,8 +104,8 @@ public abstract class BaseMapView implements MapView {
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
     private boolean running = true, recenterAfterZooming, pedestrians, avoidHighways,
-            haveToInitializeMapOnFirstStart = true,
-            haveToRepaintImmediately = false, haveToRecenterMap = false,
+            haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
+            haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToUpdatePosition = false, ignoreNextZoomCallback = false;
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
@@ -231,14 +231,14 @@ public abstract class BaseMapView implements MapView {
                              - repaint if moved
                          */
                         long currentTime = System.currentTimeMillis();
-                        if (haveToRepaintImmediately ||
+                        if (haveToRepaintRouteImmediately ||
                             haveToReplaceRoute ||
                             (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
                             copiedPositions = filterPositionsWithoutCoordinates(positions);
                             recenter = haveToReplaceRoute;
                             haveToUpdateRoute = false;
                             haveToReplaceRoute = false;
-                            haveToRepaintImmediately = false;
+                            haveToRepaintRouteImmediately = false;
                         } else
                             continue;
                     }
@@ -269,6 +269,7 @@ public abstract class BaseMapView implements MapView {
                 while (true) {
                     int[] copiedSelectedPositions;
                     List<BaseNavigationPosition> copiedPositions;
+                    boolean recenter;
                     synchronized (notificationMutex) {
                         try {
                             notificationMutex.wait(100);
@@ -284,9 +285,11 @@ public abstract class BaseMapView implements MapView {
                             continue;
 
                         long currentTime = System.currentTimeMillis();
-                        if (haveToRecenterMap ||
+                        if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
                             (haveToUpdatePosition && (currentTime - lastTime > 500))) {
                             haveToRecenterMap = false;
+                            recenter = !haveToRepaintSelectionImmediately;
+                            haveToRepaintSelectionImmediately = false;
                             haveToUpdatePosition = false;
                             copiedSelectedPositions = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositions, 0, copiedSelectedPositions.length);
@@ -295,8 +298,8 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
-                    List<BaseNavigationPosition> selected = filterSelectedPositions(copiedPositions, copiedSelectedPositions);
-                    selectPositions(selected);
+                    List<BaseNavigationPosition> selected = reducePositions(copiedPositions, copiedSelectedPositions);
+                    selectPositions(selected, recenter);
                     log.info("MapView position updated for " + selected.size() + " positions");
                     lastTime = System.currentTimeMillis();
                 }
@@ -626,24 +629,6 @@ public abstract class BaseMapView implements MapView {
         return significant;
     }
 
-    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, boolean recenter, int maximumPositionCount) {
-        if (positions.size() < 2)
-            return positions;
-
-        // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions, recenter);
-
-        // reduce the number of significant positions by a visibility heuristic
-        if (positions.size() > maximumPositionCount)
-            positions = filterVisiblePositions(positions);
-
-        // reduce the number of visible positions by a JS-stability heuristic
-        if (positions.size() > maximumPositionCount)
-            positions = filterEveryNthPosition(positions, maximumPositionCount);
-
-        return positions;
-    }
-
     private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions, boolean recenter) {
         int zoomLevel = recenter ? getBoundsZoomLevel(positions) : getCurrentZoomLevel();
 
@@ -656,10 +641,43 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
+    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, boolean recenter, int maximumPositionCount) {
+        if (positions.size() < 2)
+            return positions;
+
+        // determine significant positions for this zoom level
+        positions = filterSignificantPositions(positions, recenter);
+
+        // reduce the number of significant positions by a visibility heuristic
+        if (positions.size() > maximumPositionCount)
+            positions = filterVisiblePositions(positions, 2.5);
+
+        // reduce the number of visible positions by a JS-stability heuristic
+        if (positions.size() > maximumPositionCount)
+            positions = filterEveryNthPosition(positions, maximumPositionCount);
+
+        return positions;
+    }
+
+    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int[] indices) {
+        // reduced selected positions if they're not selected
+        positions = filterSelectedPositions(positions, indices);
+
+        // reduce the number of selected positions by a visibility heuristic
+        if (positions.size() > MAXIMUM_SELECTION_COUNT)
+            positions = filterVisiblePositions(positions, 1.25);
+
+        // reduce the number of visible positions by a JS-stability heuristic
+        if (positions.size() > MAXIMUM_SELECTION_COUNT)
+            positions = filterEveryNthPosition(positions, MAXIMUM_SELECTION_COUNT);
+
+        return positions;  
+    }
+
     protected abstract int getBoundsZoomLevel(List<BaseNavigationPosition> positions);
     protected abstract int getCurrentZoomLevel();
 
-    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions) {
+    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions, double factor) {
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
         if (northEast == null || southWest == null)
@@ -668,8 +686,8 @@ public abstract class BaseMapView implements MapView {
         // heuristic: increase bounds for visible positions to enable dragging the map
         // at the same zoom level, with a factor of 2 you hardly see the cropping even
         // with a small map and a big screen (meaning lots of space to drag the map)
-        double width = (northEast.getLongitude() - southWest.getLongitude()) * 2.0;
-        double height = (southWest.getLatitude() - northEast.getLatitude()) * 2.0;
+        double width = (northEast.getLongitude() - southWest.getLongitude()) * factor;
+        double height = (southWest.getLatitude() - northEast.getLatitude()) * factor;
         northEast.setLongitude(northEast.getLongitude() + width);
         northEast.setLatitude(northEast.getLatitude() - height);
         southWest.setLongitude(southWest.getLongitude() - width);
@@ -750,7 +768,7 @@ public abstract class BaseMapView implements MapView {
     private void updateButDontRecenter() {
         // repaint route immediately, simulates update(true) without recentering
         synchronized (notificationMutex) {
-            haveToRepaintImmediately = true;
+            haveToRepaintRouteImmediately = true;
             significantPositionCache.clear();
             notificationMutex.notifyAll();
         }
@@ -860,11 +878,7 @@ public abstract class BaseMapView implements MapView {
     private List<BaseNavigationPosition> lastSelectedPositions;
     private int[] selectedPositionIndices = new int[0];
 
-    private void selectPositions(List<BaseNavigationPosition> selectedPositions) {
-        if (selectedPositions.size() > MAXIMUM_SELECTION_COUNT) {
-            selectedPositions = filterEveryNthPosition(selectedPositions, MAXIMUM_SELECTION_COUNT);
-        }
-
+    private void selectPositions(List<BaseNavigationPosition> selectedPositions, boolean recenter) {
         // delete old
         if (lastSelectedPositionCount >= 0) {
             StringBuffer buffer = new StringBuffer();
@@ -888,7 +902,7 @@ public abstract class BaseMapView implements MapView {
         }
 
         // pan to first position
-        if (lastSelectedPositionCount > 0) {
+        if (lastSelectedPositionCount > 0 && recenter) {
             BaseNavigationPosition center = selectedPositions.get(0);
             buffer.append("centerMap(new GLatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("));");
@@ -1039,10 +1053,11 @@ public abstract class BaseMapView implements MapView {
                     if (ignoreNextZoomCallback)
                         ignoreNextZoomCallback = false;
                     else
-                        haveToRepaintImmediately = true;
+                        haveToRepaintRouteImmediately = true;
                     // if enabled, recenter map to selected positions after zooming
                     if (recenterAfterZooming)
                         haveToRecenterMap = true;
+                    haveToRepaintSelectionImmediately = true;
                     notificationMutex.notifyAll();
                 }
             }
@@ -1051,7 +1066,8 @@ public abstract class BaseMapView implements MapView {
             if (moveEndMather.matches()) {
                 if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
                     synchronized (notificationMutex) {
-                        haveToRepaintImmediately = true;
+                        haveToRepaintRouteImmediately = true;
+                        haveToRepaintSelectionImmediately = true;
                         notificationMutex.notifyAll();
                     }
                 }
@@ -1161,7 +1177,7 @@ public abstract class BaseMapView implements MapView {
             positionsModel.remove(new int[]{row});
 
             synchronized (notificationMutex) {
-                haveToRepaintImmediately = true;
+                haveToRepaintRouteImmediately = true;
                 notificationMutex.notifyAll();
             }
         }
