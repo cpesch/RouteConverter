@@ -49,7 +49,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="RouteService:"/>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="routeservice-colon"/>
         </properties>
       </component>
       <component id="ae3e1" class="javax.swing.JComboBox" binding="comboBoxChooseRouteService" default-binding="true">
@@ -79,7 +79,7 @@
           <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Please select to which RouteService the route should be uploaded:"/>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="please-select"/>
         </properties>
       </component>
       <component id="f67c9" class="javax.swing.JTextField" binding="textFieldUserName" default-binding="true">
@@ -127,7 +127,7 @@
           <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Please name the route and provide a description:"/>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="please-name"/>
         </properties>
       </component>
       <component id="eb114" class="javax.swing.JTextArea" binding="textAreaDescription" default-binding="true">
