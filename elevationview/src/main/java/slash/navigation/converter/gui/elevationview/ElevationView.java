@@ -32,6 +32,7 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.Layer;
+import org.jfree.ui.RectangleInsets;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.Application;
@@ -100,11 +101,14 @@ public class ElevationView {
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        Font font = new JLabel().getFont();
+        rangeAxis.setLabelFont(font);
 
         NumberAxis valueAxis = (NumberAxis) plot.getDomainAxis();
         valueAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         valueAxis.setLowerMargin(0.0);
         valueAxis.setUpperMargin(0.0);
+        valueAxis.setLabelFont(font);
 
         XYItemRenderer renderer = plot.getRenderer();
         renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{2}m @ {1} Km",
