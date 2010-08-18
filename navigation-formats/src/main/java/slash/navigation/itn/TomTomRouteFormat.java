@@ -170,6 +170,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         if (position.getTime() != null) {
             buffer.append(" : ").append(RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
+            buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
+            buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
         }
         if(distance != null) {
             buffer.append(" - ").append(distance.intValue()).append(" Km");

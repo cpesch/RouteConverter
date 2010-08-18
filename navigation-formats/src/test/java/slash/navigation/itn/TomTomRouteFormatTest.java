@@ -178,7 +178,7 @@ public class TomTomRouteFormatTest {
         TomTomPosition position = format.parsePosition("883644|4939999|Los|2|");
         position.setTime(DATE);
         String comment = format.formatFirstOrLastName(position, "Start", null);
-        assertEquals("Start : Los : 07/08/2004 03:29:10 - 0.0 m", comment);
+        assertEquals("Start : Los : 07/08/2004 03:29:10 - 0.0 m - 0.0 Km/h - 0.0 deg", comment);
         position.setTime(null);
         position.setComment(comment);
         assertEquals("Los", position.getComment());
@@ -187,13 +187,13 @@ public class TomTomRouteFormatTest {
 
         position.setElevation(47.4);
         comment = format.formatFirstOrLastName(position, "Start", null);
-        assertEquals("Start : Los : 07/08/2004 03:29:10 - 47.4 m", comment);
+        assertEquals("Start : Los : 07/08/2004 03:29:10 - 47.4 m - 0.0 Km/h - 0.0 deg", comment);
         position.setElevation(null);
         position.setComment(comment);
         assertDoubleEquals(47.4, position.getElevation());
 
         comment = format.formatFirstOrLastName(position, "Start", 10.0);
-        assertEquals("Start : Los : 07/08/2004 03:29:10 - 47.4 m - 10 Km", comment);
+        assertEquals("Start : Los : 07/08/2004 03:29:10 - 47.4 m - 0.0 Km/h - 0.0 deg - 10 Km", comment);
         position.setElevation(null);
         position.setComment(comment);
         assertDoubleEquals(47.4, position.getElevation());
@@ -204,12 +204,16 @@ public class TomTomRouteFormatTest {
         TomTomPosition position = format.parsePosition("883644|4939999|Los|2|");
         position.setTime(DATE);
         position.setElevation(82.4);
+        position.setHeading(248.9);
+        position.setSpeed(61.3);
         String comment = format.formatFirstOrLastName(position, "Finish", 1354.4);
-        assertEquals("Finish : Los : 07/08/2004 03:29:10 - 82.4 m - 1354 Km", comment);
+        assertEquals("Finish : Los : 07/08/2004 03:29:10 - 82.4 m - 61.3 Km/h - 248.9 deg - 1354 Km", comment);
         position.setElevation(null);
         position.setTime(null);
         position.setComment(comment);
         assertDoubleEquals(82.4, position.getElevation());
+        assertDoubleEquals(248.9, position.getHeading());
+        assertDoubleEquals(61.3, position.getSpeed());
     }
 
     @Test
@@ -247,6 +251,6 @@ public class TomTomRouteFormatTest {
         assertDoubleEquals(47.4, position.getElevation());
         assertDoubleEquals(248.9, position.getHeading());
         assertDoubleEquals(61.3, position.getSpeed());
-   }
+    }
 }
 

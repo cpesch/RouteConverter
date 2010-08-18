@@ -224,7 +224,7 @@ public abstract class RouteComments {
             "(" + TIME + ") - (Start : (.*?)|Finish : (.*?)|" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - " +
             "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
     private static final Pattern ROUTECONVERTER_STARTEND_PATTERN = Pattern.compile(
-            "((Start|Ende|Finish) : (.+) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m.*");
+            "((Start|Ende|Finish) : (.+) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
     private static final Pattern ROUTECONVERTER_INTERMEDIATE_PATTERN = Pattern.compile(
             "(.+) : (" + TIME + ") - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
 
@@ -294,12 +294,16 @@ public abstract class RouteComments {
         return parseTripmaster14Time(string);
     }
 
+    private static Double parseDouble(String string) {
+        Double aDouble = Transfer.parseDouble(string);
+        return aDouble != null && aDouble != 0.0 ? aDouble : null;
+    }
 
     public static void parseComment(BaseNavigationPosition position, String comment) {
         Matcher matcher = TRIPMASTER_14_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(matcher.group(2)));
-            position.setElevation(Transfer.parseDouble(matcher.group(3)));
+            position.setElevation(parseDouble(matcher.group(3)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -323,7 +327,7 @@ public abstract class RouteComments {
             position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
             if (position.getTime() == null)
                 position.setTime(parseTripmaster14Time(timeStr));
-            position.setElevation(Transfer.parseDouble(matcher.group(6)));
+            position.setElevation(parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -340,7 +344,7 @@ public abstract class RouteComments {
         matcher = TRIPMASTER_18_SHORT_WAYPOINT_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(matcher.group(1)));
-            position.setElevation(Transfer.parseDouble(matcher.group(2)));
+            position.setElevation(parseDouble(matcher.group(2)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -353,7 +357,7 @@ public abstract class RouteComments {
         matcher = TRIPMASTER_25_SHORT_WAYPOINT_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(Transfer.trim(matcher.group(1))));
-            position.setElevation(Transfer.parseDouble(matcher.group(3)));
+            position.setElevation(parseDouble(matcher.group(3)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -375,7 +379,7 @@ public abstract class RouteComments {
             String dateStr = Transfer.trim(matcher.group(4));
             String timeStr = Transfer.trim(matcher.group(5));
             position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
-            position.setElevation(Transfer.parseDouble(matcher.group(6)));
+            position.setElevation(parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -388,7 +392,7 @@ public abstract class RouteComments {
         matcher = TRIPMASTER_MIDDLE_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(Transfer.trim(matcher.group(1))));
-            position.setElevation(Transfer.parseDouble(matcher.group(4)));
+            position.setElevation(parseDouble(matcher.group(4)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -406,8 +410,8 @@ public abstract class RouteComments {
         matcher = TRIPMASTER_LONG_NO_REASON_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTripmaster14Time(Transfer.trim(matcher.group(1))));
-            position.setSpeed(Transfer.parseDouble(matcher.group(6)));
-            position.setElevation(Transfer.parseDouble(matcher.group(3)));
+            position.setSpeed(parseDouble(matcher.group(6)));
+            position.setElevation(parseDouble(matcher.group(3)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -424,8 +428,8 @@ public abstract class RouteComments {
             position.setTime(parseTripmaster18Date(matcher.group(3)));
             if (position.getTime() == null)
                 position.setTime(parseTripmaster14Time(matcher.group(1)));
-            position.setSpeed(Transfer.parseDouble(matcher.group(9)));
-            position.setElevation(Transfer.parseDouble(matcher.group(6)));
+            position.setSpeed(parseDouble(matcher.group(9)));
+            position.setElevation(parseDouble(matcher.group(6)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -443,13 +447,13 @@ public abstract class RouteComments {
         matcher = LOGPOS_2_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseLogposDate(matcher.group(1)));
-            position.setSpeed(Transfer.parseDouble(matcher.group(5)));
+            position.setSpeed(parseDouble(matcher.group(5)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 tomTomPosition.setReason(Transfer.trim(matcher.group(4)));
                 tomTomPosition.setCity(Transfer.trim(matcher.group(3)));
-                tomTomPosition.setHeading(Transfer.parseDouble(matcher.group(6)));
+                tomTomPosition.setHeading(parseDouble(matcher.group(6)));
             }
         }
 
@@ -458,28 +462,28 @@ public abstract class RouteComments {
             position.setTime(parseLogposDate(matcher.group(1)));
             Double elevation;
             try {
-                elevation = Transfer.parseDouble(matcher.group(4));
+                elevation = parseDouble(matcher.group(4));
             } catch (NumberFormatException e) {
                 elevation = null;
             }
             position.setElevation(elevation);
-            position.setSpeed(Transfer.parseDouble(matcher.group(7)));
+            position.setSpeed(parseDouble(matcher.group(7)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 tomTomPosition.setReason(Transfer.trim(matcher.group(5)));
                 tomTomPosition.setCity(Transfer.trim(matcher.group(3)));
-                tomTomPosition.setHeading(Transfer.parseDouble(matcher.group(8)));
+                tomTomPosition.setHeading(parseDouble(matcher.group(8)));
             }
         }
 
         matcher = TTTRACKLOG_PATTERN.matcher(comment);
         if (matcher.matches()) {
             position.setTime(parseTTTracklogTime(matcher.group(1)));
-            position.setSpeed(Transfer.parseDouble(matcher.group(5)));
-            Double elevation = Transfer.parseDouble(matcher.group(6));
+            position.setSpeed(parseDouble(matcher.group(5)));
+            Double elevation = parseDouble(matcher.group(6));
             if(elevation == null)
-                elevation = Transfer.parseDouble(matcher.group(4)); // pause with elevation
+                elevation = parseDouble(matcher.group(4)); // pause with elevation
             position.setElevation(elevation);
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -492,7 +496,8 @@ public abstract class RouteComments {
             String dateStr = Transfer.trim(matcher.group(4));
             String timeStr = Transfer.trim(matcher.group(5));
             position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
-            position.setElevation(Transfer.parseDouble(matcher.group(6)));
+            position.setElevation(parseDouble(matcher.group(6)));
+            position.setSpeed(parseDouble(matcher.group(7)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
@@ -500,6 +505,7 @@ public abstract class RouteComments {
                 tomTomPosition.setReason(reason);
                 String city = Transfer.trim(matcher.group(3));
                 tomTomPosition.setCity(city);
+                tomTomPosition.setHeading(parseDouble(matcher.group(9)));
             }
         }
 
@@ -507,14 +513,14 @@ public abstract class RouteComments {
         if (matcher.matches()) {
             String timeStr = Transfer.trim(matcher.group(2));
             position.setTime(parseTripmaster14Time(timeStr));
-            position.setElevation(Transfer.parseDouble(matcher.group(3)));
-            position.setSpeed(Transfer.parseDouble(matcher.group(4)));
+            position.setElevation(parseDouble(matcher.group(3)));
+            position.setSpeed(parseDouble(matcher.group(4)));
 
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 String city = Transfer.trim(matcher.group(1));
                 tomTomPosition.setCity(city);
-                tomTomPosition.setHeading(Transfer.parseDouble(matcher.group(6)));
+                tomTomPosition.setHeading(parseDouble(matcher.group(6)));
             }
         }
     }

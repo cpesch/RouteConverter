@@ -325,7 +325,7 @@ public abstract class NavigationTestCase extends TestCase {
         } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
                 sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                 sourceFormat instanceof NmeaFormat || sourceFormat instanceof TomTomRouteFormat) &&
-                (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat ||
+                (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat || targetFormat instanceof TomTomRouteFormat ||
                  targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track))) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
         } else if (targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format) {
