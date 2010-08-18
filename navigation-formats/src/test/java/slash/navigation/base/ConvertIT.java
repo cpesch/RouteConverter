@@ -137,16 +137,6 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from.itn", new TomTom5RouteFormat(), new Kml22Format());
     }
 
-
-    public void testConvertGoogleMapsToGoogleMaps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new GoogleMapsFormat());
-    }
-
-    public void testConvertGoogleMapsToTomTomRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.url", new GoogleMapsFormat(), new TomTom5RouteFormat());
-    }
-
-
     public void testConvertGarminMapSource6ToGarminMapSource5() throws IOException {
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
         convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());

@@ -162,23 +162,36 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
-        return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
-                firstOrLast + " : " +
-                (position.getTime() != null ? RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()) + " : " : "") +
-                position.getComment() +
-                (position.getElevation() != null ? " - " + position.getElevation() + " m - " + distance.intValue() + " km - " +
-                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - " +
-                (position.getHeading() != null ? position.getHeading().intValue() : "6") : "");
+        StringBuffer buffer = new StringBuffer();
+        if (position.getTime() != null) {
+            buffer.append(firstOrLast).append(" : ");
+        }
+        buffer.append(position.getComment());
+        if (position.getTime() != null) {
+            buffer.append(" : ").append(RouteComments.TRIPMASTER_DATE.format(position.getTime().getTime()));
+            buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
+        }
+        if(distance != null) {
+            buffer.append(" - ").append(distance.intValue()).append(" Km");
+        }
+        return buffer.toString();
     }
 
     String formatIntermediateName(TomTomPosition position, Double distance) {
-        return (position.getTime() != null ? RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()) + " - " : "") +
-                position.getComment() +
-                (position.getElevation() != null ? " - " + position.getElevation() + " m - " + distance.intValue() + " km - " +
-                (position.getSpeed() != null ? position.getSpeed() : "0") + " Km/h - " +
-                (position.getHeading() != null ? position.getHeading().intValue() : "6") : "");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(position.getComment());
+        if (position.getTime() != null) {
+            buffer.append(" : ").append(RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()));
+            buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
+            buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
+            buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
+        }
+        if(distance != null) {
+            buffer.append(" - ").append(distance.intValue()).append(" Km");
+        }
+        return buffer.toString();
     }
-
+    
     public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex) {
         List<TomTomPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {

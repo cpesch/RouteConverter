@@ -20,15 +20,20 @@
 
 package slash.navigation.itn;
 
+import org.junit.Test;
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.util.RouteComments;
 
 import java.io.IOException;
 
-public class TomTomRouteFormatTest extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
+
+public class TomTomRouteFormatTest {
     TomTomRouteFormat format = new TomTom5RouteFormat();
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("1046348|5364352|Linau|1|"));
         assertTrue(format.isPosition("+1046348|+5364352|Linau|1|"));
@@ -55,6 +60,7 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("1046348|5364352|Linau|10|"));
     }
 
+    @Test
     public void testParsePosition() {
         TomTomPosition position = format.parsePosition("1003200|5356948|Hamburg/Uhlenhorst|4|");
         assertEquals(1003200, position.getLongitudeAsInt().intValue());
@@ -62,6 +68,7 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertEquals("Hamburg/Uhlenhorst", position.getComment());
     }
 
+    @Test
     public void testParsePositionFromITNConv() {
         TomTomPosition position = format.parsePosition("+1003200|+5356948|Hamburg/Uhlenhorst|4|");
         assertEquals(1003200, position.getLongitudeAsInt().intValue());
@@ -69,6 +76,7 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertEquals("Hamburg/Uhlenhorst", position.getComment());
     }
 
+    @Test
     public void testParsePositionWithNegativeNumbers() {
         TomTomPosition position = format.parsePosition("-4253127|-3910293|Nirgendwo|3|");
         assertEquals(-4253127, position.getLongitudeAsInt().intValue());
@@ -76,6 +84,7 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertEquals("Nirgendwo", position.getComment());
     }
 
+    @Test
     public void testParsePositionFromMotorradTourenplaner() {
         TomTomPosition position = format.parsePosition("1003200|5356949|Finkenau, Hamburg, Uhlenhorst (Hamburg) |2|");
         assertEquals(1003200, position.getLongitudeAsInt().intValue());
@@ -83,27 +92,30 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertEquals("Finkenau, Hamburg, Uhlenhorst (Hamburg)", position.getComment());
     }
 
+    @Test
     public void testParsePositionFromTripmaster() {
         TomTomPosition position = format.parsePosition("992001|5356396|Abstand 6 - 11:32:26 - 34 m - Bahrenfeld|0|");
         assertEquals(992001, position.getLongitudeAsInt().intValue());
         assertEquals(5356396, position.getLatitudeAsInt().intValue());
         assertEquals("Bahrenfeld", position.getComment());
         assertEquals("Bahrenfeld", position.getCity());
-        assertEquals(34.0, position.getElevation());
+        assertDoubleEquals(34.0, position.getElevation());
         assertEquals("Abstand 6", position.getReason());
         assertEquals(calendar(1970, 1, 1, 11, 32, 26), position.getTime());
     }
 
+    @Test
     public void testParsePositionFromTripmasterWithStrangeNullPointerException() {
         TomTomPosition position = format.parsePosition("967193|5362179|Punkt - 12:01:38 - 10.9 m - Holm DE (Pinneberg)|0|");
         assertEquals(967193, position.getLongitudeAsInt().intValue());
         assertEquals(5362179, position.getLatitudeAsInt().intValue());
         assertEquals("Holm DE (Pinneberg)", position.getComment());
-        assertEquals(10.9, position.getElevation());
+        assertDoubleEquals(10.9, position.getElevation());
         assertEquals("Punkt", position.getReason());
         assertEquals(calendar(1970, 1, 1, 12, 1, 38), position.getTime());
     }
 
+    @Test
     public void testIsName() {
         assertTrue(format.isName("\"\""));
         assertTrue(format.isName("\"a\""));
@@ -111,10 +123,12 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertFalse(format.isName("\"\"\""));
     }
 
+    @Test
     public void testParseName() {
         assertEquals("abc", format.parseName("\"abc\""));
     }
 
+    @Test
     public void testSinglePositionFile() throws IOException {
         TomTomPosition position = format.parsePosition("883644|4939999|kommandantenhaus|2|");
         assertEquals(883644, position.getLongitudeAsInt().intValue());
@@ -122,19 +136,20 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertEquals("kommandantenhaus", position.getComment());
     }
 
+    @Test
     public void testSetLongitudeAndLatitudeAndElevation() {
         TomTomPosition position = format.parsePosition("992001|5356396|Abstand 6 - 11:32:26 - 34 m - Bahrenfeld|0|");
         assertEquals(992001, position.getLongitudeAsInt().intValue());
         assertEquals(5356396, position.getLatitudeAsInt().intValue());
-        assertEquals(34.0, position.getElevation());
+        assertDoubleEquals(34.0, position.getElevation());
         position.setLongitude(19.02522);
         position.setLatitude(62.963395);
         position.setElevation(67.42);
         assertEquals(1902522, position.getLongitudeAsInt().intValue());
         assertEquals(6296339, position.getLatitudeAsInt().intValue());
-        assertEquals(19.02522, position.getLongitude());
-        assertEquals(62.96339, position.getLatitude());
-        assertEquals(67.42, position.getElevation());
+        assertDoubleEquals(19.02522, position.getLongitude());
+        assertDoubleEquals(62.96339, position.getLatitude());
+        assertDoubleEquals(67.42, position.getElevation());
         position.setLongitude(null);
         position.setLatitude(null);
         position.setElevation(null);
@@ -145,46 +160,93 @@ public class TomTomRouteFormatTest extends NavigationTestCase {
         assertNull(position.getElevation());
     }
 
+    @Test
     public void testFormatFirstName() {
         TomTomPosition position = format.parsePosition("883644|4939999|Los|2|");
         String comment = format.formatFirstOrLastName(position, "Start", null);
-        assertEquals("Start : Los - 0 m - 0 km - 0 Km/h - 6", comment);
+        assertEquals("Los", comment);
+        position.setComment(comment);
         RouteComments.parseComment(position, comment);
         assertEquals("Los", position.getComment());
+    }
 
-        position.setTime(CompactCalendar.fromMillis(1234567890));
-        comment = format.formatFirstOrLastName(position, "Start", null);
-        assertEquals("06:56:07 - Start : 15/01/1970 06:56:07 : Los - 0 m - 0 km - 0 Km/h - 6", comment);
+    private static final CompactCalendar DATE = calendar(2004, 8, 7, 3, 29, 10, 542);
+    private static final CompactCalendar TIME = calendar(1970, 1, 1, 3, 29, 10, 542);
+
+    @Test
+    public void testFormatFirstNameWithDate() {
+        TomTomPosition position = format.parsePosition("883644|4939999|Los|2|");
+        position.setTime(DATE);
+        String comment = format.formatFirstOrLastName(position, "Start", null);
+        assertEquals("Start : Los : 07/08/2004 03:29:10 - 0.0 m", comment);
         position.setTime(null);
-        RouteComments.parseComment(position, comment);
+        position.setComment(comment);
         assertEquals("Los", position.getComment());
-        assertEquals(CompactCalendar.fromMillis(1234567890), position.getTime());
+        assertEquals("Start", position.getReason());
+        assertEquals(DATE.getTimeInMillis() / 1000, position.getTime().getTimeInMillis() / 1000);
 
-        position = format.parsePosition("883644|4939999|Los|2|");
-        comment = format.formatFirstOrLastName(position, "Start", 123.45);
-        assertEquals("Start : Los", comment);
-        RouteComments.parseComment(position, comment);
-        assertEquals("Los", position.getComment());
+        position.setElevation(47.4);
+        comment = format.formatFirstOrLastName(position, "Start", null);
+        assertEquals("Start : Los : 07/08/2004 03:29:10 - 47.4 m", comment);
+        position.setElevation(null);
+        position.setComment(comment);
+        assertDoubleEquals(47.4, position.getElevation());
 
-        // TODO elevation, speed, heading
+        comment = format.formatFirstOrLastName(position, "Start", 10.0);
+        assertEquals("Start : Los : 07/08/2004 03:29:10 - 47.4 m - 10 Km", comment);
+        position.setElevation(null);
+        position.setComment(comment);
+        assertDoubleEquals(47.4, position.getElevation());
     }
 
+    @Test
     public void testFormatLastName() {
-        TomTomPosition position = format.parsePosition("883644|4939999|Stop|2|");
-        assertEquals("Finish : Stop - 0 m - 0 km - 0 Km/h - 6", format.formatFirstOrLastName(position, "Finish", null));
-        assertEquals("?", format.formatFirstOrLastName(position, "Finish", 123.45));
-
-        // TODO continue
+        TomTomPosition position = format.parsePosition("883644|4939999|Los|2|");
+        position.setTime(DATE);
+        position.setElevation(82.4);
+        String comment = format.formatFirstOrLastName(position, "Finish", 1354.4);
+        assertEquals("Finish : Los : 07/08/2004 03:29:10 - 82.4 m - 1354 Km", comment);
+        position.setElevation(null);
+        position.setTime(null);
+        position.setComment(comment);
+        assertDoubleEquals(82.4, position.getElevation());
     }
 
+    @Test
     public void testFormatIntermediateName() {
         TomTomPosition position = format.parsePosition("883644|4939999|Weiter|2|");
-        assertEquals("Weiter", format.formatIntermediateName(position, null));
-        position.setTime(CompactCalendar.fromMillis(1234567890));
-        assertEquals("Weiter", format.formatIntermediateName(position, null));
-        assertEquals("?", format.formatIntermediateName(position, 123.45));
-
-        // TODO continue
+        String comment = format.formatIntermediateName(position, null);
+        assertEquals("Weiter", comment);
+        position.setComment(comment);
+        RouteComments.parseComment(position, comment);
+        assertEquals("Weiter", position.getComment());
     }
+
+    @Test
+    public void testFormatIntermediateNameWithDateElevationSpeedAndHeading() {
+        TomTomPosition position = format.parsePosition("883644|4939999|Weiter|2|");
+        position.setTime(TIME);
+        String comment = format.formatIntermediateName(position, null);
+        assertEquals("Weiter : 03:29:10 - 0.0 m - 0.0 Km/h - 0.0 deg", comment);
+        position.setTime(null);
+        position.setComment(comment);
+        assertEquals("Weiter", position.getComment());
+        assertNull(position.getReason());
+        assertEquals(TIME.getTimeInMillis() / 1000, position.getTime().getTimeInMillis() / 1000);
+
+        position.setElevation(47.4);
+        position.setHeading(248.9);
+        position.setSpeed(61.3);
+        comment = format.formatIntermediateName(position, 5.0);
+        assertEquals("Weiter : 03:29:10 - 47.4 m - 61.3 Km/h - 248.9 deg - 5 Km", comment);
+        position.setElevation(null);
+        position.setHeading(null);
+        position.setSpeed(null);
+        position.setComment(comment);
+        assertEquals("Weiter", position.getComment());
+        assertDoubleEquals(47.4, position.getElevation());
+        assertDoubleEquals(248.9, position.getHeading());
+        assertDoubleEquals(61.3, position.getSpeed());
+   }
 }
 

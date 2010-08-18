@@ -223,6 +223,10 @@ public abstract class RouteComments {
     private static final Pattern TRIPMASTER_LONG_PATTERN = Pattern.compile(
             "(" + TIME + ") - (Start : (.*?)|Finish : (.*?)|" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - " +
             "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
+    private static final Pattern ROUTECONVERTER_STARTEND_PATTERN = Pattern.compile(
+            "((Start|Ende|Finish) : (.+) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m.*");
+    private static final Pattern ROUTECONVERTER_INTERMEDIATE_PATTERN = Pattern.compile(
+            "(.+) : (" + TIME + ") - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
 
     /**
      * logpos encoding of the comment:
@@ -480,6 +484,37 @@ public abstract class RouteComments {
             if (position instanceof TomTomPosition) {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 tomTomPosition.setReason(Transfer.trim(matcher.group(2)));
+            }
+        }
+
+        matcher = ROUTECONVERTER_STARTEND_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            String dateStr = Transfer.trim(matcher.group(4));
+            String timeStr = Transfer.trim(matcher.group(5));
+            position.setTime(parseTripmaster18Date(dateStr + " " + timeStr));
+            position.setElevation(Transfer.parseDouble(matcher.group(6)));
+
+            if (position instanceof TomTomPosition) {
+                TomTomPosition tomTomPosition = (TomTomPosition) position;
+                String reason = Transfer.trim(matcher.group(2));
+                tomTomPosition.setReason(reason);
+                String city = Transfer.trim(matcher.group(3));
+                tomTomPosition.setCity(city);
+            }
+        }
+
+        matcher = ROUTECONVERTER_INTERMEDIATE_PATTERN.matcher(comment);
+        if (matcher.matches()) {
+            String timeStr = Transfer.trim(matcher.group(2));
+            position.setTime(parseTripmaster14Time(timeStr));
+            position.setElevation(Transfer.parseDouble(matcher.group(3)));
+            position.setSpeed(Transfer.parseDouble(matcher.group(4)));
+
+            if (position instanceof TomTomPosition) {
+                TomTomPosition tomTomPosition = (TomTomPosition) position;
+                String city = Transfer.trim(matcher.group(1));
+                tomTomPosition.setCity(city);
+                tomTomPosition.setHeading(Transfer.parseDouble(matcher.group(6)));
             }
         }
     }
