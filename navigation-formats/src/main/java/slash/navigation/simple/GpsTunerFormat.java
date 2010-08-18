@@ -69,7 +69,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Route;
+        return RouteCharacteristics.Track;
     }
 
     protected boolean isValidLine(String line) {
