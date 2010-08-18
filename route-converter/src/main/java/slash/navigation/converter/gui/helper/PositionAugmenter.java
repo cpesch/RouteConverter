@@ -382,7 +382,7 @@ public class PositionAugmenter {
                     maximumIndex = index;
             }
         }
-        int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumIndex) : 0;
+        int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumIndex + 1) : 0;
 
         processIndices(positionsTable, positionsModel, selectedRows,
                 digitCount, spaceBetweenNumberAndComment, COORDINATE_PREDICATE);
