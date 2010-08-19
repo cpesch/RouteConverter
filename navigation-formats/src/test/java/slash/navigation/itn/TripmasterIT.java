@@ -208,7 +208,7 @@ public class TripmasterIT extends NavigationTestCase {
         TomTomPosition position3 = route.getPositions().get(2);
         assertEquals(53.56963, position3.getLatitude());
         assertEquals(10.0294, position3.getLongitude());
-        assertEquals(0.0, position3.getElevation());
+        assertEquals(43.21, position3.getElevation());
         assertEquals("Hohenfelde (Hamburg)", position3.getComment());
         assertEquals("Hohenfelde (Hamburg)", position3.getCity());
         assertEquals("Dur. 0:05:55", position3.getReason());
