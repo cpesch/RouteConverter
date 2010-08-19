@@ -21,7 +21,13 @@
 package slash.navigation.converter.gui.mapview;
 
 import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-import chrriis.dj.nativeswing.swtimpl.components.*;
+import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserCommandEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
 import slash.common.io.TokenResolver;
@@ -46,8 +52,10 @@ import java.util.logging.Logger;
 
 public class EclipseSWTMapView extends BaseMapView {
     private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
+    private static final String DEBUG_PREFERENCE = "debug";
 
     private JWebBrowser webBrowser;
+    private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
 
     public boolean isSupportedPlatform() {
         return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
@@ -61,7 +69,7 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private JWebBrowser createWebBrowser() {
         try {
-            if(!NativeInterface.isOpen())
+            if (!NativeInterface.isOpen())
                 throw new Exception("Native Interface is not initialized");
             JWebBrowser browser = new JWebBrowser();
             browser.setBarsVisible(false);
@@ -79,9 +87,9 @@ public class EclipseSWTMapView extends BaseMapView {
             final String language = Locale.getDefault().getLanguage();
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", language, new TokenResolver() {
                 public String resolveToken(String tokenName) {
-                    if(tokenName.equals("locale"))
+                    if (tokenName.equals("locale"))
                         return language;
-                    if(tokenName.equals("percent"))
+                    if (tokenName.equals("percent"))
                         return Platform.isWindows() ? "99" : "100";
                     return tokenName;
                 }
@@ -315,7 +323,8 @@ public class EclipseSWTMapView extends BaseMapView {
                         webBrowser.runInSequence(new Runnable() {
                             public void run() {
                                 result[0] = webBrowser.executeJavascriptWithResult(script);
-                                log.info("After invokeLater, executeJavascriptWithResult " + result[0]); // TODO logging
+                                if (debug)
+                                    log.info("After invokeLater, executeJavascriptWithResult " + result[0]);
                             }
                         });
                     }
@@ -329,7 +338,8 @@ public class EclipseSWTMapView extends BaseMapView {
             webBrowser.runInSequence(new Runnable() {
                 public void run() {
                     result[0] = webBrowser.executeJavascriptWithResult(script);
-                    log.info("After executeJavascriptWithResult " + result[0]); // TODO logging
+                    if (debug)
+                        log.info("After executeJavascriptWithResult " + result[0]);
                 }
             });
         }
