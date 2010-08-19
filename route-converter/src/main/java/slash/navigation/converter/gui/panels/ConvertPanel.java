@@ -321,7 +321,6 @@ public abstract class ConvertPanel {
         });
 
         handleUndoUpdate();
-        handleFormatUpdate(); // TODO do we need this?
         handleRoutesUpdate();
         handlePositionsUpdate();
 
@@ -763,18 +762,6 @@ public abstract class ConvertPanel {
         actionManager.enable("redo", undoManager.canRedo());
     }
 
-    private void handleFormatUpdate() {
-        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-        boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
-        boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
-
-        buttonNewPositionList.setEnabled(supportsMultipleRoutes);
-        buttonRemovePositionList.setEnabled(existsMoreThanOneRoute);
-
-        ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
-        actionManager.enable("split-positionlist", supportsMultipleRoutes && existsMoreThanOnePosition);
-    }
-
     private void handleRoutesUpdate() {
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
@@ -933,6 +920,10 @@ public abstract class ConvertPanel {
     }
 
     // helpers for external components
+
+    public UrlDocument getUrlModel() {
+        return urlModel;
+    }
 
     public void selectPosition(int index) {
         tablePositions.getSelectionModel().addSelectionInterval(index, index);

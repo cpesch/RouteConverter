@@ -33,6 +33,7 @@ import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
 import slash.navigation.converter.gui.services.CrossingWays;
 import slash.navigation.converter.gui.services.GPSies;
 import slash.navigation.converter.gui.services.OpenStreetMap;
+import slash.navigation.converter.gui.services.RouteCatalog;
 import slash.navigation.converter.gui.services.RouteService;
 import slash.navigation.gui.SimpleDialog;
 
@@ -86,8 +87,7 @@ public class UploadDialog extends SimpleDialog {
         services.add(new CrossingWays());
         services.add(new GPSies());
         services.add(new OpenStreetMap());
-        // TODO implement these:
-        // services.add(new RouteCatalog());
+        services.add(new RouteCatalog());
 
         comboBoxChooseRouteService.setModel(new DefaultComboBoxModel(services.toArray()));
         comboBoxChooseRouteService.setRenderer(new RouteServiceListCellRenderer());

@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.FrameAction;
+
 import javax.swing.*;
 
 /**
@@ -38,6 +39,9 @@ public class SaveAction extends FrameAction {
     }
 
     public void run() {
-        convertPanel.saveFile();
+        if (convertPanel.getUrlModel().getShortUrl() != null)
+            convertPanel.saveFile();
+        else
+            convertPanel.saveAsFile();
     }
 }

@@ -42,7 +42,7 @@ public class RouteCatalog implements RouteService {
 
     public void upload(String username, String password, String fileUrl, String name, String description) throws IOException {
         routeCatalog.setAuthentication(username, password);
-        String categoryUrl = "?", routeUrl = "?"; // TODO fix me
+        String categoryUrl = "unknown-category", routeUrl = "unknown-route"; // TODO fix me
         if (isOriginOf(fileUrl))
             routeCatalog.addRoute(categoryUrl, description, fileUrl);
         else
