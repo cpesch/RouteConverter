@@ -72,7 +72,7 @@ public class OptionsPanel {
             }
         });
 
-        comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{Constants.ARABIC, Locale.CHINA, Locale.GERMANY, Locale.US, Locale.FRANCE, Constants.DUTCH, Constants.SERBIAN, Constants.ROOT_LOCALE}));
+        comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.GERMANY, Locale.US, Locale.FRANCE, Constants.NEDERLANDS, Constants.SERBIA, Constants.ROOT_LOCALE}));
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
         comboBoxLocale.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
