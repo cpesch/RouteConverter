@@ -186,6 +186,7 @@ public class Gpx11Format extends GpxFormat {
         return speed;
     }
 
+    @SuppressWarnings("unchecked")
     private void setSpeed(WptType wptType, Double speed) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -211,7 +212,7 @@ public class Gpx11Format extends GpxFormat {
 
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
-                JAXBElement element = (JAXBElement) any;
+                JAXBElement<String> element = (JAXBElement<String>) any;
                 if ("speed".equals(element.getName().getLocalPart())) {
                     if(foundSpeed || speed == null)
                         iterator.remove();
@@ -245,6 +246,7 @@ public class Gpx11Format extends GpxFormat {
         return heading;
     }
 
+    @SuppressWarnings("unchecked")
     private void setHeading(WptType wptType, Double heading) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -270,7 +272,7 @@ public class Gpx11Format extends GpxFormat {
 
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
-                JAXBElement element = (JAXBElement) any;
+                JAXBElement<String> element = (JAXBElement<String>) any;
                 if ("course".equals(element.getName().getLocalPart())) {
                     if(foundHeading || heading == null)
                         iterator.remove();

@@ -67,10 +67,12 @@ public class NavigationFileParser {
         return formatAndRoutes.getFormat();
     }
 
+    @SuppressWarnings("unchecked")
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getTheRoute() {
         return formatAndRoutes.getRoute();
     }
 
+    @SuppressWarnings("unchecked")
     public List<BaseRoute> getAllRoutes() {
         return formatAndRoutes.getRoutes();
     }
@@ -98,6 +100,7 @@ public class NavigationFileParser {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private FormatAndRoutes internalRead(InputStream buffer, int readBufferSize, Calendar startDate,
                                          List<NavigationFormat> formats) throws IOException {
         try {
@@ -128,6 +131,7 @@ public class NavigationFileParser {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private void commentRoutes(List<BaseRoute> routes) {
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
             RouteComments.commentPositions(route.getPositions());
@@ -246,6 +250,7 @@ public class NavigationFileParser {
         return Transfer.ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
     }
 
+    @SuppressWarnings("unchecked")
     public void write(BaseRoute route, NavigationFormat format,
                       boolean duplicateFirstPosition,
                       boolean ignoreMaximumPositionCount,
@@ -293,6 +298,7 @@ public class NavigationFileParser {
     }
 
 
+    @SuppressWarnings("unchecked")
     private void preprocessRoute(BaseRoute routeToWrite, NavigationFormat format, boolean duplicateFirstPosition) {
         if (format instanceof NmnFormat)
             routeToWrite.removeDuplicates();
@@ -300,6 +306,7 @@ public class NavigationFileParser {
             routeToWrite.add(0, ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite));
     }
 
+    @SuppressWarnings("unchecked")
     private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int trackIndex, OutputStream... targets) {
         // gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
@@ -317,6 +324,7 @@ public class NavigationFileParser {
     }
 
 
+    @SuppressWarnings("unchecked")
     public void write(List<BaseRoute> routes, MultipleRoutesFormat format, File target) throws IOException {
         log.info("Writing '" + format.getName() + "' file with with " + routes.size() + " routes and " +
                 getPositionCounts(routes) + " positions");

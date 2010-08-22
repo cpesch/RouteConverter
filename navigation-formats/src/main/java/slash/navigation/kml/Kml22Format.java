@@ -96,7 +96,7 @@ public class Kml22Format extends KmlFormat {
         return extractTracks(kmlType);
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends AbstractFeatureType>> elements, String name, Class<T> resultClass) {
         List<JAXBElement<T>> result = new ArrayList<JAXBElement<T>>();
         for (JAXBElement<? extends AbstractFeatureType> element : elements) {

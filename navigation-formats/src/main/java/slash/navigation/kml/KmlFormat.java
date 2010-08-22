@@ -86,6 +86,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
@@ -245,7 +246,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 List<BaseRoute> routes = parser.getAllRoutes();
                 for (BaseRoute route : routes) {
                     if (resultClass.isInstance(route))
-                        result.add((T) route);
+                        result.add(resultClass.cast(route));
                 }
             }
         } catch (Exception e) {

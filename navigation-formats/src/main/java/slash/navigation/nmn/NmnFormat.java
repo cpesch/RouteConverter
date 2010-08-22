@@ -46,6 +46,7 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
         return ".rte";
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> NmnRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new NmnRoute(this, characteristics, null, (List<NmnPosition>) positions);
     }

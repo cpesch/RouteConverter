@@ -71,6 +71,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> TourRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new TourRoute(name, (List<TourPosition>) positions);        
     }

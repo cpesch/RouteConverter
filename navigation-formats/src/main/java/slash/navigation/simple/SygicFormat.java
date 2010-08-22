@@ -49,6 +49,7 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return ".txt";
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }

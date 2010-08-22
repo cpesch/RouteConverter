@@ -58,6 +58,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> MagicMapsPthRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }

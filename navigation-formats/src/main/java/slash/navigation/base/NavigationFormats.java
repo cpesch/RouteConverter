@@ -239,6 +239,7 @@ public final class NavigationFormats {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public static BaseRoute<BaseNavigationPosition, BaseNavigationFormat> asFormat(BaseRoute route, NavigationFormat format) throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> result;
         String formatName = getFormatName(format);

@@ -76,6 +76,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return positions.size() > 0;
     }
 
+    @SuppressWarnings("unchecked")
     protected R createRoute(RouteCharacteristics characteristics, List<Wgs84Position> positions) {
         return (R)new Wgs84Route(this, characteristics, positions);
     }
@@ -91,6 +92,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     protected abstract Wgs84Position parsePosition(String line, CompactCalendar startDate);
 
 
+    @SuppressWarnings("unchecked")
     public void write(R route, PrintWriter writer, int startIndex, int endIndex) {
         List<Wgs84Position> positions = route.getPositions();
         writeHeader(writer);

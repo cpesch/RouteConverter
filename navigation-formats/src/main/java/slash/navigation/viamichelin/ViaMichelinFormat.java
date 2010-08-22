@@ -59,6 +59,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> ViaMichelinRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new ViaMichelinRoute(name, (List<Wgs84Position>) positions);
     }

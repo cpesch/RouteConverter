@@ -61,6 +61,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> KlickTelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KlickTelRoute(name, (List<Wgs84Position>) positions);
     }

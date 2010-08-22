@@ -163,6 +163,7 @@ public abstract class NavigationTestCase extends TestCase {
         return name.substring(0, Math.min(15 - 3, name.length()));
     }
 
+    @SuppressWarnings("unchecked")
     public static void compareRouteMetaData(BaseRoute sourceRoute, BaseRoute targetRoute) {
         if (targetRoute instanceof KmlRoute && targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
             String sourceName = getKmlRouteName(sourceRoute);

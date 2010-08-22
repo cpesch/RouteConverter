@@ -66,6 +66,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }

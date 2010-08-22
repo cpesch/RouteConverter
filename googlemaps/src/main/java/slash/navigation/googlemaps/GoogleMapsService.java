@@ -98,6 +98,7 @@ public class GoogleMapsService {
         return kml != null ? extractPositions(kml) : null;
     }
 
+    @SuppressWarnings("unchecked")
     <T> T find(List elements, Class<T> resultClass) {
         for (Object element : elements) {
             if (resultClass.isInstance(element))

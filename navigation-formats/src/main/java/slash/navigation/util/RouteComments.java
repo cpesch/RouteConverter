@@ -71,6 +71,7 @@ public abstract class RouteComments {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static String createRouteDescription(BaseRoute route) {
         String name = Transfer.trim(route.getName());
         List<String> description = route.getDescription();

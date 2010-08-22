@@ -78,6 +78,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> MagicMapsIktRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new MagicMapsIktRoute(name, null, (List<Wgs84Position>) positions);
     }
