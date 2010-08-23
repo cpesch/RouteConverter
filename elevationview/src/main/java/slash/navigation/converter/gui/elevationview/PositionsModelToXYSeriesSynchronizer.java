@@ -118,7 +118,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         // delete might change all distances of the rows after the deleted rows
         getSeries().setFireSeriesChanged(false);
         series.delete(firstRow, series.getItemCount() - 1);
-        handleAdd(lastRow + 1, positions.getRowCount() - 1);
+        handleAdd(Math.min(lastRow + 1, series.getItemCount() - 1), positions.getRowCount() - 1);
         getSeries().setFireSeriesChanged(true);
         getSeries().fireSeriesChanged();
     }
