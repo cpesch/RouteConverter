@@ -45,8 +45,6 @@ import java.text.MessageFormat;
  */
 
 public class PositionAugmenter {
-    private static final int SLOW_OPERATIONS_IN_A_ROW = 10;
-
     private final JFrame frame;
 
     public PositionAugmenter(JFrame frame) {
@@ -73,9 +71,13 @@ public class PositionAugmenter {
 
     private interface Operation {
         String getName();
+
         int getColumnIndex();
+
         boolean run(int index, BaseNavigationPosition position) throws Exception;
+
         String getErrorMessage();
+
         void postRunning();
     }
 
@@ -92,8 +94,7 @@ public class PositionAugmenter {
                 try {
                     final Exception[] lastException = new Exception[1];
                     lastException[0] = null;
-                    final int maximumRangeLength = slowOperation ? SLOW_OPERATIONS_IN_A_ROW :
-                            rows.length > 99 ? rows.length / 10 : rows.length;
+                    final int maximumRangeLength = rows.length > 99 ? rows.length / (slowOperation ? 100 : 10) : rows.length;
 
                     new ContinousRange(rows, new RangeOperation() {
                         public void performOnIndex(int index) {
@@ -168,7 +169,8 @@ public class PositionAugmenter {
                         return RouteConverter.getBundle().getString("add-coordinates-error");
                     }
 
-                    public void postRunning() {}
+                    public void postRunning() {
+                    }
                 }
         );
     }
@@ -250,7 +252,8 @@ public class PositionAugmenter {
                         return RouteConverter.getBundle().getString("add-populated-place-error");
                     }
 
-                    public void postRunning() {}
+                    public void postRunning() {
+                    }
                 }
         );
     }
@@ -287,7 +290,8 @@ public class PositionAugmenter {
                         return RouteConverter.getBundle().getString("add-postal-address-error");
                     }
 
-                    public void postRunning() {}
+                    public void postRunning() {
+                    }
                 }
         );
     }
@@ -328,7 +332,8 @@ public class PositionAugmenter {
                         return RouteConverter.getBundle().getString("add-speed-error");
                     }
 
-                    public void postRunning() {}
+                    public void postRunning() {
+                    }
                 }
         );
     }
@@ -367,7 +372,8 @@ public class PositionAugmenter {
                         return RouteConverter.getBundle().getString("add-index-error");
                     }
 
-                    public void postRunning() {}
+                    public void postRunning() {
+                    }
                 }
         );
     }
@@ -376,7 +382,7 @@ public class PositionAugmenter {
                            boolean prefixNumberWithZeros,
                            boolean spaceBetweenNumberAndComment) {
         int maximumIndex = 0;
-        if(prefixNumberWithZeros) {
+        if (prefixNumberWithZeros) {
             for (int index : selectedRows) {
                 if (index > maximumIndex)
                     maximumIndex = index;
