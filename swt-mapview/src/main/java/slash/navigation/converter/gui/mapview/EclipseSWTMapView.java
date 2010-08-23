@@ -167,7 +167,7 @@ public class EclipseSWTMapView extends BaseMapView {
             }
 
             public void commandReceived(WebBrowserCommandEvent e) {
-                log.fine(System.currentTimeMillis() + " commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
+                // log.fine(System.currentTimeMillis() + " commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
             }
         });
 
@@ -186,7 +186,7 @@ public class EclipseSWTMapView extends BaseMapView {
             log.fine(System.currentTimeMillis() + " compatible, further initializing map");
             initializeAfterLoading();
             initializeBrowserInteraction();
-            initializeDragListener();
+            initializeCallbackListener();
             checkLocalhostResolution();
             checkCallback();
         } else {
@@ -315,6 +315,7 @@ public class EclipseSWTMapView extends BaseMapView {
         if (script.length() == 0)
             return null;
 
+        final boolean pollingCallback = !script.contains("getCallbacks");
         final Object[] result = new Object[1];
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
@@ -323,8 +324,9 @@ public class EclipseSWTMapView extends BaseMapView {
                         webBrowser.runInSequence(new Runnable() {
                             public void run() {
                                 result[0] = webBrowser.executeJavascriptWithResult(script);
-                                if (debug)
+                                if (debug && pollingCallback) {
                                     log.info("After invokeLater, executeJavascriptWithResult " + result[0]);
+                                }
                             }
                         });
                     }
@@ -338,13 +340,16 @@ public class EclipseSWTMapView extends BaseMapView {
             webBrowser.runInSequence(new Runnable() {
                 public void run() {
                     result[0] = webBrowser.executeJavascriptWithResult(script);
-                    if (debug)
+                    if (debug && pollingCallback) {
                         log.info("After executeJavascriptWithResult " + result[0]);
+                    }
                 }
             });
         }
 
-        logExecuteScript(script, result[0]);
+        if (pollingCallback) {
+            logExecuteScript(script, result[0]);
+        }
         return result[0] != null ? result[0].toString() : null;
     }
 }

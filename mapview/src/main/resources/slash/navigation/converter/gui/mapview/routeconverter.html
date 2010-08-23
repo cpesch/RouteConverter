@@ -58,30 +58,42 @@
        div.style.height = y + "px";
    }
 
+   var callbackQueue = [];
+
+   function getCallbacks() {
+       var callbacks = callbackQueue.join("--");
+       callbackQueue = [];
+       return callbacks;
+   }
+
    function callJava(uri) {
-       if (xmlhttp) {
-           xmlhttp.open("GET", "http://127.0.0.1:" + dragListenerPort + "/" + uri);
+       if (xmlhttp && callbackListenerPort > 0) {
+           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + uri);
            xmlhttp.setRequestHeader("id", "Jx3dQUv4");
            xmlhttp.send();
+       } else {
+           callbackQueue.push("GET /" + uri + " POLL/1.0");
        }
    }
 
    function callJavaWithPost(body) {
-       if (xmlhttp) {
-           xmlhttp.open("POST", "http://127.0.0.1:" + dragListenerPort + "/generic-post-url/", true);
+       if (xmlhttp && callbackListenerPort > 0) {
+           xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/generic-post-url/", true);
            xmlhttp.setRequestHeader("id", "Jx3dQUv4");
            xmlhttp.send(body);
+       } else {
+           callbackQueue.push(body);
        }
    }
 
-   var dragListenerPort = 4711;
+   var callbackListenerPort = -1;
 
-   function setDragListenerPort(port) {
-       dragListenerPort = port;
+   function setCallbackListenerPort(callbackListenerPort) {
+       this.callbackListenerPort = callbackListenerPort;
    }
 
-   function checkCallback() {
-       callJava("callback/" + dragListenerPort);
+   function checkCallbackListenerPort() {
+       callJava("callback-port/" + callbackListenerPort);
    }
 
    function setMapType(mapType) {

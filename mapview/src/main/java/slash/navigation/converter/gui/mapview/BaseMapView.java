@@ -98,8 +98,8 @@ public abstract class BaseMapView implements MapView {
     private PositionsModel positionsModel;
     private List<BaseNavigationPosition> positions;
 
-    private ServerSocket dragListenerServerSocket;
-    private Thread mapViewRouteUpdater, mapViewPositionUpdater, mapViewDragListener;
+    private ServerSocket callbackListenerServerSocket;
+    private Thread routeUpdater, positionUpdater, callbackListener, callbackPoller;
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
@@ -188,7 +188,7 @@ public abstract class BaseMapView implements MapView {
             }
         });
 
-        mapViewRouteUpdater = new Thread(new Runnable() {
+        routeUpdater = new Thread(new Runnable() {
             public void run() {
                 long lastTime = 0;
                 boolean recenter;
@@ -261,9 +261,9 @@ public abstract class BaseMapView implements MapView {
                 }
             }
         }, "MapViewRouteUpdater");
-        mapViewRouteUpdater.start();
+        routeUpdater.start();
 
-        mapViewPositionUpdater = new Thread(new Runnable() {
+        positionUpdater = new Thread(new Runnable() {
             public void run() {
                 long lastTime = 0;
                 while (true) {
@@ -305,7 +305,7 @@ public abstract class BaseMapView implements MapView {
                 }
             }
         }, "MapViewPositionUpdater");
-        mapViewPositionUpdater.start();
+        positionUpdater.start();
     }
 
     private ServerSocket createDragListenerServerSocket() {
@@ -314,7 +314,7 @@ public abstract class BaseMapView implements MapView {
             serverSocket.setSoTimeout(1000);
             int port = serverSocket.getLocalPort();
             log.info("MapView listens on port " + port + " for dragging");
-            setDragListenerPort(port);
+            setCallbackListenerPort(port);
             return serverSocket;
         } catch (IOException e) {
             log.severe("Cannot open drag listener socket: " + e.getMessage());
@@ -322,12 +322,12 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    protected void initializeDragListener() {
-        dragListenerServerSocket = createDragListenerServerSocket();
-        if (dragListenerServerSocket == null)
+    protected void initializeCallbackListener() {
+        callbackListenerServerSocket = createDragListenerServerSocket();
+        if (callbackListenerServerSocket == null)
             return;
 
-        mapViewDragListener = new Thread(new Runnable() {
+        callbackListener = new Thread(new Runnable() {
             public void run() {
                 while (true) {
                     synchronized (notificationMutex) {
@@ -341,7 +341,7 @@ public abstract class BaseMapView implements MapView {
                     OutputStream os = null;
                     try {
                         List<String> lines = new ArrayList<String>();
-                        clientSocket = dragListenerServerSocket.accept();
+                        clientSocket = callbackListenerServerSocket.accept();
                         is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
                         os = clientSocket.getOutputStream();
                         boolean processingPost = false, processingBody = false;
@@ -363,13 +363,13 @@ public abstract class BaseMapView implements MapView {
                                 break;
                             }
                         }
-                        processDragListenerCallBack(lines);
+                        processCallbacks(lines);
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {
                         synchronized (notificationMutex) {
                             if (running) {
-                                log.severe("Cannot listen at drag listener socket: " + e.getMessage());
+                                log.severe("Cannot listen at callback listener socket: " + e.getMessage());
                             }
                         }
                         break;
@@ -388,8 +388,37 @@ public abstract class BaseMapView implements MapView {
                     }
                 }
             }
-        }, "MapViewDragListener");
-        mapViewDragListener.start();
+        }, "MapViewCallbackListener");
+        callbackListener.start();
+    }
+
+    protected void initializeCallbackPoller() {
+        callbackPoller = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    synchronized (notificationMutex) {
+                        if (!running) {
+                            return;
+                        }
+                    }
+
+                    String callbacks = Transfer.trim(executeScriptWithResult("return getCallbacks();"));
+                    if(callbacks != null) {
+                        String[] lines = callbacks.split("--");
+                        for(String line : lines) {
+                            processCallback(line);
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // intentionally left empty
+                    }
+                }
+            }
+        }, "MapViewCallbackPoller");
+        callbackPoller.start();
     }
 
     protected void checkLocalhostResolution() {
@@ -436,7 +465,7 @@ public abstract class BaseMapView implements MapView {
             public void run() {
                 addMapViewListener(callbackWaiter);
                 try {
-                    executeScript("checkCallback();");
+                    executeScript("checkCallbackListenerPort();");
 
                     long start = System.currentTimeMillis();
                     while(true) {
@@ -456,21 +485,17 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     synchronized (receivedCallback) {
-                        if(!receivedCallback[0])
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    String message = "Unable to call RouteConverter from Webbrowser via port " + dragListenerServerSocket.getLocalPort() + ".\nPlease check your firewall settings.";
-                                    log.severe(message);
-                                    JOptionPane.showMessageDialog(getComponent(), message, "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-                            });
+                        if(!receivedCallback[0]) {
+                        }
+                        setCallbackListenerPort(-1);   // TODO
+                        initializeCallbackPoller();
                     }
                 }
                 finally {
                     removeMapViewListener(callbackWaiter);
                 }
             }
-        } , "CallbackChecker").start();
+        } , "MapViewCallbackChecker").start();
     }
 
     // disposal
@@ -482,46 +507,56 @@ public abstract class BaseMapView implements MapView {
             notificationMutex.notifyAll();
         }
 
-        if (mapViewPositionUpdater != null) {
+        if (positionUpdater != null) {
             try {
-                mapViewPositionUpdater.join();
+                positionUpdater.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
             long end = System.currentTimeMillis();
-            log.info("MapViewPositionUpdater stopped after " + (end - start) + " ms");
+            log.info("PositionUpdater stopped after " + (end - start) + " ms");
         }
 
-        if (mapViewRouteUpdater != null) {
+        if (routeUpdater != null) {
             try {
-                mapViewRouteUpdater.join();
+                routeUpdater.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
             long end = System.currentTimeMillis();
-            log.info("MapViewRouteUpdater stopped after " + (end - start) + " ms");
+            log.info("RouteUpdater stopped after " + (end - start) + " ms");
         }
 
         disposeBrowser();
 
-        if (dragListenerServerSocket != null) {
+        if (callbackListenerServerSocket != null) {
             try {
-                dragListenerServerSocket.close();
+                callbackListenerServerSocket.close();
             } catch (IOException e) {
-                log.severe("Cannot close drag listener socket:" + e.getMessage());
+                log.severe("Cannot close callback listener socket:" + e.getMessage());
             }
             long end = System.currentTimeMillis();
-            log.info("MapViewDragListenerSocket stopped after " + (end - start) + " ms");
+            log.info("CallbackListenerSocket stopped after " + (end - start) + " ms");
         }
 
-        if (mapViewDragListener != null) {
+        if (callbackListener != null) {
             try {
-                mapViewDragListener.join();
+                callbackListener.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
             long end = System.currentTimeMillis();
-            log.info("MapViewDragListener stopped after " + (end - start) + " ms");
+            log.info("CallbackListener stopped after " + (end - start) + " ms");
+        }
+
+        if (callbackPoller != null) {
+            try {
+                callbackPoller.join();
+            } catch (InterruptedException e) {
+                // intentionally left empty
+            }
+            long end = System.currentTimeMillis();
+            log.info("CallbackPoller stopped after " + (end - start) + " ms");
         }
     }
 
@@ -550,9 +585,9 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void setDragListenerPort(int dragListenerPort) {
+    private void setCallbackListenerPort(int callbackListenerPort) {
         synchronized (notificationMutex) {
-            executeScript("setDragListenerPort(" + dragListenerPort + ")");
+            executeScript("setCallbackListenerPort(" + callbackListenerPort + ")");
         }
     }
 
@@ -1004,106 +1039,121 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^GET /maptypechanged/(.*) .*$");
     private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^GET /zoomend/(.*)/(.*) .*$");
     private static final Pattern MOVE_END_PATTERN = Pattern.compile("^GET /moveend/(.*)/(.*) .*$");
-    private static final Pattern CALLBACK_PATTERN = Pattern.compile("^GET /callback/(\\d+) .*$");
+    private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^GET /callback-port/(\\d+) .*$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
-    private void processDragListenerCallBack(List<String> lines) {
+    private void processCallbacks(List<String> lines) {
         if (!isAuthenticated(lines))
             return;
 
         for (String line : lines) {
-            Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
-            if (directionsLoadMatcher.matches()) {
-                meters += Transfer.parseInt(directionsLoadMatcher.group(1));
-                seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
-                fireCalculatedDistance(meters, seconds);
-            }
+            if (processCallback(line))
+                break;
+        }
+    }
 
-            Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
-            if (insertPositionMatcher.matches()) {
-                Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
-                Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
-                insertPosition(longitude, latitude);
-            }
+    private boolean processCallback(String line) {
+        Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
+        if (directionsLoadMatcher.matches()) {
+            meters += Transfer.parseInt(directionsLoadMatcher.group(1));
+            seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
+            fireCalculatedDistance(meters, seconds);
+            return true;
+        }
 
-            Matcher moePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
-            if (moePositionMatcher.matches()) {
-                int index = Transfer.parseInt(moePositionMatcher.group(1));
-                Double latitude = Transfer.parseDouble(moePositionMatcher.group(2));
-                Double longitude = Transfer.parseDouble(moePositionMatcher.group(3));
-                movePosition(index, longitude, latitude);
-            }
+        Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
+        if (insertPositionMatcher.matches()) {
+            Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
+            Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+            insertPosition(longitude, latitude);
+            return true;
+        }
 
-            Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(line);
-            if (removePositionMatcher.matches()) {
-                int index = Transfer.parseInt(removePositionMatcher.group(1));
-                removePosition(index);
-            }
+        Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
+        if (movePositionMatcher.matches()) {
+            int index = Transfer.parseInt(movePositionMatcher.group(1));
+            Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
+            Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
+            movePosition(index, longitude, latitude);
+            return true;
+        }
 
-            Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
-            if (mapTypeChangedMatcher.matches()) {
-                String mapType = mapTypeChangedMatcher.group(1);
-                preferences.put(MAP_TYPE_PREFERENCE, mapType);
-            }
+        Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(line);
+        if (removePositionMatcher.matches()) {
+            int index = Transfer.parseInt(removePositionMatcher.group(1));
+            removePosition(index);
+            return true;
+        }
 
-            Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
-            if (zoomEndMatcher.matches()) {
+        Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
+        if (mapTypeChangedMatcher.matches()) {
+            String mapType = mapTypeChangedMatcher.group(1);
+            preferences.put(MAP_TYPE_PREFERENCE, mapType);
+            return true;
+        }
+
+        Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
+        if (zoomEndMatcher.matches()) {
+            synchronized (notificationMutex) {
+                // since setCenter() leads to a callback and thus paints the track twice
+                if (ignoreNextZoomCallback)
+                    ignoreNextZoomCallback = false;
+                else
+                    haveToRepaintRouteImmediately = true;
+                // if enabled, recenter map to selected positions after zooming
+                if (recenterAfterZooming)
+                    haveToRecenterMap = true;
+                haveToRepaintSelectionImmediately = true;
+                notificationMutex.notifyAll();
+            }
+            return true;
+        }
+
+        Matcher moveEndMather = MOVE_END_PATTERN.matcher(line);
+        if (moveEndMather.matches()) {
+            if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
                 synchronized (notificationMutex) {
-                    // since setCenter() leads to a callback and thus paints the track twice
-                    if (ignoreNextZoomCallback)
-                        ignoreNextZoomCallback = false;
-                    else
-                        haveToRepaintRouteImmediately = true;
-                    // if enabled, recenter map to selected positions after zooming
-                    if (recenterAfterZooming)
-                        haveToRecenterMap = true;
+                    haveToRepaintRouteImmediately = true;
                     haveToRepaintSelectionImmediately = true;
                     notificationMutex.notifyAll();
                 }
             }
-
-            Matcher moveEndMather = MOVE_END_PATTERN.matcher(line);
-            if (moveEndMather.matches()) {
-                if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
-                    synchronized (notificationMutex) {
-                        haveToRepaintRouteImmediately = true;
-                        haveToRepaintSelectionImmediately = true;
-                        notificationMutex.notifyAll();
-                    }
-                }
-            }
-
-            Matcher testMatcher = CALLBACK_PATTERN.matcher(line);
-            if (testMatcher.matches()) {
-                int port = Transfer.parseInt(testMatcher.group(1));
-                fireReceivedCallback(port);
-            }
-
-            Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(line);
-            if (insertWaypointsMatcher.matches()) {
-                Integer key = Transfer.parseInt(insertWaypointsMatcher.group(2));
-                List<Double> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
-
-                List<BaseNavigationPosition> successorPredecessor;
-                synchronized (insertWaypointsQueue) {
-                    successorPredecessor = insertWaypointsQueue.remove(key);
-                }
-
-                if(coordinates.size() < 4 || successorPredecessor == null)
-                   break;
-
-                BaseNavigationPosition before = successorPredecessor.get(0);
-                synchronized (notificationMutex) {
-                    int index = positions.indexOf(before) + 1;
-                    for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-                        // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-                        positionsModel.add(index, coordinates.get(i - 2), coordinates.get(i - 3), null, null, null, null);
-                    }
-                }
-
-                RouteComments.commentPositions(positions);
-            }
+            return true;
         }
+
+        Matcher testMatcher = CALLBACK_PORT_PATTERN.matcher(line);
+        if (testMatcher.matches()) {
+            int port = Transfer.parseInt(testMatcher.group(1));
+            fireReceivedCallback(port);
+            return true;
+        }
+
+        Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(line);
+        if (insertWaypointsMatcher.matches()) {
+            Integer key = Transfer.parseInt(insertWaypointsMatcher.group(2));
+            List<Double> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
+
+            List<BaseNavigationPosition> successorPredecessor;
+            synchronized (insertWaypointsQueue) {
+                successorPredecessor = insertWaypointsQueue.remove(key);
+            }
+
+            if(coordinates.size() < 4 || successorPredecessor == null)
+                return true;
+
+            BaseNavigationPosition before = successorPredecessor.get(0);
+            synchronized (notificationMutex) {
+                int index = positions.indexOf(before) + 1;
+                for (int i = coordinates.size() - 1; i > 0; i -= 4) {
+                    // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
+                    positionsModel.add(index, coordinates.get(i - 2), coordinates.get(i - 3), null, null, null, null);
+                }
+            }
+
+            RouteComments.commentPositions(positions);
+            return false;
+        }
+        return false;
     }
 
     private List<Double> parseCoordinates(String coordinates) {
@@ -1187,7 +1237,7 @@ public abstract class BaseMapView implements MapView {
         Map<String, String> map = asMap(lines);
         String host = Transfer.trim(map.get("Host"));
         String id = Transfer.trim(map.get("id"));
-        return host != null && host.equals("127.0.0.1:" + dragListenerServerSocket.getLocalPort()) &&
+        return host != null && host.equals("127.0.0.1:" + callbackListenerServerSocket.getLocalPort()) &&
                 id != null && id.equals("Jx3dQUv4");
     }
 
