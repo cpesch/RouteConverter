@@ -95,14 +95,14 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void handleFullUpdate() {
-        handleDelete(0, series.getItemCount() - 1);
+        series.delete(0, series.getItemCount() - 1);
         if (positions.getRowCount() > 0)
             handleAdd(0, positions.getRowCount() - 1);
     }
 
     protected void handleIntervalXUpdate(int firstRow, int lastRow) {
         getSeries().setFireSeriesChanged(false);
-        handleDelete(firstRow, lastRow);
+        series.delete(firstRow, Math.min(lastRow, series.getItemCount() - 1));
         handleAdd(firstRow, lastRow);
         getSeries().setFireSeriesChanged(true);
         getSeries().fireSeriesChanged();
@@ -115,6 +115,11 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void handleDelete(int firstRow, int lastRow) {
-        series.delete(firstRow, lastRow);
+        // delete might change all distances of the rows after the deleted rows
+        getSeries().setFireSeriesChanged(false);
+        series.delete(firstRow, series.getItemCount() - 1);
+        handleAdd(lastRow + 1, positions.getRowCount() - 1);
+        getSeries().setFireSeriesChanged(true);
+        getSeries().fireSeriesChanged();
     }
 }

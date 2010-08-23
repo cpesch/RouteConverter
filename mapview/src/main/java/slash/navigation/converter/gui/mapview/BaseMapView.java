@@ -136,12 +136,25 @@ public abstract class BaseMapView implements MapView {
                     updateButDontRecenter();
                 else {
                     // ignored updates on columns not displayed
-                    if(e.getType() == TableModelEvent.UPDATE &&
+                    if (e.getType() == TableModelEvent.UPDATE &&
                             !(e.getColumn() == PositionColumns.DESCRIPTION_COLUMN_INDEX ||
                                     e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                                    e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX))
+                                    e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
+                                    e.getColumn() == TableModelEvent.ALL_COLUMNS))
                         return;
                     update(allRowsChanged || insertOrDelete);
+                }
+                // update position marker on updates of longitude and latitude
+                if (e.getType() == TableModelEvent.UPDATE &&
+                        (e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
+                                e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
+                                e.getColumn() == TableModelEvent.ALL_COLUMNS)) {
+                    for (int selectedPositionIndex : selectedPositionIndices) {
+                        if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
+                            updatePositionMarker();
+                            break;
+                        }
+                    }
                 }
             }
         });
@@ -551,7 +564,8 @@ public abstract class BaseMapView implements MapView {
 
         if (callbackPoller != null) {
             try {
-                callbackPoller.join();
+                if (callbackPoller.isAlive())
+                    callbackPoller.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -805,6 +819,13 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             haveToRepaintRouteImmediately = true;
             significantPositionCache.clear();
+            notificationMutex.notifyAll();
+        }
+    }
+
+    private void updatePositionMarker() {
+        synchronized (notificationMutex) {
+            haveToUpdatePosition = true;
             notificationMutex.notifyAll();
         }
     }
@@ -1192,19 +1213,18 @@ public abstract class BaseMapView implements MapView {
 
     private void movePosition(int index, Double longitude, Double latitude) {
         BaseNavigationPosition position = lastSelectedPositions.get(index);
-        position.setLatitude(latitude);
-        position.setLongitude(longitude);
-
-        updateButDontRecenter();
-
-        // notify views about change, leads to update(false)
         int row;
         synchronized (notificationMutex) {
            row = positions.indexOf(position);
         }
+        positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
+        positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
+
+        updateButDontRecenter();
+
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
-        positionsModel.fireTableRowsUpdated(row, positions.size() - 1, PositionColumns.LONGITUDE_COLUMN_INDEX);
+        positionsModel.fireTableRowsUpdated(row, positions.size() - 1, TableModelEvent.ALL_COLUMNS);
 
         // give time for repainting of the route
         try {
@@ -1213,11 +1233,7 @@ public abstract class BaseMapView implements MapView {
             // intentionally left empty
         }
 
-        // repaint position marker
-        synchronized (notificationMutex) {
-            haveToUpdatePosition = true;
-            notificationMutex.notifyAll();
-        }
+        updatePositionMarker();
     }
 
     private void removePosition(int index) {

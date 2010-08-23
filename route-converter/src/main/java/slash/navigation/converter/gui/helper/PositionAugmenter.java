@@ -159,8 +159,8 @@ public class PositionAugmenter {
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         GoogleMapsPosition coordinates = service.getPositionFor(position.getComment());
                         if (coordinates != null) {
-                            positionsModel.edit(coordinates.getLongitude().toString(), index, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
-                            positionsModel.edit(coordinates.getLatitude().toString(), index, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
+                            positionsModel.edit(coordinates.getLongitude(), index, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
+                            positionsModel.edit(coordinates.getLatitude(), index, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
                         }
                         return coordinates != null;
                     }
@@ -205,7 +205,7 @@ public class PositionAugmenter {
                         if (elevation == null)
                             elevation = earthToolsService.getElevationFor(position.getLongitude(), position.getLatitude());
                         if (elevation != null)
-                            positionsModel.edit(elevation.toString(), index, PositionColumns.ELEVATION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(elevation, index, PositionColumns.ELEVATION_COLUMN_INDEX, false, true);
                         return elevation != null;
                     }
 
@@ -322,7 +322,7 @@ public class PositionAugmenter {
                             Double nextSpeed = position.calculateSpeed(predecessor);
                             boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
                             if (changed)
-                                positionsModel.edit(nextSpeed.toString(), index, PositionColumns.SPEED_COLUMN_INDEX, false, true);
+                                positionsModel.edit(nextSpeed, index, PositionColumns.SPEED_COLUMN_INDEX, false, true);
                             return changed;
                         }
                         return false;
