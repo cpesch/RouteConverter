@@ -24,7 +24,6 @@ import slash.common.io.Transfer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 
-import javax.help.CSH;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
@@ -51,7 +50,6 @@ public class JMenuHelper {
         String mnemonic = Transfer.trim(getOptionalString(name + "-menu-mnemonic"));
         if (mnemonic != null && mnemonic.length() > 0)
             menu.setMnemonic(mnemonic.charAt(0));
-        CSH.setHelpIDString(menu, name + "-menu");
         return menu;
     }
 
@@ -107,7 +105,6 @@ public class JMenuHelper {
         String disabledIconUrl = Transfer.trim(getOptionalString(name + "-action-disabled-icon"));
         if (disabledIconUrl != null)
             item.setDisabledIcon(Constants.loadIcon(disabledIconUrl));
-        CSH.setHelpIDString(item, name + "-action");
         return item;
     }
 

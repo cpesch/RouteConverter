@@ -58,10 +58,14 @@ import slash.navigation.gui.FrameAction;
 import slash.navigation.gui.HelpTopicsAction;
 import slash.navigation.gui.SingleFrameApplication;
 
+import javax.help.CSH;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -719,11 +723,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
             return (ConvertPanel) initialized.get(convertPanel);
         }
 
-        private synchronized ElevationPanel getElevationPanel() {
-            initialize(elevationPanel);
-            return (ElevationPanel) initialized.get(elevationPanel);
-        }
-
         private void initialize(Component selected) {
             Runnable runnable = lazyInitializers.get(selected);
             if (runnable != null) {
@@ -797,7 +796,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeActions() {
-        ActionManager actionManager = getInstance().getContext().getActionManager();
+        final ActionManager actionManager = getInstance().getContext().getActionManager();
         actionManager.register("exit", new ExitAction());
         actionManager.register("print-map", new PrintMapAction(false));
         actionManager.register("print-map-and-route", new PrintMapAction(true));
@@ -816,6 +815,22 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("about", new AboutAction());
         JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(getContext().getMenuBar(), "edit", "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
+
+        CSH.setHelpIDString(frame.getRootPane(), "top");
+        CSH.setHelpIDString(convertPanel, "convert");
+        CSH.setHelpIDString(browsePanel, "browse");
+        CSH.setHelpIDString(mapPanel, "map");
+
+        // delay JavaHelp initialization
+        ActionListener actionListener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                actionManager.run("help-topics", event);
+            }
+        };
+        frame.getRootPane().registerKeyboardAction(actionListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_HELP, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        frame.getRootPane().registerKeyboardAction(actionListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private class PrintMapAction extends FrameAction {

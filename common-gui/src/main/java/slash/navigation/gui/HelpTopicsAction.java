@@ -35,7 +35,7 @@ public class HelpTopicsAction extends FrameAction {
     public void run() {
         try {
             HelpBroker broker = Application.getInstance().getContext().getHelpBroker();
-            new CSH.DisplayHelpFromSource(broker).actionPerformed(getEvent());
+            new CSH.DisplayHelpFromFocus(broker).actionPerformed(getEvent());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Could not initialize help: " + e.getMessage(), "JavaHelp", JOptionPane.ERROR_MESSAGE);
         }
