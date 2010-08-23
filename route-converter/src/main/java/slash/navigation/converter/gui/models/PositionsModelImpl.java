@@ -20,7 +20,11 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.*;
+import slash.common.io.CompactCalendar;
+import slash.common.io.ContinousRange;
+import slash.common.io.Range;
+import slash.common.io.RangeOperation;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -31,7 +35,11 @@ import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -178,14 +186,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             return;
 
         BaseNavigationPosition position = getPosition(rowIndex);
-        String value = Transfer.trim(aValue.toString());
+        String string = Transfer.trim(aValue.toString());
         switch (columnIndex) {
             case PositionColumns.DESCRIPTION_COLUMN_INDEX:
-                position.setComment(value);
+                position.setComment(string);
                 break;
             case PositionColumns.TIME_COLUMN_INDEX:
                 try {
-                    Date date = TIME_FORMAT.parse(value);
+                    Date date = TIME_FORMAT.parse(string);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
                     position.setTime(CompactCalendar.fromCalendar(calendar));
@@ -195,43 +203,46 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 }
                 break;
             case PositionColumns.LONGITUDE_COLUMN_INDEX:
-                try {
-                    position.setLongitude(Transfer.parseDouble(value));
-                }
-                catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
+                Double longitude = parseDouble(aValue, string, null);
+                if (longitude != null)
+                    position.setLongitude(longitude);
                 break;
             case PositionColumns.LATITUDE_COLUMN_INDEX:
-                try {
-                    position.setLatitude(Transfer.parseDouble(value));
-                } catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
+                Double latitude = parseDouble(aValue, string, null);
+                if (latitude != null)
+                    position.setLatitude(latitude);
                 break;
             case PositionColumns.ELEVATION_COLUMN_INDEX:
-                try {
-                    if (value != null)
-                        value = value.replaceAll("m", "");
-                    position.setElevation(Transfer.parseDouble(value));
-                } catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
+                Double elevation = parseDouble(aValue, string, "m");
+                if (elevation != null)
+                    position.setElevation(elevation);
                 break;
             case PositionColumns.SPEED_COLUMN_INDEX:
-                try {
-                    if (value != null)
-                        value = value.replaceAll("Km/h", "");
-                    position.setSpeed(Transfer.parseDouble(value));
-                } catch (NumberFormatException e) {
-                    // intentionally left empty
-                }
+                Double speed = parseDouble(aValue, string, "Km/h");
+                if (speed != null)
+                    position.setSpeed(speed);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         if (fireEvent)
             fireTableRowsUpdated(rowIndex, rowIndex, columnIndex);
+    }
+
+    private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
+        if (objectValue instanceof Double) {
+            return (Double)objectValue;
+        } else {
+            try {
+                if(replaceAll != null && stringValue != null)
+                    stringValue = stringValue.replaceAll(replaceAll, "");
+                return Transfer.parseDouble(stringValue);
+            }
+            catch (NumberFormatException e) {
+                // intentionally left empty
+            }
+        }
+        return null;
     }
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
