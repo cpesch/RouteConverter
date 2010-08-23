@@ -486,9 +486,9 @@ public abstract class BaseMapView implements MapView {
 
                     synchronized (receivedCallback) {
                         if(!receivedCallback[0]) {
+                            setCallbackListenerPort(-1);
+                            initializeCallbackPoller();
                         }
-                        setCallbackListenerPort(-1);   // TODO
-                        initializeCallbackPoller();
                     }
                 }
                 finally {
