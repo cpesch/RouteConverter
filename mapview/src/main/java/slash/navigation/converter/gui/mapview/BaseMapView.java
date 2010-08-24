@@ -1177,23 +1177,25 @@ public abstract class BaseMapView implements MapView {
                 return true;
 
             BaseNavigationPosition before = successorPredecessor.get(0);
+            final int index;
             synchronized (notificationMutex) {
-                final int index = positions.indexOf(before) + 1;
-                final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
-                for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-                    Double longitude = coordinates.get(i - 2);
-                    Double latitude = coordinates.get(i - 3);
-                    route.add(0, route.createPosition(longitude, latitude, null, null, null, null));
-                    // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            insertPositions(index, route);
-                        }
-                    });
-                }
+                index = positions.indexOf(before) + 1;
+            }
+            final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
+            // count backwards as inserting at position 0, i>3 to skip first position which is == before
+            for (int i = coordinates.size() - 1; i > 3; i -= 4) {
+                Double longitude = coordinates.get(i - 2);
+                Double latitude = coordinates.get(i - 3);
+                // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
+                route.add(0, route.createPosition(longitude, latitude, null, null, null, null));
             }
 
-            RouteComments.commentPositions(positions);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    insertPositions(index, route);
+                    RouteComments.commentPositions(positions);
+                }
+            });
             return false;
         }
         return false;
