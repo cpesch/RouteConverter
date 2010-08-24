@@ -1084,25 +1084,37 @@ public abstract class BaseMapView implements MapView {
 
         Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
         if (insertPositionMatcher.matches()) {
-            Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
-            Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
-            insertPosition(longitude, latitude);
+            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    insertPosition(longitude, latitude);
+                }
+            });
             return true;
         }
 
         Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
         if (movePositionMatcher.matches()) {
-            int index = Transfer.parseInt(movePositionMatcher.group(1));
-            Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
-            Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
-            movePosition(index, longitude, latitude);
+            final int index = Transfer.parseInt(movePositionMatcher.group(1));
+            final Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
+            final Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    movePosition(index, longitude, latitude);
+                }
+            });
             return true;
         }
 
         Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(line);
         if (removePositionMatcher.matches()) {
-            int index = Transfer.parseInt(removePositionMatcher.group(1));
-            removePosition(index);
+            final int index = Transfer.parseInt(removePositionMatcher.group(1));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    removePosition(index);
+                }
+            });
             return true;
         }
 
@@ -1164,10 +1176,16 @@ public abstract class BaseMapView implements MapView {
 
             BaseNavigationPosition before = successorPredecessor.get(0);
             synchronized (notificationMutex) {
-                int index = positions.indexOf(before) + 1;
+                final int index = positions.indexOf(before) + 1;
                 for (int i = coordinates.size() - 1; i > 0; i -= 4) {
+                    final Double longitude = coordinates.get(i - 2);
+                    final Double latitude = coordinates.get(i - 3);
                     // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-                    positionsModel.add(index, coordinates.get(i - 2), coordinates.get(i - 3), null, null, null, null);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            insertPosition(index, longitude, latitude);
+                        }
+                    });
                 }
             }
 
@@ -1199,14 +1217,20 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
+    private void insertPosition(int index, Double longitude, Double latitude) {
+        positionsModel.add(index, longitude, latitude, null, null, null, null);
+    }
+
     private void insertPosition(Double longitude, Double latitude) {
         BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
         // TODO crude logic, or?
         if (position == null && positionsModel.getRowCount() > 0)
             position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
         int row = 0;
-        if (position != null)
-            row = positionsModel.getIndex(position) + 1;
+        synchronized (notificationMutex) {
+            if (position != null)
+                row = positionsModel.getIndex(position) + 1;
+        }
         positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-comment"));
         fireSelectedPosition(row);
     }
@@ -1220,20 +1244,28 @@ public abstract class BaseMapView implements MapView {
         positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
 
-        updateButDontRecenter();
-
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
-        positionsModel.fireTableRowsUpdated(row, positions.size() - 1, TableModelEvent.ALL_COLUMNS);
-
-        // give time for repainting of the route
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // intentionally left empty
+        int size;
+        synchronized (notificationMutex) {
+           size = positions.size() - 1;
         }
+        positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
 
-        updatePositionMarker();
+        new Thread(new Runnable() {
+            public void run() {
+                updateButDontRecenter();
+
+                // give time for repainting of the route
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // intentionally left empty
+                }
+
+                updatePositionMarker();
+            }
+        }, "MapViewMovePositionNotifier").start();
     }
 
     private void removePosition(int index) {
@@ -1242,10 +1274,14 @@ public abstract class BaseMapView implements MapView {
             int row = positionsModel.getIndex(position);
             positionsModel.remove(new int[]{row});
 
-            synchronized (notificationMutex) {
-                haveToRepaintRouteImmediately = true;
-                notificationMutex.notifyAll();
-            }
+            new Thread(new Runnable() {
+                public void run() {
+                    synchronized (notificationMutex) {
+                        haveToRepaintRouteImmediately = true;
+                        notificationMutex.notifyAll();
+                    }
+                }
+            }, "MapViewRemovePositionNotifier").start();
         }
     }
 
