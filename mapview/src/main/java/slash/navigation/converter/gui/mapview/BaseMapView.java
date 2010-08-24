@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.mapview;
 
 import slash.common.io.Transfer;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
@@ -29,6 +30,7 @@ import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.gui.Application;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.util.Positions;
 import slash.navigation.util.RouteComments;
 
@@ -1177,13 +1179,15 @@ public abstract class BaseMapView implements MapView {
             BaseNavigationPosition before = successorPredecessor.get(0);
             synchronized (notificationMutex) {
                 final int index = positions.indexOf(before) + 1;
+                final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
                 for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-                    final Double longitude = coordinates.get(i - 2);
-                    final Double latitude = coordinates.get(i - 3);
+                    Double longitude = coordinates.get(i - 2);
+                    Double latitude = coordinates.get(i - 3);
+                    route.add(0, route.createPosition(longitude, latitude, null, null, null, null));
                     // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            insertPosition(index, longitude, latitude);
+                            insertPositions(index, route);
                         }
                     });
                 }
@@ -1217,8 +1221,12 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private void insertPosition(int index, Double longitude, Double latitude) {
-        positionsModel.add(index, longitude, latitude, null, null, null, null);
+    private void insertPositions(int index, BaseRoute route) {
+        try {
+            positionsModel.add(index, route);
+        } catch (IOException e) {
+            log.severe("Cannot add route: " + e.getMessage());
+        }
     }
 
     private void insertPosition(Double longitude, Double latitude) {

@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.elevationview;
 
+import org.jfree.data.xy.XYSeries;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.PositionsModel;
-import org.jfree.data.xy.XYSeries;
 
 /**
  * Provides a {@link XYSeries} model by extracting the elevation from a {@link PositionsModel}.
@@ -38,15 +38,18 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     protected void handleAdd(int firstRow, int lastRow) {
-        BaseRoute<BaseNavigationPosition,BaseNavigationFormat> route = getPositions().getRoute();
-        if(route == null)
-            return;
-        
-        double[] distances = route.getDistancesFromStart(firstRow, lastRow);
-        for (int i = firstRow; i < lastRow + 1; i++) {
-            getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
-        }
-        getSeries().fireSeriesChanged();
+        System.out.println("handleAdd " + firstRow + " to " + lastRow);
+        recomputeEverythingAfter(firstRow);
+    }
+
+    protected void handleFullUpdate() {
+        System.out.println("handleFullUpdate");
+        recomputeEverythingAfter(0);
+    }
+
+    protected void handleIntervalXUpdate(int firstRow, int lastRow) {
+        System.out.println("handleAdd " + firstRow + " to " + lastRow);
+        recomputeEverythingAfter(firstRow);
     }
 
     protected void handleIntervalYUpdate(int firstRow, int lastRow) {
@@ -54,6 +57,34 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
         for (int i = firstRow; i < lastRow + 1; i++) {
             getSeries().updateByIndex(i, getPositions().getPosition(i).getElevation());
         }
+        getSeries().setFireSeriesChanged(true);
+        getSeries().fireSeriesChanged();
+    }
+
+    protected void handleDelete(int firstRow, int lastRow) {
+        System.out.println("handleDelete " + firstRow + " to " + lastRow);
+        recomputeEverythingAfter(firstRow);
+    }
+
+    private void recomputeEverythingAfter(int firstRow) {
+        System.out.println("recomputeEverythingAfter " + firstRow);
+        getSeries().setFireSeriesChanged(false);
+
+        if (getSeries().getItemCount() > 0)
+            getSeries().delete(firstRow, getSeries().getItemCount() - 1);
+
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = getPositions().getRoute();
+        if(route == null)
+            return;
+
+        int lastRow = getPositions().getRowCount() - 1;
+        if (firstRow < lastRow && lastRow > 0) {
+            double[] distances = route.getDistancesFromStart(firstRow, lastRow);
+            for (int i = firstRow; i < lastRow + 1; i++) {
+                getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
+            }
+        }
+
         getSeries().setFireSeriesChanged(true);
         getSeries().fireSeriesChanged();
     }

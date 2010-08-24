@@ -87,14 +87,15 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
             // ignored updates on columns not displayed
             if (columnIndex == PositionColumns.LONGITUDE_COLUMN_INDEX ||
                     columnIndex == PositionColumns.LATITUDE_COLUMN_INDEX ||
-                    columnIndex == TableModelEvent.ALL_COLUMNS)
+                    columnIndex == TableModelEvent.ALL_COLUMNS) {
                 handleIntervalXUpdate(firstRow, lastRow);
-            else if(columnIndex == PositionColumns.ELEVATION_COLUMN_INDEX)
+            } else if (columnIndex == PositionColumns.ELEVATION_COLUMN_INDEX) {
                 handleIntervalYUpdate(firstRow, lastRow);
+            }
         }
     }
 
-    private void handleFullUpdate() {
+    protected void handleFullUpdate() {
         series.delete(0, series.getItemCount() - 1);
         if (positions.getRowCount() > 0)
             handleAdd(0, positions.getRowCount() - 1);
@@ -114,12 +115,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         }
     }
 
-    private void handleDelete(int firstRow, int lastRow) {
-        // delete might change all distances of the rows after the deleted rows
-        getSeries().setFireSeriesChanged(false);
-        series.delete(firstRow, series.getItemCount() - 1);
-        handleAdd(Math.min(lastRow + 1, series.getItemCount() - 1), positions.getRowCount() - 1);
-        getSeries().setFireSeriesChanged(true);
-        getSeries().fireSeriesChanged();
+    protected void handleDelete(int firstRow, int lastRow) {
+        series.delete(firstRow, lastRow);
     }
 }
