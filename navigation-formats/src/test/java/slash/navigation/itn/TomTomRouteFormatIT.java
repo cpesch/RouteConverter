@@ -20,15 +20,27 @@
 
 package slash.navigation.itn;
 
+import org.junit.Test;
 import slash.common.io.Files;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.RouteCharacteristics;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class TomTomRouteFormatIT extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
+public class TomTomRouteFormatIT {
+
+    @Test
     public void testIsPlainRouteRouteCharacteristics() throws IOException {
         File source = new File(SAMPLE_PATH + "bcr_with_itnconv.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -36,6 +48,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
     }
 
+    @Test
     public void testIsTripmasterTrackRouteCharacteristics() throws IOException {
         File source = new File(SAMPLE_PATH + "tripmaster2.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -43,6 +56,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals(RouteCharacteristics.Track, parser.getTheRoute().getCharacteristics());
     }
 
+    @Test
     public void testSinglePositionFile() throws IOException {
         File source = new File(SAMPLE_PATH + "dilsberg kommandantenhaus.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -51,6 +65,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals(1, parser.getTheRoute().getPositionCount());
     }
 
+    @Test
     public void testIsNamedByTyre() throws IOException {
         File source = new File(SAMPLE_PATH + "itn_with_tyre.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -60,6 +75,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
 
     private static final char EURO = '\u20ac';
 
+    @Test
     public void testTomTomRoute5() throws IOException {
         File source = new File(TEST_PATH + "from5.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -69,6 +85,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals("abcäöüß" + EURO, first.getComment());
     }
 
+    @Test
     public void testTomTomRoute8() throws IOException {
         File source = new File(TEST_PATH + "from8.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -78,6 +95,7 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals("abcäöüß" + EURO, first.getComment());
     }
 
+    @Test
     public void testTomTomRoute8FromDevice() throws IOException {
         File source = new File(TEST_PATH + "from85.itn");
         NavigationFileParser parser = new NavigationFileParser();
@@ -87,18 +105,16 @@ public class TomTomRouteFormatIT extends NavigationTestCase {
         assertEquals("Borkum - Anleger", first.getComment());
     }
 
+    @Test
     public void testManfredsTourFiles() throws IOException {
         NavigationFileParser parser = new NavigationFileParser();
         List<File> files = Files.collectFiles(new File(SAMPLE_PATH), ".itn");
         for (File file : files) {
-            if(file.getName().startsWith("Tour")) {
-                if(!parser.read(file))
-                    System.out.println("Cannot read route from " + file);
-                else {
-                    assertNotNull(parser.getFormat());
-                    assertNotNull("Cannot get route from " + file, parser.getTheRoute());
-                    assertNotNull(parser.getAllRoutes());
-                }
+            if (file.getName().startsWith("Tour")) {
+                assertTrue("Cannot read route from " + file, parser.read(file));
+                assertNotNull(parser.getFormat());
+                assertNotNull("Cannot get route from " + file, parser.getTheRoute());
+                assertNotNull(parser.getAllRoutes());
             }
         }
     }

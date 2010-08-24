@@ -152,7 +152,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             else
                 previous = next;
         }
-        System.out.println(result);
         return Range.toArray(result);
     }
 
