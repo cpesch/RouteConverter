@@ -8,8 +8,9 @@ all the programmers sending me code
 
 My special thanks to:
 
-Branko Velickovic for the Serbian translation
+Branko Velickovic for the Croatian and Serbian translation
 Denny Baier for OpenSUSE packaging
+Harry van der Wolf for Linux and Mac OS X fixes
 Malte Neumann for contributing code for KML, Wintec, Douglas-Peucker, Map and much more
 Matthias Pötzsch for the RouteCatalog maintenance
 Philippe Vandekerckhove for the Dutch translation
