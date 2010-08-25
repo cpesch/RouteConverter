@@ -233,6 +233,26 @@ public class BcrRouteTest {
     }
 
     @Test
+    public void testGetDistanceSamePositionTwiceInTheMiddle() {
+        BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
+        List<BcrPosition> positions = route.getPositions();
+        positions.add(a);
+        positions.add(b);
+        positions.add(c);
+        positions.add(c);
+        positions.add(d);
+        positions.add(e);
+        assertDoubleEquals(0.0, route.getDistance(0, 0));
+        assertDoubleEquals(1.1131, route.getDistance(0, 1));
+        assertDoubleEquals(1.1131 + 1.569, route.getDistance(0, 2));
+        assertDoubleEquals(1.1131 + 1.569, route.getDistance(0, 3));
+        assertDoubleEquals(1.1131 + 1.569 + 2.4858, route.getDistance(0, 4));
+        assertDoubleEquals(1.569 + 2.4858, route.getDistance(1, 4));
+        assertDoubleEquals(route.getDistance(1, 2) + route.getDistance(2, 3) + route.getDistance(3, 4), route.getDistance(1, 4));
+        assertDoubleEquals(2.4858, route.getDistance(2, 4));
+    }
+
+    @Test
     public void testGetDistancesFromStartBetweenStartAndEndIndex() {
         BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
         List<BcrPosition> positions = route.getPositions();
@@ -250,6 +270,30 @@ public class BcrRouteTest {
         assertDoubleArrayEquals(new double[]{1.1131}, route.getDistancesFromStart(1, 1));
         assertDoubleArrayEquals(new double[]{1.1131+1.569}, route.getDistancesFromStart(2, 2));
         assertDoubleArrayEquals(new double[]{1.1131+1.569+2.4858}, route.getDistancesFromStart(3, 3));
+    }
+
+    @Test
+    public void testGetDistancesFromStartSamePositionTwiceInTheMiddle() {
+        BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
+        List<BcrPosition> positions = route.getPositions();
+        positions.add(a);
+        positions.add(b);
+        positions.add(c);
+        positions.add(c);
+        positions.add(d);
+        positions.add(e);
+        assertDoubleArrayEquals(new double[]{0.0}, route.getDistancesFromStart(0, 0));
+        assertDoubleArrayEquals(new double[]{0.0, 1.1131}, route.getDistancesFromStart(0, 1));
+        assertDoubleArrayEquals(new double[]{0.0, 1.1131, 1.1131+1.569}, route.getDistancesFromStart(0, 2));
+        assertDoubleArrayEquals(new double[]{0.0, 1.1131, 1.1131+1.569, 1.1131+1.569, 1.1131+1.569+2.4858}, route.getDistancesFromStart(0, 4));
+        assertDoubleArrayEquals(new double[]{0.0, 1.1131, 1.1131+1.569, 1.1131+1.569, 1.1131+1.569+2.4858, 1.1131+1.569+2.4858+2.2114}, route.getDistancesFromStart(0, 5));
+        assertDoubleArrayEquals(new double[]{1.1131, 1.1131+1.569, 1.1131+1.569}, route.getDistancesFromStart(1, 3));
+        assertDoubleArrayEquals(new double[]{1.1131, 1.1131+1.569, 1.1131+1.569, 1.1131+1.569+2.4858}, route.getDistancesFromStart(1, 4));
+        assertDoubleArrayEquals(new double[]{0.0}, route.getDistancesFromStart(0, 0));
+        assertDoubleArrayEquals(new double[]{1.1131}, route.getDistancesFromStart(1, 1));
+        assertDoubleArrayEquals(new double[]{1.1131+1.569}, route.getDistancesFromStart(2, 2));
+        assertDoubleArrayEquals(new double[]{1.1131+1.569}, route.getDistancesFromStart(3, 3));
+        assertDoubleArrayEquals(new double[]{1.1131+1.569+2.4858}, route.getDistancesFromStart(4, 4));
     }
 
     @Test

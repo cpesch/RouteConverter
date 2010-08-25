@@ -141,7 +141,9 @@ public abstract class BaseNavigationPosition {
     public Double calculateDistance(BaseNavigationPosition other) {
         if (hasCoordinates() && other.hasCoordinates()) {
             Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
-            return bearing.getDistance();
+            double distance = bearing.getDistance();
+            if (!Double.isNaN(distance))
+                return distance;
         }
         return null;
     }
