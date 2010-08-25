@@ -1177,17 +1177,21 @@ public abstract class BaseMapView implements MapView {
                 return true;
 
             BaseNavigationPosition before = successorPredecessor.get(0);
+            BaseNavigationPosition after = successorPredecessor.get(1);
             final int index;
             synchronized (notificationMutex) {
                 index = positions.indexOf(before) + 1;
             }
             final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
-            // count backwards as inserting at position 0, i>3 to skip first position which is == before
-            for (int i = coordinates.size() - 1; i > 3; i -= 4) {
+            // count backwards as inserting at position 0
+            for (int i = coordinates.size() - 1; i > 0; i -= 4) {
                 Double longitude = coordinates.get(i - 2);
                 Double latitude = coordinates.get(i - 3);
                 // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-                route.add(0, route.createPosition(longitude, latitude, null, null, null, null));
+                BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, null, null);
+                if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
+                    route.add(0, position);
+                }
             }
 
             SwingUtilities.invokeLater(new Runnable() {
@@ -1199,6 +1203,13 @@ public abstract class BaseMapView implements MapView {
             return false;
         }
         return false;
+    }
+
+    private boolean isDuplicate(BaseNavigationPosition position, BaseNavigationPosition insert) {
+        if(position == null)
+           return false;
+        Double distance = position.calculateDistance(insert);
+        return distance != null && distance < 10.0;
     }
 
     private List<Double> parseCoordinates(String coordinates) {
