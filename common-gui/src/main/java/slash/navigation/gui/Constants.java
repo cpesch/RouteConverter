@@ -20,6 +20,8 @@
 
 package slash.navigation.gui;
 
+import slash.common.io.Platform;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
@@ -44,7 +46,11 @@ public class Constants {
     public static final Locale CROATIA = new Locale("hr", "HR");
     public static final Locale SERBIA = new Locale("sr", "SR");
 
-    public static void setLookAndFeel() {
+    public static void setLookAndFeel(String appleAppMenuName) {
+        if(Platform.isMac()) {
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", appleAppMenuName);
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+        }
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
