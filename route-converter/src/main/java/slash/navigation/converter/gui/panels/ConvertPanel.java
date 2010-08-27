@@ -702,7 +702,7 @@ public abstract class ConvertPanel {
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
-        saveFile(selected, selectedFormat, true, true);
+        saveFile(selected, selectedFormat, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
     private NavigationFormat getSelectedFormat(FileFilter fileFilter) {
