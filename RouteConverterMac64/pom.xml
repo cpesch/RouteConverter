@@ -62,8 +62,8 @@
                         <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
                     </descriptors>
                     <finalName>RouteConverterMac64.app</finalName>
-                    <outputDirectory>target/RouteConverterMac64.app</outputDirectory>
-                    <workDirectory>target/assembly</workDirectory>
+                    <outputDirectory>target</outputDirectory>
+                    <workDirectory>target/maven-assembly</workDirectory>
                 </configuration>
             </plugin>
         </plugins>
