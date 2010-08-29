@@ -14,6 +14,14 @@
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>src/main/executable-resources/</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>777</fileMode>
+        </fileSet>
+        <fileSet>
             <directory>target</directory>
             <includes>
                 <include>${project.artifactId}.jar</include>
