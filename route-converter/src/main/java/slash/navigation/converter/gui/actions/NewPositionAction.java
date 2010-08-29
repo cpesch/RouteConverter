@@ -70,7 +70,7 @@ public class NewPositionAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
         if (center == null)
             center = r.getMapCenter();
-        r.setLastMapCenter(center);
+        r.setLastMapCenter(center.getLongitude(), center.getLatitude());
 
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(),

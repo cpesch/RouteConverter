@@ -355,9 +355,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return new Wgs84Position(longitude, latitude, null, null, null, null);
     }
 
-    public void setLastMapCenter(BaseNavigationPosition position) {
-        preferences.putDouble(ADD_POSITION_LONGITUDE_PREFERENCE, position.getLongitude());
-        preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, position.getLatitude());
+    public void setLastMapCenter(Double longitude, Double latitude) {
+        preferences.putDouble(ADD_POSITION_LONGITUDE_PREFERENCE, longitude);
+        preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, latitude);
     }
 
     boolean isAutomaticUpdateCheck() {
