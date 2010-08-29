@@ -237,15 +237,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 mapView.initialize(getPositionsModel(),
+                        getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
                 );
-                addMapViewListener(new AbstractMapViewListener() {
-                    public void selectedPosition(int index) {
-                        getConvertPanel().selectPosition(index);
-                    }
-                });
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();

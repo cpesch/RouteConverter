@@ -131,6 +131,7 @@ public abstract class ConvertPanel {
 
     private final UrlDocument urlModel = new UrlDocument();
     private FormatAndRoutesModel formatAndRoutesModel;
+    private PositionsSelectionModel positionsSelectionModel;
 
     protected JPanel convertPanel;
     private JLabel labelFormat;
@@ -162,6 +163,21 @@ public abstract class ConvertPanel {
         final RouteConverter r = RouteConverter.getInstance();
 
         formatAndRoutesModel = new FormatAndRoutesModel(r.getContext().getUndoManager());
+        positionsSelectionModel = new PositionsSelectionModel() {
+            public void setSelectedPositions(int[] selectedPositions) {
+                new ContinousRange(selectedPositions, new RangeOperation() {
+                    public void performOnIndex(int index) {
+                        ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                        selectionModel.clearSelection();
+                        selectionModel.addSelectionInterval(index, index);
+                    }
+
+                    public void performOnRange(int firstIndex, int lastIndex) {
+                        JTableHelper.scrollToPosition(tablePositions, firstIndex);
+                    }
+                }).performMonotonicallyIncreasing(20);
+            }
+        };
 
         lengthCalculator = new LengthCalculator();
         lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
@@ -285,7 +301,7 @@ public abstract class ConvertPanel {
         actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));
-        actionManager.register("new-position", new NewPositionAction(getPositionsView(), getPositionsModel()));
+        actionManager.register("new-position", new NewPositionAction(getPositionsView(), getPositionsModel(), getPositionsSelectionModel()));
         actionManager.register("new-file", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
         actionManager.register("paste", new PasteAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
@@ -418,6 +434,7 @@ public abstract class ConvertPanel {
         openPositionList(urls, null);
     }
 
+    @SuppressWarnings("unchecked")
     public void openPositionList(final List<URL> urls, final NavigationFormat preferredFormat) {
         final RouteConverter r = RouteConverter.getInstance();
 
@@ -432,7 +449,6 @@ public abstract class ConvertPanel {
                     SwingUtilities.invokeAndWait(new Runnable() {
                         public void run() {
                             Gpx11Format gpxFormat = new Gpx11Format();
-                            //noinspection unchecked
                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
                             urlModel.setString(null);
                         }
@@ -459,7 +475,6 @@ public abstract class ConvertPanel {
 
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                //noinspection unchecked
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
                                 comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                 urlModel.setString(path);
@@ -477,7 +492,6 @@ public abstract class ConvertPanel {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 Gpx11Format gpxFormat = new Gpx11Format();
-                                //noinspection unchecked
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
                             }
                         });
@@ -502,7 +516,7 @@ public abstract class ConvertPanel {
         }, "UrlOpener").start();
     }
 
-
+    @SuppressWarnings("unchecked")
     private void appendPositionList(final List<URL> urls) {
         final RouteConverter r = RouteConverter.getInstance();
 
@@ -522,7 +536,6 @@ public abstract class ConvertPanel {
                                     try {
                                         // if there is no file loaded: parseArgs()
                                         if (formatAndRoutesModel.getRoutes() == null) {
-                                            //noinspection unchecked
                                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
                                             comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                             urlModel.setString(path);
@@ -557,6 +570,7 @@ public abstract class ConvertPanel {
         }, "UrlAppender").start();
     }
 
+    @SuppressWarnings("unchecked")
     public void newFile() {
         if (!confirmDiscard())
             return;
@@ -566,7 +580,6 @@ public abstract class ConvertPanel {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
             gpxRoute.setName(RouteConverter.getBundle().getString("new-route-name"));
-            //noinspection unchecked
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             urlModel.setString(null);
             UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
@@ -900,19 +913,7 @@ public abstract class ConvertPanel {
     }
 
     public PositionsSelectionModel getPositionsSelectionModel() {
-        return new PositionsSelectionModel() {
-            public void setSelectedPositions(int[] selectedPositions) {
-                new ContinousRange(selectedPositions, new RangeOperation() {
-                    public void performOnIndex(int index) {
-                        tablePositions.getSelectionModel().addSelectionInterval(index, index);
-                    }
-
-                    public void performOnRange(int firstIndex, int lastIndex) {
-                        JTableHelper.scrollToPosition(tablePositions, firstIndex);
-                    }
-                }).performMonotonicallyIncreasing(20);
-            }
-        };
+        return positionsSelectionModel;
     }
 
     public CharacteristicsModel getCharacteristicsModel() {
@@ -923,11 +924,6 @@ public abstract class ConvertPanel {
 
     public UrlDocument getUrlModel() {
         return urlModel;
-    }
-
-    public void selectPosition(int index) {
-        tablePositions.getSelectionModel().addSelectionInterval(index, index);
-        JTableHelper.scrollToPosition(tablePositions, index);
     }
 
     private void selectPositions(int[] selectedPositions) {
