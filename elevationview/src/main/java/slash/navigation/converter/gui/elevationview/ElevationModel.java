@@ -65,8 +65,9 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
     private void recomputeEverythingAfter(int firstRow) {
         getSeries().setFireSeriesChanged(false);
 
-        if (getSeries().getItemCount() > 0)
-            getSeries().delete(firstRow, getSeries().getItemCount() - 1);
+        int itemCount = getSeries().getItemCount();
+        if (itemCount > 0 && firstRow < itemCount - 1)
+            getSeries().delete(firstRow, itemCount - 1);
 
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = getPositions().getRoute();
         if(route == null)
@@ -74,10 +75,10 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
 
         int lastRow = getPositions().getRowCount() - 1;
         if (firstRow < lastRow && lastRow > 0) {
-            double[] distances = route.getDistancesFromStart(firstRow, lastRow);
-            for (int i = firstRow; i < lastRow + 1; i++) {
-                getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
-            }
+                double[] distances = route.getDistancesFromStart(firstRow, lastRow);
+                for (int i = firstRow; i < lastRow + 1; i++) {
+                    getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
+                }
         }
 
         getSeries().setFireSeriesChanged(true);
