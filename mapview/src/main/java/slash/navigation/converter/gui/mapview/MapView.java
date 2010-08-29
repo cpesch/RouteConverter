@@ -34,7 +34,9 @@ import java.awt.*;
  */
 
 public interface MapView extends PositionsSelectionModel {
-    void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+    void initialize(PositionsModel positionsModel,
+                    PositionsSelectionModel positionsSelectionModel,
+                    CharacteristicsModel characteristicsModel,
                     boolean pedestrians, boolean avoidHighways);
     boolean isSupportedPlatform();
     boolean isInitialized();

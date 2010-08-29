@@ -23,8 +23,8 @@ package slash.navigation.converter.gui.actions;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.FrameAction;
 import slash.navigation.util.Positions;
 
@@ -40,12 +40,14 @@ import java.util.Calendar;
  */
 
 public class NewPositionAction extends FrameAction {
-    private final JTable table;
-    private final PositionsModel positionsModel;
+    private JTable table;
+    private PositionsModel positionsModel;
+    private PositionsSelectionModel positionsSelectionModel;
 
-    public NewPositionAction(JTable table, PositionsModel positionsModel) {
+    public NewPositionAction(JTable table, PositionsModel positionsModel, PositionsSelectionModel positionsSelectionModel) {
         this.table = table;
         this.positionsModel = positionsModel;
+        this.positionsSelectionModel = positionsSelectionModel;
     }
 
     private BaseNavigationPosition calculateCenter(int row) {
@@ -76,11 +78,6 @@ public class NewPositionAction extends FrameAction {
                 center.getElevation(), center.getSpeed(),
                 center.getTime() != null ? center.getTime() : CompactCalendar.fromCalendar(Calendar.getInstance()),
                 RouteConverter.getBundle().getString("new-position-comment"));
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                JTableHelper.scrollToPosition(table, insertRow);
-                JTableHelper.selectPositions(table, insertRow, insertRow);
-            }
-        });
+        positionsSelectionModel.setSelectedPositions(new int[]{insertRow});
     }
 }

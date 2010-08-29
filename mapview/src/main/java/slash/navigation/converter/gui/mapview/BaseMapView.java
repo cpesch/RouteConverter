@@ -27,6 +27,7 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.models.PositionColumns;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.Application;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -99,6 +100,7 @@ public abstract class BaseMapView implements MapView {
 
     private PositionsModel positionsModel;
     private List<BaseNavigationPosition> positions;
+    private PositionsSelectionModel positionsSelectionModel;
 
     private ServerSocket callbackListenerServerSocket;
     private Thread routeUpdater, positionUpdater, callbackListener, callbackPoller;
@@ -115,18 +117,23 @@ public abstract class BaseMapView implements MapView {
 
     // initialization
 
-    public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel,
+    public void initialize(PositionsModel positionsModel,
+                           PositionsSelectionModel positionsSelectionModel,
+                           CharacteristicsModel characteristicsModel,
                            boolean pedestrians, boolean avoidHighways) {
         initializeBrowser();
-        setModel(positionsModel, characteristicsModel);
+        setModel(positionsModel, positionsSelectionModel, characteristicsModel);
         this.pedestrians = pedestrians;
         this.avoidHighways = avoidHighways;
     }
 
     protected abstract void initializeBrowser();
 
-    protected void setModel(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
+    protected void setModel(PositionsModel positionsModel,
+                            PositionsSelectionModel positionsSelectionModel,
+                            CharacteristicsModel characteristicsModel) {
         this.positionsModel = positionsModel;
+        this.positionsSelectionModel = positionsSelectionModel;
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -1244,7 +1251,7 @@ public abstract class BaseMapView implements MapView {
 
     private void insertPosition(Double longitude, Double latitude) {
         BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
-        // TODO crude logic, or?
+        // quite crude logic to be as robust as possible on failures
         if (position == null && positionsModel.getRowCount() > 0)
             position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
         int row = 0;
@@ -1253,7 +1260,7 @@ public abstract class BaseMapView implements MapView {
                 row = positionsModel.getIndex(position) + 1;
         }
         positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-comment"));
-        fireSelectedPosition(row);
+        positionsSelectionModel.setSelectedPositions(new int[]{row});
     }
 
     private void movePosition(int index, Double longitude, Double latitude) {
@@ -1347,12 +1354,6 @@ public abstract class BaseMapView implements MapView {
     private void fireReceivedCallback(int port) {
         for (MapViewListener listener : mapViewListeners) {
             listener.receivedCallback(port);
-        }
-    }
-
-    private void fireSelectedPosition(int index) {
-        for (MapViewListener listener : mapViewListeners) {
-            listener.selectedPosition(index);
         }
     }
 }

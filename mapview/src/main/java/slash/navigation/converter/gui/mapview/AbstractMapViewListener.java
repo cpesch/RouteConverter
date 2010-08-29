@@ -32,7 +32,4 @@ public abstract class AbstractMapViewListener implements MapViewListener {
 
     public void receivedCallback(int port) {
     }
-
-    public void selectedPosition(int index) {
-    }
 }
