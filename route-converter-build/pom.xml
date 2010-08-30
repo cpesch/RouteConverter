@@ -42,7 +42,6 @@
                 </executions>
                 <configuration>
                     <buildNumberPropertyName>maven.build.number</buildNumberPropertyName>
-                    <buildNumberPropertiesFileLocation>${basedir}/../route-converter-build/buildNumber.properties</buildNumberPropertiesFileLocation>
                     <format>{0,number}</format>
                     <items>
                         <item>buildNumber0</item>
