@@ -30,14 +30,12 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Specification-Title>${project.name}</Specification-Title>
-                                        <Specification-Version>${project.version}-${maven.build.number}
-                                        </Specification-Version>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
                                         <Download-At>http://www.routeconverter.de</Download-At>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter6</Main-Class>
-                                        <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png
-                                        </SplashScreen-Image>
+                                        <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -89,7 +87,7 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx.x86_64</artifactId>
-            <version>3.6RC3</version>
+            <version>3.6</version>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>

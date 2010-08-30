@@ -92,7 +92,7 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>cocoa.macosx</artifactId>
-            <version>3.6RC3</version>
+            <version>3.6</version>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>
