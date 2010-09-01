@@ -33,7 +33,6 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
-import slash.navigation.gui.FrameAction;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
@@ -96,7 +95,7 @@ public class FindPlaceDialog extends SimpleDialog {
         RouteConverter r = RouteConverter.getInstance();
 
         textFieldSearch.setText(r.getSearchPositionPreference());
-        textFieldSearch.registerKeyboardAction(new FrameAction() {
+        textFieldSearch.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 searchPositions();
             }
