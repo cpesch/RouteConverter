@@ -40,6 +40,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
+    @SuppressWarnings("unchecked")
     public List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
 

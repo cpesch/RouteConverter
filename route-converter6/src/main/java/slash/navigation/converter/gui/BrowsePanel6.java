@@ -65,6 +65,7 @@ class BrowsePanel6 extends BrowsePanel {
                     support.isDataFlavorSupported(DataFlavor.stringFlavor);
         }
 
+        @SuppressWarnings("unchecked")
         public boolean importData(TransferSupport support) {
             JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
             TreePath path = dropLocation.getPath();

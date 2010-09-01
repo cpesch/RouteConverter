@@ -71,13 +71,9 @@ public class PositionAugmenter {
 
     private interface Operation {
         String getName();
-
         int getColumnIndex();
-
         boolean run(int index, BaseNavigationPosition position) throws Exception;
-
         String getErrorMessage();
-
         void postRunning();
     }
 

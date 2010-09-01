@@ -40,7 +40,7 @@ public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,
     }
 
     public FormatAndRoutes(NavigationFormat<R> format, BaseRoute<P,F> route) {
-        this(format, Arrays.asList(route));
+        this(format, Arrays.<BaseRoute<P,F>>asList(route));
     }
 
     public NavigationFormat<R> getFormat() {

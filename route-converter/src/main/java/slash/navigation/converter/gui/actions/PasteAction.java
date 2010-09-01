@@ -51,6 +51,7 @@ public class PasteAction extends FrameAction {
         this.clipboardInteractor = clipboardInteractor;
     }
 
+    @SuppressWarnings("unchecked")
     public void run() {
         Transferable transferable = clipboardInteractor.getFromClipboard();
         if (transferable == null)

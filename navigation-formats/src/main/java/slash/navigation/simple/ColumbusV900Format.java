@@ -63,6 +63,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return ".csv";
     }
 
+    @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }

@@ -1189,22 +1189,11 @@ public abstract class BaseMapView implements MapView {
             synchronized (notificationMutex) {
                 index = positions.indexOf(before) + 1;
             }
-            final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
-            // count backwards as inserting at position 0
-            for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-                Double longitude = coordinates.get(i - 2);
-                Double latitude = coordinates.get(i - 3);
-                // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-                BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, null, null);
-                if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
-                    route.add(0, position);
-                }
-            }
+            final BaseRoute route = parseRoute(coordinates, before, after);
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPositions(index, route);
-                    RouteComments.commentPositions(positions);
                 }
             });
             return false;
@@ -1223,15 +1212,15 @@ public abstract class BaseMapView implements MapView {
         List<Double> result = new ArrayList<Double>();
         StringTokenizer tokenizer = new StringTokenizer(coordinates, "/");
         while (tokenizer.hasMoreTokens()) {
-            Double longitude = Transfer.parseDouble(tokenizer.nextToken());
+            Double latitude = Transfer.parseDouble(tokenizer.nextToken());
             if (tokenizer.hasMoreTokens()) {
-                Double latitude = Transfer.parseDouble(tokenizer.nextToken());
+                Double longitude = Transfer.parseDouble(tokenizer.nextToken());
                 if (tokenizer.hasMoreTokens()) {
                     Double meters = Transfer.parseDouble(tokenizer.nextToken());
                     if (tokenizer.hasMoreTokens()) {
                         Double seconds = Transfer.parseDouble(tokenizer.nextToken());
-                        result.add(longitude);
                         result.add(latitude);
+                        result.add(longitude);
                         result.add(meters);
                         result.add(seconds);
                     }
@@ -1241,9 +1230,28 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
+    private BaseRoute parseRoute(List<Double> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
+        final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
+        // count backwards as inserting at position 0
+        for (int i = coordinates.size() - 1; i > 0; i -= 4) {
+            // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
+            Double longitude = coordinates.get(i - 2);
+            Double latitude = coordinates.get(i - 3);
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, null, null);
+            if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
+                // TODO add Comment and Elevation
+                route.add(0, position);
+            }
+        }
+        return route;
+    }
+
+    @SuppressWarnings("unchecked")
     private void insertPositions(int index, BaseRoute route) {
         try {
             positionsModel.add(index, route);
+            RouteComments.commentPositions(positions);
         } catch (IOException e) {
             log.severe("Cannot add route: " + e.getMessage());
         }

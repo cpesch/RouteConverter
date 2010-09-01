@@ -129,6 +129,7 @@ public abstract class RouteComments {
         position.setComment(getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment));
     }
 
+    @SuppressWarnings("unchecked")
     public static void commentRoutePositions(List<? extends BaseRoute> routes) {
         Map<LongitudeAndLatitude, String> comments = new HashMap<LongitudeAndLatitude, String>();
 

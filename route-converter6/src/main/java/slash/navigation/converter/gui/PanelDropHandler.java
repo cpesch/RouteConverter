@@ -70,6 +70,7 @@ class PanelDropHandler extends TransferHandler {
                 support.isDataFlavorSupported(DataFlavor.stringFlavor);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean importData(TransferSupport support) {
         Transferable t = support.getTransferable();
         try {
