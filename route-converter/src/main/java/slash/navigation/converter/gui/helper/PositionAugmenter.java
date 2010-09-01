@@ -24,15 +24,14 @@ import slash.common.io.ContinousRange;
 import slash.common.io.RangeOperation;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.earthtools.EarthToolsService;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
-import slash.navigation.hgt.HgtFiles;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
@@ -142,7 +141,7 @@ public class PositionAugmenter {
                                     final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private GoogleMapsService service = new GoogleMapsService();
+                    private GoogleMapsService googleMapsService = new GoogleMapsService();
 
                     public String getName() {
                         return "CoordinatesPositionAugmenter";
@@ -153,7 +152,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        GoogleMapsPosition coordinates = service.getPositionFor(position.getComment());
+                        GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
                         if (coordinates != null) {
                             positionsModel.edit(coordinates.getLongitude(), index, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
                             positionsModel.edit(coordinates.getLatitude(), index, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
@@ -182,9 +181,7 @@ public class PositionAugmenter {
                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private HgtFiles hgtFiles = new HgtFiles();
-                    private GeoNamesService geoNamesService = new GeoNamesService();
-                    private EarthToolsService earthToolsService = new EarthToolsService();
+                    private CompletePositionService completePositionService = new CompletePositionService();
 
                     public String getName() {
                         return "ElevationPositionAugmenter";
@@ -195,13 +192,9 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        Integer elevation = hgtFiles.getElevationFor(position.getLongitude(), position.getLatitude());
-                        if (elevation == null)
-                            elevation = geoNamesService.getElevationFor(position.getLongitude(), position.getLatitude());
-                        if (elevation == null)
-                            elevation = earthToolsService.getElevationFor(position.getLongitude(), position.getLatitude());
+                        Integer elevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
                         if (elevation != null)
-                            positionsModel.edit(elevation, index, PositionColumns.ELEVATION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(elevation.doubleValue(), index, PositionColumns.ELEVATION_COLUMN_INDEX, false, true);
                         return elevation != null;
                     }
 
@@ -210,7 +203,7 @@ public class PositionAugmenter {
                     }
 
                     public void postRunning() {
-                        hgtFiles.close();
+                        completePositionService.close();
                     }
                 }
         );
@@ -227,7 +220,7 @@ public class PositionAugmenter {
                                     final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private GeoNamesService service = new GeoNamesService();
+                    private GeoNamesService geonamesService = new GeoNamesService();
 
                     public String getName() {
                         return "PopulatedPlacePositionAugmenter";
@@ -238,7 +231,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        String comment = service.getNearByFor(position.getLongitude(), position.getLatitude());
+                        String comment = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
                             positionsModel.edit(comment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
                         return comment != null;
@@ -265,7 +258,7 @@ public class PositionAugmenter {
                                     final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private GoogleMapsService service = new GoogleMapsService();
+                    private GoogleMapsService googleMapsService = new GoogleMapsService();
 
                     public String getName() {
                         return "PostalAddressPositionAugmenter";
@@ -276,7 +269,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        String comment = service.getLocationFor(position.getLongitude(), position.getLatitude());
+                        String comment = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
                             positionsModel.edit(comment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
                         return comment != null;

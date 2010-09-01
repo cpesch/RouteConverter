@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
-    <artifactId>mapview</artifactId>
+    <artifactId>position-completer</artifactId>
     <packaging>jar</packaging>
-    <name>Code shared by all MapView modules</name>
+    <name>Complete before with data from external services</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
@@ -13,22 +13,27 @@
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>earthtools</artifactId>
             <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
-            <artifactId>common-gui</artifactId>
+            <artifactId>geonames</artifactId>
+            <version>1.34-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>googlemaps</artifactId>
+            <version>1.34-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>hgt</artifactId>
             <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
             <artifactId>navigation-formats</artifactId>
-            <version>1.34-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>slash.navigation</groupId>
-            <artifactId>position-completer</artifactId>
             <version>1.34-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -126,6 +126,7 @@
         <module>jaxb6</module>
         <module>mapview</module>
         <module>navigation-formats</module>
+        <module>position-completer</module>
         <module>rest</module>
         <module>route-converter</module>
         <module>route-converter-cmdline</module>

@@ -74,11 +74,11 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
             return;
 
         int lastRow = getPositions().getRowCount() - 1;
-        if (firstRow < lastRow && lastRow > 0) {
-                double[] distances = route.getDistancesFromStart(firstRow, lastRow);
-                for (int i = firstRow; i < lastRow + 1; i++) {
-                    getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
-                }
+        if (firstRow <= lastRow && lastRow >= 0) {
+            double[] distances = route.getDistancesFromStart(firstRow, lastRow);
+            for (int i = firstRow; i < lastRow + 1; i++) {
+                getSeries().add(distances[i - firstRow] / 1000.0, getPositions().getPosition(i).getElevation(), false);
+            }
         }
 
         getSeries().setFireSeriesChanged(true);

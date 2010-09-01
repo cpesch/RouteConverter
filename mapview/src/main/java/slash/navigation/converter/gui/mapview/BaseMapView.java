@@ -20,17 +20,18 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.common.io.Transfer;
 import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.completer.CompletePositionService;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionColumns;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.Application;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.util.Positions;
 import slash.navigation.util.RouteComments;
@@ -56,6 +57,8 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * Interface for a component that displays the positions of a route.
@@ -170,8 +173,10 @@ public abstract class BaseMapView implements MapView {
         characteristicsModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
             }
+
             public void intervalRemoved(ListDataEvent e) {
             }
+
             public void contentsChanged(ListDataEvent e) {
                 update(true);
             }
@@ -254,8 +259,8 @@ public abstract class BaseMapView implements MapView {
                          */
                         long currentTime = System.currentTimeMillis();
                         if (haveToRepaintRouteImmediately ||
-                            haveToReplaceRoute ||
-                            (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
+                                haveToReplaceRoute ||
+                                (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
                             copiedPositions = filterPositionsWithoutCoordinates(positions);
                             recenter = haveToReplaceRoute;
                             haveToUpdateRoute = false;
@@ -308,7 +313,7 @@ public abstract class BaseMapView implements MapView {
 
                         long currentTime = System.currentTimeMillis();
                         if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
-                            (haveToUpdatePosition && (currentTime - lastTime > 500))) {
+                                (haveToUpdatePosition && (currentTime - lastTime > 500))) {
                             haveToRecenterMap = false;
                             recenter = !haveToRepaintSelectionImmediately;
                             haveToRepaintSelectionImmediately = false;
@@ -371,13 +376,13 @@ public abstract class BaseMapView implements MapView {
                             try {
                                 String line = Transfer.trim(is.readLine());
                                 if (line == null) {
-                                    if(processingPost && !processingBody) {
+                                    if (processingPost && !processingBody) {
                                         processingBody = true;
                                         continue;
                                     } else
                                         break;
                                 }
-                                if(line.startsWith("POST"))
+                                if (line.startsWith("POST"))
                                     processingPost = true;
                                 lines.add(line);
                             } catch (IOException e) {
@@ -425,9 +430,9 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     String callbacks = Transfer.trim(executeScriptWithResult("return getCallbacks();"));
-                    if(callbacks != null) {
+                    if (callbacks != null) {
                         String[] lines = callbacks.split("--");
-                        for(String line : lines) {
+                        for (String line : lines) {
                             processCallback(line);
                         }
                     }
@@ -449,14 +454,14 @@ public abstract class BaseMapView implements MapView {
             log.info("localhost is resolved to: " + localhost);
             String localhostName = localhost.getHostAddress();
             log.info("IP of localhost is: " + localhostName);
-            if(!localhostName.equals("127.0.0.1"))
+            if (!localhostName.equals("127.0.0.1"))
                 throw new Exception("localhost does not resolve to 127.0.0.1");
 
             InetAddress ip = InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
             log.info("127.0.0.1 is resolved to: " + ip);
             String ipName = localhost.getHostName();
             log.info("Name of 127.0.0.1 is: " + ipName);
-            if(!ipName.equals("localhost"))
+            if (!ipName.equals("localhost"))
                 throw new Exception("127.0.0.1 does not resolve to localhost");
         } catch (Exception e) {
             e.printStackTrace();
@@ -490,9 +495,9 @@ public abstract class BaseMapView implements MapView {
                     executeScript("checkCallbackListenerPort();");
 
                     long start = System.currentTimeMillis();
-                    while(true) {
+                    while (true) {
                         synchronized (receivedCallback) {
-                            if(receivedCallback[0])
+                            if (receivedCallback[0])
                                 break;
                         }
 
@@ -507,7 +512,7 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     synchronized (receivedCallback) {
-                        if(!receivedCallback[0]) {
+                        if (!receivedCallback[0]) {
                             setCallbackListenerPort(-1);
                             initializeCallbackPoller();
                         }
@@ -517,7 +522,7 @@ public abstract class BaseMapView implements MapView {
                     removeMapViewListener(callbackWaiter);
                 }
             }
-        } , "MapViewCallbackChecker").start();
+        }, "MapViewCallbackChecker").start();
     }
 
     // disposal
@@ -624,17 +629,17 @@ public abstract class BaseMapView implements MapView {
 
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         this.recenterAfterZooming = recenterAfterZooming;
-     }
+    }
 
     public void setPedestrians(boolean pedestrians) {
         this.pedestrians = pedestrians;
-        if(positionsModel.getRoute().getCharacteristics() == RouteCharacteristics.Route)
+        if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
         this.avoidHighways = avoidHighways;
-        if(positionsModel.getRoute().getCharacteristics() == RouteCharacteristics.Route)
+        if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
     }
 
@@ -645,6 +650,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract BaseNavigationPosition getNorthEastBounds();
+
     protected abstract BaseNavigationPosition getSouthWestBounds();
 
     protected BaseNavigationPosition getBounds(String script) {
@@ -729,10 +735,11 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() > MAXIMUM_SELECTION_COUNT)
             positions = filterEveryNthPosition(positions, MAXIMUM_SELECTION_COUNT);
 
-        return positions;  
+        return positions;
     }
 
     protected abstract int getBoundsZoomLevel(List<BaseNavigationPosition> positions);
+
     protected abstract int getCurrentZoomLevel();
 
     private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions, double factor) {
@@ -848,7 +855,7 @@ public abstract class BaseMapView implements MapView {
         seconds = 0;
 
         // avoid throwing javascript exceptions if there is nothing to direct
-        if(positions.size() < 2) {
+        if (positions.size() < 2) {
             addMarkersToMap(positions);
             return;
         }
@@ -866,7 +873,7 @@ public abstract class BaseMapView implements MapView {
             }
             buffer.append("];\n");
             buffer.append("createDirections().loadFromWaypoints(latlngs, ").
-                   append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
+                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
                     append(avoidHighways).append(", travelMode: ").
                     append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
                     append(", locale: '").append(Locale.getDefault()).append("'").
@@ -893,7 +900,7 @@ public abstract class BaseMapView implements MapView {
             executeScript(buffer.toString());
         }
         removeOverlays();
-   }
+    }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
         int markersCount = Transfer.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
@@ -989,7 +996,7 @@ public abstract class BaseMapView implements MapView {
                 successorPredecessor.add(positions.get(startPositions[i]));
                 successorPredecessor.add(positions.get(startPositions[i] + 1));
                 addToQueue.put(random.nextInt(), successorPredecessor);
-           }
+            }
         }
 
         synchronized (insertWaypointsQueue) {
@@ -1039,7 +1046,7 @@ public abstract class BaseMapView implements MapView {
     // script execution
 
     private String escape(String string) {
-        if(string == null)
+        if (string == null)
             return "";
         StringBuffer buffer = new StringBuffer(string);
         for (int i = 0; i < buffer.length(); i++) {
@@ -1058,6 +1065,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void executeScript(String script);
+
     protected abstract String executeScriptWithResult(String script);
 
     // browser callbacks
@@ -1093,11 +1101,14 @@ public abstract class BaseMapView implements MapView {
 
         Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
         if (insertPositionMatcher.matches()) {
+            final int row = getInsertRow();
             final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
             final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    insertPosition(longitude, latitude);
+                    insertPosition(row, longitude, latitude);
+                    complementComment(row, longitude, latitude);
+                    complementElevation(row, longitude, latitude);
                 }
             });
             return true;
@@ -1105,12 +1116,15 @@ public abstract class BaseMapView implements MapView {
 
         Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
         if (movePositionMatcher.matches()) {
-            final int index = Transfer.parseInt(movePositionMatcher.group(1));
+            final int row = getMoveRow(Transfer.parseInt(movePositionMatcher.group(1)));
             final Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
             final Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    movePosition(index, longitude, latitude);
+                    movePosition(row, longitude, latitude);
+                    if (positionsModel.getRoute().getCharacteristics().equals(Route))
+                        complementComment(row, longitude, latitude);
+                    complementElevation(row, longitude, latitude);
                 }
             });
             return true;
@@ -1180,20 +1194,20 @@ public abstract class BaseMapView implements MapView {
                 successorPredecessor = insertWaypointsQueue.remove(key);
             }
 
-            if(coordinates.size() < 4 || successorPredecessor == null)
+            if (coordinates.size() < 4 || successorPredecessor == null)
                 return true;
 
             BaseNavigationPosition before = successorPredecessor.get(0);
             BaseNavigationPosition after = successorPredecessor.get(1);
-            final int index;
+            final int row;
             synchronized (notificationMutex) {
-                index = positions.indexOf(before) + 1;
+                row = positions.indexOf(before) + 1;
             }
             final BaseRoute route = parseRoute(coordinates, before, after);
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    insertPositions(index, route);
+                    insertPositions(row, route);
                 }
             });
             return false;
@@ -1202,8 +1216,8 @@ public abstract class BaseMapView implements MapView {
     }
 
     private boolean isDuplicate(BaseNavigationPosition position, BaseNavigationPosition insert) {
-        if(position == null)
-           return false;
+        if (position == null)
+            return false;
         Double distance = position.calculateDistance(insert);
         return distance != null && distance < 10.0;
     }
@@ -1232,59 +1246,119 @@ public abstract class BaseMapView implements MapView {
 
     @SuppressWarnings("unchecked")
     private BaseRoute parseRoute(List<Double> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
-        final BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
-        // count backwards as inserting at position 0
-        for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-            // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-            Double longitude = coordinates.get(i - 2);
-            Double latitude = coordinates.get(i - 3);
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, null, null);
-            if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
-                // TODO add Comment and Elevation
-                route.add(0, position);
+        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
+
+        CompletePositionService completePositionService = new CompletePositionService();
+        try {
+            // count backwards as inserting at position 0
+            for (int i = coordinates.size() - 1; i > 0; i -= 4) {
+                // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
+                Double longitude = coordinates.get(i - 2);
+                Double latitude = coordinates.get(i - 3);
+                BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, null, null);
+                if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
+                    completePositionService.completePosition(position);
+                    route.add(0, position);
+                }
             }
+            RouteComments.commentPositions(positions);
+        } finally {
+            completePositionService.close();
         }
         return route;
     }
 
     @SuppressWarnings("unchecked")
-    private void insertPositions(int index, BaseRoute route) {
+    private void insertPositions(int row, BaseRoute route) {
         try {
-            positionsModel.add(index, route);
-            RouteComments.commentPositions(positions);
+            positionsModel.add(row, route);
         } catch (IOException e) {
-            log.severe("Cannot add route: " + e.getMessage());
+            log.severe("Cannot insert route: " + e.getMessage());
         }
     }
 
-    private void insertPosition(Double longitude, Double latitude) {
-        BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
-        // quite crude logic to be as robust as possible on failures
-        if (position == null && positionsModel.getRowCount() > 0)
-            position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
-        int row = 0;
-        synchronized (notificationMutex) {
-            if (position != null)
-                row = positionsModel.getIndex(position) + 1;
-        }
+    private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-comment"));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
     }
 
-    private void movePosition(int index, Double longitude, Double latitude) {
+    private int getInsertRow() {
+        BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
+        // quite crude logic to be as robust as possible on failures
+        if (position == null && positionsModel.getRowCount() > 0)
+            position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
+        return position != null ? positionsModel.getIndex(position) + 1 : 0;
+    }
+
+    private int getMoveRow(int index) {
         BaseNavigationPosition position = lastSelectedPositions.get(index);
-        int row;
+        final int row;
         synchronized (notificationMutex) {
-           row = positions.indexOf(position);
+            row = positions.indexOf(position);
         }
+        return row;
+    }
+
+    private void complementComment(final int row, final Double longitude, final Double latitude) {
+        new Thread(new Runnable() {
+            public void run() {
+                CompletePositionService completePositionService = new CompletePositionService();
+                final String[] comment = new String[1];
+                try {
+                    comment[0] = completePositionService.getCommentFor(longitude, latitude);
+                } catch (IOException e) {
+                    log.warning("Cannot retrieve comment for " + longitude + "/" + latitude + ": " + e.getMessage());
+                } finally {
+                    completePositionService.close();
+                }
+
+                if (comment[0] != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (comment[0] != null)
+                                positionsModel.edit(comment[0], row, PositionColumns.DESCRIPTION_COLUMN_INDEX, true, false);
+                        }
+                    });
+                }
+            }
+        }, "MapViewInsertPositionCommentComplementer").start();
+    }
+
+    private void complementElevation(final int row, final Double longitude, final Double latitude) {
+        new Thread(new Runnable() {
+            public void run() {
+                CompletePositionService completePositionService = new CompletePositionService();
+                final Integer[] elevation = new Integer[1];
+                try {
+                    elevation[0] = completePositionService.getElevationFor(longitude, latitude);
+                } catch (IOException e) {
+                    log.warning("Cannot retrieve elevation for " + longitude + "/" + latitude + ": " + e.getMessage());
+                } finally {
+                    completePositionService.close();
+                }
+
+                if (elevation[0] != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (elevation[0] != null)
+                                positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
+                        }
+                    });
+                }
+            }
+        }, "MapViewInsertPositionElevationComplementer").start();
+    }
+
+    private void movePosition(int row, Double longitude, Double latitude) {
         positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
+        positionsModel.edit(null, row, PositionColumns.ELEVATION_COLUMN_INDEX, false, false);
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
         int size;
         synchronized (notificationMutex) {
-           size = positions.size() - 1;
+            size = positions.size() - 1;
         }
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
 
