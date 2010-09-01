@@ -186,7 +186,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             return;
 
         BaseNavigationPosition position = getPosition(rowIndex);
-        String string = Transfer.trim(aValue.toString());
+        String string = aValue != null ? Transfer.trim(aValue.toString()) : null;
         switch (columnIndex) {
             case PositionColumns.DESCRIPTION_COLUMN_INDEX:
                 position.setComment(string);
@@ -230,7 +230,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
-        if (objectValue instanceof Double) {
+        if (objectValue == null || objectValue instanceof Double) {
             return (Double)objectValue;
         } else {
             try {
