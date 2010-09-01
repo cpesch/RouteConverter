@@ -24,8 +24,6 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
@@ -47,7 +45,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for finding and inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
+ * Dialog for finding and inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -152,7 +150,10 @@ public class FindPlaceDialog extends SimpleDialog {
         Object[] objects = listResult.getSelectedValues();
         for (int i = objects.length - 1; i >= 0; i -= 1) {
             GoogleMapsPosition position = (GoogleMapsPosition) objects[i];
-            positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(), position.getElevation(),
+            Double elevation = position.getElevation();
+            if (elevation != null && elevation == 0.0)
+                elevation = null;
+            positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(), elevation,
                     null, CompactCalendar.fromCalendar(Calendar.getInstance()), position.getComment());
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
