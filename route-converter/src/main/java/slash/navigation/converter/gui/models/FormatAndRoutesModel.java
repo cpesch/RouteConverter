@@ -72,6 +72,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
         });
     }
 
+    @SuppressWarnings("unchecked")
     public List<BaseRoute> getRoutes() {
         return formatAndRoutes != null ? formatAndRoutes.getRoutes() : null;
     }
@@ -91,10 +92,12 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
         setModified(false);
     }
 
+    @SuppressWarnings("unchecked")
     public NavigationFormat<BaseRoute> getFormat() {
         return formatAndRoutes != null ? formatAndRoutes.getFormat() : null;
     }
 
+    @SuppressWarnings("unchecked")
     public void setFormat(NavigationFormat<BaseRoute> format) {
         formatAndRoutes.setFormat(format);
         fireContentsChanged(this, -1, -1);
@@ -179,6 +182,7 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
         return getSelectedRoute();
     }
 
+    @SuppressWarnings("unchecked")
     public void setSelectedItem(Object anItem) {
         if ((getSelectedItem() != null && !getSelectedItem().equals(anItem)) ||
                 getSelectedItem() == null && anItem != null) {
