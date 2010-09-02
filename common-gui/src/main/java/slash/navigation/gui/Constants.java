@@ -49,7 +49,6 @@ public class Constants {
     public static void setLookAndFeel(String appleAppMenuName) {
         if(Platform.isMac()) {
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", appleAppMenuName);
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.showGrowBox", "true");
         }
         try {
