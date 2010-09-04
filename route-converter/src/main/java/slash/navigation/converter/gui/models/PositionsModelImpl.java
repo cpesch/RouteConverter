@@ -192,15 +192,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 position.setComment(string);
                 break;
             case PositionColumns.TIME_COLUMN_INDEX:
-                try {
-                    Date date = TIME_FORMAT.parse(string);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(date);
-                    position.setTime(CompactCalendar.fromCalendar(calendar));
-                }
-                catch (ParseException e) {
-                    // intentionally left empty
-                }
+                position.setTime(parseDate(aValue, string));
                 break;
             case PositionColumns.LONGITUDE_COLUMN_INDEX:
                 Double longitude = parseDouble(aValue, string, null);
@@ -227,6 +219,23 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
         if (fireEvent)
             fireTableRowsUpdated(rowIndex, rowIndex, columnIndex);
+    }
+
+    private CompactCalendar parseDate(Object objectValue, String stringValue) {
+        if (objectValue == null || objectValue instanceof CompactCalendar) {
+            return (CompactCalendar) objectValue;
+        } else {
+            try {
+                Date date = TIME_FORMAT.parse(stringValue);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                return CompactCalendar.fromCalendar(calendar);
+            }
+            catch (ParseException e) {
+                // intentionally left empty
+            }
+        }
+        return null;
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {

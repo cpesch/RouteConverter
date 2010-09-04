@@ -626,7 +626,6 @@ public abstract class ConvertPanel {
 
     private void saveFile(File file, NavigationFormat format, boolean confirmOverwrite, boolean openAfterSave) {
         RouteConverter r = RouteConverter.getInstance();
-
         r.setSavePathPreference(format, file.getParent());
 
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();

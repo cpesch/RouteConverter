@@ -302,12 +302,12 @@ public class EclipseSWTMapView extends BaseMapView {
                             webBrowser.executeJavascript(script);
                         }
                     });
-                    logExecuteScript(script, null);
+                    logJavaScript(script, null);
                 }
             });
         } else {
             webBrowser.executeJavascript(script);
-            logExecuteScript(script, null);
+            logJavaScript(script, null);
         }
     }
 
@@ -348,7 +348,7 @@ public class EclipseSWTMapView extends BaseMapView {
         }
 
         if (pollingCallback) {
-            logExecuteScript(script, result[0]);
+            logJavaScript(script, result[0]);
         }
         return result[0] != null ? result[0].toString() : null;
     }
