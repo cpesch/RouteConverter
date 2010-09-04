@@ -298,7 +298,7 @@ public abstract class RouteComments {
 
     private static Double parseDouble(String string) {
         Double aDouble = Transfer.parseDouble(string);
-        return Transfer.isEmpty(aDouble) ? aDouble : null;
+        return !Transfer.isEmpty(aDouble) ? aDouble : null;
     }
 
     public static void parseComment(BaseNavigationPosition position, String comment) {
