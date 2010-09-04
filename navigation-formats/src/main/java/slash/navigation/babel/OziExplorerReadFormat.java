@@ -20,6 +20,7 @@
 
 package slash.navigation.babel;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.common.io.CompactCalendar;
 import slash.navigation.gpx.GpxRoute;
@@ -68,8 +69,8 @@ public class OziExplorerReadFormat extends BabelFormat implements MultipleRoutes
     private boolean isValidRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
-            if ((!position.hasCoordinates() || (position.getLongitude() == 0.0 && position.getLatitude() == 0.0)) &&
-                    (position.getElevation() == null || position.getElevation() == 0.0))
+            if ((!position.hasCoordinates() ||
+                    (Transfer.isEmpty(position.getLongitude()) && Transfer.isEmpty(position.getLatitude())) && Transfer.isEmpty(position.getElevation())))
                 count++;
         }
         return count != positions.size();

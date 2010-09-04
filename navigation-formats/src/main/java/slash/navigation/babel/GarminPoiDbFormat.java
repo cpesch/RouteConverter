@@ -20,6 +20,7 @@
 
 package slash.navigation.babel;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -65,8 +66,8 @@ public class GarminPoiDbFormat extends BabelFormat {
     private boolean isValidRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
-            if ((position.getLongitude() == 0.0 && position.getLatitude() == 0.0) ||
-                    (position.getLatitude() == 0.0 && (position.getElevation() == null || position.getElevation() == 0.0)))
+            if ((Transfer.isEmpty(position.getLongitude()) && Transfer.isEmpty(position.getLatitude())) ||
+                    (Transfer.isEmpty(position.getLatitude()) && Transfer.isEmpty(position.getElevation())))
                 count++;
         }
         return count != positions.size();

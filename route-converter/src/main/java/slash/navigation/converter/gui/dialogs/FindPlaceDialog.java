@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
@@ -151,7 +152,7 @@ public class FindPlaceDialog extends SimpleDialog {
         for (int i = objects.length - 1; i >= 0; i -= 1) {
             GoogleMapsPosition position = (GoogleMapsPosition) objects[i];
             Double elevation = position.getElevation();
-            if (elevation != null && elevation == 0.0)
+            if (Transfer.isEmpty(elevation))
                 elevation = null;
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(), elevation,
                     null, CompactCalendar.fromCalendar(Calendar.getInstance()), position.getComment());

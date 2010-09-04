@@ -20,6 +20,7 @@
 
 package slash.navigation.babel;
 
+import slash.common.io.Transfer;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gpx.GpxPosition;
 import slash.common.io.CompactCalendar;
@@ -63,8 +64,8 @@ public class GarminPcx5Format extends BabelFormat {
     private boolean isValidRoute(List<GpxPosition> positions) {
         int count = 0;
         for (GpxPosition position : positions) {
-            if ((position.getLongitude() == 0.0 && position.getElevation() != null && position.getElevation() > 100000.0) ||
-                (position.getLongitude() == 0.0 && position.getLatitude() == 0.0))
+            if ((Transfer.isEmpty(position.getLongitude()) && position.getElevation() != null && position.getElevation() > 100000.0) ||
+                (Transfer.isEmpty(position.getLongitude()) && Transfer.isEmpty(position.getLatitude())))
                 count++;
         }
         return count != positions.size();

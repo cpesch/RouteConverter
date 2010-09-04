@@ -73,7 +73,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private String formatSpeed(Double speed) {
-        if (speed == null || speed == 0.0)
+        if (Transfer.isEmpty(speed))
             return "";
         String speedStr;
         if (Math.abs(speed) < 10.0)

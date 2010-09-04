@@ -274,7 +274,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals(0.0, targetPosition.getElevation());
         else if (sourcePosition.getElevation() == null &&
                 targetFormat instanceof MagellanMapSendFormat)
-            assertTrue(targetPosition.getElevation() == null || targetPosition.getElevation() == 0.0);
+            assertTrue(Transfer.isEmpty(targetPosition.getElevation()));
     }
 
     private static void compareHeading(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {

@@ -177,14 +177,14 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private String formatSpeed(String comment, Double speed) {
-        if (speed == null || speed == 0.0)
+        if (Transfer.isEmpty(speed))
             return comment;
         return (comment != null ? comment + " " : "") +
                 "Speed: " + Transfer.formatSpeedAsString(speed) + " Km/h";
     }
 
     private String formatHeading(String comment, Double heading) {
-        if (heading == null || heading == 0.0)
+        if (Transfer.isEmpty(heading))
             return comment;
         return (comment != null ? comment + " " : "") +
                 "Heading: " + Transfer.formatHeadingAsString(heading);
