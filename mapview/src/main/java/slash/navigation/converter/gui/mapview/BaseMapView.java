@@ -282,6 +282,7 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
+                    log.info("Woke up to update route");
                     copiedPositions = reducePositions(copiedPositions, recenter, getMaximumPositionCount());
                     setCenterOfMap(copiedPositions, recenter);
                     switch (positionsModel.getRoute().getCharacteristics()) {
@@ -294,7 +295,7 @@ public abstract class BaseMapView implements MapView {
                         default:
                             addPolylinesToMap(copiedPositions);
                     }
-                    log.info("MapView updated for " + copiedPositions.size() + " positions of type " +
+                    log.info("Route updated for " + copiedPositions.size() + " positions of type " +
                             positionsModel.getRoute().getCharacteristics() + ", recentering: " + recenter);
                     lastTime = System.currentTimeMillis();
                 }
@@ -337,9 +338,10 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
+                    log.info("Woke up to update selected positions");
                     List<BaseNavigationPosition> selected = reducePositions(copiedPositions, copiedSelectedPositions);
                     selectPositions(selected, recenter);
-                    log.info("MapView position updated for " + selected.size() + " positions");
+                    log.info("Selected positions updated for " + selected.size() + " positions");
                     lastTime = System.currentTimeMillis();
                 }
             }
@@ -352,7 +354,7 @@ public abstract class BaseMapView implements MapView {
             ServerSocket serverSocket = new ServerSocket(0, 0, InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
             serverSocket.setSoTimeout(1000);
             int port = serverSocket.getLocalPort();
-            log.info("MapView listens on port " + port + " for callbacks");
+            log.info("Map listens on port " + port + " for callbacks");
             setCallbackListenerPort(port);
             return serverSocket;
         } catch (IOException e) {
@@ -702,7 +704,9 @@ public abstract class BaseMapView implements MapView {
                 long start = System.currentTimeMillis();
                 int[] significantPositions = Positions.getSignificantPositions(positions, threshold);
                 long end = System.currentTimeMillis();
-                log.info("zoomLevel " + zoomLevel + " < " + MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION + " threshold " + threshold + " significant positions " + significantPositions.length + " calculated in " + (end - start) + " milliseconds");
+                log.info("zoomLevel " + zoomLevel + " < " + MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION +
+                        ": threshold " + threshold + ", significant positions " + significantPositions.length +
+                        ", calculated in " + (end - start) + " milliseconds");
                 for (int significantPosition : significantPositions)
                     significant.set(significantPosition);
             } else {
@@ -793,7 +797,7 @@ public abstract class BaseMapView implements MapView {
 
         result.add(positions.get(positions.size() - 1));
 
-        log.info("filtered visible positions to reduce " + positions.size() + " positions to " + result.size());
+        log.info("Filtered visible positions to reduce " + positions.size() + " positions to " + result.size());
         return result;
     }
 
@@ -808,7 +812,7 @@ public abstract class BaseMapView implements MapView {
 
         result.add(positions.get(positions.size() - 1));
 
-        log.info("filtered every " + increment + "th position to reduce " + positions.size() + " positions to " + result.size() + " (maximum was " + maximumPositionCount + ")");
+        log.info("Filtered every " + increment + "th position to reduce " + positions.size() + " positions to " + result.size() + " (maximum was " + maximumPositionCount + ")");
         return result;
     }
 
@@ -847,8 +851,8 @@ public abstract class BaseMapView implements MapView {
                 this.haveToUpdatePosition = true;
                 significantPositionCache.clear();
             }
-            log.fine(System.currentTimeMillis() + " haveToUpdateRoute: " + haveToUpdateRoute +
-                    " haveToReplaceRoute: " + haveToReplaceRoute + " positions: " + positions.size());
+            log.info("haveToUpdateRoute: " + haveToUpdateRoute + " haveToReplaceRoute: " + haveToReplaceRoute +
+                     " positions: " + (positions != null ? positions.size() : "<null>"));
             notificationMutex.notifyAll();
         }
     }
@@ -1082,9 +1086,8 @@ public abstract class BaseMapView implements MapView {
         return buffer.toString();
     }
 
-    protected void logExecuteScript(String script, Object result) {
-        String output = System.currentTimeMillis() + " executing script '" + script + (result != null ? "' with result '" + result : "") + "'";
-        log.fine(output);
+    protected void logJavaScript(String script, Object result) {
+        log.fine("script '" + script + (result != null ? "'\nwith result '" + result : "") + "'");
     }
 
     protected abstract void executeScript(String script);
@@ -1303,6 +1306,7 @@ public abstract class BaseMapView implements MapView {
 
     private void complementPositions(final int row, final BaseRoute route) {
         executor.execute(new Runnable() {
+            @SuppressWarnings("unchecked")
             public void run() {
                 CompletePositionService completePositionService = new CompletePositionService();
                 try {
