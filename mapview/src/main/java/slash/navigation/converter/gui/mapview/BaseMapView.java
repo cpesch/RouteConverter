@@ -34,7 +34,6 @@ import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.Application;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.util.Positions;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -51,8 +50,19 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -117,6 +127,8 @@ public abstract class BaseMapView implements MapView {
             haveToUpdatePosition = false, ignoreNextZoomCallback = false;
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
     private int meters = 0, seconds = 0;
+    private ExecutorService executor = Executors.newCachedThreadPool();
+    private ExecutorService commentExecutor = Executors.newSingleThreadExecutor();
 
     // initialization
 
@@ -488,7 +500,7 @@ public abstract class BaseMapView implements MapView {
             }
         };
 
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             public void run() {
                 addMapViewListener(callbackWaiter);
                 try {
@@ -522,7 +534,7 @@ public abstract class BaseMapView implements MapView {
                     removeMapViewListener(callbackWaiter);
                 }
             }
-        }, "MapViewCallbackChecker").start();
+        });
     }
 
     // disposal
@@ -532,6 +544,13 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             running = false;
             notificationMutex.notifyAll();
+        }
+
+        {
+            executor.shutdownNow();
+            commentExecutor.shutdownNow();
+            long end = System.currentTimeMillis();
+            log.info("Executors stopped after " + (end - start) + " ms");
         }
 
         if (positionUpdater != null) {
@@ -1003,7 +1022,7 @@ public abstract class BaseMapView implements MapView {
             insertWaypointsQueue.putAll(addToQueue);
         }
 
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             public void run() {
                 for (Integer key : addToQueue.keySet()) {
                     List<BaseNavigationPosition> successorPredecessor = addToQueue.get(key);
@@ -1026,7 +1045,7 @@ public abstract class BaseMapView implements MapView {
                     }
                 }
             }
-        }, "WaypointsInserter").start();
+        });
     }
 
     // call Google Maps API functions
@@ -1208,6 +1227,7 @@ public abstract class BaseMapView implements MapView {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPositions(row, route);
+                    complementPositions(row, route);
                 }
             });
             return false;
@@ -1247,23 +1267,23 @@ public abstract class BaseMapView implements MapView {
     @SuppressWarnings("unchecked")
     private BaseRoute parseRoute(List<Double> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
         BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
-
-        CompletePositionService completePositionService = new CompletePositionService();
-        try {
-            // count backwards as inserting at position 0
-            for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-                // Double seconds = coordinates.get(i); Double meters = coordinates.get(i - 1);
-                Double longitude = coordinates.get(i - 2);
-                Double latitude = coordinates.get(i - 3);
-                BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, null, null);
-                if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
-                    completePositionService.completePosition(position);
-                    route.add(0, position);
-                }
+        // count backwards as inserting at position 0
+        CompactCalendar time = after.getTime();
+        for (int i = coordinates.size() - 1; i > 0; i -= 4) {
+            Double seconds = coordinates.get(i);
+            seconds = Transfer.isEmpty(seconds) ? seconds : null;
+            // Double meters = coordinates.get(i - 1);
+            Double longitude = coordinates.get(i - 2);
+            Double latitude = coordinates.get(i - 3);
+            if(seconds != null && time != null) {
+                Calendar calendar = time.getCalendar();
+                calendar.add(Calendar.SECOND, -seconds.intValue());
+                time = CompactCalendar.fromCalendar(calendar);
             }
-            RouteComments.commentPositions(positions);
-        } finally {
-            completePositionService.close();
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, Application.getInstance().getContext().getBundle().getString("new-position-comment"));
+            if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
+                route.add(0, position);
+            }
         }
         return route;
     }
@@ -1275,6 +1295,24 @@ public abstract class BaseMapView implements MapView {
         } catch (IOException e) {
             log.severe("Cannot insert route: " + e.getMessage());
         }
+    }
+
+    private void complementPositions(final int row, final BaseRoute route) {
+        executor.execute(new Runnable() {
+            public void run() {
+                CompletePositionService completePositionService = new CompletePositionService();
+                try {
+                    List<BaseNavigationPosition> positions = route.getPositions();
+                    int index = row;
+                    for (BaseNavigationPosition position : positions) {
+                        complementElevation(index, position.getLongitude(), position.getLatitude());
+                        index++;
+                    }
+                } finally {
+                    completePositionService.close();
+                }
+            }
+        });
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
@@ -1300,7 +1338,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void complementComment(final int row, final Double longitude, final Double latitude) {
-        new Thread(new Runnable() {
+        commentExecutor.execute(new Runnable() {
             public void run() {
                 CompletePositionService completePositionService = new CompletePositionService();
                 final String[] comment = new String[1];
@@ -1321,11 +1359,11 @@ public abstract class BaseMapView implements MapView {
                     });
                 }
             }
-        }, "MapViewInsertPositionCommentComplementer").start();
+        });
     }
 
     private void complementElevation(final int row, final Double longitude, final Double latitude) {
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             public void run() {
                 CompletePositionService completePositionService = new CompletePositionService();
                 final Integer[] elevation = new Integer[1];
@@ -1346,13 +1384,14 @@ public abstract class BaseMapView implements MapView {
                     });
                 }
             }
-        }, "MapViewInsertPositionElevationComplementer").start();
+        });
     }
 
     private void movePosition(int row, Double longitude, Double latitude) {
         positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(null, row, PositionColumns.ELEVATION_COLUMN_INDEX, false, false);
+        positionsModel.edit(null, row, PositionColumns.TIME_COLUMN_INDEX, false, false);
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
@@ -1362,7 +1401,7 @@ public abstract class BaseMapView implements MapView {
         }
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
 
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             public void run() {
                 updateButDontRecenter();
 
@@ -1375,7 +1414,7 @@ public abstract class BaseMapView implements MapView {
 
                 updatePositionMarker();
             }
-        }, "MapViewMovePositionNotifier").start();
+        });
     }
 
     private void removePosition(int index) {
@@ -1384,14 +1423,14 @@ public abstract class BaseMapView implements MapView {
             int row = positionsModel.getIndex(position);
             positionsModel.remove(new int[]{row});
 
-            new Thread(new Runnable() {
+            executor.execute(new Runnable() {
                 public void run() {
                     synchronized (notificationMutex) {
                         haveToRepaintRouteImmediately = true;
                         notificationMutex.notifyAll();
                     }
                 }
-            }, "MapViewRemovePositionNotifier").start();
+            });
         }
     }
 
