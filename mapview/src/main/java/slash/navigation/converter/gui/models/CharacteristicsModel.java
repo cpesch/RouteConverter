@@ -44,7 +44,6 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
     public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         this.route = route;
         routeHasChanged = true;
-        setSelectedItem(getSelectedItem());
     }
 
     public int getSize() {
