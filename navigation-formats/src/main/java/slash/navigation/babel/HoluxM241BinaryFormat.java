@@ -20,6 +20,16 @@
 
 package slash.navigation.babel;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Reads and writes Holux M-241 Binary (.bin) files.
  *
@@ -49,5 +59,31 @@ public class HoluxM241BinaryFormat extends BabelFormat {
 
     public boolean isSupportsWriting() {
         return false;
+    }
+
+    private boolean isValidRoute(List<GpxPosition> positions) {
+        int count = 0;
+        for (GpxPosition position : positions) {
+            if ((position.getSatellites() == null || position.getSatellites() < 12) &&
+                    (position.getVdop() == null || position.getVdop() < 20) &&
+                    !Transfer.isEmpty(position.getLongitude()) &&
+                    !Transfer.isEmpty(position.getLatitude()))
+                count++;
+        }
+        return count == positions.size();
+    }
+
+    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
+        List<GpxRoute> routes = super.read(source, startDate);
+        if (routes == null)
+            return null;
+
+        List<GpxRoute> result = new ArrayList<GpxRoute>();
+        for (GpxRoute route : routes) {
+            // is reading GarminPoiDb files
+            if (isValidRoute(route.getPositions()))
+                result.add(route);
+        }
+        return result.size() > 0 ? result : null;
     }
 }
