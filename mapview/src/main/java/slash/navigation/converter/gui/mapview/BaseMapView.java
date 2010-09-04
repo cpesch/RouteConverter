@@ -347,22 +347,22 @@ public abstract class BaseMapView implements MapView {
         positionUpdater.start();
     }
 
-    private ServerSocket createDragListenerServerSocket() {
+    private ServerSocket createCallbackListenerServerSocket() {
         try {
             ServerSocket serverSocket = new ServerSocket(0, 0, InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
             serverSocket.setSoTimeout(1000);
             int port = serverSocket.getLocalPort();
-            log.info("MapView listens on port " + port + " for dragging");
+            log.info("MapView listens on port " + port + " for callbacks");
             setCallbackListenerPort(port);
             return serverSocket;
         } catch (IOException e) {
-            log.severe("Cannot open drag listener socket: " + e.getMessage());
+            log.severe("Cannot open callback listener socket: " + e.getMessage());
             return null;
         }
     }
 
     protected void initializeCallbackListener() {
-        callbackListenerServerSocket = createDragListenerServerSocket();
+        callbackListenerServerSocket = createCallbackListenerServerSocket();
         if (callbackListenerServerSocket == null)
             return;
 
@@ -379,30 +379,10 @@ public abstract class BaseMapView implements MapView {
                     BufferedReader is = null;
                     OutputStream os = null;
                     try {
-                        List<String> lines = new ArrayList<String>();
                         clientSocket = callbackListenerServerSocket.accept();
                         is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
                         os = clientSocket.getOutputStream();
-                        boolean processingPost = false, processingBody = false;
-                        while (true) {
-                            try {
-                                String line = Transfer.trim(is.readLine());
-                                if (line == null) {
-                                    if (processingPost && !processingBody) {
-                                        processingBody = true;
-                                        continue;
-                                    } else
-                                        break;
-                                }
-                                if (line.startsWith("POST"))
-                                    processingPost = true;
-                                lines.add(line);
-                            } catch (IOException e) {
-                                log.severe("Cannot read line from drag listener port:" + e.getMessage());
-                                break;
-                            }
-                        }
-                        processCallbacks(lines);
+                        processCallbacks(is);
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {
@@ -422,13 +402,37 @@ public abstract class BaseMapView implements MapView {
                             if (clientSocket != null)
                                 clientSocket.close();
                         } catch (IOException e) {
-                            log.severe("Cannot close drag listener socket: " + e.getMessage());
+                            log.severe("Cannot close callback listener socket: " + e.getMessage());
                         }
                     }
                 }
             }
         }, "MapViewCallbackListener");
         callbackListener.start();
+    }
+
+    private void processCallbacks(BufferedReader is) {
+        List<String> lines = new ArrayList<String>();
+        boolean processingPost = false, processingBody = false;
+        while (true) {
+            try {
+                String line = Transfer.trim(is.readLine());
+                if (line == null) {
+                    if (processingPost && !processingBody) {
+                        processingBody = true;
+                        continue;
+                    } else
+                        break;
+                }
+                if (line.startsWith("POST"))
+                    processingPost = true;
+                lines.add(line);
+            } catch (IOException e) {
+                log.severe("Cannot read line from callback listener port:" + e.getMessage());
+                break;
+            }
+        }
+        processCallbacks(lines);
     }
 
     protected void initializeCallbackPoller() {
