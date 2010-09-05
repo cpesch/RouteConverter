@@ -91,7 +91,7 @@
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
-            <artifactId>cocoa.macosx</artifactId>
+            <artifactId>cocoa.macosx.x86</artifactId>
             <version>3.6</version>
         </dependency>
         <dependency>
