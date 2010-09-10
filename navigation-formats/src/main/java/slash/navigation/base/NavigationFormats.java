@@ -20,7 +20,27 @@
 
 package slash.navigation.base;
 
-import slash.navigation.babel.*;
+import slash.common.io.Transfer;
+import slash.navigation.babel.AlanTrackLogFormat;
+import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.babel.BabelFormat;
+import slash.navigation.babel.GarminMapSource5Format;
+import slash.navigation.babel.GarminMapSource6Format;
+import slash.navigation.babel.GarminPcx5Format;
+import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.babel.GarminPoiFormat;
+import slash.navigation.babel.GeoCachingFormat;
+import slash.navigation.babel.HoluxM241BinaryFormat;
+import slash.navigation.babel.Igo8TrackFormat;
+import slash.navigation.babel.MagellanMapSendFormat;
+import slash.navigation.babel.MicrosoftAutoRouteFormat;
+import slash.navigation.babel.NationalGeographicTopo3Format;
+import slash.navigation.babel.OziExplorerReadFormat;
+import slash.navigation.babel.OziExplorerRouteFormat;
+import slash.navigation.babel.OziExplorerTrackFormat;
+import slash.navigation.babel.OziExplorerWaypointFormat;
+import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
@@ -34,24 +54,53 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
-import slash.navigation.kml.*;
+import slash.navigation.kml.BrokenKml21Format;
+import slash.navigation.kml.BrokenKml21LittleEndianFormat;
+import slash.navigation.kml.BrokenKml22BetaFormat;
+import slash.navigation.kml.BrokenKmz21Format;
+import slash.navigation.kml.BrokenKmz21LittleEndianFormat;
+import slash.navigation.kml.Kml20Format;
+import slash.navigation.kml.Kml21Format;
+import slash.navigation.kml.Kml22BetaFormat;
+import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.Kmz20Format;
+import slash.navigation.kml.Kmz21Format;
+import slash.navigation.kml.Kmz22BetaFormat;
+import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
+import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.BrokenNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.nmn.*;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.*;
+import slash.navigation.simple.BrokenHaicomLoggerFormat;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoogleMapsFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.KienzleGpsFormat;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.NavilinkFormat;
+import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.SygicAsciiFormat;
+import slash.navigation.simple.SygicUnicodeFormat;
+import slash.navigation.simple.WebPageFormat;
+import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
-import slash.navigation.tcx.Crs1Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.util.RouteComments;
-import slash.common.io.Transfer;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
@@ -141,7 +190,7 @@ public final class NavigationFormats {
         addFormat(OziExplorerReadFormat.class);
         addFormat(OziExplorerRouteFormat.class);
         addFormat(OziExplorerTrackFormat.class);
-        addFormat(OziExplorerWaypointFormat.class);      
+        addFormat(OziExplorerWaypointFormat.class);
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
@@ -193,14 +242,15 @@ public final class NavigationFormats {
         return getFormatInstances(true);
     }
 
+    private static class NameComparator implements Comparator<NavigationFormat> {
+        public int compare(NavigationFormat f1, NavigationFormat f2) {
+            return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+        }
+    }
 
     private static List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
         NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
-        Arrays.sort(formatsArray, new Comparator<NavigationFormat>() {
-            public int compare(NavigationFormat f1, NavigationFormat f2) {
-                return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
-            }
-        });
+        Arrays.sort(formatsArray, new NameComparator());
         return Arrays.asList(formatsArray);
     }
 
@@ -212,6 +262,33 @@ public final class NavigationFormats {
         return sortByName(getWriteFormats());
     }
 
+    private static List<NavigationFormat> sortByExtension(List<NavigationFormat> formats, final String extension) {
+        NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
+        final NameComparator nameComparator = new NameComparator();
+        Arrays.sort(formatsArray, new Comparator<NavigationFormat>() {
+            public int compare(NavigationFormat f1, NavigationFormat f2) {
+                if (f1.getExtension().equals(extension))
+                    return -1;
+                if (f2.getExtension().equals(extension))
+                    return 1;
+                return nameComparator.compare(f1, f2);
+            }
+        });
+        return Arrays.asList(formatsArray);
+    }
+
+    public static List<NavigationFormat> getReadFormatsSortedByExtension(String preferredExtension) {
+        return sortByExtension(getReadFormats(), preferredExtension);
+    }
+
+    public static List<NavigationFormat> getReadFormatsWithPreferredFormat(NavigationFormat preferredFormat) {
+        List<NavigationFormat> formats = new ArrayList<NavigationFormat>(getReadFormats());
+        if (preferredFormat != null) {
+            formats.remove(preferredFormat);
+            formats.add(0, preferredFormat);
+        }
+        return formats;
+    }
 
     private static String removeDigits(String string) {
         StringBuffer buffer = new StringBuffer(string);

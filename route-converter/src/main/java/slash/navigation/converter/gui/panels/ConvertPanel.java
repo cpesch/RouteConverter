@@ -425,17 +425,21 @@ public abstract class ConvertPanel {
         setReadFormatFileFilterPreference(selectedFormat);
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
-        openPositionList(Files.toUrls(selected), selectedFormat);
+        openPositionList(Files.toUrls(selected), NavigationFormats.getReadFormatsWithPreferredFormat(selectedFormat));
     }
 
     public void openPositionList(final List<URL> urls) {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
-        openPositionList(urls, null);
+        String extension = "";
+        for (URL url : urls) {
+            extension = Files.getExtension(url.toExternalForm());
+        }
+        openPositionList(urls, NavigationFormats.getReadFormatsSortedByExtension(extension)); 
     }
 
     @SuppressWarnings("unchecked")
-    public void openPositionList(final List<URL> urls, final NavigationFormat preferredFormat) {
+    public void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
         final RouteConverter r = RouteConverter.getInstance();
 
         final URL url = urls.get(0);
@@ -464,11 +468,6 @@ public abstract class ConvertPanel {
                             });
                         }
                     });
-                    List<NavigationFormat> formats = new ArrayList<NavigationFormat>(NavigationFormats.getReadFormats());
-                    if (preferredFormat != null) {
-                        formats.remove(preferredFormat);
-                        formats.add(0, preferredFormat);
-                    }
 
                     if (parser.read(url, formats)) {
                         log.info("Opened: " + path);
@@ -678,7 +677,7 @@ public abstract class ConvertPanel {
             log.info("Saved: " + targetsAsString);
 
             if (openAfterSave && format.isSupportsReading()) {
-                openPositionList(Files.toUrls(targets), format);
+                openPositionList(Files.toUrls(targets), NavigationFormats.getReadFormatsWithPreferredFormat(format));
                 log.info("Open after save: " + targets[0]);
             }
         } catch (Throwable t) {
