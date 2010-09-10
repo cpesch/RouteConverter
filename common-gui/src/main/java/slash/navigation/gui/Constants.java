@@ -47,10 +47,6 @@ public class Constants {
     public static final Locale SERBIA = new Locale("sr", "SR");
 
     public static void setLookAndFeel(String appleAppMenuName) {
-        if(Platform.isMac()) {
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", appleAppMenuName);
-            System.setProperty("apple.awt.showGrowBox", "true");
-        }
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
