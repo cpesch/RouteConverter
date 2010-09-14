@@ -41,7 +41,6 @@ import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.FrameMenu;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.helper.MergePositionListMenu;
-import slash.navigation.converter.gui.mapview.AbstractMapViewListener;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -168,8 +167,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void checkJreVersion() {
         String currentVersion = System.getProperty("java.version");
         String minimumVersion = "1.6.0_14";
-        if (!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion))
-            JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion), frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+        if (!Platform.isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
+            JLabel label = new JLabel(MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion));
+            label.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    createExternalPrograms().startBrowserForJava(frame);
+                }
+            });
+            JOptionPane.showMessageDialog(frame, label, frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void parseArgs(String[] args) {

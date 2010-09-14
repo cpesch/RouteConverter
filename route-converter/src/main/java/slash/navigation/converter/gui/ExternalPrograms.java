@@ -60,6 +60,10 @@ public abstract class ExternalPrograms {
         startBrowser(window, url);
     }
 
+    public void startBrowserForJava(Window window) {
+        startBrowser(window, "http://java.com/download/");
+    }
+
     protected abstract void startBrowser(Window window, String uri);
 
     public void startMail(Window window) {
