@@ -9,6 +9,7 @@
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
         <version>1.34-SNAPSHOT</version>
+        <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
     <build>

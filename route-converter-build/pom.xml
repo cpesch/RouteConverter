@@ -8,6 +8,7 @@
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
         <version>1.34-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <pluginRepositories>
