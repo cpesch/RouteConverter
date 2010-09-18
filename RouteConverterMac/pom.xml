@@ -75,9 +75,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>route-converter6</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun</groupId>

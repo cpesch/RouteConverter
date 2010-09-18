@@ -8,33 +8,34 @@
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
         <version>1.34-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>earthtools</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>geonames</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>googlemaps</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>hgt</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>navigation-formats</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -60,16 +60,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>RouteConverterBase</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <!-- mvn package does not need this but mvn release:perform stops claiming there's no artifact
              containing the main class if this is omitted -->
         <dependency>
-            <groupId>slash.navigation</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>route-converter6</artifactId>
-            <version>1.34-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
  
         <dependency>
