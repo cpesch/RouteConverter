@@ -39,6 +39,7 @@ public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,
         this.routes = new ArrayList<BaseRoute<P,F>>(routes);
     }
 
+    @SuppressWarnings("unchecked")
     public FormatAndRoutes(NavigationFormat<R> format, BaseRoute<P,F> route) {
         this(format, Arrays.<BaseRoute<P,F>>asList(route));
     }

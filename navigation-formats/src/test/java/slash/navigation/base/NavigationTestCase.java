@@ -816,6 +816,7 @@ public abstract class NavigationTestCase extends TestCase {
                 hour, minute, second);
     }
 
+    @SuppressWarnings("unchecked")
     protected void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
         NavigationFileParser parser = new NavigationFileParser();
         parser.read(source);

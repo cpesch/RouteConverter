@@ -32,6 +32,7 @@ import java.util.List;
 public abstract class ReadWriteBase extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
+    @SuppressWarnings("unchecked")
     protected void readWriteRoundtrip(String testFileName, NavigationFileParserCallback navigationFileParserCallback) throws IOException {
         File source = new File(testFileName);
         assertTrue("Could not read " + testFileName, parser.read(source));

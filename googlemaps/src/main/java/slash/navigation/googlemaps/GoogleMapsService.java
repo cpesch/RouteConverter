@@ -129,7 +129,7 @@ public class GoogleMapsService {
         List<T> result = new ArrayList<T>();
         for (Object element : elements) {
             if (resultClass.isInstance(element))
-                result.add((T) element);
+                result.add(resultClass.cast(element));
         }
         return result.size() > 0 ? result : null;
     }

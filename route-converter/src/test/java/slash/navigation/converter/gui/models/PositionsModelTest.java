@@ -40,6 +40,7 @@ public class PositionsModelTest {
     BcrPosition d = new BcrPosition(7, 7, 0, "d");
     BcrPosition e = new BcrPosition(9, 9, 0, "e");
 
+    @SuppressWarnings("unchecked")
     private void initialize() {
         List<BcrPosition> positions = route.getPositions();
         positions.clear();

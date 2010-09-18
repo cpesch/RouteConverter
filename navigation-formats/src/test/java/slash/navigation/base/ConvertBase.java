@@ -69,6 +69,7 @@ public abstract class ConvertBase extends NavigationTestCase {
         return targetFormat;
     }
 
+    @SuppressWarnings("unchecked")
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
         File target = File.createTempFile("singletarget", targetFormat.getExtension());
         target.deleteOnExit();
