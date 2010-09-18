@@ -242,15 +242,13 @@ public final class NavigationFormats {
         return getFormatInstances(true);
     }
 
-    private static class NameComparator implements Comparator<NavigationFormat> {
-        public int compare(NavigationFormat f1, NavigationFormat f2) {
-            return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
-        }
-    }
-
     private static List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
         NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
-        Arrays.sort(formatsArray, new NameComparator());
+        Arrays.sort(formatsArray, new Comparator<NavigationFormat>() {
+            public int compare(NavigationFormat f1, NavigationFormat f2) {
+                return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+            }
+        });
         return Arrays.asList(formatsArray);
     }
 
@@ -262,23 +260,17 @@ public final class NavigationFormats {
         return sortByName(getWriteFormats());
     }
 
-    private static List<NavigationFormat> sortByExtension(List<NavigationFormat> formats, final String extension) {
-        NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
-        final NameComparator nameComparator = new NameComparator();
-        Arrays.sort(formatsArray, new Comparator<NavigationFormat>() {
-            public int compare(NavigationFormat f1, NavigationFormat f2) {
-                if (f1.getExtension().equals(extension))
-                    return -1;
-                if (f2.getExtension().equals(extension))
-                    return 1;
-                return nameComparator.compare(f1, f2);
-            }
-        });
-        return Arrays.asList(formatsArray);
-    }
+    public static List<NavigationFormat> getReadFormatsPreferredByExtension(String preferredExtension) {
+        List<NavigationFormat> preferredFormats = new ArrayList<NavigationFormat>();
+        for(NavigationFormat format : getReadFormats()) {
+            if(format.getExtension().equals(preferredExtension))
+                preferredFormats.add(format);
+        }
 
-    public static List<NavigationFormat> getReadFormatsSortedByExtension(String preferredExtension) {
-        return sortByExtension(getReadFormats(), preferredExtension);
+        List<NavigationFormat> result = new ArrayList<NavigationFormat>(getReadFormats());
+        result.removeAll(preferredFormats);
+        result.addAll(0, preferredFormats);
+        return result;
     }
 
     public static List<NavigationFormat> getReadFormatsWithPreferredFormat(NavigationFormat preferredFormat) {
