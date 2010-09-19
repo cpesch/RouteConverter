@@ -46,7 +46,7 @@ public class Constants {
     public static final Locale CROATIA = new Locale("hr", "HR");
     public static final Locale SERBIA = new Locale("sr", "SR");
 
-    public static void setLookAndFeel(String appleAppMenuName) {
+    public static void setLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {

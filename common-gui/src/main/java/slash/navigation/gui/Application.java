@@ -99,7 +99,7 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
-        Constants.setLookAndFeel(applicationClass.getSimpleName());
+        Constants.setLookAndFeel();
         openNativeInterface();
         setDefaultLocale(Preferences.userNodeForPackage(applicationClass));
 
