@@ -306,7 +306,11 @@ public class EclipseSWTMapView extends BaseMapView {
                 }
             });
         } else {
-            webBrowser.executeJavascript(script);
+            webBrowser.runInSequence(new Runnable() {
+                public void run() {
+                    webBrowser.executeJavascript(script);
+                }
+            });
             logJavaScript(script, null);
         }
     }
