@@ -79,6 +79,10 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return false;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> BcrRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);

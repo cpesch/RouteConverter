@@ -46,6 +46,10 @@ public class GarminMapSource5Format extends BabelFormat implements MultipleRoute
         return true;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return true;
+    }
+
     protected boolean isStreamingCapable() {
         return false;
     }

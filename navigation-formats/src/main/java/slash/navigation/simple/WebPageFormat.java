@@ -50,6 +50,10 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         return false;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return true; 
+    }
+
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }

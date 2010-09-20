@@ -71,6 +71,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     protected abstract String getFormatName();
 
+    public boolean isWritingRouteCharacteristics() {
+        return false;
+    }
+
     protected abstract boolean isStreamingCapable();
 
     protected String getGlobalOptions() {

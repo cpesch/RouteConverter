@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public class NokiaLandmarkExchangeFormat extends GpxFormat {
+public class NokiaLandmarkExchangeFormat extends GpxFormat { // TODO why is it subclassing GPX?
     private static final Logger log = Logger.getLogger(NokiaLandmarkExchangeFormat.class.getName());
 
     public String getExtension() {
@@ -55,6 +55,10 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
     }
 
     public boolean isSupportsMultipleRoutes() {
+        return false;
+    }
+
+    public boolean isWritingRouteCharacteristics() {
         return false;
     }
 

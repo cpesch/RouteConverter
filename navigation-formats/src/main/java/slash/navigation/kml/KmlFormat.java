@@ -86,6 +86,10 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return true;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return true;
+    }
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);

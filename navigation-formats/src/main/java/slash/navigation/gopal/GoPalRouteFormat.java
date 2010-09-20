@@ -61,6 +61,10 @@ public class GoPalRouteFormat extends XmlNavigationFormat<GoPalRoute> {
         return false;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> GoPalRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GoPalRoute(name, (List<GoPalPosition>) positions);

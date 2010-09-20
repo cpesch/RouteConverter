@@ -34,4 +34,8 @@ public abstract class SimpleFormat<R extends SimpleRoute> extends TextNavigation
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
+
+    public boolean isWritingRouteCharacteristics() {
+        return false;
+    }
 }

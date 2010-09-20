@@ -65,6 +65,10 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return true;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return false;
+    }
+
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> OvlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);

@@ -61,6 +61,10 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.isSupportsMultipleRoutes();
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return delegate.isWritingRouteCharacteristics();
+    }
+
     public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return delegate.createRoute(characteristics, name, positions);
     }

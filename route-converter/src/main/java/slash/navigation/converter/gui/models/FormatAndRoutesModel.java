@@ -67,6 +67,8 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
             public void intervalRemoved(ListDataEvent e) {
             }
             public void contentsChanged(ListDataEvent e) {
+                if(formatAndRoutes.getFormat().isWritingRouteCharacteristics())
+                    setModified(true);
                 fireContentsChanged(this, -1, -1);
             }
         });

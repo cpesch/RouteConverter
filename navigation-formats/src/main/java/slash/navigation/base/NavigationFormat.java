@@ -42,6 +42,7 @@ public interface NavigationFormat<R extends BaseRoute> {
     boolean isSupportsReading();
     boolean isSupportsWriting();
     boolean isSupportsMultipleRoutes();
+    boolean isWritingRouteCharacteristics();
 
     <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 

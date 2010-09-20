@@ -54,6 +54,10 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return true;
     }
 
+    public boolean isWritingRouteCharacteristics() {
+        return true; 
+    }
+
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> GpxRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GpxRoute(this, characteristics, name, null, (List<GpxPosition>) positions);
