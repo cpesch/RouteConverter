@@ -266,7 +266,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     mapSplitPane.setDividerLocation(location);
                 else
                     mapSplitPane.setDividerLocation(300);
-                mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
+                mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
                 ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                 actionManager.enable("print-map", enablePrintActions);
@@ -288,7 +288,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     bottomSplitPane.setDividerLocation(location);
                 else
                     bottomSplitPane.setDividerLocation(Integer.MAX_VALUE);
-                bottomSplitPane.addPropertyChangeListener(new BottomSplitPaneListener());
+                bottomSplitPane.addPropertyChangeListener(new BottomSplitPaneListener(location));
             }
         });
     }
@@ -752,7 +752,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private class MapSplitPaneListener implements PropertyChangeListener {
-        private int location = 0;
+        private int location;
+
+        private MapSplitPaneListener(int location) {
+            this.location = location;
+        }
 
         public void propertyChange(PropertyChangeEvent e) {
             if (!isMapViewAvailable())
@@ -773,7 +777,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private class BottomSplitPaneListener implements PropertyChangeListener {
-        private int location = 0;
+        private int location;
+
+        private BottomSplitPaneListener(int location) {
+            this.location = location;
+        }
 
         public void propertyChange(PropertyChangeEvent e) {
             if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
