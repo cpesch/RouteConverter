@@ -56,7 +56,7 @@ public abstract class ConvertBase extends NavigationTestCase {
         convertSingleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getTheRoute());
 
         if (targetFormat.isSupportsMultipleRoutes()) {
-            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, new ArrayList<BaseRoute>(Arrays.asList(parser.getTheRoute())));
+            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, new ArrayList<BaseRoute>(Arrays.<BaseRoute>asList(parser.getTheRoute())));
             convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getAllRoutes());
         }
     }
