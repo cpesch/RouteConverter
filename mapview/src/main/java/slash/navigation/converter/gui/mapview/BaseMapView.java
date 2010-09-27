@@ -1106,6 +1106,8 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^GET /callback-port/(\\d+) .*$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
+    private Double lastMoveLongitude = null, lastMoveLatitude = null;
+
     private void processCallbacks(List<String> lines) {
         if (!isAuthenticated(lines))
             return;
@@ -1193,13 +1195,20 @@ public abstract class BaseMapView implements MapView {
 
         Matcher moveEndMather = MOVE_END_PATTERN.matcher(line);
         if (moveEndMather.matches()) {
-            if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
-                synchronized (notificationMutex) {
-                    haveToRepaintRouteImmediately = true;
-                    haveToRepaintSelectionImmediately = true;
-                    notificationMutex.notifyAll();
+            final Double latitude = Transfer.parseDouble(moveEndMather.group(1));
+            final Double longitude = Transfer.parseDouble(moveEndMather.group(2));
+            // avoid an immediate repaint of the center of the map hasn't changed
+            if (!longitude.equals(lastMoveLongitude) && !latitude.equals(lastMoveLatitude)) {
+                if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
+                    synchronized (notificationMutex) {
+                        haveToRepaintRouteImmediately = true;
+                        haveToRepaintSelectionImmediately = true;
+                        notificationMutex.notifyAll();
+                    }
                 }
             }
+            lastMoveLongitude = longitude;
+            lastMoveLatitude = latitude;
             return true;
         }
 
