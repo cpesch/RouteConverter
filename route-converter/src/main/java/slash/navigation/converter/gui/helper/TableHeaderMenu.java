@@ -65,15 +65,16 @@ public class TableHeaderMenu {
             ToggleColumnVisibilityAction action = new ToggleColumnVisibilityAction(column);
             actionManager.register("show-column-" + column.getName(), action);
 
-            String text = RouteConverter.getBundle().getString("show-column-prefix") + " " + RouteConverter.getBundle().getString(column.getName());
-            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text);
-            menuItem.setModel(new PositionTableColumnButtonModel(column, action));
-
-            popupMenu.add(menuItem);
+            String popupText = RouteConverter.getBundle().getString("show-column-prefix") + " " +
+                    RouteConverter.getBundle().getString(column.getName());
+            JCheckBoxMenuItem popupItem = new JCheckBoxMenuItem(popupText);
+            popupItem.setModel(new PositionTableColumnButtonModel(column, action));
+            popupMenu.add(popupItem);
 
             String menuBarText = RouteConverter.getBundle().getString(column.getName());
             JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuBarText);
             menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
+            JMenuHelper.setMnemonic(menuBarItem, "show-column-" + column.getName() + "-mnemonic");
             columnMenu.add(menuBarItem);
         }
 
