@@ -399,4 +399,12 @@ public abstract class BaseNavigationPosition {
     public Wgs84Position asWgs84Position() {
         return new Wgs84Position(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
+
+    public Wgs84Position asWintecWbtTkPosition() {
+        return asWgs84Position();
+    }
+
+    public Wgs84Position asWintecWbtTesPosition() {
+        return asWgs84Position();
+    }
 }

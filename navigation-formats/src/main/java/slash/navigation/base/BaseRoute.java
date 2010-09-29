@@ -427,6 +427,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asWebPageFormat();
 
+    public abstract SimpleRoute asWintecWbt201Tk1Format();
+
+    public abstract SimpleRoute asWintecWbt201Tk2Format();
+
+    public abstract SimpleRoute asWintecWbt202TesFormat();
+
     public abstract TomTomRoute asTomTom5RouteFormat();
 
     public abstract TomTomRoute asTomTom8RouteFormat();

@@ -44,6 +44,9 @@ import slash.navigation.tour.TourRoute;
 import slash.common.io.CompactCalendar;
 import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinRoute;
+import slash.navigation.wbt.WintecWbt201Tk1Format;
+import slash.navigation.wbt.WintecWbt201Tk2Format;
+import slash.navigation.wbt.WintecWbt202TesFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -363,6 +366,18 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
 
     public SimpleRoute asWebPageFormat() {
         return asSimpleFormat(new WebPageFormat());
+    }
+
+    public SimpleRoute asWintecWbt201Tk1Format() {
+        return asSimpleFormat(new WintecWbt201Tk1Format());
+    }
+
+    public SimpleRoute asWintecWbt201Tk2Format() {
+        return asSimpleFormat(new WintecWbt201Tk2Format());
+    }
+
+    public SimpleRoute asWintecWbt202TesFormat() {
+        return asSimpleFormat(new WintecWbt202TesFormat());
     }
 
     public TourRoute asTourFormat() {

@@ -232,4 +232,18 @@ public class AppendIT extends NavigationTestCase {
     public void testAppendNmnToGk() throws IOException {
         append(TEST_PATH + "from.pth", TEST_PATH + "from-nmn4.rte");
     }
+
+    // Wintec formats
+
+    public void testAppendTk1ToTes() throws IOException {
+        append(TEST_PATH + "from.tes", TEST_PATH + "from.tk1");
+    }
+
+    public void testAppendTesToTk1() throws IOException {
+        append(TEST_PATH + "from.tk1", TEST_PATH + "from.tes");
+    }
+
+    public void testAppendTesToTk2() throws IOException {
+        append(TEST_PATH + "from.tk2", TEST_PATH + "from.tes");
+    }
 }

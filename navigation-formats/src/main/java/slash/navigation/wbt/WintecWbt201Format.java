@@ -217,6 +217,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, second);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         String comment;
         if (isTrackpoint)

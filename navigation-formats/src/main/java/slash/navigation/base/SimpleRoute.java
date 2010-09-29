@@ -43,6 +43,9 @@ import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.util.RouteComments;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.*;
+import slash.navigation.wbt.WintecWbt201Tk1Format;
+import slash.navigation.wbt.WintecWbt201Tk2Format;
+import slash.navigation.wbt.WintecWbt202TesFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -288,6 +291,24 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         if (getFormat() instanceof WebPageFormat)
             return this;
         return asSimpleFormat(new WebPageFormat());
+    }
+
+    public SimpleRoute asWintecWbt201Tk1Format() {
+        if (getFormat() instanceof WintecWbt201Tk1Format)
+            return this;
+        return asSimpleFormat(new WintecWbt201Tk1Format());
+    }
+
+    public SimpleRoute asWintecWbt201Tk2Format() {
+        if (getFormat() instanceof WintecWbt201Tk2Format)
+            return this;
+        return asSimpleFormat(new WintecWbt201Tk2Format());
+    }
+
+    public SimpleRoute asWintecWbt202TesFormat() {
+        if (getFormat() instanceof WintecWbt202TesFormat)
+            return this;
+        return asSimpleFormat(new WintecWbt202TesFormat());
     }
 
     private GpxRoute asGpxFormat(GpxFormat format) {
