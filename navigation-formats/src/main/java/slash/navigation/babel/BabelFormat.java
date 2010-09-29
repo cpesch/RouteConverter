@@ -216,12 +216,12 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         // 2a. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
         if (babelFile == null && Platform.isWindows()) {
-            babelFile = checkIfBabelExists("c:\\Program Files\\GPSBabel\\gpsbabel.exe");
+            babelFile = checkIfBabelExists(System.getenv("ProgramFiles") + "\\GPSBabel\\gpsbabel.exe");
         }
 
         // 2b. look for "c:\Program Files (x86)\GPSBabel\gpsbabel.exe"
         if (babelFile == null && Platform.isWindows()) {
-            babelFile = checkIfBabelExists("c:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe");
+            babelFile = checkIfBabelExists(System.getenv("ProgramFiles(x86)") + "\\GPSBabel\\gpsbabel.exe");
         }
 
         // 3. look for "/usr/bin/gpsbabel" in path
