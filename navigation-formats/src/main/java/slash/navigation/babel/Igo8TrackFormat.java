@@ -56,7 +56,7 @@ public class Igo8TrackFormat extends BabelFormat {
     }
 
     private boolean isValidRoute(GpxRoute route) {
-        double length = route.getLength();
+        double length = route.getDistance();
         double distancePerPosition = length / route.getPositionCount();
         return distancePerPosition < 1000000.0;
     }

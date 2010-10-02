@@ -222,7 +222,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             if (CLIENT_TITLE.equals(section.getTitle())) {
                 writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
                 writer.println(ROUTE_NAME + NAME_VALUE_SEPARATOR + route.getName());
-                double length = route.getLength();
+                double length = route.getDistance();
                 if(length > 0)
                     length = length / 1000.0;
                 writer.println(EXPECTED_DISTANCE + NAME_VALUE_SEPARATOR + (int)length);

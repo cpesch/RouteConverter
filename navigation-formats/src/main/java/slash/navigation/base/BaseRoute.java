@@ -37,11 +37,7 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Positions;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * The base of all routes formats.
@@ -139,6 +135,34 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
     }
 
+    public void ensureIncreasingTime() {
+        if(getPositionCount() < 2)
+            return;
+
+        long completeTime = getTime(); // ms
+        double completeDistance = getDistance(); // m
+        double averageSpeed = completeTime > 0 ? completeDistance / completeTime * 1000 : 1.0; // m/s
+
+        List<P> positions = getPositions();
+        P first = positions.get(0);
+        if(first.getTime() == null)
+            first.setTime(CompactCalendar.fromCalendar(Calendar.getInstance()));
+
+        P previous = first;
+        for (int i = 1; i < positions.size(); i++) {
+            P next = positions.get(i);
+            CompactCalendar time = next.getTime();
+            if(time == null || time.equals(previous.getTime())) {
+                Double distance = next.calculateDistance(previous);
+                Long millis = distance != null ? new Double(distance / averageSpeed * 1000).longValue() : null;
+                if(millis == null || millis < 1000)
+                    millis = 1000L;
+                next.setTime(CompactCalendar.fromMillisAndTimeZone(previous.getTime().getTimeInMillis() + millis, previous.getTime().getTimeZoneId()));
+            }
+            previous = next;
+        }
+    }
+
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
         List<Integer> result = new ArrayList<Integer>();
         List<P> positions = getPositions();
@@ -183,22 +207,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return index != -1 && index < positions.size() - 1 ? positions.get(index + 1) : null;
     }
 
-    public double getLength() {
-        double result = 0;
-        List<P> positions = getPositions();
-        P previous = null;
-        for (P next : positions) {
-            if (previous != null) {
-                Double distance = previous.calculateDistance(next);
-                if (distance != null)
-                    result += distance;
-            }
-            previous = next;
-        }
-        return result;
-    }
-
-    public long getDuration() {
+    public long getTime() {
         Calendar minimum = null, maximum = null;
         long delta = 0;
         List<P> positions = getPositions();
@@ -223,6 +232,10 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
         long maxMinusMin = minimum != null ? maximum.getTimeInMillis() - minimum.getTimeInMillis() : 0;
         return Math.max(maxMinusMin, delta);
+    }
+
+    public double getDistance() {
+        return getDistance(0, getPositionCount() - 1);
     }
 
     public double getDistance(int startIndex, int endIndex) {

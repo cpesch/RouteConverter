@@ -117,8 +117,8 @@ public class LengthCalculator {
     private void recalculateDistance() {
         fireCalculatedDistance(0, 0);
 
-        double meters = 0.0;
-        long delta = 0;
+        double distanceMeters = 0.0;
+        long totalTimeMilliSeconds = 0;
         Calendar minimumTime = null, maximumTime = null;
         BaseNavigationPosition previous = null;
         for (int i = 0; i < positionsModel.getRowCount(); i++) {
@@ -126,10 +126,10 @@ public class LengthCalculator {
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
                 if (distance != null)
-                    meters += distance;
+                    distanceMeters += distance;
                 Long time = previous.calculateTime(next);
                 if (time != null)
-                    delta += time;
+                    totalTimeMilliSeconds += time;
             }
 
             CompactCalendar time = next.getTime();
@@ -142,14 +142,14 @@ public class LengthCalculator {
             }
 
             if (i % 100 == 0)
-                fireCalculatedDistance(new Double(meters).intValue(), delta > 0 ? (int) (delta / 1000) : 0);
+                fireCalculatedDistance(new Double(distanceMeters).intValue(), totalTimeMilliSeconds > 0 ? (int) (totalTimeMilliSeconds / 1000) : 0);
 
             previous = next;
         }
 
-        int summedUp = delta > 0 ? (int) delta / 1000 : 0;
+        int summedUp = totalTimeMilliSeconds > 0 ? (int) totalTimeMilliSeconds / 1000 : 0;
         int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance(new Double(meters).intValue(), Math.max(maxMinusMin, summedUp));
+        fireCalculatedDistance(new Double(distanceMeters).intValue(), Math.max(maxMinusMin, summedUp));
     }
 
     private void initialize() {

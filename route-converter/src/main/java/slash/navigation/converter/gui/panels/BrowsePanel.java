@@ -376,7 +376,7 @@ public abstract class BrowsePanel {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
                 if (route != null) {
                     description = RouteComments.createRouteDescription(route);
-                    length = route.getLength();
+                    length = route.getDistance();
                 }
                 showAddFileToCatalog(categoryTreeNode, description, length, file);
             } else

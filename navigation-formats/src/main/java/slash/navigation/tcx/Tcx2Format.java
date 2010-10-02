@@ -20,15 +20,10 @@
 
 package slash.navigation.tcx;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.tcx.binding2.*;
 
 import javax.xml.bind.JAXBException;
@@ -45,15 +40,11 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public class Tcx2Format extends GpxFormat {
+public class Tcx2Format extends TcxFormat {
     private static final Logger log = Logger.getLogger(Tcx2Format.class.getName());
 
     public String getName() {
         return "Training Center Database 2 (*" + getExtension() + ")";
-    }
-
-    public String getExtension() {
-        return ".tcx";
     }
 
 
@@ -187,37 +178,12 @@ public class Tcx2Format extends GpxFormat {
     }
 
 
-    private Double getHeartBeatRate(WptType wptType) {
-        Double heartBeatRate = null;
-        if (wptType.getExtensions() != null) {
-            for (Object any : wptType.getExtensions().getAny()) {
-                if (any instanceof Element) {
-                    Element extension = (Element) any;
-                    if ("TrackPointExtension".equals(extension.getLocalName())) {
-                        for (int i = 0; i < extension.getChildNodes().getLength(); i++) {
-                            Node hr = extension.getChildNodes().item(i);
-                            if ("hr".equals(hr.getLocalName()))
-                                heartBeatRate = Transfer.parseDouble(hr.getTextContent());
-                        }
-                    }
-                }
-            }
-        }
-        return heartBeatRate;
-    }
-
-    private HeartRateInBeatsPerMinuteT getHeartBeatRate(GpxPosition position) {
-        // conversion is done currently only from Gpx11Format to Tcx2Format
-        if (position != null) {
-            WptType wpt = position.getOrigin(WptType.class);
-            if (wpt != null) {
-                Double heartBeatRate = getHeartBeatRate(wpt);
-                if (heartBeatRate != null) {
-                    HeartRateInBeatsPerMinuteT result = new ObjectFactory().createHeartRateInBeatsPerMinuteT();
-                    result.setValue(heartBeatRate.shortValue());
-                    return result;
-                }
-            }
+    private HeartRateInBeatsPerMinuteT getHeartBeatRateT(GpxPosition position) {
+        Short heartBeatRate = getHeartBeatRate(position);
+        if (heartBeatRate != null) {
+            HeartRateInBeatsPerMinuteT result = new ObjectFactory().createHeartRateInBeatsPerMinuteT();
+            result.setValue(heartBeatRate);
+            return result;
         }
         return null;
     }
@@ -238,26 +204,10 @@ public class Tcx2Format extends GpxFormat {
         if (last == null)
             last = first;
 
-        double distanceMeters = 0.0;
-        long totalTimeMilliSeconds = 0;
-        List<GpxPosition> positions = route.getPositions();
-        GpxPosition previous = null;
-        for (int i = startIndex; i < endIndex; i++) {
-            GpxPosition position = positions.get(i);
-            if (previous != null) {
-                Double distance = previous.calculateDistance(position);
-                if (distance != null)
-                    distanceMeters += distance;
-                Long time = previous.calculateTime(position);
-                if (time != null)
-                    totalTimeMilliSeconds += time;
-            }
-            previous = position;
-        }
-        courseLapT.setAverageHeartRateBpm(getHeartBeatRate(first));
-        courseLapT.setDistanceMeters(distanceMeters);
+        courseLapT.setAverageHeartRateBpm(getHeartBeatRateT(first));
+        courseLapT.setDistanceMeters(route.getDistance());
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
-        courseLapT.setTotalTimeSeconds(totalTimeMilliSeconds / 1000);
+        courseLapT.setTotalTimeSeconds(route.getTime() / 1000);
 
         if (first != null) {
             courseLapT.setBeginPosition(createPosition(first));
@@ -279,21 +229,13 @@ public class Tcx2Format extends GpxFormat {
 
         List<GpxPosition> positions = route.getPositions();
         GpxPosition first = null;
-        CompactCalendar lastTime = CompactCalendar.getInstance("GMT");
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();
             trackpointT.setAltitudeMeters(position.getElevation());
-            trackpointT.setHeartRateBpm(getHeartBeatRate(position));
+            trackpointT.setHeartRateBpm(getHeartBeatRateT(position));
             trackpointT.setPosition(createPosition(position));
-
-            CompactCalendar time = position.getTime();
-            if(time != null)
-                lastTime = time;
-            else
-                // ensure that the time is always set
-                time = lastTime;
-            trackpointT.setTime(formatTime(time));
+            trackpointT.setTime(formatTime(position.getTime()));
 
             if (first != null)
                 trackpointT.setDistanceMeters(first.calculateDistance(position));

@@ -21,10 +21,12 @@
 package slash.navigation.bcr;
 
 import org.junit.Test;
+import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.util.RouteComments;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -320,14 +322,14 @@ public class BcrRouteTest {
         positions.clear();
         positions.add(a);
         positions.add(b);
-        assertDoubleEquals(1.1131, route.getLength());
-        assertDoubleEquals(a.calculateDistance(b), route.getLength());
+        assertDoubleEquals(1.1131, route.getDistance());
+        assertDoubleEquals(a.calculateDistance(b), route.getDistance());
         positions.add(c);
-        assertDoubleEquals(1.1131+1.569, route.getLength());
+        assertDoubleEquals(1.1131+1.569, route.getDistance());
         positions.add(d);
-        assertDoubleEquals(1.1131+1.569+2.4858, route.getLength());
+        assertDoubleEquals(1.1131+1.569+2.4858, route.getDistance());
         positions.add(e);
-        assertDoubleEquals(1.1131+1.569+2.4858+2.2114, route.getLength());
+        assertDoubleEquals(1.1131+1.569+2.4858+2.2114, route.getDistance());
     }
 
     @Test
@@ -352,6 +354,55 @@ public class BcrRouteTest {
         assertPositions(c, a, c, b, a, c, a);
         route.removeDuplicates();
         assertPositions(c, a, c, b, a, c, a);
+    }
+
+    @Test
+    public void testEnsureIncreasingTime() {
+        List<BcrPosition> positions = route.getPositions();
+        positions.clear();
+        positions.add(a);
+        route.ensureIncreasingTime();
+        assertNull(a.getTime());
+
+        positions.add(b);
+        route.ensureIncreasingTime();
+        assertNotNull(a.getTime());
+        assertEquals(a.getTime().getTimeInMillis() + 1113, b.getTime().getTimeInMillis());
+
+        positions.clear();
+        positions.add(c);
+        positions.add(d);
+        positions.add(e);
+        route.ensureIncreasingTime();
+        assertNotNull(c.getTime());
+        long startTime = c.getTime().getTimeInMillis();
+        assertEquals(startTime, c.getTime().getTimeInMillis());
+        assertEquals(startTime + 2485, d.getTime().getTimeInMillis());
+        assertEquals(startTime + 2485 + 2211, e.getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void testEnsureIncreasingTimeWithAverageSpeed() {
+        BcrPosition x = new BcrPosition(1180598,7090272, 0, "x");
+        x.setTime(CompactCalendar.fromCalendar(Calendar.getInstance()));
+        BcrPosition y = new BcrPosition(1153565,7113439, 0, "y");
+        BcrPosition z = new BcrPosition(1138352,7089963, 0, "z");
+        final int COMPLETE_TIME = 3600 * 1000;
+        z.setTime(CompactCalendar.fromMillis(x.getTime().getTimeInMillis() + COMPLETE_TIME));
+
+        List<BcrPosition> positions = route.getPositions();
+        positions.clear();
+        positions.add(x);
+        positions.add(y);
+        positions.add(z);
+        assertEquals(COMPLETE_TIME, route.getTime());
+
+        route.ensureIncreasingTime();
+        long startTime = x.getTime().getTimeInMillis();
+        assertEquals(startTime, x.getTime().getTimeInMillis());
+        assertEquals(startTime + 2016544, y.getTime().getTimeInMillis());
+        assertEquals(startTime + route.getTime(), z.getTime().getTimeInMillis());
+        assertEquals(startTime + COMPLETE_TIME, z.getTime().getTimeInMillis());
     }
 
     @Test

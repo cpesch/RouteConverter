@@ -133,8 +133,8 @@ public class UploadDialog extends SimpleDialog {
 
         // TODO add lots of error checking here
         // TODO see LengthToJLabelAdapter
-        double meters = firstRoute.getDistance(0, firstRoute.getPositionCount() - 1);
-        long milliSeconds = firstRoute.getDuration();
+        double meters = firstRoute.getDistance();
+        long milliSeconds = firstRoute.getTime();
         String length = (meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
