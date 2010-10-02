@@ -435,7 +435,7 @@ public abstract class ConvertPanel {
         for (URL url : urls) {
             extension = Files.getExtension(url.toExternalForm());
         }
-        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(extension)); 
+        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(extension.toLowerCase())); 
     }
 
     @SuppressWarnings("unchecked")

@@ -3,12 +3,9 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.simple.BrokenHaicomLoggerFormat;
-import slash.navigation.simple.ColumbusV900ProfessionalFormat;
-import slash.navigation.simple.ColumbusV900StandardFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
-import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.*;
 
 import java.util.List;
 
@@ -21,6 +18,13 @@ public class NavigationFormatsTest {
         List<NavigationFormat> formats = NavigationFormats.getReadFormatsPreferredByExtension(".ov2");
         assertEquals(TomTomPoiFormat.class, formats.get(0).getClass());
         assertEquals(NmeaFormat.class, formats.get(1).getClass());
+    }
+
+    @Test
+    public void testGetReadFormatsSortedByExtensionIsCaseSensitive() {
+        List<NavigationFormat> formats = NavigationFormats.getReadFormatsPreferredByExtension(".OV2");
+        assertEquals(NmeaFormat.class, formats.get(0).getClass());
+        assertEquals(MTP0809Format.class, formats.get(1).getClass());
     }
 
     @Test
