@@ -116,7 +116,7 @@ public abstract class BaseMapView implements MapView {
     private PositionsSelectionModel positionsSelectionModel;
 
     private ServerSocket callbackListenerServerSocket;
-    private Thread routeUpdater, positionUpdater, callbackListener, callbackPoller;
+    private Thread routeUpdater, selectionUpdater, callbackListener, callbackPoller;
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
@@ -124,7 +124,8 @@ public abstract class BaseMapView implements MapView {
             haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
             haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
-            haveToUpdatePosition = false, ignoreNextZoomCallback = false;
+            haveToRepaintSelection = false, ignoreNextZoomCallback = false;
+    private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
     private int meters = 0, seconds = 0;
     private ExecutorService executor = Executors.newCachedThreadPool();
@@ -157,7 +158,7 @@ public abstract class BaseMapView implements MapView {
                 // used to be limited to single rows which did work reliably but with usabilty problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
                 if (!allRowsChanged && insertOrDelete)
-                    updateButDontRecenter();
+                    updateRouteButDontRecenter();
                 else {
                     // ignored updates on columns not displayed
                     if (e.getType() == TableModelEvent.UPDATE &&
@@ -175,7 +176,7 @@ public abstract class BaseMapView implements MapView {
                                 e.getColumn() == TableModelEvent.ALL_COLUMNS)) {
                     for (int selectedPositionIndex : selectedPositionIndices) {
                         if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
-                            updatePositionMarker();
+                            updateSelection();
                             break;
                         }
                     }
@@ -273,6 +274,10 @@ public abstract class BaseMapView implements MapView {
                         if (haveToRepaintRouteImmediately ||
                                 haveToReplaceRoute ||
                                 (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
+                            log.info("Woke up to update route: " + routeUpdateReason +
+                                    " haveToUpdateRoute:" + haveToUpdateRoute +
+                                    " haveToReplaceRoute:" + haveToReplaceRoute +
+                                    " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
                             copiedPositions = filterPositionsWithoutCoordinates(positions);
                             recenter = haveToReplaceRoute;
                             haveToUpdateRoute = false;
@@ -282,7 +287,6 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
-                    log.info("Woke up to update route");
                     copiedPositions = reducePositions(copiedPositions, recenter, getMaximumPositionCount());
                     setCenterOfMap(copiedPositions, recenter);
                     switch (positionsModel.getRoute().getCharacteristics()) {
@@ -303,7 +307,7 @@ public abstract class BaseMapView implements MapView {
         }, "MapViewRouteUpdater");
         routeUpdater.start();
 
-        positionUpdater = new Thread(new Runnable() {
+        selectionUpdater = new Thread(new Runnable() {
             public void run() {
                 long lastTime = 0;
                 while (true) {
@@ -326,11 +330,15 @@ public abstract class BaseMapView implements MapView {
 
                         long currentTime = System.currentTimeMillis();
                         if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
-                                (haveToUpdatePosition && (currentTime - lastTime > 500))) {
+                                (haveToRepaintSelection && (currentTime - lastTime > 500))) {
+                            log.info("Woke up to update selected positions: " + selectionUpdateReason +
+                                    " haveToRepaintSelection: " + haveToRepaintSelection +
+                                    " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
+                                    " haveToRecenterMap: " + haveToRecenterMap);
                             haveToRecenterMap = false;
                             recenter = !haveToRepaintSelectionImmediately;
                             haveToRepaintSelectionImmediately = false;
-                            haveToUpdatePosition = false;
+                            haveToRepaintSelection = false;
                             copiedSelectedPositions = new int[selectedPositionIndices.length];
                             System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositions, 0, copiedSelectedPositions.length);
                             copiedPositions = filterPositionsWithoutCoordinates(positions);
@@ -338,15 +346,14 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
-                    log.info("Woke up to update selected positions");
                     List<BaseNavigationPosition> selected = reducePositions(copiedPositions, copiedSelectedPositions);
                     selectPositions(selected, recenter);
                     log.info("Selected positions updated for " + selected.size() + " positions");
                     lastTime = System.currentTimeMillis();
                 }
             }
-        }, "MapViewPositionUpdater");
-        positionUpdater.start();
+        }, "MapViewSelectionUpdater");
+        selectionUpdater.start();
     }
 
     private ServerSocket createCallbackListenerServerSocket() {
@@ -559,9 +566,9 @@ public abstract class BaseMapView implements MapView {
             log.info("Executors stopped after " + (end - start) + " ms");
         }
 
-        if (positionUpdater != null) {
+        if (selectionUpdater != null) {
             try {
-                positionUpdater.join();
+                selectionUpdater.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -647,7 +654,8 @@ public abstract class BaseMapView implements MapView {
     public void setSelectedPositions(int[] selectedPositions) {
         synchronized (notificationMutex) {
             this.selectedPositionIndices = selectedPositions;
-            haveToUpdatePosition = true;
+            haveToRepaintSelection = true;
+            selectionUpdateReason = "selected " + selectedPositions.length + " positions";
             notificationMutex.notifyAll();
         }
     }
@@ -846,29 +854,32 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             this.positions = positionsModel.getRoute() != null ? positionsModel.getRoute().getPositions() : null;
             this.haveToUpdateRoute = true;
+            routeUpdateReason = "update route";
             if (haveToReplaceRoute) {
                 this.haveToReplaceRoute = true;
-                this.haveToUpdatePosition = true;
+                routeUpdateReason = "replace route";
+                this.haveToRepaintSelection = true;
+                selectionUpdateReason = "replace route";
                 significantPositionCache.clear();
             }
-            log.info("haveToUpdateRoute: " + haveToUpdateRoute + " haveToReplaceRoute: " + haveToReplaceRoute +
-                     " positions: " + (positions != null ? positions.size() : "<null>"));
             notificationMutex.notifyAll();
         }
     }
 
-    private void updateButDontRecenter() {
+    private void updateRouteButDontRecenter() {
         // repaint route immediately, simulates update(true) without recentering
         synchronized (notificationMutex) {
             haveToRepaintRouteImmediately = true;
+            routeUpdateReason = "update route but don't recenter";
             significantPositionCache.clear();
             notificationMutex.notifyAll();
         }
     }
 
-    private void updatePositionMarker() {
+    private void updateSelection() {
         synchronized (notificationMutex) {
-            haveToUpdatePosition = true;
+            haveToRepaintSelection = true;
+            selectionUpdateReason = "update selection";
             notificationMutex.notifyAll();
         }
     }
@@ -1113,6 +1124,7 @@ public abstract class BaseMapView implements MapView {
             return;
 
         for (String line : lines) {
+            log.fine("Received callback: " + line);
             if (processCallback(line))
                 break;
         }
@@ -1178,6 +1190,8 @@ public abstract class BaseMapView implements MapView {
 
         Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
         if (zoomEndMatcher.matches()) {
+            Integer from = Transfer.parseInt(zoomEndMatcher.group(1));
+            Integer to = Transfer.parseInt(zoomEndMatcher.group(2));
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
@@ -1188,6 +1202,7 @@ public abstract class BaseMapView implements MapView {
                 if (recenterAfterZooming)
                     haveToRecenterMap = true;
                 haveToRepaintSelectionImmediately = true;
+                selectionUpdateReason = "zoomed from " + from + " to " + to;
                 notificationMutex.notifyAll();
             }
             return true;
@@ -1199,13 +1214,23 @@ public abstract class BaseMapView implements MapView {
             final Double longitude = Transfer.parseDouble(moveEndMather.group(2));
             // avoid an immediate repaint of the center of the map hasn't changed
             if (!longitude.equals(lastMoveLongitude) && !latitude.equals(lastMoveLatitude)) {
+                BaseNavigationPosition northEast = getNorthEastBounds();
+                BaseNavigationPosition southWest = getSouthWestBounds();
+                System.out.println();
+                System.out.println("MOVE_END longitude: " + longitude + " latitude: " + latitude + 
+                        " is in NE/SW bounds: " + Positions.contains(northEast, southWest, new Wgs84Position(longitude, latitude, null, null, null, null)));
+                System.out.println();
+                /* TODO test if this can be removed
                 if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
                     synchronized (notificationMutex) {
                         haveToRepaintRouteImmediately = true;
+                        routeUpdateReason = "moved map";
                         haveToRepaintSelectionImmediately = true;
+                        selectionUpdateReason = "moved map";
                         notificationMutex.notifyAll();
                     }
                 }
+                */
             }
             lastMoveLongitude = longitude;
             lastMoveLatitude = latitude;
@@ -1415,9 +1440,17 @@ public abstract class BaseMapView implements MapView {
         int size;
         synchronized (notificationMutex) {
             size = positions.size() - 1;
+            // was: updateButDontRecenter();  TODO double check if this can be removed
+            haveToRepaintRouteImmediately = true;
+            routeUpdateReason = "move position";
+            significantPositionCache.clear();
+            // was: updatePositionMarker();   TODO double check if this can be removed
+            haveToRepaintSelectionImmediately = true;
+            selectionUpdateReason = "move position";
         }
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
 
+        /* previously all this crap was executed, TODO double check if this can be removed
         executor.execute(new Runnable() {
             public void run() {
                 updateButDontRecenter();
@@ -1430,8 +1463,9 @@ public abstract class BaseMapView implements MapView {
                 }
 
                 updatePositionMarker();
-            }
+            }                                                                               a
         });
+        */
     }
 
     private void removePosition(int index) {
@@ -1444,6 +1478,7 @@ public abstract class BaseMapView implements MapView {
                 public void run() {
                     synchronized (notificationMutex) {
                         haveToRepaintRouteImmediately = true;
+                        routeUpdateReason = "remove position";
                         notificationMutex.notifyAll();
                     }
                 }
