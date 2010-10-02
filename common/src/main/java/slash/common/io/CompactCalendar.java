@@ -35,8 +35,12 @@ public class CompactCalendar {
     private final long timeInMillis;
     private final String timeZoneId;
 
+    public static CompactCalendar fromMillisAndTimeZone(long timeInMillis, String timeZoneId) {
+        return new CompactCalendar(timeInMillis, timeZoneId);
+    }
+
     public static CompactCalendar fromCalendar(Calendar calendar) {
-        return new CompactCalendar(calendar.getTimeInMillis(), calendar.getTimeZone().getID());
+        return fromMillisAndTimeZone(calendar.getTimeInMillis(), calendar.getTimeZone().getID());
     }
 
     public static CompactCalendar fromDate(Date date) {
@@ -46,9 +50,9 @@ public class CompactCalendar {
     }
 
 
-    public static CompactCalendar fromMillis(long millis) {
+    public static CompactCalendar fromMillis(long timeInMillis) {
         Calendar calendar = Calendar.getInstance(GMT);
-        calendar.setTimeInMillis(millis);
+        calendar.setTimeInMillis(timeInMillis);
         return fromCalendar(calendar);
     }
 

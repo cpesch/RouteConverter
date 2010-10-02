@@ -23,8 +23,6 @@ package slash.navigation.base;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.OziExplorerReadFormat;
 import slash.navigation.babel.OziExplorerWriteFormat;
-import slash.navigation.tcx.Crs1Format;
-import slash.navigation.tcx.Tcx1Format;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,8 +62,6 @@ public abstract class ConvertBase extends NavigationTestCase {
     private BaseNavigationFormat handleWriteOnlyFormats(BaseNavigationFormat targetFormat) {
         if (targetFormat instanceof OziExplorerWriteFormat)
             targetFormat = new OziExplorerReadFormat();
-        if (targetFormat instanceof Crs1Format)
-            targetFormat = new Tcx1Format();
         return targetFormat;
     }
 
@@ -106,6 +102,7 @@ public abstract class ConvertBase extends NavigationTestCase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
         File target = File.createTempFile("multitarget", targetFormat.getExtension());
         target.deleteOnExit();

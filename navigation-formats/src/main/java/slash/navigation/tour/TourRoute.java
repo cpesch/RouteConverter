@@ -20,6 +20,7 @@
 
 package slash.navigation.tour;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
@@ -39,9 +40,8 @@ import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.*;
-import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
-import slash.common.io.CompactCalendar;
 import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
@@ -132,8 +132,8 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    public GpxRoute asCrs1Format() {
-        return asGpxFormat(new Crs1Format());
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
     }
 
     public GpxRoute asTcx2Format() {

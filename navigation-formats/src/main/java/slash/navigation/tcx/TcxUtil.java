@@ -87,18 +87,17 @@ class TcxUtil {
         return result;
     }
 
-    public static void marshal2(slash.navigation.tcx.binding2.TrainingCenterDatabaseT trainingCenterDatabaseT, File file) throws JAXBException {
+    public static void marshal2(slash.navigation.tcx.binding2.TrainingCenterDatabaseT trainingCenterDatabaseT, OutputStream out) throws JAXBException {
         try {
-            FileOutputStream fos = new FileOutputStream(file);
             try {
-                newMarshaller2().marshal(new JAXBElement<slash.navigation.tcx.binding2.TrainingCenterDatabaseT>(new QName(TCX_2_NAMESPACE_URI, "TrainingCenterDatabase"), slash.navigation.tcx.binding2.TrainingCenterDatabaseT.class, trainingCenterDatabaseT), fos);
+                newMarshaller2().marshal(new JAXBElement<slash.navigation.tcx.binding2.TrainingCenterDatabaseT>(new QName(TCX_2_NAMESPACE_URI, "TrainingCenterDatabase"), slash.navigation.tcx.binding2.TrainingCenterDatabaseT.class, trainingCenterDatabaseT), out);
             }
             finally {
-                fos.flush();
-                fos.close();
+                out.flush();
+                out.close();
             }
         } catch (IOException e) {
-            throw new JAXBException("Error while marshalling to " + file + ": " + e.getMessage());
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
         }
     }
 }

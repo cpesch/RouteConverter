@@ -327,8 +327,8 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asGpxFormat(new Gpx11Format());
     }
 
-    public GpxRoute asCrs1Format() {
-        return asGpxFormat(new Crs1Format());
+    public GpxRoute asTcx1Format() {
+        return asGpxFormat(new Tcx1Format());
     }
 
     public GpxRoute asTcx2Format() {

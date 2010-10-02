@@ -39,7 +39,7 @@ import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.*;
-import slash.navigation.tcx.Crs1Format;
+import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
@@ -229,10 +229,10 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asGpxFormat(new Gpx11Format());
     }
 
-    public GpxRoute asCrs1Format() {
-        if (getFormat() instanceof Crs1Format)
+    public GpxRoute asTcx1Format() {
+        if (getFormat() instanceof Tcx1Format)
             return this;
-        return asGpxFormat(new Crs1Format());
+        return asGpxFormat(new Tcx1Format());
     }
 
     public GpxRoute asTcx2Format() {
