@@ -127,8 +127,8 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<GpxRoute> process(String name, CourseFolderT courseFolderT) {
-        boolean notWrittenByRouteConverter = !"RouteConverter".equals(name);
-        String prefix = name != null && notWrittenByRouteConverter ? name + "/" : "";
+        boolean writtenByRouteConverter = courseFolderT.getNotes() != null && courseFolderT.getNotes().equals(GENERATED_BY);
+        String prefix = name != null && !writtenByRouteConverter ? name + "/" : "";
 
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (CourseFolderT folderT : courseFolderT.getFolder())
@@ -139,7 +139,7 @@ public class Tcx1Format extends TcxFormat {
             GpxRoute coursePoints = processCoursePoints(positionListName, courseT);
             if (coursePoints != null)
                 result.add(coursePoints);
-            if (notWrittenByRouteConverter)
+            if (!writtenByRouteConverter)
                 result.addAll(processCourseLap(positionListName, courseT));
             result.add(processTracks(positionListName, courseT.getTrack()));
         }

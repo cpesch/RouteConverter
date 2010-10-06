@@ -21,13 +21,12 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
-import slash.navigation.base.BaseNavigationFormat;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -375,7 +374,7 @@ public class Gpx11Format extends GpxFormat {
         GpxType gpxType = recycleGpxType(route);
         if (gpxType == null)
             gpxType = objectFactory.createGpxType();
-        gpxType.setCreator(BaseNavigationFormat.GENERATED_BY);
+        gpxType.setCreator(GENERATED_BY);
         gpxType.setVersion(VERSION);
 
         MetadataType metadataType = gpxType.getMetadata();
@@ -404,7 +403,7 @@ public class Gpx11Format extends GpxFormat {
         }
         if (gpxType == null)
             gpxType = objectFactory.createGpxType();
-        gpxType.setCreator(BaseNavigationFormat.GENERATED_BY);
+        gpxType.setCreator(GENERATED_BY);
         gpxType.setVersion(VERSION);
 
         for (GpxRoute route : routes) {

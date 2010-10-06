@@ -116,13 +116,15 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    private List<GpxRoute> process(CourseT courseT) {
+    private List<GpxRoute> process(CourseT courseT, boolean writtenByRouteConverter) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute coursePoints = processCoursePoints(courseT);
         if (coursePoints != null)
             result.add(coursePoints);
-        for (CourseLapT courseLapT : courseT.getLap()) {
-            result.add(processCourseLap(courseT.getName(), courseLapT));
+        if (!writtenByRouteConverter) {
+            for (CourseLapT courseLapT : courseT.getLap()) {
+                result.add(processCourseLap(courseT.getName(), courseLapT));
+            }
         }
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         for (TrackT trackT : courseT.getTrack()) {
@@ -154,13 +156,17 @@ public class Tcx2Format extends TcxFormat {
             }
         }
 
+        boolean writtenByRouteConverter = trainingCenterDatabaseT.getAuthor() != null &&
+                trainingCenterDatabaseT.getAuthor().getName() != null &&
+                GENERATED_BY.equals(trainingCenterDatabaseT.getAuthor().getName());
+
         // TrainingCenterDatabase -> CourseList -> Course -> CoursePoint -> Position
         // TrainingCenterDatabase -> CourseList -> Course -> CourseLap -> BeginPosition/EndPosition
         // TrainingCenterDatabase -> CourseList -> Course -> Track -> TrackPoint -> Position
         CourseListT courseListT = trainingCenterDatabaseT.getCourses();
         if (courseListT != null) {
             for (CourseT courseT : courseListT.getCourse()) {
-                result.addAll(process(courseT));
+                result.addAll(process(courseT, writtenByRouteConverter));
             }
         }
         return result;
@@ -257,9 +263,17 @@ public class Tcx2Format extends TcxFormat {
         return courseT;
     }
 
+    private ApplicationT createAuthor() {
+        ObjectFactory objectFactory = new ObjectFactory();
+        ApplicationT applicationT = objectFactory.createApplicationT();
+        applicationT.setName(GENERATED_BY);
+        return applicationT;
+    }
+
     private TrainingCenterDatabaseT createTrainingCenterDatabase(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         TrainingCenterDatabaseT trainingCenterDatabaseT = objectFactory.createTrainingCenterDatabaseT();
+        trainingCenterDatabaseT.setAuthor(createAuthor());
         CourseListT courseListT = objectFactory.createCourseListT();
         trainingCenterDatabaseT.setCourses(courseListT);
         List<CourseT> courses = courseListT.getCourse();
@@ -270,6 +284,7 @@ public class Tcx2Format extends TcxFormat {
     private TrainingCenterDatabaseT createTrainingCenterDatabase(List<GpxRoute> routes) {
         ObjectFactory objectFactory = new ObjectFactory();
         TrainingCenterDatabaseT trainingCenterDatabaseT = objectFactory.createTrainingCenterDatabaseT();
+        trainingCenterDatabaseT.setAuthor(createAuthor());
         CourseListT courseListT = objectFactory.createCourseListT();
         trainingCenterDatabaseT.setCourses(courseListT);
         List<CourseT> courses = courseListT.getCourse();

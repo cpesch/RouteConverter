@@ -21,6 +21,10 @@
 package slash.navigation.base;
 
 import junit.framework.AssertionFailedError;
+import slash.common.TestCase;
+import slash.common.io.CompactCalendar;
+import slash.common.io.Files;
+import slash.common.io.Transfer;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
@@ -46,11 +50,8 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
+import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tour.TourFormat;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Files;
-import slash.common.io.Transfer;
-import slash.common.TestCase;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -182,8 +183,8 @@ public abstract class NavigationTestCase extends TestCase {
             String sourcePrefix = getAlanWaypointsAndRoutesName(sourceRoute);
             String targetPrefix = getAlanWaypointsAndRoutesName(targetRoute);
             assertEquals(sourcePrefix, targetPrefix);
-        } else if (targetRoute.getFormat() instanceof Tcx1Format) {
-            // Crs1Format makes route names unique by prefixing "Name" with "1: "
+        } else if (targetRoute.getFormat() instanceof TcxFormat) {
+            // TcxFormat makes route names unique by prefixing "Name" with "1: "
             String sourceName = getTrainingCenterRouteName(sourceRoute);
             String targetName = getTrainingCenterRouteName(targetRoute);
             assertEquals(sourceName, targetName);
