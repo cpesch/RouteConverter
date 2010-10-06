@@ -115,7 +115,11 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     CompactCalendar parseDateAndTime(String date, String time) {
-        String dateAndTime = Transfer.trim(date) + " " + Transfer.trim(time);
+        date = Transfer.trim(date);
+        time = Transfer.trim(time);
+        if(date == null || time == null)
+            return null;
+        String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
             return CompactCalendar.fromDate(parsed);

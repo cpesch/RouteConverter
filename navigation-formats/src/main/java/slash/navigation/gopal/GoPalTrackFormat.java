@@ -25,23 +25,37 @@ import slash.common.io.Transfer;
 import slash.navigation.base.*;
 
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Reads and writes GoPal Track (.trk) files.
- * <p/>
- * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, Länge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten<br/>
+ *
+ * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, Länge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten, [Datum (yyyymmdd), ?, ?]<br/>
  * Format: 6661343, 180817, 8.016822, 52.345300, 10.78, 38.1142, 2, 3.000000, 3<br/>
- *         6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0
+ *         6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0<br/>
+ *         31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14
  *
  * @author Christian Pesch
  */
 
 public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
+    private static final Logger log = Logger.getLogger(GoPalTrackFormat.class.getName());
+
     private static final char SEPARATOR_CHAR = ',';
+    private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyyMMdd HHmmss");
+    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
+    static {
+        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
@@ -53,7 +67,10 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE +
+                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
+                    WHITE_SPACE + "(\\d*)" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
+                    WHITE_SPACE + "\\d*" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
+                    WHITE_SPACE + "[-\\d]*" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
                     END_OF_LINE);
 
 
@@ -93,22 +110,28 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseTime(String time) {
+        try {
+            Date parsed = TIME_FORMAT.parse(time);
+            return CompactCalendar.fromDate(parsed);
+        } catch (ParseException e) {
+            log.severe("Could not parse time '" + time + "'");
+        }
+        return null;
+    }
+
+    private CompactCalendar parseDateAndTime(String date, String time) {
         time = Transfer.trim(time);
-        if (time == null || time.length() != 6)
-            return null;
-        Calendar calendar = Calendar.getInstance(CompactCalendar.GMT);
-        calendar.set(1970, 0, 1, 0, 0, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        Integer hour = Transfer.parseInt(time.substring(0, 2));
-        if (hour != null)
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-        Integer minute = Transfer.parseInt(time.substring(2, 4));
-        if (minute != null)
-            calendar.set(Calendar.MINUTE, minute);
-        Integer second = Transfer.parseInt(time.substring(4, 6));
-        if (second != null)
-            calendar.set(Calendar.SECOND, second);
-        return CompactCalendar.fromCalendar(calendar);
+        date = Transfer.trim(date);
+        if (date == null)
+            return parseTime(time);
+        String dateAndTime = date + " " + time;
+        try {
+            Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
+            return CompactCalendar.fromDate(parsed);
+        } catch (ParseException e) {
+            log.severe("Could not parse date and time '" + dateAndTime + "'");
+        }
+        return null;
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
@@ -122,10 +145,10 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = lineMatcher.group(5);
         String hdop = lineMatcher.group(6);
         String satellites = lineMatcher.group(7);
+        String date = lineMatcher.group(8);
 
-        CompactCalendar calendar = parseTime(time);
         Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                null, Transfer.parseDouble(speed), calendar, null);
+                null, Transfer.parseDouble(speed), parseDateAndTime(date, time), null);
         position.setStartDate(startDate);
         position.setHeading(Transfer.parseDouble(heading));
         position.setHdop(Transfer.parseDouble(hdop));

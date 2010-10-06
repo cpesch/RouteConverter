@@ -37,12 +37,15 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("6651145, 180807, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
         assertTrue(format.isValidLine("6122534, 160149, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
         assertTrue(format.isValidLine("54850635, 184229, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
+        assertTrue(format.isValidLine("31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14"));
     }
 
     public void testIsPosition() {
         assertTrue(format.isPosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000000, 3"));
         assertTrue(format.isPosition("6664226, 180820, 8.016903, 52.345550, 12.95, 30.0394, 2, 3.000000, 3 "));
         assertTrue(format.isPosition("6664226,180820,8.016903,52.345550,12.95,30.0394,2,3.000000,3"));
+        assertTrue(format.isPosition("31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14"));
+        assertTrue(format.isPosition("31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, -14"));
         assertFalse(format.isPosition("6651145, 180807, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
         assertFalse(format.isPosition("6122534, 160149, 0.000000, 0.000000, 0, 0, 0, 0.000000, 0"));
     }
@@ -82,6 +85,22 @@ public class GoPalTrackFormatTest extends NavigationTestCase {
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime().getCalendar());
+        assertNull(position.getComment());
+    }
+
+    public void testParsePositionWithDate() {
+        Wgs84Position position = format.parsePosition("31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14", null);
+        assertEquals(-22.760357, position.getLongitude());
+        assertEquals(65.125717, position.getLatitude());
+        assertNull(position.getElevation());
+        assertEquals(334.4, position.getHeading());
+        assertEquals(20.7424, position.getSpeed());
+        assertEquals(1.000000, position.getHdop());
+        assertEquals(new Integer(8), position.getSatellites());
+        String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
+        CompactCalendar expectedCal = calendar(2010, 7, 19, 9, 22, 58);
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        assertEquals(expected, actual);
         assertNull(position.getComment());
     }
 }
