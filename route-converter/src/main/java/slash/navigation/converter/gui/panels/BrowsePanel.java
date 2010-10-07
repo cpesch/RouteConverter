@@ -276,7 +276,10 @@ public abstract class BrowsePanel {
     }
 
     private void selectTreeNode(CategoryTreeNode selected) {
-        tableRoutes.setModel(selected.getRoutesListModel());
+        RoutesListModel routesListModel = selected.getRoutesListModel();
+        if (routesListModel == null)
+            return;
+        tableRoutes.setModel(routesListModel);
         TableCellRenderer routesHeaderRenderer = new RoutesTableCellHeaderRenderer();
         TableColumnModel routeColumns = tableRoutes.getColumnModel();
         for (int i = 0; i < routeColumns.getColumnCount(); i++) {
