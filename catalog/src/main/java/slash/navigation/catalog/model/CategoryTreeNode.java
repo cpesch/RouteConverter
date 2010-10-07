@@ -82,7 +82,6 @@ public class CategoryTreeNode extends DefaultMutableTreeNode {
                     insert(new CategoryTreeNode(child), children == null ? 0 : getChildCount());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 log.severe("Cannot get child categories: " + e.getMessage());
             }
         }
@@ -107,7 +106,6 @@ public class CategoryTreeNode extends DefaultMutableTreeNode {
         try {
             return getCategory().getName();
         } catch (Exception e) {
-            e.printStackTrace();
             log.severe("Cannot get name: " + e.getMessage());
             return "?";
         }
