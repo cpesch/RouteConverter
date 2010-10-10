@@ -107,14 +107,6 @@
        }
    }
 
-   var square = new GIcon();
-   square.image = "square.png";
-   square.iconSize = new GSize(11, 11);
-   square.dragCrossSize = new GSize(0, 0);
-   square.shadowSize = new GSize(11, 11);
-   square.iconAnchor = new GPoint(5, 5);
-   square.maxHeight = 0;
-
    function addListener(marker, index) {
        GEvent.addListener(marker, "dragend", function() {
            var ll = marker.getLatLng();
