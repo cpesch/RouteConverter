@@ -90,6 +90,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
     // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,A*76
     // $GPRMC,140403.000,A,4837.5194,N,00903.4022,E,15.00,0.00,260707,,  *3E
+    // $GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A
     private static final Pattern RMC_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time
@@ -101,7 +102,8 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "(\\d*)" + SEPARATOR +          // Date, ddmmyy
                     "[\\d\\.]*" + SEPARATOR +
                     "[\\d\\.]*" + SEPARATOR + "?" +
-                    "[AEW]?" +
+                    "[AEW]?" + SEPARATOR + "?" +
+                    "[AN]?" +
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22

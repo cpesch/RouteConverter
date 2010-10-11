@@ -55,6 +55,7 @@ public class NmeaFormatTest {
         assertTrue(format.isValidLine("$GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,,A*76"));
         assertTrue(format.isValidLine("$GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d"));
         assertTrue(format.isValidLine("$GPRMC,132713,A,5509.7861,N,00140.5854,W,2.1,278.3,010110,,*e"));
+        assertTrue(format.isValidLine("$GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A"));
 
         assertTrue(format.isValidLine("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
         assertTrue(format.isValidLine("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
@@ -103,6 +104,7 @@ public class NmeaFormatTest {
         assertTrue(format.isPosition("$GPRMC,180114,A,4808.9490,N,00928.9610,E,,,,,,A*70"));
         assertTrue(format.isPosition("$GPRMC,,A,4808.9490,N,00928.9610,E,,,,,,A*7D"));
         assertTrue(format.isPosition("$GPRMC,175947.000,A,4812.0597,N,01136.4663,E,0.0,163.8,010907,,,A*62"));
+        assertTrue(format.isPosition("$GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A"));
         assertTrue(format.isPosition("$GPZDA,032910,07,08,2004,00,00*48"));
         assertTrue(format.isPosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22"));
         assertTrue(format.isPosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
