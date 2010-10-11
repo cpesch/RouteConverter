@@ -94,16 +94,16 @@ public class NmeaFormat extends BaseNmeaFormat {
     private static final Pattern RMC_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time
-                    "[AV]" + SEPARATOR +
+                    "[AV]" + SEPARATOR +            // Status, A=active, V=void
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
+                    "([\\d\\.]+)" + SEPARATOR + "([EW])" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // Speed over ground, knots
                     "[\\d\\.]*" + SEPARATOR +
                     "(\\d*)" + SEPARATOR +          // Date, ddmmyy
                     "[\\d\\.]*" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR + "?" +
-                    "[AEW]?" + SEPARATOR + "?" +
-                    "[AN]?" +
+                    "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation 
+                    "[AEW]?" + SEPARATOR + "?" +    // E=East, W=West
+                    "[ADEMNS]?" +                   // Signal integrity
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
