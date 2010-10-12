@@ -82,7 +82,7 @@ public class OptionsPanel {
                 Application.getInstance().setLocale(locale);
             }
         });
-        comboBoxLocale.setSelectedItem(Locale.getDefault());
+        comboBoxLocale.setSelectedItem(Application.getInstance().getLocale());
 
         textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {

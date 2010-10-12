@@ -62,6 +62,12 @@ public abstract class Application {
         return context;
     }
 
+    public Locale getLocale() {
+        String language = preferences.get(PREFERRED_LANGUAGE_PREFERENCE, "");
+        String country = preferences.get(PREFERRED_COUNTRY_PREFERENCE, "");
+        return new Locale(language, country);
+    }
+
     public void setLocale(Locale locale) {
         if (!Constants.ROOT_LOCALE.equals(locale)) {
             preferences.put(PREFERRED_LANGUAGE_PREFERENCE, locale.getLanguage());
@@ -72,7 +78,7 @@ public abstract class Application {
         }
     }
 
-    private static void setDefaultLocale(Preferences preferences) {
+    private static void initializeLocale(Preferences preferences) {
         String language = preferences.get(PREFERRED_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
         String country = preferences.get(PREFERRED_COUNTRY_PREFERENCE, Locale.getDefault().getCountry());
         Locale.setDefault(new Locale(language, country));
@@ -101,7 +107,7 @@ public abstract class Application {
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
         Constants.setLookAndFeel();
         openNativeInterface();
-        setDefaultLocale(Preferences.userNodeForPackage(applicationClass));
+        initializeLocale(Preferences.userNodeForPackage(applicationClass));
 
         Runnable doCreateAndShowGUI = new Runnable() {
             public void run() {
