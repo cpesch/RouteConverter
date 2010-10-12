@@ -145,11 +145,12 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = lineMatcher.group(5);
         String hdop = lineMatcher.group(6);
         String satellites = lineMatcher.group(7);
-        String date = lineMatcher.group(8);
+        String date = Transfer.trim(lineMatcher.group(8));
 
         Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
                 null, Transfer.parseDouble(speed), parseDateAndTime(date, time), null);
-        position.setStartDate(startDate);
+        if (date == null)
+            position.setStartDate(startDate);
         position.setHeading(Transfer.parseDouble(heading));
         position.setHdop(Transfer.parseDouble(hdop));
         position.setSatellites(Transfer.parseInt(satellites));
