@@ -136,6 +136,7 @@ public class FilesTest extends TestCase {
 
     public void testCreateGoPalFileName() {
         assertEquals("EIFELSTERN AACHEN", Files.createGoPalFileName("Eifelstern-Aachen"));
+        assertEquals("EIFELSTERN.XML", Files.createGoPalFileName("Eifelstern.xml"));
     }
 
     public void testShortenPath() {

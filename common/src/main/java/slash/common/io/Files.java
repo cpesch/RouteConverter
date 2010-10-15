@@ -158,7 +158,7 @@ public class Files {
 
     public static String createGoPalFileName(String fileName) {
         fileName = fileName.toUpperCase();
-        fileName = fileName.replaceAll("[^\\w]", " ");
+        fileName = fileName.replaceAll("[^\\w.]", " ");
         return fileName;
     }
 
