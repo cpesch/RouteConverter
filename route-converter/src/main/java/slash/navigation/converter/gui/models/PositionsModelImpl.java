@@ -224,7 +224,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     private CompactCalendar parseDate(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
-        } else {
+        } else if (stringValue != null) {
             try {
                 Date date = TIME_FORMAT.parse(stringValue);
                 Calendar calendar = Calendar.getInstance();
