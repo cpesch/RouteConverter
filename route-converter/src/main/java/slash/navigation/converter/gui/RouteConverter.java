@@ -245,6 +245,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
+                        preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
                 );

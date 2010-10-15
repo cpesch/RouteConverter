@@ -136,9 +136,10 @@ public abstract class BaseMapView implements MapView {
     public void initialize(PositionsModel positionsModel,
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
-                           boolean pedestrians, boolean avoidHighways) {
+                           boolean recenterAfterZooming, boolean pedestrians, boolean avoidHighways) {
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel);
+        this.recenterAfterZooming = recenterAfterZooming;
         this.pedestrians = pedestrians;
         this.avoidHighways = avoidHighways;
     }
@@ -335,8 +336,8 @@ public abstract class BaseMapView implements MapView {
                                     " haveToRepaintSelection: " + haveToRepaintSelection +
                                     " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
                                     " haveToRecenterMap: " + haveToRecenterMap);
+                            recenter = haveToRecenterMap;
                             haveToRecenterMap = false;
-                            recenter = !haveToRepaintSelectionImmediately;
                             haveToRepaintSelectionImmediately = false;
                             haveToRepaintSelection = false;
                             copiedSelectedPositions = new int[selectedPositionIndices.length];

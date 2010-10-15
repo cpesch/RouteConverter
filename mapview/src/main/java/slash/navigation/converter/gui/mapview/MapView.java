@@ -37,7 +37,7 @@ public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
-                    boolean pedestrians, boolean avoidHighways);
+                    boolean recenterAfterZooming, boolean pedestrians, boolean avoidHighways);
     boolean isSupportedPlatform();
     boolean isInitialized();
     Throwable getInitializationCause();
