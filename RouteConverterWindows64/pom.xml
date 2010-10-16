@@ -65,7 +65,7 @@
                             </classPath>
                             <jre>
                                 <minVersion>1.6.0</minVersion>
-                                <maxHeapSize>256</maxHeapSize>
+                                <maxHeapSize>512</maxHeapSize>
                             </jre>
                             <versionInfo>
                                 <fileVersion>1.34.${maven.build.number}.0</fileVersion>
