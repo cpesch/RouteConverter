@@ -75,6 +75,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.6.1</version>
                 <configuration>
+                    <doctitle>RouteConverter ${project.version} API</doctitle>
+                    <windowtitle>RouteConverter ${project.version} API</windowtitle>
                     <encoding>Cp1252</encoding>
                     <header>RouteConverter API</header>
                     <bottom>Created by Christian Pesch</bottom>
@@ -90,7 +92,7 @@
                         </group>
                         <group>
                             <title>Formats</title>
-                            <packages>slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.viamichelin:slash.navigation.wbt</packages>
+                            <packages>slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.viamichelin:slash.navigation.wbt</packages>
                         </group>
                         <group>
                             <title>Utilities</title>
