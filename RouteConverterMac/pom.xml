@@ -42,9 +42,30 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
+                    </descriptors>
+                    <finalName>RouteConverterMac.app</finalName>
+                    <outputDirectory>target</outputDirectory>
+                    <workDirectory>target/maven-assembly</workDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
+ 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
