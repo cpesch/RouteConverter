@@ -35,7 +35,7 @@
                                 </excludes>
                             </dependencies>
                             <jnlp>
-                                <outputFile>${name}.jnlp</outputFile>
+                                <outputFile>${project.name}.jnlp</outputFile>
                                 <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
                             </jnlp>
                             <sign>
