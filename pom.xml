@@ -38,8 +38,8 @@
     </distributionManagement>
 
     <scm>
-      <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/RouteConverter-2.0</connection>
-      <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/RouteConverter-2.0</developerConnection>
+        <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</connection>
+        <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/trunk</developerConnection>
     </scm>
 
     <build>
