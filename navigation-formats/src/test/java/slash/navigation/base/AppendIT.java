@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import slash.navigation.gopal.GoPal3RouteFormat;
+import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
@@ -39,7 +39,7 @@ public class AppendIT extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
     static boolean isStoringRouteName(NavigationFormat format) {
-        return !(format instanceof GoPal3RouteFormat) && !(format instanceof GoPalTrackFormat) &&
+        return !(format instanceof GoPalRouteFormat) && !(format instanceof GoPalTrackFormat) &&
                 !(format instanceof GpsTunerFormat) && !(format instanceof TomTomRouteFormat) &&
                 !(format instanceof NmeaFormat) && !(format instanceof Nmn4Format) &&
                 !(format instanceof Nmn5Format) && !(format instanceof Nmn6Format) &&

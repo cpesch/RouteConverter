@@ -23,7 +23,6 @@ package slash.navigation.gopal;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.gopal.binding3.ObjectFactory;
 import slash.navigation.gopal.binding3.Tour;
 
@@ -42,27 +41,11 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 
-public class GoPal3RouteFormat extends XmlNavigationFormat<GoPal3Route> {
+public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal3RouteFormat.class);
-
-    public String getExtension() {
-        return ".xml";
-    }
 
     public String getName() {
         return "GoPal Route 3 (*" + getExtension() + ")";
-    }
-
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return false;
-    }
-
-    public boolean isWritingRouteCharacteristics() {
-        return false;
     }
 
     @SuppressWarnings("unchecked")

@@ -24,7 +24,6 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.gopal.binding5.ObjectFactory;
 import slash.navigation.gopal.binding5.Tour;
 
@@ -43,27 +42,11 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 
-public class GoPal5RouteFormat extends XmlNavigationFormat<GoPal5Route> {
+public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal5RouteFormat.class);
-
-    public String getExtension() {
-        return ".xml";
-    }
 
     public String getName() {
         return "GoPal Route 5 (*" + getExtension() + ")";
-    }
-
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return false;
-    }
-
-    public boolean isWritingRouteCharacteristics() {
-        return false;
     }
 
     @SuppressWarnings("unchecked")
