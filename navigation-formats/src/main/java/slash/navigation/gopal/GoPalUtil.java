@@ -20,25 +20,26 @@
 
 package slash.navigation.gopal;
 
-import slash.navigation.gopal.binding3.ObjectFactory;
-import slash.navigation.gopal.binding3.Tour;
 import slash.navigation.jaxb.JaxbUtils;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 class GoPalUtil {
-    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+    private static final JAXBContext CONTEXT_3 = JaxbUtils.newContext(slash.navigation.gopal.binding3.ObjectFactory.class);
+    private static final JAXBContext CONTEXT_5 = JaxbUtils.newContext(slash.navigation.gopal.binding5.ObjectFactory.class);
 
     private static final String GOPAL_NAMESPACE_URI = "";
 
-    private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+    private static Unmarshaller newUnmarshaller3() {
+        return JaxbUtils.newUnmarshaller(CONTEXT_3);
     }
 
-    private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
+    private static Marshaller newMarshaller3() {
+        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT_3);
         try {
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
         } catch (PropertyException e) {
@@ -47,11 +48,29 @@ class GoPalUtil {
         return marshaller;
     }
 
+    private static Unmarshaller newUnmarshaller5() {
+        return JaxbUtils.newUnmarshaller(CONTEXT_5);
+    }
 
-    public static Tour unmarshal(InputStream in) throws JAXBException {
-        Tour result = null;
+    private static Marshaller newMarshaller5() {
+        return JaxbUtils.newMarshaller(CONTEXT_5);
+    }
+
+
+    public static slash.navigation.gopal.binding3.Tour unmarshal3(InputStream in) throws JAXBException {
+        slash.navigation.gopal.binding3.Tour result = null;
         try {
-            result = (Tour) newUnmarshaller().unmarshal(in);
+            result = (slash.navigation.gopal.binding3.Tour) newUnmarshaller3().unmarshal(in);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
+        }
+        return result;
+    }
+
+    public static slash.navigation.gopal.binding5.Tour unmarshal5(InputStream in) throws JAXBException {
+        slash.navigation.gopal.binding5.Tour result = null;
+        try {
+            result = (slash.navigation.gopal.binding5.Tour) newUnmarshaller5().unmarshal(in);
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage(), e);
         }
@@ -59,10 +78,24 @@ class GoPalUtil {
     }
 
 
-    public static void marshal(Tour tour, OutputStream out) throws JAXBException {
+    public static void marshal3(slash.navigation.gopal.binding3.Tour tour, OutputStream out) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<Tour>(new QName(GOPAL_NAMESPACE_URI, "tour"), Tour.class, tour), out);
+                newMarshaller3().marshal(new JAXBElement<slash.navigation.gopal.binding3.Tour>(new QName(GOPAL_NAMESPACE_URI, "tour"), slash.navigation.gopal.binding3.Tour.class, tour), out);
+            }
+            finally {
+                out.flush();
+                out.close();
+            }
+        } catch (IOException e) {
+            throw new JAXBException("Error while marshalling: " + e.getMessage());
+        }
+    }
+
+    public static void marshal5(slash.navigation.gopal.binding5.Tour tour, OutputStream out) throws JAXBException {
+        try {
+            try {
+                newMarshaller5().marshal(new JAXBElement<slash.navigation.gopal.binding5.Tour>(new QName(GOPAL_NAMESPACE_URI, "Tour"), slash.navigation.gopal.binding5.Tour.class, tour), out);
             }
             finally {
                 out.flush();

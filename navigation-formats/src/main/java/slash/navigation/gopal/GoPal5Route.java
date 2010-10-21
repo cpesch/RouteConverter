@@ -25,7 +25,7 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.gopal.binding3.Tour;
+import slash.navigation.gopal.binding5.Tour;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -52,23 +52,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A GoPal Route (.xml) route.
+ * A GoPal Route 5 (.xml) route.
  *
  * @author Christian Pesch
  */
 
-public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
+public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
     private String name;
-    private final Tour.Options options;
+    private final Tour.RouteOptions options;
     private final List<GoPalPosition> positions;
 
 
-    public GoPalRoute(String name, List<GoPalPosition> positions) {
+    public GoPal5Route(String name, List<GoPalPosition> positions) {
         this(name, null, positions);
     }
 
-    public GoPalRoute(String name, Tour.Options options, List<GoPalPosition> positions) {
-        super(new GoPalRouteFormat(), RouteCharacteristics.Route);
+    public GoPal5Route(String name, Tour.RouteOptions options, List<GoPalPosition> positions) {
+        super(new GoPal5RouteFormat(), RouteCharacteristics.Route);
         this.options = options;
         this.positions = positions;
         setName(name);
@@ -86,7 +86,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return null;
     }
 
-    public Tour.Options getOptions() {
+    public Tour.RouteOptions getOptions() {
         return options;
     }
 
@@ -254,8 +254,8 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (GoPalPosition Wgs84Position : positions) {
-            nmnPositions.add(Wgs84Position.asNmnPosition());
+        for (GoPalPosition wgs84Position : positions) {
+            nmnPositions.add(wgs84Position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
@@ -322,7 +322,15 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return asSimpleFormat(new GoogleMapsFormat());
     }
 
-    public GoPalRoute asGoPalRouteFormat() {
+    public GoPal3Route asGoPal3RouteFormat() {
+        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        for (GoPalPosition position : positions) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPal3Route(getName(), gopalPositions); // TODO transfer options?
+    }
+
+    public GoPal5Route asGoPal5RouteFormat() {
         return this;
     }
 
@@ -395,7 +403,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GoPalRoute gopalRoute = (GoPalRoute) o;
+        GoPal5Route gopalRoute = (GoPal5Route) o;
 
         return !(name != null ? !name.equals(gopalRoute.name) : gopalRoute.name != null) &&
                 !(positions != null ? !positions.equals(gopalRoute.positions) : gopalRoute.positions != null);

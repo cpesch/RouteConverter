@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Tour">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RouteOptions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="NaviMode">
+                <xs:complexType>
+                  <xs:attribute name="value" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="OptimizationMode">
+                <xs:complexType>
+                  <xs:attribute name="value" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="TTIBypass">
+                <xs:complexType>
+                  <xs:attribute name="calculation" type="xs:string" use="required" />
+                  <xs:attribute name="mode" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="RoadUsageTypes">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="MotorWays">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="TollRoads">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="SpecialChargeRoads">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Ferries">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Tunnels">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="CarTrains">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="SeasonalRestrictedRoads">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="TimeRestrictedRoads">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="UnpavedRoads">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="IPDRoads">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="TrafficFlowInfo">
+                      <xs:complexType>
+                        <xs:attribute name="mode" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="TravelSpeeds">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Vehicle">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="MotorWay">
+                            <xs:complexType>
+                              <xs:attribute name="speed" type="xs:decimal" use="required" />
+                              <xs:attribute name="unit" type="xs:string" use="required" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="PedestrianArea">
+                            <xs:complexType>
+                              <xs:attribute name="speed" type="xs:decimal" use="required" />
+                              <xs:attribute name="unit" type="xs:string" use="required" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="speed" type="xs:decimal" use="required" />
+                        <xs:attribute name="unit" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Bicycle">
+                      <xs:complexType>
+                        <xs:attribute name="speed" type="xs:decimal" use="required" />
+                        <xs:attribute name="unit" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Pedestrian">
+                      <xs:complexType>
+                        <xs:attribute name="speed" type="xs:decimal" use="required" />
+                        <xs:attribute name="unit" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="Start">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Country">
+                <xs:complexType>
+                  <xs:attribute name="code" type="xs:unsignedByte" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="State">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="City">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Coordinates">
+                <xs:complexType>
+                  <xs:attribute name="latitude" type="xs:decimal" use="required" />
+                  <xs:attribute name="longitude" type="xs:decimal" use="required" />
+                  <xs:attribute name="mercatorx" type="xs:unsignedInt" use="required" />
+                  <xs:attribute name="mercatory" type="xs:unsignedInt" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ResultSource">
+                <xs:complexType>
+                  <xs:attribute name="workflow" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element maxOccurs="unbounded" name="Destination">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Country">
+                <xs:complexType>
+                  <xs:attribute name="code" type="xs:unsignedByte" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="State">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="Zip">
+                <xs:complexType>
+                  <xs:attribute name="code" type="xs:unsignedShort" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="City">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="Street">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="houseNumberAvailable" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="HouseNumber">
+                <xs:complexType>
+                  <xs:attribute name="value" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="type" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="POI">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="open24h" type="xs:string" use="required" />
+                  <xs:attribute name="typeID" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="extensionType" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="phone" type="xs:int" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Coordinates">
+                <xs:complexType>
+                  <xs:attribute name="latitude" type="xs:decimal" use="required" />
+                  <xs:attribute name="longitude" type="xs:decimal" use="required" />
+                  <xs:attribute name="mercatorx" type="xs:unsignedInt" use="required" />
+                  <xs:attribute name="mercatory" type="xs:unsignedInt" use="required" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ResultSource">
+                <xs:complexType>
+                  <xs:attribute name="workflow" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

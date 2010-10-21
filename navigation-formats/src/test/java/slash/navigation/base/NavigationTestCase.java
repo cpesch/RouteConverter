@@ -29,7 +29,7 @@ import slash.navigation.babel.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.copilot.CoPilotFormat;
-import slash.navigation.gopal.GoPalRouteFormat;
+import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -264,7 +264,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull(targetPosition.getElevation());
         } else if (sourceFormat instanceof CoPilotFormat || sourceFormat instanceof TourFormat)
             assertNull(sourcePosition.getElevation());
-        else if (targetFormat instanceof CoPilotFormat || targetFormat instanceof GoPalRouteFormat ||
+        else if (targetFormat instanceof CoPilotFormat || targetFormat instanceof GoPal3RouteFormat ||
                 targetFormat instanceof GoPalTrackFormat ||
                 targetFormat instanceof NavigatingPoiWarnerFormat || targetFormat instanceof NmnFormat ||
                 targetFormat instanceof Route66Format || targetFormat instanceof TourFormat)

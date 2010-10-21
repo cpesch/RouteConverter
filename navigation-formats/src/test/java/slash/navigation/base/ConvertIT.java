@@ -25,7 +25,8 @@ import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.gopal.GoPalRouteFormat;
+import slash.navigation.gopal.GoPal3RouteFormat;
+import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -374,15 +375,17 @@ public class ConvertIT extends ConvertBase {
 
 
     public void testConvertGoPalRouteToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gopal.xml", new GoPalRouteFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-gopal3.xml", new GoPal3RouteFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-gopal5.xml", new GoPal5RouteFormat(), new Gpx11Format());
     }
 
     public void testConvertGoPalRouteToGoPalRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gopal.xml", new GoPalRouteFormat(), new GoPalRouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal3.xml", new GoPal3RouteFormat(), new GoPal3RouteFormat());
+        convertRoundtrip(TEST_PATH + "from-gopal5.xml", new GoPal5RouteFormat(), new GoPal3RouteFormat());
     }
 
     public void testConvertTourExchangeToGoPalRoute() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPalRouteFormat());
+        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GoPal3RouteFormat());
     }
 
 
@@ -763,7 +766,7 @@ public class ConvertIT extends ConvertBase {
     }
 
     public void testConvertViaMichelinToGoPal() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new GoPalRouteFormat());
+        convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new GoPal3RouteFormat());
         convertRoundtrip(TEST_PATH + "from-itinerary.xvm", new ViaMichelinFormat(), new GoPalTrackFormat());
     }
 

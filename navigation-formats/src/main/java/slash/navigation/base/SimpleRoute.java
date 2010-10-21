@@ -23,8 +23,9 @@ package slash.navigation.base;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.gopal.GoPalRoute;
+import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
@@ -58,7 +59,7 @@ import java.util.List;
 
 public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends SimpleFormat> extends BaseRoute<P, F> {
     protected String name;
-    protected final List<P> positions;
+    protected List<P> positions;
 
     public SimpleRoute(F format, RouteCharacteristics characteristics, List<P> positions) {
         this(format, characteristics, null, positions);
@@ -231,12 +232,20 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new GoogleMapsFormat());
     }
 
-    public GoPalRoute asGoPalRouteFormat() {
+    public GoPal3Route asGoPal3RouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
         for (P position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
-        return new GoPalRoute(getName(), gopalPositions);
+        return new GoPal3Route(getName(), gopalPositions);
+    }
+
+    public GoPal5Route asGoPal5RouteFormat() {
+        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        for (P position : positions) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPal5Route(getName(), gopalPositions);
     }
 
     public SimpleRoute asGoPalTrackFormat() {

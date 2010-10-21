@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import slash.navigation.gopal.GoPalRouteFormat;
+import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
@@ -39,7 +39,7 @@ public class AppendIT extends NavigationTestCase {
     NavigationFileParser parser = new NavigationFileParser();
 
     static boolean isStoringRouteName(NavigationFormat format) {
-        return !(format instanceof GoPalRouteFormat) && !(format instanceof GoPalTrackFormat) &&
+        return !(format instanceof GoPal3RouteFormat) && !(format instanceof GoPalTrackFormat) &&
                 !(format instanceof GpsTunerFormat) && !(format instanceof TomTomRouteFormat) &&
                 !(format instanceof NmeaFormat) && !(format instanceof Nmn4Format) &&
                 !(format instanceof Nmn5Format) && !(format instanceof Nmn6Format) &&
@@ -200,11 +200,13 @@ public class AppendIT extends NavigationTestCase {
     }
 
     public void testAppendGopalRouteToGopalTrack() throws IOException {
-        append(TEST_PATH + "from-gopal.xml", TEST_PATH + "from-gopal.trk");
+        append(TEST_PATH + "from-gopal3.xml", TEST_PATH + "from-gopal.trk");
+        append(TEST_PATH + "from-gopal5.xml", TEST_PATH + "from-gopal.trk");
     }
 
     public void testAppendGopalTrackToGopalRoute() throws IOException {
-        append(TEST_PATH + "from-gopal.trk", TEST_PATH + "from-gopal.xml");
+        append(TEST_PATH + "from-gopal.trk", TEST_PATH + "from-gopal3.xml");
+        append(TEST_PATH + "from-gopal.trk", TEST_PATH + "from-gopal5.xml");
     }
 
     // GkPosition

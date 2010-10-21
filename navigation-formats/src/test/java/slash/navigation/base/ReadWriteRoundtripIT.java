@@ -51,7 +51,8 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testGoPalRouteReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-gopal.xml");
+        readWriteRoundtrip(TEST_PATH + "from-gopal3.xml");
+        readWriteRoundtrip(TEST_PATH + "from-gopal5.xml");
     }
 
     public void testGoPalTrackReadWriteRoundtrip() throws IOException {

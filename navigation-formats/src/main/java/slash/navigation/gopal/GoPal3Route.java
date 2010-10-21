@@ -18,17 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.viamichelin;
+package slash.navigation.gopal;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
-import slash.navigation.gopal.GoPal5Route;
-import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.gopal.GoPal3Route;
-import slash.navigation.gopal.GoPalTrackFormat;
+import slash.navigation.gopal.binding3.Tour;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -46,6 +43,7 @@ import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.util.RouteComments;
+import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
 import slash.navigation.wbt.WintecWbt202TesFormat;
@@ -54,18 +52,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A ViaMichelin (.xvm) route.
+ * A GoPal Route 3 (.xml) route.
  *
  * @author Christian Pesch
  */
 
-public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat> {
+public class GoPal3Route extends BaseRoute<GoPalPosition, GoPal3RouteFormat> { // TODO extends SimpleFormat<GoPalPosition, GoPal3RouteFormat>?
     private String name;
-    private final List<Wgs84Position> positions;
+    private final Tour.Options options;
+    private final List<GoPalPosition> positions;
 
 
-    public ViaMichelinRoute(String name, List<Wgs84Position> positions) {
-        super(new ViaMichelinFormat(), RouteCharacteristics.Route);
+    public GoPal3Route(String name, List<GoPalPosition> positions) {
+        this(name, null, positions);
+    }
+
+    public GoPal3Route(String name, Tour.Options options, List<GoPalPosition> positions) {
+        super(new GoPal3RouteFormat(), RouteCharacteristics.Route);
+        this.options = options;
         this.positions = positions;
         setName(name);
     }
@@ -82,7 +86,11 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return null;
     }
 
-    public List<Wgs84Position> getPositions() {
+    public Tour.Options getOptions() {
+        return options;
+    }
+
+    public List<GoPalPosition> getPositions() {
         return positions;
     }
 
@@ -90,18 +98,18 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return positions.size();
     }
 
-    public void add(int index, Wgs84Position position) {
+    public void add(int index, GoPalPosition position) {
         positions.add(index, position);
     }
 
 
-    public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
-        return new Wgs84Position(longitude, latitude, elevation, speed, time, comment);
+    public GoPalPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
+        return new GoPalPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
     private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
@@ -117,7 +125,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, RouteCharacteristics.Route, getName(), getDescription(), gpxPositions);
@@ -145,7 +153,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
@@ -161,7 +169,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public KlickTelRoute asKlickTelRouteFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new KlickTelRoute(getName(), wgs84Positions);
@@ -169,7 +177,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -207,10 +215,10 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return asKmlFormat(new Kmz22Format());
     }
 
-    
+
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
@@ -218,7 +226,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public MagicMapsPthRoute asMagicMapsPthFormat() {
         List<GkPosition> gkPositions = new ArrayList<GkPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             gkPositions.add(position.asGkPosition());
         }
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
@@ -226,7 +234,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     private NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<NmeaPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -246,8 +254,8 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (Wgs84Position Wgs84Position : positions) {
-            nmnPositions.add(Wgs84Position.asNmnPosition());
+        for (GoPalPosition wgs84Position : positions) {
+            nmnPositions.add(wgs84Position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
@@ -275,7 +283,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             wgs84Positions.add(position.asOvlPosition());
         }
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
@@ -283,11 +291,11 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> Wgs84Positions = new ArrayList<Wgs84Position>();
-        for (Wgs84Position position : positions) {
-            Wgs84Positions.add(position.asWgs84Position());
+        List<Wgs84Position> gopalPositions = new ArrayList<Wgs84Position>();
+        for (GoPalPosition position : positions) {
+            gopalPositions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), Wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), gopalPositions);
     }
 
     public SimpleRoute asColumbusV900StandardFormat() {
@@ -315,19 +323,15 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
-        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (Wgs84Position position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
-        }
-        return new GoPal3Route(getName(), gopalPositions);
+        return this;
     }
 
     public GoPal5Route asGoPal5RouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
-        return new GoPal5Route(getName(), gopalPositions);
+        return new GoPal5Route(getName(), gopalPositions); // TODO transfer options?
     }
 
     public SimpleRoute asGoPalTrackFormat() {
@@ -361,7 +365,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
     public SimpleRoute asSygicUnicodeFormat() {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
-    
+
     public SimpleRoute asWebPageFormat() {
         return asSimpleFormat(new WebPageFormat());
     }
@@ -380,24 +384,29 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
-        for (Wgs84Position position : positions) {
+        for (GoPalPosition position : positions) {
             tourPositions.add(position.asTourPosition());
         }
         return new TourRoute(getName(), tourPositions);
     }
 
     public ViaMichelinRoute asViaMichelinFormat() {
-        return this;
+        List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
+        for (GoPalPosition position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new ViaMichelinRoute(getName(), wgs84Positions);
     }
+
 
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ViaMichelinRoute viaMichelinRoute = (ViaMichelinRoute) o;
+        GoPal3Route gopalRoute = (GoPal3Route) o;
 
-        return !(name != null ? !name.equals(viaMichelinRoute.name) : viaMichelinRoute.name != null) &&
-                !(positions != null ? !positions.equals(viaMichelinRoute.positions) : viaMichelinRoute.positions != null);
+        return !(name != null ? !name.equals(gopalRoute.name) : gopalRoute.name != null) &&
+                !(positions != null ? !positions.equals(gopalRoute.positions) : gopalRoute.positions != null);
     }
 
     public int hashCode() {

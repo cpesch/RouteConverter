@@ -20,15 +20,15 @@
 
 package slash.navigation.gopal;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.MercatorPosition;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.tour.TourPosition;
-import slash.common.io.CompactCalendar;
 
 import java.util.HashMap;
 
 /**
- * Represents a position in a GoPal Route (.xml) file.
+ * Represents a position in a GoPal 3 or 5 Route (.xml) file.
  *
  * @author Christian Pesch
  */
@@ -53,7 +53,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         String result = (getZipCode() != null ? getZipCode() + " " : "") +
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "") +
-                (getHouseNo() != null ? " " + getHouseNo() : "");
+                (getHouseNumber() != null ? " " + getHouseNumber() : "");
         return result.length() > 0 ? result : null;
     }
 
@@ -82,7 +82,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         return street;
     }
 
-    public Short getHouseNo() {
+    public Short getHouseNumber() {
         return houseNo;
     }
 
@@ -96,7 +96,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getX(), getY(), getZipCode(), getCity(), getStreet(), Short.toString(getHouseNo()), null, false, new HashMap<String, String>());
+        return new TourPosition(getX(), getY(), getZipCode(), getCity(), getStreet(), Short.toString(getHouseNumber()), null, false, new HashMap<String, String>());
     }
 
 

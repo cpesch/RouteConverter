@@ -25,8 +25,9 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.gopal.GoPalRoute;
+import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.*;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -353,12 +354,20 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asSimpleFormat(new GoogleMapsFormat());
     }
 
-    public GoPalRoute asGoPalRouteFormat() {
+    public GoPal3Route asGoPal3RouteFormat() {
         List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
         for (GpxPosition position : positions) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
-        return new GoPalRoute(getName(), gopalPositions);
+        return new GoPal3Route(getName(), gopalPositions);
+    }
+
+    public GoPal5Route asGoPal5RouteFormat() {
+        List<GoPalPosition> gopalPositions = new ArrayList<GoPalPosition>();
+        for (Wgs84Position position : positions) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPal5Route(getName(), gopalPositions);
     }
 
     public SimpleRoute asGoPalTrackFormat() {

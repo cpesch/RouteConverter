@@ -23,7 +23,8 @@ package slash.navigation.base;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Range;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.gopal.GoPalRoute;
+import slash.navigation.gopal.GoPal3Route;
+import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.klicktel.KlickTelRoute;
@@ -366,7 +367,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asGoogleMapsFormat();
 
-    public abstract GoPalRoute asGoPalRouteFormat();
+    public abstract GoPal3Route asGoPal3RouteFormat();
+
+    public abstract GoPal5Route asGoPal5RouteFormat();
 
     public abstract SimpleRoute asGoPalTrackFormat();
 

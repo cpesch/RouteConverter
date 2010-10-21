@@ -81,7 +81,7 @@ import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
-import slash.navigation.gopal.GoPalRouteFormat;
+import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.ActionManager;
@@ -852,7 +852,7 @@ public abstract class ConvertPanel {
         if (!path.exists())
             path = file.getParentFile();
         String fileName = file.getName();
-        if (format instanceof GoPalRouteFormat)
+        if (format instanceof GoPal3RouteFormat)
             fileName = Files.createGoPalFileName(fileName);
         return new File(Files.calculateConvertFileName(new File(path, fileName),
                 "",
