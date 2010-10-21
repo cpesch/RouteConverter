@@ -77,7 +77,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
 
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> TourRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new TourRoute(name, (List<TourPosition>) positions);        
+        return new TourRoute(name, (List<TourPosition>) positions);
     }
 
     public List<TourRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
@@ -108,7 +108,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                         map.clear();
                     } else {
                         // if there is no PositionInList key, use the sectionTitle to order the positions
-                        if(!map.containsKey(POSITION_IN_LIST))
+                        if (!map.containsKey(POSITION_IN_LIST))
                             map.put(POSITION_IN_LIST, sectionTitle);
 
                         TourPosition position = parsePosition(map, sectionTitle);
@@ -128,13 +128,16 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         }
 
         if (positions.size() > 0) {
-            TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
-            Arrays.sort(positionArray, new PositionInListComparator());
-            positions = Arrays.asList(positionArray);
-            return Arrays.asList(new TourRoute(this, routeName, positions));
+            return Arrays.asList(new TourRoute(this, routeName, sortPositions(positions)));
         }
 
         return null;
+    }
+
+    private List<TourPosition> sortPositions(List<TourPosition> positions) {
+        TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
+        Arrays.sort(positionArray, new PositionInListComparator());
+        return new ArrayList<TourPosition>(Arrays.asList(positionArray));
     }
 
     boolean isSectionTitle(String line) {
@@ -184,7 +187,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + route.getName());
         writer.println(CREATOR + TOUR_FORMAT_NAME_VALUE_SEPARATOR + GENERATED_BY);
         writer.println();
- 
+
         List<TourPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             TourPosition position = positions.get(i);
