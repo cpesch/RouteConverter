@@ -86,10 +86,12 @@ public class GoPal5RouteFormat extends XmlNavigationFormat<GoPal5Route> {
         }
         for (Tour.Destination destination : tour.getDestination()) {
             Short country = destination.getCountry() != null ? destination.getCountry().getCode() : null;
-            String zip = destination.getZip() != null ? Integer.toString(destination.getZip().getCode()) : null;
+            String zip = destination.getZip() != null && destination.getZip().getCode() != 0 ?
+                    Integer.toString(destination.getZip().getCode()) : null;
             String city = destination.getCity() != null ? destination.getCity().getName() : null;
             String street = destination.getStreet() != null ? destination.getStreet().getName() : null;
-            Short houseNumber = destination.getHouseNumber() != null ? destination.getHouseNumber().getValue() : null;
+            Short houseNumber = destination.getHouseNumber() != null && destination.getHouseNumber().getValue() != 0 ?
+                    destination.getHouseNumber().getValue() : null;
             positions.add(new GoPalPosition(destination.getCoordinates().getMercatorx(), destination.getCoordinates().getMercatory(),
                     country, zip, city, street, houseNumber));
         }
