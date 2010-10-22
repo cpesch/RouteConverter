@@ -215,8 +215,10 @@ public class TourFormat extends IniFileFormat<TourRoute> {
             writer.println(LATITUDE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getY());
 
             for (String key : position.keySet()) {
-                String value = position.get(key);
-                writer.println(key + TOUR_FORMAT_NAME_VALUE_SEPARATOR + value);
+                if (!key.equals(POSITION_IN_LIST)) {
+                    String value = position.get(key);
+                    writer.println(key + TOUR_FORMAT_NAME_VALUE_SEPARATOR + value);
+                }
             }
 
             if (!position.keySet().contains(CLASS))
