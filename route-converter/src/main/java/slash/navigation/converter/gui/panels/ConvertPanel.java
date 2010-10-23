@@ -38,7 +38,7 @@ import slash.navigation.base.NavigationFormats;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCoordinatesToPositions;
 import slash.navigation.converter.gui.actions.AddElevationToPositions;
-import slash.navigation.converter.gui.actions.AddIndicesToPositions;
+import slash.navigation.converter.gui.actions.AddNumbersToPositions;
 import slash.navigation.converter.gui.actions.AddPopulatedPlaceToPositions;
 import slash.navigation.converter.gui.actions.AddPostalAddressToPositions;
 import slash.navigation.converter.gui.actions.AddSpeedToPositions;
@@ -315,7 +315,7 @@ public abstract class ConvertPanel {
         actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-index", new AddIndicesToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
+        actionManager.register("add-number", new AddNumbersToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
         actionManager.register("split-positionlist", new SplitPositionList(tablePositions, getPositionsModel(), formatAndRoutesModel));
         actionManager.register("import-positionlist", new ImportPositionList(RouteConverter.getInstance(), tablePositions, getPositionsModel()));
 
@@ -821,7 +821,7 @@ public abstract class ConvertPanel {
         actionManager.enable("add-postal-address", existsASelectedPosition);
         actionManager.enable("add-populated-place", existsASelectedPosition);
         actionManager.enable("add-speed", existsASelectedPosition);
-        actionManager.enable("add-index", existsASelectedPosition);
+        actionManager.enable("add-number", existsASelectedPosition);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsASelectedPosition);
         actionManager.enable("insert-positions", existsAPosition);
         actionManager.enable("delete-positions", existsAPosition);

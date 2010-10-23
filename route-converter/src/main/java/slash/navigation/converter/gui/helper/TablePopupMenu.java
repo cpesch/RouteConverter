@@ -20,8 +20,9 @@
 
 package slash.navigation.converter.gui.helper;
 
+import slash.navigation.converter.gui.models.PositionsModel;
+
 import javax.swing.*;
-import slash.navigation.converter.gui.models.*;
 
 /**
  * Creates a {@link JPopupMenu} for a {@link PositionsModel}.
@@ -53,7 +54,7 @@ public class TablePopupMenu extends AbstractTablePopupMenu {
         completeMenu.add(JMenuHelper.createItem("add-postal-address"));
         completeMenu.add(JMenuHelper.createItem("add-populated-place"));
         completeMenu.add(JMenuHelper.createItem("add-speed"));
-        completeMenu.add(JMenuHelper.createItem("add-index"));
+        completeMenu.add(JMenuHelper.createItem("add-number"));
         menu.add(completeMenu);
         menu.addSeparator();
         menu.add(JMenuHelper.createItem("split-positionlist"));

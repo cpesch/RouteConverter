@@ -66,7 +66,7 @@ public class FrameMenu {
         completeMenu.add(JMenuHelper.createItem("add-postal-address"));
         completeMenu.add(JMenuHelper.createItem("add-populated-place"));
         completeMenu.add(JMenuHelper.createItem("add-speed"));
-        completeMenu.add(JMenuHelper.createItem("add-index"));
+        completeMenu.add(JMenuHelper.createItem("add-number"));
         editMenu.add(completeMenu);
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("split-positionlist"));

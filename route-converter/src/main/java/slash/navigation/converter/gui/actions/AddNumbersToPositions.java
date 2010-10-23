@@ -29,19 +29,19 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * {@link ActionListener} that adds indices to the selected rows of a {@link JTable}
+ * {@link ActionListener} that adds numbers to the selected rows of a {@link JTable}
  * with the help of a {@link PositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class AddIndicesToPositions extends FrameAction {
+public class AddNumbersToPositions extends FrameAction {
     private final RouteConverter routeConverter;
     private final JTable table;
     private final PositionsModel positionsModel;
     private final PositionAugmenter augmenter;
 
-    public AddIndicesToPositions(RouteConverter routeConverter, JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddNumbersToPositions(RouteConverter routeConverter, JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
         this.routeConverter = routeConverter;
         this.table = table;
         this.positionsModel = positionsModel;
@@ -51,7 +51,7 @@ public class AddIndicesToPositions extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addIndices(table, positionsModel, selectedRows, 
+            augmenter.addNumbers(table, positionsModel, selectedRows,
                     routeConverter.getPrefixNumberWithZerosPreference(),
                     routeConverter.getSpaceBetweenNumberAndCommentPreference());
         }

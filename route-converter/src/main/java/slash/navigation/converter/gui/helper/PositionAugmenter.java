@@ -332,7 +332,7 @@ public class PositionAugmenter {
     }
 
 
-    private void processIndices(final JTable positionsTable,
+    private void processNumbers(final JTable positionsTable,
                                 final PositionsModel positionsModel,
                                 final int[] rows,
                                 final int digitCount,
@@ -341,7 +341,7 @@ public class PositionAugmenter {
         executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
                     public String getName() {
-                        return "IndexPositionAugmenter";
+                        return "NumberPositionAugmenter";
                     }
 
                     public int getColumnIndex() {
@@ -358,7 +358,7 @@ public class PositionAugmenter {
                     }
 
                     public String getErrorMessage() {
-                        return RouteConverter.getBundle().getString("add-index-error");
+                        return RouteConverter.getBundle().getString("add-number-error");
                     }
 
                     public void postRunning() {
@@ -367,19 +367,18 @@ public class PositionAugmenter {
         );
     }
 
-    public void addIndices(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows,
-                           boolean prefixNumberWithZeros,
-                           boolean spaceBetweenNumberAndComment) {
-        int maximumIndex = 0;
+    public void addNumbers(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows,
+                           boolean prefixNumberWithZeros, boolean spaceBetweenNumberAndComment) {
+        int maximumNumber = 0;
         if (prefixNumberWithZeros) {
-            for (int index : selectedRows) {
-                if (index > maximumIndex)
-                    maximumIndex = index;
+            for (int row : selectedRows) {
+                if (row > maximumNumber)
+                    maximumNumber = row;
             }
         }
-        int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumIndex + 1) : 0;
+        int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumNumber + 1) : 0;
 
-        processIndices(positionsTable, positionsModel, selectedRows,
+        processNumbers(positionsTable, positionsModel, selectedRows,
                 digitCount, spaceBetweenNumberAndComment, COORDINATE_PREDICATE);
     }
 }
