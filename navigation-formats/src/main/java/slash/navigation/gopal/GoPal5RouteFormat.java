@@ -44,6 +44,8 @@ import java.util.prefs.Preferences;
 
 public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal5RouteFormat.class);
+    private static final String ROUTE_OPTIONS_SPEED_UNIT = "km_h";
+    private static final String VERSION_PREFIX = "v5";
 
     public String getName() {
         return "GoPal Route 5 (*" + getExtension() + ")";
@@ -97,67 +99,73 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
             options = objectFactory.createTourRouteOptions();
 
             Tour.RouteOptions.NaviMode naviMode = objectFactory.createTourRouteOptionsNaviMode();
-            naviMode.setValue(preferences.get("naviMode", "motorbike")); // bicycle, car, motorbike, pedestrian
+            naviMode.setValue(preferences.get(VERSION_PREFIX + "naviMode", "motorbike")); // bicycle, car, motorbike, pedestrian
             options.setNaviMode(naviMode);
             Tour.RouteOptions.OptimizationMode optimizationMode = objectFactory.createTourRouteOptionsOptimizationMode();
-            optimizationMode.setValue(preferences.get("optimizationMode", "short")); // fast, short
+            optimizationMode.setValue(preferences.get(VERSION_PREFIX + "optimizationMode", "short")); // fast, short
             options.setOptimizationMode(optimizationMode);
             Tour.RouteOptions.TTIBypass bypass = objectFactory.createTourRouteOptionsTTIBypass();
-            optimizationMode.setValue(preferences.get("ttiBypass", "automatic")); // automatic, disabled, manual
+            optimizationMode.setValue(preferences.get(VERSION_PREFIX + "ttiBypass", "automatic")); // automatic, disabled, manual
             options.setTTIBypass(bypass);
 
             Tour.RouteOptions.RoadUsageTypes usageTypes = objectFactory.createTourRouteOptionsRoadUsageTypes();
             Tour.RouteOptions.RoadUsageTypes.CarTrains carTrains = objectFactory.createTourRouteOptionsRoadUsageTypesCarTrains();
-            carTrains.setMode(preferences.get("carTrains", "use")); // avoid, use, prohibit
+            carTrains.setMode(preferences.get(VERSION_PREFIX + "carTrains", "use")); // avoid, use, prohibit
             usageTypes.setCarTrains(carTrains);
             Tour.RouteOptions.RoadUsageTypes.Ferries ferries = objectFactory.createTourRouteOptionsRoadUsageTypesFerries();
-            ferries.setMode(preferences.get("ferries", "avoid")); // avoid, use, prohibit
+            ferries.setMode(preferences.get(VERSION_PREFIX + "ferries", "avoid")); // avoid, use, prohibit
             usageTypes.setFerries(ferries);
             Tour.RouteOptions.RoadUsageTypes.IPDRoads ipdRoads = objectFactory.createTourRouteOptionsRoadUsageTypesIPDRoads();
-            ipdRoads.setMode(preferences.get("ipdRoads", "use")); // avoid, use, prohibit
+            ipdRoads.setMode(preferences.get(VERSION_PREFIX + "ipdRoads", "use")); // avoid, use, prohibit
             usageTypes.setIPDRoads(ipdRoads);
             Tour.RouteOptions.RoadUsageTypes.MotorWays motorWays = objectFactory.createTourRouteOptionsRoadUsageTypesMotorWays();
-            motorWays.setMode(preferences.get("motorWays", "avoid")); // avoid, use, prohibit
+            motorWays.setMode(preferences.get(VERSION_PREFIX + "motorWays", "avoid")); // avoid, use, prohibit
             usageTypes.setMotorWays(motorWays);
             Tour.RouteOptions.RoadUsageTypes.SeasonalRestrictedRoads seasonalRestrictedRoads = objectFactory.createTourRouteOptionsRoadUsageTypesSeasonalRestrictedRoads();
-            seasonalRestrictedRoads.setMode(preferences.get("seasonalRestrictedRoads", "use")); // avoid, use, prohibit
+            seasonalRestrictedRoads.setMode(preferences.get(VERSION_PREFIX + "seasonalRestrictedRoads", "use")); // avoid, use, prohibit
             usageTypes.setSeasonalRestrictedRoads(seasonalRestrictedRoads);
             Tour.RouteOptions.RoadUsageTypes.SpecialChargeRoads specialChargeRoads = objectFactory.createTourRouteOptionsRoadUsageTypesSpecialChargeRoads();
-            specialChargeRoads.setMode(preferences.get("specialChargeRoads", "avoid")); // avoid, use, prohibit
+            specialChargeRoads.setMode(preferences.get(VERSION_PREFIX + "specialChargeRoads", "avoid")); // avoid, use, prohibit
             usageTypes.setSpecialChargeRoads(specialChargeRoads);
             Tour.RouteOptions.RoadUsageTypes.TimeRestrictedRoads timeRestrictedRoads = objectFactory.createTourRouteOptionsRoadUsageTypesTimeRestrictedRoads();
-            timeRestrictedRoads.setMode(preferences.get("timeRestrictedRoads", "use")); // avoid, use, prohibit
+            timeRestrictedRoads.setMode(preferences.get(VERSION_PREFIX + "timeRestrictedRoads", "use")); // avoid, use, prohibit
             usageTypes.setTimeRestrictedRoads(timeRestrictedRoads);
             Tour.RouteOptions.RoadUsageTypes.TollRoads tollRoads = objectFactory.createTourRouteOptionsRoadUsageTypesTollRoads();
-            tollRoads.setMode(preferences.get("tollRoads", "avoid")); // avoid, use, prohibit
+            tollRoads.setMode(preferences.get(VERSION_PREFIX + "tollRoads", "avoid")); // avoid, use, prohibit
             usageTypes.setTollRoads(tollRoads);
             Tour.RouteOptions.RoadUsageTypes.TrafficFlowInfo trafficFlowInfo = objectFactory.createTourRouteOptionsRoadUsageTypesTrafficFlowInfo();
-            trafficFlowInfo.setMode(preferences.get("trafficFlowInfo", "use")); // avoid, use, prohibit
+            trafficFlowInfo.setMode(preferences.get(VERSION_PREFIX + "trafficFlowInfo", "use")); // avoid, use, prohibit
             usageTypes.setTrafficFlowInfo(trafficFlowInfo);
             Tour.RouteOptions.RoadUsageTypes.Tunnels tunnels = objectFactory.createTourRouteOptionsRoadUsageTypesTunnels();
-            tunnels.setMode(preferences.get("tunnels", "use")); // avoid, use, prohibit
+            tunnels.setMode(preferences.get(VERSION_PREFIX + "tunnels", "use")); // avoid, use, prohibit
             usageTypes.setTunnels(tunnels);
             Tour.RouteOptions.RoadUsageTypes.UnpavedRoads unpavedRoads = objectFactory.createTourRouteOptionsRoadUsageTypesUnpavedRoads();
-            unpavedRoads.setMode(preferences.get("unpavedRoads", "avoid")); // avoid, use, prohibit
+            unpavedRoads.setMode(preferences.get(VERSION_PREFIX + "unpavedRoads", "avoid")); // avoid, use, prohibit
             usageTypes.setUnpavedRoads(unpavedRoads);
             options.setRoadUsageTypes(usageTypes);
 
-            /* 5: TODO finish
-            options.setTravelSpeeds();
-            3:
-            options.setType((short) preferences.getInt("type", 3)); -> naviMode
-            options.setMode((short) preferences.getInt("mode", 2)); -> optimizationMode
-            options.setFerries((short) preferences.getInt("ferries", 1)); -> ferries
-            options.setMotorWays((short) preferences.getInt("motorWays", 0)); -> motorWays
-            options.setTollRoad((short) preferences.getInt("tollRoad", 1)); -> tollRoads
-            options.setTunnels((short) preferences.getInt("tunnels", 1));
-            options.setTTIMode((short) preferences.getInt("ttiMode", 0)); -> ttiBypass
-            options.setVehicleSpeedMotorway((short) preferences.getInt("vehicleSpeedMotorway", 33));
-            options.setVehicleSpeedNonMotorway((short) preferences.getInt("vehicleSpeedNonMotorway", 27));
-            options.setVehicleSpeedInPedestrianArea((short) preferences.getInt("vehicleSpeedInPedestrianArea", 2));
-            options.setPedestrianSpeed((short) preferences.getInt("pedestrianSpeed", 1));
-            options.setCyclistSpeed((short) preferences.getInt("cyclistSpeed", 4));
-            */
+            Tour.RouteOptions.TravelSpeeds travelSpeeds = objectFactory.createTourRouteOptionsTravelSpeeds();
+            Tour.RouteOptions.TravelSpeeds.Bicycle bicycle = objectFactory.createTourRouteOptionsTravelSpeedsBicycle();
+            bicycle.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "bicycleSpeed", 14.4))); // Km/h
+            bicycle.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
+            travelSpeeds.setBicycle(bicycle);
+            Tour.RouteOptions.TravelSpeeds.Pedestrian pedestrian = objectFactory.createTourRouteOptionsTravelSpeedsPedestrian();
+            pedestrian.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "pedestrianSpeed", 3.6))); // Km/h
+            pedestrian.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
+            travelSpeeds.setPedestrian(pedestrian);
+            Tour.RouteOptions.TravelSpeeds.Vehicle vehicle = objectFactory.createTourRouteOptionsTravelSpeedsVehicle();
+            vehicle.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeed", 80.0))); // Km/h
+            vehicle.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
+            Tour.RouteOptions.TravelSpeeds.Vehicle.MotorWay motorWay = objectFactory.createTourRouteOptionsTravelSpeedsVehicleMotorWay();
+            motorWay.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeedMotorWay", 120.0))); // Km/h
+            motorWay.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
+            vehicle.setMotorWay(motorWay);
+            Tour.RouteOptions.TravelSpeeds.Vehicle.PedestrianArea pedestrianArea = objectFactory.createTourRouteOptionsTravelSpeedsVehiclePedestrianArea();
+            pedestrianArea.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeedPedestrianArea", 7.2))); // Km/h
+            pedestrianArea.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
+            vehicle.setPedestrianArea(pedestrianArea);
+            travelSpeeds.setVehicle(vehicle);
+            options.setTravelSpeeds(travelSpeeds);
         }
         return options;
     }

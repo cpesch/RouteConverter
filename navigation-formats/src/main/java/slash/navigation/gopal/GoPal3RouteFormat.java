@@ -43,6 +43,7 @@ import java.util.prefs.Preferences;
 
 public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal3RouteFormat.class);
+    private static final String VERSION_PREFIX = "v3";
 
     public String getName() {
         return "GoPal Route 3 (*" + getExtension() + ")";
@@ -75,18 +76,18 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         Tour.Options options = route.getOptions();
         if (options == null) {
             options = new ObjectFactory().createTourOptions();
-            options.setType((short) preferences.getInt("type", 3)); // Fahrzeugtyp: 0=PKW 1=Fussgaenger 2=Fahrrad 3=Motorrad
-            options.setMode((short) preferences.getInt("mode", 2)); // Art der Route: 0=kurz 1=schnell 2=Oekonomisch
-            options.setFerries((short) preferences.getInt("ferries", 1)); // Faehren: 0=meiden 1=verwenden
-            options.setMotorWays((short) preferences.getInt("motorWays", 0)); // Autobahn: 0=meiden 1=verwenden
-            options.setTollRoad((short) preferences.getInt("tollRoad", 1)); // Mautstrassen: 0=meiden 1=verwenden
-            options.setTunnels((short) preferences.getInt("tunnels", 1)); // Tunnel: 0=meiden 1=verwenden
-            options.setTTIMode((short) preferences.getInt("ttiMode", 0)); // Stauumfahrung: 0=automatisch 1=manuell 2=keine
-            options.setVehicleSpeedMotorway((short) preferences.getInt("vehicleSpeedMotorway", 33));
-            options.setVehicleSpeedNonMotorway((short) preferences.getInt("vehicleSpeedNonMotorway", 27));
-            options.setVehicleSpeedInPedestrianArea((short) preferences.getInt("vehicleSpeedInPedestrianArea", 2));
-            options.setPedestrianSpeed((short) preferences.getInt("pedestrianSpeed", 1));
-            options.setCyclistSpeed((short) preferences.getInt("cyclistSpeed", 4));
+            options.setType((short) preferences.getInt(VERSION_PREFIX + "type", 3)); // Fahrzeugtyp: 0=PKW 1=Fussgaenger 2=Fahrrad 3=Motorrad
+            options.setMode((short) preferences.getInt(VERSION_PREFIX + "mode", 2)); // Art der Route: 0=kurz 1=schnell 2=Oekonomisch
+            options.setFerries((short) preferences.getInt(VERSION_PREFIX + "ferries", 1)); // Faehren: 0=meiden 1=verwenden
+            options.setMotorWays((short) preferences.getInt(VERSION_PREFIX + "motorWays", 0)); // Autobahn: 0=meiden 1=verwenden
+            options.setTollRoad((short) preferences.getInt(VERSION_PREFIX + "tollRoad", 1)); // Mautstrassen: 0=meiden 1=verwenden
+            options.setTunnels((short) preferences.getInt(VERSION_PREFIX + "tunnels", 1)); // Tunnel: 0=meiden 1=verwenden
+            options.setTTIMode((short) preferences.getInt(VERSION_PREFIX + "ttiMode", 0)); // Stauumfahrung: 0=automatisch 1=manuell 2=keine
+            options.setVehicleSpeedMotorway((short) preferences.getInt(VERSION_PREFIX + "vehicleSpeedMotorway", 33)); // Km/h
+            options.setVehicleSpeedNonMotorway((short) preferences.getInt(VERSION_PREFIX + "vehicleSpeedNonMotorway", 27)); // Km/h
+            options.setVehicleSpeedInPedestrianArea((short) preferences.getInt(VERSION_PREFIX + "vehicleSpeedInPedestrianArea", 2));
+            options.setPedestrianSpeed((short) preferences.getInt(VERSION_PREFIX + "pedestrianSpeed", 1)); // Km/h
+            options.setCyclistSpeed((short) preferences.getInt(VERSION_PREFIX + "cyclistSpeed", 4)); // Km/h
         }
         return options;
     }
