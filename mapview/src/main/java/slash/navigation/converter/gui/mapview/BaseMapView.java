@@ -1120,7 +1120,6 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^GET /remove-position/(.*) .*$");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^GET /maptypechanged/(.*) .*$");
     private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^GET /zoomend/(.*)/(.*) .*$");
-    private static final Pattern MOVE_END_PATTERN = Pattern.compile("^GET /moveend/(.*)/(.*) .*$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^GET /callback-port/(\\d+) .*$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
@@ -1212,35 +1211,6 @@ public abstract class BaseMapView implements MapView {
                 selectionUpdateReason = "zoomed from " + from + " to " + to;
                 notificationMutex.notifyAll();
             }
-            return true;
-        }
-
-        Matcher moveEndMather = MOVE_END_PATTERN.matcher(line);
-        if (moveEndMather.matches()) {
-            final Double latitude = Transfer.parseDouble(moveEndMather.group(1));
-            final Double longitude = Transfer.parseDouble(moveEndMather.group(2));
-            // avoid an immediate repaint of the center of the map hasn't changed
-            if (!longitude.equals(lastMoveLongitude) && !latitude.equals(lastMoveLatitude)) {
-                BaseNavigationPosition northEast = getNorthEastBounds();
-                BaseNavigationPosition southWest = getSouthWestBounds();
-                System.out.println();
-                System.out.println("MOVE_END longitude: " + longitude + " latitude: " + latitude + 
-                        " is in NE/SW bounds: " + Positions.contains(northEast, southWest, new Wgs84Position(longitude, latitude, null, null, null, null)));
-                System.out.println();
-                /* TODO test if this can be removed
-                if (getCurrentZoomLevel() >= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
-                    synchronized (notificationMutex) {
-                        haveToRepaintRouteImmediately = true;
-                        routeUpdateReason = "moved map";
-                        haveToRepaintSelectionImmediately = true;
-                        selectionUpdateReason = "moved map";
-                        notificationMutex.notifyAll();
-                    }
-                }
-                */
-            }
-            lastMoveLongitude = longitude;
-            lastMoveLatitude = latitude;
             return true;
         }
 

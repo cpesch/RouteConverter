@@ -287,10 +287,6 @@
                    callJava("zoomend/" + oldLevel + "/" + newLevel);
                });
 
-               GEvent.addListener(map, "moveend", function(){
-                   callJava("moveend/" + map.getCenter().lat() + "/" + map.getCenter().lng());
-               });
-
                try {
                    var xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
                }
