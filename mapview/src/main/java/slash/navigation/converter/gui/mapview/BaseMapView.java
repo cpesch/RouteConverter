@@ -923,6 +923,12 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
+        // display markers if there is no polyline to show
+        if (positions.size() < 2) {
+            addMarkersToMap(positions);
+            return;
+        }
+
         int polylinesCount = Transfer.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuffer buffer = new StringBuffer();
