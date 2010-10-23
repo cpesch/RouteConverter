@@ -192,7 +192,7 @@ public abstract class BaseMapView implements MapView {
             }
 
             public void contentsChanged(ListDataEvent e) {
-                update(true);
+                updateRouteButDontRecenter();
             }
         });
     }
