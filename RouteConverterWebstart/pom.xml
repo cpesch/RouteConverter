@@ -10,50 +10,44 @@
         <version>2.1-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
-            
-    <!-- allow to build without -Prouteconverter switch -->
-    <profiles>
-        <profile>
-            <id>routeconverter</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo.webstart</groupId>
-                        <artifactId>webstart-maven-plugin</artifactId>
-                        <version>1.0-alpha-2</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jnlp</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <dependencies>
-                                <excludes>
-                                    <exclude>slash.navigation:route-converter-license</exclude>
-                                </excludes>
-                            </dependencies>
-                            <jnlp>
-                                <outputFile>${project.name}.jnlp</outputFile>
-                                <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
-                            </jnlp>
-                            <sign>
-                                <keystore>${keystorePath}</keystore>
-                                <alias>${keystoreAlias}</alias>
-                                <storepass>${keystorePassword}</storepass>
-                                <keystoreConfig>
-                                    <delete>false</delete>
-                                    <gen>false</gen>
-                                </keystoreConfig>
-                            </sign>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo.webstart</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jnlp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dependencies>
+                        <excludes>
+                            <exclude>slash.navigation:route-converter-license</exclude>
+                        </excludes>
+                    </dependencies>
+                    <jnlp>
+                        <outputFile>${project.name}.jnlp</outputFile>
+                        <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
+                    </jnlp>
+                    <sign>
+                        <keystore>${keystorePath}</keystore>
+                        <alias>${keystoreAlias}</alias>
+                        <storepass>${keystorePassword}</storepass>
+                        <keystoreConfig>
+                            <delete>false</delete>
+                            <gen>false</gen>
+                        </keystoreConfig>
+                    </sign>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
