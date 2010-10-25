@@ -41,10 +41,13 @@ import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.helper.FrameMenu;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.helper.MergePositionListMenu;
+import slash.navigation.converter.gui.helper.ReopenMenuSynchronizer;
+import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.ElevationPanel;
@@ -467,7 +470,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable.getMessage());
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path), throwable.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path, 60), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         createExternalPrograms().startMail(frame);
@@ -499,7 +502,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             public void run() {
                 log.severe("Unsupported format: " + path);
                 JOptionPane.showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("unsupported-format"), Files.shortenPath(path)),
+                        MessageFormat.format(getBundle().getString("unsupported-format"), Files.shortenPath(path, 60)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
@@ -612,6 +615,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public PositionsSelectionModel getPositionsSelectionModel() {
         return getConvertPanel().getPositionsSelectionModel();
+    }
+
+    private RecentUrlsModel getRecentUrlsModel() {
+        return getConvertPanel().getRecentUrlsModel();
     }
 
     // tab related helpers
@@ -842,6 +849,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 KeyStroke.getKeyStroke(KeyEvent.VK_HELP, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         frame.getRootPane().registerKeyboardAction(actionListener,
                 KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        new UndoMenuSynchronizer(getInstance().getContext().getUndoManager(),
+                JMenuHelper.findItem(frame.getJMenuBar(), "edit", "undo"),
+                JMenuHelper.findItem(frame.getJMenuBar(), "edit", "redo"));
+        new ReopenMenuSynchronizer(getConvertPanel(), getRecentUrlsModel(), JMenuHelper.findMenu(frame.getJMenuBar(), "file", "reopen"));
     }
 
     private class PrintMapAction extends FrameAction {

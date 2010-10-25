@@ -78,6 +78,7 @@ import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
+import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
@@ -129,7 +130,8 @@ import java.util.logging.Logger;
 public abstract class ConvertPanel {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
 
-    private final UrlDocument urlModel = new UrlDocument();
+    private UrlDocument urlModel = new UrlDocument();
+    private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
 
@@ -404,6 +406,13 @@ public abstract class ConvertPanel {
         }
     }
 
+    public void openUrl(URL url) {
+        if (!confirmDiscard())
+            return;
+
+        openPositionList(Arrays.asList(url));
+    }
+
     public void openFile() {
         if (!confirmDiscard())
             return;
@@ -477,6 +486,7 @@ public abstract class ConvertPanel {
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
                                 comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                 urlModel.setString(path);
+                                recentUrlsModel.addUrl(url);
                             }
                         });
 
@@ -633,7 +643,7 @@ public abstract class ConvertPanel {
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
-                            Files.shortenPath(file.getPath()), route.getPositionCount(), format.getName(),
+                            Files.shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     r.getFrame().getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
             switch (confirm) {
@@ -922,6 +932,10 @@ public abstract class ConvertPanel {
 
     public UrlDocument getUrlModel() {
         return urlModel;
+    }
+
+    public RecentUrlsModel getRecentUrlsModel() {
+        return recentUrlsModel;
     }
 
     private void selectPositions(int[] selectedPositions) {

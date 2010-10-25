@@ -34,9 +34,11 @@ import javax.swing.event.ChangeListener;
  */
 
 public class UndoMenuSynchronizer {
+    private UndoManager undoManager;
     private JMenuItem undoMenuItem, redoMenuItem;
 
-    public UndoMenuSynchronizer(JMenuItem undoMenuItem, JMenuItem redoMenuItem) {
+    public UndoMenuSynchronizer(UndoManager undoManager, JMenuItem undoMenuItem, JMenuItem redoMenuItem) {
+        this.undoManager = undoManager;
         this.undoMenuItem = undoMenuItem;
         this.redoMenuItem = redoMenuItem;
         initialize();
@@ -53,7 +55,6 @@ public class UndoMenuSynchronizer {
     }
 
     private void initialize() {
-        final UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 setText(undoMenuItem, undoManager.canUndo() ?

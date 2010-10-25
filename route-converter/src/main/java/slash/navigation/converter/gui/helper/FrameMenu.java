@@ -35,6 +35,7 @@ public class FrameMenu {
         JMenu fileMenu = JMenuHelper.createMenu("file");
         fileMenu.add(JMenuHelper.createItem("new-file"));
         fileMenu.add(JMenuHelper.createItem("open"));
+        fileMenu.add(JMenuHelper.createMenu("reopen"));
         fileMenu.add(JMenuHelper.createItem("save"));
         fileMenu.add(JMenuHelper.createItem("save-as"));
         fileMenu.add(JMenuHelper.createItem("upload"));
@@ -47,9 +48,8 @@ public class FrameMenu {
         fileMenu.add(JMenuHelper.createItem("exit"));
 
         JMenu editMenu = JMenuHelper.createMenu("edit");
-        JMenuItem undoMenuItem = editMenu.add(JMenuHelper.createItem("undo"));
-        JMenuItem redoMenuItem = editMenu.add(JMenuHelper.createItem("redo"));
-        new UndoMenuSynchronizer(undoMenuItem, redoMenuItem);
+        editMenu.add(JMenuHelper.createItem("undo"));
+        editMenu.add(JMenuHelper.createItem("redo"));
         editMenu.addSeparator();
         editMenu.add(JMenuHelper.createItem("cut"));
         editMenu.add(JMenuHelper.createItem("copy"));

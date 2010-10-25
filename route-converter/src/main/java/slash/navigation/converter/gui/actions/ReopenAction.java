@@ -22,22 +22,26 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.FrameAction;
+
 import javax.swing.*;
+import java.net.URL;
 
 /**
- * {@link Action} that opens a file.
+ * {@link Action} that reopens an URL.
  *
  * @author Christian Pesch
  */
 
-public class OpenAction extends FrameAction {
+public class ReopenAction extends FrameAction {
     private ConvertPanel convertPanel;
+    private URL url;
 
-    public OpenAction(ConvertPanel convertPanel) {
+    public ReopenAction(ConvertPanel convertPanel, URL url) {
         this.convertPanel = convertPanel;
+        this.url = url;
     }
 
     public void run() {
-        convertPanel.openFile();
+        convertPanel.openUrl(url);
     }
 }

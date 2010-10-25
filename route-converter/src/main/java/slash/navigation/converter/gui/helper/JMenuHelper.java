@@ -91,6 +91,7 @@ public class JMenuHelper {
     public static JMenuItem createItem(String name) {
         Action action = Application.getInstance().getContext().getActionManager().get(name);
         JMenuItem item = new JMenuItem(action);
+        item.setName(name);
         item.setText(getString(name + "-action"));
         String tooltip = Transfer.trim(getOptionalString(name + "-action-tooltip"));
         if (tooltip != null)
@@ -123,6 +124,16 @@ public class JMenuHelper {
         return null;
     }
 
+    public static JMenu findMenu(JMenuBar menuBar, String menuName, String subMenuName) {
+        Component component = findMenuComponent(menuBar, menuName, subMenuName);
+        return component instanceof JMenu ? (JMenu) component : null;
+    }
+
+    public static JMenuItem findItem(JMenuBar menuBar, String menuName, String menuItemName) {
+        Component component = findMenuComponent(menuBar, menuName, menuItemName);
+        return component instanceof JMenuItem ? (JMenuItem) component : null;
+    }
+
     public static Component findMenuComponent(JPopupMenu menu, String menuComponentName) {
         for (int i = 0; i < menu.getComponentCount(); i++) {
             Component component = menu.getComponent(i);
@@ -143,7 +154,7 @@ public class JMenuHelper {
 
     public static Component findMenuComponent(JMenuBar menuBar, String menuName, String menuComponentName) {
         JMenu menu = findMenu(menuBar, menuName);
-        if(menu != null) {
+        if (menu != null) {
             return findMenuComponent(menu, menuComponentName);
         }
         return null;

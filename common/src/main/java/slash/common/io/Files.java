@@ -99,9 +99,9 @@ public class Files {
         return url.toExternalForm();
     }
 
-    public static String shortenPath(String path) {
-        if (path.length() > 60) {
-            path = path.substring(0, 57) + "...";
+    public static String shortenPath(String path, int maximumLength) {
+        if (path.length() > maximumLength) {
+            path = path.substring(0, maximumLength - 3) + "...";
         }
         return path;
     }
@@ -112,7 +112,7 @@ public class Files {
             index = path.lastIndexOf('\\');
         if (index != -1)
             path = path.substring(index + 1);
-        return shortenPath(path);
+        return shortenPath(path, 60);
     }
 
     public static File toFile(URL url) {
@@ -304,7 +304,7 @@ public class Files {
                     buffer.append(" and\n");
                 else
                     buffer.append(",\n");
-            buffer.append("'").append(shortenPath(array[i].toString())).append("'");
+            buffer.append("'").append(shortenPath(array[i].toString(), 60)).append("'");
         }
         return buffer.toString();
     }
