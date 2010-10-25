@@ -48,6 +48,7 @@ import slash.navigation.converter.gui.actions.DeleteAction;
 import slash.navigation.converter.gui.actions.ImportPositionList;
 import slash.navigation.converter.gui.actions.NewFileAction;
 import slash.navigation.converter.gui.actions.NewPositionAction;
+import slash.navigation.converter.gui.actions.NewPositionListAction;
 import slash.navigation.converter.gui.actions.OpenAction;
 import slash.navigation.converter.gui.actions.PasteAction;
 import slash.navigation.converter.gui.actions.SaveAction;
@@ -190,9 +191,10 @@ public abstract class ConvertPanel {
         new LengthToJLabelAdapter(getPositionsModel(), lengthCalculator, labelLength, labelDuration);
         new ElevationToJLabelAdapter(getPositionsModel(), labelOverallAscend, labelOverallDescend);
 
+        final ActionManager actionManager = r.getContext().getActionManager();
         buttonNewPositionList.addActionListener(new FrameAction() {
             public void run() {
-                newPositionList();
+                actionManager.run("new-positionlist");
             }
         });
 
@@ -279,7 +281,7 @@ public abstract class ConvertPanel {
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
-                r.getContext().getActionManager().run("delete");
+                actionManager.run("delete");
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -297,13 +299,13 @@ public abstract class ConvertPanel {
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
-        final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("undo", new UndoAction());
         actionManager.register("redo", new RedoAction());
         actionManager.register("copy", new CopyAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("cut", new CutAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
         actionManager.register("delete", new DeleteAction(getPositionsView(), getPositionsModel()));
         actionManager.register("new-position", new NewPositionAction(getPositionsView(), getPositionsModel(), getPositionsSelectionModel()));
+        actionManager.register("new-positionlist", new NewPositionListAction(getFormatAndRoutesModel()));
         actionManager.register("new-file", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
         actionManager.register("paste", new PasteAction(getPositionsView(), getPositionsModel(), clipboardInteractor));
@@ -311,7 +313,7 @@ public abstract class ConvertPanel {
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
         actionManager.register("upload", new UploadAction(this));
-        final PositionAugmenter augmenter = new PositionAugmenter(r.getFrame());
+        PositionAugmenter augmenter = new PositionAugmenter(r.getFrame());
         actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
@@ -444,7 +446,7 @@ public abstract class ConvertPanel {
         for (URL url : urls) {
             extension = Files.getExtension(url.toExternalForm());
         }
-        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(extension.toLowerCase())); 
+        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(extension.toLowerCase()));
     }
 
     @SuppressWarnings("unchecked")
@@ -588,7 +590,7 @@ public abstract class ConvertPanel {
         try {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(RouteConverter.getBundle().getString("new-route-name"));
+            gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             urlModel.setString(null);
             UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
@@ -623,14 +625,6 @@ public abstract class ConvertPanel {
         renameDialog.pack();
         renameDialog.restoreLocation();
         renameDialog.setVisible(true);
-    }
-
-    private void newPositionList() {
-        Gpx11Format gpxFormat = new Gpx11Format();
-        GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-        gpxRoute.setName(RouteConverter.getBundle().getString("new-route-name"));
-        formatAndRoutesModel.addRoute(formatAndRoutesModel.getSize(), gpxRoute);
-        formatAndRoutesModel.setSelectedItem(gpxRoute);
     }
 
     private void saveFile(File file, NavigationFormat format, boolean confirmOverwrite, boolean openAfterSave) {
