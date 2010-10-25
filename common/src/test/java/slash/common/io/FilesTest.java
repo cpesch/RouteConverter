@@ -152,7 +152,7 @@ public class FilesTest {
 
     @Test
     public void testShortenPath() {
-        assertEquals("http://maps.google.de/maps?f=d&hl=de&geocode=142500959607204...",
+        assertEquals("http://maps.google.de/maps?f=d&hl=de&geocode=142500959607...",
                      shortenPath("http://maps.google.de/maps?f=d&hl=de&geocode=14250095960720490931,54.083160,13.475246%3B13832872253745319564,54.096925,13.383573%3B4731465831403354564,54.114440,13.528310&saddr=54.096925,+13.383573&daddr=54.08316,13.475246+to:54.114440,+13.528310&mra=ps&mrcr=0,1&sll=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12", 60));
     }
 
@@ -164,6 +164,6 @@ public class FilesTest {
         assertEquals("file.gpx", lastPathFragment("c:/bla/bla/file.gpx"));
         assertEquals("file.gpx", lastPathFragment("file:///c:/bla/bla/file.gpx"));
         assertEquals("file.gpx", lastPathFragment("http://www.blabla.com/bla/bla/file.gpx"));
-        assertEquals("maps?f=d&hl=de&geocode=14250095960720490931,54.083160,13.475...", lastPathFragment("http://maps.google.de/maps?f=d&hl=de&geocode=14250095960720490931,54.083160,13.475246%3B13832872253745319564,54.096925,13.383573%3B4731465831403354564,54.114440,13.528310&saddr=54.096925,+13.383573&daddr=54.08316,13.475246+to:54.114440,+13.528310&mra=ps&mrcr=0,1&sll=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12"));
+        assertEquals("maps?f=d&hl=de&geocode=14250095960720490931,54.0831601,13...", lastPathFragment("http://maps.google.de/maps?f=d&hl=de&geocode=14250095960720490931,54.0831601,13.475246%3B13832872253745319564,54.096925,13.383573%3B4731465831403354564,54.114440,13.528310&saddr=54.096925,+13.383573&daddr=54.08316,13.475246+to:54.114440,+13.528310&mra=ps&mrcr=0,1&sll=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12"));
     }
 }
