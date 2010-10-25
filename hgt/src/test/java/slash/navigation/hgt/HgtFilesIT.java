@@ -19,18 +19,24 @@
 */
 package slash.navigation.hgt;
 
-import slash.common.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 
-public class HgtFilesIT extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class HgtFilesIT {
     private HgtFiles files = new HgtFiles();
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         HgtFileCache hgtFileCache = new HgtFileCache();
         hgtFileCache.clear();
     }
 
+    @Test
     public void testElevationFor() throws IOException {
         assertEquals(40, files.getElevationFor(11.2, 59.0).intValue());
         assertEquals(190, files.getElevationFor(11.2, 60.0).intValue());

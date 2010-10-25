@@ -20,27 +20,33 @@
 
 package slash.common.io;
 
-import slash.common.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-public class FilesTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class FilesTest {
     private File file;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         file = File.createTempFile("convert", ".tmp");
         File renamed = new File(file.getParentFile(), "convert.tmp");
         assertTrue(file.renameTo(renamed));
         file = renamed;
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         assertTrue(file.delete());
     }
 
+    @Test
     public void testNumberToString() throws IOException {
         assertEquals("5", Files.numberToString(5, 9));
         assertEquals("05", Files.numberToString(5, 10));
@@ -48,6 +54,7 @@ public class FilesTest extends TestCase {
         assertEquals("0005", Files.numberToString(5, 1000));
     }
 
+    @Test
     public void testCalculateConvertFileName() throws IOException {
         int FILE_NAME_LENGTH = 18;
 
@@ -92,6 +99,7 @@ public class FilesTest extends TestCase {
                 Files.calculateConvertFileName(file, 5000, 9999, ".itn", FILE_NAME_LENGTH));
     }
 
+    @Test
     public void testCalculateConvertFileNameLimitedLength() throws IOException {
         int FILE_NAME_LENGTH = 4;
 
@@ -111,6 +119,7 @@ public class FilesTest extends TestCase {
                 Files.calculateConvertFileName(file, 5000, 5000, ".itn", FILE_NAME_LENGTH));
     }
 
+    @Test
     public void testCalculateConvertFileNameThrowsException() throws IOException {
         try {
             Files.calculateConvertFileName(file, 10000, 10000, "gpx", 64);
@@ -134,16 +143,19 @@ public class FilesTest extends TestCase {
         }
     }
 
+    @Test
     public void testCreateGoPalFileName() {
         assertEquals("EIFELSTERN AACHEN", Files.createGoPalFileName("Eifelstern-Aachen"));
         assertEquals("EIFELSTERN.XML", Files.createGoPalFileName("Eifelstern.xml"));
     }
 
+    @Test
     public void testShortenPath() {
         assertEquals("http://maps.google.de/maps?f=d&hl=de&geocode=142500959607...",
                      Files.shortenPath("http://maps.google.de/maps?f=d&hl=de&geocode=14250095960720490931,54.083160,13.475246%3B13832872253745319564,54.096925,13.383573%3B4731465831403354564,54.114440,13.528310&saddr=54.096925,+13.383573&daddr=54.08316,13.475246+to:54.114440,+13.528310&mra=ps&mrcr=0,1&sll=54.105307,13.490181&sspn=0.132448,0.318604&ie=UTF8&z=12"));
     }
 
+    @Test
     public void testLastPathFragment() {
         assertEquals("file.gpx", Files.lastPathFragment("file.gpx"));
         assertEquals("file.gpx", Files.lastPathFragment("../file.gpx"));
