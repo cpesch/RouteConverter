@@ -35,14 +35,16 @@ import javax.swing.*;
 
 public class CharacteristicsModel extends AbstractListModel implements ComboBoxModel {
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
-    private boolean routeHasChanged = false;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
         return route;
     }
 
     public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+        boolean change = this.route != null && route.getCharacteristics() != this.route.getCharacteristics();
         this.route = route;
+        if(change)
+            fireContentsChanged(this, -1, -1);
     }
 
     public int getSize() {
@@ -58,9 +60,8 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
     }
 
     public void setSelectedItem(Object anItem) {
-        if ((getSelectedItem() != null && !getSelectedItem().equals(anItem)) || routeHasChanged ||
+        if ((getSelectedItem() != null && !getSelectedItem().equals(anItem)) ||
                 getSelectedItem() == null && anItem != null) {
-            routeHasChanged = true;
             route.setCharacteristics((RouteCharacteristics) anItem);
             fireContentsChanged(this, -1, -1);
         }
