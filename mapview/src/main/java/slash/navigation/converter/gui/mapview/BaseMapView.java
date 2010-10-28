@@ -655,6 +655,7 @@ public abstract class BaseMapView implements MapView {
     public void setSelectedPositions(int[] selectedPositions) {
         synchronized (notificationMutex) {
             this.selectedPositionIndices = selectedPositions;
+            haveToRecenterMap = true;
             haveToRepaintSelection = true;
             selectionUpdateReason = "selected " + selectedPositions.length + " positions";
             notificationMutex.notifyAll();
