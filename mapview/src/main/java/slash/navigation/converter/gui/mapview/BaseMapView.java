@@ -523,8 +523,11 @@ public abstract class BaseMapView implements MapView {
                     long start = System.currentTimeMillis();
                     while (true) {
                         synchronized (receivedCallback) {
-                            if (receivedCallback[0])
+                            if (receivedCallback[0]) {
+                                long end = System.currentTimeMillis();
+                                log.info("Received callback from browser after " + (end - start) + " milliseconds");
                                 break;
+                            }
                         }
 
                         if (start + 5000 < System.currentTimeMillis())
@@ -541,6 +544,7 @@ public abstract class BaseMapView implements MapView {
                         if (!receivedCallback[0]) {
                             setCallbackListenerPort(-1);
                             initializeCallbackPoller();
+                            log.info("Switched from callback to polling the browser");
                         }
                     }
                 }
