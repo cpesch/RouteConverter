@@ -1128,8 +1128,6 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^GET /callback-port/(\\d+) .*$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
-    private Double lastMoveLongitude = null, lastMoveLatitude = null;
-
     private void processCallbacks(List<String> lines) {
         if (!isAuthenticated(lines))
             return;
