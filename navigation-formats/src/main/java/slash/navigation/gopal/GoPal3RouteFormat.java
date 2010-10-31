@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * Reads and writes GoPal Route 3 (.xml) files.
+ * Reads and writes GoPal 3 Route (.xml) files.
  *
  * @author Christian Pesch
  */
@@ -46,7 +46,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
     private static final String VERSION_PREFIX = "v3";
 
     public String getName() {
-        return "GoPal Route 3 (*" + getExtension() + ")";
+        return "GoPal 3 Route (*" + getExtension() + ")";
     }
 
     @SuppressWarnings("unchecked")

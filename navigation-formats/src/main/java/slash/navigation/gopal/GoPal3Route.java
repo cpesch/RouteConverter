@@ -52,7 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A GoPal Route 3 (.xml) route.
+ * A GoPal 3 Route (.xml) route.
  *
  * @author Christian Pesch
  */

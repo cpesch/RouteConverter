@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * Reads and writes GoPal Route 5 (.xml) files.
+ * Reads and writes GoPal 5 Route (.xml) files.
  *
  * @author Christian Pesch
  */
@@ -48,7 +48,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
     private static final String VERSION_PREFIX = "v5";
 
     public String getName() {
-        return "GoPal Route 5 (*" + getExtension() + ")";
+        return "GoPal 5 Route (*" + getExtension() + ")";
     }
 
     @SuppressWarnings("unchecked")
