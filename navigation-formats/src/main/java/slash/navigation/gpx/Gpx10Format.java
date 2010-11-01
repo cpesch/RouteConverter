@@ -131,12 +131,6 @@ public class Gpx10Format extends GpxFormat {
         return result;
     }
 
-    private Double asKmh(Double metersPerSecond) {
-        if (metersPerSecond == null)
-            return null;
-        return Conversion.msToKmh(metersPerSecond);
-    }
-
     private List<GpxPosition> extractRoute(Gpx.Rte rte, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<GpxPosition>();
         if (rte != null) {
@@ -169,6 +163,7 @@ public class Gpx10Format extends GpxFormat {
 
     private Double getSpeed(BigDecimal speed, String comment, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         Double result = Transfer.formatDouble(speed);
+        // everything is converted from m/s to Km/h except for the exceptional case
         if(!hasSpeedInKilometerPerHourInsteadOfMeterPerSecond)
             result = asKmh(result);
         if (result == null)

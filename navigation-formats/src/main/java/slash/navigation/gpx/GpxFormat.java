@@ -25,6 +25,7 @@ import slash.navigation.base.XmlNavigationFormat;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.util.Conversion;
 
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -86,6 +87,12 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
                 return Transfer.parseDouble(matcher.group(1));
         }
         return null;
+    }
+
+    protected Double asKmh(Double metersPerSecond) {
+        if (metersPerSecond == null)
+            return null;
+        return Conversion.msToKmh(metersPerSecond);
     }
 
     protected boolean isWriteName() {
