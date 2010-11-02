@@ -76,7 +76,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 try {
-                    List<KmlRoute> routes = delegate.internalRead(new NotClosingUnderlyingInputStream(zip));
+                    List<KmlRoute> routes = delegate.internalRead(new NotClosingUnderlyingInputStream(zip), startDate);
                     if (routes != null)
                         result.addAll(routes);
                 } catch (JAXBException e) {

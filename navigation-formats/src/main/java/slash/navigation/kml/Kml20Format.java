@@ -53,31 +53,31 @@ public class Kml20Format extends KmlFormat {
 
     public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            return internalRead(source);
+            return internalRead(source, startDate);
         } catch (JAXBException e) {
             log.fine("Error reading KML 2.0 from " + source + ": " + e.getMessage());
             return null;
         }
     }
 
-    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
         Object o = KmlUtil.unmarshal20(source);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;
-            return extractTracks(kml.getDocument(), kml.getFolder());
+            return extractTracks(kml.getDocument(), kml.getFolder(), startDate);
         }
         if (o instanceof Document) {
             Document document = (Document) o;
-            return extractTracks(document, null);
+            return extractTracks(document, null, startDate);
         }
         if (o instanceof Folder) {
             Folder folder = (Folder) o;
-            return extractTracks(null, folder);
+            return extractTracks(null, folder, startDate);
         }
         return null;
     }
 
-    private List<KmlRoute> extractTracks(Document document, Folder folder) {
+    private List<KmlRoute> extractTracks(Document document, Folder folder, CompactCalendar startDate) {
         List<Object> elements = null;
         if (document != null && document.getDocumentOrFolderOrGroundOverlay().size() > 0)
             elements = document.getDocumentOrFolderOrGroundOverlay();
@@ -88,7 +88,7 @@ public class Kml20Format extends KmlFormat {
         if (elements == null)
             return null;
 
-        List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements);
+        List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements, startDate);
         RouteComments.commentRoutePositions(routes);
         return routes;
     }
@@ -171,11 +171,11 @@ public class Kml20Format extends KmlFormat {
         return networkLinks;
     }
 
-    private List<KmlRoute> extractTracks(String name, List<String> description, List<Object> elements) {
+    private List<KmlRoute> extractTracks(String name, List<String> description, List<Object> elements, CompactCalendar startDate) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<Placemark> placemarks = findPlacemarks(elements);
-        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks));
+        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, startDate));
 
         List<NetworkLink> networkLinks = findNetworkLinks(elements);
         result.addAll(extractWayPointsAndTracksFromNetworkLinks(networkLinks));
@@ -184,13 +184,13 @@ public class Kml20Format extends KmlFormat {
         for (Folder folder : folders) {
             List<Object> overlays = folder.getDocumentOrFolderOrGroundOverlay();
             String folderName = concatPath(name, extractName(overlays));
-            result.addAll(extractTracks(folderName, description, overlays));
+            result.addAll(extractTracks(folderName, description, overlays, startDate));
         }
 
         return result;
     }
 
-    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks) {
+    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, List<String> description, List<Placemark> placemarks, CompactCalendar startDate) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
@@ -202,7 +202,7 @@ public class Kml20Format extends KmlFormat {
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
-                enrichPosition(wayPoint, extractTime(placemark.getDescriptionOrNameOrSnippet()), placemarkName, extractDescription(placemark.getDescriptionOrNameOrSnippet()));
+                enrichPosition(wayPoint, extractTime(placemark.getDescriptionOrNameOrSnippet()), placemarkName, extractDescription(placemark.getDescriptionOrNameOrSnippet()), startDate);
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track

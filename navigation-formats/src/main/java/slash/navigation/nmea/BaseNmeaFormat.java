@@ -111,7 +111,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                     NmeaPosition position = parsePosition(line);
                     if (isValidStartDate(position.getTime()))
                         startDate = position.getTime();
-                    else if (startDate != null)
+                    else
                         position.setStartDate(startDate);
 
                     if (haveDifferentLongitudeAndLatitude(previous, position)) {

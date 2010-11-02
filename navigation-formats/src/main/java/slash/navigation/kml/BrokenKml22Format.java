@@ -20,6 +20,7 @@
 
 package slash.navigation.kml;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.kml.binding22.KmlType;
 
 import javax.xml.bind.JAXBException;
@@ -46,11 +47,11 @@ public class BrokenKml22Format extends Kml22Format {
         return false;
     }
 
-    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
         InputStreamReader reader = new InputStreamReader(source);
         try {
             KmlType kmlType = KmlUtil.unmarshal22(reader);
-            return process(kmlType);
+            return process(kmlType, startDate);
         } catch (JAXBException e) {
             log.fine("Error reading broken KML 2.2 rom " + source + ": " + e.getMessage());
         }

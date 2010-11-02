@@ -109,7 +109,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 TomTomPosition position = parsePosition(line);
                 if (isValidStartDate(position.getTime()))
                     startDate = position.getTime();
-                else if (startDate != null)
+                else
                     position.setStartDate(startDate);
 
                 if (isIso885915ButReadWithUtf8(position.getComment()))

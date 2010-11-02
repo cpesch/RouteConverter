@@ -159,6 +159,7 @@ public final class NavigationFormats {
         addFormat(BrokenKmz21Format.class);
         addFormat(BrokenKmz21LittleEndianFormat.class);
         addFormat(BrokenKml22BetaFormat.class);
+        addFormat(BrokenKml22Format.class);
 
         // greedy BabelFormats
         addFormat(GarminPoiFormat.class);

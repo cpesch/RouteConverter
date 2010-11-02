@@ -20,6 +20,7 @@
 
 package slash.navigation.kml;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.kml.binding21.KmlType;
 
 import javax.xml.bind.JAXBException;
@@ -46,11 +47,11 @@ public class BrokenKml21LittleEndianFormat extends Kml21Format {
         return false;
     }
 
-    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
         InputStreamReader reader = new InputStreamReader(source, UTF16LE_ENCODING);
         try {
             KmlType kmlType = KmlUtil.unmarshal21(reader);
-            return process(kmlType);
+            return process(kmlType, startDate);
         } catch (JAXBException e) {
             log.fine("Error reading broken KML 2.1 in little endian from " + source + ": " + e.getMessage());
         }

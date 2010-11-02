@@ -21,27 +21,30 @@
 package slash.navigation.kml;
 
 import org.junit.Test;
+import slash.common.io.CompactCalendar;
+
+import java.text.DateFormat;
 
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
-public class TavellogTest {
-    private Kml20Format format = new Kml20Format();
-    private static final String TAVELLOG_DESCRIPTION = "<description><![CDATA[<html><body>Time: 2009/02/07 21:45:55<BR>Altitude: 62.20<BR>Speed: 15.37<BR></body></html>]]></description>";
+public class Navigon6310Test {
+   private Kml20Format format = new Kml20Format();
+    private static final String NAVIGON6310_NAME = " 10:08:18, 509.49 meter ";
 
     @Test
     public void testParseTime() {
-        assertEquals(calendar(2009, 2, 7, 21, 45, 55), format.parseTime(TAVELLOG_DESCRIPTION));
-    }
-
-    @Test
-    public void testParseSpeed() {
-        assertDoubleEquals(15.37, format.parseSpeed(TAVELLOG_DESCRIPTION));
+        CompactCalendar expectedCal = calendar(1970, 1, 1, 10, 8, 18);
+        CompactCalendar actualCal = format.parseTime(NAVIGON6310_NAME);
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        String actual = DateFormat.getDateTimeInstance().format(actualCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(expectedCal, actualCal);
     }
 
     @Test
     public void testParseElevation() {
-        assertDoubleEquals(62.20, format.parseElevation(TAVELLOG_DESCRIPTION));
+        assertDoubleEquals(509.49, format.parseElevation(NAVIGON6310_NAME));
     }
 }

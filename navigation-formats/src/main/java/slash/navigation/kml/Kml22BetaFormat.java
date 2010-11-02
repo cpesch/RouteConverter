@@ -53,22 +53,22 @@ public class Kml22BetaFormat extends KmlFormat {
 
     public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            return internalRead(source);
+            return internalRead(source, startDate);
         } catch (JAXBException e) {
             log.fine("Error reading KML 2.2 Beta from " + source + ": " + e.getMessage());
             return null;
         }
     }
 
-    List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException {
+    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
         KmlType kmlType = KmlUtil.unmarshal22Beta(source);
-        return process(kmlType);
+        return process(kmlType, startDate);
     }
 
-    protected List<KmlRoute> process(KmlType kmlType) {
+    protected List<KmlRoute> process(KmlType kmlType, CompactCalendar startDate) {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
             return null;
-        return extractTracks(kmlType);
+        return extractTracks(kmlType, startDate);
     }
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
@@ -81,7 +81,7 @@ public class Kml22BetaFormat extends KmlFormat {
         return result;
     }
 
-    private List<KmlRoute> extractTracks(KmlType kmlType) {
+    private List<KmlRoute> extractTracks(KmlType kmlType, CompactCalendar startDate) {
         List<KmlRoute> routes = null;
 
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
@@ -92,7 +92,7 @@ public class Kml22BetaFormat extends KmlFormat {
                 features = ((FolderType) containerType).getAbstractFeatureGroup();
             else if (containerType instanceof DocumentType)
                 features = ((DocumentType) containerType).getAbstractFeatureGroup();
-            routes = extractTracks(Transfer.trim(containerType.getNameElement()), Transfer.trim(containerType.getDescription()), features);
+            routes = extractTracks(Transfer.trim(containerType.getNameElement()), Transfer.trim(containerType.getDescription()), features, startDate);
         }
 
         if (feature instanceof PlacemarkType) {
@@ -102,7 +102,7 @@ public class Kml22BetaFormat extends KmlFormat {
 
             List<KmlPosition> positions = extractPositions(placemarkType.getAbstractGeometryGroup());
             for (KmlPosition position : positions) {
-                enrichPosition(position, extractTime(placemarkType.getAbstractTimePrimitiveGroup()), placemarkName, placemarkType.getDescription());
+                enrichPosition(position, extractTime(placemarkType.getAbstractTimePrimitiveGroup()), placemarkName, placemarkType.getDescription(), startDate);
             }
             routes = Arrays.asList(new KmlRoute(this, RouteCharacteristics.Waypoints, placemarkName, null, positions));
         }
@@ -112,11 +112,11 @@ public class Kml22BetaFormat extends KmlFormat {
         return routes;
     }
 
-    private List<KmlRoute> extractTracks(String name, String description, List<JAXBElement<? extends AbstractFeatureType>> features) {
+    private List<KmlRoute> extractTracks(String name, String description, List<JAXBElement<? extends AbstractFeatureType>> features, CompactCalendar startDate) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<JAXBElement<PlacemarkType>> placemarks = find(features, "Placemark", PlacemarkType.class);
-        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks));
+        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, startDate));
 
         List<JAXBElement<NetworkLinkType>> networkLinks = find(features, "NetworkLink", NetworkLinkType.class);
         result.addAll(extractWayPointsAndTracksFromNetworkLinks(networkLinks));
@@ -125,19 +125,19 @@ public class Kml22BetaFormat extends KmlFormat {
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
             String folderName = concatPath(name, folderTypeValue.getNameElement());
-            result.addAll(extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup()));
+            result.addAll(extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup(), startDate));
         }
 
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
         for (JAXBElement<DocumentType> document : documents) {
             DocumentType documentTypeValue = document.getValue();
             String documentName = concatPath(name, documentTypeValue.getNameElement());
-            result.addAll(extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup()));
+            result.addAll(extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup(), startDate));
         }
         return result;
     }
 
-    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes) {
+    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate) {
         List<KmlRoute> result = new ArrayList<KmlRoute>();
 
         List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
@@ -150,7 +150,7 @@ public class Kml22BetaFormat extends KmlFormat {
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
-                enrichPosition(wayPoint, extractTime(placemarkTypeValue.getAbstractTimePrimitiveGroup()), placemarkName, placemarkTypeValue.getDescription());
+                enrichPosition(wayPoint, extractTime(placemarkTypeValue.getAbstractTimePrimitiveGroup()), placemarkName, placemarkTypeValue.getDescription(), startDate);
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track

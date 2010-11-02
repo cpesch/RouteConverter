@@ -95,7 +95,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
-    abstract List<KmlRoute> internalRead(InputStream source) throws IOException, JAXBException;
+    abstract List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException;
 
     protected KmlPosition asKmlPosition(GoogleMapsPosition position) {
         return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());
@@ -154,26 +154,36 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return result;
     }
 
-    protected void enrichPosition(KmlPosition position, Calendar time, String comment, String travellogDescription) {
+    protected void enrichPosition(KmlPosition position, Calendar time, String name, String description, CompactCalendar startDate) {
         if (position.getTime() == null && time != null)
             position.setTime(CompactCalendar.fromCalendar(time));
         if (position.getComment() == null)
-            position.setComment(comment);
+            position.setComment(name);
 
-        if (travellogDescription == null)
-            return;
+        if (position.getTime() == null) {
+            CompactCalendar logTime = parseTime(description);
+            if (logTime != null)
+                position.setTime(logTime);
+            else {
+                logTime = parseTime(name);
+                if (logTime != null) {
+                    position.setTime(logTime);
+                    position.setStartDate(startDate);
+                }
+            }
+        }
 
-        CompactCalendar logTime = parseTime(travellogDescription);
-        if (position.getTime() == null)
-            position.setTime(logTime);
-
-        Double elevation = parseElevation(travellogDescription);
-        if (position.getElevation() == null)
+        if (position.getElevation() == null) {
+            Double elevation = parseElevation(description);
+            if (elevation == null)
+                elevation = parseElevation(name);
             position.setElevation(elevation);
+        }
 
-        Double speed = parseSpeed(travellogDescription);
-        if (position.getSpeed() == null)
+        if (position.getSpeed() == null) {
+            Double speed = parseSpeed(description);
             position.setSpeed(speed);
+        }
     }
 
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
@@ -182,13 +192,30 @@ public abstract class KmlFormat extends BaseKmlFormat {
         TAVELLOG_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
     }
 
+    private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");
+    private static final SimpleDateFormat NAVIGON6310_TIME = new SimpleDateFormat("HH:mm:ss");
+    static {
+        NAVIGON6310_TIME.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+    }
+
     CompactCalendar parseTime(String description) {
         if (description != null) {
-            Matcher matcher = TAVELLOG_DATE_PATTERN.matcher(description);
-            if (matcher.matches()) {
-                String timeString = matcher.group(1);
+            Matcher tavelLogMatcher = TAVELLOG_DATE_PATTERN.matcher(description);
+            if (tavelLogMatcher.matches()) {
+                String timeString = tavelLogMatcher.group(1);
                 try {
                     Date parsed = TAVELLOG_DATE.parse(timeString);
+                    return CompactCalendar.fromDate(parsed);
+                }
+                catch (ParseException e) {
+                    // intentionally left empty;
+                }
+            }
+            Matcher navigonMatcher = NAVIGON6310_TIME_AND_ELEVATION_PATTERN.matcher(description);
+            if (navigonMatcher.matches()) {
+                String timeString = navigonMatcher.group(1);
+                try {
+                    Date parsed = NAVIGON6310_TIME.parse(timeString);
                     return CompactCalendar.fromDate(parsed);
                 }
                 catch (ParseException e) {
@@ -204,9 +231,9 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     Double parseSpeed(String description) {
         if (description != null) {
-            Matcher travelLogMatcher = TAVELLOG_SPEED_PATTERN.matcher(description);
-            if (travelLogMatcher.matches()) {
-                return Transfer.parseDouble(travelLogMatcher.group(1));
+            Matcher tavelLogMatcher = TAVELLOG_SPEED_PATTERN.matcher(description);
+            if (tavelLogMatcher.matches()) {
+                return Transfer.parseDouble(tavelLogMatcher.group(1));
             }
             Matcher wbt201LogMatcher = WBT201LOG_SPEED_PATTERN.matcher(description);
             if (wbt201LogMatcher.matches()) {
@@ -220,9 +247,13 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     Double parseElevation(String description) {
         if (description != null) {
-            Matcher matcher = TAVELLOG_ELEVATION_PATTERN.matcher(description);
-            if (matcher.matches()) {
-                return Transfer.parseDouble(matcher.group(1));
+            Matcher tavelLogMatcher = TAVELLOG_ELEVATION_PATTERN.matcher(description);
+            if (tavelLogMatcher.matches()) {
+                return Transfer.parseDouble(tavelLogMatcher.group(1));
+            }
+            Matcher navigonMatcher = NAVIGON6310_TIME_AND_ELEVATION_PATTERN.matcher(description);
+            if (navigonMatcher.matches()) {
+                return Transfer.parseDouble(navigonMatcher.group(2));
             }
         }
         return null;
