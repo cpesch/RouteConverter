@@ -77,7 +77,7 @@ public class NewPositionAction extends FrameAction {
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(),
                 center.getTime() != null ? center.getTime() : CompactCalendar.fromCalendar(Calendar.getInstance()),
-                RouteConverter.getBundle().getString("new-position-comment"));
+                RouteConverter.getBundle().getString("new-position-name"));
         positionsSelectionModel.setSelectedPositions(new int[]{insertRow});
     }
 }

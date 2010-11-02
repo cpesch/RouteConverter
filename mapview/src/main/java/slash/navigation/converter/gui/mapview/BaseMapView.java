@@ -50,16 +50,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1119,13 +1110,14 @@ public abstract class BaseMapView implements MapView {
 
     // browser callbacks
 
-    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^GET /load/(\\d*)/(\\d*) .*$");
-    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^GET /insert-position/(.*)/(.*) .*$");
-    private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^GET /move-position/(.*)/(.*)/(.*) .*$");
-    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^GET /remove-position/(.*) .*$");
-    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^GET /maptypechanged/(.*) .*$");
-    private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^GET /zoomend/(.*)/(.*) .*$");
-    private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^GET /callback-port/(\\d+) .*$");
+    private static final String OPERATION = "(GET|OPTIONS)";
+    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^" + OPERATION + " /load/(\\d*)/(\\d*) .*$");
+    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^" + OPERATION + " /insert-position/(.*)/(.*) .*$");
+    private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^" + OPERATION + " /move-position/(.*)/(.*)/(.*) .*$");
+    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^" + OPERATION + " /remove-position/(.*) .*$");
+    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^" + OPERATION + " /maptypechanged/(.*) .*$");
+    private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^" + OPERATION + " /zoomend/(.*)/(.*) .*$");
+    private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^" + OPERATION + " /callback-port/(\\d+) .*$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
     private void processCallbacks(List<String> lines) {
@@ -1133,17 +1125,16 @@ public abstract class BaseMapView implements MapView {
             return;
 
         for (String line : lines) {
-            log.fine("Received callback: " + line);
             if (processCallback(line))
                 break;
         }
     }
 
-    private boolean processCallback(String line) {
+    boolean processCallback(String line) {
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
         if (directionsLoadMatcher.matches()) {
-            meters += Transfer.parseInt(directionsLoadMatcher.group(1));
-            seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
+            meters += Transfer.parseInt(directionsLoadMatcher.group(2));
+            seconds += Transfer.parseInt(directionsLoadMatcher.group(3));
             fireCalculatedDistance(meters, seconds);
             return true;
         }
@@ -1151,8 +1142,8 @@ public abstract class BaseMapView implements MapView {
         Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
         if (insertPositionMatcher.matches()) {
             final int row = getInsertRow();
-            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
-            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
@@ -1165,9 +1156,9 @@ public abstract class BaseMapView implements MapView {
 
         Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
         if (movePositionMatcher.matches()) {
-            final int row = getMoveRow(Transfer.parseInt(movePositionMatcher.group(1)));
-            final Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
-            final Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
+            final int row = getMoveRow(Transfer.parseInt(movePositionMatcher.group(2)));
+            final Double latitude = Transfer.parseDouble(movePositionMatcher.group(3));
+            final Double longitude = Transfer.parseDouble(movePositionMatcher.group(4));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     movePosition(row, longitude, latitude);
@@ -1181,7 +1172,7 @@ public abstract class BaseMapView implements MapView {
 
         Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(line);
         if (removePositionMatcher.matches()) {
-            final int index = Transfer.parseInt(removePositionMatcher.group(1));
+            final int index = Transfer.parseInt(removePositionMatcher.group(2));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     removePosition(index);
@@ -1192,15 +1183,15 @@ public abstract class BaseMapView implements MapView {
 
         Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
         if (mapTypeChangedMatcher.matches()) {
-            String mapType = mapTypeChangedMatcher.group(1);
+            String mapType = mapTypeChangedMatcher.group(2);
             preferences.put(MAP_TYPE_PREFERENCE, mapType);
             return true;
         }
 
         Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
         if (zoomEndMatcher.matches()) {
-            Integer from = Transfer.parseInt(zoomEndMatcher.group(1));
-            Integer to = Transfer.parseInt(zoomEndMatcher.group(2));
+            Integer from = Transfer.parseInt(zoomEndMatcher.group(2));
+            Integer to = Transfer.parseInt(zoomEndMatcher.group(3));
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
@@ -1217,9 +1208,9 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher testMatcher = CALLBACK_PORT_PATTERN.matcher(line);
-        if (testMatcher.matches()) {
-            int port = Transfer.parseInt(testMatcher.group(1));
+        Matcher callbackPortMatcher = CALLBACK_PORT_PATTERN.matcher(line);
+        if (callbackPortMatcher.matches()) {
+            int port = Transfer.parseInt(callbackPortMatcher.group(2));
             fireReceivedCallback(port);
             return true;
         }
@@ -1301,7 +1292,7 @@ public abstract class BaseMapView implements MapView {
                 calendar.add(Calendar.SECOND, -seconds.intValue());
                 time = CompactCalendar.fromCalendar(calendar);
             }
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, Application.getInstance().getContext().getBundle().getString("new-position-comment"));
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, Application.getInstance().getContext().getBundle().getString("new-position-name"));
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
@@ -1338,7 +1329,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
-        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-comment"));
+        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-name"));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
     }
 
@@ -1469,9 +1460,7 @@ public abstract class BaseMapView implements MapView {
     private boolean isAuthenticated(List<String> lines) {
         Map<String, String> map = asMap(lines);
         String host = Transfer.trim(map.get("Host"));
-        String id = Transfer.trim(map.get("id"));
-        return host != null && host.equals("127.0.0.1:" + callbackListenerServerSocket.getLocalPort()) &&
-                id != null && id.equals("Jx3dQUv4");
+        return host != null && host.equals("127.0.0.1:" + callbackListenerServerSocket.getLocalPort());
     }
 
     private static final Pattern NAME_VALUE_PATTERN = Pattern.compile("^(.+?):(.+)$");
