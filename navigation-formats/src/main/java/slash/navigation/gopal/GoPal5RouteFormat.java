@@ -105,7 +105,8 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
             optimizationMode.setValue(preferences.get(VERSION_PREFIX + "optimizationMode", "short")); // fast, short
             options.setOptimizationMode(optimizationMode);
             Tour.RouteOptions.TTIBypass bypass = objectFactory.createTourRouteOptionsTTIBypass();
-            optimizationMode.setValue(preferences.get(VERSION_PREFIX + "ttiBypass", "automatic")); // automatic, disabled, manual
+            bypass.setCalculation(preferences.get(VERSION_PREFIX + "ttiBypass", "automatic")); // automatic, disabled, manual
+            bypass.setMode("avoid"); 
             options.setTTIBypass(bypass);
 
             Tour.RouteOptions.RoadUsageTypes usageTypes = objectFactory.createTourRouteOptionsRoadUsageTypes();
