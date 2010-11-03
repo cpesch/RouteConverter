@@ -63,6 +63,7 @@ public class HgtFileDownloader {
         return preferences.get(HGT_FILES_URL_PREFERENCE, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/");
     }
 
+    @SuppressWarnings({"unchecked"})
     private synchronized void initialize() {
         try {
             downloadFailures = (Set<String>) fileCache.getFileAsObject(HGT_FILES_URL_FAILURES);

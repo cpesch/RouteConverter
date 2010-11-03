@@ -20,16 +20,12 @@
 
 package slash.navigation.base;
 
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.SimpleRoute;
+import slash.common.io.CompactCalendar;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
-import slash.common.io.CompactCalendar;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,6 +51,7 @@ public class StartDateIT extends NavigationTestCase {
         checkPositionsWithDate(routes, expectedDate);
     }
 
+    @SuppressWarnings({"unchecked"})
     private void checkPositionsWithDate(List<? extends BaseRoute> routes, Calendar expectedDate) {
         int year = expectedDate.get(Calendar.YEAR);
         int month = expectedDate.get(Calendar.MONTH) + 1;
