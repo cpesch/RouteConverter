@@ -53,8 +53,8 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyyMMdd HHmmss");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
     static {
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final Pattern LINE_PATTERN = Pattern.

@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
@@ -29,8 +30,8 @@ import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.util.Bearing;
-import slash.common.io.CompactCalendar;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 
 /**

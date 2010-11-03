@@ -142,7 +142,7 @@ public class NavigationFileParser {
 
     public boolean read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        Calendar startDate = Calendar.getInstance();
+        Calendar startDate = Calendar.getInstance(CompactCalendar.UTC);
         startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int)source.length() + 1));

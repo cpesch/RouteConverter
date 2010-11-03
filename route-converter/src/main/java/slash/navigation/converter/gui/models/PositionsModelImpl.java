@@ -50,7 +50,7 @@ import java.util.List;
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     static {
-        TIME_FORMAT.setTimeZone(CompactCalendar.GMT);
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 

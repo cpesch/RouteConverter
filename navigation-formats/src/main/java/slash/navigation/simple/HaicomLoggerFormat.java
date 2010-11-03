@@ -26,7 +26,6 @@ import slash.navigation.base.*;
 
 import java.io.PrintWriter;
 import java.text.*;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,9 +52,9 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yy/MM/dd");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     static {
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);

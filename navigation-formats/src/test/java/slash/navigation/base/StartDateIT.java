@@ -38,8 +38,10 @@ public class StartDateIT extends NavigationTestCase {
 
     private void checkPosition(BaseNavigationPosition position, CompactCalendar expectedDate) {
         CompactCalendar actual = position.getTime();
-        String cal1 = DateFormat.getDateTimeInstance().format(actual.getTime());
-        String cal2 = DateFormat.getDateTimeInstance().format(expectedDate.getTime());
+        DateFormat format = DateFormat.getDateTimeInstance();
+        format.setTimeZone(CompactCalendar.UTC);
+        String cal1 = format.format(actual.getTime());
+        String cal2 = format.format(expectedDate.getTime());
         assertEquals(cal2, cal1);
         assertEquals(expectedDate.getTimeInMillis(), actual.getTimeInMillis());
         assertEquals(expectedDate.getTime(), actual.getTime());

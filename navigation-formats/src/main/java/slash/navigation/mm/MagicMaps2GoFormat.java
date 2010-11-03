@@ -49,7 +49,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ' ';
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
     static {
-       DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+       DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final Pattern LINE_PATTERN = Pattern.

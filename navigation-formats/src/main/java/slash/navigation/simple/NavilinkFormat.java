@@ -54,7 +54,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
     private static final int SBP_RECORD_LENGTH = 32;
     private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     static {
-        TRACK_NAME_DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TRACK_NAME_DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     public String getName() {
@@ -141,7 +141,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         int month = months % 12;
         int year = 2000 + months / 12;
 
-        Calendar calendar = Calendar.getInstance(CompactCalendar.GMT);
+        Calendar calendar = Calendar.getInstance(CompactCalendar.UTC);
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month - 1); // Java month starts with 0
         calendar.set(Calendar.DAY_OF_MONTH, day);

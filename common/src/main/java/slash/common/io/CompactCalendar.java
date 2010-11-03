@@ -30,7 +30,7 @@ import java.util.*;
  */
 
 public class CompactCalendar {
-    public static final TimeZone GMT = TimeZone.getTimeZone("GMT");
+    public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private final long timeInMillis;
     private final String timeZoneId;
@@ -44,14 +44,14 @@ public class CompactCalendar {
     }
 
     public static CompactCalendar fromDate(Date date) {
-        Calendar calendar = Calendar.getInstance(GMT);
+        Calendar calendar = Calendar.getInstance(UTC);
         calendar.setTime(date);
         return fromCalendar(calendar);
     }
 
 
     public static CompactCalendar fromMillis(long timeInMillis) {
-        Calendar calendar = Calendar.getInstance(GMT);
+        Calendar calendar = Calendar.getInstance(UTC);
         calendar.setTimeInMillis(timeInMillis);
         return fromCalendar(calendar);
     }
@@ -62,7 +62,7 @@ public class CompactCalendar {
 
     private CompactCalendar(long timeInMillis, String timeZoneId) {
         this.timeInMillis = timeInMillis;
-        this.timeZoneId = timeZoneId.equals("GMT") ? "GMT" : timeZoneId.intern();
+        this.timeZoneId = timeZoneId.equals("UTC") ? "UTC" : timeZoneId.intern();
     }
 
     public long getTimeInMillis() {
@@ -86,8 +86,8 @@ public class CompactCalendar {
     private static volatile Map<String, TimeZone> timeZones = Collections.emptyMap();
 
     private TimeZone getTimeZone() {
-        if ("GMT".equals(getTimeZoneId()))
-            return GMT;
+        if ("UTC".equals(getTimeZoneId()))
+            return UTC;
         // try global read-only map. No synchronization necessary because the field is volatile.
         // (this is only *guaranteed* to work with the Java 5 revised memory model, but works on older JVMs anyway)
         TimeZone result = timeZones.get(getTimeZoneId());

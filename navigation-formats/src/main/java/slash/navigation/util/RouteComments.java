@@ -196,8 +196,8 @@ public abstract class RouteComments {
     public static final SimpleDateFormat TRIPMASTER_TIME = new SimpleDateFormat("HH:mm:ss");
     public static final SimpleDateFormat TRIPMASTER_DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     static {
-        TRIPMASTER_TIME.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TRIPMASTER_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TRIPMASTER_TIME.setTimeZone(CompactCalendar.UTC);
+        TRIPMASTER_DATE.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final String TIME = "\\d{1,2}:\\d{2}:\\d{2}";
@@ -244,7 +244,7 @@ public abstract class RouteComments {
     private static final String COMMENT_SEPARATOR = "(\\+|-|\\*|=)";
     private static final SimpleDateFormat LOGPOS_DATE = new SimpleDateFormat("yyMMdd HH:mm:ss");
     static {
-        LOGPOS_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        LOGPOS_DATE.setTimeZone(CompactCalendar.UTC);
     }
     private static final Pattern LOGPOS_1_PATTERN = Pattern.compile("(" + DATE_WITHOUT_SEPARATOR + " " + TIME + "): " +
             COMMENT_SEPARATOR + " (.+) \\(?@(" + DOUBLE + "|\\?)m \\(?((s=(\\d+) d=(\\d+))?.*)\\)");

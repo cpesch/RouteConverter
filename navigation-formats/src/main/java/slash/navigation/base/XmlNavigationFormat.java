@@ -68,8 +68,8 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         if (time == null)
             return null;
         try {
-            // by using GMT no timezone is written
-            GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.GMT, Locale.getDefault());
+            // by using UTC no timezone is written
+            GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.UTC, Locale.getDefault());
             gregorianCalendar.clear();
             Calendar calendar = time.getCalendar();
             gregorianCalendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),

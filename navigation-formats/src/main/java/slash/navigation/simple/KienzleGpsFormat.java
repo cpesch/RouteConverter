@@ -27,7 +27,6 @@ import slash.navigation.base.*;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -47,7 +46,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char SEPARATOR_CHAR = ';';
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
     static {
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final Pattern LINE_PATTERN = Pattern.

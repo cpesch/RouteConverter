@@ -59,11 +59,11 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final DateFormat PRECISE_TIME_FORMAT = new SimpleDateFormat("HHmmss.SSS");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
     static {
-        PRECISE_DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        PRECISE_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        PRECISE_DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
+        PRECISE_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final NumberFormat LONGITUDE_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);

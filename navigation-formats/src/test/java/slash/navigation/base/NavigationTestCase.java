@@ -648,12 +648,16 @@ public abstract class NavigationTestCase extends TestCase {
     private static void compareTime(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
         if (sourcePosition.getTime() != null && targetPosition.getTime() != null) {
             if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
-                String sourceTime = DateFormat.getTimeInstance().format(sourcePosition.getTime().getTime());
-                String targetTime = DateFormat.getTimeInstance().format(targetPosition.getTime().getTime());
+                DateFormat format = DateFormat.getTimeInstance();
+                format.setTimeZone(CompactCalendar.UTC);
+                String sourceTime = format.format(sourcePosition.getTime().getTime());
+                String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
             } else {
-                String sourceTime = DateFormat.getDateTimeInstance().format(sourcePosition.getTime().getTime());
-                String targetTime = DateFormat.getDateTimeInstance().format(targetPosition.getTime().getTime());
+                DateFormat format = DateFormat.getDateTimeInstance();
+                format.setTimeZone(CompactCalendar.UTC);
+                String sourceTime = format.format(sourcePosition.getTime().getTime());
+                String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
                 if (!sourcePosition.getTime().equals(targetPosition.getTime()))
                     log.warning("Time " + index + " does not match");

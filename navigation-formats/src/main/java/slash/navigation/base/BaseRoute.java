@@ -147,7 +147,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         P first = positions.get(0);
         if(first.getTime() == null)
-            first.setTime(CompactCalendar.fromCalendar(Calendar.getInstance(CompactCalendar.GMT)));
+            first.setTime(CompactCalendar.fromCalendar(Calendar.getInstance(CompactCalendar.UTC)));
 
         P previous = first;
         for (int i = 1; i < positions.size(); i++) {

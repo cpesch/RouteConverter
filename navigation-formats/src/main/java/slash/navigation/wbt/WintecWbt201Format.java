@@ -40,7 +40,7 @@ import java.util.List;
 public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
     private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     static {
-        TRACK_NAME_DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TRACK_NAME_DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     public String getName() {
@@ -210,7 +210,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         int minute = (int) ((time & MINUTE_MASK) >> 6);
         int second = (int) ((time & SECOND_MASK));
 
-        Calendar calendar = Calendar.getInstance(CompactCalendar.GMT);
+        Calendar calendar = Calendar.getInstance(CompactCalendar.UTC);
         calendar.set(Calendar.YEAR, 2000 + year);
         calendar.set(Calendar.MONTH, month - 1); // Java month starts with 0
         calendar.set(Calendar.DAY_OF_MONTH, day);

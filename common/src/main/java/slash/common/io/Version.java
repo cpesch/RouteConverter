@@ -155,7 +155,9 @@ public class Version {
         if (date != null) {
             try {
                 Date date = BUILD_DATE.parse(this.date);
-                return DateFormat.getDateInstance(DateFormat.LONG).format(date);
+                DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
+                format.setTimeZone(CompactCalendar.UTC);
+                return format.format(date);
             }
             catch (ParseException e) {
                 // intentionally ignored

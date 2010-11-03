@@ -44,11 +44,13 @@ public class TimeZoneTest {
         Calendar local = localCalendar(now).getCalendar();
         Calendar utc = utcCalendar(now).getCalendar();
 
-        String localTime = DateFormat.getInstance().format(local.getTime().getTime());
-        String utcTime = DateFormat.getInstance().format(utc.getTime().getTime());
+        DateFormat format = DateFormat.getInstance();
+        format.setTimeZone(CompactCalendar.UTC);
+        String localTime = format.format(local.getTime().getTime());
+        String utcTime = format.format(utc.getTime().getTime());
         assertEquals(localTime, utcTime);
 
-        local.setTimeZone(CompactCalendar.GMT);
+        local.setTimeZone(CompactCalendar.UTC);
         assertCalendarEquals(local, utc);
     }
 

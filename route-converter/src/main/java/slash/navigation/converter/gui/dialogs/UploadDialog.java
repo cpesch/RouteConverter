@@ -57,6 +57,9 @@ public class UploadDialog extends SimpleDialog {
     private final Preferences preferences = Preferences.userNodeForPackage(getClass());
 
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+    static {
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+    }
 
     private static final String SERVICE_PREFERENCE = "service";
     private static final String USERNAME_PREFERENCE = "userName";

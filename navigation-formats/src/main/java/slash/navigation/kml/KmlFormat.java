@@ -189,13 +189,13 @@ public abstract class KmlFormat extends BaseKmlFormat {
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
     private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     static {
-        TAVELLOG_DATE.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        TAVELLOG_DATE.setTimeZone(CompactCalendar.UTC);
     }
 
     private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");
     private static final SimpleDateFormat NAVIGON6310_TIME = new SimpleDateFormat("HH:mm:ss");
     static {
-        NAVIGON6310_TIME.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        NAVIGON6310_TIME.setTimeZone(CompactCalendar.UTC);
     }
 
     CompactCalendar parseTime(String description) {

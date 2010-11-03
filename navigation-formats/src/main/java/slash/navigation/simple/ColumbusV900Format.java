@@ -28,7 +28,6 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -54,9 +53,9 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
     static {
-        DATE_AND_TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        DATE_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
-        TIME_FORMAT.setCalendar(Calendar.getInstance(CompactCalendar.GMT));
+        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+        DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
     public String getExtension() {
