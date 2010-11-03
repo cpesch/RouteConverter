@@ -49,6 +49,9 @@ import java.util.List;
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+    static {
+        TIME_FORMAT.setTimeZone(CompactCalendar.GMT);
+    }
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
