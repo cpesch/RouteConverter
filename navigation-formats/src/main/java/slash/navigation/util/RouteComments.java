@@ -93,7 +93,10 @@ public abstract class RouteComments {
     public static void commentPositions(List<? extends BaseNavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
             BaseNavigationPosition position = positions.get(i);
-            position.setComment(getPositionComment(position, i));
+            String original = position.getComment();
+            String modified = getPositionComment(position, i);
+            if (original == null || !original.equals(modified))
+                position.setComment(modified);
         }
     }
 
