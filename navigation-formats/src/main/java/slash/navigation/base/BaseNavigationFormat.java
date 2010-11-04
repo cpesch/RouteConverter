@@ -116,4 +116,12 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
     public List<R> read(InputStream source) throws IOException {
         return read(source, null);
     }
+
+    public int hashCode() {
+        return getClass().getName().hashCode();
+    }
+
+    public boolean equals(Object obj) {
+        return getClass().equals(obj.getClass());
+    }
 }
