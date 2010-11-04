@@ -34,19 +34,20 @@ import java.util.HashMap;
  */
 
 public class GoPalPosition extends MercatorPosition { // TODO eliminate this class
-    private Short country, houseNo;
-    private String zipCode, street; // comment = city
+    private Short country, houseNumber;
+    private String state, zipCode, street; // comment = city
 
     public GoPalPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GoPalPosition(Long x, Long y, Short country, String zipCode, String city, String street, Short houseNo) {
+    public GoPalPosition(Long x, Long y, Short country, String state, String zipCode, String city, String street, Short houseNo) {
         super(x, y, null, null, null, city);
+        this.state = state;
         this.country = country;
         this.zipCode = zipCode;
         this.street = street;
-        this.houseNo = houseNo;
+        this.houseNumber = houseNo;
     }
 
     public String getComment() {
@@ -58,16 +59,21 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
     }
 
     public void setComment(String comment) {
+        this.state = null;
         this.country = null;
         this.zipCode = null;
         this.comment = comment;
         this.street = null;
-        this.houseNo = null;
+        this.houseNumber = null;
         // TODO parse comment like BcrPosition#setComment
     }
 
     public Short getCountry() {
         return country;
+    }
+
+    public String getState() {
+        return state;
     }
 
     public String getZipCode() {
@@ -83,7 +89,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
     }
 
     public Short getHouseNumber() {
-        return houseNo;
+        return houseNumber;
     }
 
 
@@ -112,7 +118,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
                 !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) &&
                 !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
                 !(street != null ? !street.equals(that.street) : that.street != null) &&
-                !(houseNo != null ? !houseNo.equals(that.houseNo) : that.houseNo != null);
+                !(houseNumber != null ? !houseNumber.equals(that.houseNumber) : that.houseNumber != null);
     }
 
     public int hashCode() {
@@ -123,7 +129,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
-        result = 31 * result + (houseNo != null ? houseNo.hashCode() : 0);
+        result = 31 * result + (houseNumber != null ? houseNumber.hashCode() : 0);
         return result;
     }
 }
