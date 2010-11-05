@@ -43,6 +43,16 @@
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>external.xpt</exclude>
+                                        <exclude>version.txt</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
