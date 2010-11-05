@@ -92,11 +92,12 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         return options;
     }
 
-    private Tour createGoPal(GoPal3Route route) {
+    private Tour createGoPal(GoPal3Route route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Tour tour = objectFactory.createTour();
         tour.setOptions(createOptions(route));
-        for (GoPalPosition position : route.getPositions()) {
+        for (int i = startIndex; i < endIndex; i++) {
+            GoPalPosition position = route.getPosition(i);
             Tour.Dest dest = objectFactory.createTourDest();
             if (position.getX() != null)
                 dest.setLongitude(position.getX());
@@ -116,7 +117,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
 
     public void write(GoPal3Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            GoPalUtil.marshal3(createGoPal(route), target);
+            GoPalUtil.marshal3(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
