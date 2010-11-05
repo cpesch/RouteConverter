@@ -125,8 +125,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
 
                 NavigationFormat sourceFormat = sourceParser.getFormat();
                 NavigationFormat targetFormat = targetParser.getFormat();
-                assertNotEquals(sourceFormat, targetFormat);
-                assertEquals(sourceFormat.getName(), targetFormat.getName());
+                assertEquals(sourceFormat, targetFormat);
                 assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
                         targetParser.getTheRoute().getPositionCount());
                 targetPositionCount += targetParser.getTheRoute().getPositionCount();
