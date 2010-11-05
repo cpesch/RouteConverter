@@ -179,58 +179,97 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         return null;
     }
 
-    private Tour createGoPal(GoPal5Route route) {
+    private Tour.Start createStart(GoPalPosition position) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        Tour.Start start = objectFactory.createTourStart();
+        Tour.Start.Coordinates coordinates = objectFactory.createTourStartCoordinates();
+        if (position.getX() != null)
+            coordinates.setMercatorx(position.getX());
+        if (position.getY() != null)
+            coordinates.setMercatory(position.getY());
+        if (position.getLongitude() != null)
+            coordinates.setLongitude(Transfer.formatPosition(position.getLongitude()));
+        if (position.getLatitude() != null)
+            coordinates.setLatitude(Transfer.formatPosition(position.getLatitude()));
+        start.setCoordinates(coordinates);
+
+        Tour.Start.City city = objectFactory.createTourStartCity();
+        city.setName(position.getCity());
+        start.setCity(city);
+        Tour.Start.Country country = objectFactory.createTourStartCountry();
+        if (position.getCountry() != null)
+            country.setCode(position.getCountry());
+        start.setCountry(country);
+        Tour.Start.State state = objectFactory.createTourStartState();
+        if (position.getState() != null)
+            state.setName(position.getState());
+        start.setState(state);
+        return start;
+    }
+
+    private Tour.Destination createDestination(GoPalPosition position) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        Tour.Destination destination = objectFactory.createTourDestination();
+        Tour.Destination.Coordinates coordinates = objectFactory.createTourDestinationCoordinates();
+        if (position.getX() != null)
+            coordinates.setMercatorx(position.getX());
+        if (position.getY() != null)
+            coordinates.setMercatory(position.getY());
+        if (position.getLongitude() != null)
+            coordinates.setLongitude(Transfer.formatPosition(position.getLongitude()));
+        if (position.getLatitude() != null)
+            coordinates.setLatitude(Transfer.formatPosition(position.getLatitude()));
+        destination.setCoordinates(coordinates);
+
+        Tour.Destination.City city = objectFactory.createTourDestinationCity();
+        city.setName(position.getCity());
+        destination.setCity(city);
+        Tour.Destination.Country country = objectFactory.createTourDestinationCountry();
+        if (position.getCountry() != null)
+            country.setCode(position.getCountry());
+        destination.setCountry(country);
+        Tour.Destination.State state = objectFactory.createTourDestinationState();
+        if (position.getState() != null)
+            state.setName(position.getState());
+        destination.setState(state);
+        Tour.Destination.HouseNumber houseNumber = objectFactory.createTourDestinationHouseNumber();
+        if (position.getHouseNumber() != null) {
+            houseNumber.setValue(position.getHouseNumber());
+            houseNumber.setType("middle_of_street");
+        }
+        destination.setHouseNumber(houseNumber);
+        Tour.Destination.Street street = objectFactory.createTourDestinationStreet();
+        street.setName(position.getStreet());
+        street.setHouseNumberAvailable(position.getHouseNumber() != null ? "yes" : "no");
+        destination.setStreet(street);
+        Tour.Destination.Zip zip = objectFactory.createTourDestinationZip();
+        Integer zipValue = parseZip(position.getZipCode()); // TODO eliminate Zip as String
+        if (zipValue != null)
+            zip.setCode(zipValue);
+        destination.setZip(zip);
+        return destination;
+    }
+
+    private Tour createGoPal(GoPal5Route route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Tour tour = objectFactory.createTour();
         tour.setRouteOptions(createRouteOptions(route));
-        for (GoPalPosition position : route.getPositions()) {
-            Tour.Destination destination = objectFactory.createTourDestination();
-            Tour.Destination.Coordinates coordinates = objectFactory.createTourDestinationCoordinates();
-            if (position.getX() != null)
-                coordinates.setMercatorx(position.getX());
-            if (position.getY() != null)
-                coordinates.setMercatory(position.getY());
-            if (position.getLongitude() != null)
-                coordinates.setLongitude(Transfer.formatPosition(position.getLongitude()));
-            if (position.getLatitude() != null)
-                coordinates.setLatitude(Transfer.formatPosition(position.getLatitude()));
-            destination.setCoordinates(coordinates);
 
-            Tour.Destination.City city = objectFactory.createTourDestinationCity();
-            city.setName(position.getCity());
-            destination.setCity(city);
-            Tour.Destination.Country country = objectFactory.createTourDestinationCountry();
-            if (position.getCountry() != null)
-                country.setCode(position.getCountry());
-            destination.setCountry(country);
-            Tour.Destination.State state = objectFactory.createTourDestinationState();
-            if (position.getState() != null)
-                state.setName(position.getState());
-            destination.setState(state);
-            Tour.Destination.HouseNumber houseNumber = objectFactory.createTourDestinationHouseNumber();
-            if (position.getHouseNumber() != null) {
-                houseNumber.setValue(position.getHouseNumber());
-                houseNumber.setType("middle_of_street");
+        for (int i = startIndex; i < endIndex; i++) {
+            GoPalPosition position = route.getPosition(i);
+
+            if(i == startIndex) {
+                tour.setStart(createStart(position));
+            } else {
+                tour.getDestination().add(createDestination(position));
             }
-            destination.setHouseNumber(houseNumber);
-            Tour.Destination.Street street = objectFactory.createTourDestinationStreet();
-            street.setName(position.getStreet());
-            street.setHouseNumberAvailable(position.getHouseNumber() != null ? "yes" : "no");
-            destination.setStreet(street);
-            Tour.Destination.Zip zip = objectFactory.createTourDestinationZip();
-            Integer zipValue = parseZip(position.getZipCode()); // TODO eliminate Zip as String
-            if (zipValue != null)
-                zip.setCode(zipValue);
-            destination.setZip(zip);
-
-            tour.getDestination().add(destination);
         }
         return tour;
     }
 
     public void write(GoPal5Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            GoPalUtil.marshal5(createGoPal(route), target);
+            GoPalUtil.marshal5(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
