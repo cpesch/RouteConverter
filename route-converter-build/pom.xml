@@ -20,7 +20,6 @@
     </pluginRepositories>
 
     <properties>
-        <maven.build.number>1</maven.build.number>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     </properties>
 
@@ -29,7 +28,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0-beta-3</version>
+                <version>1.0-beta-4</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
