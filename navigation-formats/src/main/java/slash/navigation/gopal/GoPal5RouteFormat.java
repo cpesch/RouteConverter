@@ -240,7 +240,8 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         destination.setHouseNumber(houseNumber);
         Tour.Destination.Street street = objectFactory.createTourDestinationStreet();
         street.setName(position.getStreet());
-        street.setHouseNumberAvailable(position.getHouseNumber() != null ? "yes" : "no");
+        if (position.getHouseNumber() != null)
+            street.setHouseNumberAvailable("no");
         destination.setStreet(street);
         Tour.Destination.Zip zip = objectFactory.createTourDestinationZip();
         Integer zipValue = parseZip(position.getZipCode()); // TODO eliminate Zip as String
