@@ -250,6 +250,7 @@ public class ReadIT extends NavigationTestCase {
     }
 
     public void testXmlFilesAreValid() throws IOException {
+        // GoPal 3,5
         readFiles(".xml");
     }
 

@@ -67,7 +67,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
             String suburb = start.getCity() != null ? start.getCity().getSuburb() : null;
             String street = start.getStreet() != null ? start.getStreet().getName() : null;
             String sideStreet = start.getSideStreet() != null ? start.getSideStreet().getName() : null;
-            Short houseNumber = start.getHouseNumber() != null && start.getHouseNumber().getValue() != 0 ?
+            Short houseNumber = start.getHouseNumber() != null && start.getHouseNumber().getValue() != null ?
                     start.getHouseNumber().getValue() : null;
             positions.add(new GoPalPosition(start.getCoordinates().getMercatorx(), start.getCoordinates().getMercatory(),
                     country, state, zip, city, suburb, street, sideStreet, houseNumber));
@@ -80,7 +80,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
             String suburb = destination.getCity() != null ? destination.getCity().getSuburb() : null;
             String street = destination.getStreet() != null ? destination.getStreet().getName() : null;
             String sideStreet = destination.getSideStreet() != null ? destination.getSideStreet().getName() : null;
-            Short houseNumber = destination.getHouseNumber() != null && destination.getHouseNumber().getValue() != 0 ?
+            Short houseNumber = destination.getHouseNumber() != null && destination.getHouseNumber().getValue() != null ?
                     destination.getHouseNumber().getValue() : null;
             positions.add(new GoPalPosition(destination.getCoordinates().getMercatorx(), destination.getCoordinates().getMercatory(),
                     country, state, zip, city, suburb, street, sideStreet, houseNumber));
