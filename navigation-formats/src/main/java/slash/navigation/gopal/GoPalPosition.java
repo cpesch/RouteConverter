@@ -35,18 +35,20 @@ import java.util.HashMap;
 
 public class GoPalPosition extends MercatorPosition { // TODO eliminate this class
     private Short country, houseNumber;
-    private String state, zipCode, street; // comment = city
+    private String state, zipCode, suburb, street, sideStreet; // comment = city
 
     public GoPalPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment) {
         super(longitude, latitude, elevation, speed, time, comment);
     }
 
-    public GoPalPosition(Long x, Long y, Short country, String state, String zipCode, String city, String street, Short houseNo) {
+    public GoPalPosition(Long x, Long y, Short country, String state, String zipCode, String city, String suburb, String street, String sideStreet, Short houseNo) {
         super(x, y, null, null, null, city);
         this.state = state;
         this.country = country;
         this.zipCode = zipCode;
+        this.suburb = suburb;
         this.street = street;
+        this.sideStreet = sideStreet;
         this.houseNumber = houseNo;
     }
 
@@ -63,7 +65,9 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         this.country = null;
         this.zipCode = null;
         this.comment = comment;
+        this.suburb = null;
         this.street = null;
+        this.sideStreet = null;
         this.houseNumber = null;
         // TODO parse comment like BcrPosition#setComment
     }
@@ -84,8 +88,16 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         return comment;
     }
 
+    public String getSuburb() {
+        return suburb;
+    }
+
     public String getStreet() {
         return street;
+    }
+
+    public String getSideStreet() {
+        return sideStreet;
     }
 
     public Short getHouseNumber() {
@@ -117,7 +129,9 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
                 !(country != null ? !country.equals(that.country) : that.country != null) &&
                 !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) &&
                 !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
+                !(suburb != null ? !suburb.equals(that.suburb) : that.suburb != null) &&
                 !(street != null ? !street.equals(that.street) : that.street != null) &&
+                !(sideStreet != null ? !sideStreet.equals(that.sideStreet) : that.sideStreet != null) &&
                 !(houseNumber != null ? !houseNumber.equals(that.houseNumber) : that.houseNumber != null);
     }
 
@@ -128,7 +142,9 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
         result = 31 * result + (country != null ? country.hashCode() : 0);
         result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (suburb != null ? suburb.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
+        result = 31 * result + (sideStreet != null ? sideStreet.hashCode() : 0);
         result = 31 * result + (houseNumber != null ? houseNumber.hashCode() : 0);
         return result;
     }

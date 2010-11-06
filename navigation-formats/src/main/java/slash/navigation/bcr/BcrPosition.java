@@ -145,7 +145,7 @@ public class BcrPosition extends MercatorPosition {
     }
 
     public GoPalPosition asGoPalRoutePosition() {
-        return new GoPalPosition(getX(), getY(), null, null, getZipCode(), getCity(), getStreet(), null);
+        return new GoPalPosition(getX(), getY(), null, null, getZipCode(), getCity(), null, getStreet(), null, null);
     }
 
     public TourPosition asTourPosition() {

@@ -124,35 +124,58 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element minOccurs="0" name="Start">
+        <xs:element name="Start">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Country">
                 <xs:complexType>
-                  <xs:attribute name="code" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="code" type="xs:unsignedByte" use="optional" />
                 </xs:complexType>
               </xs:element>
-              <xs:element minOccurs="0" name="State">
+              <xs:element name="State">
                 <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Zip">
+                <xs:complexType>
+                    <xs:attribute name="code" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="City">
                 <xs:complexType>
                   <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="suburb" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Street">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                  <xs:attribute name="houseNumberAvailable" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="SideStreet">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="HouseNumber">
+                <xs:complexType>
+                  <xs:attribute name="value" type="xs:unsignedByte" use="optional" />
+                  <xs:attribute name="type" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="Coordinates">
                 <xs:complexType>
-                  <xs:attribute name="latitude" type="xs:decimal" use="required" />
-                  <xs:attribute name="longitude" type="xs:decimal" use="required" />
+                  <xs:attribute name="latitude" type="xs:decimal" use="optional" />
+                  <xs:attribute name="longitude" type="xs:decimal" use="optional" />
                   <xs:attribute name="mercatorx" type="xs:unsignedInt" use="required" />
                   <xs:attribute name="mercatory" type="xs:unsignedInt" use="required" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="ResultSource">
                 <xs:complexType>
-                  <xs:attribute name="workflow" type="xs:string" use="required" />
+                  <xs:attribute name="workflow" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
@@ -163,56 +186,62 @@
             <xs:sequence>
               <xs:element name="Country">
                 <xs:complexType>
-                  <xs:attribute name="code" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="code" type="xs:unsignedByte" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="State">
                 <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="name" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
-              <xs:element minOccurs="0" name="Zip">
+              <xs:element name="Zip">
                 <xs:complexType>
-                  <xs:attribute name="code" type="xs:unsignedShort" use="required" />
+                  <xs:attribute name="code" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="City">
                 <xs:complexType>
                   <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="suburb" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
-              <xs:element minOccurs="0" name="Street">
+              <xs:element name="Street">
                 <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="houseNumberAvailable" type="xs:string" use="required" />
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                  <xs:attribute name="houseNumberAvailable" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
-              <xs:element minOccurs="0" name="HouseNumber">
+              <xs:element name="POI">
                 <xs:complexType>
-                  <xs:attribute name="value" type="xs:unsignedByte" use="required" />
-                  <xs:attribute name="type" type="xs:string" use="optional" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element minOccurs="0" name="POI">
-                <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="open24h" type="xs:string" use="required" />
-                  <xs:attribute name="typeID" type="xs:unsignedByte" use="required" />
-                  <xs:attribute name="extensionType" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="name" type="xs:string" use="optional" />
                   <xs:attribute name="phone" type="xs:int" use="optional" />
+                  <xs:attribute name="open24h" type="xs:string" use="optional" />
+                  <xs:attribute name="typeID" type="xs:unsignedByte" use="optional" />
+                  <xs:attribute name="extensionType" type="xs:unsignedByte" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="SideStreet">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="HouseNumber">
+                <xs:complexType>
+                  <xs:attribute name="value" type="xs:unsignedByte" use="optional" />
+                  <xs:attribute name="type" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="Coordinates">
                 <xs:complexType>
-                  <xs:attribute name="latitude" type="xs:decimal" use="required" />
-                  <xs:attribute name="longitude" type="xs:decimal" use="required" />
+                  <xs:attribute name="latitude" type="xs:decimal" use="optional" />
+                  <xs:attribute name="longitude" type="xs:decimal" use="optional" />
                   <xs:attribute name="mercatorx" type="xs:unsignedInt" use="required" />
                   <xs:attribute name="mercatory" type="xs:unsignedInt" use="required" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="ResultSource">
                 <xs:complexType>
-                  <xs:attribute name="workflow" type="xs:string" use="required" />
+                  <xs:attribute name="workflow" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>

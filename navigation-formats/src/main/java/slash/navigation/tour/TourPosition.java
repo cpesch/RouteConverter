@@ -121,7 +121,7 @@ public class TourPosition extends MercatorPosition {
         } catch (NumberFormatException e) {
             // intentionally left empty
         }
-        return new GoPalPosition(getX(), getY(), null, null, getZipCode(), getCity(), getStreet(), houseNo);
+        return new GoPalPosition(getX(), getY(), null, null, getZipCode(), getCity(), null, getStreet(), null, houseNo);
     }
 
     public TourPosition asTourPosition() {

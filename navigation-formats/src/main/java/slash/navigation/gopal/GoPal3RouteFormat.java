@@ -58,7 +58,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
         for (Tour.Dest dest : tour.getDest()) {
             Short country = dest.getCountry() != 0 ? dest.getCountry() : null;
-            positions.add(new GoPalPosition(dest.getLongitude(), dest.getLatitude(), country, null, dest.getZip(), dest.getCity(), dest.getStreet(), dest.getHouse()));
+            positions.add(new GoPalPosition(dest.getLongitude(), dest.getLatitude(), country, null, dest.getZip(), dest.getCity(), null, dest.getStreet(), null, dest.getHouse()));
         }
         return new GoPal3Route(null, tour.getOptions(), positions);
     }

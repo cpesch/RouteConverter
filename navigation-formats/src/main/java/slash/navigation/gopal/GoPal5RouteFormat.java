@@ -62,21 +62,28 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         if(start != null) {
             Short country = start.getCountry() != null ? start.getCountry().getCode() : null;
             String state = start.getState() != null ? start.getState().getName() : null;
+            String zip = start.getZip() != null ? start.getZip().getCode() : null;
             String city = start.getCity() != null ? start.getCity().getName() : null;
+            String suburb = start.getCity() != null ? start.getCity().getSuburb() : null;
+            String street = start.getStreet() != null ? start.getStreet().getName() : null;
+            String sideStreet = start.getSideStreet() != null ? start.getSideStreet().getName() : null;
+            Short houseNumber = start.getHouseNumber() != null && start.getHouseNumber().getValue() != 0 ?
+                    start.getHouseNumber().getValue() : null;
             positions.add(new GoPalPosition(start.getCoordinates().getMercatorx(), start.getCoordinates().getMercatory(),
-                    country, state, null, city, null, null));
+                    country, state, zip, city, suburb, street, sideStreet, houseNumber));
         }
         for (Tour.Destination destination : tour.getDestination()) {
             Short country = destination.getCountry() != null ? destination.getCountry().getCode() : null;
             String state = destination.getState() != null ? destination.getState().getName() : null;
-            String zip = destination.getZip() != null && destination.getZip().getCode() != 0 ?
-                    Integer.toString(destination.getZip().getCode()) : null;
+            String zip = destination.getZip() != null ? destination.getZip().getCode() : null;
             String city = destination.getCity() != null ? destination.getCity().getName() : null;
+            String suburb = destination.getCity() != null ? destination.getCity().getSuburb() : null;
             String street = destination.getStreet() != null ? destination.getStreet().getName() : null;
+            String sideStreet = destination.getSideStreet() != null ? destination.getSideStreet().getName() : null;
             Short houseNumber = destination.getHouseNumber() != null && destination.getHouseNumber().getValue() != 0 ?
                     destination.getHouseNumber().getValue() : null;
             positions.add(new GoPalPosition(destination.getCoordinates().getMercatorx(), destination.getCoordinates().getMercatory(),
-                    country, state, zip, city, street, houseNumber));
+                    country, state, zip, city, suburb, street, sideStreet, houseNumber));
         }
         return new GoPal5Route(null, tour.getRouteOptions(), positions);
     }
@@ -169,16 +176,6 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         return options;
     }
 
-    private Integer parseZip(String zip) {
-        try {
-            return Transfer.parseInt(zip);
-        }
-        catch(NumberFormatException e) {
-            // intentionally left empty
-        }
-        return null;
-    }
-
     private Tour.Start createStart(GoPalPosition position) {
         ObjectFactory objectFactory = new ObjectFactory();
         Tour.Start start = objectFactory.createTourStart();
@@ -195,6 +192,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
 
         Tour.Start.City city = objectFactory.createTourStartCity();
         city.setName(position.getCity());
+        city.setSuburb(position.getSuburb());
         start.setCity(city);
         Tour.Start.Country country = objectFactory.createTourStartCountry();
         if (position.getCountry() != null)
@@ -204,6 +202,23 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         if (position.getState() != null)
             state.setName(position.getState());
         start.setState(state);
+        Tour.Start.HouseNumber houseNumber = objectFactory.createTourStartHouseNumber();
+        if (position.getHouseNumber() != null) {
+            houseNumber.setValue(position.getHouseNumber());
+            houseNumber.setType("middle_of_street");
+        }
+        start.setHouseNumber(houseNumber);
+        Tour.Start.Street street = objectFactory.createTourStartStreet();
+        street.setName(position.getStreet());
+        if (position.getHouseNumber() != null)
+            street.setHouseNumberAvailable("no");
+        start.setStreet(street);
+        Tour.Start.SideStreet sideStreet = objectFactory.createTourStartSideStreet();
+        sideStreet.setName(position.getSideStreet());
+        start.setSideStreet(sideStreet);
+        Tour.Start.Zip zip = objectFactory.createTourStartZip();
+        zip.setCode(position.getZipCode());
+        start.setZip(zip);
         return start;
     }
 
@@ -223,6 +238,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
 
         Tour.Destination.City city = objectFactory.createTourDestinationCity();
         city.setName(position.getCity());
+        city.setSuburb(position.getSuburb());
         destination.setCity(city);
         Tour.Destination.Country country = objectFactory.createTourDestinationCountry();
         if (position.getCountry() != null)
@@ -243,10 +259,11 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         if (position.getHouseNumber() != null)
             street.setHouseNumberAvailable("no");
         destination.setStreet(street);
+        Tour.Destination.SideStreet sideStreet = objectFactory.createTourDestinationSideStreet();
+        sideStreet.setName(position.getSideStreet());
+        destination.setSideStreet(sideStreet);
         Tour.Destination.Zip zip = objectFactory.createTourDestinationZip();
-        Integer zipValue = parseZip(position.getZipCode()); // TODO eliminate Zip as String
-        if (zipValue != null)
-            zip.setCode(zipValue);
+        zip.setCode(position.getZipCode());
         destination.setZip(zip);
         return destination;
     }
