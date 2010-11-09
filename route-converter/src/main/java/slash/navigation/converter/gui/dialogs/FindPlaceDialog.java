@@ -25,9 +25,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsPosition;
@@ -44,6 +46,9 @@ import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * Dialog for finding and inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
@@ -158,8 +163,43 @@ public class FindPlaceDialog extends SimpleDialog {
                     null, CompactCalendar.fromCalendar(Calendar.getInstance()), position.getComment());
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
+
+            if(elevation == null)
+                complementElevation(insertRow,  position.getLongitude(), position.getLatitude());
         }
     }
+
+    protected static final Logger log = Logger.getLogger(FindPlaceDialog.class.getName());
+    private ExecutorService executor = Executors.newCachedThreadPool();
+    // TODO same as in BaseMapView
+    private void complementElevation(final int row, final Double longitude, final Double latitude) {
+        executor.execute(new Runnable() {
+            public void run() {
+                CompletePositionService completePositionService = new CompletePositionService();
+                final Integer[] elevation = new Integer[1];
+                try {
+                    elevation[0] = completePositionService.getElevationFor(longitude, latitude);
+                } catch (IOException e) {
+                    log.warning("Cannot retrieve elevation for " + longitude + "/" + latitude + ": " + e.getMessage());
+                } finally {
+                    completePositionService.close();
+                }
+
+                if (elevation[0] != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (elevation[0] != null) {
+                                RouteConverter r = RouteConverter.getInstance();
+                                PositionsModel positionsModel = r.getPositionsModel();
+                                positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
 
     private void savePreferences() {
         RouteConverter r = RouteConverter.getInstance();
