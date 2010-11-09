@@ -56,6 +56,14 @@ public class Files {
         return name.substring(index, name.length());
     }
 
+    public static String getExtension(List<URL> urls) {
+        String extension = "";
+        for (URL url : urls) {
+            extension = getExtension(url.toExternalForm());
+        }
+        return extension.toLowerCase();
+    }
+
     /**
      * Remove the extension of the given file name, if there is any.
      *

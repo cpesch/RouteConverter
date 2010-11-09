@@ -436,17 +436,18 @@ public abstract class ConvertPanel {
         setReadFormatFileFilterPreference(selectedFormat);
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
-        openPositionList(Files.toUrls(selected), NavigationFormats.getReadFormatsWithPreferredFormat(selectedFormat));
+
+        List<URL> urls = Files.toUrls(selected);
+        List<NavigationFormat> formats = selectedFormat != null ?
+                NavigationFormats.getReadFormatsWithPreferredFormat(selectedFormat) :
+                NavigationFormats.getReadFormatsPreferredByExtension(Files.getExtension(urls));
+        openPositionList(urls, formats);
     }
 
     public void openPositionList(final List<URL> urls) {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
-        String extension = "";
-        for (URL url : urls) {
-            extension = Files.getExtension(url.toExternalForm());
-        }
-        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(extension.toLowerCase()));
+        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(Files.getExtension(urls)));
     }
 
     @SuppressWarnings("unchecked")
