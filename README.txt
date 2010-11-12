@@ -3,7 +3,7 @@ How to develop for RouteConverter
 
 1. Install a recent Java 6 SDK from http://java.sun.com/javase/downloads/index.jsp
 
-2. Install Maven 2.10 or 2.2.1 from http://maven.apache.org/download.html
+2. Install Maven 3 from http://maven.apache.org/download.html
 
 3. Checkout RouteConverter from Subversion:
    > svn checkout http://www.routeconverter.de/svn/RouteConverter/trunk/ RouteConverter
@@ -20,14 +20,15 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_20
+   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_22
    Put Maven into your PATH and call
    > mvn clean package
-   If you're using Maven 2.0.9 which suffers from issue http://jira.codehaus.org/browse/MNG-4032 call
-   > mvn clean install
 
 6. Run RouteConverter
    > java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
    > java -jar RouteConverterLinux/target/RouteConverterLinux.jar
+   > java -jar RouteConverterLinux64/target/RouteConverterLinux64.jar
    > java -jar RouteConverterMac/target/RouteConverterMac.jar
+   > java -jar RouteConverterMac64/target/RouteConverterMac64.jar
    > java -jar RouteConverterWindows/target/RouteConverterWindows.jar
+   > java -jar RouteConverterWindows64/target/RouteConverterWindows64.jar
