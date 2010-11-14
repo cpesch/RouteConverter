@@ -74,11 +74,11 @@ public class HgtFileDownloader {
             downloadFailures = new HashSet<String>();
     }
 
-    private boolean hasDownloadAlreadyFailed(String key) {
+    private synchronized boolean hasDownloadAlreadyFailed(String key) {
         return downloadFailures.contains(key);
     }
 
-    private void addFailedDownload(String key) {
+    private synchronized void addFailedDownload(String key) {
         downloadFailures.add(key);
         try {
             fileCache.putAsObject(HGT_FILES_URL_FAILURES, downloadFailures);
