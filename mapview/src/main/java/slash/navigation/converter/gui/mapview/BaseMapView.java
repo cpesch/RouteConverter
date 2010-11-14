@@ -1399,6 +1399,11 @@ public abstract class BaseMapView implements MapView {
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
+        // TODO same as in NewPositionAction
+        BaseNavigationPosition center = positionsModel.getPosition(row);
+        CompactCalendar time = row - 2 >= 0 ? Positions.interpolateTime(center, positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
+        if (time != null)
+            positionsModel.edit(time, row, PositionColumns.TIME_COLUMN_INDEX, true, false);
     }
 
     private int getInsertRow() {

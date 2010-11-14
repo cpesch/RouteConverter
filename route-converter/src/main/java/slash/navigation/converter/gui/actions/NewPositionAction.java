@@ -81,9 +81,16 @@ public class NewPositionAction extends FrameAction {
             center = r.getMapCenter();
         r.setLastMapCenter(center.getLongitude(), center.getLatitude());
 
+        // TODO same as in BaseMapView#insertPosition
+        if (center.getTime() == null) {
+            CompactCalendar time = insertRow - 2 >= 0 ? Positions.interpolateTime(center, positionsModel.getPosition(insertRow - 1), positionsModel.getPosition(insertRow - 2)) : null;
+            if (time == null)
+                time = CompactCalendar.fromCalendar(Calendar.getInstance());
+            center.setTime(time);
+        }
+
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
-                center.getElevation(), center.getSpeed(),
-                center.getTime() != null ? center.getTime() : CompactCalendar.fromCalendar(Calendar.getInstance()),
+                center.getElevation(), center.getSpeed(), center.getTime(),
                 MessageFormat.format(RouteConverter.getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{insertRow});
 

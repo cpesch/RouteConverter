@@ -20,9 +20,10 @@
 
 package slash.navigation.util;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
-import slash.common.io.CompactCalendar;
 
 import java.util.Calendar;
 import java.util.List;
@@ -77,6 +78,26 @@ public class Positions {
      */
     public static int[] getSignificantPositions(List<? extends BaseNavigationPosition> positions, double threshold) {
         return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
+    }
+
+    public static CompactCalendar interpolateTime(BaseNavigationPosition position, BaseNavigationPosition previous, BaseNavigationPosition beforePrevious) {
+        if (beforePrevious.getTime() == null || previous.getTime() == null)
+            return null;
+
+        long previousTime = Math.abs(beforePrevious.getTime().getTimeInMillis() - previous.getTime().getTimeInMillis());
+        if (previousTime == 0)
+            return null;
+
+        Double previousDistance = beforePrevious.calculateDistance(previous);
+        if (Transfer.isEmpty(previousDistance))
+            return null;
+
+        Double distance = previous.calculateDistance(position);
+        if (Transfer.isEmpty(distance))
+            return null;
+
+        long time = new Double(previous.getTime().getTimeInMillis() + (double) previousTime * (distance / previousDistance)).longValue();
+        return CompactCalendar.fromMillis(time);
     }
 
     public static Wgs84Position center(List<? extends BaseNavigationPosition> positions) {
