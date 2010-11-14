@@ -24,11 +24,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class EclipseSWTMapViewTest {
+public class BaseMapViewProcessCallbackTest {
     private EclipseSWTMapView view = new EclipseSWTMapView();
     private final Object LOCK = new Object();
 
-    private void callback(final String line) throws InterruptedException {
+    private void processCallback(final String callback) throws InterruptedException {
         final int[] portCallback = new int[1];
         portCallback[0] = -1;
 
@@ -42,26 +42,20 @@ public class EclipseSWTMapViewTest {
         });
         new Thread(new Runnable() {
             public void run() {
-                view.processCallback(line);
+                view.processCallback(callback);
             }
         }).start();
 
         synchronized (LOCK) {
-        LOCK.wait(1000);
+            LOCK.wait(1000);
         }
 
         assertEquals(49632, portCallback[0]);
     }
 
     @Test
-    public void testGetCallback() throws InterruptedException {
-        callback("GET /callback-port/49632 HTTP/1.1");
-
-    }
-
-    @Test
-    public void testOptionsCallback() throws InterruptedException {
-        callback("OPTIONS /callback-port/49632 HTTP/1.1");
+    public void testCallback() throws InterruptedException {
+        processCallback("callback-port/49632");
 
     }
 }

@@ -66,18 +66,22 @@
        return callbacks;
    }
 
+   var callbackCount = 0;
+
    function callJava(uri) {
        if (xmlhttp && callbackListenerPort > 0) {
-           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + uri);
+           callbackCount++;
+           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri);
            xmlhttp.send();
        } else {
-           callbackQueue.push("GET /" + uri + " POLL/1.0");
+           callbackQueue.push(uri);
        }
    }
 
    function callJavaWithPost(body) {
        if (xmlhttp && callbackListenerPort > 0) {
-           xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/generic-post-url/", true);
+           callbackCount++;
+           xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/generic-post-url/", true);
            xmlhttp.send(body);
        } else {
            callbackQueue.push(body);

@@ -291,7 +291,7 @@ public class EclipseSWTMapView extends BaseMapView {
     // script execution
 
     protected void executeScript(final String script) {
-        if (script.length() == 0)
+        if (webBrowser == null || script.length() == 0)
             return;
 
         if (!SwingUtilities.isEventDispatchThread()) {

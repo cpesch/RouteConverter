@@ -50,7 +50,17 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,6 +82,8 @@ public abstract class BaseMapView implements MapView {
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
     private static final String MAP_TYPE_PREFERENCE = "mapType";
+    private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
+    private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
 
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);
@@ -266,7 +278,7 @@ public abstract class BaseMapView implements MapView {
                         if (haveToRepaintRouteImmediately ||
                                 haveToReplaceRoute ||
                                 (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
-                            log.info("Woke up to update route: " + routeUpdateReason +
+                            log.fine("Woke up to update route: " + routeUpdateReason +
                                     " haveToUpdateRoute:" + haveToUpdateRoute +
                                     " haveToReplaceRoute:" + haveToReplaceRoute +
                                     " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
@@ -323,7 +335,7 @@ public abstract class BaseMapView implements MapView {
                         long currentTime = System.currentTimeMillis();
                         if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
                                 (haveToRepaintSelection && (currentTime - lastTime > 500))) {
-                            log.info("Woke up to update selected positions: " + selectionUpdateReason +
+                            log.fine("Woke up to update selected positions: " + selectionUpdateReason +
                                     " haveToRepaintSelection: " + haveToRepaintSelection +
                                     " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
                                     " haveToRecenterMap: " + haveToRecenterMap);
@@ -383,7 +395,7 @@ public abstract class BaseMapView implements MapView {
                         clientSocket = callbackListenerServerSocket.accept();
                         is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), 64 * 1024);
                         os = clientSocket.getOutputStream();
-                        processCallbacks(is);
+                        processStream(is);
                     } catch (SocketTimeoutException e) {
                         // intentionally left empty
                     } catch (IOException e) {
@@ -410,30 +422,6 @@ public abstract class BaseMapView implements MapView {
             }
         }, "MapViewCallbackListener");
         callbackListener.start();
-    }
-
-    private void processCallbacks(BufferedReader is) {
-        List<String> lines = new ArrayList<String>();
-        boolean processingPost = false, processingBody = false;
-        while (true) {
-            try {
-                String line = Transfer.trim(is.readLine());
-                if (line == null) {
-                    if (processingPost && !processingBody) {
-                        processingBody = true;
-                        continue;
-                    } else
-                        break;
-                }
-                if (line.startsWith("POST"))
-                    processingPost = true;
-                lines.add(line);
-            } catch (IOException e) {
-                log.severe("Cannot read line from callback listener port:" + e.getMessage());
-                break;
-            }
-        }
-        processCallbacks(lines);
     }
 
     protected void initializeCallbackPoller() {
@@ -535,7 +523,7 @@ public abstract class BaseMapView implements MapView {
                         if (!receivedCallback[0]) {
                             setCallbackListenerPort(-1);
                             initializeCallbackPoller();
-                            log.info("Switched from callback to polling the browser");
+                            log.warning("Switched from callback to polling the browser");
                         }
                     }
                 }
@@ -588,7 +576,7 @@ public abstract class BaseMapView implements MapView {
             try {
                 callbackListenerServerSocket.close();
             } catch (IOException e) {
-                log.severe("Cannot close callback listener socket:" + e.getMessage());
+                log.warning("Cannot close callback listener socket:" + e.getMessage());
             }
             long end = System.currentTimeMillis();
             log.info("CallbackListenerSocket stopped after " + (end - start) + " ms");
@@ -1031,7 +1019,7 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             for (int i = 0; i < startPositions.length; i++) {
                 // skip the very last position without successor
-                if (i == positions.size() - 1)
+                if (i == positions.size() - 1 || i == startPositions.length)
                     continue;
                 List<BaseNavigationPosition> successorPredecessor = new ArrayList<BaseNavigationPosition>();
                 successorPredecessor.add(positions.get(startPositions[i]));
@@ -1101,7 +1089,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected void logJavaScript(String script, Object result) {
-        log.fine("script '" + script + (result != null ? "'\nwith result '" + result : "") + "'");
+        log.info("script '" + script + (result != null ? "'\nwith result '" + result : "") + "'"); // TODO fine
     }
 
     protected abstract void executeScript(String script);
@@ -1110,40 +1098,117 @@ public abstract class BaseMapView implements MapView {
 
     // browser callbacks
 
-    private static final String OPERATION = "(GET|OPTIONS)";
-    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^" + OPERATION + " /load/(\\d*)/(\\d*) .*$");
-    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^" + OPERATION + " /insert-position/(.*)/(.*) .*$");
-    private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^" + OPERATION + " /move-position/(.*)/(.*)/(.*) .*$");
-    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^" + OPERATION + " /remove-position/(.*) .*$");
-    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^" + OPERATION + " /maptypechanged/(.*) .*$");
-    private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^" + OPERATION + " /zoomend/(.*)/(.*) .*$");
-    private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^" + OPERATION + " /callback-port/(\\d+) .*$");
-    private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
+    private void processStream(BufferedReader reader) {
+        List<String> lines = new ArrayList<String>();
+        boolean processingPost = false, processingBody = false;
+        while (true) {
+            try {
+                String line = Transfer.trim(reader.readLine());
+                if (line == null) {
+                    if (processingPost && !processingBody) {
+                        processingBody = true;
+                        continue;
+                    } else
+                        break;
+                }
+                if (line.startsWith("POST"))
+                    processingPost = true;
+                lines.add(line);
+            } catch (IOException e) {
+                log.severe("Cannot read line from callback listener port:" + e.getMessage());
+                break;
+            }
+        }
 
-    private void processCallbacks(List<String> lines) {
+        StringBuffer buffer = new StringBuffer();
+        for (String line : lines) {
+            buffer.append("  ").append(line).append("\n");
+        }
+        log.info("processing callback: \n" + buffer.toString()); // TODO remove
+
         if (!isAuthenticated(lines))
             return;
 
+        processLines(lines);
+    }
+
+    private boolean isAuthenticated(List<String> lines) {
+        Map<String, String> map = asMap(lines);
+        String host = Transfer.trim(map.get("Host"));
+        return host != null && host.equals("127.0.0.1:" + getCallbackPort());
+    }
+
+    int getCallbackPort() {
+        return callbackListenerServerSocket.getLocalPort();
+    }
+
+    private static final Pattern NAME_VALUE_PATTERN = Pattern.compile("^(.+?):(.+)$");
+
+    private Map<String, String> asMap(List<String> lines) {
+        Map<String, String> map = new HashMap<String, String>();
         for (String line : lines) {
-            if (processCallback(line))
+            Matcher matcher = NAME_VALUE_PATTERN.matcher(line);
+            if (matcher.matches())
+                map.put(matcher.group(1), matcher.group(2));
+        }
+        return map;
+    }
+
+    private static final Pattern CALLBACK_REQUEST_PATTERN = Pattern.compile("^(GET|OPTIONS|POST) /(\\d+)/(.*) HTTP.+$");
+    private int lastCallbackNumber = -1;
+
+    void processLines(List<String> lines) {
+        boolean hasValidCallbackNumber = false;
+        for (String line : lines) {
+            log.info("processing line " + line); // TODO fine
+            Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                int callbackNumber = Transfer.parseInt(matcher.group(2));
+                if (lastCallbackNumber >= callbackNumber) {
+                    log.info("ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber); // TODO fine
+                    break;
+                }
+                lastCallbackNumber = callbackNumber;
+                hasValidCallbackNumber = true;
+
+                String callback = matcher.group(3);
+                if (processCallback(callback)) {
+                    log.info("processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber); // TODO fine
+                    break;
+                }
+            }
+
+            // process body of POST requests
+            if (hasValidCallbackNumber && processCallback(line)) {
+                log.info("processed POST callback " + line + " with number: " + lastCallbackNumber); // TODO fine
                 break;
+            }
         }
     }
 
-    boolean processCallback(String line) {
-        Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(line);
+    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^load/(\\d*)/(\\d*)$");
+    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
+    private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
+    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)$");
+    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
+    private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^zoomend/(.*)/(.*)$");
+    private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
+    private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
+
+    boolean processCallback(String callback) {
+        Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
         if (directionsLoadMatcher.matches()) {
-            meters += Transfer.parseInt(directionsLoadMatcher.group(2));
-            seconds += Transfer.parseInt(directionsLoadMatcher.group(3));
+            meters += Transfer.parseInt(directionsLoadMatcher.group(1));
+            seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
             fireCalculatedDistance(meters, seconds);
             return true;
         }
 
-        Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(line);
+        Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
         if (insertPositionMatcher.matches()) {
             final int row = getInsertRow();
-            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(2));
-            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(3));
+            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
@@ -1154,11 +1219,11 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(line);
+        Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(callback);
         if (movePositionMatcher.matches()) {
-            final int row = getMoveRow(Transfer.parseInt(movePositionMatcher.group(2)));
-            final Double latitude = Transfer.parseDouble(movePositionMatcher.group(3));
-            final Double longitude = Transfer.parseDouble(movePositionMatcher.group(4));
+            final int row = getMoveRow(Transfer.parseInt(movePositionMatcher.group(1)));
+            final Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
+            final Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     movePosition(row, longitude, latitude);
@@ -1170,9 +1235,9 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(line);
+        Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(callback);
         if (removePositionMatcher.matches()) {
-            final int index = Transfer.parseInt(removePositionMatcher.group(2));
+            final int index = Transfer.parseInt(removePositionMatcher.group(1));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     removePosition(index);
@@ -1181,17 +1246,17 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(line);
+        Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(callback);
         if (mapTypeChangedMatcher.matches()) {
             String mapType = mapTypeChangedMatcher.group(2);
             preferences.put(MAP_TYPE_PREFERENCE, mapType);
             return true;
         }
 
-        Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(line);
+        Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(callback);
         if (zoomEndMatcher.matches()) {
-            Integer from = Transfer.parseInt(zoomEndMatcher.group(2));
-            Integer to = Transfer.parseInt(zoomEndMatcher.group(3));
+            Integer from = Transfer.parseInt(zoomEndMatcher.group(1));
+            Integer to = Transfer.parseInt(zoomEndMatcher.group(2));
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
@@ -1208,14 +1273,14 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher callbackPortMatcher = CALLBACK_PORT_PATTERN.matcher(line);
+        Matcher callbackPortMatcher = CALLBACK_PORT_PATTERN.matcher(callback);
         if (callbackPortMatcher.matches()) {
-            int port = Transfer.parseInt(callbackPortMatcher.group(2));
+            int port = Transfer.parseInt(callbackPortMatcher.group(1));
             fireReceivedCallback(port);
             return true;
         }
 
-        Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(line);
+        Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(callback);
         if (insertWaypointsMatcher.matches()) {
             Integer key = Transfer.parseInt(insertWaypointsMatcher.group(2));
             List<Double> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
@@ -1242,6 +1307,7 @@ public abstract class BaseMapView implements MapView {
                     complementPositions(row, route);
                 }
             });
+            log.info("processed insert " + callback);
             return false;
         }
         return false;
@@ -1281,6 +1347,7 @@ public abstract class BaseMapView implements MapView {
         BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
+        int positionInsertionCount = coordinates.size() / 4;
         for (int i = coordinates.size() - 1; i > 0; i -= 4) {
             Double seconds = coordinates.get(i);
             seconds = Transfer.isEmpty(seconds) ? seconds : null;
@@ -1292,7 +1359,8 @@ public abstract class BaseMapView implements MapView {
                 calendar.add(Calendar.SECOND, -seconds.intValue());
                 time = CompactCalendar.fromCalendar(calendar);
             }
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, Application.getInstance().getContext().getBundle().getString("new-position-name"));
+            int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null,  MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionNumber));
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
@@ -1329,7 +1397,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
-        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), Application.getInstance().getContext().getBundle().getString("new-position-name"));
+        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
     }
 
@@ -1403,40 +1471,23 @@ public abstract class BaseMapView implements MapView {
     private void movePosition(int row, Double longitude, Double latitude) {
         positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
-        positionsModel.edit(null, row, PositionColumns.ELEVATION_COLUMN_INDEX, false, false);
-        positionsModel.edit(null, row, PositionColumns.TIME_COLUMN_INDEX, false, false);
+        if (preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false))
+            positionsModel.edit(null, row, PositionColumns.ELEVATION_COLUMN_INDEX, false, false);
+        if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
+            positionsModel.edit(null, row, PositionColumns.TIME_COLUMN_INDEX, false, false);
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
         int size;
         synchronized (notificationMutex) {
             size = positions.size() - 1;
-            // was: updateButDontRecenter();  TODO double check if this can be removed
             haveToRepaintRouteImmediately = true;
             routeUpdateReason = "move position";
             significantPositionCache.clear();
-            // was: updatePositionMarker();   TODO double check if this can be removed
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
-
-        /* previously all this crap was executed, TODO double check if this can be removed
-        executor.execute(new Runnable() {
-            public void run() {
-                updateButDontRecenter();
-
-                // give time for repainting of the route
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // intentionally left empty
-                }
-
-                updatePositionMarker();
-            }                                                                               a
-        });
-        */
     }
 
     private void removePosition(int index) {
@@ -1455,24 +1506,6 @@ public abstract class BaseMapView implements MapView {
                 }
             });
         }
-    }
-
-    private boolean isAuthenticated(List<String> lines) {
-        Map<String, String> map = asMap(lines);
-        String host = Transfer.trim(map.get("Host"));
-        return host != null && host.equals("127.0.0.1:" + callbackListenerServerSocket.getLocalPort());
-    }
-
-    private static final Pattern NAME_VALUE_PATTERN = Pattern.compile("^(.+?):(.+)$");
-
-    private Map<String, String> asMap(List<String> lines) {
-        Map<String, String> map = new HashMap<String, String>();
-        for (String line : lines) {
-            Matcher matcher = NAME_VALUE_PATTERN.matcher(line);
-            if (matcher.matches())
-                map.put(matcher.group(1), matcher.group(2));
-        }
-        return map;
     }
 
     // listeners
