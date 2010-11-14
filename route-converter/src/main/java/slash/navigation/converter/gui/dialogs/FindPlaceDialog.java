@@ -164,8 +164,8 @@ public class FindPlaceDialog extends SimpleDialog {
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
 
-            if(elevation == null)
-                complementElevation(insertRow,  position.getLongitude(), position.getLatitude());
+            if (elevation == null)
+                complementElevation(insertRow, position.getLongitude(), position.getLatitude());
         }
     }
 
@@ -199,7 +199,6 @@ public class FindPlaceDialog extends SimpleDialog {
             }
         });
     }
-
 
     private void savePreferences() {
         RouteConverter r = RouteConverter.getInstance();

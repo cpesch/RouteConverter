@@ -22,15 +22,22 @@ package slash.navigation.converter.gui.actions;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.FrameAction;
 import slash.navigation.util.Positions;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after
@@ -77,7 +84,67 @@ public class NewPositionAction extends FrameAction {
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(),
                 center.getTime() != null ? center.getTime() : CompactCalendar.fromCalendar(Calendar.getInstance()),
-                RouteConverter.getBundle().getString("new-position-name"));
+                MessageFormat.format(RouteConverter.getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{insertRow});
+
+        complementComment(insertRow, center.getLongitude(), center.getLatitude());
+        complementElevation(insertRow, center.getLongitude(), center.getLatitude());
+    }
+
+    protected static final Logger log = Logger.getLogger(NewPositionAction.class.getName());
+    private ExecutorService executor = Executors.newCachedThreadPool();
+    // TODO same as in BaseMapView
+    private void complementElevation(final int row, final Double longitude, final Double latitude) {
+        executor.execute(new Runnable() {
+            public void run() {
+                CompletePositionService completePositionService = new CompletePositionService();
+                final Integer[] elevation = new Integer[1];
+                try {
+                    elevation[0] = completePositionService.getElevationFor(longitude, latitude);
+                } catch (IOException e) {
+                    log.warning("Cannot retrieve elevation for " + longitude + "/" + latitude + ": " + e.getMessage());
+                } finally {
+                    completePositionService.close();
+                }
+
+                if (elevation[0] != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (elevation[0] != null) {
+                                RouteConverter r = RouteConverter.getInstance();
+                                PositionsModel positionsModel = r.getPositionsModel();
+                                positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    private ExecutorService commentExecutor = Executors.newSingleThreadExecutor();
+    // TODO same as in BaseMapView
+    private void complementComment(final int row, final Double longitude, final Double latitude) {
+        commentExecutor.execute(new Runnable() {
+            public void run() {
+                CompletePositionService completePositionService = new CompletePositionService();
+                final String[] comment = new String[1];
+                try {
+                    comment[0] = completePositionService.getCommentFor(longitude, latitude);
+                } catch (IOException e) {
+                    log.warning("Cannot retrieve comment for " + longitude + "/" + latitude + ": " + e.getMessage());
+                } finally {
+                    completePositionService.close();
+                }
+
+                if (comment[0] != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (comment[0] != null)
+                                positionsModel.edit(comment[0], row, PositionColumns.DESCRIPTION_COLUMN_INDEX, true, false);
+                        }
+                    });
+                }
+            }
+        });
     }
 }
