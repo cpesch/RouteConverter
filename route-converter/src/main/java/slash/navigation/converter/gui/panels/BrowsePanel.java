@@ -400,9 +400,10 @@ public abstract class BrowsePanel {
 
     protected void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
         if (category == null || category.getParent() == null) {
-            JOptionPane.showMessageDialog(RouteConverter.getInstance().getFrame(),
-                    "Please choose a category for your files!",           // TODO make nicer
-                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+            RouteConverter r = RouteConverter.getInstance();
+            JOptionPane.showMessageDialog(r.getFrame(),
+                    r.getContext().getBundle().getString("add-file-category-missing"),
+                    r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -417,9 +418,10 @@ public abstract class BrowsePanel {
 
     protected void addUrlToCatalog(CategoryTreeNode category, String url) {
         if (category.getParent() == null) {
-            JOptionPane.showMessageDialog(RouteConverter.getInstance().getFrame(),
-                    "Please choose a category for your url!",           // TODO make nicer
-                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+            RouteConverter r = RouteConverter.getInstance();
+            JOptionPane.showMessageDialog(r.getFrame(),
+                    r.getContext().getBundle().getString("add-url-category-missing"),
+                    r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
