@@ -11,6 +11,9 @@
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
+    <profiles>
+        <profile>
+            <id>routeconverter</id>
     <build>
         <plugins>
             <plugin>
@@ -48,6 +51,8 @@
             </plugin>
         </plugins>
     </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
