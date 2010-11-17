@@ -705,7 +705,7 @@ public abstract class BaseMapView implements MapView {
             } else {
                 // on all zoom level about MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION
                 // use all positions since the calculation is too expensive
-                log.info("zoomLevel " + zoomLevel + " use all " + positions.size() + "positions");
+                log.info("zoomLevel " + zoomLevel + " use all " + positions.size() + " positions");
                 significant.set(0, positions.size(), true);
             }
             significantPositionCache.put(zoomLevel, significant);
@@ -1248,7 +1248,7 @@ public abstract class BaseMapView implements MapView {
 
         Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(callback);
         if (mapTypeChangedMatcher.matches()) {
-            String mapType = mapTypeChangedMatcher.group(2);
+            String mapType = mapTypeChangedMatcher.group(1);
             preferences.put(MAP_TYPE_PREFERENCE, mapType);
             return true;
         }
