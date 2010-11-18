@@ -205,7 +205,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public void postRunning() {
-                        completePositionService.close();
+                        completePositionService.dispose();
                     }
                 }
         );

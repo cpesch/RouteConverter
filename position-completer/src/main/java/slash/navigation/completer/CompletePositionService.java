@@ -21,8 +21,8 @@ public class CompletePositionService {
     private GoogleMapsService googleMapsService = new GoogleMapsService();
     private GeoNamesService geonamesService = new GeoNamesService();
 
-    public void close() {
-        hgtFiles.close();
+    public void dispose() {
+        hgtFiles.dispose();
     }
 
     public Integer getElevationFor(double longitude, double latitude) throws IOException {

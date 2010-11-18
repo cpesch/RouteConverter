@@ -26,7 +26,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.completer.CompletePositionService;
+import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -131,17 +131,19 @@ public abstract class BaseMapView implements MapView {
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
     private int meters = 0, seconds = 0;
+    private PositionAugmenter positionAugmenter;
     private ExecutorService executor = Executors.newCachedThreadPool();
-    private ExecutorService commentExecutor = Executors.newSingleThreadExecutor();
 
     // initialization
 
     public void initialize(PositionsModel positionsModel,
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
+                           PositionAugmenter positionAugmenter,
                            boolean recenterAfterZooming, boolean pedestrians, boolean avoidHighways) {
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel);
+        this.positionAugmenter = positionAugmenter;
         this.recenterAfterZooming = recenterAfterZooming;
         this.pedestrians = pedestrians;
         this.avoidHighways = avoidHighways;
@@ -545,7 +547,6 @@ public abstract class BaseMapView implements MapView {
 
         {
             executor.shutdownNow();
-            commentExecutor.shutdownNow();
             long end = System.currentTimeMillis();
             log.info("Executors stopped after " + (end - start) + " ms");
         }
@@ -1212,8 +1213,6 @@ public abstract class BaseMapView implements MapView {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
-                    complementComment(row, longitude, latitude);
-                    complementElevation(row, longitude, latitude);
                 }
             });
             return true;
@@ -1227,9 +1226,6 @@ public abstract class BaseMapView implements MapView {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     movePosition(row, longitude, latitude);
-                    if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                        complementComment(row, longitude, latitude);
-                    complementElevation(row, longitude, latitude);
                 }
             });
             return true;
@@ -1377,33 +1373,24 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void complementPositions(final int row, final BaseRoute route) {
-        executor.execute(new Runnable() {
-            @SuppressWarnings("unchecked")
-            public void run() {
-                CompletePositionService completePositionService = new CompletePositionService();
-                try {
-                    List<BaseNavigationPosition> positions = route.getPositions();
-                    int index = row;
-                    for (BaseNavigationPosition position : positions) {
-                        complementElevation(index, position.getLongitude(), position.getLatitude());
-                        index++;
-                    }
-                } finally {
-                    completePositionService.close();
-                }
-            }
-        });
+    @SuppressWarnings({"unchecked"})
+    private void complementPositions(int row, BaseRoute route) {
+        List<BaseNavigationPosition> positions = route.getPositions();
+        int index = row;
+        for (BaseNavigationPosition position : positions) {
+            // do not complement comment since this is limited to 2500 calls/day
+            positionAugmenter.complementElevation(index, position.getLongitude(), position.getLatitude());
+            positionAugmenter.complementTime(index, null);
+            index++;
+        }
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
-        positionsModel.add(row, longitude, latitude, null, null, CompactCalendar.fromCalendar(Calendar.getInstance()), MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
+        positionsModel.add(row, longitude, latitude, null, null, null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
-        // TODO same as in NewPositionAction
-        BaseNavigationPosition center = positionsModel.getPosition(row);
-        CompactCalendar time = row - 2 >= 0 ? Positions.interpolateTime(center, positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
-        if (time != null)
-            positionsModel.edit(time, row, PositionColumns.TIME_COLUMN_INDEX, true, false);
+
+        positionAugmenter.complementElevation(row, longitude, latitude);        
+        positionAugmenter.complementTime(row, null);
     }
 
     private int getInsertRow() {
@@ -1421,56 +1408,6 @@ public abstract class BaseMapView implements MapView {
             row = positions.indexOf(position);
         }
         return row;
-    }
-
-    private void complementComment(final int row, final Double longitude, final Double latitude) {
-        commentExecutor.execute(new Runnable() {
-            public void run() {
-                CompletePositionService completePositionService = new CompletePositionService();
-                final String[] comment = new String[1];
-                try {
-                    comment[0] = completePositionService.getCommentFor(longitude, latitude);
-                } catch (IOException e) {
-                    log.warning("Cannot retrieve comment for " + longitude + "/" + latitude + ": " + e.getMessage());
-                } finally {
-                    completePositionService.close();
-                }
-
-                if (comment[0] != null) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (comment[0] != null)
-                                positionsModel.edit(comment[0], row, PositionColumns.DESCRIPTION_COLUMN_INDEX, true, false);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private void complementElevation(final int row, final Double longitude, final Double latitude) {
-        executor.execute(new Runnable() {
-            public void run() {
-                CompletePositionService completePositionService = new CompletePositionService();
-                final Integer[] elevation = new Integer[1];
-                try {
-                    elevation[0] = completePositionService.getElevationFor(longitude, latitude);
-                } catch (IOException e) {
-                    log.warning("Cannot retrieve elevation for " + longitude + "/" + latitude + ": " + e.getMessage());
-                } finally {
-                    completePositionService.close();
-                }
-
-                if (elevation[0] != null) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (elevation[0] != null)
-                                positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private void movePosition(int row, Double longitude, Double latitude) {

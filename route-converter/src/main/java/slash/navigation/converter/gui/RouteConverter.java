@@ -22,6 +22,7 @@ package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import slash.common.io.CompactCalendar;
 import slash.common.io.Files;
 import slash.common.io.Platform;
 import slash.common.io.Version;
@@ -38,11 +39,8 @@ import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
 import slash.navigation.converter.gui.actions.OptionsAction;
 import slash.navigation.converter.gui.actions.RevertPositionListAction;
 import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
-import slash.navigation.converter.gui.helper.FrameMenu;
-import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.helper.MergePositionListMenu;
-import slash.navigation.converter.gui.helper.ReopenMenuSynchronizer;
-import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
+import slash.navigation.converter.gui.augment.PositionAugmenter;
+import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -248,6 +246,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 mapView.initialize(getPositionsModel(),
                         getPositionsSelectionModel(),
                         getConvertPanel().getCharacteristicsModel(),
+                        getPositionAugmenter(),
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
                         preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
                         preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
@@ -301,6 +300,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         if (mapView != null)
             mapView.dispose();
         getConvertPanel().dispose();
+        if (positionAugmenter != null)
+            positionAugmenter.close();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
@@ -556,6 +557,27 @@ public abstract class RouteConverter extends SingleFrameApplication {
             getConvertPanel().clearSelection();
             mapView.insertOnlyTurnpoints(selectedRows);
         }
+    }
+
+    private SinglePositionAugmenter positionAugmenter = null;
+
+    private synchronized PositionAugmenter getPositionAugmenter() {
+        if(positionAugmenter == null) {
+            positionAugmenter = new SinglePositionAugmenter(getPositionsModel());
+        }
+        return positionAugmenter;
+    }
+
+    public void complementElevation(int row, Double longitude, Double latitude) {
+        getPositionAugmenter().complementElevation(row, longitude, latitude);
+    }
+
+    public void complementComment(int row, Double longitude, Double latitude) {
+        getPositionAugmenter().complementComment(row, longitude, latitude);
+    }
+
+    public void complementTime(final int row, final CompactCalendar time) {
+        getPositionAugmenter().complementTime(row, time);
     }
 
     public JTable getPositionsView() {

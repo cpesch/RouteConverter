@@ -23,18 +23,16 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.SimpleDialog;
+import slash.navigation.base.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -43,15 +41,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 /**
- * Dialog for finding and inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
+ * Dialog for finding and inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -156,48 +150,15 @@ public class FindPlaceDialog extends SimpleDialog {
         Object[] objects = listResult.getSelectedValues();
         for (int i = objects.length - 1; i >= 0; i -= 1) {
             GoogleMapsPosition position = (GoogleMapsPosition) objects[i];
-            Double elevation = position.getElevation();
-            if (Transfer.isEmpty(elevation))
-                elevation = null;
-            positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(), elevation,
-                    null, CompactCalendar.fromCalendar(Calendar.getInstance()), position.getComment());
+            positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
+                    Transfer.formatDouble(position.getElevation()), null, null, position.getComment());
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
-
-            if (elevation == null)
-                complementElevation(insertRow, position.getLongitude(), position.getLatitude());
+            
+            if (position.getElevation() == null)
+                r.complementElevation(insertRow, position.getLongitude(), position.getLatitude());
+            r.complementTime(insertRow, null);
         }
-    }
-
-    protected static final Logger log = Logger.getLogger(FindPlaceDialog.class.getName());
-    private ExecutorService executor = Executors.newCachedThreadPool();
-    // TODO same as in BaseMapView
-    private void complementElevation(final int row, final Double longitude, final Double latitude) {
-        executor.execute(new Runnable() {
-            public void run() {
-                CompletePositionService completePositionService = new CompletePositionService();
-                final Integer[] elevation = new Integer[1];
-                try {
-                    elevation[0] = completePositionService.getElevationFor(longitude, latitude);
-                } catch (IOException e) {
-                    log.warning("Cannot retrieve elevation for " + longitude + "/" + latitude + ": " + e.getMessage());
-                } finally {
-                    completePositionService.close();
-                }
-
-                if (elevation[0] != null) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (elevation[0] != null) {
-                                RouteConverter r = RouteConverter.getInstance();
-                                PositionsModel positionsModel = r.getPositionsModel();
-                                positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
-                            }
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private void savePreferences() {

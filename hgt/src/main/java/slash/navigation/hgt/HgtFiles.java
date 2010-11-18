@@ -85,7 +85,7 @@ public class HgtFiles {
         return tile.getElevationFor(longitude, latitude);
     }
 
-    public void close() {
+    public void dispose() {
         for (RandomAccessFile randomAccessFile : randomAccessFileCache.values())
             try {
                 randomAccessFile.close();

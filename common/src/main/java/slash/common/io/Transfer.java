@@ -128,6 +128,10 @@ public class Transfer {
         return formatBigDecimal(speed, 2);
     }
 
+    public static Double formatDouble(Double aDouble) {
+        return !isEmpty(aDouble) ? aDouble : null;
+    }
+
     public static Double formatDouble(BigDecimal aBigDecimal) {
         return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
     }

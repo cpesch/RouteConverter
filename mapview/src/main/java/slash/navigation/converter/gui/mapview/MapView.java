@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
@@ -37,6 +38,7 @@ public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
+                    PositionAugmenter positionAugmenter,
                     boolean recenterAfterZooming, boolean pedestrians, boolean avoidHighways);
     boolean isSupportedPlatform();
     boolean isInitialized();
