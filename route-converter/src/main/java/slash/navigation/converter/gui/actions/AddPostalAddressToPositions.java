@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.helper.PositionAugmenter;
+import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.FrameAction;
 
@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds postal addresses from Google Maps as comments to
- * the selected rows of a {@link JTable} with the help of a {@link PositionAugmenter}.
+ * the selected rows of a {@link JTable} with the help of a {@link slash.navigation.converter.gui.helper.BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */
@@ -37,9 +37,9 @@ import java.awt.event.ActionListener;
 public class AddPostalAddressToPositions extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
-    private final PositionAugmenter augmenter;
+    private final BatchPositionAugmenter augmenter;
 
-    public AddPostalAddressToPositions(JTable table, PositionsModel positionsModel, PositionAugmenter augmenter) {
+    public AddPostalAddressToPositions(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;

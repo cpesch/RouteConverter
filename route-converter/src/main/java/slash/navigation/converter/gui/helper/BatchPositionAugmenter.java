@@ -38,15 +38,17 @@ import javax.swing.*;
 import java.text.MessageFormat;
 
 /**
- * Helps to augment positions with elevation, postal address and populated place information.
+ * Helps to augment a batch of positions with geocoded coordinates, elevation,
+ * position index for its comment, postal address, populated place and speed
+ * information.
  *
  * @author Christian Pesch
  */
 
-public class PositionAugmenter {
-    private final JFrame frame;
+public class BatchPositionAugmenter {
+    private JFrame frame;
 
-    public PositionAugmenter(JFrame frame) {
+    public BatchPositionAugmenter(JFrame frame) {
         this.frame = frame;
     }
 

@@ -66,7 +66,7 @@ import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.helper.LengthCalculator;
 import slash.navigation.converter.gui.helper.MergePositionListMenu;
 import slash.navigation.converter.gui.helper.NavigationFormatFileFilter;
-import slash.navigation.converter.gui.helper.PositionAugmenter;
+import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
 import slash.navigation.converter.gui.helper.TableHeaderMenu;
 import slash.navigation.converter.gui.helper.TablePopupMenu;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
@@ -313,7 +313,7 @@ public abstract class ConvertPanel {
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
         actionManager.register("upload", new UploadAction(this));
-        PositionAugmenter augmenter = new PositionAugmenter(r.getFrame());
+        BatchPositionAugmenter augmenter = new BatchPositionAugmenter(r.getFrame());
         actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
