@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionColumns;
@@ -68,7 +69,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 if (elevation[0] != null) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            if (elevation[0] != null) {
+                            if (!Transfer.isEmpty(elevation[0])) {
                                 positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
                             }
                         }
