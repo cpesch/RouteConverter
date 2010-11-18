@@ -562,7 +562,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private SinglePositionAugmenter positionAugmenter = null;
 
     private synchronized PositionAugmenter getPositionAugmenter() {
-        if(positionAugmenter == null) {
+        if (positionAugmenter == null) {
             positionAugmenter = new SinglePositionAugmenter(getPositionsModel());
         }
         return positionAugmenter;

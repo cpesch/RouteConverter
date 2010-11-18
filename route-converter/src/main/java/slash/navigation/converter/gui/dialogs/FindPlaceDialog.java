@@ -151,11 +151,11 @@ public class FindPlaceDialog extends SimpleDialog {
         for (int i = objects.length - 1; i >= 0; i -= 1) {
             GoogleMapsPosition position = (GoogleMapsPosition) objects[i];
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
-                    Transfer.formatDouble(position.getElevation()), null, null, position.getComment());
+                    position.getElevation(), null, null, position.getComment());
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
             
-            if (position.getElevation() == null)
+            if (Transfer.isEmpty(position.getElevation()))
                 r.complementElevation(insertRow, position.getLongitude(), position.getLatitude());
             r.complementTime(insertRow, null);
         }
