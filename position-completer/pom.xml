@@ -32,10 +32,5 @@
             <artifactId>hgt</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>navigation-formats</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
