@@ -76,7 +76,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             compile(BEGIN_OF_LINE + "GGA" + SEPARATOR + "([\\d\\.]*)" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "[012]" + SEPARATOR +
+                    "[\\d+]" + SEPARATOR +           // Fix quality, 0=invalid
                     "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
                     "[\\d\\.]*" + SEPARATOR +
                     "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)  
@@ -102,7 +102,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "[\\d\\.]*" + SEPARATOR +
                     "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation 
                     "[AEW]?" + SEPARATOR + "?" +    // E=East, W=West
-                    "[ADEMNS]?" +                   // Signal integrity
+                    "[ADEMNS]?" +                   // Signal integrity, N=not valid
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
@@ -142,8 +142,8 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F
     private static final Pattern GSA_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "GSA" + SEPARATOR +
-                    "A" + SEPARATOR +
-                    "[123]" + SEPARATOR +        // Fix
+                    "[AM]" + SEPARATOR +         
+                    "[123]" + SEPARATOR +        // Fix, 1=Fix not available
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
