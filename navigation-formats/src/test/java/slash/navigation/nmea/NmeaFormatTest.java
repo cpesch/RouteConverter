@@ -31,6 +31,8 @@ import java.text.DateFormat;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
@@ -104,7 +106,7 @@ public class NmeaFormatTest {
         assertTrue(format.isPosition("$GPRMC,180114,A,4808.9490,N,00928.9610,E,,,,,,A*70"));
         assertTrue(format.isPosition("$GPRMC,,A,4808.9490,N,00928.9610,E,,,,,,A*7D"));
         assertTrue(format.isPosition("$GPRMC,175947.000,A,4812.0597,N,01136.4663,E,0.0,163.8,010907,,,A*62"));
-        assertTrue(format.isPosition("$GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,N*3A"));
+        assertTrue(format.isPosition("$GPRMC,172103.38,V,4424.5358,N,06812.3754,W,0.000,0.000,101010,0,W,A*35"));
         assertTrue(format.isPosition("$GPZDA,032910,07,08,2004,00,00*48"));
         assertTrue(format.isPosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22"));
         assertTrue(format.isPosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
@@ -121,6 +123,20 @@ public class NmeaFormatTest {
         assertFalse(format.isPosition("$GPRMC,123613.957,V,,,,,,,170807,,*29"));
         assertFalse(format.isPosition("$GPGGA,145524.054,,,,,0,00,,,M,0.0,M,,0000*54"));
         assertFalse(format.isPosition("$GPRMC,145524.054,V,,,,,,,300807,,*21"));
+    }
+
+    @Test
+    public void testIsPositionRespectingFixQuality() {
+        assertTrue(format.isPosition("$GPRMC,061013.64,A,5119.8979,N,01219.1497,E,0,0,160709,0,W,A*34"));
+        assertTrue(format.isPosition("$GPGGA,061014.64,5119.8979,N,01219.1497,E,1,5,1.892,144.426,M,42.396,M,0,*63"));
+        assertFalse(format.isPosition("$GPRMC,060900.64,V,0000.0000,N,00000.0000,E,0,0,160709,0,W,N*25"));
+        assertFalse(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,,2,60.000,0,M,0,M,0,*55"));
+        assertFalse(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,0,2,60.000,0,M,0,M,0,*65"));
+        assertTrue(format.isPosition("$GPGGA,060901.64,0000.0000,N,00000.0000,E,1,2,60.000,0,M,0,M,0,*64"));
+        assertFalse(format.isPosition("$GPRMC,060914.64,V,4508.3662,N,01543.0320,E,0,0,160709,0,W,N*2A"));
+        assertFalse(format.isPosition("$GPGGA,060915.64,4512.4901,N,01541.0840,E,,3,60.000,-0.000,M,0,M,0,*61"));
+        assertFalse(format.isPosition("$GPGSA,A,1,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*09"));
+        assertTrue(format.isPosition("$GPGSA,A,3,05,09,12,14,22,,,,,,,,19.9,12.6,15.3*0B"));
     }
 
     @Test

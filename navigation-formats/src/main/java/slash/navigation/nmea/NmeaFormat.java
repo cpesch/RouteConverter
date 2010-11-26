@@ -76,7 +76,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             compile(BEGIN_OF_LINE + "GGA" + SEPARATOR + "([\\d\\.]*)" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "[\\d+]" + SEPARATOR +           // Fix quality, 0=invalid
+                    "([\\d+])" + SEPARATOR +         // Fix quality, 0=invalid
                     "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
                     "[\\d\\.]*" + SEPARATOR +
                     "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)  
@@ -102,7 +102,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "[\\d\\.]*" + SEPARATOR +
                     "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation 
                     "[AEW]?" + SEPARATOR + "?" +    // E=East, W=West
-                    "[ADEMNS]?" +                   // Signal integrity, N=not valid
+                    "([ADEMNS])?" +                 // Signal integrity, N=not valid
                     END_OF_LINE);
 
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
@@ -143,7 +143,7 @@ public class NmeaFormat extends BaseNmeaFormat {
     private static final Pattern GSA_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "GSA" + SEPARATOR +
                     "[AM]" + SEPARATOR +         
-                    "[123]" + SEPARATOR +        // Fix, 1=Fix not available
+                    "([123])" + SEPARATOR +      // Fix, 1=Fix not available
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
@@ -177,11 +177,11 @@ public class NmeaFormat extends BaseNmeaFormat {
     protected boolean isPosition(String line) {
         Matcher rmcMatcher = RMC_PATTERN.matcher(line);
         if (rmcMatcher.matches())
-            return hasValidChecksum(line);
+            return hasValidChecksum(line) && !"N".equals(rmcMatcher.group(8));
 
         Matcher ggaMatcher = GGA_PATTERN.matcher(line);
         if (ggaMatcher.matches())
-            return hasValidChecksum(line);
+            return hasValidChecksum(line) && !"0".equals(ggaMatcher.group(6));
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
@@ -196,7 +196,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             return hasValidChecksum(line);
 
         Matcher gsaMatcher = GSA_PATTERN.matcher(line);
-        return gsaMatcher.matches() && hasValidChecksum(line);
+        return gsaMatcher.matches() && hasValidChecksum(line) && !"1".equals(gsaMatcher.group(1));
     }
 
     protected NmeaPosition parsePosition(String line) {
@@ -226,8 +226,8 @@ public class NmeaFormat extends BaseNmeaFormat {
             String northOrSouth = ggaMatcher.group(3);
             String longitude = ggaMatcher.group(4);
             String westOrEast = ggaMatcher.group(5);
-            String satellites = ggaMatcher.group(6);
-            String altitude = ggaMatcher.group(7);
+            String satellites = ggaMatcher.group(7);
+            String altitude = ggaMatcher.group(8);
             NmeaPosition position = new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
                     Transfer.parseDouble(altitude), null, null, parseTime(time), null);
             position.setSatellites(Transfer.parseInt(satellites));
@@ -272,9 +272,9 @@ public class NmeaFormat extends BaseNmeaFormat {
 
         Matcher gsaMatcher = GSA_PATTERN.matcher(line);
         if (gsaMatcher.matches()) {
-            String pdop = gsaMatcher.group(1);
-            String hdop = gsaMatcher.group(2);
-            String vdop = gsaMatcher.group(3);
+            String pdop = gsaMatcher.group(2);
+            String hdop = gsaMatcher.group(3);
+            String vdop = gsaMatcher.group(4);
             NmeaPosition position = new NmeaPosition(null, null, null, null, null, null, null, null, null);
             position.setPdop(Transfer.parseDouble(pdop));
             position.setHdop(Transfer.parseDouble(hdop));
