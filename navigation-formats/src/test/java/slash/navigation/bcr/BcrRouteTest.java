@@ -469,14 +469,15 @@ public class BcrRouteTest {
     }
 
     @Test
-    public void testNumberPositions() {
+    public void testNumberPositionsWithGetNumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
             positions.add(new BcrPosition(i, i, i, "Comment"));
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            RouteComments.numberPosition(positions.get(i), i, 0, false);
+            BcrPosition position = positions.get(i);
+            position.setComment(RouteComments.getNumberedPosition(position, i, 0, false));
         }
 
         for (int i = 0; i < positions.size(); i++) {
@@ -488,7 +489,8 @@ public class BcrRouteTest {
 
         // check renumbering, add space
         for (int i = 0; i < positions.size(); i++) {
-            RouteComments.numberPosition(positions.get(i), i, 0, true);
+            BcrPosition position = positions.get(i);
+            position.setComment(RouteComments.getNumberedPosition(position, i, 0, true));
         }
 
         for (int i = 0; i < positions.size(); i++) {
@@ -500,7 +502,8 @@ public class BcrRouteTest {
 
         // check renumbering, check remove space again but have 2 digits and leading zeros
         for (int i = 0; i < positions.size(); i++) {
-            RouteComments.numberPosition(positions.get(i), i, 2, false);
+            BcrPosition position = positions.get(i);
+            position.setComment(RouteComments.getNumberedPosition(position, i, 2, false));
         }
 
         for (int i = 0; i < positions.size(); i++) {

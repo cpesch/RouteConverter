@@ -43,10 +43,6 @@ import java.util.regex.Pattern;
 public abstract class RouteComments {
     private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
 
-    private static final String POSITION = "Position";
-    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + ".*(\\d+)(.*)");
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d*)(.*)");
-
     public static String shortenRouteName(BaseRoute route) {
         String result = "?";
         if (route != null) {
@@ -86,6 +82,9 @@ public abstract class RouteComments {
     }
 
 
+    private static final String POSITION = "Position";
+    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + ".*(\\d+)(.*)");
+
     private static String getPositionComment(int index) {
         return POSITION + " " + (index + 1);
     }
@@ -114,6 +113,8 @@ public abstract class RouteComments {
         return position.getComment();
     }
 
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d*)(.*)");
+
     public static String getNumberedPosition(BaseNavigationPosition position, int index,
                                              int digitCount, boolean spaceBetweenNumberAndComment) {
         String comment = getPositionComment(position, index);
@@ -125,11 +126,6 @@ public abstract class RouteComments {
                     (postfix != null ? (spaceBetweenNumberAndComment ? " " : "") + postfix : "");
         }
         return comment;
-    }
-
-    public static void numberPosition(BaseNavigationPosition position, int index,
-                                      int digitCount, boolean spaceBetweenNumberAndComment) {
-        position.setComment(getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment));
     }
 
     @SuppressWarnings("unchecked")
