@@ -342,30 +342,50 @@ public class Kml22Format extends KmlFormat {
         return placemarkType;
     }
 
+    private static final String[] SPEED_COLORS = {
+            "FF00ffff",
+            "FF008080",
+            "FF00ff00",
+            "FF008000",
+            "FFffff00",
+            "FF808000",
+            "FFff0000",
+            "FF800000",
+            "FFff00ff",
+            "FF800080",
+            "FF0000ff",
+            "FF000080",
+            "FF194c80",
+            "FF000000"};
+    private static final String SPEEDBAR_URL = "http://www.routeconverter.de/images/speedbar.png";
 
     private float getSpeedLineWidth() {
         return preferences.getFloat("speedLineWidth", 5.0f);
     }
 
+    private int getSpeedScale() {
+        return preferences.getInt("speedScale", 10);
+    }
+
     private String getSpeedColorCode(double speed) {
-        int arrayPos = (int) speed / SPEED_SCALE;
+        int arrayPos = (int) speed / getSpeedScale();
         if (arrayPos < SPEED_COLORS.length)
             return SPEED_COLORS[arrayPos];
         return SPEED_COLORS[SPEED_COLORS.length - 1];
     }
 
     private String getSpeedColorName(double speed) {
-        int speedInt = (int) speed / SPEED_SCALE;
+        int speedInt = (int) speed / getSpeedScale();
         return "speedColor_" + String.valueOf(speedInt < SPEED_COLORS.length ? speedInt : SPEED_COLORS.length - 1);
     }
 
     private String getSpeedDescription(double speed) {
-        int speedGroup = (int) speed / SPEED_SCALE;
+        int speedGroup = (int) speed / getSpeedScale();
         if (speedGroup == 0)
-            return "< " + String.valueOf(SPEED_SCALE) + " km/h";
+            return "< " + String.valueOf(getSpeedScale()) + " Km/h";
         else if (speedGroup <= SPEED_COLORS.length)
-            return String.valueOf(speedGroup * SPEED_SCALE) + " - " + String.valueOf((speedGroup + 1) * SPEED_SCALE) + " km/h";
-        return "> " + String.valueOf(speedGroup * SPEED_SCALE) + " km/h";
+            return String.valueOf(speedGroup * getSpeedScale()) + " - " + String.valueOf((speedGroup + 1) * getSpeedScale()) + " km/h";
+        return "> " + String.valueOf(speedGroup * getSpeedScale()) + " Km/h";
     }
 
     private boolean isWriteMarks() {
@@ -379,7 +399,7 @@ public class Kml22Format extends KmlFormat {
     private List<StyleType> createSpeedTrackColors(float width) {
         List<StyleType> styleTypeList = new ArrayList<StyleType>();
         for (int i = 0; i < SPEED_COLORS.length; i++) {
-            String styleName = getSpeedColorName((i) * SPEED_SCALE);
+            String styleName = getSpeedColorName((i) * getSpeedScale());
             StyleType styleType = createLineStyle(styleName, width, HexDecoder.decodeBytes(SPEED_COLORS[i]));
             styleTypeList.add(styleType);
         }

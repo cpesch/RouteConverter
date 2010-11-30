@@ -56,23 +56,6 @@ public abstract class KmlFormat extends BaseKmlFormat {
     static final String TRACK = "Track";
     static final String ROUTE_LINE_STYLE = "routeStyle";
     static final String TRACK_LINE_STYLE = "trackStyle";
-    static final String[] SPEED_COLORS = {
-            "FF00ffff",
-            "FF008080",
-            "FF00ff00",
-            "FF008000",
-            "FFffff00",
-            "FF808000",
-            "FFff0000",
-            "FF800000",
-            "FFff00ff",
-            "FF800080",
-            "FF0000ff",
-            "FF000080",
-            "FF194c80",
-            "FF000000"};
-    static final int SPEED_SCALE = 10;
-    static final String SPEEDBAR_URL = "http://www.routeconverter.de/images/speedbar.png";
 
     public String getExtension() {
         return ".kml";
