@@ -109,6 +109,14 @@ public class JMenuHelper {
         return item;
     }
 
+    public static void registerAction(AbstractButton component, String name) {
+        String text = component.getText();
+        Icon icon = component.getIcon();
+        component.setAction(Application.getInstance().getContext().getActionManager().get(name));
+        component.setText(text);
+        component.setIcon(icon);
+    }
+
     public static void registerKeyStroke(JComponent component, String name) {
         String keystroke = getString(name + "-action-keystroke");
         component.getInputMap().put(KeyStroke.getKeyStroke(keystroke), name);

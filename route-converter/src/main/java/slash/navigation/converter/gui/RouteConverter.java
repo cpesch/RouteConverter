@@ -853,7 +853,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("search-for-updates", new SearchForUpdatesAction());
         actionManager.register("about", new AboutAction());
-        JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(getContext().getMenuBar(), "edit", "merge-positionlist");
+        JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
         CSH.setHelpIDString(frame.getRootPane(), "top");

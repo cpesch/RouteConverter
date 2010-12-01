@@ -55,11 +55,12 @@ public class FrameMenu {
         editMenu.add(JMenuHelper.createItem("copy"));
         editMenu.add(JMenuHelper.createItem("paste"));
         editMenu.add(JMenuHelper.createItem("select-all"));
-        editMenu.addSeparator();
-        editMenu.add(JMenuHelper.createItem("new-position"));
-        editMenu.add(JMenuHelper.createItem("delete"));
-        editMenu.addSeparator();
-        editMenu.add(JMenuHelper.createItem("find-place"));
+
+        JMenu positionMenu = JMenuHelper.createMenu("position");
+        positionMenu.add(JMenuHelper.createItem("new-position"));
+        positionMenu.add(JMenuHelper.createItem("delete"));
+        positionMenu.addSeparator();
+        positionMenu.add(JMenuHelper.createItem("find-place"));
         JMenu completeMenu = JMenuHelper.createMenu("complete");
         completeMenu.add(JMenuHelper.createItem("add-coordinates"));
         completeMenu.add(JMenuHelper.createItem("add-elevation"));
@@ -67,22 +68,26 @@ public class FrameMenu {
         completeMenu.add(JMenuHelper.createItem("add-populated-place"));
         completeMenu.add(JMenuHelper.createItem("add-speed"));
         completeMenu.add(JMenuHelper.createItem("add-number"));
-        editMenu.add(completeMenu);
-        editMenu.addSeparator();
-        editMenu.add(JMenuHelper.createItem("split-positionlist"));
-        editMenu.add(JMenuHelper.createMenu("merge-positionlist"));
-        editMenu.add(JMenuHelper.createItem("import-positionlist"));
+        positionMenu.add(completeMenu);
+        positionMenu.addSeparator();
+        positionMenu.add(JMenuHelper.createItem("insert-positions"));
+        positionMenu.add(JMenuHelper.createItem("delete-positions"));
+
+        JMenu positionlistMenu = JMenuHelper.createMenu("positionlist");
+        positionlistMenu.add(JMenuHelper.createItem("new-positionlist"));
+        positionlistMenu.add(JMenuHelper.createItem("delete-positionlist"));
+        positionlistMenu.add(JMenuHelper.createItem("rename-positionlist"));
+        positionlistMenu.add(JMenuHelper.createItem("revert-positions"));
+        positionlistMenu.addSeparator();
+        positionlistMenu.add(JMenuHelper.createItem("split-positionlist"));
+        positionlistMenu.add(JMenuHelper.createMenu("merge-positionlist"));
+        positionlistMenu.add(JMenuHelper.createItem("import-positionlist"));
 
         JMenu viewMenu = JMenuHelper.createMenu("view");
         viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
         viewMenu.add(JMenuHelper.createItem("show-elevation-profile"));
         viewMenu.add(JMenuHelper.createItem("maximize-map"));
         viewMenu.add(JMenuHelper.createItem("maximize-positionlist"));
-
-        JMenu toolsMenu = JMenuHelper.createMenu("tools");
-        toolsMenu.add(JMenuHelper.createItem("insert-positions"));
-        toolsMenu.add(JMenuHelper.createItem("delete-positions"));
-        toolsMenu.add(JMenuHelper.createItem("revert-positions"));
 
         JMenu extrasMenu = JMenuHelper.createMenu("extras");
         extrasMenu.add(JMenuHelper.createItem("options"));
@@ -95,8 +100,9 @@ public class FrameMenu {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(positionMenu);
+        menuBar.add(positionlistMenu);
         menuBar.add(viewMenu);
-        menuBar.add(toolsMenu);
         menuBar.add(extrasMenu);
         // menuBar.add(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
