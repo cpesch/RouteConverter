@@ -27,7 +27,7 @@ public class GoogleMapsServiceIT extends TestCase {
     private GoogleMapsService service = new GoogleMapsService();
 
     public void testLocationLookup() throws IOException {
-        assertEquals("Chammstrasse 28, 8638 Goldingen, Schweiz", service.getLocationFor(9.0, 47.3));
+        assertEquals("Kreuzegg, 8638 Goldingen, Schweiz" /*"Chammstrasse 28, 8638 Goldingen, Schweiz"*/, service.getLocationFor(9.0, 47.3));
         assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Deutschland", service.getLocationFor(10.2, 50.001));
         assertEquals("82467 Garmisch-Partenkirchen, Deutschland", service.getLocationFor(11.06561, 47.42428));
         assertEquals("North Atlantic Ocean", service.getLocationFor(0.0, 0.0));
