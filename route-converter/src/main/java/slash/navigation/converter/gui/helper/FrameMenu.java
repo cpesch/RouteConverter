@@ -76,6 +76,7 @@ public class FrameMenu {
         JMenu positionlistMenu = JMenuHelper.createMenu("positionlist");
         positionlistMenu.add(JMenuHelper.createItem("new-positionlist"));
         positionlistMenu.add(JMenuHelper.createItem("delete-positionlist"));
+        positionlistMenu.addSeparator();
         positionlistMenu.add(JMenuHelper.createItem("rename-positionlist"));
         positionlistMenu.add(JMenuHelper.createItem("revert-positions"));
         positionlistMenu.addSeparator();

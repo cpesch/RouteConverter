@@ -111,9 +111,11 @@ public class JMenuHelper {
 
     public static void registerAction(AbstractButton component, String name) {
         String text = component.getText();
+        String toolTipText = component.getToolTipText();
         Icon icon = component.getIcon();
         component.setAction(Application.getInstance().getContext().getActionManager().get(name));
         component.setText(text);
+        component.setToolTipText(toolTipText);
         component.setIcon(icon);
     }
 

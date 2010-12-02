@@ -205,7 +205,7 @@
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/new-route.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-positionlist-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="new-positionlist-action-tooltip"/>
             </properties>
           </component>
           <component id="72618" class="javax.swing.JButton" binding="buttonRenamePositionList" default-binding="true">
@@ -216,7 +216,7 @@
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/rename-route.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-positionlist-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename-positionlist-action-tooltip"/>
             </properties>
           </component>
           <component id="9ec01" class="javax.swing.JButton" binding="buttonDeletePositionList">
@@ -227,7 +227,7 @@
               <hideActionText value="true"/>
               <icon value="slash/navigation/converter/gui/remove-route.png"/>
               <text value=""/>
-              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="remove-position-list-tooltip"/>
+              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-positionlist-action-tooltip"/>
             </properties>
           </component>
           <hspacer id="4bbcd">
