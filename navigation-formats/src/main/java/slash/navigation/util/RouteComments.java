@@ -130,6 +130,9 @@ public abstract class RouteComments {
 
     @SuppressWarnings("unchecked")
     public static void commentRoutePositions(List<? extends BaseRoute> routes) {
+        if(routes.size() < 2)
+            return;
+
         Map<LongitudeAndLatitude, String> comments = new HashMap<LongitudeAndLatitude, String>();
         Map<LongitudeAndLatitude, Double> elevations = new HashMap<LongitudeAndLatitude, Double>();
         Map<LongitudeAndLatitude, CompactCalendar> times = new HashMap<LongitudeAndLatitude, CompactCalendar>();
