@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.gui.Constants;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -40,7 +39,7 @@ public class LocaleListCellRenderer extends DefaultListCellRenderer {
         Locale locale = (Locale) value;
 
         String text;
-        if (Constants.ROOT_LOCALE.equals(locale))
+        if (Locale.ROOT.equals(locale))
             text = RouteConverter.getBundle().getString("locale-default");
         else {
             String language = locale.getLanguage();

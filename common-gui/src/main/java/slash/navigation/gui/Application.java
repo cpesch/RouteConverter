@@ -69,7 +69,7 @@ public abstract class Application {
     }
 
     public void setLocale(Locale locale) {
-        if (!Constants.ROOT_LOCALE.equals(locale)) {
+        if (!Locale.ROOT.equals(locale)) {
             preferences.put(PREFERRED_LANGUAGE_PREFERENCE, locale.getLanguage());
             preferences.put(PREFERRED_COUNTRY_PREFERENCE, locale.getCountry());
         } else {
