@@ -140,21 +140,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected void enrichPosition(KmlPosition position, Calendar time, String name, String description, CompactCalendar startDate) {
         if (position.getTime() == null && time != null)
             position.setTime(CompactCalendar.fromCalendar(time));
+        if (position.getTime() == null)
+            parseTime(position, description, startDate);
+        if (position.getTime() == null)
+            parseTime(position, name, startDate);
         if (position.getComment() == null)
             position.setComment(name);
-
-        if (position.getTime() == null) {
-            CompactCalendar logTime = parseTime(description);
-            if (logTime != null)
-                position.setTime(logTime);
-            else {
-                logTime = parseTime(name);
-                if (logTime != null) {
-                    position.setTime(logTime);
-                    position.setStartDate(startDate);
-                }
-            }
-        }
 
         if (position.getElevation() == null) {
             Double elevation = parseElevation(description);
@@ -181,14 +172,20 @@ public abstract class KmlFormat extends BaseKmlFormat {
         NAVIGON6310_TIME.setTimeZone(CompactCalendar.UTC);
     }
 
-    CompactCalendar parseTime(String description) {
+    private static final Pattern BT747_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*TIME:.*>(\\d{2}-.+-\\d{2} \\d{2}:\\d{2}:\\d{2})<.*>([\\d\\.\\s]+)m<.*");
+    private static final SimpleDateFormat BT747_DATE = new SimpleDateFormat("dd-MMMMM-yy HH:mm:ss");
+    static {
+        BT747_DATE.setTimeZone(CompactCalendar.UTC);
+    }
+
+    void parseTime(BaseNavigationPosition position, String description, CompactCalendar startDate) { 
         if (description != null) {
             Matcher tavelLogMatcher = TAVELLOG_DATE_PATTERN.matcher(description);
             if (tavelLogMatcher.matches()) {
                 String timeString = tavelLogMatcher.group(1);
                 try {
                     Date parsed = TAVELLOG_DATE.parse(timeString);
-                    return CompactCalendar.fromDate(parsed);
+                    position.setTime(CompactCalendar.fromDate(parsed));
                 }
                 catch (ParseException e) {
                     // intentionally left empty;
@@ -199,14 +196,25 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 String timeString = navigonMatcher.group(1);
                 try {
                     Date parsed = NAVIGON6310_TIME.parse(timeString);
-                    return CompactCalendar.fromDate(parsed);
+                    position.setTime(CompactCalendar.fromDate(parsed));
+                    position.setStartDate(startDate);
+                }
+                catch (ParseException e) {
+                    // intentionally left empty;
+                }
+            }
+            Matcher bt747Matcher = BT747_TIME_AND_ELEVATION_PATTERN.matcher(description);
+            if (bt747Matcher.matches()) {
+                String timeString = bt747Matcher.group(1);
+                try {
+                    Date parsed = BT747_DATE.parse(timeString);
+                    position.setTime(CompactCalendar.fromDate(parsed));
                 }
                 catch (ParseException e) {
                     // intentionally left empty;
                 }
             }
         }
-        return null;
     }
 
     private static final Pattern TAVELLOG_SPEED_PATTERN = Pattern.compile(".*Speed:\\s*(\\d+\\.\\d+).*");
@@ -237,6 +245,10 @@ public abstract class KmlFormat extends BaseKmlFormat {
             Matcher navigonMatcher = NAVIGON6310_TIME_AND_ELEVATION_PATTERN.matcher(description);
             if (navigonMatcher.matches()) {
                 return Transfer.parseDouble(navigonMatcher.group(2));
+            }
+            Matcher bt747Matcher = BT747_TIME_AND_ELEVATION_PATTERN.matcher(description);
+            if (bt747Matcher.matches()) {
+                return Transfer.parseDouble(bt747Matcher.group(2));
             }
         }
         return null;

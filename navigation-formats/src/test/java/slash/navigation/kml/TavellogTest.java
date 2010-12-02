@@ -21,6 +21,9 @@
 package slash.navigation.kml;
 
 import org.junit.Test;
+import slash.common.io.CompactCalendar;
+
+import java.text.DateFormat;
 
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
@@ -32,7 +35,14 @@ public class TavellogTest {
 
     @Test
     public void testParseTime() {
-        assertEquals(calendar(2009, 2, 7, 21, 45, 55), format.parseTime(TAVELLOG_DESCRIPTION));
+        KmlPosition position = new KmlPosition(null, null, null, null, null, null);
+        CompactCalendar expectedCal = calendar(2009, 2, 7, 21, 45, 55);
+        format.parseTime(position, TAVELLOG_DESCRIPTION, null);
+        CompactCalendar actualCal = position.getTime();
+        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
+        String actual = DateFormat.getDateTimeInstance().format(actualCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(expectedCal, actualCal);
     }
 
     @Test
