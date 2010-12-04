@@ -384,7 +384,7 @@ public class Kml22Format extends KmlFormat {
         if (speedGroup == 0)
             return "< " + String.valueOf(getSpeedScale()) + " Km/h";
         else if (speedGroup <= SPEED_COLORS.length)
-            return String.valueOf(speedGroup * getSpeedScale()) + " - " + String.valueOf((speedGroup + 1) * getSpeedScale()) + " km/h";
+            return String.valueOf(speedGroup * getSpeedScale()) + " - " + String.valueOf((speedGroup + 1) * getSpeedScale()) + " Km/h";
         return "> " + String.valueOf(speedGroup * getSpeedScale()) + " Km/h";
     }
 
@@ -500,7 +500,7 @@ public class Kml22Format extends KmlFormat {
         }
 
         FolderType speed = objectFactory.createFolderType();
-        speed.setName("Speed [km/h]");
+        speed.setName("Speed [Km/h]");
         speed.setOpen(false);
         speed.setVisibility(false);
 
