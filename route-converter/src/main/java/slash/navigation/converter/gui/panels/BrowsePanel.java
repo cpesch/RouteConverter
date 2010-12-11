@@ -269,9 +269,12 @@ public abstract class BrowsePanel {
     }
 
     private void selectTreePath(TreePath treePath) {
+        Object selectedObject = treePath.getLastPathComponent();
+        if(!(selectedObject instanceof CategoryTreeNode))
+            return;
         treeCategories.expandPath(treePath);
-        CategoryTreeNode selected = (CategoryTreeNode) treePath.getLastPathComponent();
-        selectTreeNode(selected);
+        CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
+        selectTreeNode(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
     }
 
