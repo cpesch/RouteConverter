@@ -90,9 +90,8 @@ public abstract class Application {
             Method method = clazz.getMethod(name);
             method.invoke(null);
         } catch (Exception e) {
-            if (!(e instanceof ClassNotFoundException))
-                e.printStackTrace();
-            log.fine("Cannot invoke NativeInterface#" + name + "(): " + e.getMessage());
+            log.info("Cannot invoke NativeInterface#" + name + "(): " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
