@@ -37,12 +37,11 @@ public abstract class ExternalPrograms {
     }
 
     public void startBrowserForUpdate(Window window) {
-        String locale = Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()) ? "_de" : "";
-        startBrowser(window, "www.routeconverter.de/download" + locale + ".html");
+        startBrowser(window, "www.routeconverter.de/downloads/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForTerms(Window window) {
-        startBrowser(window, "www.routeconverter.de/routecatalog/terms.html");
+        startBrowser(window, "www.routeconverter.de/routecatalog/terms/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForForum(Window window) {
