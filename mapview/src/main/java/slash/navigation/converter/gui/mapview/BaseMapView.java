@@ -897,11 +897,9 @@ public abstract class BaseMapView implements MapView {
             }
             buffer.append("];\n");
             buffer.append("createDirections().loadFromWaypoints(latlngs, ").
-                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").
-                    append(avoidHighways).append(", travelMode: ").
-                    append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
-                    append(", locale: '").append(Locale.getDefault()).append("'").
-                    append(" });");
+                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").append(avoidHighways).
+                    append(", travelMode: ").append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
+                    append(", locale: '").append(Locale.getDefault()).append("' });");
             executeScript(buffer.toString());
         }
         removeOverlays();
@@ -1045,9 +1043,10 @@ public abstract class BaseMapView implements MapView {
                     buffer.append("new GLatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append(")");
                     buffer.append("];\n");
                     buffer.append(mode).append("(").append(key).append(").loadFromWaypoints(latlngs, ").
-                            append("{ preserveViewport: true, getPolyline: true, getSteps: true, avoidHighways: ").
-                            append(avoidHighways).append(", locale: '").append(Locale.getDefault()).append("'").
-                            append(" });");
+                            append("{ preserveViewport: true, getPolyline: true, getSteps: true").
+                            append(", avoidHighways: ").append(avoidHighways).
+                            // append(", travelMode: ").append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
+                            append(", locale: '").append(Locale.getDefault()).append("' });");
                     executeScript(buffer.toString());
                     try {
                         Thread.sleep(1000);
