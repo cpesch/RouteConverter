@@ -46,7 +46,8 @@ public class ResourceBundleTest {
             String key = keys.nextElement();
             // skip keys which are only present in the default bundle
             if (key.startsWith("locale-") ||
-                    key.endsWith("-icon") || key.endsWith("-keystroke") || key.endsWith("-value")
+                    key.endsWith("-icon") || key.endsWith("-keystroke") || key.endsWith("-value") ||
+                    key.equals("help-set")
                     )
                 continue;
 

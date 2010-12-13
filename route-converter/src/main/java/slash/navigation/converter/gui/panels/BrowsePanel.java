@@ -270,7 +270,7 @@ public abstract class BrowsePanel {
 
     private void selectTreePath(TreePath treePath) {
         Object selectedObject = treePath.getLastPathComponent();
-        if(!(selectedObject instanceof CategoryTreeNode))
+        if (!(selectedObject instanceof CategoryTreeNode))
             return;
         treeCategories.expandPath(treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
