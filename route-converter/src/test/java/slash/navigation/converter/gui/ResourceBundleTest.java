@@ -23,7 +23,14 @@ package slash.navigation.converter.gui;
 import org.junit.Test;
 import slash.navigation.gui.Constants;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import static org.junit.Assert.assertTrue;
 
 public class ResourceBundleTest {
     private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.GERMANY, Locale.US, Constants.SPAIN,
@@ -31,6 +38,10 @@ public class ResourceBundleTest {
 
     @Test
     public void testEnglishAgainstOtherBundles() {
+        compareEnglishAgainstOtherBundles(true);
+    }
+
+    private void compareEnglishAgainstOtherBundles(boolean throwException) {
         ResourceBundle.Control noFallbackControl = new ResourceBundle.Control() {
             public List<Locale> getCandidateLocales(String baseName, Locale locale) {
                 return Arrays.asList(new Locale(locale.getLanguage()));
@@ -56,15 +67,15 @@ public class ResourceBundleTest {
                     continue;
 
                 ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, noFallbackControl);
-                try {
-                    bundle.getString(key);
-                } catch (MissingResourceException e) {
-                    System.out.println("key " + key + " does not exist in " + locale);
+                if (!throwException) {
+                    try {
+                        bundle.getString(key);
+                    } catch (MissingResourceException e) {
+                        System.out.println("key " + key + " does not exist in " + locale);
+                    }
+                } else {
+                    assertTrue("key " + key + " exists in locale " + locale, bundle.getString(key) != null);
                 }
-                // String value = root.getString(key);
-                // assertTrue("key " + key + " exists in locale " + locale, bundle.getString(key) != null);
-                // if (value.equals(bundle.getString(key)))
-                // System.out.println("key " + key + " identical in US and " + locale + ": " + value);
             }
         }
     }
