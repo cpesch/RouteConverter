@@ -287,7 +287,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 elevationPanel.setVisible(true);
 
                 int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
-                if(location < 2)
+                if (location < 2)
                     location = Integer.MAX_VALUE;
                 elevationSplitPane.setDividerLocation(location);
                 log.info("Initialized elevation divider to " + location);
