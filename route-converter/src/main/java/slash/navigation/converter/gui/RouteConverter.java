@@ -132,7 +132,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
     protected JPanel contentPane;
-    private JSplitPane mapSplitPane, bottomSplitPane;
+    private JSplitPane mapSplitPane, elevationSplitPane;
     private JTabbedPane tabbedPane;
     private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
     private MapView mapView;
@@ -265,10 +265,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 }
 
                 int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
-                if (location > 0)
-                    mapSplitPane.setDividerLocation(location);
-                else
-                    mapSplitPane.setDividerLocation(300);
+                if (location < 1)
+                    location = 300;
+                mapSplitPane.setDividerLocation(location);
+                log.info("Initialized map divider to " + location);
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
                 ActionManager actionManager = Application.getInstance().getContext().getActionManager();
@@ -287,11 +287,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 elevationPanel.setVisible(true);
 
                 int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
-                if (location > 1)
-                    bottomSplitPane.setDividerLocation(location);
-                else
-                    bottomSplitPane.setDividerLocation(Integer.MAX_VALUE);
-                bottomSplitPane.addPropertyChangeListener(new BottomSplitPaneListener(location));
+                if(location < 2)
+                    location = Integer.MAX_VALUE;
+                elevationSplitPane.setDividerLocation(location);
+                log.info("Initialized elevation divider to " + location);
+                elevationSplitPane.addPropertyChangeListener(new ElevationSplitPaneListener(location));
             }
         });
     }
@@ -572,6 +572,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getPositionAugmenter().complementElevation(row, longitude, latitude);
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void complementComment(int row, Double longitude, Double latitude) {
         getPositionAugmenter().complementComment(row, longitude, latitude);
     }
@@ -678,14 +679,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        bottomSplitPane = new JSplitPane();
-        bottomSplitPane.setContinuousLayout(true);
-        bottomSplitPane.setDividerLocation(888);
-        bottomSplitPane.setDividerSize(10);
-        bottomSplitPane.setOneTouchExpandable(true);
-        bottomSplitPane.setOrientation(0);
-        bottomSplitPane.setResizeWeight(0.0);
-        contentPane.add(bottomSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        elevationSplitPane = new JSplitPane();
+        elevationSplitPane.setContinuousLayout(true);
+        elevationSplitPane.setDividerLocation(888);
+        elevationSplitPane.setDividerSize(10);
+        elevationSplitPane.setOneTouchExpandable(true);
+        elevationSplitPane.setOrientation(0);
+        elevationSplitPane.setResizeWeight(0.0);
+        contentPane.add(elevationSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         mapSplitPane = new JSplitPane();
         mapSplitPane.setContinuousLayout(true);
         mapSplitPane.setDividerLocation(341);
@@ -694,7 +695,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         mapSplitPane.setOneTouchExpandable(true);
         mapSplitPane.setOpaque(true);
         mapSplitPane.setResizeWeight(1.0);
-        bottomSplitPane.setLeftComponent(mapSplitPane);
+        elevationSplitPane.setLeftComponent(mapSplitPane);
         mapPanel = new JPanel();
         mapPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mapPanel.setMinimumSize(new Dimension(-1, -1));
@@ -714,7 +715,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         elevationPanel.setMinimumSize(new Dimension(0, 0));
         elevationPanel.setPreferredSize(new Dimension(0, 0));
         elevationPanel.setVisible(false);
-        bottomSplitPane.setRightComponent(elevationPanel);
+        elevationSplitPane.setRightComponent(elevationPanel);
     }
 
     /**
@@ -797,6 +798,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     mapView.resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
+                    log.info("Changed map divider to " + mapSplitPane.getDividerLocation());
 
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < mapSplitPane.getMaximumDividerLocation() - 10);
@@ -806,17 +808,17 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private class BottomSplitPaneListener implements PropertyChangeListener {
+    private class ElevationSplitPaneListener implements PropertyChangeListener {
         private int location;
 
-        private BottomSplitPaneListener(int location) {
+        private ElevationSplitPaneListener(int location) {
             this.location = location;
         }
 
         public void propertyChange(PropertyChangeEvent e) {
             if (e.getPropertyName().equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
-                if (bottomSplitPane.getDividerLocation() != location) {
-                    location = bottomSplitPane.getDividerLocation();
+                if (elevationSplitPane.getDividerLocation() != location) {
+                    location = elevationSplitPane.getDividerLocation();
                     if (isMapViewAvailable()) {
                         // make sure the one touch expandable to minimize the map works fine
                         if (location == 1)
@@ -825,7 +827,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
                             mapView.getComponent().setVisible(true);
                         mapView.resize();
                     }
-                    preferences.putInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, bottomSplitPane.getDividerLocation());
+                    log.info("Changed elevation divider to " + elevationSplitPane.getDividerLocation());
+                    preferences.putInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, elevationSplitPane.getDividerLocation());
 
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < frame.getHeight() - 10);
@@ -844,8 +847,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("find-place", new FindPlaceAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
         actionManager.register("show-elevation-profile", new ShowElevationProfileAction());
-        actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, Integer.MAX_VALUE, bottomSplitPane, Integer.MAX_VALUE));
-        actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, bottomSplitPane, Integer.MAX_VALUE));
+        actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, Integer.MAX_VALUE, elevationSplitPane, Integer.MAX_VALUE));
+        actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, elevationSplitPane, Integer.MAX_VALUE));
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
@@ -902,7 +905,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
             if (location > frame.getHeight() - 200)
                 location = frame.getHeight() - 200;
-            bottomSplitPane.setDividerLocation(location);
+            elevationSplitPane.setDividerLocation(location);
         }
     }
 
