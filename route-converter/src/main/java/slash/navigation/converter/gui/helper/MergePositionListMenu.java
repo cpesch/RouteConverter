@@ -55,6 +55,7 @@ public class MergePositionListMenu {
                     menuItem.setText(RouteComments.shortenRouteName(route));
                     menu.add(menuItem, i);
                 }
+                menu.setEnabled(formatAndRoutesModel.getSize() > 1);
             }
 
             public void intervalRemoved(ListDataEvent e) {
@@ -65,6 +66,7 @@ public class MergePositionListMenu {
                     }
                     menu.remove(i);
                 }
+                menu.setEnabled(formatAndRoutesModel.getSize() > 1);
             }
 
             public void contentsChanged(ListDataEvent e) {
