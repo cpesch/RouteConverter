@@ -123,7 +123,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
     private static final String SEARCH_POSITION_PREFERENCE = "searchPosition";
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
-    private static final String BOTTOM_DIVIDER_LOCATION_PREFERENCE = "bottomDividerLocation";
+    private static final String ELEVATION_DIVIDER_LOCATION_PREFERENCE = "elevationDividerLocation";
 
     private static final String DEBUG_PREFERENCE = "debug";
     private static final String USERNAME_PREFERENCE = "userName";
@@ -286,9 +286,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 elevationPanel.add(elevationView.getRootComponent(), ELEVATION_PANEL_CONSTRAINTS);
                 elevationPanel.setVisible(true);
 
-                int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
+                int location = preferences.getInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, -1);
                 if (location < 2)
-                    location = Integer.MAX_VALUE;
+                    location = 888;
                 elevationSplitPane.setDividerLocation(location);
                 log.info("Initialized elevation divider to " + location);
                 elevationSplitPane.addPropertyChangeListener(new ElevationSplitPaneListener(location));
@@ -827,8 +827,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
                             mapView.getComponent().setVisible(true);
                         mapView.resize();
                     }
+                    preferences.putInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, elevationSplitPane.getDividerLocation());
                     log.info("Changed elevation divider to " + elevationSplitPane.getDividerLocation());
-                    preferences.putInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, elevationSplitPane.getDividerLocation());
 
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < frame.getHeight() - 10);
@@ -902,7 +902,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private class ShowElevationProfileAction extends FrameAction {
         public void run() {
-            int location = preferences.getInt(BOTTOM_DIVIDER_LOCATION_PREFERENCE, -1);
+            int location = preferences.getInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, -1);
             if (location > frame.getHeight() - 200)
                 location = frame.getHeight() - 200;
             elevationSplitPane.setDividerLocation(location);
