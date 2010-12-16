@@ -96,8 +96,14 @@ public abstract class SingleFrameApplication extends Application {
         Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
         log.info("Screen size is " + bounds);
 
+        int state = preferences.getInt(STATE_PREFERENCE, Frame.NORMAL);
+
         int width = crop("width", getPreferenceWidth(), -MAXIMIZE_OFFSET, (int) bounds.getWidth() + 2 * MAXIMIZE_OFFSET);
         int height = crop("height", getPreferenceHeight(), -MAXIMIZE_OFFSET, (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET);
+        if((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
+            width = (int)bounds.getWidth() - MAXIMIZE_OFFSET;
+        if((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
+            height = (int)bounds.getHeight() - 3 * MAXIMIZE_OFFSET;
         if (width != -1 && height != -1)
             frame.setSize(width, height);
         log.info("Frame size is " + frame.getSize());
@@ -108,11 +114,15 @@ public abstract class SingleFrameApplication extends Application {
         int y = crop("y", preferences.getInt(Y_PREFERENCE, -1),
                 (int) bounds.getY() - MAXIMIZE_OFFSET,
                 (int) bounds.getY() + (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET - height);
+        if((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
+            x = - 2 * MAXIMIZE_OFFSET;
+        if((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
+            y = -MAXIMIZE_OFFSET;
         if (x != -1 && y != -1)
             frame.setLocation(x, y);
         log.info("Frame location is " + frame.getLocation());
 
-        frame.setExtendedState(preferences.getInt(STATE_PREFERENCE, Frame.NORMAL));
+        frame.setExtendedState(state);
         log.info("Frame state is " + frame.getExtendedState());
 
         frame.setVisible(true);
@@ -135,20 +145,19 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     void closeFrame() {
+        preferences.putInt(X_PREFERENCE, frame.getLocation().x);
+        preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
+        preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
+        preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
+        log.info("Storing frame location as " + frame.getLocation());
+        log.info("Storing frame size as " + frame.getSize());
+
         int state = frame.getExtendedState();
-        if ((state & Frame.MAXIMIZED_BOTH) != Frame.MAXIMIZED_BOTH) {
-            log.info("Storing frame location as " + frame.getLocation());
-            log.info("Storing frame size as " + frame.getSize());
-            preferences.putInt(X_PREFERENCE, frame.getLocation().x);
-            preferences.putInt(Y_PREFERENCE, frame.getLocation().y);
-            preferences.putInt(WIDTH_PREFERENCE, frame.getSize().width);
-            preferences.putInt(HEIGHT_PREFERENCE, frame.getSize().height);
-        }
+        preferences.putInt(STATE_PREFERENCE, state);
+        log.info("Storing frame state as " + state);
 
         String deviceId = frame.getGraphicsConfiguration().getDevice().getIDstring();
-        log.info("Storing frame state as " + state);
         log.info("Storing graphics device as " + deviceId);
-        preferences.putInt(STATE_PREFERENCE, state);
         preferences.put(DEVICE_PREFERENCE, deviceId);
 
         frame.dispose();
