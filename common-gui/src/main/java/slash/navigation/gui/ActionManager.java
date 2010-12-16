@@ -68,14 +68,14 @@ public class ActionManager {
     public void run(String actionName, ActionEvent actionEvent) {
         Action action = actionMap.get(actionName);
         if (action == null)
-            throw new IllegalArgumentException("no action registered for '" + actionName);
+            throw new IllegalArgumentException("no action registered for '" + actionName + "'");
         action.actionPerformed(actionEvent);
     }
 
     public void enable(String actionName, boolean enable) {
         Action action = actionMap.get(actionName);
         if (action == null)
-            throw new IllegalArgumentException("no action registered for '" + actionName);
+            throw new IllegalArgumentException("no action registered for '" + actionName + "'");
         action.setEnabled(enable);
     }
 
