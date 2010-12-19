@@ -53,7 +53,6 @@ public class Nmn5Format extends NmnFormat {
         return "Navigon Mobile Navigator 5 (*" + getExtension() + ")";
     }
 
-
     protected boolean isPosition(String line) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         return matcher.matches();

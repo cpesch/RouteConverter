@@ -55,7 +55,6 @@ public class Nmn6Format extends NmnFormat {
         return "Navigon Mobile Navigator 6 (*" + getExtension() + ")";
     }
 
-
     protected boolean isValidLine(String line) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         return matcher.matches() || isPosition(line);
