@@ -1295,7 +1295,6 @@ public abstract class BaseMapView implements MapView {
                 row = positions.indexOf(before) + 1;
             }
             final BaseRoute route = parseRoute(coordinates, before, after);
-
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPositions(row, route);
