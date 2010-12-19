@@ -32,7 +32,7 @@ import java.util.TimeZone;
  * <p/>
  * The currently supported format is:
  * <pre>
- *   &plusmn;YYYY-MM-DDThh:mm:ss
+ *   &plusmn;YYYY-MM-DDThh:mm:ss[.SSS]
  * </pre>
  * where:
  * <pre>
@@ -45,6 +45,7 @@ import java.util.TimeZone;
  *   hh    = two digits of hour (00 through 23) (am/pm NOT allowed)
  *   mm    = two digits of minute (00 through 59)
  *   ss    = two digits of second (00 through 59)
+ *   SSS   = optionally: three digits of milliseconds (000 through 999)
  * </pre>
  *
  * @author Unknown
@@ -55,6 +56,7 @@ public final class ISO8601 {
      * misc. numeric formats used in formatting
      */
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
+    private static final DecimalFormat XXX_FORMAT = new DecimalFormat("000");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
 
     /**
@@ -93,7 +95,7 @@ public final class ISO8601 {
          */
 
         TimeZone timeZone;
-        int year, month, day, hour, min, sec;
+        int year, month, day, hour, minutes, seconds, milliseconds = 0;
         try {
             // year (YYYY)
             year = Integer.parseInt(text.substring(start, start + 4));
@@ -128,7 +130,7 @@ public final class ISO8601 {
             }
             start++;
             // minute (mm)
-            min = Integer.parseInt(text.substring(start, start + 2));
+            minutes = Integer.parseInt(text.substring(start, start + 2));
             start += 2;
             // delimiter ':'
             if (text.charAt(start) != ':') {
@@ -136,13 +138,29 @@ public final class ISO8601 {
             }
             start++;
             // second (ss)
-            sec = Integer.parseInt(text.substring(start, start + 2));
+            seconds = Integer.parseInt(text.substring(start, start + 2));
             start += 2;
 
-            char tz = text.charAt(start++);
-            if (tz == 'Z')
+            // delimiter '.' 'Z' '+' (or 'T')
+            char delimiter = text.charAt(start++);
+            if (delimiter == '.') {
+                // milliseconds (S), (SS), (SSS)
+                StringBuffer buffer = new StringBuffer();
+                while(true) {
+                    delimiter = text.charAt(start++);
+                    if(Character.isDigit(delimiter))
+                        buffer.append(delimiter);
+                    else
+                        break;
+                }
+                while(buffer.length() < 3) {
+                    buffer.append('0');                            
+                }
+                milliseconds = Integer.parseInt(buffer.toString());
+            }
+            if (delimiter == 'Z')
                 timeZone = CompactCalendar.UTC;
-            else if (tz == 'T') {
+            else if (delimiter == '+' || delimiter == 'T') {
                 // hour (hh)
                 // delimiter ':'
                 // minute (mm)
@@ -175,11 +193,11 @@ public final class ISO8601 {
         // hour
         cal.set(Calendar.HOUR_OF_DAY, hour);
         // minute
-        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.MINUTE, minutes);
         // second
-        cal.set(Calendar.SECOND, sec);
+        cal.set(Calendar.SECOND, seconds);
         // millisecond
-        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.MILLISECOND, milliseconds);
 
         try {
             /**
@@ -205,17 +223,18 @@ public final class ISO8601 {
         if (calendar == null) {
             throw new IllegalArgumentException("argument can not be null");
         }
-        return format(calendar.getCalendar());
+        return format(calendar.getCalendar(), false);
     }
 
     /**
      * Formats a {@link Calendar} value into an ISO8601-compliant date/time string.
      *
      * @param calendar the time value to be formatted into a date/time string
+     * @param includeMilliseconds if milli seconds should be included although the spec does not include them
      * @return the formatted date/time string
      * @throws IllegalArgumentException if a <code>null</code> argument is passed
      */
-    public static String format(Calendar calendar) {
+    public static String format(Calendar calendar, boolean includeMilliseconds) {
         if (calendar == null) {
             throw new IllegalArgumentException("argument can not be null");
         }
@@ -237,24 +256,39 @@ public final class ISO8601 {
          * note that we cannot use java.text.SimpleDateFormat for
          * formatting because it can't handle years <= 0 and TZD's
          */
-        StringBuffer buf = new StringBuffer();
+        StringBuffer buffer = new StringBuffer();
         // year ([-]YYYY)
-        buf.append(XXXX_FORMAT.format(year));
-        buf.append('-');
+        buffer.append(XXXX_FORMAT.format(year));
+        buffer.append('-');
         // month (MM)
-        buf.append(XX_FORMAT.format(calendar.get(Calendar.MONTH) + 1));
-        buf.append('-');
+        buffer.append(XX_FORMAT.format(calendar.get(Calendar.MONTH) + 1));
+        buffer.append('-');
         // day (DD)
-        buf.append(XX_FORMAT.format(calendar.get(Calendar.DAY_OF_MONTH)));
-        buf.append('T');
+        buffer.append(XX_FORMAT.format(calendar.get(Calendar.DAY_OF_MONTH)));
+        buffer.append('T');
         // hour (hh)
-        buf.append(XX_FORMAT.format(calendar.get(Calendar.HOUR_OF_DAY)));
-        buf.append(':');
+        buffer.append(XX_FORMAT.format(calendar.get(Calendar.HOUR_OF_DAY)));
+        buffer.append(':');
         // minute (mm)
-        buf.append(XX_FORMAT.format(calendar.get(Calendar.MINUTE)));
-        buf.append(':');
+        buffer.append(XX_FORMAT.format(calendar.get(Calendar.MINUTE)));
+        buffer.append(':');
         // second (ss)
-        buf.append(XX_FORMAT.format(calendar.get(Calendar.SECOND)));
-        return buf.toString();
+        buffer.append(XX_FORMAT.format(calendar.get(Calendar.SECOND)));
+        if(includeMilliseconds) {
+            // millisecond (SSS)
+            buffer.append('.');
+            buffer.append(XXX_FORMAT.format(calendar.get(Calendar.MILLISECOND)));
+        }
+        if(calendar.getTimeZone().equals(CompactCalendar.UTC))
+           buffer.append('Z');
+        else {
+            buffer.append('+');
+            int offsetHours = calendar.getTimeZone().getRawOffset() / 1000 / 3600;
+            int offsetMinutes = calendar.getTimeZone().getRawOffset() / 1000 / 60 - offsetHours * 60;
+            buffer.append(XX_FORMAT.format(offsetHours));
+            buffer.append(':');
+            buffer.append(XX_FORMAT.format(offsetMinutes));
+        }
+        return buffer.toString();
     }
 }

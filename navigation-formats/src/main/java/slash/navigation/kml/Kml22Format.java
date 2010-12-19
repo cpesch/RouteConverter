@@ -250,8 +250,11 @@ public class Kml22Format extends KmlFormat {
         List<KmlPosition> result = asExtendedKmlPositions(coords);
         for (int i = 0; i < whens.size(); i++) {
             String when = whens.get(i);
-            if (when != null)
-                result.get(i).setTime(CompactCalendar.fromCalendar(ISO8601.parse(when)));
+            if (when != null) {
+                Calendar calendar = ISO8601.parse(when);
+                if (calendar != null)
+                    result.get(i).setTime(CompactCalendar.fromCalendar(calendar));
+            }
         }
         return result;
     }
