@@ -217,7 +217,7 @@ public abstract class NavigationTestCase extends TestCase {
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
         compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
-        compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
         compareHdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         comparePdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
@@ -645,9 +645,12 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    private static void compareTime(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
+    private static void compareTime(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
         if (sourcePosition.getTime() != null && targetPosition.getTime() != null) {
-            if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
+            if (targetFormat instanceof KmlFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) {
+                assertNotNull(sourcePosition.getTime());
+                assertNotNull(targetPosition.getTime());
+            } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
                 DateFormat format = DateFormat.getTimeInstance();
                 format.setTimeZone(CompactCalendar.UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
