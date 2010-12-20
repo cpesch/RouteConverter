@@ -1046,10 +1046,10 @@ public abstract class BaseMapView implements MapView {
                             append("{ preserveViewport: true, getPolyline: true, getSteps: true").
                             append(", avoidHighways: ").append(avoidHighways).
                             // append(", travelMode: ").append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
-                            append(", locale: '").append(Locale.getDefault()).append("' });");
+                                    append(", locale: '").append(Locale.getDefault()).append("' });");
                     executeScript(buffer.toString());
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         // don't care if this happens
                     }
@@ -1120,16 +1120,21 @@ public abstract class BaseMapView implements MapView {
             }
         }
 
-        StringBuffer buffer = new StringBuffer();
-        for (String line : lines) {
-            buffer.append("  ").append(line).append("\n");
-        }
-        log.info("processing callback: \n" + buffer.toString()); // TODO remove
+        final List<String> theLines = new ArrayList<String>(lines);
+        executor.execute(new Runnable() {
+            public void run() {
+                StringBuffer buffer = new StringBuffer();
+                for (String line : theLines) {
+                    buffer.append("  ").append(line).append("\n");
+                }
+                log.fine("processing callback: \n" + buffer.toString());
 
-        if (!isAuthenticated(lines))
-            return;
+                if (!isAuthenticated(theLines))
+                    return;
 
-        processLines(lines);
+                processLines(theLines);
+            }
+        });
     }
 
     private boolean isAuthenticated(List<String> lines) {
@@ -1160,12 +1165,12 @@ public abstract class BaseMapView implements MapView {
     void processLines(List<String> lines) {
         boolean hasValidCallbackNumber = false;
         for (String line : lines) {
-            log.info("processing line " + line); // TODO fine
+            log.fine("processing line " + line);
             Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
             if (matcher.matches()) {
                 int callbackNumber = Transfer.parseInt(matcher.group(2));
                 if (lastCallbackNumber >= callbackNumber) {
-                    log.info("ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber); // TODO fine
+                    log.info("ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber);
                     break;
                 }
                 lastCallbackNumber = callbackNumber;
@@ -1173,14 +1178,14 @@ public abstract class BaseMapView implements MapView {
 
                 String callback = matcher.group(3);
                 if (processCallback(callback)) {
-                    log.info("processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber); // TODO fine
+                    log.fine("processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber);
                     break;
                 }
             }
 
             // process body of POST requests
             if (hasValidCallbackNumber && processCallback(line)) {
-                log.info("processed POST callback " + line + " with number: " + lastCallbackNumber); // TODO fine
+                log.fine("processed POST callback " + line + " with number: " + lastCallbackNumber);
                 break;
             }
         }
@@ -1348,13 +1353,13 @@ public abstract class BaseMapView implements MapView {
             // Double meters = coordinates.get(i - 1);
             Double longitude = coordinates.get(i - 2);
             Double latitude = coordinates.get(i - 3);
-            if(seconds != null && time != null) {
+            if (seconds != null && time != null) {
                 Calendar calendar = time.getCalendar();
                 calendar.add(Calendar.SECOND, -seconds.intValue());
                 time = CompactCalendar.fromCalendar(calendar);
             }
             int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null,  MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionNumber));
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionNumber));
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
@@ -1387,7 +1392,7 @@ public abstract class BaseMapView implements MapView {
         positionsModel.add(row, longitude, latitude, null, null, null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
 
-        positionAugmenter.complementElevation(row, longitude, latitude);        
+        positionAugmenter.complementElevation(row, longitude, latitude);
         positionAugmenter.complementTime(row, null);
     }
 
