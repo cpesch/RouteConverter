@@ -47,6 +47,10 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
             fireContentsChanged(this, -1, -1);
     }
 
+    public RouteCharacteristics getSelectedCharacteristics() {
+        return getRoute() != null ? route.getCharacteristics() : null;
+    }
+
     public int getSize() {
         return RouteCharacteristics.values().length;
     }
@@ -56,7 +60,7 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
     }
 
     public Object getSelectedItem() {
-        return getRoute() != null ? route.getCharacteristics() : null;
+        return getSelectedCharacteristics();
     }
 
     public void setSelectedItem(Object anItem) {
