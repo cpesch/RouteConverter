@@ -71,9 +71,7 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = Transfer.trim(lineMatcher.group(3));
-        if (comment != null && comment.toUpperCase().equals(comment))
-            comment = Transfer.toMixedCase(comment);
+        String comment = Transfer.toMixedCase(Transfer.trim(lineMatcher.group(3)));
         return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
                 null, null, null, comment);
     }

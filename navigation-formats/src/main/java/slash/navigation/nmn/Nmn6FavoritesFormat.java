@@ -80,9 +80,7 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
         String street = Transfer.trim(lineMatcher.group(4));
-        String comment = city != null ? city + (street != null ? ", " + street : "") : "";
-        if (comment.toUpperCase().equals(comment))
-            comment = Transfer.toMixedCase(comment);
+        String comment = Transfer.toMixedCase(city != null ? city + (street != null ? ", " + street : "") : "");
         return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), (Double) null, null, null, Transfer.trim(comment));
     }
 

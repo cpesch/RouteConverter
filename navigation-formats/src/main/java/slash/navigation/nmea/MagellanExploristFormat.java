@@ -78,9 +78,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
             String time = matcher.group(6);
-            String comment = matcher.group(7);
-            if (comment != null && comment.toUpperCase().equals(comment))
-                comment = Transfer.toMixedCase(comment);
+            String comment = Transfer.toMixedCase(matcher.group(7));
             String date = matcher.group(8);
             return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
                     Double.parseDouble(altitude), null, null, parseDateAndTime(date, time), Transfer.trim(comment));

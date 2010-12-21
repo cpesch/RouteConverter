@@ -730,7 +730,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String escapeNmn4and5(String str) {
-        if (str != null && str.length() > 2 && str.toUpperCase().equals(str))
+        if (str != null && str.length() > 2)
             str = Transfer.toMixedCase(str);
         return str != null ? str.replaceAll("\\|", ";") : null;
     }

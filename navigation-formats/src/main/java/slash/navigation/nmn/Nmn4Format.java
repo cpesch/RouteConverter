@@ -73,7 +73,7 @@ public class Nmn4Format extends NmnFormat {
         if (result != null && "-".equals(result))
             result = null;
         // this was currently only in NMN5, try it out for NMN4, too
-        if (result != null && result.length() > 2 && result.toUpperCase().equals(result))
+        if (result != null && result.length() > 2)
             result = Transfer.toMixedCase(result);
         return result;
     }

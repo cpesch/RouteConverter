@@ -53,6 +53,7 @@ public class Nmn5Format extends NmnFormat {
         return "Navigon Mobile Navigator 5 (*" + getExtension() + ")";
     }
 
+
     protected boolean isPosition(String line) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         return matcher.matches();
@@ -62,7 +63,7 @@ public class Nmn5Format extends NmnFormat {
         String result = Transfer.trim(string);
         if (result != null && "-".equals(result))
             result = null;
-        if (result != null && result.length() > 2 && result.toUpperCase().equals(result))
+        if (result != null && result.length() > 2)
             result = Transfer.toMixedCase(result);
         return result;
     }

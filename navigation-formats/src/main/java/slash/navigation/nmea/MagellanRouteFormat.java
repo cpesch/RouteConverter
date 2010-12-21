@@ -113,13 +113,10 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             String longitude = matcher.group(3);
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
-            String comment = matcher.group(6);
-            if (comment != null && comment.toUpperCase().equals(comment))
-                comment = Transfer.toMixedCase(comment);
+            String comment = Transfer.toMixedCase(matcher.group(6));
             return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
                     Double.parseDouble(altitude), null, null, null, Transfer.trim(comment));
         }
-
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 

@@ -80,16 +80,19 @@ public class Transfer {
     }
 
     public static String toMixedCase(String string) {
-        StringBuffer buffer = new StringBuffer();
-        StringTokenizer tokenizer = new StringTokenizer(string, " -", true);
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            if (token.length() > 1)
-                buffer.append(token.substring(0, 1).toUpperCase()).append(token.substring(1).toLowerCase());
-            else
-                buffer.append(token);
-        }
-        return buffer.toString();
+        if (string != null && string.toUpperCase().equals(string)) {
+            StringBuffer buffer = new StringBuffer();
+            StringTokenizer tokenizer = new StringTokenizer(string, " -", true);
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken();
+                if (token.length() > 1)
+                    buffer.append(token.substring(0, 1).toUpperCase()).append(token.substring(1).toLowerCase());
+                else
+                    buffer.append(token);
+            }
+            return buffer.toString();
+        } else
+            return string;
     }
 
     public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
