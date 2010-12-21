@@ -61,7 +61,7 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public int getMaximumPositionCount() {
-        return preferences.getInt("maximumGoogleMapsPositionCount", 15);
+        return preferences.getInt("maximumGoogleMapsUrlPositionCount", 15);
     }
 
     @SuppressWarnings({"unchecked"})

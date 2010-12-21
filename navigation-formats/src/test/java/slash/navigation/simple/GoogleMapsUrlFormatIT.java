@@ -20,12 +20,19 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.*;
+import org.junit.Test;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFileParser;
 
 import java.io.File;
 import java.io.IOException;
 
-public class GoogleMapsUrlFormatIT extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+
+public class GoogleMapsUrlFormatIT {
 
     private void checkBookmark(String name) throws IOException {
         File source = new File(SAMPLE_PATH + name);
@@ -38,18 +45,22 @@ public class GoogleMapsUrlFormatIT extends NavigationTestCase {
         assertNotNull(position.getLatitude());
     }
 
+    @Test
     public void testOriginalBookmark() throws IOException {
         checkBookmark("4a-original.url");
     }
 
+    @Test
     public void testBookmarkWrittenByFirefox() throws IOException {
         checkBookmark("4a-modified-by-firefox.url");
     }
 
+    @Test
     public void testBookmarkWrittenByIE() throws IOException {
         checkBookmark("4a-modified-by-ie.url");
     }
 
+    @Test
     public void testBookmarkWrittenByOpera() throws IOException {
         checkBookmark("4a-modified-by-opera.url");
     }
