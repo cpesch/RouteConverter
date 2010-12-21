@@ -27,7 +27,7 @@ import slash.navigation.bcr.BcrFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.simple.GoogleMapsFormat;
+import slash.navigation.simple.GoogleMapsUrlFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.util.RouteComments;
 
@@ -234,7 +234,7 @@ public class NavigationFileParser {
     }
 
     public boolean read(URL url, List<NavigationFormat> formats) throws IOException {
-        if (GoogleMapsFormat.isGoogleMapsUrl(url)) {
+        if (GoogleMapsUrlFormat.isGoogleMapsUrl(url)) {
             url = new URL(url.toExternalForm() + "&output=kml");
         }
         int readBufferSize = getSize(url);

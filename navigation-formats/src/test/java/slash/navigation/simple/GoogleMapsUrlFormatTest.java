@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GoogleMapsFormatTest extends NavigationTestCase {
+public class GoogleMapsUrlFormatTest extends NavigationTestCase {
     private static final String INPUT1 = "Betreff: Route nach/zu Riehler Straﬂe 190 50735 Kˆln (Google Maps)\n" +
             "\n" +
             "> Routenplaner\n" +
@@ -53,17 +53,17 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
 
     private static final String INPUT8_WWW_NO_COORDINATES ="http://www.google.de/maps?f=d&source=s_d&saddr=hannover&daddr=hamburg&hl=de&geocode=&mra=ls&sll=51.151786,10.415039&sspn=20.697059,39.331055&ie=UTF8&z=9";
 
-    GoogleMapsFormat format = new GoogleMapsFormat();
+    GoogleMapsUrlFormat urlFormat = new GoogleMapsUrlFormat();
 
     public void testFindURL() {
-        String url = GoogleMapsFormat.findURL(INPUT1);
+        String url = GoogleMapsUrlFormat.findURL(INPUT1);
         assertNotNull(url);
         assertTrue(url.startsWith("f=d"));
-        assertNull(GoogleMapsFormat.findURL("don't care"));
+        assertNull(GoogleMapsUrlFormat.findURL("don't care"));
     }
 
     public void testParseSingleURLParameters() {
-        Map<String, List<String>> parameters = format.parseURLParameters("f=d", "ISO8859-1");
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d", "ISO8859-1");
         assertNotNull(parameters);
         List<String> values = parameters.get("f");
         assertNotNull(values);
@@ -72,7 +72,7 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseTwoURLParameters() {
-        Map<String, List<String>> parameters = format.parseURLParameters("f=d&g=e", "UTF-8");
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d&g=e", "UTF-8");
         assertNotNull(parameters);
         List<String> fValues = parameters.get("f");
         assertNotNull(fValues);
@@ -85,7 +85,7 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseSetURLParameters() {
-        Map<String, List<String>> parameters = format.parseURLParameters("f=d&f=e", "ISO8859-1");
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters("f=d&f=e", "ISO8859-1");
         assertNotNull(parameters);
         List<String> fValues = parameters.get("f");
         assertNotNull(fValues);
@@ -95,8 +95,8 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseURLParameters() {
-        String url = GoogleMapsFormat.findURL(INPUT1);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "UTF-8");
+        String url = GoogleMapsUrlFormat.findURL(INPUT1);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "UTF-8");
         assertNotNull(parameters);
         List<String> fValues = parameters.get("f");
         assertNotNull(fValues);
@@ -105,26 +105,26 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseStartPosition() {
-        Wgs84Position position = format.parsePlainPosition("50.954318,7.311401");
+        Wgs84Position position = urlFormat.parsePlainPosition("50.954318,7.311401");
         assertEquals(7.311401, position.getLongitude());
         assertEquals(50.954318, position.getLatitude());
     }
 
     public void testParseNegativeStartPosition() {
-        Wgs84Position position = format.parsePlainPosition("-50.954318,-7.311401");
+        Wgs84Position position = urlFormat.parsePlainPosition("-50.954318,-7.311401");
         assertEquals(-7.311401, position.getLongitude());
         assertEquals(-50.954318, position.getLatitude());
     }
 
     public void testParseDestinationPosition() {
-        Wgs84Position position = format.parseCommentPosition("L339/Wuppertaler Straﬂe @50.918890,7.560880 ");
+        Wgs84Position position = urlFormat.parseCommentPosition("L339/Wuppertaler Straﬂe @50.918890,7.560880 ");
         assertEquals(7.560880, position.getLongitude());
         assertEquals(50.918890, position.getLatitude());
         assertEquals("L339/Wuppertaler Straﬂe", position.getComment());
     }
 
     public void testParseDestinationPositions() {
-        List<Wgs84Position> positions = format.parseDestinationPositions("L339/Wuppertaler Straﬂe @50.918890,7.560880 to: B @ -1.1 , -2.2to:C@3.3,4.4");
+        List<Wgs84Position> positions = urlFormat.parseDestinationPositions("L339/Wuppertaler Straﬂe @50.918890,7.560880 to: B @ -1.1 , -2.2to:C@3.3,4.4");
         assertEquals(3, positions.size());
         Wgs84Position position1 = positions.get(0);
         assertEquals(7.560880, position1.getLongitude());
@@ -141,9 +141,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionsFromInput1() {
-        String url = GoogleMapsFormat.findURL(INPUT1);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "UTF-8");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT1);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "UTF-8");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(6, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -161,9 +161,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionsFromInput2() {
-        String url = GoogleMapsFormat.findURL(INPUT2);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT2);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(3, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -181,9 +181,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionsFromInput3() {
-        String url = GoogleMapsFormat.findURL(INPUT3);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT3);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -197,9 +197,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionsFromInput4() {
-        String url = GoogleMapsFormat.findURL(INPUT4);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT4);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(3, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -217,9 +217,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionsFromInput4Stripped() {
-        String url = GoogleMapsFormat.findURL(INPUT4_STRIPPED);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT4_STRIPPED);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(3, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -237,9 +237,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseGeocodePositionsFromInput5() {
-        String url = GoogleMapsFormat.findURL(INPUT5);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT5);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -253,9 +253,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseGeocodePositionsWithViaFromInput6() {
-        String url = GoogleMapsFormat.findURL(INPUT6);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT6);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(5, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -277,9 +277,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseEncodedGeocodePositionsFromInput7() {
-        String url = GoogleMapsFormat.findURL(INPUT7_GEOCODE);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT7_GEOCODE);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(4, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -297,9 +297,9 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
     }
 
     public void testParseWWWNoCoordinatesFromInput8() {
-        String url = GoogleMapsFormat.findURL(INPUT8_WWW_NO_COORDINATES);
-        Map<String, List<String>> parameters = format.parseURLParameters(url, "ISO8859-1");
-        List<Wgs84Position> positions = format.parsePositions(parameters);
+        String url = GoogleMapsUrlFormat.findURL(INPUT8_WWW_NO_COORDINATES);
+        Map<String, List<String>> parameters = urlFormat.parseURLParameters(url, "ISO8859-1");
+        List<Wgs84Position> positions = urlFormat.parsePositions(parameters);
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position1 = positions.get(0);
@@ -319,7 +319,7 @@ public class GoogleMapsFormatTest extends NavigationTestCase {
         positions.add(new Wgs84Position(53.59171021, 10.35735078, null,3.5, null, "Groﬂensee, Germany"));
         positions.add(new Wgs84Position(53.64781001, 10.45696089, null,2.5, null, "Linau, Germany"));
         String expected = "http://maps.google.com/maps?ie=UTF8&saddr=Hamburg,+Germany%4010.025711,53.574977&daddr=Stemwarde,+Germany%4010.200260,53.576620+to:Gro%C3%9Fensee,+Germany%4010.357350,53.591710+to:Linau,+Germany%4010.456960,53.647810";
-        String actual = format.createURL(positions, 0, positions.size());
+        String actual = urlFormat.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
 }

@@ -226,10 +226,10 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new GlopusFormat());
     }
 
-    public SimpleRoute asGoogleMapsFormat() {
-        if (getFormat() instanceof GoogleMapsFormat)
+    public SimpleRoute asGoogleMapsUrlFormat() {
+        if (getFormat() instanceof GoogleMapsUrlFormat)
             return this;
-        return asSimpleFormat(new GoogleMapsFormat());
+        return asSimpleFormat(new GoogleMapsUrlFormat());
     }
 
     public GoPal3Route asGoPal3RouteFormat() {

@@ -106,7 +106,7 @@ public abstract class NavigationTestCase extends TestCase {
         return isReallyUnprecise(format) ||
                 format instanceof GarminPoiFormat || format instanceof GarminMapSource6Format ||
                 format instanceof GeoCachingFormat || format instanceof GarminMapSource5Format ||
-                format instanceof GarminPcx5Format || format instanceof GoogleMapsFormat ||
+                format instanceof GarminPcx5Format || format instanceof GoogleMapsUrlFormat ||
                 format instanceof GpsTunerFormat;
     }
 
@@ -217,7 +217,7 @@ public abstract class NavigationTestCase extends TestCase {
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
         compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
-        compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
+        compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
         compareHdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         comparePdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
@@ -645,12 +645,9 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    private static void compareTime(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics targetCharacteristics) {
+    private static void compareTime(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
         if (sourcePosition.getTime() != null && targetPosition.getTime() != null) {
-            if (targetFormat instanceof KmlFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) {
-                assertNotNull(sourcePosition.getTime());
-                assertNotNull(targetPosition.getTime());
-            } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
+            if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
                 DateFormat format = DateFormat.getTimeInstance();
                 format.setTimeZone(CompactCalendar.UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());

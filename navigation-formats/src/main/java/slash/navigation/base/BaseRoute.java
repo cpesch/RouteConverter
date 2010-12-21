@@ -365,7 +365,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asGlopusFormat();
 
-    public abstract SimpleRoute asGoogleMapsFormat();
+    public abstract SimpleRoute asGoogleMapsUrlFormat();
 
     public abstract GoPal3Route asGoPal3RouteFormat();
 

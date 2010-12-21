@@ -25,7 +25,7 @@ import slash.navigation.base.*;
 import java.io.File;
 import java.io.IOException;
 
-public class GoogleMapsFormatIT extends NavigationTestCase {
+public class GoogleMapsUrlFormatIT extends NavigationTestCase {
 
     private void checkBookmark(String name) throws IOException {
         File source = new File(SAMPLE_PATH + name);

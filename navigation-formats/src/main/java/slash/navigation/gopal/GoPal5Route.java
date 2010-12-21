@@ -318,8 +318,8 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
         return asSimpleFormat(new GlopusFormat());
     }
 
-    public SimpleRoute asGoogleMapsFormat() {
-        return asSimpleFormat(new GoogleMapsFormat());
+    public SimpleRoute asGoogleMapsUrlFormat() {
+        return asSimpleFormat(new GoogleMapsUrlFormat());
     }
 
     public GoPal3Route asGoPal3RouteFormat() {
