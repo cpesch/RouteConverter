@@ -280,6 +280,18 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
+    private String encodeComment(String string) {
+        if (string == null)
+            return "";
+        try {
+            string = URLEncoder.encode(string, UTF8_ENCODING);
+            string = string.replace("%2C", ",");
+            return string;
+        } catch (UnsupportedEncodingException e) {
+            return string;
+        }
+    }
+
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
         StringBuffer buffer = new StringBuffer("http://maps.google.com/maps?ie=UTF8&");
         for (int i = startIndex; i < endIndex; i++) {
@@ -308,17 +320,5 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
         startIndex = Math.max(startIndex - 1, 0);
         writer.println("URL=" + createURL(positions, startIndex, endIndex));
         writer.println();
-    }
-
-    private static String encodeComment(String string) {
-        if (string == null)
-            return "";
-        try {
-            string = URLEncoder.encode(string, UTF8_ENCODING);
-            string = string.replace("%2C", ",");
-            return string;
-        } catch (UnsupportedEncodingException e) {
-            return string;
-        }
     }
 }
