@@ -30,8 +30,11 @@ import slash.common.log.LoggingHelper;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.actions.AboutAction;
+import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
+import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
 import slash.navigation.converter.gui.actions.DeletePositionsAction;
 import slash.navigation.converter.gui.actions.FindPlaceAction;
 import slash.navigation.converter.gui.actions.InsertPositionsAction;
@@ -40,7 +43,12 @@ import slash.navigation.converter.gui.actions.OptionsAction;
 import slash.navigation.converter.gui.actions.RevertPositionListAction;
 import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
-import slash.navigation.converter.gui.helper.*;
+import slash.navigation.converter.gui.helper.FrameMenu;
+import slash.navigation.converter.gui.helper.JMenuHelper;
+import slash.navigation.converter.gui.helper.MergePositionListMenu;
+import slash.navigation.converter.gui.helper.ReopenMenuSynchronizer;
+import slash.navigation.converter.gui.helper.SinglePositionAugmenter;
+import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -536,6 +544,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getConvertPanel().renameRoute(name);
     }
 
+    public void setRouteCharacteristics(RouteCharacteristics characteristics) {
+        getConvertPanel().getCharacteristicsModel().setSelectedItem(characteristics);
+    }
+
     public void selectPositions(int[] selectedPositions) {
         if (isMapViewAvailable())
             mapView.setSelectedPositions(selectedPositions);
@@ -803,6 +815,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < mapSplitPane.getMaximumDividerLocation() - 10);
                     actionManager.enable("maximize-positionlist", location > mapSplitPane.getMinimumDividerLocation() + 10);
+                    actionManager.enable("show-map-and-positionlist", location == 1 || location > mapSplitPane.getMaximumDividerLocation() + tabbedPane.getMinimumSize().width - 1);
                 }
             }
         }
@@ -833,6 +846,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < frame.getHeight() - 10);
                     actionManager.enable("maximize-positionlist", location < frame.getHeight() - 10);
+                    actionManager.enable("show-elevation-profile", location > frame.getHeight() - 80);
                 }
             }
         }
@@ -852,6 +866,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
+        actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
+        actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("options", new OptionsAction());
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("search-for-updates", new SearchForUpdatesAction());
@@ -893,10 +909,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    private class ShowMapAndPositionListAction extends ShowElevationProfileAction {
+    private class ShowMapAndPositionListAction extends FrameAction {
         public void run() {
             mapSplitPane.setDividerLocation(getConvertPanel().getRootComponent().getMinimumSize().width);
-            super.run();
+            elevationSplitPane.setDividerLocation(preferences.getInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, -1));
         }
     }
 

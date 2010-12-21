@@ -35,6 +35,7 @@ import slash.navigation.base.NavigationFileParser;
 import slash.navigation.base.NavigationFileParserListener;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormats;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCoordinatesToPositions;
 import slash.navigation.converter.gui.actions.AddElevationToPositions;
@@ -122,6 +123,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * The convert panel of the route converter user interface.
@@ -762,18 +766,24 @@ public abstract class ConvertPanel {
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
+        boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
+        RouteCharacteristics characteristics = formatAndRoutesModel.getCharacteristicsModel().getSelectedCharacteristics();
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
 
         ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
+        actionManager.enable("insert-positions", existsMoreThanOnePosition);
+        actionManager.enable("delete-positions", existsMoreThanOnePosition);
         actionManager.enable("new-positionlist", supportsMultipleRoutes);
         actionManager.enable("rename-positionlist", existsARoute);
+        actionManager.enable("convert-route-to-track", existsAPosition && characteristics.equals(Route));
+        actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
     }
 
-    private int[] selectedPositionIndices = new int[0];
+    private int[] selectedPositionIndices = null;
 
     private void handlePositionsUpdate() {
         int[] selectedRows = tablePositions.getSelectedRows();
@@ -800,6 +810,7 @@ public abstract class ConvertPanel {
         actionManager.enable("copy", existsASelectedPosition);
         actionManager.enable("delete", existsASelectedPosition);
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
+        JMenuHelper.findMenu(RouteConverter.getInstance().getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
         actionManager.enable("add-coordinates", existsASelectedPosition);
         actionManager.enable("add-elevation", existsASelectedPosition);
         actionManager.enable("add-postal-address", existsASelectedPosition);

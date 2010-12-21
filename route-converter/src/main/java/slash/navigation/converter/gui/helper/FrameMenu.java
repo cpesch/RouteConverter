@@ -79,6 +79,8 @@ public class FrameMenu {
         positionlistMenu.addSeparator();
         positionlistMenu.add(JMenuHelper.createItem("rename-positionlist"));
         positionlistMenu.add(JMenuHelper.createItem("revert-positions"));
+        positionlistMenu.add(JMenuHelper.createItem("convert-route-to-track"));
+        positionlistMenu.add(JMenuHelper.createItem("convert-track-to-route"));
         positionlistMenu.addSeparator();
         positionlistMenu.add(JMenuHelper.createItem("split-positionlist"));
         positionlistMenu.add(JMenuHelper.createMenu("merge-positionlist"));
