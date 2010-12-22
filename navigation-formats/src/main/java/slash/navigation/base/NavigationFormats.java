@@ -96,6 +96,7 @@ public final class NavigationFormats {
         addFormat(Nmn6Format.class);
         addFormat(Nmn5Format.class);
         addFormat(Nmn4Format.class);
+        addFormat(NmnUrlFormat.class);
         addFormat(GoogleMapsUrlFormat.class);
         addFormat(WebPageFormat.class);
         addFormat(GpsTunerFormat.class);

@@ -208,12 +208,19 @@ public abstract class NavigationTestCase extends TestCase {
                                         boolean commentPositionNames,
                                         RouteCharacteristics sourceCharacteristics,
                                         RouteCharacteristics targetCharacteristics) {
-        assertNotNull("Source longitude " + index + " does not exist", sourcePosition.getLongitude());
-        assertNotNull("Source latitude " + index + " does not exist", sourcePosition.getLatitude());
-        assertNotNull("Target longitude " + index + " does not exist", targetPosition.getLongitude());
-        assertNotNull("Target latitude " + index + " does not exist", targetPosition.getLatitude());
-
-        compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        if (sourceFormat instanceof GoogleMapsUrlFormat &&
+                sourcePosition.getLongitude() == null && sourcePosition.getLatitude() == null) {
+            assertNull(sourcePosition.getLongitude());
+            assertNull(sourcePosition.getLatitude());
+            assertNull(targetPosition.getLongitude());
+            assertNull(targetPosition.getLatitude());
+        } else {
+            assertNotNull("Source longitude " + index + " does not exist", sourcePosition.getLongitude());
+            assertNotNull("Source latitude " + index + " does not exist", sourcePosition.getLatitude());
+            assertNotNull("Target longitude " + index + " does not exist", targetPosition.getLongitude());
+            assertNotNull("Target latitude " + index + " does not exist", targetPosition.getLatitude());
+            compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
+        }
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
         compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);

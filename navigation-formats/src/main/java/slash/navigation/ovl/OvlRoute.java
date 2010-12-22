@@ -297,6 +297,9 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asNmnFormat(new Nmn7Format());
     }
 
+    public SimpleRoute asNmnUrlFormat() {
+        return asSimpleFormat(new NmnUrlFormat());
+    }
 
     public OvlRoute asOvlFormat() {
         return this;

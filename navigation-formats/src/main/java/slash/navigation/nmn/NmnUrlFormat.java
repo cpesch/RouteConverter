@@ -231,7 +231,7 @@ public class NmnUrlFormat extends SimpleFormat<Wgs84Route> {
             String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
             if (i > startIndex)
                 buffer.append("&amp;");
-            buffer.append("target=coordinate//").append(latitude).append("/").append(longitude);
+            buffer.append("target=coordinate//").append(longitude).append("/").append(latitude);
         }
         buffer.append("\">");
         for (int i = startIndex; i < endIndex; i++) {
@@ -239,7 +239,6 @@ public class NmnUrlFormat extends SimpleFormat<Wgs84Route> {
             String comment = Transfer.trim(position.getComment());
             if (i > startIndex)
                 buffer.append(" -> ");
-            // TODO skipped 51°24'41"N, 07°16'23"O, <Comment>
             buffer.append(comment);
         }
         buffer.append("</a>");

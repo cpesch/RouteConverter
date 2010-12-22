@@ -271,6 +271,9 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return asNmnFormat(new Nmn7Format());
     }
 
+    public SimpleRoute asNmnUrlFormat() {
+        return asSimpleFormat(new NmnUrlFormat());
+    }
 
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();

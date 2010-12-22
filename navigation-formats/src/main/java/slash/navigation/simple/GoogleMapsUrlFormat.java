@@ -296,17 +296,21 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
         StringBuffer buffer = new StringBuffer("http://maps.google.com/maps?ie=UTF8&");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
-            String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+            String longitude = position.getLongitude() != null ? Transfer.formatDoubleAsString(position.getLongitude(), 6) : null;
+            String latitude = position.getLatitude() != null ? Transfer.formatDoubleAsString(position.getLatitude(), 6) : null;
             String comment = encodeComment(Transfer.trim(position.getComment()));
             if (i == startIndex) {
-                buffer.append("saddr=").append(comment).append("%40").append(latitude).append(",").append(longitude);
+                buffer.append("saddr=").append(comment);
+                if(longitude != null && latitude != null)
+                    buffer.append("%40").append(latitude).append(",").append(longitude);
                 if (endIndex > startIndex + 1)
                     buffer.append("&daddr=");
             } else {
                 if (i > startIndex + 1 && i < endIndex)
                     buffer.append("+").append(DESTINATION_SEPARATOR);
-                buffer.append(comment).append("%40").append(latitude).append(",").append(longitude);
+                buffer.append(comment);
+                if(longitude != null && latitude != null)
+                    buffer.append("%40").append(latitude).append(",").append(longitude);
             }
         }
         return buffer.toString();

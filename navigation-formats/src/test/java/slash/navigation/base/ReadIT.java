@@ -200,7 +200,6 @@ public class ReadIT {
 
     @Test
     public void testMagellanMapSendFilesAreValid() throws Exception {
-        // TODO Thread.sleep(5000); // this seems to help against the errors that only show up on complete runs
         readFiles(".mps");
     }
 
@@ -291,6 +290,8 @@ public class ReadIT {
 
     @Test
     public void testUrlFilesAreValid() throws IOException {
+        // GoogleMapsUrl
+        // NmnUrl
         readFiles(".url");
     }
 

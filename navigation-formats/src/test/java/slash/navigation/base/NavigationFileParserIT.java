@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -27,10 +28,12 @@ import slash.navigation.itn.TomTomRouteFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class NavigationFileParserIT extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+
+public class NavigationFileParserIT {
     NavigationFileParser parser = new NavigationFileParser();
 
     void read(String testFileName) throws IOException {
@@ -71,6 +74,7 @@ public class NavigationFileParserIT extends NavigationTestCase {
         readRouteCharacteristics(testFileName, RouteCharacteristics.Track, trackCount, positionCount);
     }
 
+    @Test
     public void testNavigationFileParserListener() throws IOException {
         final NavigationFormat[] found = new NavigationFormat[1];
         found[0] = null;
@@ -93,6 +97,7 @@ public class NavigationFileParserIT extends NavigationTestCase {
         }
     }
 
+    @Test
     public void testReadWithFormatList() throws IOException {
         NavigationFileParser parser = new NavigationFileParser();
         List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
@@ -103,17 +108,20 @@ public class NavigationFileParserIT extends NavigationTestCase {
         assertTrue(parser.read(new File(TEST_PATH + "from.itn"), formats));
     }
 
+    @Test
     public void testIsValidMicrosoftAutoRoute() throws IOException {
         read(TEST_PATH + "from.axe");
         read(TEST_PATH + "large.axe");
     }
 
+    @Test
     public void testIsValidBcr() throws IOException {
         read(TEST_PATH + "from-mtp0607.bcr");
         read(TEST_PATH + "from-mtp0809.bcr");
         read(TEST_PATH + "large.bcr");
     }
 
+    @Test
     public void testIsValidGpx10() throws IOException {
         readWaypoints(TEST_PATH + "from10.gpx", 3);
         readRoute(TEST_PATH + "from10.gpx", 3, 1, 2, 3);
@@ -126,6 +134,7 @@ public class NavigationFileParserIT extends NavigationTestCase {
         read(TEST_PATH + "large10.gpx");
     }
 
+    @Test
     public void testIsValidGpx11() throws IOException {
         readWaypoints(TEST_PATH + "from11.gpx", 3);
         readRoute(TEST_PATH + "from11.gpx", 3, 1, 2, 3);
@@ -138,6 +147,7 @@ public class NavigationFileParserIT extends NavigationTestCase {
         read(TEST_PATH + "large11.gpx");
     }
 
+    @Test
     public void testIsValidGarminMapSource6() throws IOException {
         read(TEST_PATH + "from.gdb");
 
@@ -152,70 +162,85 @@ public class NavigationFileParserIT extends NavigationTestCase {
         read(TEST_PATH + "large.gdb");
     }
 
+    @Test
     public void testIsValidTomTomRoute() throws IOException {
         read(TEST_PATH + "from.itn");
         read(TEST_PATH + "large.itn");
     }
 
+    @Test
     public void testIsValidKml20() throws IOException {
         read(TEST_PATH + "from20.kml");
         read(TEST_PATH + "large20.kml");
     }
 
+    @Test
     public void testIsValidKml21() throws IOException {
         read(TEST_PATH + "from21.kml");
         read(TEST_PATH + "large21.kml");
     }
 
+    @Test
     public void testIsValidMagellanMapSend() throws IOException {
         read(TEST_PATH + "from-mapsend.wpt");
     }
 
+    @Test
     public void testIsValidNmea() throws IOException {
         read(TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testIsValidNmn4() throws IOException {
         read(TEST_PATH + "from-nmn4.rte");
         read(TEST_PATH + "large-nmn4.rte");
     }
 
+    @Test
     public void testIsValidNmn5() throws IOException {
         read(TEST_PATH + "from-nmn5.rte");
         read(TEST_PATH + "large-nmn5.rte");
     }
 
+    @Test
     public void testIsValidNmn6() throws IOException {
         read(TEST_PATH + "from-nmn6.rte");
         read(TEST_PATH + "large-nmn6.rte");
     }
 
+    @Test
     public void testIsValidOvl() throws IOException {
         readRoute(TEST_PATH + "from-rte.ovl", 1, 100);
         readTrack(TEST_PATH + "from.ovl", 3, 476, 476, 476);
         read(TEST_PATH + "from.ovl");
     }
 
+    @Test
     public void testIsValidGarminPcx5() throws IOException {
         read(TEST_PATH + "from-pcx5.wpt");
         read(TEST_PATH + "large-pcx5.wpt");
     }
 
+    @Test
     public void testIsValidTourExchange() throws IOException {
         read(TEST_PATH + "from.tef");
         read(TEST_PATH + "large.tef");
     }
 
+    @Test
     public void testIsValidTomTomPoi() throws IOException {
         read(TEST_PATH + "from.ov2");
         read(TEST_PATH + "large.ov2");
     }
 
+    @Test
     public void testIsValidTrk() throws IOException {
         read(TEST_PATH + "from-gpstuner.trk");
     }
 
+    @Test
     public void testIsValidUrl() throws IOException {
-        read(TEST_PATH + "from.url");
+        read(TEST_PATH + "from-googlemaps.url");
+        read(TEST_PATH + "from-nmn.url");
     }
 }

@@ -435,6 +435,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract NmnRoute asNmn7Format();
 
+    public abstract SimpleRoute asNmnUrlFormat();
+
     public abstract OvlRoute asOvlFormat();
 
     public abstract SimpleRoute asRoute66Format();

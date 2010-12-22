@@ -20,82 +20,106 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
+
 import java.io.IOException;
 
 public class ReadWriteRoundtripIT extends ReadWriteBase {
 
+    @Test
     public void testAlanTrackLogWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.trl");
     }
 
+    @Test
     public void testAlanWaypointsAndRoutesWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.wpr");
     }
 
+    @Test
     public void testColumbusV900ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-columbusv900-standard.csv");
         readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv");
     }
 
+    @Test
     public void testCoPilotReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from6.trp");
         readWriteRoundtrip(TEST_PATH + "from7.trp");
     }
 
+    @Test
     public void testGeocachingDotComReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.loc");
     }
 
+    @Test
     public void testGlopusReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-glopus.tk");
     }
 
+    @Test
     public void testGoPalRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-gopal3.xml");
         readWriteRoundtrip(TEST_PATH + "from-gopal5.xml");
     }
 
+    @Test
     public void testGoPalTrackReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-gopal.trk");
     }
 
+    @Test
+    public void testGoogleMapsUrlReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-googlemaps.url");
+    }
+
+    @Test
     public void testGpsTunerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-gpstuner.trk");
     }
 
+    @Test
     public void testGpx11ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx");
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx");
     }
 
+    @Test
     public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.mps");
         readWriteRoundtrip(TEST_PATH + "from10.mps");
         readWriteRoundtrip(TEST_PATH + "from10trk.mps");
     }
 
+    @Test
     public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.gdb");
         readWriteRoundtrip(TEST_PATH + "from10.gdb");
         readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
     }
 
+    @Test
     public void testGarminPcx5ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
     }
 
+    @Test
     public void testGarminPoiReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.gpi");
     }
 
+    @Test
     public void testHaicomLoggerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-haicomlogger.csv");
     }
 
+    @Test
     public void testKlickTelRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.krt");
     }
 
+    @Test
     public void testKmlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from20.kml");
         readWriteRoundtrip(TEST_PATH + "from21.kml");
@@ -103,6 +127,7 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from22.kml");
     }
 
+    @Test
     public void testKmzReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from20.kmz");
         readWriteRoundtrip(TEST_PATH + "from21.kmz");
@@ -110,30 +135,37 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from22.kmz");
     }
 
+    @Test
     public void testKompassReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-kompass.tk");
     }
 
+    @Test
     public void testMagicMapsIktReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.ikt");
     }
 
+    @Test
     public void testMagicMapsPthReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.pth");
     }
 
+    @Test
     public void testMagicMaps2GoReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-magicmaps2go.txt");
     }
 
+    @Test
     public void testMTP0607ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "large.bcr");
     }
 
+    @Test
     public void testNavigatingPOIWarnerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc");
     }
 
+    @Test
     public void testNmeaReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "fromgga.nmea");
         readWriteRoundtrip(TEST_PATH + "fromrmc.nmea");
@@ -141,69 +173,90 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testNmn4ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn4.rte");
         readWriteRoundtrip(TEST_PATH + "large-nmn4.rte");
     }
 
+    @Test
     public void testNmn5ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn5.rte");
     }
 
+    @Test
     public void testNmn6ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn6.rte");
     }
 
+    @Test
     public void testNmn6FavoritesReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn6favorites.storage");
     }
 
+    @Test
     public void testNmn7ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn7.freshroute");
     }
 
+    @Test
+    public void testNmnUrlReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-nmn.url");
+    }
+
+    @Test
     public void testNokiaLandmarkExhangeReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.lmx");
     }
 
+    @Test
     public void testMagellanExploristReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-magellan.log");
     }
 
+    @Test
     public void testMagellanRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-magellan.rte");
     }
 
+    @Test
     public void testRoute66ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-route66poi.csv");
     }
 
+    @Test
     public void testSygicUnicodeReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-sygic-unicode.txt");
     }
 
+    @Test
     public void testTop50OvlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.ovl");
     }
 
+    @Test
     public void testTourReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.tour");
     }
 
+    @Test
     public void testTomTomRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.itn");
         readWriteRoundtrip(TEST_PATH + "large.itn");
     }
 
+    @Test
     public void testTomTomTrackReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(SAMPLE_PATH + "tripmaster3.itn");
     }
 
+    @Test
     public void testViaMichelinReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-poi.xvm");
         readWriteRoundtrip(TEST_PATH + "from-itinerary.xvm");
     }
 
+    @Test
     public void testXcsvReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.xcsv");
     }
