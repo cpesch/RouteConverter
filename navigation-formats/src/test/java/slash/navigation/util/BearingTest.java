@@ -20,10 +20,12 @@
 
 package slash.navigation.util;
 
-import slash.common.TestCase;
+import org.junit.Test;
 import slash.common.io.Transfer;
 
-public class BearingTest extends TestCase {
+import static slash.common.TestCase.assertDoubleEquals;
+
+public class BearingTest {
 
     /*
     * Calculate geodesic distance (in m) between two points specified by latitude/longitude (in numeric degrees)
@@ -73,40 +75,45 @@ public class BearingTest extends TestCase {
         return s;
     }
 
+    @Test
     public void testVincentyDistance() {
-        assertEquals(0.0, vincentyDistance(10.03200, 53.56948, 10.03200, 53.56948));
-        assertEquals(0.1295, vincentyDistance(10.03200, 53.56948, 10.032001, 53.569481));
-        assertEquals(1.2952, vincentyDistance(10.03200, 53.56948, 10.03201, 53.56949));
-        assertEquals(12.9522, vincentyDistance(10.0320, 53.5694, 10.0321, 53.5695));
-        assertEquals(144472.5478, vincentyDistance(01.5040, 53.0902, 00.0833, 52.1219));
+        assertDoubleEquals(0.0, vincentyDistance(10.03200, 53.56948, 10.03200, 53.56948));
+        assertDoubleEquals(0.1295, vincentyDistance(10.03200, 53.56948, 10.032001, 53.569481));
+        assertDoubleEquals(1.2952, vincentyDistance(10.03200, 53.56948, 10.03201, 53.56949));
+        assertDoubleEquals(12.9522, vincentyDistance(10.0320, 53.5694, 10.0321, 53.5695));
+        assertDoubleEquals(144472.5478, vincentyDistance(01.5040, 53.0902, 00.0833, 52.1219));
     }
 
+    @Test
     public void testIdenticalPositionBearing() {
         Bearing bearing = Bearing.calculateBearing(10.03200, 53.56948, 10.03200, 53.56948);
-        assertEquals(0.0, bearing.getAngle());
-        assertEquals(0.0, bearing.getBackAzimuth());
-        assertEquals(0.0, bearing.getDistance());
+        assertDoubleEquals(0.0, bearing.getAngle());
+        assertDoubleEquals(0.0, bearing.getBackAzimuth());
+        assertDoubleEquals(0.0, bearing.getDistance());
     }
 
+    @Test
     public void testModifiedLongitudes6thPositionBehindTheCommaBearing() {
         Bearing bearing = Bearing.calculateBearing(10.03200, 53.56948, 10.032001, 53.56948);
-        assertEquals(90.0, bearing.getAngle());
-        assertEquals(270.0000006116776, bearing.getBackAzimuth()); // should be 270.0 ?
-        assertEquals(0.0662, bearing.getDistance());
+        assertDoubleEquals(90.0, bearing.getAngle());
+        assertDoubleEquals(270.0000006116776, bearing.getBackAzimuth()); // should be 270.0 ?
+        assertDoubleEquals(0.0662, bearing.getDistance());
     }
 
+    @Test
     public void testModifiedLatitudes6thPositionBehindTheCommaBearing() {
         Bearing bearing = Bearing.calculateBearing(10.03200, 53.56948, 10.03200, 53.569481);
-        assertEquals(0.0, bearing.getAngle());
-        assertEquals(180.0, bearing.getBackAzimuth());
-        assertEquals(0.1112, bearing.getDistance());
+        assertDoubleEquals(0.0, bearing.getAngle());
+        assertDoubleEquals(180.0, bearing.getBackAzimuth());
+        assertDoubleEquals(0.1112, bearing.getDistance());
     }
 
+    @Test
     public void testBearingAgainstVincentyDistance() {
         Bearing bearing = Bearing.calculateBearing(01.5040, 53.0902, 00.0833, 52.1219);
-        assertEquals(222.33867425245487, bearing.getAngle());
-        assertEquals(41.20989654768979, bearing.getBackAzimuth());
-        assertEquals(144472.5478, bearing.getDistance());
-        assertEquals(vincentyDistance(01.5040, 53.0902, 00.0833, 52.1219), bearing.getDistance());
+        assertDoubleEquals(222.33867425245487, bearing.getAngle());
+        assertDoubleEquals(41.20989654768979, bearing.getBackAzimuth());
+        assertDoubleEquals(144472.5478, bearing.getDistance());
+        assertDoubleEquals(vincentyDistance(01.5040, 53.0902, 00.0833, 52.1219), bearing.getDistance());
     }
 }

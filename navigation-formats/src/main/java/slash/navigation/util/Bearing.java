@@ -81,9 +81,6 @@ public class Bearing {
      */
     private static final double deg = Math.toDegrees(1.0);
 
-    public Bearing() {
-    }
-
     public Bearing(double azimuth, double backazimuth, double distance) {
         this.azimuth = azimuth;
         this.backazimuth = backazimuth;
@@ -193,6 +190,7 @@ public class Bearing {
         double GLON2 = rad * longitude2;
         double X = GLON2 - GLON1;
         double D, SX, CX, SY, CY, Y, SA, C2A, CZ, E, C;
+        int count = 0;
         do {
             SX = Math.sin(X);
             CX = Math.cos(X);
@@ -212,6 +210,8 @@ public class Bearing {
             D = X;
             X = ((E * CY * C + CZ) * SY * C + Y) * SA;
             X = (1. - C) * X * F + GLON2 - GLON1;
+            if(count++ > 100000)
+                return new Bearing(0, 0, 0);
             //IF(DABS(D-X).GT.EPS) GO TO 100
         } while (Math.abs(D - X) > EPS);
 
