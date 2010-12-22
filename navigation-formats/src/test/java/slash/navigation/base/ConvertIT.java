@@ -527,6 +527,9 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-nmn6favorites.storage", new Nmn6FavoritesFormat(), new NavigatingPoiWarnerFormat());
     }
 
+    public void testConvertNmnUrlToNavigatingPOIWarner() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-nmn.txt", new NmnUrlFormat(), new NavigatingPoiWarnerFormat());
+    }
 
     public void testConvertRoute66ToTomTomPoi() throws IOException {
         convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new TomTomPoiFormat());

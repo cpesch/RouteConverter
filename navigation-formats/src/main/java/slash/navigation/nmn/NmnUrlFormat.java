@@ -46,7 +46,7 @@ public class NmnUrlFormat extends SimpleFormat<Wgs84Route> {
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
     public String getExtension() {
-        return ".url";
+        return ".txt";
     }
 
     public String getName() {
@@ -54,7 +54,7 @@ public class NmnUrlFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public int getMaximumPositionCount() {
-        return preferences.getInt("maximumNavigonUrlPositionCount", 100); // TODO or 25?
+        return preferences.getInt("maximumNavigonUrlPositionCount", Integer.MAX_VALUE); // TODO or 25? or 100?
     }
 
     @SuppressWarnings({"unchecked"})

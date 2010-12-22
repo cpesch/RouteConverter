@@ -279,6 +279,7 @@ public class ReadIT {
     public void testTextFilesAreValid() throws IOException {
         // KienzleGps
         // MagicMaps2Go
+        // NmnUrl
         // Sygic
         readFiles(".txt");
     }
@@ -291,7 +292,6 @@ public class ReadIT {
     @Test
     public void testUrlFilesAreValid() throws IOException {
         // GoogleMapsUrl
-        // NmnUrl
         readFiles(".url");
     }
 
