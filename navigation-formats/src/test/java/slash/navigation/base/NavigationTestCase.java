@@ -594,7 +594,7 @@ public abstract class NavigationTestCase extends TestCase {
             else if (targetFormat instanceof Nmn6Format)
                 assertEquals("Comment " + index + " does not match", escapeNmn6(sourcePosition.getComment()), targetPosition.getComment());
             else if (targetFormat instanceof Nmn6FavoritesFormat)
-                assertEquals("Comment " + index + " does not match", escapeNmn6Favorites(sourcePosition.getComment()), targetPosition.getComment());
+                assertEquals("Comment " + index + " does not match", escapeNmn6Favorites(sourcePosition.getComment().toUpperCase()), targetPosition.getComment());
             else if (targetFormat instanceof Nmn7Format)
                 assertEquals("Comment " + index + " does not match", trimSpaces(sourcePosition.getComment()), trimSpaces(targetPosition.getComment()));
             else if (sourceFormat instanceof GarminPcx5Format && targetFormat instanceof MagellanMapSendFormat) {
