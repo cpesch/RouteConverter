@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 /**
  * Reads and writes Navigating POI-Warner (.asc) files.
- * <p/>
+ *
  * Format: 8.6180900,50.2175100,"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]"
  *
  * @author Christian Pesch

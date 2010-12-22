@@ -198,14 +198,14 @@ public class NmnUrlFormat extends SimpleFormat<Wgs84Route> {
                 (city != null ? city : "") +
                 (street != null ? ", " + street : "") +
                 (houseNumber != null ? " " + houseNumber : "")));
-            Double longitude = Transfer.parseDouble(addressPattern.group(5));
-            Double latitude = Transfer.parseDouble(addressPattern.group(6));
+            Double latitude = Transfer.parseDouble(addressPattern.group(5));
+            Double longitude = Transfer.parseDouble(addressPattern.group(6));
             return new Wgs84Position(longitude, latitude, null, null, null, Transfer.trim(comment));
         }
         Matcher coordinatesMatcher = COORDINATE_PATTERN.matcher(position);
         if (coordinatesMatcher.matches()) {
-            Double longitude = Transfer.parseDouble(coordinatesMatcher.group(1));
-            Double latitude = Transfer.parseDouble(coordinatesMatcher.group(2));
+            Double latitude = Transfer.parseDouble(coordinatesMatcher.group(1));
+            Double longitude = Transfer.parseDouble(coordinatesMatcher.group(2));
             return new Wgs84Position(longitude, latitude, null, null, null, null);
         }
         throw new IllegalArgumentException("'" + position + "' does not match");
@@ -231,7 +231,7 @@ public class NmnUrlFormat extends SimpleFormat<Wgs84Route> {
             String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
             if (i > startIndex)
                 buffer.append("&amp;");
-            buffer.append("target=coordinate//").append(longitude).append("/").append(latitude);
+            buffer.append("target=coordinate//").append(latitude).append("/").append(longitude);
         }
         buffer.append("\">");
         for (int i = startIndex; i < endIndex; i++) {
