@@ -134,10 +134,10 @@ public class NmnUrlFormatTest {
     @Test
     public void testCreateURL() {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        positions.add(new Wgs84Position(53.57497745, 10.02571156, null, 5.5, null, "Hamburg, Germany"));
-        positions.add(new Wgs84Position(53.57662034, 10.20026067, null,4.5, null, "Stemwarde, Germany"));
-        positions.add(new Wgs84Position(53.59171021, 10.35735078, null,3.5, null, "Groﬂensee, Germany"));
-        positions.add(new Wgs84Position(53.64781001, 10.45696089, null,2.5, null, "Linau, Germany"));
+        positions.add(new Wgs84Position(10.02571156, 53.57497745, null, 5.5, null, "Hamburg, Germany"));
+        positions.add(new Wgs84Position(10.20026067, 53.57662034, null,4.5, null, "Stemwarde, Germany"));
+        positions.add(new Wgs84Position(10.35735078, 53.59171021, null,3.5, null, "Groﬂensee, Germany"));
+        positions.add(new Wgs84Position(10.45696089, 53.64781001, null,2.5, null, "Linau, Germany"));
         String expected = "<a href=\"navigonDEU://route/?target=coordinate//10.025711/53.574977&amp;target=coordinate//10.200260/53.576620&amp;target=coordinate//10.357350/53.591710&amp;target=coordinate//10.456960/53.647810\">Hamburg, Germany -> Stemwarde, Germany -> Groﬂensee, Germany -> Linau, Germany</a>";
         String actual = urlFormat.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);

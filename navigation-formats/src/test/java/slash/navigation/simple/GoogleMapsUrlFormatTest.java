@@ -336,11 +336,11 @@ public class GoogleMapsUrlFormatTest {
     @Test
     public void testCreateURL() {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-        positions.add(new Wgs84Position(53.57497745, 10.02571156, null, 5.5, null, "Hamburg, Germany"));
-        positions.add(new Wgs84Position(53.57662034, 10.20026067, null,4.5, null, "Stemwarde, Germany"));
-        positions.add(new Wgs84Position(53.59171021, 10.35735078, null,3.5, null, "Groﬂensee, Germany"));
-        positions.add(new Wgs84Position(53.64781001, 10.45696089, null,2.5, null, "Linau, Germany"));
-        String expected = "http://maps.google.com/maps?ie=UTF8&saddr=Hamburg,+Germany%4010.025711,53.574977&daddr=Stemwarde,+Germany%4010.200260,53.576620+to:Gro%C3%9Fensee,+Germany%4010.357350,53.591710+to:Linau,+Germany%4010.456960,53.647810";
+        positions.add(new Wgs84Position(10.02571156, 53.57497745, null, 5.5, null, "Hamburg, Germany"));
+        positions.add(new Wgs84Position(10.20026067, 53.57662034, null,4.5, null, "Stemwarde, Germany"));
+        positions.add(new Wgs84Position(10.35735078, 53.59171021, null,3.5, null, "Groﬂensee, Germany"));
+        positions.add(new Wgs84Position(10.45696089, 53.64781001, null,2.5, null, "Linau, Germany"));
+        String expected = "http://maps.google.com/maps?ie=UTF8&saddr=Hamburg,+Germany%4053.574977,10.025711&daddr=Stemwarde,+Germany%4053.576620,10.200260+to:Gro%C3%9Fensee,+Germany%4053.591710,10.357350+to:Linau,+Germany%4053.647810,10.456960";
         String actual = urlFormat.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
