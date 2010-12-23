@@ -20,14 +20,17 @@
 
 package slash.navigation.simple;
 
-import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.UrlFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
-import java.io.*;
+import java.io.PrintWriter;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -39,7 +42,7 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 
-public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
+public class GoogleMapsUrlFormat extends UrlFormat {
     private static final Logger log = Logger.getLogger(GoogleMapsUrlFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsUrlFormat.class);
     private static final Pattern URL_PATTERN = Pattern.compile(".*http://.+\\.google\\..+/maps\\?([^\\s]+).*");
@@ -50,7 +53,6 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
                     "(@?(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + ")," +
                     "(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + "))?");
     private static final String DESTINATION_SEPARATOR = "to:";
-    private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
     public String getExtension() {
         return ".url";
@@ -64,46 +66,11 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
         return preferences.getInt("maximumGoogleMapsUrlPositionCount", 15);
     }
 
-    @SuppressWarnings({"unchecked"})
-    public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
-    }
-
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
-        // used to be a UTF-8 then ISO-8859-1 fallback style
-        return read(source, startDate, UTF8_ENCODING);
-    }
-
-    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
-        StringBuffer buffer = new StringBuffer();
-
-        while (buffer.length() < READ_BUFFER_SIZE) {
-            String line = reader.readLine();
-            if (line == null)
-                break;
-            buffer.append(line).append("\n");
-        }
-
-        String url = findURL(buffer.toString());
-        if (url == null)
-            return null;
-
-        Map<String, List<String>> parameters = parseURLParameters(url, encoding);
-        if (parameters == null)
-            return null;
-
-        List<Wgs84Position> positions = parsePositions(parameters);
-        if (positions.size() > 0)
-            return Arrays.asList(new Wgs84Route(this, RouteCharacteristics.Route, positions));
-        else
-            return null;
-    }
-
     public static boolean isGoogleMapsUrl(URL url) {
-        return findURL(url.toExternalForm()) != null;
+        return internalFindUrl(url.toExternalForm()) != null;
     }
 
-    static String findURL(String text) {
+    private static String internalFindUrl(String text) {
         text = text.replaceAll("[\n|\r]", "&");
         Matcher bookmarkMatcher = BOOKMARK_PATTERN.matcher(text);
         if (bookmarkMatcher.matches())
@@ -114,80 +81,8 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
         return Transfer.trim(urlMatcher.group(1));
     }
 
-    Map<String, List<String>> parseURLParameters(String data, String encoding) {
-        if (data == null || data.length() == 0)
-            return null;
-
-        try {
-            byte[] bytes = data.getBytes(encoding);
-            return parseParameters(bytes, encoding);
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-    }
-
-    private static byte convertHexDigit(byte b) {
-        if ((b >= '0') && (b <= '9')) return (byte) (b - '0');
-        if ((b >= 'a') && (b <= 'f')) return (byte) (b - 'a' + 10);
-        if ((b >= 'A') && (b <= 'F')) return (byte) (b - 'A' + 10);
-        return 0;
-    }
-
-    private static void putMapEntry(Map<String, List<String>> map, String name, String value) {
-        List<String> values = map.get(name);
-        if (values == null) {
-            values = new ArrayList<String>(1);
-            map.put(name, values);
-        }
-        values.add(value);
-    }
-
-    private static Map<String, List<String>> parseParameters(byte[] data, String encoding) throws UnsupportedEncodingException {
-        if (data == null || data.length == 0)
-            return null;
-
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
-        int ix = 0;
-        int ox = 0;
-        String key = null;
-        String value;
-        while (ix < data.length) {
-            byte c = data[ix++];
-            switch ((char) c) {
-                case'&':
-                    value = new String(data, 0, ox, encoding);
-                    if (key != null) {
-                        putMapEntry(result, key, value);
-                        key = null;
-                    }
-                    ox = 0;
-                    break;
-                case'=':
-                    if (key == null) {
-                        key = new String(data, 0, ox, encoding);
-                        ox = 0;
-                    } else {
-                        data[ox++] = c;
-                    }
-                    break;
-                case'+':
-                    data[ox++] = (byte) ' ';
-                    break;
-                case'%':
-                    int leftNibble = convertHexDigit(data[ix++]) << 4;
-                    byte rightNibble = ix < data.length ? convertHexDigit(data[ix++]) : 0;
-                    data[ox++] = (byte) (leftNibble + rightNibble);
-                    break;
-                default:
-                    data[ox++] = c;
-            }
-        }
-        // The last value does not end in '&'.  So save it now.
-        if (key != null) {
-            value = new String(data, 0, ox, encoding);
-            putMapEntry(result, key, value);
-        }
-        return result;
+    protected String findURL(String text) {
+        return internalFindUrl(text);
     }
 
     Wgs84Position parsePlainPosition(String coordinates) {
@@ -233,7 +128,7 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
-    List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
+    protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
         List<Wgs84Position> result = new ArrayList<Wgs84Position>();
         if (parameters == null)
             return result;
@@ -278,18 +173,6 @@ public class GoogleMapsUrlFormat extends SimpleFormat<Wgs84Route> {
             }
         }
         return result;
-    }
-
-    private String encodeComment(String string) {
-        if (string == null)
-            return "";
-        try {
-            string = URLEncoder.encode(string, UTF8_ENCODING);
-            string = string.replace("%2C", ",");
-            return string;
-        } catch (UnsupportedEncodingException e) {
-            return string;
-        }
     }
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {

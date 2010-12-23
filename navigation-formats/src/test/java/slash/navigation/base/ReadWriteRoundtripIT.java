@@ -202,6 +202,7 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     @Test
     public void testNmnUrlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-nmn.txt");
+        readWriteRoundtrip(TEST_PATH + "from-nmn-plain.txt");
     }
 
     @Test

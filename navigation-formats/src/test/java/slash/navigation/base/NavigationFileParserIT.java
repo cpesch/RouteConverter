@@ -241,6 +241,7 @@ public class NavigationFileParserIT {
     @Test
     public void testIsValidUrl() throws IOException {
         read(TEST_PATH + "from-googlemaps.url");
-        read(TEST_PATH + "from-nmn.url");
+        read(TEST_PATH + "from-nmn.txt");
+        read(TEST_PATH + "from-nmn-plain.txt");
     }
 }
