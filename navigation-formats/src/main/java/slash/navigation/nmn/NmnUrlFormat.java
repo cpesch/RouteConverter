@@ -55,7 +55,7 @@ public class NmnUrlFormat extends UrlFormat {
     }
 
     public int getMaximumPositionCount() {
-        return preferences.getInt("maximumNavigonUrlPositionCount", Integer.MAX_VALUE);
+        return preferences.getInt("maximumNavigonUrlPositionCount", 500);
     }
 
     protected String findURL(String text) {
