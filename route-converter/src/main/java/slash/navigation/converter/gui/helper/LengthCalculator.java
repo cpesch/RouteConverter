@@ -128,7 +128,7 @@ public class LengthCalculator {
                 if (distance != null)
                     distanceMeters += distance;
                 Long time = previous.calculateTime(next);
-                if (time != null)
+                if (time != null && time > 0)
                     totalTimeMilliSeconds += time;
             }
 

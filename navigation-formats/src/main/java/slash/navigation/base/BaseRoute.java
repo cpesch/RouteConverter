@@ -210,14 +210,14 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public long getTime() {
         Calendar minimum = null, maximum = null;
-        long delta = 0;
+        long totalTimeMilliSeconds = 0;
         List<P> positions = getPositions();
         P previous = null;
         for (P next : positions) {
             if (previous != null) {
                 Long time = previous.calculateTime(next);
-                if (time != null)
-                    delta += time;
+                if (time != null && time > 0)
+                    totalTimeMilliSeconds += time;
             }
 
             Calendar calendar = next.getTime() != null ? next.getTime().getCalendar() : null;
@@ -232,7 +232,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
 
         long maxMinusMin = minimum != null ? maximum.getTimeInMillis() - minimum.getTimeInMillis() : 0;
-        return Math.max(maxMinusMin, delta);
+        return Math.max(maxMinusMin, totalTimeMilliSeconds);
     }
 
     public double getDistance() {
