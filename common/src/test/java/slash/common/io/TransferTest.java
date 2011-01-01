@@ -111,4 +111,13 @@ public class TransferTest {
         assertEquals(new BigDecimal("1.000004"), Transfer.formatBigDecimal(1.000004, 5));
         assertEquals(new BigDecimal("1.000005"), Transfer.formatBigDecimal(1.000005, 5));
     }
+
+    @Test
+    public void testFormatDuration() {
+        assertEquals("00:00:05", Transfer.formatDuration(5 * 1000));
+        assertEquals("00:05:05", Transfer.formatDuration((5 * 60 + 5) * 1000));
+        assertEquals("05:05:05", Transfer.formatDuration((5 * 60 * 60 + 5 * 60 + 5) * 1000));
+        assertEquals("25:05:05", Transfer.formatDuration((25 * 60 * 60 + 5 * 60 + 5) * 1000));
+        assertEquals("125:05:05", Transfer.formatDuration((125 * 60 * 60 + 5 * 60 + 5) * 1000));
+    }
 }

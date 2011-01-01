@@ -111,7 +111,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 time[0] = row - 2 >= 0 ? Positions.interpolateTime(positionsModel.getPosition(row),
                         positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
                 if (time[0] == null)
-                    time[0] = CompactCalendar.fromCalendar(Calendar.getInstance());
+                    time[0] = CompactCalendar.fromCalendar(Calendar.getInstance(CompactCalendar.UTC));
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {

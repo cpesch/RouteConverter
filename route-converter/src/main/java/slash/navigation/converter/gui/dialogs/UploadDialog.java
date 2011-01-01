@@ -24,17 +24,14 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.renderer.RouteServiceListCellRenderer;
-import slash.navigation.converter.gui.services.CrossingWays;
-import slash.navigation.converter.gui.services.GPSies;
-import slash.navigation.converter.gui.services.OpenStreetMap;
-import slash.navigation.converter.gui.services.RouteCatalog;
-import slash.navigation.converter.gui.services.RouteService;
+import slash.navigation.converter.gui.services.*;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
@@ -43,8 +40,9 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 /**
@@ -139,11 +137,7 @@ public class UploadDialog extends SimpleDialog {
         double meters = firstRoute.getDistance();
         long milliSeconds = firstRoute.getTime();
         String length = (meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        calendar.add(Calendar.MILLISECOND, (int) milliSeconds);
-        Date date = calendar.getTime();
-        String duration = MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date);
+        String duration = Transfer.formatDuration(milliSeconds);
 
         textAreaDescription.setText(
                 (firstRoute.getDescription() != null ? firstRoute.getDescription() + "\n" : "") +

@@ -230,7 +230,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         } else if (stringValue != null) {
             try {
                 Date date = TIME_FORMAT.parse(stringValue);
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = Calendar.getInstance(CompactCalendar.UTC);
                 calendar.setTime(date);
                 return CompactCalendar.fromCalendar(calendar);
             }

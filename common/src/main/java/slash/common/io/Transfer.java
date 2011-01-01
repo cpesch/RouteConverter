@@ -232,6 +232,17 @@ public class Transfer {
             return null;
     }
 
+    public static String formatDuration(long milliseconds) {
+        StringBuffer buffer = new StringBuffer();
+        long seconds = milliseconds / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        buffer.append(formatIntAsString((int)hours, 2)).append(":").
+             append(formatIntAsString((int)minutes % 60, 2)).append(":").
+                append(formatIntAsString((int)seconds % 60, 2));
+        return buffer.toString();
+    }
+
     public static Integer parseInt(String string) {
         String trimmed = trim(string);
         if (trimmed != null) {

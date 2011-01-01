@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
@@ -29,8 +30,6 @@ import slash.navigation.converter.gui.helper.LengthCalculatorListener;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.text.MessageFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -68,11 +67,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
 
     private void updateLabel(int meters, long milliSeconds) {
         labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        calendar.add(Calendar.MILLISECOND, (int) milliSeconds);
-        Date date = calendar.getTime();
-        labelDuration.setText(MessageFormat.format(RouteConverter.getBundle().getString("duration-value"), date));
+        labelDuration.setText(Transfer.formatDuration(milliSeconds));
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
