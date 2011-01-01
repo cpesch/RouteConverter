@@ -135,13 +135,16 @@ public class Gpx11Format extends GpxFormat {
             for (WptType wptType : rteType.getRtept()) {
                 positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour), getHeading(wptType), parseTime(wptType.getTime()), asComment(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
 
-                for (Object any : wptType.getExtensions().getAny()) {
-                    if(any instanceof JAXBElement) {
-                        Object anyValue = ((JAXBElement) any).getValue();
-                        if (anyValue instanceof RoutePointExtensionT) {
-                            RoutePointExtensionT routePoint = (RoutePointExtensionT) anyValue;
-                            for (AutoroutePointT autoroutePoint : routePoint.getRpt()) {
-                                positions.add(new GpxPosition(autoroutePoint.getLon(), autoroutePoint.getLat(), null, null, null, null, null, null, null, null, null, null));
+                ExtensionsType extensions = wptType.getExtensions();
+                if (extensions != null) {
+                    for (Object any : extensions.getAny()) {
+                        if (any instanceof JAXBElement) {
+                            Object anyValue = ((JAXBElement) any).getValue();
+                            if (anyValue instanceof RoutePointExtensionT) {
+                                RoutePointExtensionT routePoint = (RoutePointExtensionT) anyValue;
+                                for (AutoroutePointT autoroutePoint : routePoint.getRpt()) {
+                                    positions.add(new GpxPosition(autoroutePoint.getLon(), autoroutePoint.getLat(), null, null, null, null, null, null, null, null, null, null));
+                                }
                             }
                         }
                     }
@@ -173,8 +176,9 @@ public class Gpx11Format extends GpxFormat {
 
     private Double getSpeed(WptType wptType, boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour) {
         Double result = null;
-        if (wptType.getExtensions() != null) {
-            for (Object any : wptType.getExtensions().getAny()) {
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions != null) {
+            for (Object any : extensions.getAny()) {
                 if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("speed".equals(element.getLocalName())) {
@@ -239,8 +243,9 @@ public class Gpx11Format extends GpxFormat {
 
     private Double getHeading(WptType wptType) {
         Double heading = null;
-        if (wptType.getExtensions() != null) {
-            for (Object any : wptType.getExtensions().getAny()) {
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions != null) {
+            for (Object any : extensions.getAny()) {
                 if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("course".equals(element.getLocalName()))
