@@ -178,7 +178,9 @@ public abstract class KmlFormat extends BaseKmlFormat {
         BT747_DATE.setTimeZone(CompactCalendar.UTC);
     }
 
-    void parseTime(BaseNavigationPosition position, String description, CompactCalendar startDate) { 
+    private static final Pattern QSTARTZ_DATE_AND_SPEED_PATTERN = Pattern.compile(".*Date:\\s*(\\d{4}/\\d{2}/\\d{2}).*Time:\\s*(\\d{2}:\\d{2}:\\d{2}).*Speed:\\s*([\\d\\.]+)\\s*.*", Pattern.DOTALL);
+
+    void parseTime(BaseNavigationPosition position, String description, CompactCalendar startDate) {
         if (description != null) {
             Matcher tavelLogMatcher = TAVELLOG_DATE_PATTERN.matcher(description);
             if (tavelLogMatcher.matches()) {
@@ -214,6 +216,18 @@ public abstract class KmlFormat extends BaseKmlFormat {
                     // intentionally left empty;
                 }
             }
+            Matcher qstarzMatcher = QSTARTZ_DATE_AND_SPEED_PATTERN.matcher(description);
+            if (qstarzMatcher.matches()) {
+                String dateString = qstarzMatcher.group(1);
+                String timeString = qstarzMatcher.group(2);
+                try {
+                    Date parsed = TAVELLOG_DATE.parse(dateString + " " + timeString);
+                    position.setTime(CompactCalendar.fromDate(parsed));
+                }
+                catch (ParseException e) {
+                    // intentionally left empty;
+                }
+            }
         }
     }
 
@@ -229,6 +243,10 @@ public abstract class KmlFormat extends BaseKmlFormat {
             Matcher wbt201LogMatcher = WBT201LOG_SPEED_PATTERN.matcher(description);
             if (wbt201LogMatcher.matches()) {
                 return Transfer.parseDouble(wbt201LogMatcher.group(1));
+            }
+            Matcher qstarzMatcher = QSTARTZ_DATE_AND_SPEED_PATTERN.matcher(description);
+            if (qstarzMatcher.matches()) {
+                return Transfer.parseDouble(qstarzMatcher.group(3));
             }
         }
         return null;
