@@ -439,6 +439,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract OvlRoute asOvlFormat();
 
+    public abstract SimpleRoute asQstarzQ1000Format();
+
     public abstract SimpleRoute asRoute66Format();
 
     public abstract SimpleRoute asSygicUnicodeFormat();

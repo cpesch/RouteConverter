@@ -37,7 +37,6 @@ public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
         super(format, characteristics, positions);
     }
 
-
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (Wgs84Position position : positions) {

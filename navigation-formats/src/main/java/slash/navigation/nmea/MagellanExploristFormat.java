@@ -27,7 +27,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         log = Logger.getLogger(MagellanExploristFormat.class.getName());
     }
 
-    private static final String HEADER = "$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII";
+    private static final String HEADER_LINE = "$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII";
     
     private static final Pattern TRK_PATTERN = Pattern.
             compile("^\\$PMGNTRK" + SEPARATOR +
@@ -88,7 +88,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
     }
 
     protected void writeHeader(PrintWriter writer) {
-        writer.println(HEADER);
+        writer.println(HEADER_LINE);
     }
 
     private String formatAltitude(Double aDouble) {

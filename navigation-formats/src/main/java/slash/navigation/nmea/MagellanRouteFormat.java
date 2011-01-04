@@ -66,7 +66,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         LATITUDE_NUMBER_FORMAT.setMaximumIntegerDigits(4);
     }
 
-    private static final String HEADER = "$PMGNFMT,%RTE,NUM_MSG,ID,FLAG,NUM,NAME,WPT_NAME1,ICON1,WPT_NAME2,ICON2,CHKSUM ?%WPL,LAT,HEMI,LON,HEMI,ALT,UNIT,NAME,MSG,ICON,CHKSUM,%META,ASCII";
+    private static final String HEADER_LINE = "$PMGNFMT,%RTE,NUM_MSG,ID,FLAG,NUM,NAME,WPT_NAME1,ICON1,WPT_NAME2,ICON2,CHKSUM ?%WPL,LAT,HEMI,LON,HEMI,ALT,UNIT,NAME,MSG,ICON,CHKSUM,%META,ASCII";
 
     private static final Pattern WPL_PATTERN = Pattern.
             compile("^\\$PMGNWPL" + SEPARATOR +
@@ -171,7 +171,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
     }
 
     protected void writeHeader(PrintWriter writer) {
-        writer.println(HEADER);
+        writer.println(HEADER_LINE);
     }
 
     protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {

@@ -91,6 +91,15 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot7Format());
     }
 
+    public void testConvertQstarzQ1000ToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot6Format());
+    }
+
+    public void testConvertQstarzQ1000ToColumbusV900() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900ProfessionalFormat());
+    }
+
 
     public void testConvertCoPilotToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx10Format());

@@ -221,6 +221,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     @Test
+    public void testQstarzQ1000ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-qstarz-q1000.csv");
+    }
+
+    @Test
     public void testRoute66ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-route66poi.csv");
     }

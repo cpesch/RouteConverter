@@ -119,6 +119,7 @@ public class ReadIT {
     @Test
     public void testCsvFilesAreValid() throws IOException {
         // Columbus V900
+        // Qstarz Q1000
         readFiles(".csv");
     }
 

@@ -39,9 +39,9 @@ import java.util.regex.Pattern;
  */
 
 public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
+    private static final char SEPARATOR_CHAR = ';';
     private static final String FIRST_HEADER_LINE = "GPS Tracklog - ";
     private static final String SECOND_HEADER_LINE = "Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)";
-    private static final char SEPARATOR_CHAR = ';';
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +

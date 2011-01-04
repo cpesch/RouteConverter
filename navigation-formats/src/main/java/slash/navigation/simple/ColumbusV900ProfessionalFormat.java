@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  */
 
 public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
-    private static final String HEADER = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
+    private static final String HEADER_LINE = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX";
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
@@ -66,7 +66,7 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
     }
 
     protected String getHeader() {
-        return HEADER;
+        return HEADER_LINE;
     }
 
     protected Pattern getPattern() {

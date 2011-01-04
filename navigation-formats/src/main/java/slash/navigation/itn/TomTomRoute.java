@@ -295,6 +295,9 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
 
+    public SimpleRoute asQstarzQ1000Format() {
+        return asSimpleFormat(new QstarzQ1000Format());
+    }
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> simplePositions = new ArrayList<Wgs84Position>();

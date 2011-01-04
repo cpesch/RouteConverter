@@ -41,7 +41,7 @@ class KlickTelUtil {
     private static Marshaller newMarshaller() {
         Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
         try {
-            marshaller.setProperty(JaxbUtils.JAXB_IMPL_HEADER, XmlNavigationFormat.HEADER);
+            marshaller.setProperty(JaxbUtils.JAXB_IMPL_HEADER, XmlNavigationFormat.HEADER_LINE);
         } catch (PropertyException e) {
             // intentionally left empty
         }

@@ -71,8 +71,7 @@ import java.util.List;
  */
 
 public final class NavigationFormats {
-    private static final List<Class<? extends NavigationFormat>> SUPPORTED_FORMATS =
-            new ArrayList<Class<? extends NavigationFormat>>();
+    private static final List<Class<? extends NavigationFormat>> SUPPORTED_FORMATS = new ArrayList<Class<? extends NavigationFormat>>();
 
     static {
         // self-implemented formats
@@ -109,6 +108,7 @@ public final class NavigationFormats {
         addFormat(GlopusFormat.class);
         addFormat(ColumbusV900ProfessionalFormat.class);
         addFormat(ColumbusV900StandardFormat.class);
+        addFormat(QstarzQ1000Format.class);
         addFormat(SygicAsciiFormat.class);
         addFormat(SygicUnicodeFormat.class);
         addFormat(MagicMapsPthFormat.class);

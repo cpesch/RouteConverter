@@ -42,8 +42,9 @@ import java.util.regex.Pattern;
  */
 
 public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final String HEADER_LINE = "Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos";
     private static final char SEPARATOR_CHAR = ';';
+    private static final String HEADER_LINE = "Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos";
+
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
     static {
         TIME_FORMAT.setTimeZone(CompactCalendar.UTC);

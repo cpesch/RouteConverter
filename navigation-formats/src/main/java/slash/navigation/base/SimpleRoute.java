@@ -410,6 +410,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
 
+    public SimpleRoute asQstarzQ1000Format() {
+        if (getFormat() instanceof QstarzQ1000Format)
+            return this;
+        return asSimpleFormat(new QstarzQ1000Format());
+    }
+
     public TourRoute asTourFormat() {
         List<TourPosition> tourPositions = new ArrayList<TourPosition>();
         for (P position : positions) {

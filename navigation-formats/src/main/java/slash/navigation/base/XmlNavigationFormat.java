@@ -34,7 +34,7 @@ import java.util.*;
  */
 
 public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
-    public static final String HEADER = "<!-- " + GENERATED_BY + " -->\n";
+    public static final String HEADER_LINE = "<!-- " + GENERATED_BY + " -->\n";
 
     protected String asDescription(List<String> strings) {
         StringBuffer buffer = new StringBuffer();

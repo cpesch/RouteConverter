@@ -48,6 +48,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     private static final String SEPARATOR = ",";
     private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED,";
+
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yy/MM/dd");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");

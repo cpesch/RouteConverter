@@ -305,6 +305,9 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return this;
     }
 
+    public SimpleRoute asQstarzQ1000Format() {
+        return asSimpleFormat(new QstarzQ1000Format());
+    }
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();

@@ -286,6 +286,9 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return new OvlRoute(getCharacteristics(), getName(), wgs84Positions);
     }
 
+    public SimpleRoute asQstarzQ1000Format() {
+        return asSimpleFormat(new QstarzQ1000Format());
+    }
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> tourPositions = new ArrayList<Wgs84Position>();
