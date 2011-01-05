@@ -91,13 +91,30 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot7Format());
     }
 
+    public void testConvertiBlue747ToCoPilot() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new CoPilot6Format());
+    }
+
     public void testConvertQstarzQ1000ToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot7Format());
     }
 
     public void testConvertQstarzQ1000ToColumbusV900() throws IOException {
         convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900StandardFormat());
         convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new ColumbusV900ProfessionalFormat());
+    }
+
+    public void testConvertQstarzQ1000ToiBlue747() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new iBlue747Format());
+    }
+
+    public void testConvertiBlue747ToQstarzQ1000() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new QstarzQ1000Format());
+    }
+
+    public void testConvertiBlue747ToColumbusV900() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new ColumbusV900ProfessionalFormat());
     }
 
 

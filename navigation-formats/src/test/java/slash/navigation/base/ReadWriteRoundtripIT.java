@@ -115,6 +115,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     @Test
+    public void testiBlue747ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-iblue747.csv");
+    }
+
+    @Test
     public void testKlickTelRouteReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.krt");
     }

@@ -31,7 +31,6 @@ import slash.navigation.nmn.NmnPosition;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.util.Bearing;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 
 /**
@@ -285,6 +284,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public Wgs84Position asiBluePosition() {
+        return asWgs84Position();
+    }
+
     public TomTomPosition asTomTomRoutePosition() {
         return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
@@ -374,6 +377,10 @@ public abstract class BaseNavigationPosition {
     }
 
     public Wgs84Position asOvlPosition() {
+        return asWgs84Position();
+    }
+
+    public Wgs84Position asQstarzQPosition() {
         return asWgs84Position();
     }
 

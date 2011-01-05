@@ -27,7 +27,7 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
-public class QstarzQ1000lReadWriteRoundtripIT extends ReadWriteBase {
+public class QstarzQ1000ReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new NavigationFileParserCallback() {

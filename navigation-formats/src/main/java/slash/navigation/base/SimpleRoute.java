@@ -266,6 +266,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asiBlue747Format() {
+        if (getFormat() instanceof iBlue747Format)
+            return this;
+        return asSimpleFormat(new iBlue747Format());
+    }
+
     public SimpleRoute asKompassFormat() {
         if (getFormat() instanceof KompassFormat)
             return this;

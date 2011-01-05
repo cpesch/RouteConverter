@@ -359,6 +359,10 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asiBlue747Format() {
+        return asSimpleFormat(new iBlue747Format());
+    }
+
     public SimpleRoute asKompassFormat() {
         return asSimpleFormat(new KompassFormat());
     }

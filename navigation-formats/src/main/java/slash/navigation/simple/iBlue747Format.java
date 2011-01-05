@@ -35,18 +35,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reads and writes Qstarz BT-Q1000 (.csv) files.
+ * Reads and writes i-Blue 747 (.csv) files.
  *
- * Header: INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HDOP,NSAT (USED/VIEW),DISTANCE,<br/>
- * Format: 8,T,2010/12/28,23:01:43,SPS,49.126389,N,8.614000,E,245.512 m,0.759 km/h,1.4,8(10),0.22 m,
+ * Header: INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,<br/>
+ * Format: 3656,T,2010/12/09,10:59:05,SPS,28.649061,N,17.896196,W,513.863 M,15.862 km/h,178.240250,34.60 M,
  *
  * @author Christian Pesch
  */
 
-public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
-    protected static final Logger log = Logger.getLogger(QstarzQ1000Format.class.getName());
+public class iBlue747Format extends SimpleLineBasedFormat<SimpleRoute> {
+    protected static final Logger log = Logger.getLogger(iBlue747Format.class.getName());
 
-    private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HDOP,NSAT (USED/VIEW),DISTANCE,";
+    private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,";
     private static final char SEPARATOR_CHAR = ',';
     private static final String SPACE = "\\s*";
 
@@ -66,7 +66,6 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "([-\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
                     SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
                     SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "(\\d+)\\((\\d+)\\)" + SPACE + SEPARATOR_CHAR +
                     SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
                     END_OF_LINE);
 
@@ -80,7 +79,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     public String getName() {
-        return "Qstarz BT-Q1000 (*" + getExtension() + ")";
+        return "i-Blue 747 (*" + getExtension() + ")";
     }
 
     public String getExtension() {
@@ -110,7 +109,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         if(!matcher.matches())
             return false;
         String fix = matcher.group(5);
-        return "SPS".equals(fix);
+        return "SPS".equals(fix) || "DGPS".equals(fix);
      }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
@@ -144,13 +143,11 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
             longitude = -longitude;
         String height = lineMatcher.group(10);
         String speed = lineMatcher.group(11);
-        String hdop = lineMatcher.group(12);
-        String satellites = lineMatcher.group(13);
+        String heading = lineMatcher.group(12);
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, Transfer.parseDouble(height), Transfer.parseDouble(speed),
                 parseDateAndTime(date, time), null);
-        position.setHdop(Transfer.parseDouble(hdop));
-        position.setSatellites(Transfer.parseInt(satellites));
+        position.setHeading(Transfer.parseDouble(heading));
         return position;
     }
 
@@ -181,8 +178,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = position.getElevation() != null ? Transfer.formatElevationAsString(position.getElevation()) : "0.0";
         String speed = position.getSpeed() != null ? Transfer.formatSpeedAsString(position.getSpeed()) : "0.0";
-        String hdop = position.getHdop() != null ? Transfer.formatAccuracyAsString(position.getHdop()) : "0.0";
-        String satellites = position.getSatellites() != null ? Transfer.formatIntAsString(position.getSatellites()) : "0";
+        String heading = position.getHeading() != null ? Transfer.formatHeadingAsString(position.getHeading()) : "0.0";
 
         if (firstPosition)
             previousPosition = null;
@@ -193,10 +189,9 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
                 date + SEPARATOR_CHAR + time + SEPARATOR_CHAR + "SPS" + SEPARATOR_CHAR +
                 latitude + SEPARATOR_CHAR + northOrSouth + SEPARATOR_CHAR +
                 longitude + SEPARATOR_CHAR + westOrEast + SEPARATOR_CHAR +
-                height + " m" + SEPARATOR_CHAR +
+                height + " M" + SEPARATOR_CHAR +
                 speed + " km/h" + SEPARATOR_CHAR +
-                hdop + SEPARATOR_CHAR +
-                satellites + "(" + satellites + ")" + SEPARATOR_CHAR +
-                distance + " m" + SEPARATOR_CHAR);
+                heading + SEPARATOR_CHAR +
+                distance + " M" + SEPARATOR_CHAR);
     }
 }

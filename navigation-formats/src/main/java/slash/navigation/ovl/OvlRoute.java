@@ -369,6 +369,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
+    public SimpleRoute asiBlue747Format() {
+        return asSimpleFormat(new iBlue747Format());
+    }
+
     public SimpleRoute asKompassFormat() {
         return asSimpleFormat(new KompassFormat());
     }
