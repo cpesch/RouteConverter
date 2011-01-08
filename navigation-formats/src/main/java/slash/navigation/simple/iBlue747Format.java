@@ -53,7 +53,7 @@ public class iBlue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE + "(\\d+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "([T])" + SPACE + SEPARATOR_CHAR +
+                    SPACE + "(\\p{Upper}+)" + SPACE + SEPARATOR_CHAR +
                     SPACE + "(\\d{4}/\\d{2}/\\d{2})" + SPACE + SEPARATOR_CHAR +
                     SPACE + "(\\d{2}:\\d{2}:\\d{2})" + SPACE + SEPARATOR_CHAR +
                     SPACE + "(.+)" + SPACE + SEPARATOR_CHAR +
