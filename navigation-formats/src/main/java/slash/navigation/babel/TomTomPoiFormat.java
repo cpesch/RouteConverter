@@ -54,6 +54,6 @@ public class TomTomPoiFormat extends BabelFormat {
     }
 
     protected boolean isStreamingCapable() {
-        return true;
+        return false;
     }
 }
