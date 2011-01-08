@@ -99,8 +99,8 @@ public class GeoNamesServiceIT extends TestCase {
     public void testNearByPostalCodeFor() throws IOException {
         assertEquals(new PostalCode("CH", "9622", "Krinau"), service.getNearByPostalCodeFor(9.0, 47.3));
         assertEquals(new PostalCode("DE", "97506", "Grafenrheinfeld"), service.getNearByPostalCodeFor(10.2, 50.001));
-        assertEquals(new PostalCode("AT", "6105", "Obern"), service.getNearByPostalCodeFor(11.06561, 47.42428));
-        assertEquals(null, service.getNearByPostalCodeFor(0.0, 0.0));
+        assertEquals(new PostalCode("AT", "6105", "Leutasch"), service.getNearByPostalCodeFor(11.1603, 47.3694));
+        // was: assertEquals(null, service.getNearByPostalCodeFor(0.0, 0.0));
         assertEquals(null, service.getNearByPostalCodeFor(0.0, -90.0));
         assertEquals(new PostalCode("CA", "H0H", "Reserved (Santa Claus)"), service.getNearByPostalCodeFor(0.0, 90.0));
         assertEquals(null, service.getNearByPostalCodeFor(90.0, 90.0));
@@ -116,7 +116,7 @@ public class GeoNamesServiceIT extends TestCase {
     }
 
     public void testPositionFor() throws IOException {
-        assertDoubleArrayEquals(new double[]{9.05, 47.31667}, service.getPositionFor("CH", "9622"));
+        assertDoubleArrayEquals(new double[]{9.05033, 47.31507}, service.getPositionFor("CH", "9622"));
         assertDoubleArrayEquals(new double[]{10.1982, 50.0002}, service.getPositionFor("DE", "97506"));
         assertDoubleArrayEquals(new double[]{11.1603, 47.3694}, service.getPositionFor("AT", "6105"));
         assertDoubleArrayEquals(new double[]{8.64415, 49.30075}, service.getPositionFor("DE", "69190"));

@@ -35,6 +35,10 @@ public class PostalCode {
         this.placeName = placeName;
     }
 
+    public String toString() {
+        return "PostalCode[" + countryCode + "," + postalCode + "," + placeName + "]";
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
