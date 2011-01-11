@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class LmxUtil {
+class NokiaLandmarkExchangeUtil {
     private static final JAXBContext CONTEXT = JaxbUtils.newContext(slash.navigation.lmx.binding.ObjectFactory.class);
 
     private static final String LMX_NAMESPACE_URI = "http://www.nokia.com/schemas/location/landmarks/1/0";

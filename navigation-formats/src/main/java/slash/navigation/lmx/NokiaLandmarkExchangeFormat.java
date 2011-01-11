@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public class NokiaLandmarkExchangeFormat extends GpxFormat { // TODO why is it subclassing GPX?
+public class NokiaLandmarkExchangeFormat extends GpxFormat {
     private static final Logger log = Logger.getLogger(NokiaLandmarkExchangeFormat.class.getName());
 
     public String getExtension() {
@@ -140,7 +140,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat { // TODO why is it s
 
     public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            Lmx lmx = LmxUtil.unmarshal(source);
+            Lmx lmx = NokiaLandmarkExchangeUtil.unmarshal(source);
             GpxRoute result = process(lmx);
             return result != null ? Arrays.asList(result) : null;
         } catch (JAXBException e) {
@@ -151,7 +151,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat { // TODO why is it s
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            LmxUtil.marshal(createLmx(route, startIndex, endIndex), target);
+            NokiaLandmarkExchangeUtil.marshal(createLmx(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
