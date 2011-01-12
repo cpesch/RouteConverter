@@ -110,6 +110,8 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
                 dest.setHouse(position.getHouseNumber());
             dest.setStreet(position.getStreet());
             dest.setZip(position.getZipCode());
+            if (i == startIndex)
+                dest.setStartPos((short)1);
             tour.getDest().add(dest);
         }
         return tour;
