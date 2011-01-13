@@ -108,11 +108,9 @@ public class GpxPosition extends Wgs84Position {
             return null;
     }
 
-
     public GpxPosition asGpxPosition() {
         return this;
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

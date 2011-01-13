@@ -32,7 +32,7 @@ import slash.navigation.lmx.binding.MediaLinkType;
 import java.io.IOException;
 import java.util.List;
 
-public class LmxReadWriteRoundtripIT extends ReadWriteBase {
+public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
 
     private void checkUnprocessed(Lmx lmx) {
         assertNotNull(lmx);
@@ -53,7 +53,7 @@ public class LmxReadWriteRoundtripIT extends ReadWriteBase {
         assertEquals("URLMime", mediaLinkType.getMime());
     }
 
-    public void testLmxRoundtrip() throws IOException {
+    public void testNokiaLandmarkExchangeRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.lmx", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
