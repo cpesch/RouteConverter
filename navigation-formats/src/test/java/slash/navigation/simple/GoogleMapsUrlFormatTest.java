@@ -23,6 +23,8 @@ package slash.navigation.simple;
 import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -278,5 +280,10 @@ public class GoogleMapsUrlFormatTest {
         String expected = "http://maps.google.com/maps?ie=UTF8&saddr=Hamburg,+Germany%4053.574977,10.025711&daddr=Stemwarde,+Germany%4053.576620,10.200260+to:Gro%C3%9Fensee,+Germany%4053.591710,10.357350+to:Linau,+Germany%4053.647810,10.456960";
         String actual = urlFormat.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testIsGoogleMapsUrl() throws MalformedURLException {
+        assertTrue(GoogleMapsUrlFormat.isGoogleMapsUrl(new URL("http://maps.google.com/maps/ms?ie=UTF8&hl=de&oe=UTF8&num=200&start=37&msa=0&msid=215491296402946676738.000484ccfd83696d5b12e&z=11")));
     }
 }

@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 public class GoogleMapsUrlFormat extends UrlFormat {
     private static final Logger log = Logger.getLogger(GoogleMapsUrlFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsUrlFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*http://.+\\.google\\..+/maps\\?([^\\s]+).*");
+    private static final Pattern URL_PATTERN = Pattern.compile(".*http://.+\\.google\\..+/maps[\\?/]([^\\s]+).*");
     private static final Pattern BOOKMARK_PATTERN = Pattern.compile(".*InternetShortcut(.+)IconFile.*");
     private static final Pattern PLAIN_POSITION_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
     private static final Pattern COMMENT_POSITION_PATTERN = Pattern.
