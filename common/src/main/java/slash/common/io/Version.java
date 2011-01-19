@@ -43,6 +43,8 @@ public class Version {
         propertyValue += "=";
         try {
             propertyValue += System.getProperty(propertyName);
+            if (propertyValue == null)
+                propertyValue = "";
         }
         catch (Throwable t) {
             propertyValue += t.getMessage();

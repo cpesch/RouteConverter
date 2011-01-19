@@ -61,6 +61,7 @@ public class Updater {
                     "routeconverter.startcount=" + getStartCount() + "," +
                     "user.locale=" + Locale.getDefault() + "," +
                     Version.getSystemProperty("java.version") +
+                    Version.getSystemProperty("javawebstart.version") +
                     Version.getSystemProperty("os.name") +
                     Version.getSystemProperty("os.version") +
                     Version.getSystemProperty("os.arch");

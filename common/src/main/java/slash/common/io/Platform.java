@@ -39,12 +39,6 @@ public class Platform {
         return getOsName().indexOf("windows") != -1;
     }
 
-    /*
-    private static boolean isWebStarted() {
-        return System.getProperty("javawebstart.version") != null;
-    }
-    */
-
     public static String getPlatform() {
         return System.getProperty("os.name") + " " +
                 System.getProperty("os.version") + " " +
