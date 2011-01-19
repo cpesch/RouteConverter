@@ -18,6 +18,10 @@
 <div id="map"></div>
 <div id="directions"></div>
 <script type="text/javascript">
+   function getTileUrlOutdoorActiveDeutschland(a, b) {
+       return "http://t3.outdooractive.com/portal/map/" + b + "/" + a.x + "/" + a.y + ".png";
+   }
+
    function getTileUrlMapnik(a, b) {
        return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
    }
