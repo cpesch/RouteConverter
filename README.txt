@@ -1,7 +1,7 @@
 How to develop for RouteConverter
 =================================
 
-1. Install a recent Java 6 SDK from http://java.sun.com/javase/downloads/index.jsp
+1. Install a recent Java 6 SDK from http://www.oracle.com/technetwork/java/javase/downloads/
 
 2. Install Maven 3 from http://maven.apache.org/download.html
 
@@ -10,7 +10,7 @@ How to develop for RouteConverter
 
 4. Open RouteConverter sources in an Integrated Development Environment (IDE)
 
-   Install Intellij IDEA 9 Community Edition from http://www.jetbrains.com/idea/download/
+   Install Intellij IDEA Community Edition from http://www.jetbrains.com/idea/download/
    Choose "File/Open Project..." and the root pom.xml.
 
    Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
@@ -20,7 +20,7 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_22
+   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_23
    Put Maven into your PATH and call
    > mvn clean package
 
