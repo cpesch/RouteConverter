@@ -49,6 +49,10 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         return "GoPal 3 Route (*" + getExtension() + ")";
     }
 
+    public int getMaximumPositionCount() {
+        return preferences.getInt(VERSION_PREFIX + "MaximumPositionCount", UNLIMITED_MAXIMUM_POSITION_COUNT);
+    }
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> GoPal3Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GoPal3Route(name, (List<GoPalPosition>) positions);

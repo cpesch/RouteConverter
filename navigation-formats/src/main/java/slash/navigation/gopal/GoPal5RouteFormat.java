@@ -51,6 +51,10 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         return "GoPal 5 Route (*" + getExtension() + ")";
     }
 
+    public int getMaximumPositionCount() {
+        return preferences.getInt(VERSION_PREFIX + "MaximumPositionCount", UNLIMITED_MAXIMUM_POSITION_COUNT);
+    }
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> GoPal5Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new GoPal5Route(name, (List<GoPalPosition>) positions);

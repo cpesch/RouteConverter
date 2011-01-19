@@ -34,10 +34,6 @@ public abstract class GoPalRouteFormat<R extends BaseRoute> extends XmlNavigatio
         return ".xml";
     }
 
-    public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
-    }
-
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
