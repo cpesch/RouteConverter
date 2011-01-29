@@ -527,7 +527,7 @@ public abstract class ConvertPanel {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    for (URL url : urls) {
+                    for (final URL url : urls) {
                         final String path = Files.createReadablePath(url);
 
                         final NavigationFileParser parser = new NavigationFileParser();
@@ -542,6 +542,7 @@ public abstract class ConvertPanel {
                                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
                                             comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                             urlModel.setString(path);
+                                            recentUrlsModel.addUrl(url);
                                         } else {
                                             getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
                                         }
@@ -668,6 +669,12 @@ public abstract class ConvertPanel {
             if (openAfterSave && format.isSupportsReading()) {
                 openPositionList(Files.toUrls(targets), NavigationFormats.getReadFormatsWithPreferredFormat(format));
                 log.info("Open after save: " + targets[0]);
+            }
+            if (confirmOverwrite) {
+                URL url = targets[0].toURI().toURL();
+                String path = Files.createReadablePath(url);
+                urlModel.setString(path);
+                recentUrlsModel.addUrl(url);
             }
         } catch (Throwable t) {
             log.severe("Save error " + file + "," + format + ": " + t.getMessage());
