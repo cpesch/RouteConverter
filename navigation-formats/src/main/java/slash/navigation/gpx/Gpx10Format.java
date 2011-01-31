@@ -191,11 +191,15 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
+            BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
+            BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+            if(latitude == null || longitude == null)
+                continue;
             Gpx.Wpt wpt = position.getOrigin(Gpx.Wpt.class);
             if (wpt == null || !reuseReadObjectsForWriting)
                 wpt = objectFactory.createGpxWpt();
-            wpt.setLat(Transfer.formatPosition(position.getLatitude()));
-            wpt.setLon(Transfer.formatPosition(position.getLongitude()));
+            wpt.setLat(latitude);
+            wpt.setLon(longitude);
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             wpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
             wpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
@@ -233,11 +237,15 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
+            BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
+            BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+            if(latitude == null || longitude == null)
+                continue;
             Gpx.Rte.Rtept rtept = position.getOrigin(Gpx.Rte.Rtept.class);
             if (rtept == null || !reuseReadObjectsForWriting)
                 rtept = objectFactory.createGpxRteRtept();
-            rtept.setLat(Transfer.formatPosition(position.getLatitude()));
-            rtept.setLon(Transfer.formatPosition(position.getLongitude()));
+            rtept.setLat(latitude);
+            rtept.setLon(longitude);
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             rtept.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
             rtept.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
@@ -276,11 +284,15 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
+            BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
+            BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+            if(latitude == null || longitude == null)
+                continue;
             Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
             if (trkpt == null || !reuseReadObjectsForWriting)
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
-            trkpt.setLat(Transfer.formatPosition(position.getLatitude()));
-            trkpt.setLon(Transfer.formatPosition(position.getLongitude()));
+            trkpt.setLat(latitude);
+            trkpt.setLon(longitude);
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
             trkpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);

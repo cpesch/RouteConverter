@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -303,11 +304,15 @@ public class Gpx11Format extends GpxFormat {
     }
 
     private WptType createWptType(GpxPosition position) {
+        BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
+        BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+        if(latitude == null || longitude == null)
+            return null;
         WptType wptType = position.getOrigin(WptType.class);
         if (wptType == null)
             wptType = new ObjectFactory().createWptType();
-        wptType.setLat(Transfer.formatPosition(position.getLatitude()));
-        wptType.setLon(Transfer.formatPosition(position.getLongitude()));
+        wptType.setLat(latitude);
+        wptType.setLon(longitude);
         wptType.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
         setSpeed(wptType, isWriteSpeed() ? position.getSpeed() : null);
         setHeading(wptType, isWriteHeading() ? position.getHeading() : null);
@@ -324,7 +329,9 @@ public class Gpx11Format extends GpxFormat {
     private List<WptType> createWayPoints(GpxRoute route) {
         List<WptType> wptTypes = new ArrayList<WptType>();
         for (GpxPosition position : route.getPositions()) {
-            wptTypes.add(createWptType(position));
+            WptType wptType = createWptType(position);
+            if (wptType != null)
+                wptTypes.add(wptType);
         }
         return wptTypes;
     }
@@ -343,7 +350,9 @@ public class Gpx11Format extends GpxFormat {
         }
         rteTypes.add(rteType);
         for (GpxPosition position : route.getPositions()) {
-            rteType.getRtept().add(createWptType(position));
+            WptType wptType = createWptType(position);
+            if (wptType != null)
+                rteType.getRtept().add(wptType);
         }
         return rteTypes;
     }
@@ -363,7 +372,9 @@ public class Gpx11Format extends GpxFormat {
         trkTypes.add(trkType);
         TrksegType trksegType = objectFactory.createTrksegType();
         for (GpxPosition position : route.getPositions()) {
-            trksegType.getTrkpt().add(createWptType(position));
+            WptType wptType = createWptType(position);
+            if (wptType != null)
+                trksegType.getTrkpt().add(wptType);
         }
         trkType.getTrkseg().add(trksegType);
         return trkTypes;
