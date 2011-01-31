@@ -141,7 +141,7 @@ public class LengthCalculator {
                     maximumTime = calendar;
             }
 
-            if (i % 100 == 0)
+            if (i > 0 && i % 100 == 0)
                 fireCalculatedDistance(new Double(distanceMeters).intValue(), totalTimeMilliSeconds > 0 ? (int) (totalTimeMilliSeconds / 1000) : 0);
 
             previous = next;
