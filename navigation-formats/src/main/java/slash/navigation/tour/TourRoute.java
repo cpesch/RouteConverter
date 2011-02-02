@@ -122,7 +122,7 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         for (TourPosition position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
-        return new GpxRoute(format, RouteCharacteristics.Route, getName(), getDescription(), gpxPositions);
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
     public GpxRoute asGpx10Format() {

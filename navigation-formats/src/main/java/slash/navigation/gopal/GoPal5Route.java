@@ -128,7 +128,7 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
         for (GoPalPosition position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
-        return new GpxRoute(format, RouteCharacteristics.Route, getName(), getDescription(), gpxPositions);
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
     public GpxRoute asGpx10Format() {

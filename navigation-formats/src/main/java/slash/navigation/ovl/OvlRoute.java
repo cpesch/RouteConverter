@@ -145,7 +145,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         for (Wgs84Position position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
-        return new GpxRoute(format, RouteCharacteristics.Route, getName(), getDescription(), gpxPositions);
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
     public GpxRoute asGpx10Format() {
