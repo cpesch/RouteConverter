@@ -1,0 +1,7 @@
+*.bat
+*.iml
+*.ipr
+*.iws
+velocity.log
+*/target/*
+RouteConverter*/buildNumber.properties
