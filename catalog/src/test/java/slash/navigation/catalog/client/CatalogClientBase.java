@@ -31,7 +31,7 @@ import javax.xml.bind.JAXBException;
 import java.io.*;
 
 public abstract class CatalogClientBase extends TestCase {
-    protected static final String TEST_PATH = "..\\catalog\\src\\testresources\\";
+    protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
     // protected static final String HOST = "www.routeconverter.de";
     // protected static final String HOST = "localhost:8080";
     protected static final String HOST = "localhost:8000";
@@ -247,7 +247,9 @@ public abstract class CatalogClientBase extends TestCase {
                               String authenticationUserName, String authenticationPassword) throws IOException {
         Post request = new Post(FILES_URL);
         request.setAuthentication(authenticationUserName, authenticationPassword);
-        request.addFile("file", new File(TEST_PATH + fileName));
+        File file = new File(TEST_PATH + fileName);
+        assertTrue(file.exists());
+        request.addFile("file", file);
         return request;
     }
 
