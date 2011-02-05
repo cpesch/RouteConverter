@@ -65,6 +65,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -391,6 +392,8 @@ public abstract class BrowsePanel {
             r.handleBabelError(e);
         } catch (OutOfMemoryError e) {
             r.handleOutOfMemoryError();
+        } catch (FileNotFoundException e) {
+            r.handleFileNotFound(path);
         } catch (Throwable t) {
             log.severe("Cannot parse description from route " + path + ": " + t.getMessage());
             r.handleOpenError(t, path);

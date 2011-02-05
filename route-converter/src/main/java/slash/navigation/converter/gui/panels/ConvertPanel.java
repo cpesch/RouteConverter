@@ -505,7 +505,7 @@ public abstract class ConvertPanel {
                 } catch (OutOfMemoryError e) {
                     r.handleOutOfMemoryError();
                 } catch (FileNotFoundException e) {
-                    r.handleUnsupportedFormat(path);
+                    r.handleFileNotFound(path);
                 } catch (Throwable t) {
                     r.handleOpenError(t, path);
                 } finally {
@@ -526,14 +526,16 @@ public abstract class ConvertPanel {
         Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
+                String path;
                 try {
                     for (final URL url : urls) {
-                        final String path = Files.createReadablePath(url);
+                        path = Files.createReadablePath(url);
 
                         final NavigationFileParser parser = new NavigationFileParser();
                         if (parser.read(url)) {
                             log.info("Imported: " + path);
 
+                            final String finalPath = path;
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     try {
@@ -541,13 +543,15 @@ public abstract class ConvertPanel {
                                         if (formatAndRoutesModel.getRoutes() == null) {
                                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
                                             comboBoxChoosePositionList.setModel(formatAndRoutesModel);
-                                            urlModel.setString(path);
+                                            urlModel.setString(finalPath);
                                             recentUrlsModel.addUrl(url);
                                         } else {
                                             getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
                                         }
+                                    } catch (FileNotFoundException e) {
+                                        r.handleFileNotFound(finalPath);
                                     } catch (IOException e) {
-                                        r.handleOpenError(e, path);
+                                        r.handleOpenError(e, finalPath);
                                     }
                                 }
                             });
