@@ -20,15 +20,22 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.NavigationTestCase;
-import slash.navigation.base.Wgs84Position;
+import org.junit.Test;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-public class HaicomLoggerFormatTest extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
+
+public class HaicomLoggerFormatTest {
     HaicomLoggerFormat format = new HaicomLoggerFormat();
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h"));
         assertTrue(format.isValidLine("1,T,08/12/06,07:03:40,47.92121,N,106.90585,E,1340.1m,,0km/h"));
@@ -38,6 +45,7 @@ public class HaicomLoggerFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED,"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h"));
         assertTrue(format.isPosition("1,T,08/12/06,07:03:40,47.92121,N,106.90585,E,1340.1m,,0km/h"));
@@ -45,11 +53,12 @@ public class HaicomLoggerFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("1,T,,,36.87722,N,111.51194,W,1289.0m,0.0,0.0km/h"));        
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("1,T,08/12/02,05:40:15,47.91561,N,106.90109,E,1308.4m,97.78,1km/h", null);
-        assertEquals(47.91561, position.getLatitude());
-        assertEquals(106.90109, position.getLongitude());
-        assertEquals(1308.4, position.getElevation());
+        assertDoubleEquals(47.91561, position.getLatitude());
+        assertDoubleEquals(106.90109, position.getLongitude());
+        assertDoubleEquals(1308.4, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2008, 12, 2, 5, 40, 15);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -58,9 +67,10 @@ public class HaicomLoggerFormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParseSouthWestPosition() {
         Wgs84Position position = format.parsePosition("1,T,08/12/02,05:40:15,47.91561,S,106.90109,W,1308.4m,97.78,1km/h", null);
-        assertEquals(-47.91561, position.getLatitude());
-        assertEquals(-106.90109, position.getLongitude());
+        assertDoubleEquals(-47.91561, position.getLatitude());
+        assertDoubleEquals(-106.90109, position.getLongitude());
     }
 }
