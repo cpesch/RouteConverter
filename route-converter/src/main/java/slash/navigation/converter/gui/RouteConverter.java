@@ -517,6 +517,17 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
     }
 
+    public void handleFileNotFound(final String path) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                log.severe("File not found: " + path);
+                JOptionPane.showMessageDialog(frame,
+                        MessageFormat.format(getBundle().getString("file-not-found"), Files.shortenPath(path, 60)),
+                        frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
+
     // helpers for external components
 
     public void addFilesToCatalog(List<File> files) {

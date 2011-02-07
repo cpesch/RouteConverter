@@ -30,6 +30,7 @@ import slash.navigation.gui.FrameAction;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -78,20 +79,24 @@ public class ImportPositionList extends FrameAction {
     private void importPositionList(final int row, final List<URL> urls) {
         new Thread(new Runnable() {
             public void run() {
+                String path = null;
                 try {
                     for (URL url : reverse(urls)) {
-                        final String path = Files.createReadablePath(url);
+                        path = Files.createReadablePath(url);
 
                         final NavigationFileParser parser = new NavigationFileParser();
                         if (parser.read(url)) {
                             log.info("Imported: " + path);
 
+                            final String finalPath = path;
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     try {
                                         model.add(row, parser.getTheRoute());
+                                    } catch (FileNotFoundException e) {
+                                        routeConverter.handleFileNotFound(finalPath);
                                     } catch (IOException e) {
-                                        routeConverter.handleOpenError(e, path);
+                                        routeConverter.handleOpenError(e, finalPath);
                                     }
                                 }
                             });
