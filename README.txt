@@ -10,7 +10,7 @@ Downloads
 =========
 
 Stable releases are available at http://www.routeconverter.com/releases/
-Prereleases are frequently offered at http://www.routeconverter.com/prerelease/
+Prereleases are frequently offered at http://www.routeconverter.com/prereleases/
 
 If you want to contribute
 =========================
