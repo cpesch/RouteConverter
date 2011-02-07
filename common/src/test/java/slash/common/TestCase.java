@@ -38,6 +38,7 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static void assertDoubleArrayEquals(double[] expected, double[] was) {
+        assertNotNull(was);
         assertEquals(expected.length, was.length);
         for (int i = 0; i < expected.length; i++) {
             double e = expected[i];
