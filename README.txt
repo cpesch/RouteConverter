@@ -1,3 +1,25 @@
+What is RouteConverter?
+=======================
+
+RouteConverter is a popular open source tool to display, edit, enrich and convert routes, tracks and waypoints
+licensed under the GNU Public License. See http://www.routeconverter.com/about/ for details about features,
+supported formats and languages, screenshots, frequently asked questions and how you can help.
+
+Downloads
+=========
+
+Stable releases are available at http://www.routeconverter.com/releases/
+Prereleases are offered at http://www.routeconverter.com/prerelease/
+
+If you want to contribute
+=========================
+
+Patches and pull requests are always welcome. If you minimize your diff, it's more likely that your contribution
+will be applied to the code base. Please stick to the code standards and formatting that you run across. And don't
+forget to add tests for your changes ;-)
+
+CONTRIBUTORS.txt provides a list of the people who helped developing RouteConverter.
+
 How to develop for RouteConverter
 =================================
 
@@ -32,3 +54,6 @@ How to develop for RouteConverter
    > java -jar RouteConverterMac64/target/RouteConverterMac64.jar
    > java -jar RouteConverterWindows/target/RouteConverterWindows.jar
    > java -jar RouteConverterWindows64/target/RouteConverterWindows64.jar
+
+Have fun!
+Christian
