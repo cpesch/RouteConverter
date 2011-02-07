@@ -54,7 +54,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "([-\\d\\.]+)" +
                     SPACE + "([-\\d\\.]+)" +
                     SPACE + "[\\d\\.]+" +
-                    SPACE + "(-?\\d{2}:-?\\d{2}:-?\\d{2}\\.\\d{3})" +
+                    SPACE + "(-?\\d+:-?\\d+:-?\\d+\\.\\d+)" +
                     ".*" +
                     END_OF_LINE);
 

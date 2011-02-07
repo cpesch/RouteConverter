@@ -38,8 +38,7 @@ public class GroundTrackFormatTest {
     public void testIsPosition() {
         assertTrue(format.isPosition("  943    52.17661      8.06995     -0.416      0.07569 09:19:58.480"));
         assertTrue(format.isPosition("   83    52.73522      9.88576   4508.976      0.04336 17:01:43.800"));
-        assertTrue(format.isPosition("   83    52.73522      9.88576   4508.976      0.04336 -17:-01:-43.800"));
-        assertTrue(format.isPosition("   23    53.36022      9.58822     -0.416      9.54092 06:13:06.700"));
+        assertTrue(format.isPosition("  255    52.23754     13.11184     -0.416      0.00377 -9:-47:-35.236"));
     }
 
     @Test
