@@ -355,6 +355,10 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return asSimpleFormat(new GpsTunerFormat());
     }
 
+    public SimpleRoute asGroundTrackFormat() {
+        return asSimpleFormat(new GroundTrackFormat());
+    }
+
     public SimpleRoute asHaicomLoggerFormat() {
         return asSimpleFormat(new HaicomLoggerFormat());
     }

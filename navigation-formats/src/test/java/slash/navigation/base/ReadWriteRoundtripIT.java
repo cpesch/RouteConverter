@@ -110,6 +110,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     @Test
+    public void testGroundTrackReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-groundtrack.txt");
+    }
+
+    @Test
     public void testHaicomLoggerReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-haicomlogger.csv");
     }

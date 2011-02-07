@@ -279,6 +279,7 @@ public class ReadIT {
 
     @Test
     public void testTextFilesAreValid() throws IOException {
+        // GroundTrack
         // KienzleGps
         // MagicMaps2Go
         // NmnUrl

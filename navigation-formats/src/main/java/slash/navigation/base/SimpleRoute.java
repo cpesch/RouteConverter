@@ -260,6 +260,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new GpsTunerFormat());
     }
 
+    public SimpleRoute asGroundTrackFormat() {
+        if (getFormat() instanceof GroundTrackFormat)
+            return this;
+        return asSimpleFormat(new GroundTrackFormat());
+    }
+
     public SimpleRoute asHaicomLoggerFormat() {
         if (getFormat() instanceof HaicomLoggerFormat)
             return this;

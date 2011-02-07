@@ -130,6 +130,7 @@ public final class NavigationFormats {
         addFormat(WintecWbt201Tk2Format.class);
         addFormat(NavilinkFormat.class);
         addFormat(KienzleGpsFormat.class);
+        addFormat(GroundTrackFormat.class);
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);

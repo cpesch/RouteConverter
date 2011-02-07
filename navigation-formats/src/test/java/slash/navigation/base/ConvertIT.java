@@ -267,6 +267,11 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new MTP0607Format());
     }
 
+    public void testConvertGroundTrackToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-groundtrack.txt", new GroundTrackFormat(), new Gpx10Format());
+        convertRoundtrip(SAMPLE_PATH + "groundtrack2011012806Z_F1620229.txt", new GroundTrackFormat(), new Gpx10Format());
+    }
+
 
     public void testConvertKlickTelRouteToKlickTelRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from.krt", new KlickTelRouteFormat(), new KlickTelRouteFormat());

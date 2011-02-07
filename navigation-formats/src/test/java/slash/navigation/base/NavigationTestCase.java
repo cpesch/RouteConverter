@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -674,16 +675,18 @@ public abstract class NavigationTestCase extends TestCase {
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
-            } else {
-                DateFormat format = DateFormat.getDateTimeInstance();
+            } else if (sourceFormat instanceof GroundTrackFormat || targetFormat instanceof GroundTrackFormat) {
+                DateFormat format = DateFormat.getTimeInstance();
                 format.setTimeZone(CompactCalendar.UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
-                if (!sourcePosition.getTime().equals(targetPosition.getTime()))
-                    log.warning("Time " + index + " does not match");
-                // too many reasons for an invalid time :-(
-                // assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
+            } else {
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
+                format.setTimeZone(CompactCalendar.UTC);
+                String sourceTime = format.format(sourcePosition.getTime().getTime());
+                String targetTime = format.format(targetPosition.getTime().getTime());
+                assertEquals("Time " + index + " does not match", sourceTime, targetTime);
             }
         } else if ((sourceFormat instanceof Gpx11Format || sourceFormat instanceof Tcx1Format) && targetFormat instanceof Tcx1Format) {
             assertNull(sourcePosition.getTime());

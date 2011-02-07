@@ -344,6 +344,10 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
         return asSimpleFormat(new GpsTunerFormat());
     }
 
+    public SimpleRoute asGroundTrackFormat() {
+        return asSimpleFormat(new GroundTrackFormat());
+    }
+
     public SimpleRoute asHaicomLoggerFormat() {
         return asSimpleFormat(new HaicomLoggerFormat());
     }

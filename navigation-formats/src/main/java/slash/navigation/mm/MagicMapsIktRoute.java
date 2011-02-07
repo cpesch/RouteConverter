@@ -343,6 +343,10 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
         return asSimpleFormat(new GpsTunerFormat());
     }
 
+    public SimpleRoute asGroundTrackFormat() {
+        return asSimpleFormat(new GroundTrackFormat());
+    }
+
     public SimpleRoute asHaicomLoggerFormat() {
         return asSimpleFormat(new HaicomLoggerFormat());
     }
