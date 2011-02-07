@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 public class Constants {
     private static final Logger log = Logger.getLogger(Constants.class.getName());
 
-    // for Arabic, Dutch, Serbian support which is not defined by a constant in Locale
+    // for language support which is not defined by a constant in Locale
     public static final Locale ARABIA = new Locale("ar", "SA");
     public static final Locale NEDERLANDS = new Locale("nl", "NL");
     public static final Locale CROATIA = new Locale("hr", "HR");
