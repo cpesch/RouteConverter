@@ -48,6 +48,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     private static final String LONGITUDE = "Longitude";
     private static final String LATITUDE = "Latitude";
     static final String POSITION_IN_LIST = "PositionInList";
+    static final String EXTEND_ROUTE = "ExtendRoute";
     static final String CLASS = "Class";
     static final String ASSEMBLY = "Assembly";
     static final String VISITED = "Visited";
@@ -213,9 +214,11 @@ public class TourFormat extends IniFileFormat<TourRoute> {
 
             writer.println(LONGITUDE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getX());
             writer.println(LATITUDE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getY());
+            if (i < endIndex - 1)
+                writer.println(EXTEND_ROUTE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + "1");
 
             for (String key : position.keySet()) {
-                if (!key.equals(POSITION_IN_LIST)) {
+                if (!key.equals(POSITION_IN_LIST) && !key.equals(EXTEND_ROUTE)) {
                     String value = position.get(key);
                     writer.println(key + TOUR_FORMAT_NAME_VALUE_SEPARATOR + value);
                 }
