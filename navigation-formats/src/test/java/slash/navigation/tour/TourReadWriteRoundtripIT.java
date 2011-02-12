@@ -46,6 +46,7 @@ public class TourReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");
                 checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.VISITED, "0");
                 checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.POSITION_IN_LIST, "2");
+                checkUnprocessedValue(targetRoute.getPositions().get(2), TourFormat.EXTEND_ROUTE, "1");
                 checkUnprocessedValue(targetRoute.getPositions().get(2), "PoiId", "43870");
                 checkUnprocessedValue(targetRoute.getPositions().get(2), "AreaId", "1001");
             }
