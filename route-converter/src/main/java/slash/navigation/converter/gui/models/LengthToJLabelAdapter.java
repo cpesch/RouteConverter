@@ -53,7 +53,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
             public void calculatedDistance(final int meters, final int seconds) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        updateLabel(meters, seconds * 1000);
+                        updateLabel(meters, seconds);
                     }
                 });
             }
@@ -65,9 +65,11 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         throw new UnsupportedOperationException();
     }
 
-    private void updateLabel(int meters, long milliSeconds) {
-        labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), meters / 1000.0) : "-");
-        labelDuration.setText(Transfer.formatDuration(milliSeconds));
+    private void updateLabel(int meters, int seconds) {
+        Double kilometers = (double) meters / 1000.0;
+        labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), kilometers) : "-");
+        Long milliseconds = (long) seconds * 1000;
+        labelDuration.setText(Transfer.formatDuration(milliseconds));
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
