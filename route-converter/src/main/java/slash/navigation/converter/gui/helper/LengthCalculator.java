@@ -67,7 +67,8 @@ public class LengthCalculator {
                 // ignored updates on columns not relevant for length calculation
                 if (e.getType() == TableModelEvent.UPDATE &&
                         !(e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                                e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX))
+                                e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
+                                e.getColumn() == TableModelEvent.ALL_COLUMNS))
                     return;
 
                 calculateDistance();
