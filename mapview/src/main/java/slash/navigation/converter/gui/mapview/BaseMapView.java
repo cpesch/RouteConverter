@@ -293,8 +293,8 @@ public abstract class BaseMapView implements MapView {
                             continue;
                     }
 
-                    copiedPositions = reducePositions(copiedPositions, recenter, getMaximumPositionCount());
                     setCenterOfMap(copiedPositions, recenter);
+                    copiedPositions = reducePositions(copiedPositions, recenter, getMaximumPositionCount());
                     switch (positionsModel.getRoute().getCharacteristics()) {
                         case Route:
                             addDirectionsToMap(copiedPositions);
