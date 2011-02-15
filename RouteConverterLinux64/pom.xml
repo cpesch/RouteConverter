@@ -64,13 +64,13 @@
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>jna</artifactId>
-            <version>3.0.7</version>
+            <version>3.2.4</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>com.sun.jna</groupId>
             <artifactId>linux.unknown.x86_64</artifactId>
-            <version>3.0.7</version>
+            <version>3.2.4</version>
         </dependency>
         <dependency>
             <groupId>eclipse.swt</groupId>
