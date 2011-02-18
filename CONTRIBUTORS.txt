@@ -13,7 +13,7 @@ Denny Baier for OpenSUSE packaging
 Harry van der Wolf for Linux and Mac OS X fixes
 Javier M.R. (jamaro) for the Spanish translation
 Malte Neumann for contributing code for KML, Wintec, Douglas-Peucker, Map and much more
-Matthias Pötzsch for the RouteCatalog maintenance
+Matthias Poetzsch for the RouteCatalog maintenance
 Philippe Vandekerckhove for the Dutch translation
 R.-Michael Teichert for the program icon
 Rainer Ippen for usuability improvements
