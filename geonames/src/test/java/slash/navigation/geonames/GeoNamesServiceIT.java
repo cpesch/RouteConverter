@@ -79,7 +79,7 @@ public class GeoNamesServiceIT extends TestCase {
         // was: assertEquals(null, service.getNearByFor(0.0, 0.0));
         assertEquals("Earth", service.getNearByFor(0.0, 0.0));
         String southPole = service.getNearByFor(0.0, -90.0);
-        assertTrue("South Pole".equals(southPole) || "Antarctica".equals(southPole));
+        assertTrue("South Pole".equals(southPole) || "Antarctica".equals(southPole) || "British Antarctic Territory".equals(southPole));
         assertEquals("North Pole", service.getNearByFor(0.0, 90.0));
         assertEquals(null, service.getNearByFor(90.0, 90.0));
         assertEquals(null, service.getNearByFor(-90.0, -90.0));
@@ -97,7 +97,8 @@ public class GeoNamesServiceIT extends TestCase {
     }
 
     public void testNearByPostalCodeFor() throws IOException {
-        assertEquals(new PostalCode("CH", "9622", "Krinau"), service.getNearByPostalCodeFor(9.0, 47.3));
+        PostalCode code = service.getNearByPostalCodeFor(9.0, 47.3);
+        assertTrue(new PostalCode("CH", "9622", "Krinau").equals(code) || new PostalCode("CH", "8638", "Goldingen").equals(code));
         assertEquals(new PostalCode("DE", "97506", "Grafenrheinfeld"), service.getNearByPostalCodeFor(10.2, 50.001));
         assertEquals(new PostalCode("AT", "6105", "Leutasch"), service.getNearByPostalCodeFor(11.1603, 47.3694));
         // was: assertEquals(null, service.getNearByPostalCodeFor(0.0, 0.0));
