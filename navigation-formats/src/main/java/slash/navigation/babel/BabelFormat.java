@@ -369,11 +369,13 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
         getGpxFormat().write(route, new FileOutputStream(source), startIndex, endIndex, getBabelCharacteristics());
         File targetFile = File.createTempFile("babeltarget", getExtension());
+
         boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), WRITE_COMMAND_EXECUTION_TIMEOUT);
-        if (successful) {
-            log.fine("Successfully converted " + source + " to " + target);
-            InputOutput.copy(new FileInputStream(targetFile), target);
-        }
+        if (!successful)
+            throw new IOException("Could not convert " + source + " to " + targetFile);
+
+        log.fine("Successfully converted " + source + " to " + targetFile);
+        InputOutput.copy(new FileInputStream(targetFile), target);
         if (targetFile.exists()) {
             if (!targetFile.delete())
                 log.warning("Cannot delete target file " + targetFile);
@@ -388,11 +390,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
         getGpxFormat().write(routes, new FileOutputStream(source));
         File targetFile = File.createTempFile("babeltarget", getExtension());
+
         boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), WRITE_COMMAND_EXECUTION_TIMEOUT);
-        if (successful) {
-            log.fine("Successfully converted " + source + " to " + target);
-            InputOutput.copy(new FileInputStream(targetFile), target);
-        }
+        if (!successful)
+            throw new IOException("Could not convert " + source + " to " + targetFile);
+
+        log.fine("Successfully converted " + source + " to " + targetFile);
+        InputOutput.copy(new FileInputStream(targetFile), target);
+
         if (targetFile.exists()) {
             if (!targetFile.delete())
                 log.warning("Cannot delete target file " + targetFile);
