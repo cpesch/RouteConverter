@@ -194,6 +194,19 @@ public class ConvertIT extends ConvertBase {
     }
 
 
+    public void testConvertFlightRecorderDataToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.igc", new FlightRecorderDataFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.igc", new FlightRecorderDataFormat(), new Gpx11Format());
+    }
+
+    public void testConvertFlightRecorderDataToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.igc", new FlightRecorderDataFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from.igc", new FlightRecorderDataFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.igc", new FlightRecorderDataFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.igc", new FlightRecorderDataFormat(), new Kml22Format());
+    }
+
+
     public void testConvertGpiToGpi() throws IOException {
         convertRoundtrip(TEST_PATH + "from.gpi", new GarminPoiFormat(), new GarminPoiFormat());
     }

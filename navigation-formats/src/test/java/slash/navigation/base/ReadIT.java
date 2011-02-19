@@ -125,6 +125,11 @@ public class ReadIT {
     }
 
     @Test
+    public void testFlightRecorderDataFilesAreValid() throws IOException {
+        readFiles(".igc");
+    }
+
+    @Test
     public void testGarminPoiFilesAreValid() throws IOException {
         readFiles(".gpi");
     }
