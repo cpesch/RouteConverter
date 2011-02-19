@@ -21,7 +21,7 @@
 package slash.navigation.simple;
 
 /**
- * Reads and writes broken Haicom Logger (.csv) files.
+ * Reads broken Haicom Logger (.csv) files.
  *
  * @author Christian Pesch
  */

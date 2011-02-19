@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes broken GPS Exchange Format 1.1 (.gpx) files.
+ * Reads broken GPS Exchange Format 1.1 (.gpx) files.
  *
  * @author Christian Pesch
  */

@@ -21,7 +21,7 @@
 package slash.navigation.kml;
 
 /**
- * Reads and writes broken little endian compressed Google Earth 4 (.kmz) files.
+ * Reads broken little endian compressed Google Earth 4 (.kmz) files.
  *
  * @author Christian Pesch
  */

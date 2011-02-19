@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes broken Google Earth 4.2 (.kml) files.
+ * Reads broken Google Earth 4.2 (.kml) files.
  *
  * @author Christian Pesch
  */

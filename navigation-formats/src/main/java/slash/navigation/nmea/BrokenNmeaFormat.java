@@ -21,7 +21,7 @@
 package slash.navigation.nmea;
 
 /**
- * Reads and writes broken NMEA 0183 Sentences (.nmea) files.
+ * Reads broken NMEA 0183 Sentences (.nmea) files.
  *
  * @author Christian Pesch
  */

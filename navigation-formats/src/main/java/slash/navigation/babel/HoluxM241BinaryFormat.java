@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reads and writes Holux M-241 Binary (.bin) files.
+ * Reads Holux M-241 Binary (.bin) files.
  *
  * @author Christian Pesch
  */

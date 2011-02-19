@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes broken little endian Google Earth 4 (.kml) files.
+ * Reads broken little endian Google Earth 4 (.kml) files.
  *
  * @author Christian Pesch
  */

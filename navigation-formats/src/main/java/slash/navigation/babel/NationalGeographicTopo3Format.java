@@ -21,7 +21,7 @@
 package slash.navigation.babel;
 
 /**
- * Reads and writes National Geographic Topo 3 (.tpo) files.
+ * Reads National Geographic Topo 3 (.tpo) files.
  *
  * @author Christian Pesch
  */
