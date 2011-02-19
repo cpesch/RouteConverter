@@ -33,8 +33,8 @@ import java.util.ResourceBundle;
 import static org.junit.Assert.assertTrue;
 
 public class ResourceBundleTest {
-    private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.GERMANY, Locale.US, Constants.SPAIN,
-            Locale.FRANCE, Constants.NEDERLANDS, Constants.SERBIA);
+    private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.FRANCE,
+            Locale.GERMANY, Constants.NEDERLANDS, Constants.SERBIA, Constants.SPAIN, Locale.US);
 
     @Test
     public void testEnglishAgainstOtherBundles() {
@@ -67,14 +67,12 @@ public class ResourceBundleTest {
                     continue;
 
                 ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, noFallbackControl);
-                if (!throwException) {
-                    try {
-                        bundle.getString(key);
-                    } catch (MissingResourceException e) {
-                        System.out.println("key " + key + " does not exist in " + locale);
-                    }
-                } else {
-                    assertTrue("key " + key + " exists in locale " + locale, bundle.getString(key) != null);
+                try {
+                    bundle.getString(key);
+                } catch (MissingResourceException e) {
+                    System.out.println("key " + key + " does not exist in " + locale);
+                    if (throwException)
+                        assertTrue("key " + key + " does not exist in " + locale, false);
                 }
             }
         }
