@@ -37,7 +37,7 @@
         <dependency>
             <groupId>djproject</groupId>
             <artifactId>nativeswing-swt</artifactId>
-            <version>0.9.9-20100806</version>
+            <version>0.9.9-20110113</version>
             <classifier>stripped</classifier>
         </dependency>
     </dependencies>
