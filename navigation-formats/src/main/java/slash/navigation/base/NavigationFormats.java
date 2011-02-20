@@ -151,6 +151,7 @@ public final class NavigationFormats {
         addFormat(TomTomPoiFormat.class);
         addFormat(HoluxM241BinaryFormat.class);
         addFormat(FlightRecorderDataFormat.class);
+        addFormat(CompeGPSDataFormat.class);
         addFormat(WintecWbt202TesFormat.class);
 
         // second try for broken files

@@ -261,7 +261,8 @@ public abstract class NavigationTestCase extends TestCase {
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof GarminPcx5Format) {
                 assertEquals((double) Math.round(sourcePosition.getElevation()), targetPosition.getElevation());
-            } else if (targetFormat instanceof OziExplorerReadFormat || targetFormat instanceof NmeaFormat) {
+            } else if (targetFormat instanceof OziExplorerReadFormat || targetFormat instanceof NmeaFormat ||
+                    targetFormat instanceof CompeGPSDataFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof ColumbusV900Format) {
                 assertEquals(sourcePosition.getElevation().intValue(), targetPosition.getElevation().intValue());

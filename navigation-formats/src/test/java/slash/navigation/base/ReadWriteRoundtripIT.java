@@ -43,6 +43,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     @Test
+    public void testCompeGPSReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-compegps.trk");
+    }
+
+    @Test
     public void testCoPilotReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from6.trp");
         readWriteRoundtrip(TEST_PATH + "from7.trp");

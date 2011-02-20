@@ -117,6 +117,23 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new ColumbusV900ProfessionalFormat());
     }
 
+    public void testConvertiBlue747ToCompeGPSData() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new CompeGPSDataFormat());
+    }
+
+
+    public void testConvertCompeGPSDataToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Gpx11Format());
+    }
+
+    public void testConvertCompeGPSDataToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml22Format());
+    }
+
 
     public void testConvertCoPilotToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx10Format());

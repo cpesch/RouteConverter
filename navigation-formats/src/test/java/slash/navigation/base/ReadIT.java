@@ -65,9 +65,9 @@ public class ReadIT {
                 assertNotNull("Cannot get route from " + file, parser.getTheRoute());
                 assertNotNull(parser.getAllRoutes());
                 assertTrue(parser.getAllRoutes().size() > 0);
-                for(BaseRoute route : parser.getAllRoutes()) {
+                for (BaseRoute route : parser.getAllRoutes()) {
                     List<BaseNavigationPosition> positions = route.getPositions();
-                    for(BaseNavigationPosition position : positions) {
+                    for (BaseNavigationPosition position : positions) {
                         comments.add(position.getComment());
                     }
                 }
@@ -262,6 +262,10 @@ public class ReadIT {
 
     @Test
     public void testTrkFilesAreValid() throws IOException {
+        // CompeGPS Data
+        // GoPal Track
+        // GPS Tuner
+        // IGO8 Track
         readFiles(".trk");
     }
 
