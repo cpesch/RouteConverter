@@ -71,8 +71,7 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
                     position.getLongitude() < 180.0 && position.getLongitude() > -180.0 &&
                     position.getElevation() < 20000.0 &&
                     Math.abs(position.getLatitude()) > 0.00001 &&
-                    Math.abs(position.getLongitude()) > 0.00001 &&
-                    Math.abs(position.getElevation()) > 0.000001;
+                    Math.abs(position.getLongitude()) > 0.00001;
 
             if (valid && previousPosition != null) {
                 Double speed = position.calculateSpeed(previousPosition);
