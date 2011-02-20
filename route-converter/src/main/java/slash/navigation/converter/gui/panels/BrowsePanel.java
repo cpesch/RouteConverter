@@ -83,7 +83,7 @@ import java.util.logging.Logger;
 
 public abstract class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+    private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"));
     private final RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeCatalog);
 
     private JPanel browsePanel;

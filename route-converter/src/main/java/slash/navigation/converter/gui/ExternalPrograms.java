@@ -33,19 +33,19 @@ public abstract class ExternalPrograms {
     protected static final Logger log = Logger.getLogger(ExternalPrograms.class.getName());
 
     public void startBrowserForHomepage(Window window) {
-        startBrowser(window, "www.routeconverter.de");
+        startBrowser(window, "www.routeconverter.com");
     }
 
     public void startBrowserForUpdate(Window window) {
-        startBrowser(window, "www.routeconverter.de/downloads/" + Locale.getDefault().getLanguage());
+        startBrowser(window, "www.routeconverter.com/downloads/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForTerms(Window window) {
-        startBrowser(window, "www.routeconverter.de/routecatalog/terms/" + Locale.getDefault().getLanguage());
+        startBrowser(window, "www.routeconverter.com/routecatalog/terms/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForForum(Window window) {
-        startBrowser(window, "www.routeconverter.de/forum/");
+        startBrowser(window, "www.routeconverter.com/forum/");
     }
 
     public void startBrowserForGeonames(Window window) {
@@ -66,7 +66,7 @@ public abstract class ExternalPrograms {
     protected abstract void startBrowser(Window window, String uri);
 
     public void startMail(Window window) {
-        startMail(window, "mailto:support@routeconverter.de");
+        startMail(window, "mailto:support@routeconverter.com");
     }
 
     protected abstract void startMail(Window window, String uri);

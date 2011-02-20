@@ -55,7 +55,7 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <twitterStatus>Version ${project.version} of RouteConverter released to http://www.routeconverter.de</twitterStatus>
+                            <twitterStatus>Version ${project.version} of RouteConverter released to http://www.routeconverter.com</twitterStatus>
                         </configuration>
                         <id>deploy</id>
                         <phase>deploy</phase>

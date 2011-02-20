@@ -360,7 +360,7 @@ public class Kml22Format extends KmlFormat {
             "FF000080",
             "FF194c80",
             "FF000000"};
-    private static final String SPEEDBAR_URL = "http://www.routeconverter.de/images/speedbar.png";
+    private static final String SPEEDBAR_URL = "http://www.routeconverter.com/images/speedbar.png";
 
     private float getSpeedLineWidth() {
         return preferences.getFloat("speedLineWidth", 5.0f);

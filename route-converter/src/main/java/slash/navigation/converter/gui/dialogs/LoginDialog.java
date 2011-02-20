@@ -24,7 +24,6 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.domain.RouteCatalog;
-import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.gui.SimpleDialog;
@@ -232,7 +231,7 @@ public class LoginDialog extends SimpleDialog {
             log.severe("Could not register: " + t.getMessage());
             labelRegisterResult.setText("<html>Could not register:<p>" +
                     t.getMessage() + "<p>" +
-                    "Please write an error report to <a href=\"mailto:support@routeconverter.de\">support@routeconverter.de</a>."); // TODO make nicer
+                    "Please write an error report to <a href=\"mailto:support@routeconverter.com\">support@routeconverter.com</a>."); // TODO make nicer
             pack();
         }
     }

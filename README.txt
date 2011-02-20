@@ -28,12 +28,12 @@ How to develop for RouteConverter
 
 2. Install Maven 3 from http://maven.apache.org/download.html
 
-3. Checkout RouteConverter from Subversion:
-   > svn checkout http://www.routeconverter.de/svn/RouteConverter/trunk/ RouteConverter
+3. Clone RouteConverter from github:
+   > git clone git@github.com:cpesch/RouteConverter.git
 
 4. Open RouteConverter sources in an Integrated Development Environment (IDE)
 
-   Install Intellij IDEA Community Edition from http://www.jetbrains.com/idea/download/
+   Install IntellijIDEA Community Edition from http://www.jetbrains.com/idea/download/
    Choose "File/Open Project..." and the root pom.xml.
 
    Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/

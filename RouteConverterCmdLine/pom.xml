@@ -32,7 +32,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Download-At>http://www.routeconverter.de</Download-At>
+                                        <Download-At>http://www.routeconverter.com</Download-At>
                                         <Main-Class>slash.navigation.converter.cmdline.RouteConverterCmdLine</Main-Class>
                                     </manifestEntries>
                                 </transformer>

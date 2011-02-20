@@ -32,7 +32,7 @@ import java.io.*;
 
 public abstract class CatalogClientBase extends TestCase {
     protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
-    // protected static final String HOST = "www.routeconverter.de";
+    // protected static final String HOST = "www.routeconverter.com";
     // protected static final String HOST = "localhost:8080";
     protected static final String HOST = "localhost:8000";
     protected static final String ROOT = "http://" + HOST + "/catalog/";

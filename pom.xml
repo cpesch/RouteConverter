@@ -6,7 +6,7 @@
     <version>2.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RouteConverter</name>
-    <url>http://www.routeconverter.de</url>
+    <url>http://www.routeconverter.com</url>
 
     <developers>
         <developer>
@@ -20,7 +20,7 @@
     <repositories>
         <repository>
             <id>routeconverter-thirdparty</id>
-            <url>http://www.routeconverter.de/svn/RouteThirdParty</url>
+            <url>http://www.routeconverter.com/svn/RouteThirdParty</url>
         </repository>
     </repositories>
     
@@ -28,18 +28,18 @@
         <repository>
             <id>routeconverter-release</id>
             <name>RouteConverter Release Repository</name>
-            <url>scpexe://www.routeconverter.de:/home/notroot/public_html/routeconverter.com/static/downloads/release</url>
+            <url>scpexe://www.routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/release</url>
         </repository>
         <snapshotRepository>
             <id>routeconverter-prerelease</id>
             <name>RouteConverter Prerelease Snapshot Repository</name>
-            <url>scpexe://www.routeconverter.de:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
+            <url>scpexe://www.routeconverter.com:/home/notroot/public_html/routeconverter.com/static/downloads/prerelease</url>
         </snapshotRepository>
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/2.2</connection>
-        <developerConnection>scm:svn:http://www.routeconverter.de/svn/RouteConverter/tags/2.2</developerConnection>
+        <connection>scm:svn:http://www.routeconverter.com/svn/RouteConverter/tags/2.2</connection>
+        <developerConnection>scm:svn:http://www.routeconverter.com/svn/RouteConverter/tags/2.2</developerConnection>
     </scm>
 
     <build>

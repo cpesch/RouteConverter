@@ -200,7 +200,7 @@ public class UploadDialog extends SimpleDialog {
             File tempFile = RouteCatalog.createTempFile(null);
             new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, tempFile);
             // TODO use RouteCatalog object from BrowsePanel
-            RouteCatalog routeService = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+            RouteCatalog routeService = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"));
             // TODO update description? or only file? where is description extracted from?
             routeService.updateRoute(categoryUrl, routeUrl, description, fileUrl);
             routeService.updateFile(fileUrl, tempFile);

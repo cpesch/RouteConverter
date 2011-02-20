@@ -23,21 +23,21 @@ package slash.navigation.converter.gui.services;
 import java.io.IOException;
 
 /**
- * The {@link RouteService} at http://www.routeconverter.de/catalog
+ * The {@link RouteService} at http://www.routeconverter.com/catalog
  *
  * @author Christian Pesch
  */
 
 public class RouteCatalog implements RouteService {
     // todo share with the one in BrowsePanel?
-    private final slash.navigation.catalog.domain.RouteCatalog routeCatalog = new slash.navigation.catalog.domain.RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.de/catalog/"));
+    private final slash.navigation.catalog.domain.RouteCatalog routeCatalog = new slash.navigation.catalog.domain.RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"));
 
     public String getName() {
         return "RouteCatalog";
     }
 
     public boolean isOriginOf(String url) {
-        return url.startsWith("http://www.routeconverter.de/catalog/");
+        return url.startsWith("http://www.routeconverter.com/catalog/");
     }
 
     public void upload(String username, String password, String fileUrl, String name, String description) throws IOException {
