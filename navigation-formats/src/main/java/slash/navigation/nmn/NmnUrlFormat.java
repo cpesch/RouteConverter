@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 
 public class NmnUrlFormat extends UrlFormat {
     private static final Preferences preferences = Preferences.userNodeForPackage(NmnUrlFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*navigonDEU://route/\\?([^\\s|\"]+).*");
+    private static final Pattern URL_PATTERN = Pattern.compile(".*navigon.+://route/\\?([^\\s|\"]+).*");
     private static final Pattern COORDINATE_PATTERN = Pattern.compile("coordinate//(" + POSITION + ")/(" + POSITION + ")");
     private static final Pattern ADDRESS_PATTERN = Pattern.compile("address//[^/]*/([^/]*)/([^/]*)/([^/]*)/([^/]*)/" +
             "(" + POSITION + ")/(" + POSITION + ")");
@@ -103,8 +103,20 @@ public class NmnUrlFormat extends UrlFormat {
         return result;
     }
 
+    private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
+        int westCount = 0;
+        for (int i = startIndex; i < endIndex; i++) {
+            Wgs84Position position = positions.get(i);
+            if(position.getLongitude() < -27.0)
+                westCount++;
+        }
+        int eastCount = endIndex - startIndex - westCount;
+        return westCount > eastCount ? "USA-CA" : "DEU";
+    }
+
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
-        StringBuffer buffer = new StringBuffer("navigonDEU://route/?");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("navigon").append(calculateMapName(positions, startIndex, endIndex)).append("://route/?");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
