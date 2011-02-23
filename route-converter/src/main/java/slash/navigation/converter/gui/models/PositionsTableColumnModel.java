@@ -33,7 +33,8 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -55,7 +56,7 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         PositionsTableCellRenderer rightAligned = new PositionsTableCellRenderer(SwingConstants.RIGHT);
         PositionsTableCellHeaderRenderer headerRenderer = new PositionsTableCellHeaderRenderer();
         predefineColumn(PositionColumns.DESCRIPTION_COLUMN_INDEX, "description", null, true, leftAligned, headerRenderer);
-        predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", getMaxWidth("12.34.56 78:90:12", 10), false, rightAligned, headerRenderer);
+        predefineColumn(PositionColumns.TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, rightAligned, headerRenderer);
         predefineColumn(PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, rightAligned, headerRenderer);
@@ -90,6 +91,17 @@ public class PositionsTableColumnModel extends DefaultTableColumnModel {
         FontMetrics fm = label.getFontMetrics(label.getFont());
         int width = fm.stringWidth(string);
         return width + extraWidth;
+    }
+
+    private String getExampleDateFromCurrentLocale() {
+        Calendar calendar = Calendar.getInstance(Locale.US);
+        calendar.set(Calendar.YEAR, 2030);
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DAY_OF_MONTH, 22);
+        calendar.set(Calendar.HOUR_OF_DAY, 22);
+        calendar.set(Calendar.MINUTE, 33);
+        calendar.set(Calendar.SECOND, 44);
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(new Date(calendar.getTimeInMillis()));
     }
 
     private void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visiblityDefault,
