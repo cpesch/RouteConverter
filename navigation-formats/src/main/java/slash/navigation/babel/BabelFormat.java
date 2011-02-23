@@ -69,6 +69,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         preferences.put(BABEL_PATH_PREFERENCE, babelPathPreference);
     }
 
+    private int getReadCommandExecutionTimeoutPreference() {
+        return preferences.getInt("readCommandExecutionTimeout", 10000);
+    }
+
+    private int getWriteCommandExecutionTimeOutPreference() {
+        return preferences.getInt("writeCommandExecutionTimeout", 30000);
+    }
+
     protected abstract String getFormatName();
 
     public boolean isWritingRouteCharacteristics() {
@@ -267,8 +275,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return temp;
     }
 
-    private static final int READ_COMMAND_EXECUTION_TIMEOUT = 5000;
-    private static final int WRITE_COMMAND_EXECUTION_TIMEOUT = 30000;
     private static final int COMMAND_EXECUTION_RECHECK_INTERVAL = 250;
 
     private int execute(String babelPath, String command, int timeout) throws IOException {
@@ -336,7 +342,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     public List<GpxRoute> read(InputStream in, CompactCalendar startDate) throws IOException {
         if (isStreamingCapable()) {
-            InputStream target = startBabel(in, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, READ_COMMAND_EXECUTION_TIMEOUT);
+            InputStream target = startBabel(in, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
             List<GpxRoute> result = getGpxFormat().read(target, startDate);
             if (result != null && result.size() > 0)
                 log.fine("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME + " stream");
@@ -348,7 +354,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             InputOutput.copy(in, new FileOutputStream(source));
             File target = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
             target.deleteOnExit();
-            boolean successful = startBabel(source, getFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", READ_COMMAND_EXECUTION_TIMEOUT);
+            boolean successful = startBabel(source, getFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
                 log.fine("Successfully converted " + source + " to " + target);
                 result = getGpxFormat().read(new FileInputStream(target), startDate);
@@ -370,7 +376,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         getGpxFormat().write(route, new FileOutputStream(source), startIndex, endIndex, getBabelCharacteristics());
         File targetFile = File.createTempFile("babeltarget", getExtension());
 
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), WRITE_COMMAND_EXECUTION_TIMEOUT);
+        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), getWriteCommandExecutionTimeOutPreference());
         if (!successful)
             throw new IOException("Could not convert " + source + " to " + targetFile);
 
@@ -391,7 +397,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         getGpxFormat().write(routes, new FileOutputStream(source));
         File targetFile = File.createTempFile("babeltarget", getExtension());
 
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), WRITE_COMMAND_EXECUTION_TIMEOUT);
+        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), getWriteCommandExecutionTimeOutPreference());
         if (!successful)
             throw new IOException("Could not convert " + source + " to " + targetFile);
 
