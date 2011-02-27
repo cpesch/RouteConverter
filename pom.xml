@@ -38,8 +38,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://www.routeconverter.com/svn/RouteConverter/tags/2.2</connection>
-        <developerConnection>scm:svn:http://www.routeconverter.com/svn/RouteConverter/tags/2.2</developerConnection>
+        <connection>scm:git:https://github.com/cpesch/RouteConverter</connection>
+        <developerConnection>scm:git:git@github.com:cpesch/RouteConverter.git</developerConnection>
     </scm>
 
     <build>
