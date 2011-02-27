@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.3</version>
     <packaging>pom</packaging>
     <name>RouteConverter</name>
     <url>http://www.routeconverter.com</url>
@@ -23,7 +23,17 @@
             <url>http://www.routeconverter.com/svn/RouteThirdParty</url>
         </repository>
     </repositories>
-    
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus-snapshots</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>https://nexus.codehaus.org/content/repositories/snapshots</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <distributionManagement>
         <repository>
             <id>routeconverter-release</id>
@@ -47,7 +57,22 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh-external</artifactId>
-                <version>1.0-alpha-5</version>
+                <version>1.0-beta-6</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-scm</artifactId>
+                <version>1.0-beta-6</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.scm</groupId>
+                <artifactId>maven-scm-manager-plexus</artifactId>
+                <version>1.4</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.scm</groupId>
+                <artifactId>maven-scm-provider-gitexe</artifactId>
+                <version>1.4</version>
             </extension>
         </extensions>
 
@@ -104,7 +129,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.0-beta-9</version>
+                <version>2.1</version>
             </plugin>
             <plugin>
                 <groupId>com.vineetmanohar</groupId>
