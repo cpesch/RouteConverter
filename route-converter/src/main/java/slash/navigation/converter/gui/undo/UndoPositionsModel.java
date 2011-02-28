@@ -165,13 +165,15 @@ public class UndoPositionsModel implements PositionsModel {
             public void performOnIndex(int index) {
                 removed.add(0, getRoute().remove(index));
             }
-
             public void performOnRange(int firstIndex, int lastIndex) {
                 if (fireEvent)
                     delegate.fireTableRowsDeleted(firstIndex, lastIndex);
                 if (trackUndo)
                     edit.add(firstIndex, new ArrayList<BaseNavigationPosition>(removed));
                 removed.clear();
+            }
+            public boolean isInterrupted() {
+                return false;
             }
         }).performMonotonicallyDecreasing();
 

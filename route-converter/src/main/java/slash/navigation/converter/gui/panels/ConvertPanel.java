@@ -183,6 +183,9 @@ public abstract class ConvertPanel {
                     public void performOnRange(int firstIndex, int lastIndex) {
                         JTableHelper.scrollToPosition(tablePositions, firstIndex);
                     }
+                    public boolean isInterrupted() {
+                        return false;
+                    }
                 }).performMonotonicallyIncreasing(20);
             }
         };
@@ -938,9 +941,11 @@ public abstract class ConvertPanel {
         new ContinousRange(selectedPositions, new RangeOperation() {
             public void performOnIndex(int index) {
             }
-
             public void performOnRange(int firstIndex, int lastIndex) {
                 tablePositions.getSelectionModel().addSelectionInterval(firstIndex, lastIndex);
+            }
+            public boolean isInterrupted() {
+                return false;
             }
         }).performMonotonicallyIncreasing();
     }

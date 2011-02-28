@@ -28,7 +28,6 @@ import java.util.List;
  * Use to reduce the number of notifications that Swing UI Models fire.
  *
  * @author Christian Pesch
- *
  * @see RangeOperation
  */
 
@@ -57,12 +56,16 @@ public class ContinousRange {
         for (List<Integer> range : ranges) {
             for (Integer index : range) {
                 operation.performOnIndex(index);
+                if (operation.isInterrupted())
+                    return;
             }
             int firstValue = range.get(0);
             int lastValue = range.get(range.size() - 1);
             int from = Math.min(firstValue, lastValue);
             int to = Math.max(firstValue, lastValue);
             operation.performOnRange(from, to);
+            if (operation.isInterrupted())
+                return;
         }
     }
 }

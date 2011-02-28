@@ -31,4 +31,5 @@ package slash.common.io;
 public interface RangeOperation {
     void performOnIndex(int index);
     void performOnRange(int firstIndex, int lastIndex);
+    boolean isInterrupted();
 }

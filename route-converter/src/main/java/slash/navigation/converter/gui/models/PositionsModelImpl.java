@@ -310,6 +310,9 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 if (fireEvent)
                     fireTableRowsDeleted(firstIndex, lastIndex);
             }
+            public boolean isInterrupted() {
+                return false;
+            }
         }).performMonotonicallyDecreasing();
     }
 

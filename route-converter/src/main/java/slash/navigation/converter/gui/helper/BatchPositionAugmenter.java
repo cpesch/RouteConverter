@@ -86,6 +86,7 @@ public class BatchPositionAugmenter {
                                   final Operation operation) {
         Constants.startWaitCursor(frame.getRootPane());
 
+        final ProgressMonitor progress = new ProgressMonitor(frame, "", RouteConverter.getBundle().getString("progress-started"), 0, 100);
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -94,7 +95,9 @@ public class BatchPositionAugmenter {
                     final int maximumRangeLength = rows.length > 99 ? rows.length / (slowOperation ? 100 : 10) : rows.length;
 
                     new ContinousRange(rows, new RangeOperation() {
-                        public void performOnIndex(int index) {
+                        private int count = 1;
+
+                        public void performOnIndex(final int index) {
                             BaseNavigationPosition position = positionsModel.getPosition(index);
                             if (predicate.shouldOverwrite(position)) {
                                 try {
@@ -105,6 +108,16 @@ public class BatchPositionAugmenter {
                                     lastException[0] = e;
                                 }
                             }
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    int percent = count++ * 100 / rows.length;
+                                    progress.setNote(MessageFormat.format(
+                                            RouteConverter.getBundle().getString("progress-processing-position"),
+                                            index, percent));
+                                    progress.setProgress(percent);
+                                }
+                            });
                         }
 
                         public void performOnRange(final int firstIndex, final int lastIndex) {
@@ -115,6 +128,10 @@ public class BatchPositionAugmenter {
                                         JTableHelper.scrollToPosition(positionsTable, Math.min(lastIndex + maximumRangeLength, positionsModel.getRowCount()));
                                 }
                             });
+                        }
+
+                        public boolean isInterrupted() {
+                            return progress.isCanceled();
                         }
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
@@ -129,6 +146,8 @@ public class BatchPositionAugmenter {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             Constants.stopWaitCursor(frame.getRootPane());
+                            progress.setNote(RouteConverter.getBundle().getString("progress-finished"));
+                            progress.setProgress(progress.getMaximum());
                         }
                     });
                 }
