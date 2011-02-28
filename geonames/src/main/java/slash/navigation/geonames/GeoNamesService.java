@@ -97,6 +97,8 @@ public class GeoNamesService {
         Geonames geonames = getGeonamesFor(uri, longitude, latitude);
         if (geonames == null || geonames.getGeoname() == null)
             return null;
+        if (geonames.getStatus() != null)
+            throw new IOException(geonames.getStatus().getMessage());
         List<String> result = new ArrayList<String>();
         for (Geonames.Geoname geoname : geonames.getGeoname()) {
             result.add(geoname.getName());

@@ -36,6 +36,12 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element minOccurs="0" name="status">
+          <xs:complexType>
+            <xs:attribute name="message" type="xs:string" use="required" />
+            <xs:attribute name="value" type="xs:unsignedByte" use="required" />
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

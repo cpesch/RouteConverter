@@ -15,7 +15,7 @@ bin\xjc -verbose -d generated -p slash.navigation.kml.binding22beta c:\p4\RouteC
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding3 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gopal\gopal3.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gopal.binding5 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\gopal\gopal5.xsd
 bin\xjc -verbose -dtd -d generated -p slash.navigation.viamichelin.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\viamichelin\export.dtd
-bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\p4\RouteConverter\trunk\geonames\src\main\doc\geonames.xsd
+bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\p4\RouteConverter-git\geonames\src\main\doc\geonames.xsd
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\nmn\nmn7.xsd
 bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\klicktel\klicktel.xsd
 bin\xjc -verbose -d generated -p slash.navigation.earthtools.binding c:\p4\RouteConverter\trunk\earthtools\src\main\doc\height.xsd
