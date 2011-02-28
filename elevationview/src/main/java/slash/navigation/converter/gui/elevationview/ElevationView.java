@@ -99,12 +99,12 @@ public class ElevationView {
         plot.setForegroundAlpha(0.65F);
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        rangeAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
         Font font = new JLabel().getFont();
         rangeAxis.setLabelFont(font);
 
         NumberAxis valueAxis = (NumberAxis) plot.getDomainAxis();
-        valueAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        valueAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
         valueAxis.setLowerMargin(0.0);
         valueAxis.setUpperMargin(0.0);
         valueAxis.setLabelFont(font);
