@@ -205,24 +205,24 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.topDown(rows);
     }
 
-    public void up(int[] rowIndices) {
-        up(rowIndices, true);
+    public void up(int[] rowIndices, int delta) {
+        up(rowIndices, delta, true);
     }
 
-    void up(int[] rows, boolean trackUndo) {
-        delegate.up(rows);
+    void up(int[] rows, int delta, boolean trackUndo) {
+        delegate.up(rows, delta);
         if(trackUndo)
-            undoManager.addEdit(new UpPositions(this, rows));
+            undoManager.addEdit(new UpPositions(this, rows, delta));
     }
 
-    public void down(int[] rowIndices) {
-        down(rowIndices, true);
+    public void down(int[] rowIndices, int delta) {
+        down(rowIndices, delta, true);
     }
 
-    void down(int[] rows, boolean trackUndo) {
-        delegate.down(rows);
+    void down(int[] rows, int delta, boolean trackUndo) {
+        delegate.down(rows, delta);
         if (trackUndo)
-            undoManager.addEdit(new DownPositions(this, Range.revert(rows)));
+            undoManager.addEdit(new DownPositions(this, Range.revert(rows), delta));
     }
 
     public void bottom(int[] rowIndices) {

@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
+import slash.common.io.Range;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -36,10 +37,12 @@ import javax.swing.undo.UndoableEdit;
 class UpPositions extends AbstractUndoableEdit {
     private UndoPositionsModel positionsModel;
     private int[] rows;
+    private int delta;
 
-    public UpPositions(UndoPositionsModel positionsModel, int[] rows) {
+    public UpPositions(UndoPositionsModel positionsModel, int[] rows, int delta) {
         this.positionsModel = positionsModel;
         this.rows = rows;
+        this.delta = delta;
     }
 
     public String getUndoPresentationName() {
@@ -52,15 +55,11 @@ class UpPositions extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        int[] up = new int[rows.length];
-        for (int i = 0; i < rows.length; i++) {
-            up[i] = rows[i] - 1;
-        }
-        positionsModel.down(up, false);
+        positionsModel.down(Range.increment(rows, -delta), delta, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.up(rows, false);
+        positionsModel.up(rows, delta, false);
     }
 }

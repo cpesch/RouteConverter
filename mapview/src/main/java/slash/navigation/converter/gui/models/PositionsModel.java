@@ -59,8 +59,8 @@ public interface PositionsModel extends TableModel {
     void revert();
 
     void top(int[] rowIndices);
-    void up(int[] rowIndices);
-    void down(int[] rowIndices);
+    void up(int[] rowIndices, int delta);
+    void down(int[] rowIndices, int delta);
     void bottom(int[] rowIndices);
 
     void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex);

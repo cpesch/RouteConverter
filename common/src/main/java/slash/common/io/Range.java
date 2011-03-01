@@ -79,6 +79,14 @@ public class Range {
         return reverted;
     }
 
+    public static int[] increment(int[] indices, int delta) {
+        int[] incremented = new int[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            incremented[i] = indices[i] + delta;
+        }
+        return incremented;
+    }
+
     public static int[] allButEveryNthAndFirstAndLast(int maximum, int nth) {
         if (nth < 1)
             throw new IllegalArgumentException("nth has to be more than zero");

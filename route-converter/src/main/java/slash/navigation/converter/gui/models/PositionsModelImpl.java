@@ -340,21 +340,21 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(0, reverted[0]);
     }
 
-    public void up(int[] rowIndices) {
+    public void up(int[] rowIndices, int delta) {
         Arrays.sort(rowIndices);
 
         for (int row : rowIndices) {
-            getRoute().up(row, row - 1);
-            fireTableRowsUpdated(row - 1, row);
+            getRoute().up(row, row - delta);
+            fireTableRowsUpdated(row - delta, row);
         }
     }
 
-    public void down(int[] rowIndices) {
+    public void down(int[] rowIndices, int delta) {
         int[] reverted = Range.revert(rowIndices);
 
         for (int row : reverted) {
-            getRoute().down(row, row + 1);
-            fireTableRowsUpdated(row, row + 1);
+            getRoute().down(row, row + delta);
+            fireTableRowsUpdated(row, row + delta);
         }
     }
 
