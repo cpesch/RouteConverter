@@ -116,5 +116,4 @@ class BrowsePanel6 extends BrowsePanel {
             return false;
         }
     }
-
 }
