@@ -44,14 +44,14 @@ import java.util.logging.Logger;
 class PanelDropHandler extends TransferHandler {
     private static final Logger log = Logger.getLogger(PanelDropHandler.class.getName());
 
-    protected void handleDrop(List<File> files) {
+    protected void openOrAdd(List<File> files) {
         if (RouteConverter.getInstance().isConvertPanelSelected())
             RouteConverter.getInstance().openPositionList(Files.toUrls(files.toArray(new File[files.size()])));
         else if (RouteConverter.getInstance().isBrowsePanelSelected())
             RouteConverter.getInstance().addFilesToCatalog(files);
     }
 
-    protected void handleDrop(String string) {
+    protected void openOrAdd(String string) {
         if (RouteConverter.getInstance().isConvertPanelSelected()) {
             String url = DnDHelper.extractUrl(string);
             try {
@@ -78,7 +78,7 @@ class PanelDropHandler extends TransferHandler {
                 Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
                 if (data != null) {
                     List<File> files = (List<File>) data;
-                    handleDrop(files);
+                    openOrAdd(files);
                     return true;
                 }
             }
@@ -87,7 +87,7 @@ class PanelDropHandler extends TransferHandler {
                 Object data = t.getTransferData(DataFlavor.stringFlavor);
                 if (data != null) {
                     String url = (String) data;
-                    handleDrop(url);
+                    openOrAdd(url);
                     return true;
                 }
             }
