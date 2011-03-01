@@ -177,21 +177,7 @@ public abstract class BrowsePanel {
 
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
         tableRoutes.setDragEnabled(true);
-        tableRoutes.setTransferHandler(new TransferHandler() {
-            public int getSourceActions(JComponent comp) {
-                return MOVE;
-            }
-
-            protected Transferable createTransferable(JComponent c) {
-                int[] selectedRows = tableRoutes.getSelectedRows();
-                List<Route> selectedRoutes = new ArrayList<Route>();
-                for (int selectedRow : selectedRows) {
-                    Route route = getRoutesListModel().getRoute(selectedRow);
-                    selectedRoutes.add(route);
-                }
-                return new RouteSelection(selectedRoutes);
-            }
-        });
+        tableRoutes.setTransferHandler(new TableDragHandler());
         tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 int[] selectedRows = tableRoutes.getSelectedRows();
@@ -518,6 +504,22 @@ public abstract class BrowsePanel {
                 }
             }
         });
+    }
+
+    private class TableDragHandler extends TransferHandler {
+        public int getSourceActions(JComponent comp) {
+            return MOVE;
+        }
+
+        protected Transferable createTransferable(JComponent c) {
+            int[] selectedRows = tableRoutes.getSelectedRows();
+            List<Route> selectedRoutes = new ArrayList<Route>();
+            for (int selectedRow : selectedRows) {
+                Route route = getRoutesListModel().getRoute(selectedRow);
+                selectedRoutes.add(route);
+            }
+            return new RouteSelection(selectedRoutes);
+        }
     }
 
     {
