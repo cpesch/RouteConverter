@@ -77,6 +77,9 @@ public class LengthCalculator {
 
         characteristicsModel.addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
+                // ignore events following setRoute()
+                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == CharacteristicsModel.IGNORE && e.getIndex1() == CharacteristicsModel.IGNORE)
+                    return;
                 calculateDistance();
             }
         });

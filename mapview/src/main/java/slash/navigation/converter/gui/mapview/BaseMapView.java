@@ -197,6 +197,9 @@ public abstract class BaseMapView implements MapView {
             }
 
             public void contentsChanged(ListDataEvent e) {
+                // ignore events following setRoute()
+                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == CharacteristicsModel.IGNORE && e.getIndex1() == CharacteristicsModel.IGNORE)
+                    return;
                 updateRouteButDontRecenter();
             }
         });

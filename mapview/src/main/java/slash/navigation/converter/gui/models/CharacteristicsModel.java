@@ -28,20 +28,24 @@ import slash.navigation.base.BaseRoute;
 import javax.swing.*;
 
 /**
- * Acts as a {@link ComboBoxModel} for the characteristics of a {@link slash.navigation.base.BaseRoute}.
+ * Acts as a {@link ComboBoxModel} for the characteristics of a {@link BaseRoute}.
  *
  * @author Christian Pesch
  */
 
 public class CharacteristicsModel extends AbstractListModel implements ComboBoxModel {
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
+    public static final int IGNORE = Integer.MIN_VALUE;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
         return route;
     }
 
     public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+        // TODO boolean change = this.route != null && (route.getCharacteristics() != this.route.getCharacteristics() || route != this.route);
         this.route = route;
+        // TODO if (change)
+          fireContentsChanged(this, IGNORE, IGNORE);
     }
 
     public RouteCharacteristics getSelectedCharacteristics() {

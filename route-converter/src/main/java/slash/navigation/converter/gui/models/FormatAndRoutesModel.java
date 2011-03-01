@@ -67,6 +67,9 @@ public class FormatAndRoutesModel extends AbstractListModel implements ComboBoxM
             public void intervalRemoved(ListDataEvent e) {
             }
             public void contentsChanged(ListDataEvent e) {
+                // ignore events following setRoute()
+                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == CharacteristicsModel.IGNORE && e.getIndex1() == CharacteristicsModel.IGNORE)
+                    return;
                 if(formatAndRoutes.getFormat().isWritingRouteCharacteristics())
                     setModified(true);
                 fireContentsChanged(this, -1, -1);
