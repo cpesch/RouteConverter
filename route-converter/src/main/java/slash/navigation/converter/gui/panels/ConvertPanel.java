@@ -28,87 +28,29 @@ import slash.common.io.Files;
 import slash.common.io.Range;
 import slash.common.io.RangeOperation;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.FormatAndRoutes;
-import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationFileParser;
-import slash.navigation.base.NavigationFileParserListener;
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormats;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.*;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.AddCoordinatesToPositions;
-import slash.navigation.converter.gui.actions.AddElevationToPositions;
-import slash.navigation.converter.gui.actions.AddNumbersToPositions;
-import slash.navigation.converter.gui.actions.AddPopulatedPlaceToPositions;
-import slash.navigation.converter.gui.actions.AddPostalAddressToPositions;
-import slash.navigation.converter.gui.actions.AddSpeedToPositions;
-import slash.navigation.converter.gui.actions.CopyAction;
-import slash.navigation.converter.gui.actions.CutAction;
-import slash.navigation.converter.gui.actions.DeleteAction;
-import slash.navigation.converter.gui.actions.DeletePositionListAction;
-import slash.navigation.converter.gui.actions.ImportPositionList;
-import slash.navigation.converter.gui.actions.NewFileAction;
-import slash.navigation.converter.gui.actions.NewPositionAction;
-import slash.navigation.converter.gui.actions.NewPositionListAction;
-import slash.navigation.converter.gui.actions.OpenAction;
-import slash.navigation.converter.gui.actions.PasteAction;
-import slash.navigation.converter.gui.actions.RenamePositionListAction;
-import slash.navigation.converter.gui.actions.SaveAction;
-import slash.navigation.converter.gui.actions.SaveAsAction;
-import slash.navigation.converter.gui.actions.SelectAllAction;
-import slash.navigation.converter.gui.actions.SplitPositionList;
-import slash.navigation.converter.gui.actions.UploadAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.UploadDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
-import slash.navigation.converter.gui.helper.AbstractDocumentListener;
-import slash.navigation.converter.gui.helper.AbstractListDataListener;
-import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
-import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.helper.JTableHelper;
-import slash.navigation.converter.gui.helper.LengthCalculator;
-import slash.navigation.converter.gui.helper.MergePositionListMenu;
-import slash.navigation.converter.gui.helper.NavigationFormatFileFilter;
-import slash.navigation.converter.gui.helper.TableHeaderMenu;
-import slash.navigation.converter.gui.helper.TablePopupMenu;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
-import slash.navigation.converter.gui.models.FormatAndRoutesModel;
-import slash.navigation.converter.gui.models.FormatToJLabelAdapter;
-import slash.navigation.converter.gui.models.LengthToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionListsToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.PositionsTableColumnModel;
-import slash.navigation.converter.gui.models.RecentUrlsModel;
-import slash.navigation.converter.gui.models.UrlDocument;
+import slash.navigation.converter.gui.dnd.PositionSelection;
+import slash.navigation.converter.gui.helper.*;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gui.ActionManager;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.FrameAction;
-import slash.navigation.gui.RedoAction;
-import slash.navigation.gui.UndoAction;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.gui.*;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -117,11 +59,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -208,7 +147,7 @@ public abstract class ConvertPanel {
                 int[] selectedRows = tablePositions.getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().top(selectedRows);
-                    reestablishPositionSelection(0);
+                    selectPositions(selectedRows);
                 }
             }
         });
@@ -217,8 +156,8 @@ public abstract class ConvertPanel {
             public void run() {
                 int[] selectedRows = tablePositions.getSelectedRows();
                 if (selectedRows.length > 0) {
-                    getPositionsModel().up(selectedRows);
-                    reestablishPositionSelection(-1);
+                    getPositionsModel().up(selectedRows, 1);
+                    selectPositions(Range.increment(selectedRows, -1));
                 }
             }
         });
@@ -230,8 +169,8 @@ public abstract class ConvertPanel {
             public void run() {
                 int[] selectedRows = tablePositions.getSelectedRows();
                 if (selectedRows.length > 0) {
-                    getPositionsModel().down(selectedRows);
-                    reestablishPositionSelection(+1);
+                    getPositionsModel().down(selectedRows, 1);
+                    selectPositions(Range.increment(selectedRows, +1));
                 }
             }
         });
@@ -241,7 +180,7 @@ public abstract class ConvertPanel {
                 int[] selectedRows = tablePositions.getSelectedRows();
                 if (selectedRows.length > 0) {
                     getPositionsModel().bottom(selectedRows);
-                    reestablishPositionSelection(0);
+                    selectPositions(selectedRows);
                 }
             }
         });
@@ -276,6 +215,9 @@ public abstract class ConvertPanel {
                 actionManager.run("delete");
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.setDragEnabled(true);
+        tablePositions.setDropMode(DropMode.ON);
+        tablePositions.setTransferHandler(new TableDragAndDropHandler());
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
@@ -756,13 +698,6 @@ public abstract class ConvertPanel {
         return confirm != JOptionPane.YES_OPTION;
     }
 
-    private void reestablishPositionSelection(final int upOrDown) {
-        final int minSelectedRow = tablePositions.getSelectionModel().getMinSelectionIndex();
-        final int maxSelectedRow = tablePositions.getSelectionModel().getMaxSelectionIndex();
-        if (minSelectedRow != -1 && maxSelectedRow != -1)
-            JTableHelper.selectPositions(tablePositions, minSelectedRow + upOrDown, maxSelectedRow + upOrDown);
-    }
-
     public JTable getPositionsView() {
         return tablePositions;
     }
@@ -938,6 +873,7 @@ public abstract class ConvertPanel {
     }
 
     private void selectPositions(int[] selectedPositions) {
+        clearSelection();
         new ContinousRange(selectedPositions, new RangeOperation() {
             public void performOnIndex(int index) {
             }
@@ -951,14 +887,12 @@ public abstract class ConvertPanel {
     }
 
     public int selectPositionsWithinDistanceToPredecessor(int distance) {
-        clearSelection();
         int[] indices = getPositionsModel().getPositionsWithinDistanceToPredecessor(distance);
         selectPositions(indices);
         return indices.length;
     }
 
     public int[] selectAllButEveryNthPosition(int order) {
-        clearSelection();
         int rowCount = getPositionsModel().getRowCount();
         int[] indices = Range.allButEveryNthAndFirstAndLast(rowCount, order);
         selectPositions(indices);
@@ -966,7 +900,6 @@ public abstract class ConvertPanel {
     }
 
     public int selectInsignificantPositions(int threshold) {
-        clearSelection();
         int[] indices = getPositionsModel().getInsignificantPositions(threshold);
         selectPositions(indices);
         return indices.length;
@@ -978,6 +911,69 @@ public abstract class ConvertPanel {
 
     public void renameRoute(String name) {
         formatAndRoutesModel.renameRoute(name);
+    }
+
+    private class TableDragAndDropHandler extends TransferHandler {
+        public boolean canImport(TransferSupport support) {
+            return support.isDataFlavorSupported(PositionSelection.positionFlavor);
+        }
+
+
+        private int[] toRows(List<BaseNavigationPosition> positions) {
+            int[] result = new int[positions.size()];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = getPositionsModel().getIndex(positions.get(i));
+            }
+            return result;
+        }
+
+        private void moveRows(int[] rows, TransferSupport support) {
+            JTable table = (JTable) support.getComponent();
+            JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation();
+            int index = dropLocation.getRow();
+            int max = table.getModel().getRowCount();
+            if (index < 0 || index > max)
+                index = max;
+
+            if (rows[0] > index) {
+                getPositionsModel().up(rows, rows[0] - index);
+                JTableHelper.selectPositions(table, index, index + rows.length - 1);
+            } else {
+                getPositionsModel().down(Range.revert(rows), index - rows[0] - rows.length);
+                JTableHelper.selectPositions(table, index - rows.length, index - 1);
+            }
+        }
+
+        public boolean importData(TransferSupport support) {
+            Transferable t = support.getTransferable();
+            try {
+                if (support.isDataFlavorSupported(PositionSelection.positionFlavor)) {
+                    Object data = t.getTransferData(PositionSelection.positionFlavor);
+                    if (data != null) {
+                        List<BaseNavigationPosition> positions = (List<BaseNavigationPosition>) data;
+                        int[] rows = toRows(positions);
+                        if (rows.length > 0) {
+                            moveRows(rows, support);
+                            return true;
+                        }
+                    }
+                }
+            } catch (UnsupportedFlavorException e) {
+                // intentionally left empty
+            } catch (IOException e) {
+                // intentionally left empty
+            }
+            return false;
+        }
+
+        public int getSourceActions(JComponent comp) {
+            return MOVE;
+        }
+
+        protected Transferable createTransferable(JComponent c) {
+            int[] selectedRows = tablePositions.getSelectedRows();
+            return new PositionSelection(getPositionsModel().getPositions(selectedRows));
+        }
     }
 
     {
