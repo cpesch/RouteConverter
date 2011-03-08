@@ -52,6 +52,7 @@ import java.util.logging.Logger;
 
 public class EclipseSWTMapView extends BaseMapView {
     private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
+    private static final String MAP_SERVER_PREFERENCE = "mapServer";
     private static final String DEBUG_PREFERENCE = "debug";
 
     private JWebBrowser webBrowser;
@@ -103,6 +104,8 @@ public class EclipseSWTMapView extends BaseMapView {
                         return language;
                     if (tokenName.equals("percent"))
                         return Platform.isWindows() ? "99" : "100";
+                    if (tokenName.equals("mapserver"))
+                        return preferences.get(MAP_SERVER_PREFERENCE, "maps.google.com");
                     return tokenName;
                 }
             });
