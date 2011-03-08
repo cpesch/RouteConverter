@@ -78,12 +78,12 @@
                                 <maxHeapSize>512</maxHeapSize>
                             </jre>
                             <versionInfo>
-                                <fileVersion>2.1.${maven.build.number}.0</fileVersion>
+                                <fileVersion>2.3.${maven.build.number}.0</fileVersion>
                                 <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtFileVersion>
                                 <fileDescription>RouteConverter displays, modifies and converts GPS data between over 50 formats</fileDescription>
                                 <copyright>Christian Pesch</copyright>
                                 <productName>RouteConverter</productName>
-                                <productVersion>2.1.${maven.build.number}.0</productVersion>
+                                <productVersion>2.3.${maven.build.number}.0</productVersion>
                                 <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp}</txtProductVersion>
                                 <internalName>RouteConverter for Windows as Executable</internalName>
                                 <originalFilename>RouteConverterWindows64.exe</originalFilename>
