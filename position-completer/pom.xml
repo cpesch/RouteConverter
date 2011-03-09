@@ -3,7 +3,7 @@
     <groupId>slash.navigation</groupId>
     <artifactId>position-completer</artifactId>
     <packaging>jar</packaging>
-    <name>Complete before with data from external services</name>
+    <name>Complete positions with data from external services</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
