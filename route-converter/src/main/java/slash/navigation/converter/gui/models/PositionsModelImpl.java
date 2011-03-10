@@ -264,12 +264,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
-        List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
-        for (BaseNavigationPosition sourcePosition : route.getPositions()) {
-            BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetFormat);
-            positions.add(targetPosition);
-        }
-        return positions;
+        return NavigationFormats.asFormat(route.getPositions(), targetFormat);
     }
 
     public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {

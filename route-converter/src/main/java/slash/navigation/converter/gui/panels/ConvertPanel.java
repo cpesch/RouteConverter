@@ -944,6 +944,7 @@ public abstract class ConvertPanel {
             }
         }
 
+        @SuppressWarnings("unchecked")
         public boolean importData(TransferSupport support) {
             Transferable t = support.getTransferable();
             try {
@@ -972,7 +973,8 @@ public abstract class ConvertPanel {
 
         protected Transferable createTransferable(JComponent c) {
             int[] selectedRows = tablePositions.getSelectedRows();
-            return new PositionSelection(getPositionsModel().getPositions(selectedRows));
+            return new PositionSelection(getPositionsModel().getPositions(selectedRows),
+                    getPositionsModel().getRoute().getFormat());
         }
     }
 

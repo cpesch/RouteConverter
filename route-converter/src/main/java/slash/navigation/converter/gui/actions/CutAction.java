@@ -48,7 +48,8 @@ public class CutAction extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            clipboardInteractor.putIntoClipboard(new PositionSelection(positionsModel.getPositions(selectedRows)));
+            clipboardInteractor.putIntoClipboard(new PositionSelection(positionsModel.getPositions(selectedRows),
+                    positionsModel.getRoute().getFormat()));
 
             positionsModel.remove(selectedRows);
             final int removeRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;

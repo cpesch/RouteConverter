@@ -20,16 +20,18 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
 /**
  * {@link Action} that adds a new position list to the {@link PositionsModel}.
@@ -44,12 +46,13 @@ public class NewPositionListAction extends FrameAction {
         this.formatAndRoutesModel = formatAndRoutesModel;
     }
 
+    @SuppressWarnings("unchecked")
     public void run() {
-        Gpx11Format gpxFormat = new Gpx11Format();
-        GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-        gpxRoute.setCharacteristics((RouteCharacteristics) formatAndRoutesModel.getCharacteristicsModel().getSelectedItem());
-        gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1));
-        formatAndRoutesModel.addRoute(formatAndRoutesModel.getSize(), gpxRoute);
-        formatAndRoutesModel.setSelectedItem(gpxRoute);
+        NavigationFormat format = formatAndRoutesModel.getFormat();
+        BaseRoute route = format.createRoute((RouteCharacteristics) formatAndRoutesModel.getCharacteristicsModel().getSelectedItem(),
+                MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
+                new ArrayList<BaseNavigationPosition>());
+        formatAndRoutesModel.addRoute(formatAndRoutesModel.getSize(), route);
+        formatAndRoutesModel.setSelectedItem(route);
     }
 }

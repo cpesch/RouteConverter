@@ -251,7 +251,7 @@ public final class NavigationFormats {
         return buffer.toString();
     }
 
-    public static BaseNavigationPosition asFormat(BaseNavigationPosition position, NavigationFormat format) throws IOException {
+    /* package local for tests */static BaseNavigationPosition asFormat(BaseNavigationPosition position, NavigationFormat format) throws IOException {
         BaseNavigationPosition result;
         String formatName = getFormatName(format);
         formatName = formatName.replace("Format", "Position");
@@ -261,6 +261,14 @@ public final class NavigationFormats {
             result = (BaseNavigationPosition) method.invoke(position);
         } catch (Exception e) {
             throw new IOException("Cannot call as" + formatName + "() on " + position, e);
+        }
+        return result;
+    }
+
+    public static List<BaseNavigationPosition> asFormat(List<BaseNavigationPosition> positions, NavigationFormat format) throws IOException {
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        for (BaseNavigationPosition position : positions) {
+            result.add(asFormat(position, format));
         }
         return result;
     }

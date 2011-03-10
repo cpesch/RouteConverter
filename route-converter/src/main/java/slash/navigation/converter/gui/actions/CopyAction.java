@@ -47,7 +47,8 @@ public class CopyAction extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            clipboardInteractor.putIntoClipboard(new PositionSelection(positionsModel.getPositions(selectedRows)));
+            clipboardInteractor.putIntoClipboard(new PositionSelection(positionsModel.getPositions(selectedRows),
+                    positionsModel.getRoute().getFormat()));
         }
     }
 }

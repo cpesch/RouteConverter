@@ -97,7 +97,7 @@ public class GpxPosition extends Wgs84Position {
         return reason;
     }
 
-    public /* for tests */ Object getOrigin() {
+    public/* for tests */ Object getOrigin() {
         return origin;
     }
 

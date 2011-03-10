@@ -20,10 +20,7 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationFormats;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.*;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import java.awt.datatransfer.DataFlavor;
@@ -48,28 +45,36 @@ public class PositionSelection implements Transferable {
     public static final DataFlavor stringFlavor = DataFlavor.stringFlavor;
 
     private final List<BaseNavigationPosition> positions;
+    private final BaseNavigationFormat format;
     private final String string;
 
-    public PositionSelection(List<BaseNavigationPosition> positions) {
+    public PositionSelection(List<BaseNavigationPosition> positions, BaseNavigationFormat format) {
         this.positions = positions;
+        this.format = format;
         this.string = createStringFor(positions);
     }
 
     private String createStringFor(List<BaseNavigationPosition> sourcePositions) {
-        List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
         NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
-        for (BaseNavigationPosition sourcePosition : sourcePositions) {
-            try {
-                targetPositions.add(NavigationFormats.asFormat(sourcePosition, targetFormat));
-            } catch (IOException e) {
-                log.severe("Cannot convert " + sourcePosition + " for selection: " + e.getMessage());
-            }
+        List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
+        try {
+            targetPositions = NavigationFormats.asFormat(sourcePositions, targetFormat);
+        } catch (IOException e) {
+            log.severe("Cannot convert " + sourcePositions + " for selection: " + e.getMessage());
         }
         SimpleRoute targetRoute = targetFormat.createRoute(RouteCharacteristics.Waypoints, null, targetPositions);
 
         StringWriter writer = new StringWriter();
         targetFormat.write(targetRoute, new PrintWriter(writer), 0, targetPositions.size());
         return writer.toString();
+    }
+
+    public List<BaseNavigationPosition> getPositions() {
+        return positions;
+    }
+
+    public BaseNavigationFormat getFormat() {
+        return format;
     }
 
     public DataFlavor[] getTransferDataFlavors() {
@@ -87,7 +92,7 @@ public class PositionSelection implements Transferable {
 
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if (positionFlavor.equals(flavor))
-            return positions;
+            return this;
         if (stringFlavor.equals(flavor))
             return string;
         throw new UnsupportedFlavorException(flavor);
