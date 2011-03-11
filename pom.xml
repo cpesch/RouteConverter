@@ -162,10 +162,9 @@
         <module>navigation-formats</module>
         <module>position-completer</module>
         <module>rest</module>
+        <module>swt-mapview</module>
         <module>route-converter</module>
         <module>route-converter-cmdline</module>
-        <module>route-converter6</module>
-        <module>swt-mapview</module>
         <module>route-converter-build</module>
         <module>route-converter-license</module>
         <module>RouteConverterBase</module>

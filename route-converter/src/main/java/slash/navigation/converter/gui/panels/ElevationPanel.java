@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.panels;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.elevationview.ElevationView;
 
 import javax.swing.*;
@@ -32,7 +33,7 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public abstract class ElevationPanel {
+public class ElevationPanel {
     protected JPanel elevationPanel;
     private ElevationView elevationView;
 
@@ -46,11 +47,8 @@ public abstract class ElevationPanel {
         elevationView = new ElevationView(r.getPositionsModel(), r.getPositionsSelectionModel());
         elevationPanel = new JPanel(new BorderLayout());
         elevationPanel.add(elevationView.getComponent(), BorderLayout.CENTER);
-
-        addDragAndDrop();
+        elevationPanel.setTransferHandler(new PanelDropHandler());
     }
-
-    protected abstract void addDragAndDrop();
 
     public Component getRootComponent() {
         return elevationPanel;

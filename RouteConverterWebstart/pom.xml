@@ -36,7 +36,7 @@
                     </dependencies>
                     <jnlp>
                         <outputFile>${project.name}.jnlp</outputFile>
-                        <mainClass>slash.navigation.converter.gui.RouteConverter6</mainClass>
+                        <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
                     </jnlp>
                     <sign>
                         <keystore>${keystorePath}</keystore>

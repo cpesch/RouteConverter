@@ -33,6 +33,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.UploadDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
+import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.models.*;
@@ -72,7 +73,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  * @author Christian Pesch
  */
 
-public abstract class ConvertPanel {
+public class ConvertPanel {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
 
     private UrlDocument urlModel = new UrlDocument();
@@ -291,7 +292,7 @@ public abstract class ConvertPanel {
         comboBoxChoosePositionListCharacteristics.setModel(getCharacteristicsModel());
         comboBoxChoosePositionListCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
-        addDragAndDrop();
+        convertPanel.setTransferHandler(new PanelDropHandler());
 
         // make sure that Insert works directly after the program start on an empty position list
         SwingUtilities.invokeLater(new Runnable() {
@@ -304,9 +305,6 @@ public abstract class ConvertPanel {
     public void dispose() {
         lengthCalculator.dispose();
     }
-
-
-    protected abstract void addDragAndDrop();
 
     public Component getRootComponent() {
         return convertPanel;
@@ -915,7 +913,8 @@ public abstract class ConvertPanel {
 
     private class TableDragAndDropHandler extends TransferHandler {
         public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(PositionSelection.positionFlavor);
+            return support.isDataFlavorSupported(PositionSelection.positionFlavor) ||
+                    convertPanel.getTransferHandler().canImport(support); // TODO solve this by delegation
         }
 
         private int[] toRows(List<BaseNavigationPosition> positions) {
@@ -963,7 +962,7 @@ public abstract class ConvertPanel {
             } catch (IOException e) {
                 // intentionally left empty
             }
-            return false;
+            return convertPanel.getTransferHandler().importData(support); // TODO solve this by delegation
         }
 
         public int getSourceActions(JComponent comp) {

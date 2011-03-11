@@ -97,9 +97,13 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 
-public abstract class RouteConverter extends SingleFrameApplication {
+public class RouteConverter extends SingleFrameApplication {
     private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
     private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+
+    public static void main(String[] args) {
+        launch(RouteConverter.class, args);
+    }
 
     public static RouteConverter getInstance() {
         return (RouteConverter) Application.getInstance();
@@ -290,7 +294,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void openElevationView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                elevationView = createElevationPanel();
+                elevationView = new ElevationPanel();
                 elevationPanel.add(elevationView.getRootComponent(), ELEVATION_PANEL_CONSTRAINTS);
                 elevationPanel.setVisible(true);
 
@@ -314,12 +318,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
     }
-
-    // Java5/6 abstractions
-
-    protected abstract ConvertPanel createConvertPanel();
-
-    protected abstract ElevationPanel createElevationPanel();
 
     // Preferences handling
 
@@ -751,7 +749,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         LazyTabInitializer() {
             lazyInitializers.put(convertPanel, new Runnable() {
                 public void run() {
-                    ConvertPanel panel = createConvertPanel();
+                    ConvertPanel panel = new ConvertPanel();
                     convertPanel.add(panel.getRootComponent());
                     initialized.put(convertPanel, panel);
                 }
