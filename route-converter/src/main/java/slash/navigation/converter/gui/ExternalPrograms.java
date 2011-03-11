@@ -20,7 +20,10 @@
 
 package slash.navigation.converter.gui;
 
+import javax.swing.*;
 import java.awt.*;
+import java.net.URI;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -29,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Pesch
  */
-public abstract class ExternalPrograms {
+public class ExternalPrograms {
     protected static final Logger log = Logger.getLogger(ExternalPrograms.class.getName());
 
     public void startBrowserForHomepage(Window window) {
@@ -63,11 +66,34 @@ public abstract class ExternalPrograms {
         startBrowser(window, "http://java.com/download/");
     }
 
-    protected abstract void startBrowser(Window window, String uri);
+    protected void startBrowser(Window window, String uri) {
+        if (Desktop.isDesktopSupported())
+            try {
+                Desktop.getDesktop().browse(new URI(uri));
+            } catch (Exception e) {
+                log.severe("Start Browser error: " + e.getMessage());
+
+                JOptionPane.showMessageDialog(window,
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
+                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+    }
 
     public void startMail(Window window) {
         startMail(window, "mailto:support@routeconverter.com");
     }
 
-    protected abstract void startMail(Window window, String uri);
+    protected void startMail(Window window, String uri) {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().mail(new URI(uri));
+            } catch (Exception e) {
+                log.severe("Start Mail error: " + e.getMessage());
+
+                JOptionPane.showMessageDialog(window,
+                        MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getMessage()),
+                        RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 }

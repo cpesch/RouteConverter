@@ -107,7 +107,7 @@ public class Updater {
                 RouteConverter.getTitle(), JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION)
             return;
-        RouteConverter.getInstance().createExternalPrograms().startBrowserForUpdate(window);
+        new ExternalPrograms().startBrowserForUpdate(window);
     }
 
     private void noUpdateAvailable(Window window) {

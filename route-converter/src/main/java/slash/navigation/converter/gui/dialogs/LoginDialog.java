@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.domain.RouteCatalog;
+import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.gui.SimpleDialog;
@@ -85,7 +86,7 @@ public class LoginDialog extends SimpleDialog {
 
         checkBoxAcceptTerms.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                RouteConverter.getInstance().createExternalPrograms().startBrowserForTerms(LoginDialog.this);
+                new ExternalPrograms().startBrowserForTerms(LoginDialog.this);
             }
         });
 

@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui;
 
-import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.ElevationPanel;
 
@@ -32,10 +31,6 @@ import slash.navigation.converter.gui.panels.ElevationPanel;
  */
 
 public class RouteConverter6 extends RouteConverter {
-    public ExternalPrograms createExternalPrograms() {
-        return new ExternalPrograms6();
-    }
-
     protected ConvertPanel createConvertPanel() {
         return new ConvertPanel6();
     }

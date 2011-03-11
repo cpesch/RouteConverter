@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.panels;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -52,25 +53,25 @@ public class AboutPanel {
 
         labelBrowse.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startBrowserForHomepage(r.getFrame());
+                new ExternalPrograms().startBrowserForHomepage(r.getFrame());
             }
         });
 
         labelCp.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startMail(r.getFrame());
+                new ExternalPrograms().startMail(r.getFrame());
             }
         });
 
         labelMail.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startBrowserForForum(r.getFrame());
+                new ExternalPrograms().startBrowserForForum(r.getFrame());
             }
         });
 
         labelCredit.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                r.createExternalPrograms().startBrowserForGeonames(r.getFrame());
+                new ExternalPrograms().startBrowserForGeonames(r.getFrame());
             }
         });
     }

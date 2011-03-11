@@ -180,7 +180,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             JLabel label = new JLabel(MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion));
             label.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
-                    createExternalPrograms().startBrowserForJava(frame);
+                    new ExternalPrograms().startBrowserForJava(frame);
                 }
             });
             JOptionPane.showMessageDialog(frame, label, frame.getTitle(), JOptionPane.WARNING_MESSAGE);
@@ -316,8 +316,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     // Java5/6 abstractions
-
-    public abstract ExternalPrograms createExternalPrograms();
 
     protected abstract ConvertPanel createConvertPanel();
 
@@ -480,7 +478,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path, 60), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
-                        createExternalPrograms().startMail(frame);
+                        new ExternalPrograms().startMail(frame);
                     }
                 });
                 JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -496,7 +494,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
-                        createExternalPrograms().startMail(frame);
+                        new ExternalPrograms().startMail(frame);
                     }
                 });
                 JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), JOptionPane.ERROR_MESSAGE);
