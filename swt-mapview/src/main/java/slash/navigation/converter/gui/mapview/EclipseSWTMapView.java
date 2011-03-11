@@ -74,6 +74,8 @@ public class EclipseSWTMapView extends BaseMapView {
                 throw new Exception("Native Interface is not initialized");
             JWebBrowser browser;
             if (Platform.isLinux()) {
+                System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
+                /* TODO in 2.3 tried to solve it with this exception cascade
                 try {
                     browser = new JWebBrowser(JWebBrowser.useWebkitRuntime());
                     log.info("Using WebKit runtime to create WebBrowser");
@@ -82,9 +84,9 @@ public class EclipseSWTMapView extends BaseMapView {
                     browser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
                     log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
                 }
-            } else {
-                browser = new JWebBrowser();
+                */
             }
+            browser = new JWebBrowser();
             browser.setBarsVisible(false);
             browser.setJavascriptEnabled(true);
             return browser;
