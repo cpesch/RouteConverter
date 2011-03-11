@@ -918,7 +918,6 @@ public abstract class ConvertPanel {
             return support.isDataFlavorSupported(PositionSelection.positionFlavor);
         }
 
-
         private int[] toRows(List<BaseNavigationPosition> positions) {
             int[] result = new int[positions.size()];
             for (int i = 0; i < result.length; i++) {
@@ -946,13 +945,13 @@ public abstract class ConvertPanel {
 
         @SuppressWarnings("unchecked")
         public boolean importData(TransferSupport support) {
-            Transferable t = support.getTransferable();
+            Transferable transferable = support.getTransferable();
             try {
                 if (support.isDataFlavorSupported(PositionSelection.positionFlavor)) {
-                    Object data = t.getTransferData(PositionSelection.positionFlavor);
-                    if (data != null) {
-                        List<BaseNavigationPosition> positions = (List<BaseNavigationPosition>) data;
-                        int[] rows = toRows(positions);
+                    Object selection = transferable.getTransferData(PositionSelection.positionFlavor);
+                    if (selection != null) {
+                        PositionSelection positionsSelection = (PositionSelection) selection;
+                        int[] rows = toRows(positionsSelection.getPositions());
                         if (rows.length > 0) {
                             moveRows(rows, support);
                             return true;

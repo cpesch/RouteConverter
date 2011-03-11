@@ -58,13 +58,13 @@ public class PasteAction extends FrameAction {
             return;
 
         try {
-            if(transferable.isDataFlavorSupported(PositionSelection.positionFlavor)) {
-                Object positions = transferable.getTransferData(PositionSelection.positionFlavor);
-                if (positions != null) {
-                    paste((List<BaseNavigationPosition>) positions);
+            if (transferable.isDataFlavorSupported(PositionSelection.positionFlavor)) {
+                Object selection = transferable.getTransferData(PositionSelection.positionFlavor);
+                if (selection != null) {
+                    PositionSelection positionsSelection = (PositionSelection) selection;
+                    paste(positionsSelection.getPositions(), positionsSelection.getFormat());
                 }
-
-            } else if(transferable.isDataFlavorSupported(PositionSelection.stringFlavor)) {
+            } else if (transferable.isDataFlavorSupported(PositionSelection.stringFlavor)) {
                 Object string = transferable.getTransferData(PositionSelection.stringFlavor);
                 if (string != null) {
                     paste((String) string);
@@ -77,13 +77,14 @@ public class PasteAction extends FrameAction {
         }
     }
 
-    protected void paste(List<BaseNavigationPosition> positions) {
+    protected void paste(List<BaseNavigationPosition> sourcePositions, BaseNavigationFormat targetFormat) throws IOException {
         int[] selectedRows = table.getSelectedRows();
         final int insertRow = selectedRows.length > 0 ? selectedRows[0] + 1 : table.getRowCount();
 
-        positionsModel.add(insertRow, positions);
+        List<BaseNavigationPosition> targetPositions = NavigationFormats.asFormat(sourcePositions, targetFormat);
+        positionsModel.add(insertRow, targetPositions);
 
-        final int lastRow = insertRow - 1 + positions.size();
+        final int lastRow = insertRow - 1 + targetPositions.size();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JTableHelper.scrollToPosition(table, lastRow);
@@ -95,12 +96,9 @@ public class PasteAction extends FrameAction {
     protected void paste(String string) {
         NavigationFileParser parser = new NavigationFileParser();
         try {
-            if(parser.read(new ByteArrayInputStream(string.getBytes()))) {
-                BaseRoute<BaseNavigationPosition,BaseNavigationFormat> route = parser.getTheRoute();
-                if(!route.getFormat().equals(positionsModel.getRoute().getFormat()))
-                    //noinspection UnusedAssignment
-                    route = NavigationFormats.asFormat(route, positionsModel.getRoute().getFormat());
-                paste(route.getPositions());
+            if (parser.read(new ByteArrayInputStream(string.getBytes()))) {
+                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+                paste(route.getPositions(), route.getFormat());
             }
         } catch (IOException e) {
             // intentionally left empty
