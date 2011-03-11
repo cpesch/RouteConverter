@@ -38,6 +38,7 @@ import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
+import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
@@ -63,7 +64,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -81,7 +84,7 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public abstract class BrowsePanel {
+public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
     private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"));
     private final RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeCatalog);
@@ -174,6 +177,9 @@ public abstract class BrowsePanel {
             }
         });
         treeCategories.setCellRenderer(new CategoryTreeCellRenderer());
+        treeCategories.setDragEnabled(true);
+        treeCategories.setDropMode(DropMode.ON);
+        treeCategories.setTransferHandler(new TreeDragAndDropHandler());
 
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
         tableRoutes.setDragEnabled(true);
@@ -198,8 +204,6 @@ public abstract class BrowsePanel {
                 r.openPositionList(Arrays.asList(url));
             }
         });
-
-        addDragAndDrop();
 
         new Thread(new Runnable() {
             public void run() {
@@ -226,8 +230,6 @@ public abstract class BrowsePanel {
             }
         }, "CategoryTreeInitializer").start();
     }
-
-    protected abstract void addDragAndDrop();
 
     public Component getRootComponent() {
         return browsePanel;
@@ -519,6 +521,74 @@ public abstract class BrowsePanel {
                 selectedRoutes.add(route);
             }
             return new RouteSelection(selectedRoutes);
+        }
+    }
+
+    private class TreeDragAndDropHandler extends TransferHandler {
+        public int getSourceActions(JComponent c) {
+            return MOVE;
+        }
+
+        protected Transferable createTransferable(JComponent c) {
+            return new CategorySelection(getSelectedTreeNodes());
+        }
+
+        public boolean canImport(TransferSupport support) {
+            return support.isDataFlavorSupported(CategorySelection.categoryFlavor) ||
+                    support.isDataFlavorSupported(RouteSelection.routeFlavor) ||
+                    support.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
+                    support.isDataFlavorSupported(DataFlavor.stringFlavor);
+        }
+
+        @SuppressWarnings("unchecked")
+        public boolean importData(TransferSupport support) {
+            JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
+            TreePath path = dropLocation.getPath();
+            CategoryTreeNode target = (CategoryTreeNode) path.getLastPathComponent();
+            try {
+                Transferable t = support.getTransferable();
+                if (support.isDataFlavorSupported(CategorySelection.categoryFlavor)) {
+                    Object data = t.getTransferData(CategorySelection.categoryFlavor);
+                    if (data != null) {
+                        List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
+                        moveCategory(categories, target);
+                        return true;
+                    }
+                }
+
+                if (support.isDataFlavorSupported(RouteSelection.routeFlavor)) {
+                    Object data = t.getTransferData(RouteSelection.routeFlavor);
+                    if (data != null) {
+                        List<Route> routes = (List<Route>) data;
+                        CategoryTreeNode source = getSelectedTreeNode();
+                        moveRoute(routes, source, target);
+                        return true;
+                    }
+                }
+
+                if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
+                    if (data != null) {
+                        List<File> files = (List<File>) data;
+                        addFilesToCatalog(target, files);
+                        return true;
+                    }
+                }
+
+                if (support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    Object data = t.getTransferData(DataFlavor.stringFlavor);
+                    if (data != null) {
+                        String url = (String) data;
+                        addUrlToCatalog(target, url);
+                        return true;
+                    }
+                }
+            } catch (UnsupportedFlavorException e) {
+                // intentionally left empty
+            } catch (IOException e) {
+                // intentionally left empty
+            }
+            return false;
         }
     }
 

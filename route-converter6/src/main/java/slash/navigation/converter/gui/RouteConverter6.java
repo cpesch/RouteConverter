@@ -36,10 +36,6 @@ public class RouteConverter6 extends RouteConverter {
         return new ExternalPrograms6();
     }
 
-    protected BrowsePanel createBrowsePanel() {
-        return new BrowsePanel6();
-    }
-
     protected ConvertPanel createConvertPanel() {
         return new ConvertPanel6();
     }

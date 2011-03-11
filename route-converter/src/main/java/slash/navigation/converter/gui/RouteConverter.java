@@ -319,8 +319,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public abstract ExternalPrograms createExternalPrograms();
 
-    protected abstract BrowsePanel createBrowsePanel();
-
     protected abstract ConvertPanel createConvertPanel();
 
     protected abstract ElevationPanel createElevationPanel();
@@ -762,7 +760,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             });
             lazyInitializers.put(browsePanel, new Runnable() {
                 public void run() {
-                    BrowsePanel panel = createBrowsePanel();
+                    BrowsePanel panel = new BrowsePanel();
                     browsePanel.add(panel.getRootComponent());
                     initialized.put(browsePanel, panel);
                 }
