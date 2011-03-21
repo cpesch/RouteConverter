@@ -296,6 +296,8 @@ public class NavigationFileParser {
         for (int i = 0; i < targetStreams.length; i++)
             targetStreams[i] = new FileOutputStream(targets[i]);
         write(route, format, duplicateFirstPosition, ignoreMaximumPositionCount, targetStreams);
+        for (File target : targets)
+            log.info("Wrote '" + target.getAbsolutePath() + "'");
     }
 
 

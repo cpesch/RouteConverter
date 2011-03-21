@@ -89,6 +89,12 @@ public class Files {
         return name;
     }
 
+    public static File absolutize(File file) {
+        if(!file.isAbsolute())
+            file = new File(file.getAbsolutePath());
+        return file;
+    }
+
     public static String createReadablePath(File file) {
         String path = file.getAbsolutePath();
         try {

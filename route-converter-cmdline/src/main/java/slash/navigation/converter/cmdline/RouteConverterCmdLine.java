@@ -29,6 +29,14 @@ import java.util.List;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import static slash.common.io.Files.absolutize;
+import static slash.common.io.Files.createTargetFiles;
+import static slash.common.io.Files.removeExtension;
+import static slash.common.io.Version.parseVersionFromManifest;
+import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
+import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
+import static slash.navigation.base.NavigationFormats.getWriteFormatsSortedByName;
+
 /**
  * A simple command line user interface for the route conversion
  * running under Java 5.
@@ -62,15 +70,15 @@ public class RouteConverterCmdLine {
     }
 
     private void run(String[] args) {
-        Version version = Version.parseVersionFromManifest();
+        Version version = parseVersionFromManifest();
         log.info("Started RouteConverter " + version.getVersion() + " from " + version.getDate() + " on " + Platform.getOsName() + " with " + Platform.getJvm());
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
-            logFormatNames(NavigationFormats.getWriteFormatsSortedByName());
+            logFormatNames(getWriteFormatsSortedByName());
             System.exit(5);
         }
 
-        File source = new File(args[0]);
+        File source = absolutize(new File(args[0]));
         if (!source.exists()) {
             log.severe("Source '" + source.getAbsolutePath() + "' does not exist; stopping.");
             System.exit(10);
@@ -79,12 +87,12 @@ public class RouteConverterCmdLine {
         BaseNavigationFormat format = findFormat(args[1]);
         if (format == null) {
             log.severe("Format '" + args[1] + "' does not exist; stopping.");
-            logFormatNames(NavigationFormats.getWriteFormatsSortedByName());
+            logFormatNames(getWriteFormatsSortedByName());
             System.exit(12);
         }
 
-        String baseName = Files.removeExtension(args[2]);
-        File target = new File(baseName + format.getExtension());
+        String baseName = removeExtension(args[2]);
+        File target = absolutize(new File(baseName + format.getExtension()));
         if (target.exists()) {
             log.severe("Target '" + target.getAbsolutePath() + "' already exists; stopping.");
             System.exit(13);
@@ -104,15 +112,15 @@ public class RouteConverterCmdLine {
         NavigationFileParser parser = new NavigationFileParser();
         if (!parser.read(source)) {
             log.severe("Could not read source '" + source.getAbsolutePath() + "'");
-            logFormatNames(NavigationFormats.getReadFormatsSortedByName());
+            logFormatNames(getReadFormatsSortedByName());
             System.exit(20);
         }
 
         if (format.isSupportsMultipleRoutes()) {
             parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) format, target);
         } else {
-            int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(parser.getTheRoute(), format, false);
-            File[] targets = Files.createTargetFiles(target, fileCount, format.getExtension(), format.getMaximumFileNameLength());
+            int fileCount = getNumberOfFilesToWriteFor(parser.getTheRoute(), format, false);
+            File[] targets = createTargetFiles(target, fileCount, format.getExtension(), format.getMaximumFileNameLength());
             for (File t : targets) {
                 if (t.exists()) {
                     log.severe("Target '" + t.getAbsolutePath() + "' already exists; stopping.");
