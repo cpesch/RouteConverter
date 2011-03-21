@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverterWebstart</artifactId>
@@ -14,43 +15,43 @@
     <profiles>
         <profile>
             <id>routeconverter</id>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo.webstart</groupId>
-                <artifactId>webstart-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jnlp</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <dependencies>
-                        <excludes>
-                            <exclude>slash.navigation:route-converter-license</exclude>
-                        </excludes>
-                    </dependencies>
-                    <jnlp>
-                        <outputFile>${project.name}.jnlp</outputFile>
-                        <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
-                    </jnlp>
-                    <sign>
-                        <keystore>${keystorePath}</keystore>
-                        <alias>${keystoreAlias}</alias>
-                        <storepass>${keystorePassword}</storepass>
-                        <keystoreConfig>
-                            <delete>false</delete>
-                            <gen>false</gen>
-                        </keystoreConfig>
-                    </sign>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo.webstart</groupId>
+                        <artifactId>webstart-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jnlp</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <dependencies>
+                                <excludes>
+                                    <exclude>slash.navigation:route-converter-license</exclude>
+                                </excludes>
+                            </dependencies>
+                            <jnlp>
+                                <outputFile>${project.name}.jnlp</outputFile>
+                                <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
+                            </jnlp>
+                            <sign>
+                                <keystore>${keystorePath}</keystore>
+                                <alias>${keystoreAlias}</alias>
+                                <storepass>${keystorePassword}</storepass>
+                                <keystoreConfig>
+                                    <delete>false</delete>
+                                    <gen>false</gen>
+                                </keystoreConfig>
+                            </sign>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
@@ -67,7 +68,7 @@
             <artifactId>route-converter</artifactId>
             <version>${project.version}</version>
         </dependency>
- 
+
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>jna</artifactId>
