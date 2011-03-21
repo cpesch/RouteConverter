@@ -29,7 +29,7 @@ How to develop for RouteConverter
 2. Install Maven 3 from http://maven.apache.org/download.html
 
 3. Clone RouteConverter from github:
-   > git clone git@github.com:cpesch/RouteConverter.git
+   > git clone git://github.com/cpesch/RouteConverter.git
 
 4. Open RouteConverter sources in an Integrated Development Environment (IDE)
 
@@ -43,7 +43,7 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_23
+   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_24
    Put Maven into your PATH and call
    > mvn clean package
 
