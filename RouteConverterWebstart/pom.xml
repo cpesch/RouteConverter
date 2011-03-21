@@ -64,7 +64,7 @@
              containing the main class if this is omitted -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter6</artifactId>
+            <artifactId>route-converter</artifactId>
             <version>${project.version}</version>
         </dependency>
  
