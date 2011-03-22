@@ -1092,7 +1092,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected void logJavaScript(String script, Object result) {
-        log.info("script '" + script + (result != null ? "'\nwith result '" + result : "") + "'"); // TODO fine
+        log.info("script '" + script + (result != null ? "'\nwith result '" + result : "") + "'");
     }
 
     protected abstract void executeScript(String script);

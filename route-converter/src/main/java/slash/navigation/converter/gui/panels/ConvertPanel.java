@@ -914,7 +914,7 @@ public class ConvertPanel {
     private class TableDragAndDropHandler extends TransferHandler {
         public boolean canImport(TransferSupport support) {
             return support.isDataFlavorSupported(PositionSelection.positionFlavor) ||
-                    convertPanel.getTransferHandler().canImport(support); // TODO solve this by delegation
+                    convertPanel.getTransferHandler().canImport(support);
         }
 
         private int[] toRows(List<BaseNavigationPosition> positions) {
@@ -962,7 +962,7 @@ public class ConvertPanel {
             } catch (IOException e) {
                 // intentionally left empty
             }
-            return convertPanel.getTransferHandler().importData(support); // TODO solve this by delegation
+            return convertPanel.getTransferHandler().importData(support);
         }
 
         public int getSourceActions(JComponent comp) {

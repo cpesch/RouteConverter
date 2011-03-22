@@ -60,13 +60,13 @@ public abstract class HttpRequest {
     }
 
     public void setAuthentication(String userName, String password, String authScopeUrl, String authScopeScheme) {
-        setAuthentication(userName, password, new AuthScope(authScopeUrl, 80, AuthScope.ANY_REALM, authScopeScheme));  // TODO required?
+        setAuthentication(userName, password, new AuthScope(authScopeUrl, 80, AuthScope.ANY_REALM, authScopeScheme));
     }
 
     public void setAuthentication(String userName, String password) {
         try {
             URI uri = method.getURI();
-            setAuthentication(userName, password, new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access")); // TODO required?
+            setAuthentication(userName, password, new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
         } catch (URIException e) {
             log.severe("Cannot set authentication: " + e.getMessage());
         }
