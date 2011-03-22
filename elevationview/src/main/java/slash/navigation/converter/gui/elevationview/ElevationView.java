@@ -40,6 +40,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 /**
  * Displays the elevations of a {@link PositionsModel}.
@@ -48,6 +49,10 @@ import java.util.ResourceBundle;
  */
 
 public class ElevationView {
+    protected static final Preferences preferences = Preferences.userNodeForPackage(ElevationView.class);
+    private static final String X_GRID_PREFERENCE = "xGrid";
+    private static final String Y_GRID_PREFERENCE = "yGrid";
+
     private ChartPanel chartPanel;
     private XYPlot plot;
     private PositionsModel positionsModel;
@@ -97,6 +102,8 @@ public class ElevationView {
     private XYPlot createPlot(JFreeChart chart) {
         XYPlot plot = chart.getXYPlot();
         plot.setForegroundAlpha(0.65F);
+        plot.setDomainGridlinesVisible(preferences.getBoolean(X_GRID_PREFERENCE, true));
+        plot.setRangeGridlinesVisible(preferences.getBoolean(Y_GRID_PREFERENCE, true));
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
