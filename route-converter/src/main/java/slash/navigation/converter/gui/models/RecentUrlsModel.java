@@ -52,15 +52,21 @@ public class RecentUrlsModel {
         return preferences.getInt(MAXIMUM_RECENT_URL_COUNT_PREFERENCE, 10);
     }
 
-    private char getSuccessor(char c) {
-        c++;
-        if (c >= FIRST_CHAR + getMaximumCount())
-            c = FIRST_CHAR;
-        return c;
+    private char getNextCharacter(String recentUrls) {
+        char found = 0;
+        for(char c : recentUrls.toCharArray()) {
+            if (c > found)
+                found = c;
+        }
+        found++;
+        if (found < FIRST_CHAR)
+            found = FIRST_CHAR;
+        if (found >= FIRST_CHAR + getMaximumCount())
+            found = recentUrls.charAt(0);
+        return found;
     }
 
-    private Character findCharForUrl(String url) {
-        String recentUrls = preferences.get(RECENT_URLS_PREFERENCE, "");
+    private Character findCharForUrl(String recentUrls, String url) {
         for(char c : recentUrls.toCharArray()) {
             String found = preferences.get(RECENT_PREFERENCE + c, null);
             if (found != null && found.equals(url)) {
@@ -72,11 +78,11 @@ public class RecentUrlsModel {
 
     public void addUrl(URL url) {
         String recentUrls = preferences.get(RECENT_URLS_PREFERENCE, "");
-        Character character = findCharForUrl(url.toExternalForm());
+        Character character = findCharForUrl(recentUrls, url.toExternalForm());
         if (character != null) {
             recentUrls = recentUrls.replaceAll(character.toString(), "");
         } else {
-            character = recentUrls.length() > 0 ? getSuccessor(recentUrls.charAt(recentUrls.length() - 1)) : FIRST_CHAR;
+            character = getNextCharacter(recentUrls);
             preferences.put(RECENT_PREFERENCE + character, url.toExternalForm());
         }
         recentUrls = recentUrls + character;
@@ -106,6 +112,8 @@ public class RecentUrlsModel {
     }
 
     public void removeAllUrls() {
+        for (char c = FIRST_CHAR; c < FIRST_CHAR + getMaximumCount(); c++)
+            preferences.remove(RECENT_PREFERENCE + c);
         preferences.remove(RECENT_URLS_PREFERENCE);
     }
 

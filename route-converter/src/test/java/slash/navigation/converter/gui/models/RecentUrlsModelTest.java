@@ -60,6 +60,18 @@ public class RecentUrlsModelTest {
     }
 
     @Test
+    public void testReaddExistingUrlBug() throws IOException {
+        URL first = File.createTempFile("first", ".url").toURI().toURL();
+        URL second = File.createTempFile("second", ".url").toURI().toURL();
+        URL third = File.createTempFile("third", ".url").toURI().toURL();
+        recentUrlsModel.addUrl(first);
+        recentUrlsModel.addUrl(second);
+        recentUrlsModel.addUrl(first);
+        recentUrlsModel.addUrl(third);
+        assertEquals(Arrays.asList(third, first, second), recentUrlsModel.getUrls());
+    }
+
+    @Test
     public void testLatestFirst() throws IOException {
         List<URL> expected = new ArrayList<URL>();
         for (int i = 0; i < 5; i++) {
