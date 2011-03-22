@@ -69,7 +69,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         Double kilometers = (double) meters / 1000.0;
         labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), kilometers) : "-");
         Long milliseconds = (long) seconds * 1000;
-        labelDuration.setText(Transfer.formatDuration(milliseconds));
+        labelDuration.setText(milliseconds > 0 ? Transfer.formatDuration(milliseconds) : "-");
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
