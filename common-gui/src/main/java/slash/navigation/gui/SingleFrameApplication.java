@@ -42,7 +42,6 @@ public abstract class SingleFrameApplication extends Application {
     static final String HEIGHT_PREFERENCE = "height";
     private static final String STATE_PREFERENCE = "state";
     private static final String DEVICE_PREFERENCE = "device";
-    static final int MAXIMIZE_OFFSET = 4;
 
     protected JFrame frame;
 
@@ -95,29 +94,34 @@ public abstract class SingleFrameApplication extends Application {
 
         Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
         log.info("Screen size is " + bounds);
-
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
+        log.info("Insets are " + insets);
         int state = preferences.getInt(STATE_PREFERENCE, Frame.NORMAL);
 
-        int width = crop("width", getPreferenceWidth(), -MAXIMIZE_OFFSET, (int) bounds.getWidth() + 2 * MAXIMIZE_OFFSET);
-        int height = crop("height", getPreferenceHeight(), -MAXIMIZE_OFFSET, (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET);
+        int width = crop("width", getPreferenceWidth(),
+                (int) bounds.getX() - (insets.left + insets.right),
+                (int) bounds.getWidth() - (insets.left + insets.right));
+        int height = crop("height", getPreferenceHeight(),
+                (int) bounds.getY() - (insets.top + insets.bottom),
+                (int) bounds.getHeight() - (insets.top + insets.bottom));
         if((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
-            width = (int)bounds.getWidth() - MAXIMIZE_OFFSET;
+            width = (int)bounds.getWidth() - (insets.left + insets.right);
         if((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
-            height = (int)bounds.getHeight() - 3 * MAXIMIZE_OFFSET;
+            height = (int)bounds.getHeight() - (insets.top + insets.bottom);
         if (width != -1 && height != -1)
             frame.setSize(width, height);
         log.info("Frame size is " + frame.getSize());
 
         int x = crop("x", preferences.getInt(X_PREFERENCE, -1),
-                (int) bounds.getX() - MAXIMIZE_OFFSET,
-                (int) bounds.getX() + (int) bounds.getWidth() + 2 * MAXIMIZE_OFFSET - width);
+                (int) bounds.getX() + insets.left,
+                (int) bounds.getX() + insets.left + (int) bounds.getWidth() - insets.right - width);
         int y = crop("y", preferences.getInt(Y_PREFERENCE, -1),
-                (int) bounds.getY() - MAXIMIZE_OFFSET,
-                (int) bounds.getY() + (int) bounds.getHeight() + 2 * MAXIMIZE_OFFSET - height);
-        if((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
-            x = - 2 * MAXIMIZE_OFFSET;
-        if((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
-            y = -MAXIMIZE_OFFSET;
+                (int) bounds.getY() + insets.top,
+                (int) bounds.getY() + insets.top + (int) bounds.getHeight() - insets.bottom - height);
+        if ((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
+            x = insets.left;
+        if ((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
+            y = insets.top;
         if (x != -1 && y != -1)
             frame.setLocation(x, y);
         log.info("Frame location is " + frame.getLocation());

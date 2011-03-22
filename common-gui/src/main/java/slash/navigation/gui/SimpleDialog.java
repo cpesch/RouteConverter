@@ -43,13 +43,15 @@ public abstract class SimpleDialog extends JDialog {
     public void restoreLocation() {
         Rectangle bounds = getOwner().getGraphicsConfiguration().getBounds();
         log.info("Screen size is " + bounds);
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getOwner().getGraphicsConfiguration());
+        log.info("Insets are " + insets);
 
         int x = SingleFrameApplication.crop(getName() + "-x", preferences.getInt(getName() + "-" + SingleFrameApplication.X_PREFERENCE, -1),
-                (int) bounds.getX() - SingleFrameApplication.MAXIMIZE_OFFSET,
-                (int) bounds.getX() + (int) bounds.getWidth() + 2 * SingleFrameApplication.MAXIMIZE_OFFSET - getWidth());
+                (int) bounds.getX() + insets.left,
+                (int) bounds.getX() + insets.left + (int) bounds.getWidth() - insets.right - getWidth());
         int y = SingleFrameApplication.crop(getName() + "y", preferences.getInt(getName() + "-" + SingleFrameApplication.Y_PREFERENCE, -1),
-                (int) bounds.getY() - SingleFrameApplication.MAXIMIZE_OFFSET,
-                (int) bounds.getY() + (int) bounds.getHeight() + 2 * SingleFrameApplication.MAXIMIZE_OFFSET - getHeight());
+                (int) bounds.getY() + insets.top,
+                (int) bounds.getY() + insets.top + (int) bounds.getHeight() - insets.bottom - getHeight());
         if (x != -1 && y != -1)
             setLocation(x, y);
         else
