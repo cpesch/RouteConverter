@@ -42,10 +42,8 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
     }
 
     public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        // TODO boolean change = this.route != null && (route.getCharacteristics() != this.route.getCharacteristics() || route != this.route);
         this.route = route;
-        // TODO if (change)
-          fireContentsChanged(this, IGNORE, IGNORE);
+        fireContentsChanged(this, IGNORE, IGNORE);
     }
 
     public RouteCharacteristics getSelectedCharacteristics() {
