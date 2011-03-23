@@ -463,62 +463,50 @@ public class ConvertPanel {
     }
 
     @SuppressWarnings("unchecked")
-    private void appendPositionList(final List<URL> urls) {
+    private void appendPositionList(final List<URL> urls) { // TODO very similar to ImportPositionList#importPositionList()
         final RouteConverter r = RouteConverter.getInstance();
 
-        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
-        new Thread(new Runnable() {
-            public void run() {
-                String path;
-                try {
-                    for (final URL url : urls) {
-                        path = Files.createReadablePath(url);
+        try {
+            for (final URL url : urls) {
+                String path = Files.createReadablePath(url);
 
-                        final NavigationFileParser parser = new NavigationFileParser();
-                        if (parser.read(url)) {
-                            log.info("Imported: " + path);
+                final NavigationFileParser parser = new NavigationFileParser();
+                if (parser.read(url)) {
+                    log.info("Appended: " + path);
 
-                            final String finalPath = path;
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    try {
-                                        // if there is no file loaded: parseArgs()
-                                        if (formatAndRoutesModel.getRoutes() == null) {
-                                            formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
-                                            comboBoxChoosePositionList.setModel(formatAndRoutesModel);
-                                            urlModel.setString(finalPath);
-                                            recentUrlsModel.addUrl(url);
-                                        } else {
-                                            getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
-                                        }
-                                    } catch (FileNotFoundException e) {
-                                        r.handleFileNotFound(finalPath);
-                                    } catch (IOException e) {
-                                        r.handleOpenError(e, finalPath);
-                                    }
-                                }
-                            });
-
-                        } else {
-                            r.handleUnsupportedFormat(path);
-                        }
-                    }
-                } catch (BabelException e) {
-                    r.handleBabelError(e);
-                } catch (OutOfMemoryError e) {
-                    r.handleOutOfMemoryError();
-                } catch (Throwable t) {
-                    log.severe("Append error: " + t.getMessage());
-                    r.handleOpenError(t, urls);
-                } finally {
+                    final String finalPath = path;
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                            try {
+                                // if there is no file loaded: parseArgs()
+                                if (formatAndRoutesModel.getRoutes() == null) {
+                                    formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
+                                    comboBoxChoosePositionList.setModel(formatAndRoutesModel);
+                                    urlModel.setString(finalPath);
+                                    recentUrlsModel.addUrl(url);
+                                } else {
+                                    getPositionsModel().add(getPositionsModel().getRowCount(), parser.getTheRoute());
+                                }
+                            } catch (FileNotFoundException e) {
+                                r.handleFileNotFound(finalPath);
+                            } catch (IOException e) {
+                                r.handleOpenError(e, finalPath);
+                            }
                         }
                     });
+
+                } else {
+                    r.handleUnsupportedFormat(path);
                 }
             }
-        }, "UrlAppender").start();
+        } catch (BabelException e) {
+            r.handleBabelError(e);
+        } catch (OutOfMemoryError e) {
+            r.handleOutOfMemoryError();
+        } catch (Throwable t) {
+            log.severe("Append error: " + t.getMessage());
+            r.handleOpenError(t, urls);
+        }
     }
 
     @SuppressWarnings("unchecked")

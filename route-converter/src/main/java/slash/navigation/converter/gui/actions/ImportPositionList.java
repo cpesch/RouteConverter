@@ -76,13 +76,12 @@ public class ImportPositionList extends FrameAction {
         return result;
     }
 
-    private void importPositionList(final int row, final List<URL> urls) {
+    private void importPositionList(final int row, final List<URL> urls) { // TODO very similar to ConvertPanel#appendPositionList()
         new Thread(new Runnable() {
             public void run() {
-                String path = null;
                 try {
                     for (URL url : reverse(urls)) {
-                        path = Files.createReadablePath(url);
+                        String path = Files.createReadablePath(url);
 
                         final NavigationFileParser parser = new NavigationFileParser();
                         if (parser.read(url)) {
@@ -114,6 +113,6 @@ public class ImportPositionList extends FrameAction {
                     routeConverter.handleOpenError(t, urls);
                 }
             }
-        }, "FileImporter").start();
+        }, "UrlImporter").start();
     }
 }
