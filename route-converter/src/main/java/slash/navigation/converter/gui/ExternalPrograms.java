@@ -36,23 +36,23 @@ public class ExternalPrograms {
     protected static final Logger log = Logger.getLogger(ExternalPrograms.class.getName());
 
     public void startBrowserForHomepage(Window window) {
-        startBrowser(window, "www.routeconverter.com");
+        startBrowser(window, "http://www.routeconverter.com");
     }
 
     public void startBrowserForUpdate(Window window) {
-        startBrowser(window, "www.routeconverter.com/downloads/" + Locale.getDefault().getLanguage());
+        startBrowser(window, "http://www.routeconverter.com/downloads/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForTerms(Window window) {
-        startBrowser(window, "www.routeconverter.com/routecatalog/terms/" + Locale.getDefault().getLanguage());
+        startBrowser(window, "http://www.routeconverter.com/routecatalog/terms/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForForum(Window window) {
-        startBrowser(window, "www.routeconverter.com/forum/");
+        startBrowser(window, "http://www.routeconverter.com/forum/");
     }
 
     public void startBrowserForGeonames(Window window) {
-        startBrowser(window, "www.geonames.org");
+        startBrowser(window, "http://www.geonames.org");
     }
 
     public void startBrowserForDouglasPeucker(Window window) {
@@ -71,7 +71,7 @@ public class ExternalPrograms {
             try {
                 Desktop.getDesktop().browse(new URI(uri));
             } catch (Exception e) {
-                log.severe("Start Browser error: " + e.getMessage());
+                log.severe("Start browser error: " + e.getMessage());
 
                 JOptionPane.showMessageDialog(window,
                         MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
@@ -88,7 +88,7 @@ public class ExternalPrograms {
             try {
                 Desktop.getDesktop().mail(new URI(uri));
             } catch (Exception e) {
-                log.severe("Start Mail error: " + e.getMessage());
+                log.severe("Start mail error: " + e.getMessage());
 
                 JOptionPane.showMessageDialog(window,
                         MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getMessage()),
