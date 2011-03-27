@@ -121,6 +121,8 @@ public class Files {
     }
 
     public static String lastPathFragment(String path) {
+        if (path.endsWith("/"))
+            path = path.substring(0, path.length() - 1);
         int index = path.lastIndexOf('/');
         if (index == -1)
             index = path.lastIndexOf('\\');
