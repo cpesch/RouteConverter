@@ -59,6 +59,8 @@ public class ContinousRange {
                 if (operation.isInterrupted())
                     return;
             }
+            if(range.size() == 0)
+                continue;
             int firstValue = range.get(0);
             int lastValue = range.get(range.size() - 1);
             int from = Math.min(firstValue, lastValue);
