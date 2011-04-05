@@ -53,7 +53,7 @@ public class CoPilot7Format extends CoPilotFormat {
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me
         writer.write('\ufeff');
-        writer.println("Data Version=7.0.0.x");
+        writer.println(DATA_VERSION + "=7.0.0.x");
         writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
         writer.println("TollClosed=0");

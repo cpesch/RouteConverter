@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
  */
 
 public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
+    protected static final String DATA_VERSION = "Data Version";
     protected static final String START_TRIP = "Start Trip";
     protected static final String END_TRIP = "End Trip";
     protected static final String START_STOP = "Start Stop";
@@ -82,7 +83,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
              if (Transfer.trim(line) == null)
                  continue;
 
-             if (line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
+             if (line.startsWith(DATA_VERSION) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
              } else if (line.startsWith(START_TRIP) || line.startsWith(START_STOP) || line.startsWith(START_STOP_OPT)) {
                  map.clear();
              } else if (line.startsWith(END_STOP)) {
