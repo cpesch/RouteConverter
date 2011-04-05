@@ -104,7 +104,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     static boolean isSlightlyUnprecise(NavigationFormat format) {
-        return isReallyUnprecise(format) ||
+        return isReallyUnprecise(format) || format instanceof CoPilotFormat ||
                 format instanceof GarminPoiFormat || format instanceof GarminMapSource6Format ||
                 format instanceof GeoCachingFormat || format instanceof GarminMapSource5Format ||
                 format instanceof GarminPcx5Format || format instanceof GoogleMapsUrlFormat ||

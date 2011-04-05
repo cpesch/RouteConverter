@@ -31,7 +31,7 @@ public class GoogleMapsServiceIT extends TestCase {
         assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Deutschland", service.getLocationFor(10.2, 50.001));
         assertEquals("Drehm\u00f6ser 1, 82467 Garmisch-Partenkirchen, Deutschland", service.getLocationFor(11.06561, 47.42428));
         assertEquals("" /*"Auburn University Montgomery, PO Box 244023, Montgomery, AL 36124-4023, Vereinigte Staaten"*/ /*"North Pole"*/, service.getLocationFor(0.0, 0.0));
-        assertEquals("" /*Antarktis*/, service.getLocationFor(0.0, -90.0));
+        assertTrue(service.getLocationFor(0.0, -90.0).contains("Antarktis"));
         assertEquals("North Pole", service.getLocationFor(0.0, 90.0));
         assertEquals("North Pole", service.getLocationFor(90.0, 90.0));
     }
