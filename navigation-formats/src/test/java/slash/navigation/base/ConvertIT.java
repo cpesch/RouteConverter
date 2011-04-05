@@ -136,20 +136,30 @@ public class ConvertIT extends ConvertBase {
 
 
     public void testConvertCoPilotToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot7Format(), new Gpx11Format());
     }
 
     public void testConvertCoPilotToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new ColumbusV900ProfessionalFormat());
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new ColumbusV900ProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot7Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
+    }
+
+    public void testConvertCoPilotToNmn7() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot7Format(), new Nmn7Format());
     }
 
     public void testConvertCoPilotToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new CoPilot7Format());
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new CoPilot7Format());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot7Format(), new CoPilot6Format());
     }
 
 
@@ -564,12 +574,6 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from22beta.kml", new Kml22BetaFormat(), new Nmn7Format());
         convertRoundtrip(TEST_PATH + "from22beta.kmz", new Kmz22BetaFormat(), new Nmn7Format());
     }
-
-    public void testConvertCoPilotToNmn7() throws IOException {
-        convertRoundtrip(TEST_PATH + "from6.trp", new CoPilot6Format(), new Nmn7Format());
-        convertRoundtrip(TEST_PATH + "from7.trp", new CoPilot7Format(), new Nmn7Format());
-    }
-
 
     public void testConvertNavigatingPoiWarnerToNavigatingPoiWarner() throws IOException {
         convertRoundtrip(TEST_PATH + "from-navigating-poiwarner.asc", new NavigatingPoiWarnerFormat(), new NavigatingPoiWarnerFormat());

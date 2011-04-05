@@ -49,8 +49,9 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
 
     @Test
     public void testCoPilotReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from6.trp");
-        readWriteRoundtrip(TEST_PATH + "from7.trp");
+        readWriteRoundtrip(TEST_PATH + "from-copilot6.trp");
+        readWriteRoundtrip(TEST_PATH + "from-copilot7.trp");
+        readWriteRoundtrip(TEST_PATH + "from-copilot8.trp");
     }
 
     @Test
