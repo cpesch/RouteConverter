@@ -106,7 +106,7 @@
                     <header>RouteConverter API</header>
                     <bottom>Created by Christian Pesch</bottom>
                     <links>
-                        <link href="http://java.sun.com/javase/6/docs/api/" />
+                        <link href="http://download.oracle.com/javaee/6/api/" />
                         <link href="http://jakarta.apache.org/commons/logging/apidocs/" />
                     </links>
                     <excludePackageNames>slash.navigation.catalog*:slash.navigation.converter*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.rest*:*binding*</excludePackageNames>
