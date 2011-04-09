@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -48,6 +49,10 @@ import java.util.List;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
+    private static final Preferences preferences = Preferences.userNodeForPackage(PositionsModelImpl.class);
+    private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
+    private static final double maximumDistanceDisplayedInHundredMeters = preferences.getDouble("maximumDistanceDisplayedInHundredMeters", 200000.0);
+
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     static {
         TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
@@ -102,11 +107,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     private String formatDistance(double distance) {
         if (distance <= 0.0)
             return "";
-        if (Math.abs(distance) < 10000.0)
+        if (Math.abs(distance) < maximumDistanceDisplayedInMeters)
             return Math.round(distance) + " m";
-        if (Math.abs(distance) < 200000.0)
+        if (Math.abs(distance) < maximumDistanceDisplayedInHundredMeters)
             return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
-        return Transfer.roundFraction(distance / 1000.0, 0) + " Km";
+        return Math.round(distance / 1000.0) + " Km";
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
