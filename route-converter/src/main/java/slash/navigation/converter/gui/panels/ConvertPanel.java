@@ -531,7 +531,7 @@ public class ConvertPanel {
     }
 
     public File[] selectFilesToImport() {
-        JFileChooser chooser = getChooser();
+        JFileChooser chooser = Constants.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
@@ -629,7 +629,7 @@ public class ConvertPanel {
     }
 
     public void saveAsFile() {
-        JFileChooser chooser = getChooser();
+        JFileChooser chooser = Constants.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
         setWriteFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedTarget());
@@ -790,15 +790,6 @@ public class ConvertPanel {
         return new File(Files.calculateConvertFileName(new File(path, fileName),
                 "",
                 format.getMaximumFileNameLength()));
-    }
-
-    // create this only once to make users choices stable at least for one program start
-    private JFileChooser chooser;
-
-    private synchronized JFileChooser getChooser() {
-        if (chooser == null)
-            chooser = Constants.createJFileChooser();
-        return chooser;
     }
 
     private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat> formats, String selectedFormat) {
