@@ -598,7 +598,7 @@ public class ConvertPanel {
             if (format.isSupportsMultipleRoutes()) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
-                new NavigationFileParser().write(route, format, false, true, targets);
+                new NavigationFileParser().write(route, format, true, true, targets);
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
