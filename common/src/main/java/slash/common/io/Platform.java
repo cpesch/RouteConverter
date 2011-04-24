@@ -64,6 +64,10 @@ public class Platform {
         return canonical(osName);
     }
 
+    public static boolean is64Bit() {
+        return getOsArchitecture().contains("64");
+    }
+
     public static String getOsArchitecture() {
         String osArch = System.getProperty("os.arch");
         if (osArch.endsWith("86"))

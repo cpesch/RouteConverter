@@ -74,17 +74,31 @@ public class EclipseSWTMapView extends BaseMapView {
                 throw new Exception("Native Interface is not initialized");
             JWebBrowser browser;
             if (Platform.isLinux()) {
-                try {
-                    System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
-                    browser = new JWebBrowser(JWebBrowser.useWebkitRuntime());
-                    log.info("Using WebKit runtime to create WebBrowser");
-                } catch (IllegalStateException e) {
-                    System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
-                    browser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
-                    log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
+                if (Platform.is64Bit()) {
+                    try {
+                        System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
+                        System.setProperty("nativeswing.webbrowser.runtime", "webkit");
+                        browser = new JWebBrowser();
+                        log.info("Using WebKit runtime to create WebBrowser");
+                    } catch (IllegalStateException e) {
+                        System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
+                        browser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
+                        log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
+                    }
+                } else {
+                    try {
+                        System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
+                        browser = new JWebBrowser(JWebBrowser.useWebkitRuntime());
+                        log.info("Using WebKit runtime to create WebBrowser");
+                    } catch (IllegalStateException e) {
+                        System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
+                        browser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
+                        log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
+                    }
                 }
-            } else
+            } else {
                 browser = new JWebBrowser();
+            }
             browser.setBarsVisible(false);
             browser.setJavascriptEnabled(true);
             return browser;
