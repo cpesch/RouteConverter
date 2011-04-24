@@ -323,6 +323,19 @@ public class BrowsePanel {
 
     private void deleteCategory() {
         final List<CategoryTreeNode> categories = getSelectedTreeNodes();
+        StringBuffer categoryNames = new StringBuffer();
+        for (int i = 0; i < categories.size(); i++) {
+            CategoryTreeNode categoryTreeNode = categories.get(i);
+            categoryNames.append(categoryTreeNode.getName());
+            if (i < categories.size() - 1)
+                categoryNames.append(", ");
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
+                MessageFormat.format(RouteConverter.getBundle().getString("confirm-delete-category"), categoryNames),
+                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION)
+            return;
 
         operator.executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
