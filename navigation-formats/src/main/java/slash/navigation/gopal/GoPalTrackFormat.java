@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 /**
  * Reads and writes GoPal Track (.trk) files.
  *
- * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, Länge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten, [Datum (yyyymmdd), ?, ?]<br/>
+ * Header: fortlaufende Zeit, Uhrzeit (hhmmss); MEZ, L&auml;nge, Breite, Winkel Fahrtrichtung, Geschwindigkeit, Com Port GPS, HDOP, Anzahl der empfangenen Satelliten, [Datum (yyyymmdd), ?, ?]<br/>
  * Format: 6661343, 180817, 8.016822, 52.345300, 10.78, 38.1142, 2, 3.000000, 3<br/>
  *         6651145, 180807, 0.000000, 0.000000,      0,       0, 0, 0.000000, 0<br/>
  *         31653, 092258, -22.760357, 65.125717, 334.4, 20.7424, 2, 1.000000, 8, 20100719, 0, 14

@@ -34,8 +34,8 @@ import java.util.regex.Pattern;
  * Format: -|-|-|-|-|-|-|-|-|-|-|6.42323|51.84617|-|-|<br/>
  *         -|-|16|-|-|Linau|-|-|-|-|-|10.46348|53.64352|-|-|<br/>
  *         -|-|-|-|-|-|-|-|-|-|7.00905|51.44329|-|<br/>
- *         -|-|-|45128|Südviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|<br/>
- *         -|-|17|-|-|Gelsenkirchen|45896|Polsumer Straße|-|-|-|7.05143|51.59682|-|-|
+ *         -|-|-|45128|S&uuml;dviertel|45128|Hohenzollernstrasse/L451|-|-|-|7.00905|51.44329|-|<br/>
+ *         -|-|17|-|-|Gelsenkirchen|45896|Polsumer Strasse|-|-|-|7.05143|51.59682|-|-|
  *
  * @author Christian Pesch
  */
