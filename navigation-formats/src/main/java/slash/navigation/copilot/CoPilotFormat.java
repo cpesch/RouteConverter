@@ -72,38 +72,46 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
+    public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+        List<BaseNavigationPosition> positions = route.getPositions();
+        BaseNavigationPosition first = positions.get(0);
+        return new Wgs84Position(first.getLongitude(), first.getLatitude(), null, null, null, "Start:" + first.getComment());
+    }
+
     public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
-         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
-         Map<String, String> map = new HashMap<String, String>();
+        List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
+        Map<String, String> map = new HashMap<String, String>();
 
-         while (true) {
-             String line = reader.readLine();
-             if (line == null)
-                 break;
-             if (Transfer.trim(line) == null)
-                 continue;
+        while (true) {
+            String line = reader.readLine();
+            if (line == null)
+                break;
+            if (Transfer.trim(line) == null)
+                continue;
 
-             if (line.startsWith(DATA_VERSION) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
-             } else if (line.startsWith(START_TRIP) || line.startsWith(START_STOP) || line.startsWith(START_STOP_OPT)) {
-                 map.clear();
-             } else if (line.startsWith(END_STOP)) {
-                 Wgs84Position position = parsePosition(map);
-                 positions.add(position);
-                 map.clear();
-             } else if (isNameValue(line)) {
-                 String name = parseName(line);
-                 String value = parseValue(line);
-                 map.put(name, value);
-             } else {
-                 return null;
-             }
-         }
+            if (isDataVersion(line) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
+            } else if (line.startsWith(START_TRIP) || line.startsWith(START_STOP) || line.startsWith(START_STOP_OPT)) {
+                map.clear();
+            } else if (line.startsWith(END_STOP)) {
+                Wgs84Position position = parsePosition(map);
+                positions.add(position);
+                map.clear();
+            } else if (isNameValue(line)) {
+                String name = parseName(line);
+                String value = parseValue(line);
+                map.put(name, value);
+            } else {
+                return null;
+            }
+        }
 
-         if (positions.size() > 0)
-             return Arrays.asList(new Wgs84Route(this, RouteCharacteristics.Route, positions));
-         else
-             return null;
-     }
+        if (positions.size() > 0)
+            return Arrays.asList(new Wgs84Route(this, RouteCharacteristics.Route, positions));
+        else
+            return null;
+    }
+
+    protected abstract boolean isDataVersion(String line);
 
     boolean isNameValue(String line) {
         Matcher matcher = NAME_VALUE_PATTERN.matcher(line);

@@ -20,15 +20,19 @@
 
 package slash.navigation.copilot;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CoPilotFormatTest extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
+
+public class CoPilotFormatTest {
     CoPilot6Format format = new CoPilot6Format();
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isNameValue("Data Version=6.0.0.27"));
         assertTrue(format.isNameValue("Start Stop=Stop 0"));
@@ -41,6 +45,7 @@ public class CoPilotFormatTest extends NavigationTestCase {
         assertFalse(format.isNameValue("Egal"));
     }
 
+    @Test
     public void testParsePosition() {
         Map<String,String> map = new HashMap<String,String>();
             map.put("Longitude", "11753270");
@@ -48,8 +53,8 @@ public class CoPilotFormatTest extends NavigationTestCase {
 
         Wgs84Position position1 = format.parsePosition(map);
         assertNotNull(position1);
-        assertEquals(11.75327, position1.getLongitude());
-        assertEquals(47.68835, position1.getLatitude());
+        assertDoubleEquals(11.75327, position1.getLongitude());
+        assertDoubleEquals(47.68835, position1.getLatitude());
         assertNull(position1.getElevation());
         assertNull(position1.getTime());
         assertNull(position1.getComment());
@@ -73,5 +78,20 @@ public class CoPilotFormatTest extends NavigationTestCase {
         Wgs84Position position4 = format.parsePosition(map);
         assertNotNull(position4);
         assertEquals("A-6020 Innsbruck, Tirol, 39 Gumppstrasse", position4.getComment());
+    }
+
+    @Test
+    public void testIsDataVersion() {
+        CoPilot6Format coPilot6Format = new CoPilot6Format();
+        assertTrue(coPilot6Format.isDataVersion("Data Version=6.0.0.27"));
+        assertFalse(coPilot6Format.isDataVersion("Data Version:6.0.0.27"));
+
+        CoPilot7Format coPilot7Format = new CoPilot7Format();
+        assertTrue(coPilot7Format.isDataVersion("Data Version=7.0.0.27"));
+        assertFalse(coPilot7Format.isDataVersion("Data Version:7.0.0.27"));
+
+        CoPilot8Format coPilot8Format = new CoPilot8Format();
+        assertTrue(coPilot8Format.isDataVersion("Data Version:8.0.0.27"));
+        assertFalse(coPilot8Format.isDataVersion("Data Version=8.0.0.27"));
     }
 }

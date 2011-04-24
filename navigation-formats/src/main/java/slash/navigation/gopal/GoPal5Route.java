@@ -25,6 +25,7 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.gopal.binding5.Tour;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
@@ -318,6 +319,10 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
 
     public SimpleRoute asCoPilot7Format() {
         return asSimpleFormat(new CoPilot7Format());
+    }
+
+    public SimpleRoute asCoPilot8Format() {
+        return asSimpleFormat(new CoPilot8Format());
     }
 
     public SimpleRoute asGlopusFormat() {

@@ -23,27 +23,29 @@ package slash.navigation.base;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.copilot.CoPilot8Format;
+import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
-import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.*;
 import slash.navigation.itn.*;
+import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.kml.*;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
+import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.simple.*;
+import slash.navigation.tcx.Tcx1Format;
+import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
-import slash.navigation.viamichelin.ViaMichelinRoute;
-import slash.navigation.klicktel.KlickTelRoute;
 import slash.navigation.util.RouteComments;
-import slash.navigation.simple.*;
-import slash.navigation.tcx.*;
+import slash.navigation.viamichelin.ViaMichelinRoute;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
 import slash.navigation.wbt.WintecWbt202TesFormat;
@@ -218,6 +220,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         if (getFormat() instanceof CoPilot7Format)
             return this;
         return asSimpleFormat(new CoPilot7Format());
+    }
+
+    public SimpleRoute asCoPilot8Format() {
+        if (getFormat() instanceof CoPilot8Format)
+            return this;
+        return asSimpleFormat(new CoPilot8Format());
     }
 
     public SimpleRoute asGlopusFormat() {

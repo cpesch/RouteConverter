@@ -363,6 +363,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asCoPilot7Format();
 
+    public abstract SimpleRoute asCoPilot8Format();
+
     public abstract SimpleRoute asGlopusFormat();
 
     public abstract SimpleRoute asGoogleMapsUrlFormat();

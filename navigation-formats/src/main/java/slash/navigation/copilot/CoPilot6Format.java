@@ -39,6 +39,10 @@ public class CoPilot6Format extends CoPilotFormat {
         return "CoPilot 6 (*" + getExtension() + ")";
     }
 
+    protected boolean isDataVersion(String line) {
+        return line.startsWith(DATA_VERSION + NAME_VALUE_SEPARATOR);
+    }
+
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
         writer.println(DATA_VERSION + "=6.0.0.27");
         writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());

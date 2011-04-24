@@ -25,6 +25,7 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -321,6 +322,10 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
 
     public SimpleRoute asCoPilot7Format() {
         return asSimpleFormat(new CoPilot7Format());
+    }
+
+    public SimpleRoute asCoPilot8Format() {
+        return asSimpleFormat(new CoPilot8Format());
     }
 
     public SimpleRoute asGlopusFormat() {

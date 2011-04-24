@@ -44,6 +44,10 @@ public class CoPilot7Format extends CoPilotFormat {
         return read(source, startDate, UTF16_ENCODING);
     }
 
+    protected boolean isDataVersion(String line) {
+        return line.startsWith(DATA_VERSION + NAME_VALUE_SEPARATOR);
+    }
+
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
@@ -53,7 +57,7 @@ public class CoPilot7Format extends CoPilotFormat {
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me
         writer.write('\ufeff');
-        writer.println(DATA_VERSION + "=7.0.0.x");
+        writer.println(DATA_VERSION + NAME_VALUE_SEPARATOR + "7.0.0.x");
         writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
         writer.println("TollClosed=0");

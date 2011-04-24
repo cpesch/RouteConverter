@@ -24,6 +24,7 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.common.io.Transfer;
 import slash.navigation.bcr.BcrFormat;
+import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
@@ -307,6 +308,8 @@ public class NavigationFileParser {
             routeToWrite.removeDuplicates();
         if (format instanceof NmnFormat && duplicateFirstPosition)
             routeToWrite.add(0, ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite));
+        if (format instanceof CoPilotFormat && duplicateFirstPosition)
+            routeToWrite.add(0, ((CoPilotFormat) format).getDuplicateFirstPosition(routeToWrite));
         if (format instanceof TcxFormat)
             routeToWrite.ensureIncreasingTime();
     }

@@ -24,6 +24,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
+import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPal3Route;
@@ -380,6 +381,10 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
 
     public SimpleRoute asCoPilot7Format() {
         return asSimpleFormat(new CoPilot7Format());
+    }
+
+    public SimpleRoute asCoPilot8Format() {
+        return asSimpleFormat(new CoPilot8Format());
     }
 
     public SimpleRoute asGlopusFormat() {
