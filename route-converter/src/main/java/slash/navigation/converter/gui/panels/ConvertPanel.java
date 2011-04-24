@@ -123,6 +123,7 @@ public class ConvertPanel {
                     public void performOnRange(int firstIndex, int lastIndex) {
                         JTableHelper.scrollToPosition(tablePositions, firstIndex);
                     }
+
                     public boolean isInterrupted() {
                         return false;
                     }
@@ -353,20 +354,21 @@ public class ConvertPanel {
         if (!confirmDiscard())
             return;
 
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("open-file-dialog-title"));
-        setReadFormatFileFilters(getChooser());
-        getChooser().setSelectedFile(createSelectedSource());
-        getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-        getChooser().setMultiSelectionEnabled(true);
-        int open = getChooser().showOpenDialog(RouteConverter.getInstance().getFrame());
+        JFileChooser chooser = Constants.createJFileChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("open-file-dialog-title"));
+        setReadFormatFileFilters(chooser);
+        chooser.setSelectedFile(createSelectedSource());
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
+        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
         if (open != JFileChooser.APPROVE_OPTION)
             return;
 
-        File[] selected = getChooser().getSelectedFiles();
+        File[] selected = chooser.getSelectedFiles();
         if (selected == null || selected.length == 0)
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
+        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
@@ -523,27 +525,27 @@ public class ConvertPanel {
             urlModel.setString(null);
             UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
             undoManager.discardAllEdits();
-        }
-        finally {
+        } finally {
             Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         }
     }
 
     public File[] selectFilesToImport() {
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
-        setReadFormatFileFilters(getChooser());
-        getChooser().setSelectedFile(createSelectedSource());
-        getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-        getChooser().setMultiSelectionEnabled(true);
-        int open = getChooser().showOpenDialog(RouteConverter.getInstance().getFrame());
+        JFileChooser chooser = getChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
+        setReadFormatFileFilters(chooser);
+        chooser.setSelectedFile(createSelectedSource());
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
+        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
         if (open != JFileChooser.APPROVE_OPTION)
             return null;
 
-        File[] selected = getChooser().getSelectedFiles();
+        File[] selected = chooser.getSelectedFiles();
         if (selected == null || selected.length == 0)
             return null;
 
-        NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
+        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
         return selected;
     }
@@ -627,20 +629,21 @@ public class ConvertPanel {
     }
 
     public void saveAsFile() {
-        getChooser().setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
-        setWriteFormatFileFilters(getChooser());
-        getChooser().setSelectedFile(createSelectedTarget());
-        getChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-        getChooser().setMultiSelectionEnabled(false);
-        int save = getChooser().showSaveDialog(RouteConverter.getInstance().getFrame());
+        JFileChooser chooser = getChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
+        setWriteFormatFileFilters(chooser);
+        chooser.setSelectedFile(createSelectedTarget());
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
         if (save != JFileChooser.APPROVE_OPTION)
             return;
 
-        File selected = getChooser().getSelectedFile();
+        File selected = chooser.getSelectedFile();
         if (selected == null || selected.getName().length() == 0)
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(getChooser().getFileFilter());
+        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
@@ -863,9 +866,11 @@ public class ConvertPanel {
         new ContinousRange(selectedPositions, new RangeOperation() {
             public void performOnIndex(int index) {
             }
+
             public void performOnRange(int firstIndex, int lastIndex) {
                 tablePositions.getSelectionModel().addSelectionInterval(firstIndex, lastIndex);
             }
+
             public boolean isInterrupted() {
                 return false;
             }
@@ -897,71 +902,6 @@ public class ConvertPanel {
 
     public void renameRoute(String name) {
         formatAndRoutesModel.renameRoute(name);
-    }
-
-    private class TableDragAndDropHandler extends TransferHandler {
-        public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(PositionSelection.positionFlavor) ||
-                    convertPanel.getTransferHandler().canImport(support);
-        }
-
-        private int[] toRows(List<BaseNavigationPosition> positions) {
-            int[] result = new int[positions.size()];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = getPositionsModel().getIndex(positions.get(i));
-            }
-            return result;
-        }
-
-        private void moveRows(int[] rows, TransferSupport support) {
-            JTable table = (JTable) support.getComponent();
-            JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation();
-            int index = dropLocation.getRow();
-            int max = table.getModel().getRowCount();
-            if (index < 0 || index > max)
-                index = max;
-
-            if (rows[0] > index) {
-                getPositionsModel().up(rows, rows[0] - index);
-                JTableHelper.selectPositions(table, index, index + rows.length - 1);
-            } else {
-                getPositionsModel().down(Range.revert(rows), index - rows[0] - rows.length);
-                JTableHelper.selectPositions(table, index - rows.length, index - 1);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        public boolean importData(TransferSupport support) {
-            Transferable transferable = support.getTransferable();
-            try {
-                if (support.isDataFlavorSupported(PositionSelection.positionFlavor)) {
-                    Object selection = transferable.getTransferData(PositionSelection.positionFlavor);
-                    if (selection != null) {
-                        PositionSelection positionsSelection = (PositionSelection) selection;
-                        int[] rows = toRows(positionsSelection.getPositions());
-                        if (rows.length > 0) {
-                            moveRows(rows, support);
-                            return true;
-                        }
-                    }
-                }
-            } catch (UnsupportedFlavorException e) {
-                // intentionally left empty
-            } catch (IOException e) {
-                // intentionally left empty
-            }
-            return convertPanel.getTransferHandler().importData(support);
-        }
-
-        public int getSourceActions(JComponent comp) {
-            return MOVE;
-        }
-
-        protected Transferable createTransferable(JComponent c) {
-            int[] selectedRows = tablePositions.getSelectedRows();
-            return new PositionSelection(getPositionsModel().getPositions(selectedRows),
-                    getPositionsModel().getRoute().getFormat());
-        }
     }
 
     {
@@ -1183,4 +1123,70 @@ public class ConvertPanel {
     public JComponent $$$getRootComponent$$$() {
         return convertPanel;
     }
+
+    private class TableDragAndDropHandler extends TransferHandler {
+        public boolean canImport(TransferSupport support) {
+            return support.isDataFlavorSupported(PositionSelection.positionFlavor) ||
+                    convertPanel.getTransferHandler().canImport(support);
+        }
+
+        private int[] toRows(List<BaseNavigationPosition> positions) {
+            int[] result = new int[positions.size()];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = getPositionsModel().getIndex(positions.get(i));
+            }
+            return result;
+        }
+
+        private void moveRows(int[] rows, TransferSupport support) {
+            JTable table = (JTable) support.getComponent();
+            JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation();
+            int index = dropLocation.getRow();
+            int max = table.getModel().getRowCount();
+            if (index < 0 || index > max)
+                index = max;
+
+            if (rows[0] > index) {
+                getPositionsModel().up(rows, rows[0] - index);
+                JTableHelper.selectPositions(table, index, index + rows.length - 1);
+            } else {
+                getPositionsModel().down(Range.revert(rows), index - rows[0] - rows.length);
+                JTableHelper.selectPositions(table, index - rows.length, index - 1);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public boolean importData(TransferSupport support) {
+            Transferable transferable = support.getTransferable();
+            try {
+                if (support.isDataFlavorSupported(PositionSelection.positionFlavor)) {
+                    Object selection = transferable.getTransferData(PositionSelection.positionFlavor);
+                    if (selection != null) {
+                        PositionSelection positionsSelection = (PositionSelection) selection;
+                        int[] rows = toRows(positionsSelection.getPositions());
+                        if (rows.length > 0) {
+                            moveRows(rows, support);
+                            return true;
+                        }
+                    }
+                }
+            } catch (UnsupportedFlavorException e) {
+                // intentionally left empty
+            } catch (IOException e) {
+                // intentionally left empty
+            }
+            return convertPanel.getTransferHandler().importData(support);
+        }
+
+        public int getSourceActions(JComponent comp) {
+            return MOVE;
+        }
+
+        protected Transferable createTransferable(JComponent c) {
+            int[] selectedRows = tablePositions.getSelectedRows();
+            return new PositionSelection(getPositionsModel().getPositions(selectedRows),
+                    getPositionsModel().getRoute().getFormat());
+        }
+    }
+
 }

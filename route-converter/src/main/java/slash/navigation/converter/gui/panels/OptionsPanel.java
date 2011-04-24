@@ -137,6 +137,7 @@ public class OptionsPanel {
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
         if (open != JFileChooser.APPROVE_OPTION)
             return;
