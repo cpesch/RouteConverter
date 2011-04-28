@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.base.BaseNavigationPosition;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -29,7 +31,7 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class PositionsTableCellRenderer extends AlternatingColorTableCellRenderer {
+public abstract class PositionsTableCellRenderer extends AlternatingColorTableCellRenderer {
     private final int alignment;
 
     public PositionsTableCellRenderer(int alignment) {
@@ -39,6 +41,10 @@ public class PositionsTableCellRenderer extends AlternatingColorTableCellRendere
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(alignment);
+        BaseNavigationPosition position = BaseNavigationPosition.class.cast(value);
+        format(label, position);
         return label;
     }
+
+    protected abstract void format(JLabel label, BaseNavigationPosition position);
 }

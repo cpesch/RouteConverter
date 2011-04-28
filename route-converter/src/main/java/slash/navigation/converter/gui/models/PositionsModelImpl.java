@@ -20,11 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.ContinousRange;
-import slash.common.io.Range;
-import slash.common.io.RangeOperation;
-import slash.common.io.Transfer;
+import slash.common.io.*;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -35,12 +31,7 @@ import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.prefs.Preferences;
+import java.util.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -49,10 +40,6 @@ import java.util.prefs.Preferences;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(PositionsModelImpl.class);
-    private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
-    private static final double maximumDistanceDisplayedInHundredMeters = preferences.getDouble("maximumDistanceDisplayedInHundredMeters", 200000.0);
-
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     static {
         TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
@@ -76,69 +63,16 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
     }
 
-    private String formatElevation(Double elevation) {
-        return elevation != null ? Math.round(elevation) + " m" : "";
-    }
-
-    private String formatSpeed(Double speed) {
-        if (Transfer.isEmpty(speed))
-            return "";
-        String speedStr;
-        if (Math.abs(speed) < 10.0)
-            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
-        else
-            speedStr = Long.toString(Math.round(speed));
-        return speedStr + " Km/h";
-    }
-
-    private String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (longitudeOrLatitude == null)
-            return "";
-        String result = Double.toString(longitudeOrLatitude) + " ";
-        if (Math.abs(longitudeOrLatitude) < 10.0)
-            result = " " + result;
-        if (Math.abs(longitudeOrLatitude) < 100.0)
-            result = " " + result;
-        if (result.length() > 12)
-            result = result.substring(0, 12 - 1);
-        return result;
-    }
-
-    private String formatDistance(double distance) {
-        if (distance <= 0.0)
-            return "";
-        if (Math.abs(distance) < maximumDistanceDisplayedInMeters)
-            return Math.round(distance) + " m";
-        if (Math.abs(distance) < maximumDistanceDisplayedInHundredMeters)
-            return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
-        return Math.round(distance / 1000.0) + " Km";
-    }
-
     public Object getValueAt(int rowIndex, int columnIndex) {
-        BaseNavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
-            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
-                return position.getComment();
-            case PositionColumns.TIME_COLUMN_INDEX:
-                CompactCalendar time = position.getTime();
-                return time != null ? TIME_FORMAT.format(time.getTime()) : "";
-            case PositionColumns.LONGITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLongitude());
-            case PositionColumns.LATITUDE_COLUMN_INDEX:
-                return formatLongitudeOrLatitude(position.getLatitude());
-            case PositionColumns.ELEVATION_COLUMN_INDEX:
-                return formatElevation(position.getElevation());
-            case PositionColumns.SPEED_COLUMN_INDEX:
-                return formatSpeed(position.getSpeed());
             case PositionColumns.DISTANCE_COLUMN_INDEX:
-                return formatDistance(getRoute().getDistance(0, rowIndex));
+                return getRoute().getDistance(0, rowIndex);
             case PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX:
-                return formatElevation(getRoute().getElevationAscend(0, rowIndex));
+                return getRoute().getElevationAscend(0, rowIndex);
             case PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX:
-                return formatElevation(getRoute().getElevationDescend(0, rowIndex));
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+                return getRoute().getElevationDescend(0, rowIndex);
         }
+        return getPosition(rowIndex);
     }
 
     public BaseNavigationPosition getPosition(int rowIndex) {
