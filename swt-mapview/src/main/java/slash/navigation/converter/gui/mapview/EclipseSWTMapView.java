@@ -77,8 +77,8 @@ public class EclipseSWTMapView extends BaseMapView {
                 if (Platform.is64Bit()) {
                     try {
                         System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
-                        System.setProperty("nativeswing.webbrowser.runtime", "webkit");
-                        browser = new JWebBrowser();
+                        // System.setProperty("nativeswing.webbrowser.runtime", "webkit");
+                        browser = new JWebBrowser(JWebBrowser.useWebkitRuntime());
                         log.info("Using WebKit runtime to create WebBrowser");
                     } catch (IllegalStateException e) {
                         System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
