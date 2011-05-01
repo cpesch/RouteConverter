@@ -32,23 +32,9 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.converter.gui.actions.AboutAction;
-import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
-import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
-import slash.navigation.converter.gui.actions.DeletePositionsAction;
-import slash.navigation.converter.gui.actions.FindPlaceAction;
-import slash.navigation.converter.gui.actions.InsertPositionsAction;
-import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
-import slash.navigation.converter.gui.actions.OptionsAction;
-import slash.navigation.converter.gui.actions.RevertPositionListAction;
-import slash.navigation.converter.gui.actions.SearchForUpdatesAction;
+import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
-import slash.navigation.converter.gui.helper.FrameMenu;
-import slash.navigation.converter.gui.helper.JMenuHelper;
-import slash.navigation.converter.gui.helper.MergePositionListMenu;
-import slash.navigation.converter.gui.helper.ReopenMenuSynchronizer;
-import slash.navigation.converter.gui.helper.SinglePositionAugmenter;
-import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
+import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -58,24 +44,14 @@ import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.ElevationPanel;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.gui.ActionManager;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.ExitAction;
-import slash.navigation.gui.FrameAction;
-import slash.navigation.gui.HelpTopicsAction;
-import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.gui.*;
 
 import javax.help.CSH;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -83,11 +59,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.EventObject;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -193,13 +166,28 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void parseArgs(String[] args) {
         if (args.length > 0) {
-            getConvertPanel().openUrls(Files.toUrls(args));
+            List<URL> urls = Files.toUrls(args);
+            log.info("Processing arguments: " + urls);
+            getConvertPanel().openUrls(urls);
         } else {
             getConvertPanel().newFile();
         }
     }
 
+    private void patchUIManager(String key) {
+        String text = getBundle().getString(key);
+        if (text != null)
+            UIManager.getDefaults().put(key, text);
+    }
+
     private void show() {
+        patchUIManager("OptionPane.yesButtonText");
+        patchUIManager("OptionPane.noButtonText");
+        patchUIManager("OptionPane.cancelButtonText");
+        patchUIManager("FileChooser.openButtonText");
+        patchUIManager("FileChooser.saveButtonText");
+        patchUIManager("FileChooser.cancelButtonText");
+
         createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
 
         addExitListener(new ExitListener() {
