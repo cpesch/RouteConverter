@@ -20,37 +20,38 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
 
-import static java.lang.Math.abs;
-
 /**
- * Renders the longitude column of the positions table.
+ * Renders the speed column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class LongitudeColumnTableCellRenderer extends PositionsTableCellRenderer {
-    static String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (longitudeOrLatitude == null)
+public class SpeedColumnTableCellEditor extends PositionsTableCellEditor {
+    private String formatSpeed(Double speed) {
+        if (Transfer.isEmpty(speed))
             return "";
-        String result = Double.toString(longitudeOrLatitude) + " ";
-        if (abs(longitudeOrLatitude) < 10.0)
-            result = " " + result;
-        if (abs(longitudeOrLatitude) < 100.0)
-            result = " " + result;
-        if (result.length() > 12)
-            result = result.substring(0, 12 - 1);
-        return result;
+        String speedStr;
+        if (Math.abs(speed) < 10.0)
+            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
+        else
+            speedStr = Long.toString(Math.round(speed));
+        return speedStr + " Km/h";
     }
 
-    public LongitudeColumnTableCellRenderer() {
+    public SpeedColumnTableCellEditor() {
         super(RIGHT);
     }
 
-    protected void format(JLabel label, BaseNavigationPosition position) {
-        label.setText(formatLongitudeOrLatitude(position.getLongitude()));
+    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(BaseNavigationPosition position) {
+        return formatSpeed(position.getSpeed());
     }
 }

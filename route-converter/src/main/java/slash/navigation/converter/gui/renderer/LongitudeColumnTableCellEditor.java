@@ -20,31 +20,41 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
-import java.text.DateFormat;
+
+import static java.lang.Math.abs;
 
 /**
- * Renders the time column of the positions table.
+ * Renders the longitude column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class TimeColumnTableCellRenderer extends PositionsTableCellRenderer {
-    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-
-    static {
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
+public class LongitudeColumnTableCellEditor extends PositionsTableCellEditor {
+    static String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
+        if (longitudeOrLatitude == null)
+            return "";
+        String result = Double.toString(longitudeOrLatitude) + " ";
+        if (abs(longitudeOrLatitude) < 10.0)
+            result = " " + result;
+        if (abs(longitudeOrLatitude) < 100.0)
+            result = " " + result;
+        if (result.length() > 12)
+            result = result.substring(0, 12 - 1);
+        return result;
     }
 
-    public TimeColumnTableCellRenderer() {
+    public LongitudeColumnTableCellEditor() {
         super(RIGHT);
     }
 
-    protected void format(JLabel label, BaseNavigationPosition position) {
-        CompactCalendar time = position.getTime();
-        label.setText(time != null ? TIME_FORMAT.format(time.getTime()) : "");
+    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(BaseNavigationPosition position) {
+        return formatLongitudeOrLatitude(position.getLongitude());
     }
 }

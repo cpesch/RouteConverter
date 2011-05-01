@@ -20,34 +20,35 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.common.io.Transfer;
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
+import java.text.DateFormat;
 
 /**
- * Renders the speed column of the positions table.
+ * Renders the time column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class SpeedColumnTableCellRenderer extends PositionsTableCellRenderer {
-    private String formatSpeed(Double speed) {
-        if (Transfer.isEmpty(speed))
-            return "";
-        String speedStr;
-        if (Math.abs(speed) < 10.0)
-            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
-        else
-            speedStr = Long.toString(Math.round(speed));
-        return speedStr + " Km/h";
+public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
+    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+
+    static {
+        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
-    public SpeedColumnTableCellRenderer() {
+    public TimeColumnTableCellEditor() {
         super(RIGHT);
     }
 
-    protected void format(JLabel label, BaseNavigationPosition position) {
-        label.setText(formatSpeed(position.getSpeed()));
+    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(BaseNavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? TIME_FORMAT.format(time.getTime()) : "";
     }
 }

@@ -25,17 +25,25 @@ import slash.navigation.base.BaseNavigationPosition;
 import javax.swing.*;
 
 /**
- * Renders the description column of the positions table.
+ * Renders the elevation column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class DescriptionColumnTableCellRenderer extends PositionsTableCellRenderer {
-    public DescriptionColumnTableCellRenderer() {
-        super(LEFT);
+public class ElevationColumnTableCellEditor extends PositionsTableCellEditor {
+    static String formatElevation(Double elevation) {
+        return elevation != null ? Math.round(elevation) + " m" : "";
     }
 
-    protected void format(JLabel label, BaseNavigationPosition position) {
-        label.setText(position.getComment());
+    public ElevationColumnTableCellEditor() {
+        super(RIGHT);
+    }
+
+    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(BaseNavigationPosition position) {
+        return formatElevation(position.getElevation());
     }
 }

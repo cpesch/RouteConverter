@@ -24,22 +24,24 @@ import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor.formatLongitudeOrLatitude;
+
 /**
- * Renders the elevation column of the positions table.
+ * Renders the latitude column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class ElevationColumnTableCellRenderer extends PositionsTableCellRenderer {
-    static String formatElevation(Double elevation) {
-        return elevation != null ? Math.round(elevation) + " m" : "";
-    }
-
-    public ElevationColumnTableCellRenderer() {
+public class LatitudeColumnTableCellEditor extends PositionsTableCellEditor {
+    public LatitudeColumnTableCellEditor() {
         super(RIGHT);
     }
 
-    protected void format(JLabel label, BaseNavigationPosition position) {
-        label.setText(formatElevation(position.getElevation()));
+    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(BaseNavigationPosition position) {
+        return formatLongitudeOrLatitude(position.getLatitude());
     }
 }

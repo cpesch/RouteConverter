@@ -23,6 +23,8 @@ package slash.navigation.converter.gui.renderer;
 import javax.swing.*;
 import java.awt.*;
 
+import static slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor.*;
+
 /**
  * Renders the elevation column of the positions table.
  *
@@ -34,7 +36,7 @@ public class ElevationDeltaColumnTableCellRenderer extends AlternatingColorTable
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(RIGHT);
         Double elevation = Double.class.cast(value);
-        label.setText(ElevationColumnTableCellRenderer.formatElevation(elevation));
+        label.setText(formatElevation(elevation));
         return label;
     }
 }

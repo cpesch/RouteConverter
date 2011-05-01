@@ -41,9 +41,11 @@ import java.util.*;
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+
     static {
         TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
+
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
@@ -172,8 +174,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 Calendar calendar = Calendar.getInstance(CompactCalendar.UTC);
                 calendar.setTime(date);
                 return CompactCalendar.fromCalendar(calendar);
-            }
-            catch (ParseException e) {
+            } catch (ParseException e) {
                 // intentionally left empty
             }
         }
@@ -182,14 +183,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
         if (objectValue == null || objectValue instanceof Double) {
-            return (Double)objectValue;
+            return (Double) objectValue;
         } else {
             try {
-                if(replaceAll != null && stringValue != null)
+                if (replaceAll != null && stringValue != null)
                     stringValue = stringValue.replaceAll(replaceAll, "");
                 return Transfer.parseDouble(stringValue);
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 // intentionally left empty
             }
         }

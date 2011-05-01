@@ -24,20 +24,22 @@ import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.renderer.LongitudeColumnTableCellRenderer.formatLongitudeOrLatitude;
-
 /**
- * Renders the latitude column of the positions table.
+ * Renders the description column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class LatitudeColumnTableCellRenderer extends PositionsTableCellRenderer {
-    public LatitudeColumnTableCellRenderer() {
-        super(RIGHT);
+public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
+    public DescriptionColumnTableCellEditor() {
+        super(LEFT);
     }
 
-    protected void format(JLabel label, BaseNavigationPosition position) {
-        label.setText(formatLongitudeOrLatitude(position.getLatitude()));
+    protected void formatCell(JLabel label, BaseNavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(BaseNavigationPosition position) {
+        return position.getComment();
     }
 }
