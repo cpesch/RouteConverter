@@ -58,7 +58,8 @@ public class Gpx11Format extends GpxFormat {
             return null;
 
         boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour = gpxType.getCreator() != null &&
-                "GPSTracker".equals(gpxType.getCreator());
+                ("GPSTracker".equals(gpxType.getCreator()) ||
+                "nl.sogeti.android.gpstracker".equals(gpxType.getCreator()));
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour);
         if (wayPointsAsRoute != null)
