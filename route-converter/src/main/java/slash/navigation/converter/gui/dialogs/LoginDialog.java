@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.domain.RouteCatalog;
+import slash.navigation.catalog.domain.exception.DuplicateNameException;
 import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
@@ -68,6 +69,7 @@ public class LoginDialog extends SimpleDialog {
     private JButton buttonRegister;
     private JButton buttonCancel2;
     private JCheckBox checkBoxAcceptTerms;
+    private JLabel labelAcceptTerms;
 
     public LoginDialog(RouteCatalog routeCatalog) {
         super(RouteConverter.getInstance().getFrame(), "login");
@@ -84,12 +86,6 @@ public class LoginDialog extends SimpleDialog {
             }
         });
 
-        checkBoxAcceptTerms.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startBrowserForTerms(LoginDialog.this);
-            }
-        });
-
         buttonLogin.addActionListener(new DialogAction(this) {
             public void run() {
                 login();
@@ -99,6 +95,12 @@ public class LoginDialog extends SimpleDialog {
         buttonCancel1.addActionListener(new DialogAction(this) {
             public void run() {
                 cancel();
+            }
+        });
+
+        labelAcceptTerms.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                new ExternalPrograms().startBrowserForTerms(LoginDialog.this);
             }
         });
 
@@ -155,13 +157,13 @@ public class LoginDialog extends SimpleDialog {
     private void login() {
         String name = textFieldLogin.getText();
         if (Transfer.trim(name) == null) {
-            labelLoginResult.setText("No name given!"); // TODO make nicer
+            labelLoginResult.setText("Error: No name given!"); // TODO make nicer
             pack();
             return;
         }
         String password = new String(passwordLogin.getPassword());
         if (Transfer.trim(password) == null) {
-            labelLoginResult.setText("No password given!"); // TODO make nicer
+            labelLoginResult.setText("Error: No password given!"); // TODO make nicer
             pack();
             return;
         }
@@ -174,48 +176,48 @@ public class LoginDialog extends SimpleDialog {
     private void register() {
         String userName = textFieldName.getText();
         if (Transfer.trim(userName) == null) {
-            labelRegisterResult.setText("No user name given!"); // TODO make nicer
+            labelRegisterResult.setText("Error: No user name given!"); // TODO make nicer
             pack();
             return;
         }
         if (userName.length() < 4) {
-            labelRegisterResult.setText("User name too short; at least 4 characters required!"); // TODO make nicer
+            labelRegisterResult.setText("Error: User name too short; at least 4 characters required!"); // TODO make nicer
             pack();
             return;
         }
 
         String email = textFieldEMail.getText();
         if (Transfer.trim(email) == null) {
-            labelRegisterResult.setText("No email given!"); // TODO make nicer
+            labelRegisterResult.setText("Error: No email given!"); // TODO make nicer
             pack();
             return;
         }
         if (!email.contains("@") || !email.contains(".")) {
-            labelRegisterResult.setText("No valid email given; at least @ and . required!"); // TODO make nicer
+            labelRegisterResult.setText("Error: No valid email given; at least @ and . required!"); // TODO make nicer
             pack();
             return;
         }
 
         String password = new String(passwordRegister.getPassword());
         if (Transfer.trim(password) == null) {
-            labelRegisterResult.setText("No password given!"); // TODO make nicer
+            labelRegisterResult.setText("Error: No password given!"); // TODO make nicer
             pack();
             return;
         }
         if (password.length() < 4) {
-            labelRegisterResult.setText("Password too short; at least 4 characters required!"); // TODO make nicer
+            labelRegisterResult.setText("Error: Password too short; at least 4 characters required!"); // TODO make nicer
             pack();
             return;
         }
         String repeat = new String(passwordRepeat.getPassword());
         if (!password.equals(repeat)) {
-            labelRegisterResult.setText("Passwords do not match!"); // TODO make nicer
+            labelRegisterResult.setText("Error: Passwords do not match!"); // TODO make nicer
             pack();
             return;
         }
 
         if (!checkBoxAcceptTerms.isSelected()) {
-            labelRegisterResult.setText("Terms not accepted!"); // TODO make nicer
+            labelRegisterResult.setText("Error: Terms not accepted!"); // TODO make nicer
             pack();
             return;
         }
@@ -227,8 +229,10 @@ public class LoginDialog extends SimpleDialog {
             login(userName, password);
             successful = true;
             dispose();
-        }
-        catch (Throwable t) {
+        } catch (DuplicateNameException e) {
+            labelRegisterResult.setText("Error: User name already exists!"); // TODO make nicer
+            pack();
+        } catch (Throwable t) {
             log.severe("Could not register: " + t.getMessage());
             labelRegisterResult.setText("<html>Could not register:<p>" +
                     t.getMessage() + "<p>" +
@@ -344,9 +348,12 @@ public class LoginDialog extends SimpleDialog {
         panel4.add(textFieldFirstName, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         textFieldLastName = new JTextField();
         panel4.add(textFieldLastName, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        labelAcceptTerms = new JLabel();
+        this.$$$loadLabelText$$$(labelAcceptTerms, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("register-accept-terms"));
+        panel4.add(labelAcceptTerms, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxAcceptTerms = new JCheckBox();
-        this.$$$loadButtonText$$$(checkBoxAcceptTerms, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("register-accept-terms"));
-        panel4.add(checkBoxAcceptTerms, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxAcceptTerms.setText("");
+        panel4.add(checkBoxAcceptTerms, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
