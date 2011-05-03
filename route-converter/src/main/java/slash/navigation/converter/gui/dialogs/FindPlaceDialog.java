@@ -127,12 +127,14 @@ public class FindPlaceDialog extends SimpleDialog {
         GoogleMapsService service = new GoogleMapsService();
         try {
             List<GoogleMapsPosition> positions = service.getPositionsFor(textFieldSearch.getText());
-            for (GoogleMapsPosition position : positions) {
-                listModel.addElement(position);
-            }
-            if (listModel.getSize() > 0) {
-                listResult.setSelectedIndex(0);
-                listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
+            if (positions != null) {
+                for (GoogleMapsPosition position : positions) {
+                    listModel.addElement(position);
+                }
+                if (listModel.getSize() > 0) {
+                    listResult.setSelectedIndex(0);
+                    listResult.scrollRectToVisible(listResult.getCellBounds(0, 0));
+                }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getMessage()), getTitle(), JOptionPane.ERROR_MESSAGE);
