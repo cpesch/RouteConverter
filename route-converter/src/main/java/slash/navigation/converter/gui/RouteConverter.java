@@ -834,7 +834,7 @@ public class RouteConverter extends SingleFrameApplication {
                         mapView.resize();
                     }
                     preferences.putInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, elevationSplitPane.getDividerLocation());
-                    log.info("Changed elevation divider to " + elevationSplitPane.getDividerLocation());
+                    log.fine("Changed elevation divider to " + elevationSplitPane.getDividerLocation());
 
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < frame.getHeight() - 10);
