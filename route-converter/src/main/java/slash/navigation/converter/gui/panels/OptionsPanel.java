@@ -38,8 +38,10 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 /**
  * The misc panel of the route converter user interface.
@@ -58,6 +60,7 @@ public class OptionsPanel {
     private JCheckBox checkBoxPedestrians;
     private JCheckBox checkBoxPrefixNumberWithZeros;
     private JCheckBox checkBoxRecenterAfterZooming;
+    private JComboBox comboBoxTimeZone;
 
     public OptionsPanel() {
         initialize();
@@ -126,6 +129,17 @@ public class OptionsPanel {
 
         new CheckBoxPreferencesSynchronizer(checkBoxPrefixNumberWithZeros, r.getPreferences(), RouteConverter.PREFIX_NUMBER_WITH_ZEROS, false);
         new CheckBoxPreferencesSynchronizer(checkBoxSpaceBetweenNumberAndComment, r.getPreferences(), RouteConverter.SPACE_BETWEEN_NUMBER_AND_COMMENT_PREFERENCE, false);
+
+        comboBoxTimeZone.setModel(new DefaultComboBoxModel(getTimeZoneIds()));
+        comboBoxTimeZone.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != ItemEvent.SELECTED)
+                    return;
+                String timeZoneId = (String) e.getItem();
+                r.setTimeZonePreference(timeZoneId);
+            }
+        });
+        comboBoxTimeZone.setSelectedItem(r.getTimeZonePreference());
     }
 
     public Component getRootComponent() {
@@ -147,6 +161,12 @@ public class OptionsPanel {
             return;
 
         textFieldBabelPath.setText(selected.getAbsolutePath());
+    }
+
+    private String[] getTimeZoneIds() {
+        String[] ids = TimeZone.getAvailableIDs();
+        Arrays.sort(ids);
+        return ids;
     }
 
     {
@@ -200,7 +220,7 @@ public class OptionsPanel {
         final JPanel panel2 = new JPanel();
         miscPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 20), null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(10, 3, new Insets(3, 3, 3, 3), -1, -1));
+        panel3.setLayout(new GridLayoutManager(14, 3, new Insets(3, 3, 3, 3), -1, -1));
         miscPanel.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("avoid-highways"));
@@ -248,6 +268,19 @@ public class OptionsPanel {
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label12 = new JLabel();
+        this.$$$loadLabelText$$$(label12, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-times-with-timezone"));
+        panel3.add(label12, new GridConstraints(13, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JSeparator separator4 = new JSeparator();
+        panel3.add(separator4, new GridConstraints(12, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label13 = new JLabel();
+        label13.setText("Display");
+        panel3.add(label13, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new GridLayoutManager(1, 1, new Insets(3, 0, 0, 0), -1, -1));
+        panel3.add(panel5, new GridConstraints(10, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        comboBoxTimeZone = new JComboBox();
+        panel3.add(comboBoxTimeZone, new GridConstraints(13, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

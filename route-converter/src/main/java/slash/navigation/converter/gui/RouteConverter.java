@@ -109,6 +109,7 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String SEARCH_POSITION_PREFERENCE = "searchPosition";
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
     private static final String ELEVATION_DIVIDER_LOCATION_PREFERENCE = "elevationDividerLocation";
+    public static final String TIME_ZONE_PREFERENCE = "timeZone";
 
     private static final String DEBUG_PREFERENCE = "debug";
     private static final String USERNAME_PREFERENCE = "userName";
@@ -175,9 +176,13 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void patchUIManager(String key) {
-        String text = getBundle().getString(key);
-        if (text != null)
-            UIManager.getDefaults().put(key, text);
+        try {
+            String text = getBundle().getString(key);
+            if (text != null)
+                UIManager.getDefaults().put(key, text);
+        } catch (MissingResourceException e) {
+            // intentionally left empty
+        }
     }
 
     private void show() {
@@ -430,6 +435,14 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setCategoryPreference(String category) {
         preferences.put(CATEGORY_PREFERENCE, category);
+    }
+
+    public String getTimeZonePreference() {
+        return preferences.get(TIME_ZONE_PREFERENCE, TimeZone.getDefault().getID());
+    }
+
+    public void setTimeZonePreference(String timeZoneId) {
+        preferences.put(TIME_ZONE_PREFERENCE, timeZoneId);
     }
 
     // dialogs for external components
