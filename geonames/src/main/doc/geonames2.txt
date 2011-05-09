@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<geonames>
+<geoname>
+<toponymName>Himmelreich</toponymName>
+<name>Himmelreich</name>
+<lat>47.8</lat>
+<lng>12.98333</lng>
+<geonameId>2776391</geonameId>
+<countryCode>AT</countryCode>
+<countryName>Austria</countryName>
+<fcl>P</fcl>
+<fcode>PPL</fcode>
+<distance>0.96222</distance>
+</geoname>
+</geonames>
