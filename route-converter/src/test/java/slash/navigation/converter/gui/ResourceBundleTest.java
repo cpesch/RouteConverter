@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ResourceBundleTest {
     private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.FRANCE,
-            Locale.GERMANY, Constants.NEDERLANDS, Constants.SERBIA, Constants.SPAIN, Locale.US);
+            Locale.GERMANY, Constants.NEDERLANDS, Constants.SERBIA, Constants.SLOVAKIA, Constants.SPAIN, Locale.US);
 
     @Test
     public void testEnglishAgainstOtherBundles() {

@@ -40,6 +40,7 @@ public class Constants {
     public static final Locale NEDERLANDS = new Locale("nl", "NL");
     public static final Locale CROATIA = new Locale("hr", "HR");
     public static final Locale SERBIA = new Locale("sr", "SR");
+    public static final Locale SLOVAKIA = new Locale("sk", "SK");
     public static final Locale SPAIN = new Locale("es", "ES");
 
     public static void setLookAndFeel() {
