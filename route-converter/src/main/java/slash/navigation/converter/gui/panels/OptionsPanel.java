@@ -77,7 +77,7 @@ public class OptionsPanel {
 
         comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{
                 Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.GERMANY, Locale.US, Constants.SPAIN,
-                Locale.FRANCE, Constants.NEDERLANDS, Constants.SERBIA, Locale.ROOT}));
+                Locale.FRANCE, Constants.NEDERLANDS, Constants.SERBIA, Constants.SLOVAKIA, Locale.ROOT}));
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
         comboBoxLocale.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
