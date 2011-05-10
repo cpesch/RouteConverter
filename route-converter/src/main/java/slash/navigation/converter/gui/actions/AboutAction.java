@@ -34,6 +34,7 @@ import javax.swing.*;
 
 public class AboutAction extends FrameAction {
     public void run() {
-        JOptionPane.showMessageDialog(getFrame(), new AboutPanel().getRootComponent(), RouteConverter.getTitle(), JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(getFrame(),
+                new AboutPanel().getRootComponent(), RouteConverter.getTitle(), JOptionPane.INFORMATION_MESSAGE);
     }
 }

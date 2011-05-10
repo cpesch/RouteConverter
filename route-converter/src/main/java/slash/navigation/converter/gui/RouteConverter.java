@@ -450,7 +450,9 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleBabelError(final BabelException e) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                        MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -464,7 +466,9 @@ public class RouteConverter extends SingleFrameApplication {
         final long limitAfter = limitBefore * 2;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JOptionPane.showMessageDialog(frame, MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                        MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter),
+                        frame.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         });
     }

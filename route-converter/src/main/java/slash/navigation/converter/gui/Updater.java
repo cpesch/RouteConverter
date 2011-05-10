@@ -105,9 +105,8 @@ public class Updater {
         int confirm = JOptionPane.showConfirmDialog(window,
                 MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.myVersion, result.latestVersion),
                 RouteConverter.getTitle(), JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION)
-            return;
-        new ExternalPrograms().startBrowserForUpdate(window);
+        if (confirm == JOptionPane.YES_OPTION)
+            new ExternalPrograms().startBrowserForUpdate(window);
     }
 
     private void noUpdateAvailable(Window window) {

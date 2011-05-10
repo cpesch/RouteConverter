@@ -569,7 +569,7 @@ public class ConvertPanel {
                 case JOptionPane.NO_OPTION:
                     fileCount = 1;
                     break;
-                case JOptionPane.CANCEL_OPTION:
+                default:
                     return;
             }
         }
@@ -672,10 +672,15 @@ public class ConvertPanel {
             int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
                     RouteConverter.getBundle().getString("confirm-discard"),
                     urlModel.getShortUrl(), JOptionPane.YES_NO_CANCEL_OPTION);
-            if (confirm == JOptionPane.CANCEL_OPTION)
-                return false;
-            if (confirm == JOptionPane.YES_OPTION)
-                saveFile();
+            switch (confirm) {
+                case JOptionPane.YES_OPTION:
+                    saveFile();
+                    break;
+                case JOptionPane.NO_OPTION:
+                    break;
+                default:
+                    return false;
+            }
         }
         return true;
     }

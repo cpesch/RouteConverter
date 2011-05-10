@@ -191,7 +191,9 @@ public class UploadDialog extends SimpleDialog {
             routeService.upload(userName, password, fileUrl, textFieldName.getText(), textAreaDescription.getText());
         } catch (IOException e) {
             JFrame f = RouteConverter.getInstance().getFrame();
-            JOptionPane.showMessageDialog(f, MessageFormat.format(RouteConverter.getBundle().getString("service-error"), routeService.getName(), e.getMessage()), f.getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(f,
+                    MessageFormat.format(RouteConverter.getBundle().getString("service-error"), routeService.getName(),
+                            e.getMessage()), f.getTitle(), JOptionPane.ERROR_MESSAGE);
         }
 
         /*
