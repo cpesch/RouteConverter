@@ -15,6 +15,7 @@ Javier M.R. (jamaro) for the Spanish translation
 Malte Neumann for contributing code for KML, Wintec, Douglas-Peucker, Map and much more
 Matthias Pötzsch for the RouteCatalog maintenance
 Philippe Vandekerckhove for the Dutch translation
+Pietro Sarkocci for the Slovakian translation
 R.-Michael Teichert for the program icon
 Rainer Ippen for usuability improvements
 Vincent Di Sanzo for the French translation
