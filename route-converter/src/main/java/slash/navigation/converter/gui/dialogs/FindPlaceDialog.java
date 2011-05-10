@@ -137,7 +137,9 @@ public class FindPlaceDialog extends SimpleDialog {
                 }
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getMessage()), getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getMessage()),
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
         }
         savePreferences();
     }
