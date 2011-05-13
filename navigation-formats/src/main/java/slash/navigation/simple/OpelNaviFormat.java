@@ -24,6 +24,9 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.base.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Logger;
@@ -59,6 +62,14 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     public String getExtension() {
         return ".poi";
+    }
+
+    public List<SimpleRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
+        return read(source, startDate, UTF8_ENCODING);
+    }
+
+    public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+        write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 
     @SuppressWarnings("unchecked")
@@ -100,7 +111,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private String formatComment(String string, int maximumLength) {
-        string = Transfer.escape(string, SEPARATOR, ';');
+        string = Transfer.escape(string, '"', '\'');
         return string != null ? string.substring(0, Math.min(string.length(), maximumLength)) : null;
     }
 

@@ -53,7 +53,7 @@ public class SygicUnicodeFormat extends SygicFormat {
         write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
 
-    private static String formatForSygic(String string) {
+    private static String formatComment(String string) {
         return string != null ? string.replaceAll(TAB, "    ") : "";
     }
 
@@ -71,7 +71,7 @@ public class SygicUnicodeFormat extends SygicFormat {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
         String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
-        String comment = formatForSygic(position.getComment());
+        String comment = formatComment(position.getComment());
         String phone = null;
         int plus = comment.lastIndexOf('+');
         if (plus != -1) {
