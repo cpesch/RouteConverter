@@ -226,6 +226,11 @@ public class ReadIT {
     }
 
     @Test
+    public void testOpelNaviFilesAreValid() throws IOException {
+        readFiles(".poi");
+    }
+
+    @Test
     public void testMagicMapsPthFilesAreValid() throws IOException {
         readFiles(".pth");
     }

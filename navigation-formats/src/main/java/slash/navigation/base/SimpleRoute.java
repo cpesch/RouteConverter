@@ -422,6 +422,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new NmnUrlFormat());
     }
 
+    public SimpleRoute asOpelNaviFormat() {
+        if (getFormat() instanceof OpelNaviFormat)
+            return this;
+        return asSimpleFormat(new OpelNaviFormat());
+    }
+
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (P position : positions) {

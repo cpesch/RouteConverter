@@ -376,6 +376,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public Wgs84Position asOpelNaviPosition() {
+        return asWgs84Position();
+    }
+
     public Wgs84Position asOvlPosition() {
         return asWgs84Position();
     }

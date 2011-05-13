@@ -705,6 +705,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof FlightRecorderDataFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof CompeGPSDataFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof HaicomLoggerFormat && targetFormat instanceof KmlFormat ||
+                sourceFormat instanceof NavilinkFormat && targetFormat instanceof NavigatingPoiWarnerFormat ||
                 sourceFormat instanceof OziExplorerReadFormat ||
                 sourceFormat instanceof ColumbusV900Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof iBlue747Format && targetFormat instanceof CoPilotFormat ||

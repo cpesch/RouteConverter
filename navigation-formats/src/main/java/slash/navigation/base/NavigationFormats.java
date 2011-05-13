@@ -105,7 +105,6 @@ public final class NavigationFormats {
         addFormat(CoPilot7Format.class);
         addFormat(CoPilot8Format.class);
         addFormat(Route66Format.class);
-        addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);
         addFormat(ColumbusV900ProfessionalFormat.class);
@@ -133,6 +132,8 @@ public final class NavigationFormats {
         addFormat(NavilinkFormat.class);
         addFormat(KienzleGpsFormat.class);
         addFormat(GroundTrackFormat.class);
+        addFormat(OpelNaviFormat.class);
+        addFormat(NavigatingPoiWarnerFormat.class);
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);

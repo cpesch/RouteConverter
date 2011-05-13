@@ -23,6 +23,7 @@ package slash.navigation.nmn;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.ovl.OvlRoute;
+import slash.navigation.simple.OpelNaviFormat;
 import slash.navigation.simple.QstarzQ1000Format;
 
 import java.util.ArrayList;
@@ -77,6 +78,10 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
     
     public SimpleRoute asNmnUrlFormat() {
         return asSimpleFormat(new NmnUrlFormat());
+    }
+
+    public SimpleRoute asOpelNaviFormat() {
+        return asSimpleFormat(new OpelNaviFormat());
     }
 
     public OvlRoute asOvlFormat() {

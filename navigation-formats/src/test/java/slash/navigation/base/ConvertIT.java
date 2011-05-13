@@ -594,6 +594,11 @@ public class ConvertIT extends ConvertBase {
     }
 
 
+    public void testConvertNavilinkToNavigatingPoiWarner() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-navilink.sbp", new NavilinkFormat(), new NavigatingPoiWarnerFormat());
+    }
+
+
     public void testConvertNmn6FavoritesToNavigatingPOIWarner() throws IOException {
         convertRoundtrip(TEST_PATH + "from-nmn6favorites.storage", new Nmn6FavoritesFormat(), new NavigatingPoiWarnerFormat());
     }
@@ -601,6 +606,23 @@ public class ConvertIT extends ConvertBase {
     public void testConvertNmnUrlToNavigatingPOIWarner() throws IOException {
         convertRoundtrip(TEST_PATH + "from-nmn.txt", new NmnUrlFormat(), new NavigatingPoiWarnerFormat());
     }
+
+
+    public void testConvertOpelNaviToNavigatingPOIWarner() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-opelnavi.poi", new OpelNaviFormat(), new NavigatingPoiWarnerFormat());
+    }
+
+    public void testConvertOpelNaviToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-opelnavi.poi", new OpelNaviFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-opelnavi.poi", new OpelNaviFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-opelnavi.poi", new OpelNaviFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-opelnavi.poi", new OpelNaviFormat(), new Kml22Format());
+    }
+
+    public void testConvertNationalGeographicToOpelNavi() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.tpo", new NationalGeographicTopo3Format(), new OpelNaviFormat());
+    }
+
 
     public void testConvertRoute66ToTomTomPoi() throws IOException {
         convertRoundtrip(TEST_PATH + "from-route66poi.csv", new Route66Format(), new TomTomPoiFormat());

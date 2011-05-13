@@ -290,6 +290,10 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asSimpleFormat(new NmnUrlFormat());
     }
 
+    public SimpleRoute asOpelNaviFormat() {
+        return asSimpleFormat(new OpelNaviFormat());
+    }
+
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (KmlPosition position : positions) {

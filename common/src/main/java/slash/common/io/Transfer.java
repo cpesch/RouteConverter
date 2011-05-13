@@ -95,6 +95,11 @@ public class Transfer {
             return string;
     }
 
+
+    public static String filter(String string, char filter) {
+        return string != null ? string.replaceAll(String.valueOf(filter), "") : null;
+    }
+
     public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
         if (aDouble == null)
             return null;
@@ -237,9 +242,9 @@ public class Transfer {
         long seconds = milliseconds / 1000;
         long minutes = seconds / 60;
         long hours = minutes / 60;
-        buffer.append(formatIntAsString((int)hours, 2)).append(":").
-             append(formatIntAsString((int)minutes % 60, 2)).append(":").
-                append(formatIntAsString((int)seconds % 60, 2));
+        buffer.append(formatIntAsString((int) hours, 2)).append(":").
+                append(formatIntAsString((int) minutes % 60, 2)).append(":").
+                append(formatIntAsString((int) seconds % 60, 2));
         return buffer.toString();
     }
 

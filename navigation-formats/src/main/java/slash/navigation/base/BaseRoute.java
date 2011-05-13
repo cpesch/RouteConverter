@@ -443,6 +443,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asNmnUrlFormat();
 
+    public abstract SimpleRoute asOpelNaviFormat();
+
     public abstract OvlRoute asOvlFormat();
 
     public abstract SimpleRoute asQstarzQ1000Format();

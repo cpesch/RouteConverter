@@ -288,6 +288,10 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return asSimpleFormat(new NmnUrlFormat());
     }
 
+    public SimpleRoute asOpelNaviFormat() {
+        return asSimpleFormat(new OpelNaviFormat());
+    }
+
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (TomTomPosition position : positions) {

@@ -63,7 +63,7 @@ public class iBlue747Format extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR_CHAR +
                     SPACE + "([WE])" + SPACE + SEPARATOR_CHAR +
 
-                    SPACE + "([-\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
+                    SPACE + "(" + POSITION + ")" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
                     SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
                     SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR_CHAR +
                     SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +

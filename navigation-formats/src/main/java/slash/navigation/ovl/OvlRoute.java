@@ -302,6 +302,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asSimpleFormat(new NmnUrlFormat());
     }
 
+    public SimpleRoute asOpelNaviFormat() {
+        return asSimpleFormat(new OpelNaviFormat());
+    }
+
     public OvlRoute asOvlFormat() {
         return this;
     }

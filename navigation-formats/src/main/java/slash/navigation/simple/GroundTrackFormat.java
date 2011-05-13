@@ -50,9 +50,9 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE + "(\\d+)" +
-                    SPACE + "([-\\d\\.]+)" +
-                    SPACE + "([-\\d\\.]+)" +
-                    SPACE + "([-\\d\\.]+)" +
+                    SPACE + "(" + POSITION + ")" +
+                    SPACE + "(" + POSITION + ")" +
+                    SPACE + "(" + POSITION + ")" +
                     SPACE + "[\\d\\.]+" +
                     SPACE + "(-?\\d+:-?\\d+:-?\\d+\\.\\d+)" +
                     ".*" +
@@ -137,8 +137,8 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String latitude = Transfer.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
-        String longitude = Transfer.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
+        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
         String elevation = position.getElevation() != null ? Transfer.formatElevationAsString(position.getElevation()) : "0.0";
         String time = formatTime(position.getTime());
 

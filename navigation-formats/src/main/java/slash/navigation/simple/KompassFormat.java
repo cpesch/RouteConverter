@@ -47,7 +47,7 @@ public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
             compile(BEGIN_OF_LINE +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
-                    WHITE_SPACE + "([-\\d\\.]*)" + WHITE_SPACE + 
+                    WHITE_SPACE + "([-\\d\\.]*)" + WHITE_SPACE +
                     END_OF_LINE);
 
     public String getExtension() {
