@@ -19,23 +19,28 @@
 */
 package slash.navigation.googlemaps;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.io.IOException;
 
-public class GoogleMapsServiceIT extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class GoogleMapsServiceIT {
     private GoogleMapsService service = new GoogleMapsService();
 
+    @Test
     public void testLocationLookup() throws IOException {
         assertEquals("Kreuzegg, 8638 Goldingen, Schweiz" /*"Chammstrasse 28, 8638 Goldingen, Schweiz"*/, service.getLocationFor(9.0, 47.3));
         assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Deutschland", service.getLocationFor(10.2, 50.001));
         assertEquals("Drehm\u00f6ser 1, 82467 Garmisch-Partenkirchen, Deutschland", service.getLocationFor(11.06561, 47.42428));
         assertEquals("" /*"Auburn University Montgomery, PO Box 244023, Montgomery, AL 36124-4023, Vereinigte Staaten"*/ /*"North Pole"*/, service.getLocationFor(0.0, 0.0));
-        assertTrue(service.getLocationFor(0.0, -90.0).contains("Antarktis"));
+        assertTrue(service.getLocationFor(0.0, -90.0).contains("South Pole"));
         assertEquals("North Pole", service.getLocationFor(0.0, 90.0));
         assertEquals("North Pole", service.getLocationFor(90.0, 90.0));
     }
 
+    @Test
     public void testPositionLookup() throws IOException {
         GoogleMapsPosition expected = new GoogleMapsPosition(10.2003632, 50.0004554, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         GoogleMapsPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");

@@ -19,13 +19,18 @@
 */
 package slash.navigation.geonames;
 
-import slash.common.TestCase;
+import org.junit.Test;
 
 import java.io.IOException;
 
-public class GeoNamesServiceIT extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleArrayEquals;
+
+public class GeoNamesServiceIT {
     private GeoNamesService service = new GeoNamesService();
 
+    @Test
     public void testSrtm3ElevationFor() throws IOException {
         assertEquals(209, service.getSrtm3ElevationFor(10.2, 50.001).intValue());
         assertEquals(null, service.getSrtm3ElevationFor(11.06561, 47.42428));
@@ -42,6 +47,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals(null, service.getSrtm3ElevationFor(-68.0, -57.0));
     }
 
+    @Test
     public void testGtopo30ElevationFor() throws IOException {
         assertEquals(205, service.getGtopo30ElevationFor(10.2, 50.001).intValue());
         assertEquals(1789, service.getGtopo30ElevationFor(11.06561, 47.42428).intValue());
@@ -58,6 +64,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals(null, service.getGtopo30ElevationFor(-68.0, -57.0));
     }
 
+    @Test
     public void testElevationFor() throws IOException {
         assertEquals(40, service.getElevationFor(11.2, 59.0).intValue());
         assertEquals(120, service.getElevationFor(11.2, 60.0).intValue());
@@ -70,6 +77,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals(null, service.getElevationFor(-68.0, -57.0));
     }
 
+    @Test
     public void testNearByFor() throws IOException {
         // was: assertEquals("Kreuzegg", service.getNearByFor(9.0, 47.3));
         assertEquals("Atzmännig", service.getNearByFor(9.0, 47.3));
@@ -85,6 +93,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals(null, service.getNearByFor(-90.0, -90.0));
     }
 
+    @Test
     public void testNearByPlaceNameFor() throws IOException {
         assertEquals("Atzmännig", service.getNearByPlaceNameFor(9.0, 47.3));
         assertEquals("Grafenrheinfeld", service.getNearByPlaceNameFor(10.2, 50.001));
@@ -96,6 +105,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals(null, service.getNearByPlaceNameFor(-90.0, -90.0));
     }
 
+    @Test
     public void testNearByPostalCodeFor() throws IOException {
         PostalCode code = service.getNearByPostalCodeFor(9.0, 47.3);
         assertTrue(new PostalCode("CH", "9622", "Krinau").equals(code) || new PostalCode("CH", "8638", "Goldingen").equals(code));
@@ -108,6 +118,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals(null, service.getNearByPostalCodeFor(-90.0, -90.0));
     }
 
+    @Test
     public void testPlaceNameFor() throws IOException {
         assertEquals("Krinau", service.getPlaceNameFor("CH", "9622"));
         assertEquals("Grafenrheinfeld", service.getPlaceNameFor("DE", "97506"));
@@ -116,6 +127,7 @@ public class GeoNamesServiceIT extends TestCase {
         assertEquals("Walldorf", service.getPlaceNameFor("de", "69190"));
     }
 
+    @Test
     public void testPositionFor() throws IOException {
         assertDoubleArrayEquals(new double[]{9.05033, 47.31507}, service.getPositionFor("CH", "9622"));
         assertDoubleArrayEquals(new double[]{10.1982, 50.0002}, service.getPositionFor("DE", "97506"));
