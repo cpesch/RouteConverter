@@ -41,16 +41,16 @@ import java.util.regex.Pattern;
 public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected static final Logger log = Logger.getLogger(OpelNaviFormat.class.getName());
 
-    private static final char SEPARATOR_CHAR = ',';
-    private static final char QUOTE_CHAR = '"';
+    private static final char SEPARATOR = ',';
+    private static final char QUOTE = '"';
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + QUOTE_CHAR + "([^" + QUOTE_CHAR + "]*)" + QUOTE_CHAR + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + QUOTE_CHAR + "([^" + QUOTE_CHAR + "]*)" + QUOTE_CHAR + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + QUOTE_CHAR + "([^" + QUOTE_CHAR + "]*)" + QUOTE_CHAR + WHITE_SPACE +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + QUOTE + "([^" + QUOTE + "]*)" + QUOTE + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + QUOTE + "([^" + QUOTE + "]*)" + QUOTE + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + QUOTE + "([^" + QUOTE + "]*)" + QUOTE + WHITE_SPACE +
                     END_OF_LINE);
 
     public String getName() {
@@ -99,11 +99,9 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return position;
     }
 
-    private String trim(String string, int maximumLength) {
-        string = Transfer.trim(string);
-        if(string == null)
-            return "";
-        return Transfer.filter(string.substring(0, Math.min(string.length(), maximumLength)), SEPARATOR_CHAR);
+    private String formatComment(String string, int maximumLength) {
+        string = Transfer.escape(string, SEPARATOR, ';');
+        return string != null ? string.substring(0, Math.min(string.length(), maximumLength)) : null;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
@@ -111,13 +109,13 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
 
         String[] strings = position.getComment().split(";");
-        String comment = strings.length > 0 ? trim(strings[0], 60) : "";
-        String extra = strings.length > 1 ? trim(strings[1], 60) : "";
-        String phone = strings.length > 2 ? trim(strings[2], 30) : "";
+        String comment = strings.length > 0 ? formatComment(strings[0], 60) : "";
+        String extra = strings.length > 1 ? formatComment(strings[1], 60) : "";
+        String phone = strings.length > 2 ? formatComment(strings[2], 30) : "";
 
-        writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                QUOTE_CHAR + comment + QUOTE_CHAR + SEPARATOR_CHAR +
-                QUOTE_CHAR + extra + QUOTE_CHAR + SEPARATOR_CHAR +
-                QUOTE_CHAR + phone + QUOTE_CHAR);
+        writer.println(longitude + SEPARATOR + latitude + SEPARATOR +
+                QUOTE + comment + QUOTE + SEPARATOR +
+                QUOTE + extra + QUOTE + SEPARATOR +
+                QUOTE + phone + QUOTE);
     }
 }

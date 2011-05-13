@@ -39,15 +39,15 @@ import java.util.regex.Pattern;
 public class Nmn5Format extends NmnFormat {
 
     private static final Pattern LINE_PATTERN = Pattern.
-            compile(WILDCARD + SEPARATOR + WILDCARD + SEPARATOR +
-                    WILDCARD + SEPARATOR + WILDCARD + SEPARATOR + WILDCARD + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
-                    WILDCARD + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
-                    "(" + WILDCARD + ")" + SEPARATOR +
-                    WILDCARD + SEPARATOR + WILDCARD + SEPARATOR +
-                    "(" + POSITION + ")" + SEPARATOR + "(" + POSITION + ")" + SEPARATOR +
-                    WILDCARD + SEPARATOR + WILDCARD + SEPARATOR + WILDCARD + SEPARATOR + WILDCARD + SEPARATOR);
+            compile(WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR +
+                    WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR +
+                    "(" + WILDCARD + ")" + REGEX_SEPARATOR +
+                    WILDCARD + REGEX_SEPARATOR +
+                    "(" + WILDCARD + ")" + REGEX_SEPARATOR +
+                    "(" + WILDCARD + ")" + REGEX_SEPARATOR +
+                    WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR +
+                    "(" + POSITION + ")" + REGEX_SEPARATOR + "(" + POSITION + ")" + REGEX_SEPARATOR +
+                    WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR);
 
     public String getName() {
         return "Navigon Mobile Navigator 5 (*" + getExtension() + ")";
@@ -81,26 +81,26 @@ public class Nmn5Format extends NmnFormat {
         return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), null, city, street, number);
     }
 
-    private static String formatForNmn5(String string) {
-        return string != null ? escapeSeparator(string) : "-";
+    private static String formatComment(String string) {
+        return string != null ? Transfer.escape(string, SEPARATOR, ';') : "-";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
         String longitude = Transfer.formatPositionAsString(nmnPosition.getLongitude());
         String latitude = Transfer.formatPositionAsString(nmnPosition.getLatitude());
-        String city = formatForNmn5(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
-        String street = formatForNmn5(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
-        String number = formatForNmn5(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());
-        writer.println("-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR +
-                "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR +
-                city + "" + SEPARATOR_CHAR +
-                "-" + SEPARATOR_CHAR +
-                street + SEPARATOR_CHAR +
-                number + SEPARATOR_CHAR +
-                "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                "-" + SEPARATOR_CHAR + "-" + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR);
+        String city = formatComment(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
+        String street = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
+        String number = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());
+        writer.println("-" + SEPARATOR + "-" + SEPARATOR +
+                "-" + SEPARATOR + "-" + SEPARATOR + "-" + SEPARATOR +
+                city + "" + SEPARATOR +
+                "-" + SEPARATOR +
+                street + SEPARATOR +
+                number + SEPARATOR +
+                "-" + SEPARATOR + "-" + SEPARATOR +
+                longitude + SEPARATOR + latitude + SEPARATOR +
+                "-" + SEPARATOR + "-" + SEPARATOR +
+                longitude + SEPARATOR + latitude + SEPARATOR);
     }
 }

@@ -20,9 +20,9 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.Wgs84Position;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.Wgs84Position;
 
 import java.util.regex.Matcher;
 
@@ -67,7 +67,7 @@ public class NmnPosition extends Wgs84Position {
         if (comment == null)
             return;
 
-        Matcher matcher = NmnFormat.COMMENT_PATTERN.matcher(NmnFormat.escapeSeparator(comment));
+        Matcher matcher = NmnFormat.COMMENT_PATTERN.matcher(Transfer.escape(comment, NmnFormat.SEPARATOR, ';'));
         if (matcher.matches()) {
             this.comment = Transfer.trim(matcher.group(2));
             zip = Transfer.trim(matcher.group(1));

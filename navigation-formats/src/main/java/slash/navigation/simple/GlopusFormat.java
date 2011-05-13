@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 
 public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final char SEPARATOR_CHAR = ',';
+    private static final char SEPARATOR = ',';
 
     // special position format to avoid detection of GarminPoiDbFormat where longitude and latitude are swapped
     private static final String POSITION5 = "-?\\d+\\.\\d{5}";
@@ -47,14 +47,14 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     private static final Pattern SIMPLE_LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION5 + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION5 + ")" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + "(" + POSITION5 + ")" + WHITE_SPACE +
                     END_OF_LINE);
 
     private static final Pattern COMMENT_LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION7 + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION7 + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION7 + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION7 + ")" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + "([^\"]*)" + WHITE_SPACE +
                     END_OF_LINE);
 
@@ -104,7 +104,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
         String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
-        String comment = position.getComment();
-        writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + comment);
+        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
+        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + comment);
     }
 }

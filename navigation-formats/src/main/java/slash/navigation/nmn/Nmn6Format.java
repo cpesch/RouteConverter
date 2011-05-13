@@ -43,13 +43,13 @@ public class Nmn6Format extends NmnFormat {
                     "\\" + LEFT_BRACE + ".*" + RIGHT_BRACE);
 
     private static final Pattern POSITION_PATTERN = Pattern.
-            compile("\\" + LEFT_BRACE + "(" + WILDCARD + ")" + SEPARATOR + "{1,2}" + "\\" + RIGHT_BRACE +
+            compile("\\" + LEFT_BRACE + "(" + WILDCARD + ")" + REGEX_SEPARATOR + "{1,2}" + "\\" + RIGHT_BRACE +
                     "\\" + LEFT_BRACE + "\\d+\\" + RIGHT_BRACE +
                     "\\" + LEFT_BRACE + "\\d+\\" + RIGHT_BRACE +
-                    SEPARATOR + WILDCARD +
-                    SEPARATOR + WILDCARD +
-                    SEPARATOR +
-                    "(" + POSITION + ")" + SEPARATOR + "(" + POSITION + ")" + "(.*)");
+                    REGEX_SEPARATOR + WILDCARD +
+                    REGEX_SEPARATOR + WILDCARD +
+                    REGEX_SEPARATOR +
+                    "(" + POSITION + ")" + REGEX_SEPARATOR + "(" + POSITION + ")" + "(.*)");
 
     public String getName() {
         return "Navigon Mobile Navigator 6 (*" + getExtension() + ")";
@@ -75,17 +75,17 @@ public class Nmn6Format extends NmnFormat {
         return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), (Double)null, null, null, Transfer.trim(comment));
     }
 
-    private static String formatForNmn6(String string) {
-        return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + SEPARATOR + "|\\" + RIGHT_BRACE + "]", ";") : "";
+    private static String formatComment(String string) {
+        return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + REGEX_SEPARATOR + "|\\" + RIGHT_BRACE + "]", ";") : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Transfer.formatPositionAsString(position.getLongitude());
         String latitude = Transfer.formatPositionAsString(position.getLatitude());
-        String comment = formatForNmn6(position.getComment());
-        writer.println(LEFT_BRACE + comment + SEPARATOR_CHAR + RIGHT_BRACE +
+        String comment = formatComment(position.getComment());
+        writer.println(LEFT_BRACE + comment + SEPARATOR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +
-                SEPARATOR_CHAR + SEPARATOR_CHAR + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + SEPARATOR_CHAR);
+                SEPARATOR + SEPARATOR + SEPARATOR +
+                longitude + SEPARATOR + latitude + SEPARATOR + SEPARATOR);
     }
 }

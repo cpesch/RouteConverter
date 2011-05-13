@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Logger log = Logger.getLogger(GoPalTrackFormat.class.getName());
 
-    private static final char SEPARATOR_CHAR = ',';
+    private static final char SEPARATOR = ',';
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyyMMdd HHmmss");
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
     static {
@@ -59,18 +59,18 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
-                    WHITE_SPACE + "(\\d*)" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
-                    WHITE_SPACE + "\\d*" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
-                    WHITE_SPACE + "[-\\d]*" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
+                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR + "?" +
+                    WHITE_SPACE + "(\\d*)" + WHITE_SPACE + SEPARATOR + "?" +
+                    WHITE_SPACE + "\\d*" + WHITE_SPACE + SEPARATOR + "?" +
+                    WHITE_SPACE + "[-\\d]*" + WHITE_SPACE + SEPARATOR + "?" +
                     END_OF_LINE);
 
 
@@ -188,14 +188,14 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (satellites == null || satellites == 0)
             satellites = 1;
         String satellitesStr = Transfer.formatIntAsString(satellites);
-        writer.println("0" + SEPARATOR_CHAR + " " +
-                       time + SEPARATOR_CHAR + " " +
-                       longitude + SEPARATOR_CHAR + " " +
-                       latitude + SEPARATOR_CHAR + " " +
-                       heading + SEPARATOR_CHAR + " " +
-                       speed + SEPARATOR_CHAR + " " +
-                       "1" + SEPARATOR_CHAR + " " +
-                       hdop + SEPARATOR_CHAR + " " +
+        writer.println("0" + SEPARATOR + " " +
+                       time + SEPARATOR + " " +
+                       longitude + SEPARATOR + " " +
+                       latitude + SEPARATOR + " " +
+                       heading + SEPARATOR + " " +
+                       speed + SEPARATOR + " " +
+                       "1" + SEPARATOR + " " +
+                       hdop + SEPARATOR + " " +
                        satellitesStr);
     }
 }

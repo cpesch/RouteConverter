@@ -28,7 +28,6 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,7 +45,7 @@ import java.util.regex.Pattern;
 public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Logger log = Logger.getLogger(MagicMaps2GoFormat.class.getName());
     
-    private static final char SEPARATOR_CHAR = ' ';
+    private static final char SEPARATOR = ' ';
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
     static {
        DATE_AND_TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
@@ -54,10 +53,10 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    "(" + POSITION + ")" + SEPARATOR_CHAR +
-                    "(" + POSITION + ")" + SEPARATOR_CHAR +
-                    "(" + POSITION + ")" + SEPARATOR_CHAR +
-                    "(\\d\\d\\.\\d\\d\\.\\d\\d)" + SEPARATOR_CHAR +
+                    "(" + POSITION + ")" + SEPARATOR +
+                    "(" + POSITION + ")" + SEPARATOR +
+                    "(" + POSITION + ")" + SEPARATOR +
+                    "(\\d\\d\\.\\d\\d\\.\\d\\d)" + SEPARATOR +
                     "(\\d\\d\\:\\d\\d\\:\\d\\d)" +
                     END_OF_LINE);
 
@@ -114,6 +113,6 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
         String elevation = Transfer.formatDoubleAsString(position.getElevation(), 7);
         String dateAndTime = position.getTime() != null ? DATE_AND_TIME_FORMAT.format(position.getTime().getTime()) : "00.00.00 00:00:=00";
-        writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + elevation + SEPARATOR_CHAR + dateAndTime);
+        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + elevation + SEPARATOR + dateAndTime);
     }
 }

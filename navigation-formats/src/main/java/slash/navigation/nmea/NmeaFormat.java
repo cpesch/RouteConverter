@@ -79,12 +79,12 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "([\\d+])" + SEPARATOR +         // Fix quality, 0=invalid
                     "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
                     "[\\d\\.]*" + SEPARATOR +
-                    "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)  
+                    "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)
                     "M" + SEPARATOR +
                     "[-?\\d\\.]*" + SEPARATOR +
                     "M?" + SEPARATOR +
                     ".*" + SEPARATOR +
-                    ".*" +                           // Differential reference station ID, 0000-1023 
+                    ".*" +                           // Differential reference station ID, 0000-1023
                     END_OF_LINE);
 
     // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,   ,A*76
@@ -100,7 +100,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "[\\d\\.]*" + SEPARATOR +
                     "(\\d*)" + SEPARATOR +          // Date, ddmmyy
                     "[\\d\\.]*" + SEPARATOR +
-                    "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation 
+                    "[\\d\\.]*" + SEPARATOR + "?" + // Magnetic variation
                     "[AEW]?" + SEPARATOR + "?" +    // E=East, W=West
                     "([ADEMNS])?" +                 // Signal integrity, N=not valid
                     END_OF_LINE);
@@ -110,7 +110,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             compile(BEGIN_OF_LINE + "WPL" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "(.*)" + 
+                    "(.*)" +
                     END_OF_LINE);
 
     // $GPZDA,032910.542,07,08,2004,00,00*48
@@ -131,7 +131,7 @@ public class NmeaFormat extends BaseNmeaFormat {
                     "([\\d\\.]*)" + SEPARATOR +   // true course
                     "T" + SEPARATOR +
                     "[\\d\\.]*" + SEPARATOR +     // magnetic course
-                    "M" + SEPARATOR +     
+                    "M" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +
                     "N" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +
@@ -142,7 +142,7 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F
     private static final Pattern GSA_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "GSA" + SEPARATOR +
-                    "[AM]" + SEPARATOR +         
+                    "[AM]" + SEPARATOR +
                     "([123])" + SEPARATOR +      // Fix, 1=Fix not available
                     "\\d*" + SEPARATOR +
                     "\\d*" + SEPARATOR +
@@ -285,7 +285,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
-    
+
     private String formatDay(CompactCalendar date) {
         if (date == null)
             return "";
@@ -328,7 +328,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
         String satellites = position.getSatellites() != null ? Transfer.formatIntAsString(position.getSatellites()) : "";
-        String comment = formatComment(position.getComment());
+        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());

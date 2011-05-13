@@ -37,12 +37,12 @@ import java.util.regex.Pattern;
  */
 
 public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final char SEPARATOR_CHAR = ',';
+    private static final char SEPARATOR = ',';
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + "\"([A-Z\\s\\d-]*)\"" + WHITE_SPACE +
                     END_OF_LINE);
 
@@ -76,14 +76,15 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
                 null, null, null, comment);
     }
 
-    private static String formatForRoute66(String string) {
-        return string != null ? string.replaceAll("\\" + SEPARATOR_CHAR, "").toUpperCase() : "";
+    private static String formatComment(String string) {
+        string = Transfer.escape(string, SEPARATOR, ';');
+        return string != null ? string.toUpperCase() : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
         String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
-        String comment = formatForRoute66(position.getComment());
-        writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + "\"" + comment + "\"");
+        String comment = formatComment(position.getComment());
+        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
     }
 }

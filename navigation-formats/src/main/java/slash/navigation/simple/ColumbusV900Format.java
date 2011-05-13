@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRoute> {
     protected static final Logger log = Logger.getLogger(ColumbusV900Format.class.getName());
 
-    protected static final char SEPARATOR_CHAR = ',';
+    protected static final char SEPARATOR = ',';
     protected static final String SPACE_OR_ZERO = "[\\s\u0000]*";
     protected static final String WAYPOINT_POSITION = "T";
     protected static final String VOICE_POSITION = "V";

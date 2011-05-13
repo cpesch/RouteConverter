@@ -42,16 +42,16 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR_CHAR + "]*)" + SPACE_OR_ZERO +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
 
     public String getName() {
@@ -85,7 +85,7 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         String heading = lineMatcher.group(11);
 
         String comment = removeZeros(lineMatcher.group(12));
-        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
+        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR);
         if (commentSeparatorIndex != -1)
             comment = comment.substring(commentSeparatorIndex + 1);
         comment = Transfer.trim(comment);
@@ -112,15 +112,16 @@ public class ColumbusV900StandardFormat extends ColumbusV900Format {
         String height = fillWithZeros(position.getElevation() != null ? Transfer.formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? Transfer.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
         String heading = fillWithZeros(position.getHeading() != null ? Transfer.formatIntAsString(position.getHeading().intValue()) : "0", 3);
-        String comment = fillWithZeros(position.getComment() != null ? position.getComment().replaceAll(",", ";") : "", 8);
-        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
-                formatLineType(position.getComment()) + SEPARATOR_CHAR +
-                date + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
-                latitude + northOrSouth + SEPARATOR_CHAR +
-                longitude + westOrEast + SEPARATOR_CHAR +
-                height + SEPARATOR_CHAR +
-                speed + SEPARATOR_CHAR +
-                heading + SEPARATOR_CHAR +
+        String comment = fillWithZeros(Transfer.escape(position.getComment(), SEPARATOR, ';'), 8);
+
+        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
+                formatLineType(position.getComment()) + SEPARATOR +
+                date + SEPARATOR + time + SEPARATOR +
+                latitude + northOrSouth + SEPARATOR +
+                longitude + westOrEast + SEPARATOR +
+                height + SEPARATOR +
+                speed + SEPARATOR +
+                heading + SEPARATOR +
                 comment);
     }
 }

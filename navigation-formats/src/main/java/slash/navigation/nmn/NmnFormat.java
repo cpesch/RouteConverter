@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
  */
 
 public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
-    static final char SEPARATOR_CHAR = '|';
-    static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
-    static final String WILDCARD = "[.[^" + SEPARATOR_CHAR + "]]*";
+    static final char SEPARATOR = '|';
+    static final String REGEX_SEPARATOR = "\\" + SEPARATOR;
+    static final String WILDCARD = "[.[^" + SEPARATOR + "]]*";
     static final char LEFT_BRACE = '[';
     static final char RIGHT_BRACE = ']';
 
@@ -56,9 +56,5 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
         BaseNavigationPosition first = positions.get(0);
         return new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
                 first.getLatitude() + DUPLICATE_OFFSET, (Double)null, null, null, "Start:" + first.getComment());
-    }
-
-    static String escapeSeparator(String string) {
-        return string != null ? string.replaceAll(SEPARATOR, ";") : null;
     }
 }

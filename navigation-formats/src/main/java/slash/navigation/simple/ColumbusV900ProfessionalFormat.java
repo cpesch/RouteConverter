@@ -42,23 +42,23 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\s\u0000]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
 
-                    SPACE_OR_ZERO + "[^" + SEPARATOR_CHAR + "]*" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "[^" + SEPARATOR_CHAR + "]*" + SPACE_OR_ZERO + SEPARATOR_CHAR +
+                    SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "[^" + SEPARATOR + "]*" + SPACE_OR_ZERO + SEPARATOR +
 
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR_CHAR +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR_CHAR + "]*)" + SPACE_OR_ZERO +
+                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
                     END_OF_LINE);
 
     public String getName() {
@@ -95,7 +95,7 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String vdop = lineMatcher.group(14);
 
         String comment = removeZeros(lineMatcher.group(15));
-        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR_CHAR);
+        int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR);
         if (commentSeparatorIndex != -1)
             comment = comment.substring(commentSeparatorIndex + 1);
         comment = Transfer.trim(comment);
@@ -128,21 +128,21 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String pdop = fillWithZeros(position.getPdop() != null ? Transfer.formatAccuracyAsString(position.getPdop()) : "0.0", 5);
         String hdop = fillWithZeros(position.getHdop() != null ? Transfer.formatAccuracyAsString(position.getHdop()) : "0.0", 5);
         String vdop = fillWithZeros(position.getVdop() != null ? Transfer.formatAccuracyAsString(position.getVdop()) : "0.0", 5);
-        String comment = fillWithZeros(position.getComment() != null ? position.getComment().replaceAll(",", ";") : "", 8);
+        String comment = fillWithZeros(Transfer.escape(position.getComment(), SEPARATOR, ';'), 8);
 
-        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR_CHAR +
-                formatLineType(position.getComment()) + SEPARATOR_CHAR +
-                date + SEPARATOR_CHAR + time + SEPARATOR_CHAR +
-                latitude + northOrSouth + SEPARATOR_CHAR +
-                longitude + westOrEast + SEPARATOR_CHAR +
-                height + SEPARATOR_CHAR +
-                speed + SEPARATOR_CHAR +
-                heading + SEPARATOR_CHAR +
-                "3D" + SEPARATOR_CHAR +
-                "SPS" + SEPARATOR_CHAR +
-                pdop + SEPARATOR_CHAR +
-                hdop + SEPARATOR_CHAR +
-                vdop + SEPARATOR_CHAR +
+        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
+                formatLineType(position.getComment()) + SEPARATOR +
+                date + SEPARATOR + time + SEPARATOR +
+                latitude + northOrSouth + SEPARATOR +
+                longitude + westOrEast + SEPARATOR +
+                height + SEPARATOR +
+                speed + SEPARATOR +
+                heading + SEPARATOR +
+                "3D" + SEPARATOR +
+                "SPS" + SEPARATOR +
+                pdop + SEPARATOR +
+                hdop + SEPARATOR +
+                vdop + SEPARATOR +
                 comment);
     }
 }

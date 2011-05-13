@@ -96,8 +96,13 @@ public class Transfer {
     }
 
 
-    public static String filter(String string, char filter) {
-        return string != null ? string.replaceAll(String.valueOf(filter), "") : null;
+    public static String escape(String string, char escape, char replacement) {
+        String trimmed = trim(string);
+        if(trimmed != null)
+            trimmed = trimmed.replaceAll("\\" + escape, String.valueOf(replacement));
+        else
+            trimmed = "";
+        return trimmed;
     }
 
     public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {

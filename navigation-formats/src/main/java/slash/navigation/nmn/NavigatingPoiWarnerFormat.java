@@ -38,12 +38,12 @@ import java.util.regex.Pattern;
  */
 
 public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final char SEPARATOR_CHAR = ',';
+    private static final char SEPARATOR = ',';
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + "\"(.*)\"" + WHITE_SPACE +
                     END_OF_LINE);
 
@@ -83,7 +83,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
         String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
-        String comment = position.getComment();
-        writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + "\"" + comment + "\"");
+        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
+        writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
     }
 }

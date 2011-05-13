@@ -38,15 +38,15 @@ import java.util.regex.Pattern;
  */
 
 public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final char SEPARATOR_CHAR = ',';
+    private static final char SEPARATOR = ',';
 
     // special position format to avoid detection of GarminPoiDbFormat where longitude and latitude are swapped
     private static final String POSITION = "-?\\d+\\.\\d{7}";
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR + "?" +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR + "?" +
                     WHITE_SPACE + "([-\\d\\.]*)" + WHITE_SPACE +
                     END_OF_LINE);
 
@@ -83,6 +83,6 @@ public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
         String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
         String elevation = position.getElevation() != null ? Transfer.formatDoubleAsString(position.getElevation(), 1) : "0.0";
-        writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + elevation);
+        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + elevation);
     }
 }

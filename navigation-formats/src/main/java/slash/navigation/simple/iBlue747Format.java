@@ -47,26 +47,26 @@ public class iBlue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     protected static final Logger log = Logger.getLogger(iBlue747Format.class.getName());
 
     private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,";
-    private static final char SEPARATOR_CHAR = ',';
+    private static final char SEPARATOR = ',';
     private static final String SPACE = "\\s*";
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    SPACE + "(\\d+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "(\\p{Upper}+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "(\\d{4}/\\d{2}/\\d{2})" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "(\\d{2}:\\d{2}:\\d{2})" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "(.+)" + SPACE + SEPARATOR_CHAR +
+                    SPACE + "(\\d+)" + SPACE + SEPARATOR +
+                    SPACE + "(\\p{Upper}+)" + SPACE + SEPARATOR +
+                    SPACE + "(\\d{4}/\\d{2}/\\d{2})" + SPACE + SEPARATOR +
+                    SPACE + "(\\d{2}:\\d{2}:\\d{2})" + SPACE + SEPARATOR +
+                    SPACE + "(.+)" + SPACE + SEPARATOR +
 
-                    SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "([NS])" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "([WE])" + SPACE + SEPARATOR_CHAR +
+                    SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR +
+                    SPACE + "([NS])" + SPACE + SEPARATOR +
+                    SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR +
+                    SPACE + "([WE])" + SPACE + SEPARATOR +
 
-                    SPACE + "(" + POSITION + ")" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
-                    SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
-                    SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR_CHAR +
-                    SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR_CHAR + "]*" + SEPARATOR_CHAR +
+                    SPACE + "(" + POSITION + ")" + "[^" + SEPARATOR + "]*" + SEPARATOR +
+                    SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR + "]*" + SEPARATOR +
+                    SPACE + "([\\d\\.]+)" + SPACE + SEPARATOR +
+                    SPACE + "([\\d\\.]+)" + "[^" + SEPARATOR + "]*" + SEPARATOR +
                     END_OF_LINE);
 
     private static final DateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -185,13 +185,13 @@ public class iBlue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         String distance = previousPosition != null ? Transfer.formatElevationAsString(position.calculateDistance(previousPosition)) : "0.0";
         previousPosition = position;
 
-        writer.println(Integer.toString(index + 1) + SEPARATOR_CHAR + "T" + SEPARATOR_CHAR +
-                date + SEPARATOR_CHAR + time + SEPARATOR_CHAR + "SPS" + SEPARATOR_CHAR +
-                latitude + SEPARATOR_CHAR + northOrSouth + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + westOrEast + SEPARATOR_CHAR +
-                height + " M" + SEPARATOR_CHAR +
-                speed + " km/h" + SEPARATOR_CHAR +
-                heading + SEPARATOR_CHAR +
-                distance + " M" + SEPARATOR_CHAR);
+        writer.println(Integer.toString(index + 1) + SEPARATOR + "T" + SEPARATOR +
+                date + SEPARATOR + time + SEPARATOR + "SPS" + SEPARATOR +
+                latitude + SEPARATOR + northOrSouth + SEPARATOR +
+                longitude + SEPARATOR + westOrEast + SEPARATOR +
+                height + " M" + SEPARATOR +
+                speed + " km/h" + SEPARATOR +
+                heading + SEPARATOR +
+                distance + " M" + SEPARATOR);
     }
 }

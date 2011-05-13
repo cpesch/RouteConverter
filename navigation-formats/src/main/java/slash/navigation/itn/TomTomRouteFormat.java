@@ -45,11 +45,11 @@ import java.util.regex.Pattern;
 
 public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
-    private static final char SEPARATOR_CHAR = '|';
-    private static final String SEPARATOR = "\\" + SEPARATOR_CHAR;
+    private static final char SEPARATOR = '|';
+    private static final String REGEX_SEPARATOR = "\\" + SEPARATOR;
     private static final Pattern POSITION_PATTERN = Pattern.
-            compile("\\s*([+-]?\\d+)" + SEPARATOR + "([+-]?\\d+)" + SEPARATOR +
-                    "(.*)" + SEPARATOR + "\\d" + SEPARATOR + "?\\s*");
+            compile("\\s*([+-]?\\d+)" + REGEX_SEPARATOR + "([+-]?\\d+)" + REGEX_SEPARATOR +
+                    "(.*)" + REGEX_SEPARATOR + "\\d" + REGEX_SEPARATOR + "?\\s*");
     private static final Pattern NAME_PATTERN = Pattern.
             compile("^\"([^\"]*)\"$");
 
@@ -198,6 +198,13 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         return buffer.toString();
     }
     
+    private String formatComment(String comment) {
+        comment = Transfer.escape(comment, SEPARATOR, ';');
+        if (comment != null)
+            comment = comment.replaceAll("\u20ac", "\u0080");
+        return comment;
+    }
+
     public void write(TomTomRoute route, PrintWriter writer, int startIndex, int endIndex) {
         List<TomTomPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
@@ -223,9 +230,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 else
                     comment = formatIntermediateName(position, distance);
             }
-            if (comment != null)
-                comment = comment.replaceAll(SEPARATOR, ";").replaceAll("\u20ac", "\u0080");
-            writer.println(longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + comment + SEPARATOR_CHAR + type + SEPARATOR_CHAR);
+            comment = formatComment(comment);
+            writer.println(longitude + SEPARATOR + latitude + SEPARATOR + comment + SEPARATOR + type + SEPARATOR);
         }
     }
 }

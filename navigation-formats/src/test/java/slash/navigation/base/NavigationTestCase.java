@@ -550,6 +550,13 @@ public abstract class NavigationTestCase extends TestCase {
 
     }
 
+    private static String getNavigatingPoiWarnerComment(BaseNavigationPosition position) {
+        String comment = position.getComment();
+        if (comment == null)
+            return null;
+        return comment.replaceAll(",", ";");
+    }
+
 
     private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, boolean commentPositionNames, RouteCharacteristics targetCharacteristics) {
         // Test only if a position has not been commented by us
@@ -626,6 +633,14 @@ public abstract class NavigationTestCase extends TestCase {
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format) {
                 String sourceName = getGarminMapSource6PositionComment(sourcePosition);
                 String targetName = getGarminMapSource6PositionComment(targetPosition);
+                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+            } else if (sourceFormat instanceof NavigatingPoiWarnerFormat || targetFormat instanceof NavigatingPoiWarnerFormat) {
+                String sourceName = getNavigatingPoiWarnerComment(sourcePosition);
+                String targetName = getNavigatingPoiWarnerComment(targetPosition);
+                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+            } else if (targetFormat instanceof GlopusFormat) {
+                String sourceName = getNavigatingPoiWarnerComment(sourcePosition);
+                String targetName = getNavigatingPoiWarnerComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
             } else if (sourceFormat instanceof TourExchangeFormat) {
                 String sourceName = getTourExchangePositionComment(sourcePosition);

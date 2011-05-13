@@ -40,19 +40,19 @@ import java.util.regex.Pattern;
  */
 
 public class Nmn6FavoritesFormat extends NmnFormat {
-    private static final String WILDCARD = "[.[^" + SEPARATOR_CHAR + "\\p{Lower}]]*";
+    private static final String WILDCARD = "[.[^" + SEPARATOR + "\\p{Lower}]]*";
 
     private static final Pattern POSITION_PATTERN = Pattern.
-                    compile("\\" + LEFT_BRACE + "(" + WILDCARD + ")" + SEPARATOR + WILDCARD + SEPARATOR + "?\\" + RIGHT_BRACE +
+                    compile("\\" + LEFT_BRACE + "(" + WILDCARD + ")" + REGEX_SEPARATOR + WILDCARD + REGEX_SEPARATOR + "?\\" + RIGHT_BRACE +
                     "\\" + LEFT_BRACE + "\\d+\\" + RIGHT_BRACE +
                     "\\" + LEFT_BRACE + "\\d+\\" + RIGHT_BRACE +
-                    SEPARATOR + WILDCARD +
-                    SEPARATOR + WILDCARD +
-                    SEPARATOR + "(" + POSITION + ")" + SEPARATOR + "(" + POSITION + ")" +
+                            REGEX_SEPARATOR + WILDCARD +
+                            REGEX_SEPARATOR + WILDCARD +
+                            REGEX_SEPARATOR + "(" + POSITION + ")" + REGEX_SEPARATOR + "(" + POSITION + ")" +
                     "\\" + LEFT_BRACE + "?\\d*\\" + RIGHT_BRACE + "?" +
-                    SEPARATOR + "(" + WILDCARD + ")" +
+                            REGEX_SEPARATOR + "(" + WILDCARD + ")" +
                     "(.*)" +
-                    SEPARATOR + SEPARATOR + "4");
+                            REGEX_SEPARATOR + REGEX_SEPARATOR + "4");
 
     public String getName() {
         return "Navigon Mobile Navigator 6 Favorites (*" + getExtension() + ")";
@@ -80,25 +80,25 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), (Double) null, null, null, Transfer.trim(comment));
     }
 
-    private static String formatForNmnFavorites(String string) {
-        return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + SEPARATOR + "|\\" + RIGHT_BRACE + "]", "").toUpperCase() : "";
+    private static String formatComment(String string) {
+        return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + REGEX_SEPARATOR + "|\\" + RIGHT_BRACE + "]", "").toUpperCase() : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String longitude = Transfer.formatPositionAsString(position.getLongitude());
         String latitude = Transfer.formatPositionAsString(position.getLatitude());
-        String comment = formatForNmnFavorites(position.getComment());
-        writer.println(LEFT_BRACE + comment + SEPARATOR_CHAR + RIGHT_BRACE +
+        String comment = formatComment(position.getComment());
+        writer.println(LEFT_BRACE + comment + SEPARATOR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +
-                SEPARATOR_CHAR + SEPARATOR_CHAR + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR + SEPARATOR_CHAR + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                comment + SEPARATOR_CHAR + SEPARATOR_CHAR +
-                comment + SEPARATOR_CHAR + SEPARATOR_CHAR +
-                longitude + SEPARATOR_CHAR + latitude + SEPARATOR_CHAR +
-                comment + SEPARATOR_CHAR + SEPARATOR_CHAR +
-                SEPARATOR_CHAR + SEPARATOR_CHAR +
-                SEPARATOR_CHAR + SEPARATOR_CHAR + SEPARATOR_CHAR + "4"
+                SEPARATOR + SEPARATOR + SEPARATOR +
+                longitude + SEPARATOR + latitude + SEPARATOR + SEPARATOR + SEPARATOR +
+                longitude + SEPARATOR + latitude + SEPARATOR +
+                comment + SEPARATOR + SEPARATOR +
+                comment + SEPARATOR + SEPARATOR +
+                longitude + SEPARATOR + latitude + SEPARATOR +
+                comment + SEPARATOR + SEPARATOR +
+                SEPARATOR + SEPARATOR +
+                SEPARATOR + SEPARATOR + SEPARATOR + "4"
         );
     }
 }

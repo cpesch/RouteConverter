@@ -39,18 +39,18 @@ import java.util.regex.Pattern;
  */
 
 public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final char SEPARATOR_CHAR = ';';
+    private static final char SEPARATOR = ';';
     private static final String FIRST_HEADER_LINE = "GPS Tracklog - ";
     private static final String SECOND_HEADER_LINE = "Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)";
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(\\d+)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE +
                     END_OF_LINE);
 
@@ -123,7 +123,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = Transfer.formatSpeedAsString(position.getSpeed());
         String time = formatTime(position.getTime());
         String heading = position.getHeading() != null ? Transfer.formatIntAsString(position.getHeading().intValue()) : "0";
-        writer.println(latitude + SEPARATOR_CHAR + longitude + SEPARATOR_CHAR + altitude + SEPARATOR_CHAR +
-                speed + SEPARATOR_CHAR + time + SEPARATOR_CHAR + (firstPosition ? "1" : "0") + SEPARATOR_CHAR + heading);
+        writer.println(latitude + SEPARATOR + longitude + SEPARATOR + altitude + SEPARATOR +
+                speed + SEPARATOR + time + SEPARATOR + (firstPosition ? "1" : "0") + SEPARATOR + heading);
     }
 }

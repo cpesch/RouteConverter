@@ -47,7 +47,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(BaseNmeaFormat.class);
     protected static Logger log = Logger.getLogger(BaseNmeaFormat.class.getName());
 
-    static final String SEPARATOR = ",";
+    static final char SEPARATOR = ',';
     static final String BEGIN_OF_LINE = "^\\$GP";
     static final String END_OF_LINE = "\\*[0-9A-Fa-f][0-9A-Fa-f]$";
 
@@ -275,13 +275,6 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         if (latitude == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(latitude);
-    }
-
-    protected String formatComment(String comment) {
-        comment = Transfer.trim(comment);
-        if (comment == null)
-            return "";
-        return comment.replaceAll(",", ";");
     }
 
     protected void writeSentence(PrintWriter writer, String sentence) {

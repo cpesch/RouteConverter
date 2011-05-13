@@ -179,7 +179,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String westOrEast = position.getWestOrEast();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
-        String comment = formatComment(position.getComment());
+        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
         String altitude = Transfer.formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
 
         String wpl = "PMGNWPL" + SEPARATOR +
@@ -189,12 +189,12 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
     }
 
     private void writeRte(NmeaPosition start, NmeaPosition end, PrintWriter writer, int count, int index, String routeName) {
-        String startName = formatComment(start.getComment());
+        String startName = Transfer.escape(start.getComment(), SEPARATOR, ';');
 
         String rte = "PMGNRTE" + SEPARATOR + count + SEPARATOR + (index + 1) + SEPARATOR +
                 "c" + SEPARATOR + "01" + SEPARATOR + routeName + SEPARATOR + startName + SEPARATOR + "a";
         if (end != null) {
-            String endName = formatComment(end.getComment());
+            String endName = Transfer.escape(end.getComment(), SEPARATOR, ';');
             rte += SEPARATOR + endName + SEPARATOR + "a";
         }
         writeSentence(writer, rte);

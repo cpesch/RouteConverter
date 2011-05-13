@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  */
 
 public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final char SEPARATOR_CHAR = ';';
+    private static final char SEPARATOR = ';';
     private static final String HEADER_LINE = "Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos";
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -52,16 +52,16 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(\\d*)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR_CHAR +
-                    WHITE_SPACE + "(\\d+:\\d+)" + WHITE_SPACE + SEPARATOR_CHAR +
+                    WHITE_SPACE + "\\d+" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(\\d*)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(.*)" + WHITE_SPACE + SEPARATOR +
+                    WHITE_SPACE + "(\\d+:\\d+)" + WHITE_SPACE + SEPARATOR +
                     ".*" +
                     END_OF_LINE);
 
