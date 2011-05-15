@@ -37,7 +37,7 @@ public class ElevationTile {
     }
 
     /**
-     * Calculate the elevation for the destination position) according the
+     * Calculate the elevation for the destination position according the
      * theorem on intersecting lines (Strahlensatz).
      *
      * @param dHeight12 the delta height/elevation of two sub tile positions
@@ -70,15 +70,15 @@ public class ElevationTile {
             dLat = ((double) nLat + dLat) + (double) nLat;     // Make positive double latitude (needed for later calculation)
         }
 
-        int nLonIndex = (int) ((dLon - (double) nLon) * 1200.0); // Calculate the interval index for longitude
-        int nLatIndex = (int) ((dLat - (double) nLat) * 1200.0); // Calculate the interval index for latitude
+        int nLonIndex = (int) ((dLon - (double) nLon) * nAS);  // Calculate the interval index for longitude
+        int nLatIndex = (int) ((dLat - (double) nLat) * nAS);  // Calculate the interval index for latitude
 
-        if (nLonIndex >= 1200) {
-            nLonIndex = 1200 - 1;
+        if (nLonIndex >= nAS) {
+            nLonIndex = nAS - 1;
         }
 
-        if (nLatIndex >= 1200) {
-            nLatIndex = 1200 - 1;
+        if (nLatIndex >= nAS) {
+            nLatIndex = nAS - 1;
         }
 
         double dOffLon = dLon - (double) nLon;                      // The lon value offset within a tile
