@@ -20,11 +20,15 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
-public class Nmn5FormatTest extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
+
+public class Nmn5FormatTest {
     Nmn5Format format = new Nmn5Format();
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("-|-|17|4353|72574|BAD URACH|72574|SHELL|-|-|-|9.38107|48.49711|617|-|9.39698|48.49193|"));
         assertTrue(format.isPosition("-|-|-|-|-|STATION1|-|-|-|-|-|10.031982|53.569403|-|-|-|-|"));
@@ -34,24 +38,27 @@ public class Nmn5FormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("Col d Izoard,2361,12|-|-|05100|Cervières|05100|D902|-|-|-|6.73139|44.82497|-|"));
     }
 
+    @Test
     public void testParsePosition() {
         NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|9.60476|48.47282|-|-|9.68246|48.48852|", null);
-        assertEquals(9.60476, position.getLongitude());
-        assertEquals(48.47282, position.getLatitude());
+        assertDoubleEquals(9.60476, position.getLongitude());
+        assertDoubleEquals(48.47282, position.getLatitude());
         assertEquals("Laichingen", position.getComment());
     }
 
+    @Test
     public void testParseNegativePosition() {
         NmnPosition position = format.parsePosition("-|-|17|4353|89150|LAICHINGEN|-|-|-|-|-|-9.60476|-48.47282|-|-|9.68246|48.48852|", null);
-        assertEquals(-9.60476, position.getLongitude());
-        assertEquals(-48.47282, position.getLatitude());
+        assertDoubleEquals(-9.60476, position.getLongitude());
+        assertDoubleEquals(-48.47282, position.getLatitude());
         assertEquals("Laichingen", position.getComment());
     }
 
+    @Test
     public void testParsePositionWithStreet() {
         NmnPosition position = format.parsePosition("-|-|17|4353|89601|SCHELKLINGEN|89601|Marktstrasse|20|-|-|9.73374|48.37512|-|-|9.73416|48.37679|", null);
-        assertEquals(9.73374, position.getLongitude());
-        assertEquals(48.37512, position.getLatitude());
+        assertDoubleEquals(9.73374, position.getLongitude());
+        assertDoubleEquals(48.37512, position.getLatitude());
         assertEquals("Schelklingen, Marktstrasse 20", position.getComment());
         assertNull(position.getZip());
         assertEquals("Schelklingen", position.getCity());
@@ -59,10 +66,11 @@ public class Nmn5FormatTest extends NavigationTestCase {
         assertEquals("20", position.getNumber());
     }
 
+    @Test
     public void testSetComment() {
         NmnPosition position = format.parsePosition("-|-|17|4353|89601|-|89601|-|-|-|-|9.73374|48.37512|-|-|9.73416|48.37679|", null);
-        assertEquals(9.73374, position.getLongitude());
-        assertEquals(48.37512, position.getLatitude());
+        assertDoubleEquals(9.73374, position.getLongitude());
+        assertDoubleEquals(48.37512, position.getLatitude());
         assertNull(position.getZip());
         assertNull(position.getCity());
         assertNull(position.getStreet());

@@ -20,15 +20,20 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class Kml21FormatTest extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static slash.common.TestCase.assertDoubleEquals;
+
+public class Kml21FormatTest {
     Kml21Format format = new Kml21Format();
 
+    @Test
     public void testPointCoordinates() throws IOException {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
@@ -41,12 +46,13 @@ public class Kml21FormatTest extends NavigationTestCase {
         KmlRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         KmlPosition position = route.getPositions().get(0);
-        assertEquals(151.2393322528181, position.getLongitude());
-        assertEquals(-33.59862693992532, position.getLatitude());
+        assertDoubleEquals(151.2393322528181, position.getLongitude());
+        assertDoubleEquals(-33.59862693992532, position.getLatitude());
         assertNull(position.getSpeed());
-        assertEquals(0.0, position.getElevation());
+        assertDoubleEquals(0.0, position.getElevation());
     }
 
+    @Test
     public void testLineStringCoordinates() throws IOException {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
@@ -61,9 +67,9 @@ public class Kml21FormatTest extends NavigationTestCase {
         KmlRoute route = routes.get(0);
         assertEquals(3, route.getPositionCount());
         KmlPosition position = route.getPositions().get(1);
-        assertEquals(151.2274390264927, position.getLongitude());
-        assertEquals(-33.59631160091919, position.getLatitude());
+        assertDoubleEquals(151.2274390264927, position.getLongitude());
+        assertDoubleEquals(-33.59631160091919, position.getLatitude());
         assertNull(position.getSpeed());
-        assertEquals(0.0, position.getElevation());
+        assertDoubleEquals(0.0, position.getElevation());
     }
 }

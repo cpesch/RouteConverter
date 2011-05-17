@@ -20,15 +20,20 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.List;
 
-public class KmlFormatIT extends NavigationTestCase {
+import static org.junit.Assert.*;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
+public class KmlFormatIT {
+
+    @Test
     public void testReader() throws FileNotFoundException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
         Kml kml = (Kml) KmlUtil.newUnmarshaller20().unmarshal(reader);
@@ -37,6 +42,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
+    @Test
     public void testInputStream() throws FileNotFoundException, JAXBException {
         InputStream in = new FileInputStream(TEST_PATH + "from20.kml");
         Kml kml = (Kml) KmlUtil.newUnmarshaller20().unmarshal(in);
@@ -45,6 +51,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
+    @Test
     public void testUnmarshal20() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
         Kml kml = KmlUtil.unmarshal20(reader);
@@ -53,6 +60,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
+    @Test
     public void testUnmarshal20TypeError() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
         try {
@@ -62,12 +70,14 @@ public class KmlFormatIT extends NavigationTestCase {
         }
     }
 
+    @Test
     public void testUnmarshal21() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from21.kml");
         slash.navigation.kml.binding21.KmlType kml = KmlUtil.unmarshal21(reader);
         assertNotNull(kml);
     }
 
+    @Test
     public void testUnmarshal21TypeError() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from21.kml");
         try {
@@ -77,30 +87,35 @@ public class KmlFormatIT extends NavigationTestCase {
         }
     }
 
+    @Test
     public void testUnmarshal22Beta() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from22beta.kml");
         slash.navigation.kml.binding22beta.KmlType kml = KmlUtil.unmarshal22Beta(reader);
         assertNotNull(kml);
     }
 
+    @Test
     public void testUnmarshal22() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from22.kml");
         slash.navigation.kml.binding22.KmlType kml = KmlUtil.unmarshal22(reader);
         assertNotNull(kml);
     }
 
+    @Test
     public void testKmlVsKmz20() throws IOException {
         List<KmlRoute> kmlRoute = new Kml20Format().read(new FileInputStream(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kml")));
         List<KmlRoute> kmzRoute = new Kmz20Format().read(new FileInputStream(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course.kmz")));
         assertEquals(kmlRoute, kmzRoute);
     }
 
+    @Test
     public void testKmlVsKmz21() throws IOException {
         List<KmlRoute> kmlRoute = new Kml21Format().read(new FileInputStream(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kml")));
         List<KmlRoute> kmzRoute = new Kmz21Format().read(new FileInputStream(new File(SAMPLE_PATH + "magnalox ID13885_Hiroshima Race Course by Google Earth.kmz")));
         assertEquals(kmlRoute, kmzRoute);
     }
 
+    @Test
     public void testNetworkLink20() throws IOException {
         List<KmlRoute> routes = new Kml20Format().read(new FileInputStream(new File(SAMPLE_PATH + "www.gps-tour.info20.kml")));
         assertNotNull(routes);
@@ -112,6 +127,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(2658, routes.get(4).getPositionCount());
     }
 
+    @Test
     public void testItnConvKml() throws IOException {
         List<KmlRoute> routes = new BrokenKml21Format().read(new FileInputStream(new File(SAMPLE_PATH + "bcr_with_itnconv.kml")));
         assertNotNull(routes);
@@ -123,6 +139,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(46, routes.get(1).getPositionCount());
     }
 
+    @Test
     public void testNetworkLink21() throws IOException {
         List<KmlRoute> routes = new Kml21Format().read(new FileInputStream(new File(SAMPLE_PATH + "www.gps-tour.info21.kml")));
         assertEquals(6, routes.size());
@@ -133,6 +150,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(2658, routes.get(4).getPositionCount());
     }
 
+    @Test
     public void testOnlyPlacemark() throws IOException {
         List<KmlRoute> routes = new Kml22BetaFormat().read(new FileInputStream(new File(SAMPLE_PATH + "Home to Corfe Castle.kml")));
         assertNotNull(routes);
@@ -141,6 +159,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(1, route.getPositionCount());
     }
 
+    @Test
     public void testNoKmlRoot20() throws IOException {
         List<KmlRoute> routes = new Kml20Format().read(new FileInputStream(new File(SAMPLE_PATH + "MIK-Tour - Nuerburgring 7.10.2007.kml")));
         assertNotNull(routes);
@@ -149,6 +168,7 @@ public class KmlFormatIT extends NavigationTestCase {
         assertEquals(1297, route.getPositionCount());
     }
 
+    @Test
     public void testGxTrackExtension22() throws IOException {
         List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(TEST_PATH + "from22gx.kml")));
         assertNotNull(routes);
