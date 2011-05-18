@@ -37,8 +37,9 @@ public class Constants {
 
     // for language support which is not defined by a constant in Locale
     public static final Locale ARABIA = new Locale("ar", "SA");
-    public static final Locale NEDERLANDS = new Locale("nl", "NL");
+    public static final Locale CZECH = new Locale("cs", "CZ");
     public static final Locale CROATIA = new Locale("hr", "HR");
+    public static final Locale NEDERLANDS = new Locale("nl", "NL");
     public static final Locale SERBIA = new Locale("sr", "SR");
     public static final Locale SLOVAKIA = new Locale("sk", "SK");
     public static final Locale SPAIN = new Locale("es", "ES");

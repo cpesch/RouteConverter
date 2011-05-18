@@ -28,8 +28,9 @@ import java.util.*;
 import static org.junit.Assert.assertTrue;
 
 public class ResourceBundleTest {
-    private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Locale.FRANCE,
-            Locale.GERMANY, Constants.NEDERLANDS, Constants.SERBIA, Constants.SLOVAKIA, Constants.SPAIN, Locale.US);
+    private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Constants.CZECH,
+            Locale.FRANCE, Locale.GERMANY, Constants.NEDERLANDS, Constants.SERBIA, Constants.SLOVAKIA, Constants.SPAIN,
+            Locale.US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return Arrays.asList(new Locale(locale.getLanguage()));
