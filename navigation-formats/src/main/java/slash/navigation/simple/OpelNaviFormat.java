@@ -124,9 +124,9 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String extra = strings.length > 1 ? formatComment(strings[1], 60) : "";
         String phone = strings.length > 2 ? formatComment(strings[2], 30) : "";
 
-        writer.println(longitude + SEPARATOR + latitude + SEPARATOR +
-                QUOTE + comment + QUOTE + SEPARATOR +
-                QUOTE + extra + QUOTE + SEPARATOR +
+        writer.println(longitude + SEPARATOR + " " + latitude + SEPARATOR + " " +
+                QUOTE + comment + QUOTE + SEPARATOR + " " +
+                QUOTE + extra + QUOTE + SEPARATOR + " " +
                 QUOTE + phone + QUOTE);
     }
 }
