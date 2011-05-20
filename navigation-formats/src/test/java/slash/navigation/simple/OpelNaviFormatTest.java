@@ -27,16 +27,11 @@ public class OpelNaviFormatTest extends NavigationTestCase {
     OpelNaviFormat format = new OpelNaviFormat();
 
     public void testIsValidLine() {
-        assertTrue(format.isValidLine("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\""));
-        assertTrue(format.isValidLine(" 8.402824 , 49.986889 , \"Tor 45\" , \"Opel, Rüsselsheim\" , \"+49-6142-77-0\" "));
-        assertTrue(format.isValidLine("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"\""));
-        assertTrue(format.isValidLine("8.402824,49.986889,\"Tor 45\",\"\",\"\""));
-        // assertTrue(format.isValidLine("0.51260,51.296028,\"Village Hotel\",\"Sandling, Maidstone, Forstal Rd\""));
-    }
-
-    public void testIsPosition() {
         assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\""));
-        // assertTrue(format.isPosition("0.51260,51.296028,\"Village Hotel\",\"Sandling, Maidstone, Forstal Rd\""));
+        assertTrue(format.isPosition(" 8.402824 , 49.986889 , \"Tor 45\" , \"Opel, Rüsselsheim\" , \"+49-6142-77-0\" "));
+        assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"\""));
+        assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"\",\"\""));
+        assertTrue(format.isPosition("\ufeff8.402824,49.986889,\"Tor 45\",\"\",\"\""));
     }
 
     public void testParsePosition() {

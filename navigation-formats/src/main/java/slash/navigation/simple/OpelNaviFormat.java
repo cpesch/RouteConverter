@@ -48,7 +48,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final char QUOTE = '"';
 
     private static final Pattern LINE_PATTERN = Pattern.
-            compile(BEGIN_OF_LINE +
+            compile(BEGIN_OF_LINE + BYTE_ORDER_MARK + "?" +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + "(" + POSITION + ")" + WHITE_SPACE + SEPARATOR +
                     WHITE_SPACE + QUOTE + "([^" + QUOTE + "]*)" + QUOTE + WHITE_SPACE + SEPARATOR +
@@ -75,13 +75,6 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
-    }
-
-    protected boolean isValidLine(String line) {
-        if (line == null)
-            return false;
-        Matcher matcher = LINE_PATTERN.matcher(line);
-        return matcher.matches();
     }
 
     protected boolean isPosition(String line) {
