@@ -144,7 +144,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void startup() {
-        log.info("Started " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
+        log.info("Started " + getTitle() + " with locale " + Locale.getDefault() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
         show();
         checkJreVersion();
         new Updater().implicitCheck(frame);
@@ -273,7 +273,7 @@ public class RouteConverter extends SingleFrameApplication {
                 if (location < 1)
                     location = 300;
                 mapSplitPane.setDividerLocation(location);
-                log.info("Initialized map divider to " + location);
+                log.fine("Initialized map divider to " + location);
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
 
                 ActionManager actionManager = Application.getInstance().getContext().getActionManager();
@@ -295,7 +295,7 @@ public class RouteConverter extends SingleFrameApplication {
                 if (location < 2)
                     location = 888;
                 elevationSplitPane.setDividerLocation(location);
-                log.info("Initialized elevation divider to " + location);
+                log.fine("Initialized elevation divider to " + location);
                 elevationSplitPane.addPropertyChangeListener(new ElevationSplitPaneListener(location));
             }
         });
@@ -309,7 +309,7 @@ public class RouteConverter extends SingleFrameApplication {
             positionAugmenter.close();
         super.shutdown();
 
-        log.info("Shutdown " + getTitle() + " on " + Platform.getPlatform() + " with " + Platform.getJvm());
+        log.info("Shutdown " + getTitle() + " with locale " + Locale.getDefault() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
     }
 
     // Preferences handling
@@ -820,7 +820,7 @@ public class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     mapView.resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.info("Changed map divider to " + mapSplitPane.getDividerLocation());
+                    log.fine("Changed map divider to " + mapSplitPane.getDividerLocation());
 
                     ActionManager actionManager = Application.getInstance().getContext().getActionManager();
                     actionManager.enable("maximize-map", location < mapSplitPane.getMaximumDividerLocation() - 10);

@@ -93,11 +93,10 @@ public abstract class SingleFrameApplication extends Application {
         frame.setLocationRelativeTo(null);
 
         Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
-        log.info("Screen size is " + bounds);
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
-        log.info("Insets are " + insets);
-        int state = preferences.getInt(STATE_PREFERENCE, Frame.NORMAL);
+        log.info("Screen size is " + bounds + ", insets are " + insets);
 
+        int state = preferences.getInt(STATE_PREFERENCE, Frame.NORMAL);
         int width = crop("width", getPreferenceWidth(),
                 (int) bounds.getX() - (insets.left + insets.right),
                 (int) bounds.getWidth() - (insets.left + insets.right));
@@ -144,7 +143,7 @@ public abstract class SingleFrameApplication extends Application {
     static int crop(String name, int position, int minimum, int maximum) {
         int result = position < minimum ? (position == -1 ? -1 : minimum) :
                 position > maximum ? (position == -1 ? -1 : maximum) : position;
-        log.info("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);
+        log.fine("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);
         return result;
     }
 
