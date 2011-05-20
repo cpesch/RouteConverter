@@ -74,7 +74,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     protected abstract String getHeader();
 
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line != null && line.startsWith(getHeader());
+        return isPosition(line) || line.startsWith(getHeader());
     }
 
     protected abstract Pattern getPattern();

@@ -73,7 +73,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line != null && (line.startsWith(FIRST_HEADER_LINE) || line.startsWith(SECOND_HEADER_LINE));
+        return isPosition(line) || line.startsWith(FIRST_HEADER_LINE) || line.startsWith(SECOND_HEADER_LINE);
     }
 
     protected boolean isPosition(String line) {

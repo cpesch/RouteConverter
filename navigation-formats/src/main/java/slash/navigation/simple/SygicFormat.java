@@ -55,7 +55,7 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line != null && (line.length() == 0 || line.startsWith(COMMENT_LINE));
+        return isPosition(line) || line.length() == 0 || line.startsWith(COMMENT_LINE);
     }
 
     protected boolean isPosition(String line) {

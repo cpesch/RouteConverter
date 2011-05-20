@@ -97,8 +97,6 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        if(line == null)
-            return false;
         if(line.startsWith(HEADER_LINE))
             return true;
         Matcher matcher = LINE_PATTERN.matcher(line);

@@ -61,7 +61,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
     }
 
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line != null && line.trim().startsWith(";");
+        return isPosition(line) || line.trim().startsWith(";");
     }
 
     protected boolean isPosition(String line) {

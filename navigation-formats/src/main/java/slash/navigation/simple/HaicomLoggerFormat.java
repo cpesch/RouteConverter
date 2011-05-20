@@ -106,7 +106,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line != null && line.startsWith(HEADER_LINE);
+        return isPosition(line) || line.startsWith(HEADER_LINE);
     }
 
     protected boolean isPosition(String line) {

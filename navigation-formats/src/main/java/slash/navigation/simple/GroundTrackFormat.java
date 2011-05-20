@@ -82,13 +82,6 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return RouteCharacteristics.Track;
     }
 
-    protected boolean isValidLine(String line) {
-        if (line == null)
-            return false;
-        Matcher matcher = LINE_PATTERN.matcher(line);
-        return matcher.matches();
-    }
-
     protected boolean isPosition(String line) {
         Matcher matcher = LINE_PATTERN.matcher(line);
         return matcher.matches();
