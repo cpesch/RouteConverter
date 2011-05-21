@@ -20,6 +20,9 @@
 
 package slash.navigation.converter.gui.services;
 
+import slash.common.io.Files;
+
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -42,10 +45,23 @@ public class RouteCatalog implements RouteService {
 
     public void upload(String username, String password, String fileUrl, String name, String description) throws IOException {
         routeCatalog.setAuthentication(username, password);
-        String categoryUrl = "unknown-category", routeUrl = "unknown-route"; // TODO fix me
-        if (isOriginOf(fileUrl))
+
+        String categoryUrl = "http://www.routeconverter.com/catalog/categories/_Upload/"; // TODO let the user decide
+
+        // if this is a local file: upload it to the RouteCatalog
+        File file = Files.toFile(fileUrl);
+        if (file != null) {
+            fileUrl = routeCatalog.addFile(file);
             routeCatalog.addRoute(categoryUrl, description, fileUrl);
-        else
+
+            // already part of RouteCatalog?
+        } else if (isOriginOf(fileUrl)) {
+            String routeUrl = "http://www.routeconverter.com/catalog/routes/9999999999.gpx/"; // TODO extract from file url
             routeCatalog.updateRoute(categoryUrl, routeUrl, description, fileUrl);
+
+            // URL to external route
+        } else {
+            routeCatalog.addRoute(categoryUrl, description, fileUrl);
+        }
     }
 }

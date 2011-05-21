@@ -244,7 +244,7 @@ public class RouteCatalog {
         return request;
     }
 
-    String addFile(File file) throws IOException {
+    public String addFile(File file) throws IOException {
         Post request = prepareAddFile(file);
         String result = request.execute();
         if (request.isUnAuthorized())
@@ -281,6 +281,7 @@ public class RouteCatalog {
     private Post prepareAddRoute(String categoryUrl, String description, String fileUrl) throws IOException {
         log.fine(System.currentTimeMillis() + " adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
+        System.out.print(xml);
         Post request = new Post(getRoutesUrl());
         request.setAuthentication(userName, password);
         request.addFile("file", Files.writeToTempFile(xml));
