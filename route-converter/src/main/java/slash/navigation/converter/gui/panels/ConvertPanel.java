@@ -31,7 +31,6 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
-import slash.navigation.converter.gui.dialogs.UploadDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
@@ -213,10 +212,10 @@ public class ConvertPanel {
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
-            public void run() {
-                actionManager.run("delete");
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                    public void run() {
+                        actionManager.run("delete");
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(DropMode.ON);
         tablePositions.setTransferHandler(new TableDragAndDropHandler());
@@ -247,7 +246,6 @@ public class ConvertPanel {
         actionManager.register("save", new SaveAction(this));
         actionManager.register("save-as", new SaveAsAction(this));
         actionManager.register("select-all", new SelectAllAction(getPositionsView()));
-        actionManager.register("upload", new UploadAction(this));
         actionManager.register("new-positionlist", new NewPositionListAction(getFormatAndRoutesModel()));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
@@ -323,7 +321,7 @@ public class ConvertPanel {
 
         // make copy which we could modify freely
         List<URL> copy = new ArrayList<URL>(urls);
-        for (Iterator<URL> it = copy.iterator(); it.hasNext();) {
+        for (Iterator<URL> it = copy.iterator(); it.hasNext(); ) {
             URL url = it.next();
             File file = Files.toFile(url);
             if (file != null && (!file.exists() || !file.isFile())) {
@@ -655,14 +653,6 @@ public class ConvertPanel {
         if (fileFilter instanceof NavigationFormatFileFilter)
             result = ((NavigationFormatFileFilter) fileFilter).getFormat();
         return result;
-    }
-
-    public void saveToWeb() {
-        UploadDialog uploadDialog = new UploadDialog(formatAndRoutesModel, urlModel.getString());
-        uploadDialog.pack();
-        uploadDialog.restoreLocation();
-        uploadDialog.setVisible(true);
-        formatAndRoutesModel.setModified(false);
     }
 
     // helpers for actions

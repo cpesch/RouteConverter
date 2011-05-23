@@ -38,7 +38,6 @@ public class FrameMenu {
         fileMenu.add(JMenuHelper.createMenu("reopen"));
         fileMenu.add(JMenuHelper.createItem("save"));
         fileMenu.add(JMenuHelper.createItem("save-as"));
-        fileMenu.add(JMenuHelper.createItem("upload"));
         JMenu printMenu = JMenuHelper.createMenu("print");
         printMenu.add(JMenuHelper.createItem("print-map"));
         printMenu.add(JMenuHelper.createItem("print-map-and-route"));
