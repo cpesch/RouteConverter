@@ -293,6 +293,11 @@
                    callJava("zoomend/" + oldLevel + "/" + newLevel);
                });
 
+               GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
+                   if (event.shiftKey && event.ctrlKey)
+                       callJava("insert-position/" + latlng.lat() + "/" + latlng.lng());
+               });
+
                try {
                    var xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
                }
