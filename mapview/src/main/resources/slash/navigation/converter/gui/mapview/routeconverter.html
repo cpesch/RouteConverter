@@ -265,9 +265,9 @@
                tilelayers_cyc[0].getOpacity = function () {
                    return 1.0;
                };
-               mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data" });
-               tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data" });
-               cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data" });
+               mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data", errorMessage: "We're sorry but the Mapnik server cannnot serve the map for this request. Try to zoom out." });
+               tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data", errorMessage: "We're sorry but the T@H server cannnot serve the map for this request. Try to zoom out." });
+               cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Cycle server cannnot serve the map for this request. Try to zoom out." });
                addDebug("4. added OSM tile layers");
 
                var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap], draggableCursor: 'default', draggingCursor: 'pointer' });
