@@ -212,10 +212,10 @@ public class ConvertPanel {
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
-                    public void run() {
-                        actionManager.run("delete");
-                    }
-                }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+            public void run() {
+                actionManager.run("delete");
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(DropMode.ON);
         tablePositions.setTransferHandler(new TableDragAndDropHandler());
@@ -321,7 +321,7 @@ public class ConvertPanel {
 
         // make copy which we could modify freely
         List<URL> copy = new ArrayList<URL>(urls);
-        for (Iterator<URL> it = copy.iterator(); it.hasNext(); ) {
+        for (Iterator<URL> it = copy.iterator(); it.hasNext();) {
             URL url = it.next();
             File file = Files.toFile(url);
             if (file != null && (!file.exists() || !file.isFile())) {
