@@ -193,6 +193,10 @@
                map.removeOverlay(direction.getPolyline());
        }
        displayedDirections = new Array();
+       var element = document.getElementById("directions");
+       while (element.hasChildNodes()) {
+           element.removeChild(element.lastChild);
+       }
    }
 
    var oldOverlays = new Array();
