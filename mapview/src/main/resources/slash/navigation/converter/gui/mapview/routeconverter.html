@@ -18,22 +18,6 @@
 <div id="map"></div>
 <div id="directions"></div>
 <script type="text/javascript">
-   function getTileUrlOutdoorActiveDeutschland(a, b) {
-       return "http://t3.outdooractive.com/portal/map/" + b + "/" + a.x + "/" + a.y + ".png";
-   }
-
-   function getTileUrlMapnik(a, b) {
-       return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
-   }
-
-   function getTileUrlTaH(a, b) {
-       return "http://tah.openstreetmap.org/Tiles/tile/" + b + "/" + a.x + "/" + a.y + ".png";
-   }
-
-   function getTileUrlCyc(a, b) {
-       return "http://andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
-   }
-
    function isLoaded() {
        return window.GBrowserIsCompatible;
    }
@@ -251,30 +235,47 @@
                var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "(CC-by-sa)");
                var copyrightCollection = new GCopyrightCollection("&copy; OpenStreetMap");
                copyrightCollection.addCopyright(copyright);
+               // "http://t3.outdooractive.com/portal/map/" + b + "/" + a.x + "/" + a.y + ".png"
+               // "http://toolserver.org/tiles/hikebike/" + b + "/" + a.x + "/" + a.y + ".png"
                var tilelayers_mapnik = new Array();
                tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
-               tilelayers_mapnik[0].getTileUrl = getTileUrlMapnik;
+               tilelayers_mapnik[0].getTileUrl = function(a, b) {
+                   return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
+               };
                tilelayers_mapnik[0].getOpacity = function () {
                    return 1.0;
                };
                var tilelayers_tah = new Array();
                tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
-               tilelayers_tah[0].getTileUrl = getTileUrlTaH;
+               tilelayers_tah[0].getTileUrl = function(a, b) {
+                   return "http://tah.openstreetmap.org/Tiles/tile/" + b + "/" + a.x + "/" + a.y + ".png";
+               };
                tilelayers_tah[0].getOpacity = function () {
                    return 1.0;
                };
                var tilelayers_cyc = new Array();
                tilelayers_cyc[0] = new GTileLayer(copyrightCollection, 0, 17);
-               tilelayers_cyc[0].getTileUrl = getTileUrlCyc;
+               tilelayers_cyc[0].getTileUrl = function(a, b) {
+                   return "http://andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
+               };
                tilelayers_cyc[0].getOpacity = function () {
+                   return 1.0;
+               };
+               var tilelayers_hike = new Array();
+               tilelayers_hike[0] = new GTileLayer(copyrightCollection, 0, 17);
+               tilelayers_hike[0].getTileUrl = function(a, b) {
+                   return "http://toolserver.org/tiles/hikebike/" + b + "/" + a.x + "/" + a.y + ".png";
+               };
+               tilelayers_hike[0].getOpacity = function () {
                    return 1.0;
                };
                mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data", errorMessage: "We're sorry but the Mapnik server cannnot serve the map for this request. Try to zoom out." });
                tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data", errorMessage: "We're sorry but the T@H server cannnot serve the map for this request. Try to zoom out." });
                cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Cycle server cannnot serve the map for this request. Try to zoom out." });
+               hikeMap = new GMapType(tilelayers_hike, new GMercatorProjection(18), "Hike", { alt: "OSM Hike Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Hike server cannnot serve the map for this request. Try to zoom out." });
                addDebug("4. added OSM tile layers");
 
-               var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap], draggableCursor: 'default', draggingCursor: 'pointer' });
+               var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap, hikeMap], draggableCursor: 'default', draggingCursor: 'pointer' });
                map.addControl(new GLargeMapControl());
                map.addControl(new GMapTypeControl());
                map.addControl(new ContextMenuControl());
