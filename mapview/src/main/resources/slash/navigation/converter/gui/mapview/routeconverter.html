@@ -256,7 +256,7 @@
                var tilelayers_cyc = new Array();
                tilelayers_cyc[0] = new GTileLayer(copyrightCollection, 0, 17);
                tilelayers_cyc[0].getTileUrl = function(a, b) {
-                   return "http://andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
+                   return "http://tile.opencyclemap.org/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
                };
                tilelayers_cyc[0].getOpacity = function () {
                    return 1.0;
