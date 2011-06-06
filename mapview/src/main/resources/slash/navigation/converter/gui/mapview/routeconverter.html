@@ -274,13 +274,14 @@
                cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Cycle server cannnot serve the map for this request. Try to zoom out." });
                hikeMap = new GMapType(tilelayers_hike, new GMercatorProjection(18), "Hike", { alt: "OSM Hike Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Hike server cannnot serve the map for this request. Try to zoom out." });
                addDebug("4. added OSM tile layers");
+			   var zoomlevel = 2;
 
                var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap, hikeMap], draggableCursor: 'default', draggingCursor: 'pointer' });
                map.addControl(new GLargeMapControl());
                map.addControl(new GMapTypeControl());
                map.addControl(new ContextMenuControl());
                map.addControl(new GScaleControl());
-               map.setCenter(new GLatLng(35.0, -25.0), 2);
+               map.setCenter(new GLatLng(35.0, -25.0), zoomlevel);
                map.enableScrollWheelZoom();
                addDebug("5. created GMap2: " + map);
 
@@ -290,17 +291,53 @@
                markerIcon.shadowSize = markerIcon.iconSize;
                markerIcon.iconAnchor = new GPoint(14, 16);
 
+               
+
                GEvent.addListener(map, "maptypechanged", function() {
                    callJava("maptypechanged/" + map.getCurrentMapType().getName());
                });
 
                GEvent.addListener(map, "zoomend", function(oldLevel, newLevel){
+                    zoomlevel = newLevel;
                    callJava("zoomend/" + oldLevel + "/" + newLevel);
                });
 
+               function getDistanceForPixelLength( latlng, pixel )
+               {
+                    var   p = new GPoint();
+                    p = map.getCurrentMapType().getProjection().fromLatLngToPixel( latlng, zoomlevel );
+
+                    p.x = p.x + pixel;
+                    var P = new GLatLng();
+                    P = map.getCurrentMapType().getProjection().fromPixelToLatLng( p, zoomlevel );
+
+                    return latlng.distanceFrom( P )
+
+               }
+
                GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
-                   if (event.shiftKey && event.ctrlKey)
+                   var shiftKey = event.shiftKey;
+                   var ctrlKey = event.ctrlKey;
+                   var altKey  = event.altKey;
+
+                   var distance = 0;
+                    if ( shiftKey || ctrlKey || altKey )
+                        distance = getDistanceForPixelLength( latlng, 10 ) ;
+
+
+
+                    if (altKey && !shiftKey && !ctrlKey) {
+
+                       callJava("select-position/" + latlng.lat() + "/" + latlng.lng());
+                    }
+
+                   else if (shiftKey && ctrlKey && !altKey) {
                        callJava("insert-position/" + latlng.lat() + "/" + latlng.lng());
+
+                   }
+                    else if (shiftKey && ctrlKey && altKey) {
+                        callJava("delete-position/" + latlng.lat() + "/" + latlng.lng());
+                    }
                });
 
                try {
