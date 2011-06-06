@@ -548,12 +548,6 @@ public abstract class BaseMapView implements MapView {
             notificationMutex.notifyAll();
         }
 
-        {
-            executor.shutdownNow();
-            long end = System.currentTimeMillis();
-            log.info("Executors stopped after " + (end - start) + " ms");
-        }
-
         if (selectionUpdater != null) {
             try {
                 selectionUpdater.join();
@@ -606,6 +600,10 @@ public abstract class BaseMapView implements MapView {
             long end = System.currentTimeMillis();
             log.info("CallbackPoller stopped after " + (end - start) + " ms");
         }
+
+        executor.shutdownNow();
+        long end = System.currentTimeMillis();
+        log.info("Executors stopped after " + (end - start) + " ms");
     }
 
     protected abstract void disposeBrowser();
