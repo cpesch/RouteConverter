@@ -149,54 +149,54 @@ public class EclipseSWTMapView extends BaseMapView {
 
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
-                log.fine(System.currentTimeMillis() + " windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
             }
 
             public void windowOpening(WebBrowserWindowOpeningEvent e) {
-                log.fine(System.currentTimeMillis() + " windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
             }
 
             public void windowClosing(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
+                log.fine("WebBrowser windowClosing " + e + " thread " + Thread.currentThread());
             }
 
             public void locationChanging(WebBrowserNavigationEvent e) {
-                log.fine(System.currentTimeMillis() + " locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChanged(WebBrowserNavigationEvent e) {
-                log.fine(System.currentTimeMillis() + " locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChangeCanceled(WebBrowserNavigationEvent e) {
-                log.fine(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             private int startCount = 0;
 
             public void loadingProgressChanged(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
 
                 if (e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
                     // get out of the listener callback
                     new Thread(new Runnable() {
                         public void run() {
-                            tryToInitialize(startCount++);
+                            tryToInitialize(startCount++, System.currentTimeMillis());
                         }
                     }, "MapViewInitializer").start();
                 }
             }
 
             public void titleChanged(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
             }
 
             public void statusChanged(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
             }
 
             public void commandReceived(WebBrowserCommandEvent e) {
-                // log.fine(System.currentTimeMillis() + " commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
+                // log.fine("WebBrowser commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
             }
         });
 
@@ -204,32 +204,41 @@ public class EclipseSWTMapView extends BaseMapView {
             dispose();
     }
 
-    private void tryToInitialize(int counter) {
+    private void tryToInitialize(int count, long start) {
         boolean existsCompatibleBrowser = getComponent() != null && isCompatible();
         synchronized (this) {
             initialized = existsCompatibleBrowser;
         }
-        log.info(System.currentTimeMillis() + " initialized map: " + initialized);
+        log.fine("Initialized map: " + initialized);
 
         if (isInitialized()) {
-            log.fine(System.currentTimeMillis() + " compatible, further initializing map");
-            initializeAfterLoading();
-            initializeBrowserInteraction();
-            initializeCallbackListener();
-            checkLocalhostResolution();
-            checkCallback();
+            runBrowserInteractionCallbacksAndTests(start);
         } else {
-            if (counter++ < 50) {
-                log.info(System.currentTimeMillis() + " WAITING " + counter * 100 + " milliseconds");
-                try {
-                    Thread.sleep(counter * 100);
-                } catch (InterruptedException e) {
-                    // intentionally left empty
-                }
+            long end = System.currentTimeMillis();
+            int timeout = count++ * 100;
+            if(timeout > 3000)
+                timeout = 3000;
+            log.info("Failed to initialize map since " + (end - start) + " ms, sleeping for " + timeout + " ms");
 
-                tryToInitialize(counter);
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                // intentionally left empty
             }
+            tryToInitialize(count, start);
         }
+    }
+
+    private void runBrowserInteractionCallbacksAndTests(long start) {
+        long end = System.currentTimeMillis();
+        log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
+        initializeAfterLoading();
+        initializeBrowserInteraction();
+        initializeCallbackListener();
+        checkLocalhostResolution();
+        checkCallback();
+        end = System.currentTimeMillis();
+        log.fine("Browser interaction is running after " + (end - start) + " ms");
     }
 
     private boolean isCompatible() {
