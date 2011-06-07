@@ -41,10 +41,17 @@ public class StringDocument extends PlainDocument {
     }
 
     public void setString(String string) {
+        clear();
+        try {
+            insertString(0, string, null);
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void clear() {
         try {
             remove(0, getLength());
-            if(string != null)
-                insertString(0, string, null);
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }

@@ -400,7 +400,7 @@ public class ConvertPanel {
                         public void run() {
                             Gpx11Format gpxFormat = new Gpx11Format();
                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
-                            urlModel.setString(null);
+                            urlModel.clear();
                         }
                     });
 
@@ -520,7 +520,7 @@ public class ConvertPanel {
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
             gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
-            urlModel.setString(null);
+            urlModel.clear();
             UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
             undoManager.discardAllEdits();
         } finally {
