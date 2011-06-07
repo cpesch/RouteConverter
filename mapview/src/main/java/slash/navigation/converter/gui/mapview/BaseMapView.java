@@ -1203,6 +1203,8 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITION_DISTANCE_PATTERN = Pattern.compile("^select-position-within-distance/(.*)/(.*)/(.*)$");
+
     private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)$");
 
     boolean processCallback(String callback) {
@@ -1326,6 +1328,18 @@ public abstract class BaseMapView implements MapView {
             });
             return true;
         }
+        Matcher selectPositionWithinDistanceMatcher = SELECT_POSITION_DISTANCE_PATTERN.matcher(callback);
+        if (selectPositionWithinDistanceMatcher.matches()) {
+            final Double latitude = Transfer.parseDouble(selectPositionWithinDistanceMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(selectPositionWithinDistanceMatcher.group(2));
+            final Double distance  = Transfer.parseDouble(selectPositionWithinDistanceMatcher.group(3));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPositionWithinDistance(longitude, latitude, distance);
+                }
+            });
+            return true;
+        }
 
         Matcher deletePositionMatcher = DELETE_POSITION_PATTERN.matcher(callback);
         if (deletePositionMatcher.matches()) {
@@ -1433,6 +1447,14 @@ public abstract class BaseMapView implements MapView {
 
         int row = positionsModel.getNearestPositionsToCoordinates(longitude, latitude);
         positionsSelectionModel.setSelectedPositions(new int[]{row});
+
+    }
+
+    private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance)
+    {
+        int row = positionsModel.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
+        if ( row < Integer.MAX_VALUE )
+            positionsSelectionModel.setSelectedPositions(new int[]{row});
 
     }
 

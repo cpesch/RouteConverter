@@ -315,6 +315,8 @@
 
                }
 
+                var referencePixelLength = 15;
+
                GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
                    var shiftKey = event.shiftKey;
                    var ctrlKey = event.ctrlKey;
@@ -322,13 +324,13 @@
 
                    var distance = 0;
                     if ( shiftKey || ctrlKey || altKey )
-                        distance = getDistanceForPixelLength( latlng, 10 ) ;
+                        distance = getDistanceForPixelLength( latlng, referencePixelLength ) ;
 
 
 
                     if (altKey && !shiftKey && !ctrlKey) {
 
-                       callJava("select-position/" + latlng.lat() + "/" + latlng.lng());
+                       callJava("select-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
                     }
 
                    else if (shiftKey && ctrlKey && !altKey) {
