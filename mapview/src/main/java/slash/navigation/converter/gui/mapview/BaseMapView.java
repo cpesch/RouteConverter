@@ -1206,6 +1206,8 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITION_DISTANCE_PATTERN = Pattern.compile("^select-position-within-distance/(.*)/(.*)/(.*)$");
 
     private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)$");
+    private static final Pattern DELETE_POSITION_DISTANCE_PATTERN = Pattern.compile("^delete-position-within-distance/(.*)/(.*)/(.*)$");
+
 
     boolean processCallback(String callback) {
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
@@ -1353,6 +1355,20 @@ public abstract class BaseMapView implements MapView {
             });
             return true;
         }
+        Matcher deletePositionWithinDistanceMatcher = DELETE_POSITION_DISTANCE_PATTERN.matcher(callback);
+        if (deletePositionWithinDistanceMatcher.matches()) {
+            final int row = getInsertRow();
+            final Double latitude = Transfer.parseDouble(deletePositionWithinDistanceMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(deletePositionWithinDistanceMatcher.group(2));
+            final Double distance = Transfer.parseDouble(deletePositionWithinDistanceMatcher.group(3));
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    deletePositionWithinDistance(longitude, latitude, distance);
+                }
+            });
+            return true;
+        }
 
 
 
@@ -1473,6 +1489,22 @@ public abstract class BaseMapView implements MapView {
         });
 
 	}
+    private void deletePositionWithinDistance( Double longitude, Double latitude, Double distance) {
+        int row = positionsModel.getNearestPositionsToCoordinatesWithinDistance( longitude, latitude,distance);
+        if ( row < Integer.MAX_VALUE)
+            positionsModel.remove(new int[]{row});
+
+        executor.execute(new Runnable() {
+            public void run() {
+                synchronized (notificationMutex) {
+                    haveToRepaintRouteImmediately = true;
+                    routeUpdateReason = "remove position";
+                    notificationMutex.notifyAll();
+                }
+            }
+        });
+
+    }
 
     private int getInsertRow() {
         BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;

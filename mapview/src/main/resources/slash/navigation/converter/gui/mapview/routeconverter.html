@@ -338,7 +338,7 @@
 
                    }
                     else if (shiftKey && ctrlKey && altKey) {
-                        callJava("delete-position/" + latlng.lat() + "/" + latlng.lng());
+                        callJava("delete-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
                     }
                });
 
