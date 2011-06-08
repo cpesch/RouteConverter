@@ -352,6 +352,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public Wgs84Position asMagicMapsGoPosition() {
+        return asWgs84Position();
+    }
+
     public GkPosition asMagicMapsPthPosition() {
         return new GkPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
