@@ -26,6 +26,8 @@ package slash.navigation.babel;
  * @author Christian Pesch
  */
 
+// TODO might want to create 1 Read, 3 Write formats like for OziExplorer
+
 public class CompeGPSDataFormat extends BabelFormat {
     public String getExtension() {
         return ".trk";

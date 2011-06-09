@@ -561,7 +561,7 @@ public abstract class NavigationTestCase extends TestCase {
     private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, boolean commentPositionNames, RouteCharacteristics targetCharacteristics) {
         // Test only if a position has not been commented by us
         if (!(sourcePosition.getComment() == null && targetPosition.getComment().startsWith("Position"))) {
-            if (targetFormat instanceof AlanTrackLogFormat ||
+            if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof CompeGPSDataFormat ||
                     (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                     targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof KompassFormat ||

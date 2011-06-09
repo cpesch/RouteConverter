@@ -130,14 +130,14 @@ public class ConvertIT extends ConvertBase {
 
     public void testConvertCompeGPSDataToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataFormat(), new Gpx11Format());
     }
 
     public void testConvertCompeGPSDataToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataFormat(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml22BetaFormat());
-        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataFormat(), new Kml22Format());
     }
 
 
