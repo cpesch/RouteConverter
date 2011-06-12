@@ -326,17 +326,26 @@
                     if ( shiftKey || ctrlKey || altKey )
                         distance = getDistanceForPixelLength( latlng, referencePixelLength ) ;
 
-
-
+                    // select a position within a certain radius from the current mouse position
+                    // radius depends on current zoom level
+                    // this works quite well when working with waypoints
                     if (altKey && !shiftKey && !ctrlKey) {
 
-                       callJava("select-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
+                        callJava("select-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
                     }
+                    // select a position nearest to current mouse position
+                    // this works better for routes and tracks as we do not see the positions but only the connecting lines
+                    if (altKey && shiftKey && !ctrlKey) {
 
-                   else if (shiftKey && ctrlKey && !altKey) {
-                       callJava("insert-position/" + latlng.lat() + "/" + latlng.lng());
+                        callJava("select-position/" + latlng.lat() + "/" + latlng.lng());
+                    }
+                    // add a position at current mouse location
+                    else if (shiftKey && ctrlKey && !altKey) {
+                        callJava("insert-position/" + latlng.lat() + "/" + latlng.lng());
 
-                   }
+                    }
+                    // delete a position within a certain radius from the current mouse position
+                    // radius depends on current zoom level
                     else if (shiftKey && ctrlKey && altKey) {
                         callJava("delete-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
                     }
