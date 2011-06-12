@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.Locale;
 
 /**
- * Renders the locale labels of the language combo box.
+ * Renders the {@link Locale} labels of the language combo box.
  *
  * @author Christian Pesch
  */
