@@ -44,6 +44,9 @@ public interface PositionsModel extends TableModel {
     List<BaseNavigationPosition> getPositions(int[] rowIndices);
     List<BaseNavigationPosition> getPositions(int firstIndex, int lastIndex);
 
+    int getNearestPositionsToCoordinates( double longitude, double latitude);
+    int getNearestPositionsToCoordinatesWithinDistance( double longitude, double latitude, double distance);
+
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);
 

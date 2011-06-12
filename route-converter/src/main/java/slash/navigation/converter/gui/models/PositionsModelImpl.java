@@ -99,6 +99,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return result;
     }
 
+    public int getNearestPositionsToCoordinates(double longitude, double latitude)
+    {
+        return getRoute().getNearestPositionsToCoordinates(longitude, latitude);
+    }
+    public int getNearestPositionsToCoordinatesWithinDistance(double longitude, double latitude, double distance)
+    {
+        return getRoute().getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
+    }
+
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
         return getRoute().getPositionsWithinDistanceToPredecessor(distance);
     }

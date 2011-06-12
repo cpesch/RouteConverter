@@ -353,6 +353,59 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         setName(routeName);
     }
 
+    public int getNearestPositionsToCoordinates( double longitude, double latitude) {
+        List<Double> result = new ArrayList<Double>();
+        List<P> positions = getPositions();
+
+        for (int i = 0; i < positions.size() ; ++i) {
+            P point = positions.get(i);
+            if (point.hasCoordinates() )
+                result.add( point.calculateDistance(longitude, latitude) );
+            else
+                result.add( Double.MAX_VALUE);
+        }
+
+        Double minimum = Double.MAX_VALUE;
+        int index = Integer.MAX_VALUE;
+        int size = result.size();
+        for (int i = 0; i < size; ++i) {
+            if (minimum > result.get(i)) {
+                minimum = result.get(i);
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public int getNearestPositionsToCoordinatesWithinDistance( double longitude, double latitude, double distance) {
+        List<Double> result = new ArrayList<Double>();
+        List<P> positions = getPositions();
+
+        for (int i = 0; i < positions.size() ; ++i) {
+            P point = positions.get(i);
+            if (point.hasCoordinates() )
+                result.add( point.calculateDistance(longitude, latitude) );
+            else
+                result.add( Double.MAX_VALUE);
+        }
+
+        Double minimum = Double.MAX_VALUE;
+        int index = Integer.MAX_VALUE;
+        int size = result.size();
+        for (int i = 0; i < size; ++i) {
+            if (minimum > result.get(i)) {
+                minimum = result.get(i);
+                index = i;
+            }
+        }
+
+        if (result.get(index) <= distance)
+            return index;
+
+        return Integer.MAX_VALUE;
+    }
+
+
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 
     public abstract SimpleRoute asColumbusV900StandardFormat();
