@@ -81,6 +81,13 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 
+    public int getNearestPositionsToCoordinates( double longitude, double latitude) {
+        return delegate.getNearestPositionsToCoordinates(longitude, latitude);
+    }
+    public int getNearestPositionsToCoordinatesWithinDistance( double longitude, double latitude, double distance) {
+        return delegate.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
+    }
+
     // PositionsModel
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {

@@ -1200,6 +1200,10 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^zoomend/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
+    private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITION_DISTANCE_PATTERN = Pattern.compile("^select-position-within-distance/(.*)/(.*)/(.*)$");
+
+    private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)$");
 
     boolean processCallback(String callback) {
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
@@ -1310,6 +1314,46 @@ public abstract class BaseMapView implements MapView {
             log.info("processed insert " + callback);
             return false;
         }
+
+        Matcher selectPositionMatcher = SELECT_POSITION_PATTERN.matcher(callback);
+        if (selectPositionMatcher.matches()) {
+            final Double latitude = Transfer.parseDouble(selectPositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(selectPositionMatcher.group(2));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPosition(longitude, latitude);
+                }
+            });
+            return true;
+        }
+        Matcher selectPositionWithinDistanceMatcher = SELECT_POSITION_DISTANCE_PATTERN.matcher(callback);
+        if (selectPositionWithinDistanceMatcher.matches()) {
+            final Double latitude = Transfer.parseDouble(selectPositionWithinDistanceMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(selectPositionWithinDistanceMatcher.group(2));
+            final Double distance  = Transfer.parseDouble(selectPositionWithinDistanceMatcher.group(3));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPositionWithinDistance(longitude, latitude, distance);
+                }
+            });
+            return true;
+        }
+
+        Matcher deletePositionMatcher = DELETE_POSITION_PATTERN.matcher(callback);
+        if (deletePositionMatcher.matches()) {
+            final int row = getInsertRow();
+            final Double latitude = Transfer.parseDouble(deletePositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(deletePositionMatcher.group(2));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    deletePosition(longitude, latitude);
+                }
+            });
+            return true;
+        }
+
+
+
         return false;
     }
 
@@ -1396,6 +1440,37 @@ public abstract class BaseMapView implements MapView {
         positionAugmenter.complementElevation(row, longitude, latitude);
         positionAugmenter.complementTime(row, null);
     }
+
+    private void selectPosition( Double longitude, Double latitude) {
+
+        int row = positionsModel.getNearestPositionsToCoordinates(longitude, latitude);
+        positionsSelectionModel.setSelectedPositions(new int[]{row});
+
+    }
+
+    private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance)
+    {
+        int row = positionsModel.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
+        if ( row < Integer.MAX_VALUE )
+            positionsSelectionModel.setSelectedPositions(new int[]{row});
+
+    }
+
+	private void deletePosition( Double longitude, Double latitude) {
+		int row = positionsModel.getNearestPositionsToCoordinates( longitude, latitude);
+        positionsModel.remove(new int[]{row});
+
+        executor.execute(new Runnable() {
+            public void run() {
+                synchronized (notificationMutex) {
+                    haveToRepaintRouteImmediately = true;
+                    routeUpdateReason = "remove position";
+                    notificationMutex.notifyAll();
+                }
+            }
+        });
+
+	}
 
     private int getInsertRow() {
         BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;

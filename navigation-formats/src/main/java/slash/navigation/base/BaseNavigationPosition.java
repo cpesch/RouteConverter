@@ -148,6 +148,17 @@ public abstract class BaseNavigationPosition {
         return null;
     }
 
+    public Double calculateDistance( double Longitude, double Latitude)
+    {
+        if (hasCoordinates()) {
+            Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), Longitude, Latitude);
+            double distance = bearing.getDistance();
+            if (!Double.isNaN(distance))
+                return distance;
+        }
+        return null;
+    }
+
     /**
      * Calculate the elevation in meter between this and the other position.
      *
