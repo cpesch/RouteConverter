@@ -255,7 +255,7 @@ public class ConvertPanel {
         actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-number", new AddNumbersToPositions(RouteConverter.getInstance(), tablePositions, getPositionsModel(), augmenter));
+        actionManager.register("add-number", new AddNumberToPositions(tablePositions, getPositionsModel(), augmenter));
         actionManager.register("split-positionlist", new SplitPositionList(tablePositions, getPositionsModel(), formatAndRoutesModel));
         actionManager.register("import-positionlist", new ImportPositionList(RouteConverter.getInstance(), tablePositions, getPositionsModel()));
 
@@ -321,7 +321,7 @@ public class ConvertPanel {
 
         // make copy which we could modify freely
         List<URL> copy = new ArrayList<URL>(urls);
-        for (Iterator<URL> it = copy.iterator(); it.hasNext();) {
+        for (Iterator<URL> it = copy.iterator(); it.hasNext(); ) {
             URL url = it.next();
             File file = Files.toFile(url);
             if (file != null && (!file.exists() || !file.isFile())) {

@@ -31,7 +31,10 @@ import slash.navigation.itn.TomTomPosition;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +74,7 @@ public abstract class RouteComments {
     public static String createRouteDescription(BaseRoute route) {
         String name = Transfer.trim(route.getName());
         List<String> description = route.getDescription();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (name != null)
             buffer.append(name);
         if (description != null) {
@@ -80,7 +83,6 @@ public abstract class RouteComments {
         }
         return buffer.toString();
     }
-
 
     private static final String POSITION = "Position";
     private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + ".*(\\d+)(.*)");
@@ -113,19 +115,27 @@ public abstract class RouteComments {
         return position.getComment();
     }
 
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d*)(.*)");
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("\\s*(\\d*)(.*)");
 
     public static String getNumberedPosition(BaseNavigationPosition position, int index,
-                                             int digitCount, boolean spaceBetweenNumberAndComment) {
+                                             int digitCount, NumberPattern numberPattern) {
         String comment = getPositionComment(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(comment);
-        if (matcher.matches()) {
-            String prefix = Transfer.formatIntAsString((index + 1), digitCount);
-            String postfix = Transfer.trim(matcher.group(2));
-            comment = (prefix != null ? prefix : "") +
-                    (postfix != null ? (spaceBetweenNumberAndComment ? " " : "") + postfix : "");
+        String description = matcher.matches() ? matcher.group(2) : comment;
+
+        String prefix = Transfer.formatIntAsString((index + 1), digitCount);
+        String postfix = Transfer.trim(description);
+
+        switch (numberPattern) {
+            case NUMBER_ONLY:
+                return prefix;
+            case NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION:
+                return postfix != null ? prefix + postfix : prefix;
+            case NUMBER_SPACE_THEN_DESCRIPTION:
+                return  postfix != null ? prefix + " " + postfix : prefix;
+            default:
+                throw new IllegalArgumentException("Number pattern " + numberPattern + " is not supported");
         }
-        return comment;
     }
 
     @SuppressWarnings("unchecked")

@@ -32,6 +32,7 @@ import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
+import slash.navigation.util.NumberPattern;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
@@ -39,7 +40,7 @@ import java.text.MessageFormat;
 
 /**
  * Helps to augment a batch of positions with geocoded coordinates, elevation,
- * position index for its comment, postal address, populated place and speed
+ * position number for its comment, postal address, populated place and speed
  * information.
  *
  * @author Christian Pesch
@@ -139,8 +140,7 @@ public class BatchPositionAugmenter {
                         JOptionPane.showMessageDialog(frame,
                                 MessageFormat.format(operation.getErrorMessage(), lastException[0].getMessage()),
                                 frame.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-                finally {
+                } finally {
                     operation.postRunning();
 
                     SwingUtilities.invokeLater(new Runnable() {
@@ -357,7 +357,7 @@ public class BatchPositionAugmenter {
                                 final PositionsModel positionsModel,
                                 final int[] rows,
                                 final int digitCount,
-                                final boolean spaceBetweenNumberAndComment,
+                                final NumberPattern numberPattern,
                                 final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
@@ -371,7 +371,7 @@ public class BatchPositionAugmenter {
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String previousComment = position.getComment();
-                        String nextComment = RouteComments.getNumberedPosition(position, index, digitCount, spaceBetweenNumberAndComment);
+                        String nextComment = RouteComments.getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextComment != null && !nextComment.equals(previousComment);
                         if (changed)
                             positionsModel.edit(nextComment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
@@ -388,18 +388,11 @@ public class BatchPositionAugmenter {
         );
     }
 
-    public void addNumbers(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows,
-                           boolean prefixNumberWithZeros, boolean spaceBetweenNumberAndComment) {
-        int maximumNumber = 0;
-        if (prefixNumberWithZeros) {
-            for (int row : selectedRows) {
-                if (row > maximumNumber)
-                    maximumNumber = row;
-            }
-        }
-        int digitCount = prefixNumberWithZeros ? Transfer.widthInDigits(maximumNumber + 1) : 0;
+    public void addNumbers(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
+        int digitCount = Transfer.widthInDigits(positionsModel.getRowCount() + 1);
+        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
 
         processNumbers(positionsTable, positionsModel, selectedRows,
-                digitCount, spaceBetweenNumberAndComment, COORDINATE_PREDICATE);
+                digitCount, numberPattern, COORDINATE_PREDICATE);
     }
 }
