@@ -126,6 +126,7 @@ public class EclipseSWTMapView extends BaseMapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
 
             final String url = html.toURI().toURL().toExternalForm();
             webBrowser.runInSequence(new Runnable() {

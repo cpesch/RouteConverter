@@ -35,7 +35,6 @@
  */
 function ContextMenuControl() {
 }
-
 /**
  * Extends GOverlay class from the Google Maps API.
  *  Second param (selectable) should be set to true

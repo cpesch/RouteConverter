@@ -3,7 +3,10 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <script src="http://${mapserver}/maps?file=api&amp;v=2&amp;key=ABQIAAAA3C3cggohQH044oJU10p9hRSfCfkamzr65RA-A3ZfXmc8dgIhVxTusI-8RzngggpTq0xoW5B1StZwug&amp;hl=${locale}" type="text/javascript"></script>
+    <script  src="./keydragzoom.js" type="text/javascript"></script>
+
     <script src="./contextmenucontrol.js" type="text/javascript"></script>
+
     <style type="text/css">
         body { position:absolute; top:0px; left:0px; width:${percent}%; height:${percent}%; margin: 0; padding: 0 }
         #map { width: 100%; height: 100% }
@@ -274,15 +277,33 @@
                cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Cycle server cannnot serve the map for this request. Try to zoom out." });
                hikeMap = new GMapType(tilelayers_hike, new GMercatorProjection(18), "Hike", { alt: "OSM Hike Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Hike server cannnot serve the map for this request. Try to zoom out." });
                addDebug("4. added OSM tile layers");
-			   var zoomlevel = 2;
 
                var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap, hikeMap], draggableCursor: 'default', draggingCursor: 'pointer' });
                map.addControl(new GLargeMapControl());
                map.addControl(new GMapTypeControl());
                map.addControl(new ContextMenuControl());
                map.addControl(new GScaleControl());
-               map.setCenter(new GLatLng(35.0, -25.0), zoomlevel);
+
+               map.setCenter(new GLatLng(35.0, -25.0), 2);
                map.enableScrollWheelZoom();
+
+               if ( map.enableKeyDragZoom )
+               map.enableKeyDragZoom({
+                 key: "shift",
+                 boxStyle: {
+                   border: "2px blue",
+                   backgroundColor: "transparent",
+                   opacity: 1.0
+                 },
+                 veilStyle: {
+                   backgroundColor: "white",
+                   opacity: 0.15,
+                   cursor: "crosshair"
+                 },
+                 visualEnabled: true
+               });
+
+
                addDebug("5. created GMap2: " + map);
 
                var markerIcon = new GIcon();
@@ -298,12 +319,12 @@
                });
 
                GEvent.addListener(map, "zoomend", function(oldLevel, newLevel){
-                    zoomlevel = newLevel;
-                   callJava("zoomend/" + oldLevel + "/" + newLevel);
+                     callJava("zoomend/" + oldLevel + "/" + newLevel);
                });
 
                function getDistanceForPixelLength( latlng, pixel )
                {
+                    var zoomlevel = map.getZoom()
                     var   p = new GPoint();
                     p = map.getCurrentMapType().getProjection().fromLatLngToPixel( latlng, zoomlevel );
 
