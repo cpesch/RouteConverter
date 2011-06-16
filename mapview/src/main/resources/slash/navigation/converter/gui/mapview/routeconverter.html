@@ -286,22 +286,23 @@
 
                map.setCenter(new GLatLng(35.0, -25.0), 2);
                map.enableScrollWheelZoom();
+//               map.disableDoubleClickZoom();
 
-               if ( map.enableKeyDragZoom )
-               map.enableKeyDragZoom({
-                 key: "shift",
-                 boxStyle: {
-                   border: "2px blue",
-                   backgroundColor: "transparent",
-                   opacity: 1.0
-                 },
-                 veilStyle: {
-                   backgroundColor: "white",
-                   opacity: 0.15,
-                   cursor: "crosshair"
-                 },
-                 visualEnabled: true
-               });
+//               if ( map.enableKeyDragZoom )
+//               map.enableKeyDragZoom({
+//                 key: "shift",
+//                 boxStyle: {
+//                   border: "2px blue",
+//                   backgroundColor: "transparent",
+//                   opacity: 1.0
+//                 },
+//                 veilStyle: {
+//                   backgroundColor: "white",
+//                   opacity: 0.15,
+//                   cursor: "crosshair"
+//                 },
+//                 visualEnabled: true
+//               });
 
 
                addDebug("5. created GMap2: " + map);
@@ -336,32 +337,35 @@
 
                }
 
-                var referencePixelLength = 15;
-
-               GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
+               function handleMouseClick( overlay, latlng, ovlerlaylatlng) {
                    var shiftKey = event.shiftKey;
                    var ctrlKey = event.ctrlKey;
                    var altKey  = event.altKey;
 
                    var distance = 0;
-                    if ( shiftKey || ctrlKey || altKey )
-                        distance = getDistanceForPixelLength( latlng, referencePixelLength ) ;
+                    //if ( shiftKey || ctrlKey || altKey )
+                    distance = getDistanceForPixelLength( latlng, referencePixelLength ) ;
 
                     // select a position within a certain radius from the current mouse position
                     // radius depends on current zoom level
                     // this works quite well when working with waypoints
-                    if (altKey && !shiftKey && !ctrlKey) {
-
+                    if (!altKey && !shiftKey && !ctrlKey) {
                         callJava("select-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
                     }
                     // select a position nearest to current mouse position
                     // this works better for routes and tracks as we do not see the positions but only the connecting lines
-                    if (altKey && shiftKey && !ctrlKey) {
+                    if (shiftKey && !altKey &&  !ctrlKey) {
 
                         callJava("select-position/" + latlng.lat() + "/" + latlng.lng());
                     }
+                    // select or toggle selection state within distance and keep other positions selected
+                    else if (ctrlKey && !altKey && !shiftKey) {
+                    }
+                    // select or toggle selection state nearest position to mouse and keep other positions selected
+                    else if (ctrlKey && shiftKey && !altKey) {
+                    }
                     // add a position at current mouse location
-                    else if (shiftKey && ctrlKey && !altKey) {
+                    else if (altKey && !ctrlKey && !shiftKey) {
                         callJava("insert-position/" + latlng.lat() + "/" + latlng.lng());
 
                     }
@@ -370,6 +374,19 @@
                     else if (shiftKey && ctrlKey && altKey) {
                         callJava("delete-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
                     }
+
+               }
+
+                var referencePixelLength = 15;
+
+               GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
+                   if (event.stopPropagation) event.stopPropagation();
+                   handleMouseClick( overlay, latlng, overlaylatlng );
+               });
+
+               GEvent.addListener(map, "dblclick", function(overlay, latlng, overlaylatlng) {
+                   handleMouseClick( overlay, latlng, overlaylatlng );
+                   if (event.stopPropagation) event.stopPropagation();
                });
 
                try {

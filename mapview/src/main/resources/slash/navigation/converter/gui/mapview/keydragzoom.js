@@ -429,7 +429,7 @@
   DragZoom.prototype.isHotKeyDown_ = function (e) {
     var isHot;
     e = e || window.event;
-    isHot = (e.shiftKey && this.key_ === "shift") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
+    isHot = (e.shiftKey && this.key_ === "shift" && !e.altKey && !e.ctrlKey) || (e.altKey && this.key_ === "alt" && !e.shiftKey && !e.ctrlKey ) || (e.ctrlKey && this.key_ === "ctrl" && !e.shiftKey && ! e.altKey);
     if (!isHot) {
       // Need to look at keyCode for Opera because it
       // doesn't set the shiftKey, altKey, ctrlKey properties
@@ -439,17 +439,17 @@
       // Also see http://unixpapa.com/js/key.html
       switch (e.keyCode) {
       case 16:
-        if (this.key_ === "shift") {
+        if (this.key_ === "shift" && !e.altKey && !e.ctrlKey) {
           isHot = true;
         }
         break;
       case 17:
-        if (this.key_ === "ctrl") {
+        if (this.key_ === "ctrl" && !e.shiftKey && !e.ctrlKey) {
           isHot = true;
         }
         break;
       case 18:
-        if (this.key_ === "alt") {
+        if (this.key_ === "alt" && !e.shiftKey && ! e.altKey) {
           isHot = true;
         }
         break;
