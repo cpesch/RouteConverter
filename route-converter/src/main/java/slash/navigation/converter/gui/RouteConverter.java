@@ -37,6 +37,7 @@ import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
+import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
@@ -64,6 +65,8 @@ import java.util.*;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -100,8 +103,9 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String ADD_POSITION_LATITUDE_PREFERENCE = "addPositionLatitude";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
-    public static final String PEDESTRIANS_PREFERENCE = "pedestrians";
+    public static final String TRAVEL_MODEL_PREFERENCE = "travelMode";
     public static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
+    public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
@@ -253,9 +257,9 @@ public class RouteConverter extends SingleFrameApplication {
                         getConvertPanel().getCharacteristicsModel(),
                         getPositionAugmenter(),
                         preferences.getBoolean(RECENTER_AFTER_ZOOMING_PREFERENCE, false),
-                        preferences.getBoolean(PEDESTRIANS_PREFERENCE, false),
-                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true)
-                );
+                        getTravelModePreference(),
+                        preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE, true),
+                        preferences.getBoolean(AVOID_TOLLS_PREFERENCE, true));
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();
@@ -427,6 +431,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setCategoryPreference(String category) {
         preferences.put(CATEGORY_PREFERENCE, category);
+    }
+
+    public TravelMode getTravelModePreference() {
+        return TravelMode.fromString(preferences.get(TRAVEL_MODEL_PREFERENCE, Driving.toString()));
     }
 
     public NumberPattern getNumberPatternPreference() {
@@ -638,14 +646,20 @@ public class RouteConverter extends SingleFrameApplication {
         mapView.addMapViewListener(mapViewListener);
     }
 
-    public void setPedestrians(boolean pedestrians) {
+    public void setTravelMode(TravelMode travelMode) {
+        preferences.put(TRAVEL_MODEL_PREFERENCE, travelMode.toString());
         if (mapView != null)
-            mapView.setPedestrians(pedestrians);
+            mapView.setTravelMode(travelMode);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
         if (mapView != null)
             mapView.setAvoidHighways(avoidHighways);
+    }
+
+    public void setAvoidTolls(boolean avoidTolls) {
+        if (mapView != null)
+            mapView.setAvoidTolls(avoidTolls);
     }
 
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {

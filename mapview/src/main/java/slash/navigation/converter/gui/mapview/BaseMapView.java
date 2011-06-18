@@ -51,16 +51,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,12 +77,12 @@ public abstract class BaseMapView implements MapView {
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
 
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
-    private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 1500);
-    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength", 22);
-    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount", 500);
-    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength", 5);
-    private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount", 40);
-    private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount", 10);
+    private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 50 * 35);
+    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength3", 9);
+    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount3", 50 * 9);
+    private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength", 10);
+    private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount", 50 * 10);
+    private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount", 5 * 10);
     private static final int[] ZOOMLEVEL_SCALE = {
             400000000,
             200000000,
@@ -117,17 +108,20 @@ public abstract class BaseMapView implements MapView {
     private PositionsModel positionsModel;
     private List<BaseNavigationPosition> positions;
     private PositionsSelectionModel positionsSelectionModel;
+    private List<BaseNavigationPosition> lastSelectedPositions;
+    private int[] selectedPositionIndices = new int[0];
 
     private ServerSocket callbackListenerServerSocket;
     private Thread routeUpdater, selectionUpdater, callbackListener, callbackPoller;
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
-    private boolean running = true, recenterAfterZooming, pedestrians, avoidHighways,
+    private boolean running = true, recenterAfterZooming, avoidHighways, avoidTolls,
             haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately = false,
             haveToRepaintRouteImmediately = false, haveToRecenterMap = false,
             haveToUpdateRoute = false, haveToReplaceRoute = false,
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
+    private TravelMode travelMode;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
     private int meters = 0, seconds = 0;
@@ -140,13 +134,15 @@ public abstract class BaseMapView implements MapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            PositionAugmenter positionAugmenter,
-                           boolean recenterAfterZooming, boolean pedestrians, boolean avoidHighways) {
+                           boolean recenterAfterZooming,
+                           TravelMode travelMode, boolean avoidHighways, boolean avoidTolls) {
         initializeBrowser();
         setModel(positionsModel, positionsSelectionModel, characteristicsModel);
         this.positionAugmenter = positionAugmenter;
         this.recenterAfterZooming = recenterAfterZooming;
-        this.pedestrians = pedestrians;
+        this.travelMode = travelMode;
         this.avoidHighways = avoidHighways;
+        this.avoidTolls = avoidTolls;
     }
 
     protected abstract void initializeBrowser();
@@ -651,14 +647,20 @@ public abstract class BaseMapView implements MapView {
         this.recenterAfterZooming = recenterAfterZooming;
     }
 
-    public void setPedestrians(boolean pedestrians) {
-        this.pedestrians = pedestrians;
+    public void setTravelMode(TravelMode travelMode) {
+        this.travelMode = travelMode;
         if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
     }
 
     public void setAvoidHighways(boolean avoidHighways) {
         this.avoidHighways = avoidHighways;
+        if (positionsModel.getRoute().getCharacteristics() == Route)
+            update(false);
+    }
+
+    public void setAvoidTolls(boolean avoidTolls) {
+        this.avoidTolls = avoidTolls;
         if (positionsModel.getRoute().getCharacteristics() == Route)
             update(false);
     }
@@ -871,8 +873,8 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void removeOverlays() {
-        executeScript("removeOverlays();\nremoveDirections();");
+    private void toggleOverlays() {
+        executeScript("toggleOverlays();");
     }
 
     private void addDirectionsToMap(List<BaseNavigationPosition> positions) {
@@ -889,21 +891,33 @@ public abstract class BaseMapView implements MapView {
         for (int j = 0; j < directionsCount; j++) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("var latlngs = [");
-            int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH + 1);
-            for (int i = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH; i < maximum; i++) {
+
+            int start = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH;
+            int end = Math.min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH + 1);
+            for (int i = start + 1; i < end - 1; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("new GLatLng(").append(position.getLatitude()).append(",").append(position.getLongitude()).append(")");
-                if (i < maximum - 1)
+                buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").append(position.getLongitude()).append(")}");
+                if (i < end - 2)
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("createDirections().loadFromWaypoints(latlngs, ").
-                    append("{ preserveViewport: true, getPolyline: true, avoidHighways: ").append(avoidHighways).
-                    append(", travelMode: ").append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
-                    append(", locale: '").append(Locale.getDefault()).append("' });");
+
+            BaseNavigationPosition origin = positions.get(start);
+            BaseNavigationPosition destination = positions.get(end - 1);
+            buffer.append("addDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
+            buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
+            buffer.append("waypoints: latlngs, travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
+            buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
+            buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
+            buffer.append("region: '").append(Locale.getDefault()).append("'});\n");
             executeScript(buffer.toString());
         }
-        removeOverlays();
+        try {
+             Thread.sleep(500);
+         } catch (InterruptedException e) {
+             // don't care if this happens
+         }
+        toggleOverlays();
     }
 
     private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
@@ -920,34 +934,33 @@ public abstract class BaseMapView implements MapView {
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
             for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("new GLatLng(").append(position.getLatitude()).append(",").append(position.getLongitude()).append(")");
+                buffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").append(position.getLongitude()).append(")");
                 if (i < maximum - 1)
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("addOverlay(new GPolyline(latlngs,\"#0033FF\",2,1));");
+            buffer.append("addOverlay(new google.maps.Polyline({path: latlngs, strokeColor: \"#0033FF\", ").
+                    append("strokeWeight: 2, strokeOpacity: 1, clickable: false}));");
             executeScript(buffer.toString());
         }
-        removeOverlays();
+        toggleOverlays();
     }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
         int markersCount = Transfer.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
         for (int j = 0; j < markersCount; j++) {
             StringBuffer buffer = new StringBuffer();
-
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("var marker = new GMarker(new GLatLng(").
+                buffer.append("addOverlay(new google.maps.Marker({position: new google.maps.LatLng(").
                         append(position.getLatitude()).append(",").append(position.getLongitude()).
-                        append("), { title: \"").append(escape(position.getComment())).append("\", ").
-                        append("clickable: false, icon: markerIcon });\n");
-                buffer.append("addOverlay(marker);\n");
+                        append("), title: \"").append(escape(position.getComment())).
+                        append("\", clickable: false, icon: markerIcon }));\n");
             }
             executeScript(buffer.toString());
         }
-        removeOverlays();
+        toggleOverlays();
     }
 
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
@@ -955,59 +968,44 @@ public abstract class BaseMapView implements MapView {
         // set map type only on first start
         if (haveToInitializeMapOnFirstStart) {
             String mapType = preferences.get(MAP_TYPE_PREFERENCE, "Map");
-            buffer.append("setMapType(\"").append(mapType).append("\");\n");
+            buffer.append("map.setMapTypeId(\"").append(mapType).append("\");\n");
         }
 
         // if there are positions center on first start or if we have to recenter
         if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
             Wgs84Position northEast = Positions.northEast(positions);
             Wgs84Position southWest = Positions.southWest(positions);
-            buffer.append("var zoomLevel = map.getBoundsZoomLevel(new GLatLngBounds(").
-                    append("new GLatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append("),").
-                    append("new GLatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(")").
-                    append("));\n");
+            buffer.append("map.fitBounds(new google.maps.LatLngBounds(").
+                    append("new google.maps.LatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append("),").
+                    append("new google.maps.LatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(")));\n");
             Wgs84Position center = Positions.center(positions);
-            buffer.append("map.setCenter(new GLatLng(").append(center.getLatitude()).append(",").
-                    append(center.getLongitude()).append("), zoomLevel);");
+            buffer.append("map.setCenter(new google.maps.LatLng(").append(center.getLatitude()).append(",").
+                    append(center.getLongitude()).append("));\n");
             ignoreNextZoomCallback = true;
         }
         executeScript(buffer.toString());
         haveToInitializeMapOnFirstStart = false;
     }
 
-    private int lastSelectedPositionCount = -1;
-    private List<BaseNavigationPosition> lastSelectedPositions;
-    private int[] selectedPositionIndices = new int[0];
-
     private void selectPositions(List<BaseNavigationPosition> selectedPositions, boolean recenter) {
-        // delete old
-        if (lastSelectedPositionCount >= 0) {
-            StringBuffer buffer = new StringBuffer();
-            for (int i = 0; i < lastSelectedPositionCount; i++) {
-                buffer.append("map.removeOverlay(selected").append(i).append(");\n");
-            }
-            executeScript(buffer.toString());
-        }
+        lastSelectedPositions = new ArrayList<BaseNavigationPosition>(selectedPositions);
 
-        // build up new
         StringBuffer buffer = new StringBuffer();
-        lastSelectedPositionCount = selectedPositions.size();
-        lastSelectedPositions = selectedPositions;
-        for (int i = 0; i < lastSelectedPositionCount; i++) {
+        for (int i = 0; i < selectedPositions.size(); i++) {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
-            buffer.append("var selected").append(i).append(" = ");
-            buffer.append("new GMarker(new GLatLng(").append(selectedPosition.getLatitude()).append(",")
-                    .append(selectedPosition.getLongitude()).append("), { title: \"")
-                    .append(escape(selectedPosition.getComment())).append("\", draggable: true, bouncy: false, dragCrossMove: true });\n");
-            buffer.append("addMarker(selected").append(i).append(",").append(i).append(");\n");
+            buffer.append("addMarker(new google.maps.Marker({position: new google.maps.LatLng(").
+                    append(selectedPosition.getLatitude()).append(",").append(selectedPosition.getLongitude()).
+                    append("), title: \"").append(escape(selectedPosition.getComment())).
+                    append("\", draggable: true, zIndex: 1000}), ").append(i).append(");\n");
         }
 
         // pan to first position
-        if (lastSelectedPositionCount > 0 && recenter) {
+        if (selectedPositions.size() > 0 && recenter) {
             BaseNavigationPosition center = selectedPositions.get(0);
-            buffer.append("centerMap(new GLatLng(").append(center.getLatitude()).append(",").
-                    append(center.getLongitude()).append("));");
+            buffer.append("centerMap(new google.maps.LatLng(").append(center.getLatitude()).append(",").
+                    append(center.getLongitude()).append("));\n");
         }
+        buffer.append("removeMarkers();\n");
         executeScript(buffer.toString());
     }
 
@@ -1039,15 +1037,13 @@ public abstract class BaseMapView implements MapView {
                     BaseNavigationPosition from = successorPredecessor.get(0);
                     BaseNavigationPosition to = successorPredecessor.get(1);
                     StringBuffer buffer = new StringBuffer();
-                    buffer.append("var latlngs = [");
-                    buffer.append("new GLatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("),");
-                    buffer.append("new GLatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append(")");
-                    buffer.append("];\n");
-                    buffer.append(mode).append("(").append(key).append(").loadFromWaypoints(latlngs, ").
-                            append("{ preserveViewport: true, getPolyline: true, getSteps: true").
-                            append(", avoidHighways: ").append(avoidHighways).
-                            // append(", travelMode: ").append(pedestrians ? "G_TRAVEL_MODE_WALKING" : "G_TRAVEL_MODE_DRIVING").
-                                    append(", locale: '").append(Locale.getDefault()).append("' });");
+                    buffer.append(mode).append("({");
+                    buffer.append("origin: new google.maps.LatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("), ");
+                    buffer.append("destination: new google.maps.LatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append("), ");
+                    buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
+                    buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
+                    buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
+                    buffer.append("region: '").append(Locale.getDefault()).append("'}, ").append(key).append(");\n");
                     executeScript(buffer.toString());
                     try {
                         Thread.sleep(500);
@@ -1195,9 +1191,9 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^load/(\\d*)/(\\d*)$");
     private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
-    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)$");
+    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)$");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
-    private static final Pattern ZOOM_END_PATTERN = Pattern.compile("^zoomend/(.*)/(.*)$");
+    private static final Pattern ZOOMED_PATTERN = Pattern.compile("^zoomed$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
@@ -1238,10 +1234,11 @@ public abstract class BaseMapView implements MapView {
 
         Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(callback);
         if (removePositionMatcher.matches()) {
-            final int index = Transfer.parseInt(removePositionMatcher.group(1));
+            final Double latitude = Transfer.parseDouble(removePositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(removePositionMatcher.group(2));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    removePosition(index);
+                    removePosition(longitude, latitude);
                 }
             });
             return true;
@@ -1254,10 +1251,8 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher zoomEndMatcher = ZOOM_END_PATTERN.matcher(callback);
-        if (zoomEndMatcher.matches()) {
-            Integer from = Transfer.parseInt(zoomEndMatcher.group(1));
-            Integer to = Transfer.parseInt(zoomEndMatcher.group(2));
+        Matcher zoomedMatcher = ZOOMED_PATTERN.matcher(callback);
+        if (zoomedMatcher.matches()) {
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
@@ -1268,7 +1263,7 @@ public abstract class BaseMapView implements MapView {
                 if (recenterAfterZooming)
                     haveToRecenterMap = true;
                 haveToRepaintSelectionImmediately = true;
-                selectionUpdateReason = "zoomed from " + from + " to " + to;
+                selectionUpdateReason = "zoomed";
                 notificationMutex.notifyAll();
             }
             return true;
@@ -1414,6 +1409,15 @@ public abstract class BaseMapView implements MapView {
         return row;
     }
 
+    private int getDeleteRow(Double longitude, Double latitude) {
+        for (int i = 0; i < positionsModel.getRowCount(); i++) {
+            BaseNavigationPosition position = positionsModel.getPosition(i);
+            if (position.getLongitude().equals(longitude) && position.getLatitude().equals(latitude))
+                return i;
+        }
+        return -1;
+    }
+
     private void movePosition(int row, Double longitude, Double latitude) {
         positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
@@ -1436,10 +1440,9 @@ public abstract class BaseMapView implements MapView {
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
     }
 
-    private void removePosition(int index) {
-        BaseNavigationPosition position = lastSelectedPositions.size() > index ? lastSelectedPositions.get(index) : null;
-        if (position != null) {
-            int row = positionsModel.getIndex(position);
+    private void removePosition(Double longitude, Double latitude) {
+        int row = getDeleteRow(longitude, latitude);
+        if (row != -1) {
             positionsModel.remove(new int[]{row});
 
             executor.execute(new Runnable() {

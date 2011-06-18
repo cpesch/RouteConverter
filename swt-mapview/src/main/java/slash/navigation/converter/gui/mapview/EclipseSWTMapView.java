@@ -205,9 +205,9 @@ public class EclipseSWTMapView extends BaseMapView {
     }
 
     private void tryToInitialize(int count, long start) {
-        boolean existsCompatibleBrowser = getComponent() != null && isCompatible();
+        boolean initialized = getComponent() != null && isMapInitialized();
         synchronized (this) {
-            initialized = existsCompatibleBrowser;
+            this.initialized = initialized;
         }
         log.fine("Initialized map: " + initialized);
 
@@ -241,8 +241,8 @@ public class EclipseSWTMapView extends BaseMapView {
         log.fine("Browser interaction is running after " + (end - start) + " ms");
     }
 
-    private boolean isCompatible() {
-        String result = executeScriptWithResult("return window.isCompatible && isCompatible();");
+    private boolean isMapInitialized() {
+        String result = executeScriptWithResult("return initialized;");
         return Boolean.parseBoolean(result);
     }
 
@@ -303,12 +303,14 @@ public class EclipseSWTMapView extends BaseMapView {
         Wgs84Position southWest = Positions.southWest(positions);
 
         StringBuffer buffer = new StringBuffer();
+        /* TODO there is no map.getBoundsZoomLevel
         buffer.append("return map.getBoundsZoomLevel(new GLatLngBounds(").
                 append("new GLatLng(").append(northEast.getLatitude()).append(",").
                 append(northEast.getLongitude()).append("),").
                 append("new GLatLng(").append(southWest.getLatitude()).append(",").
                 append(southWest.getLongitude()).append(")").append("));");
-
+        */
+        buffer.append("return map.getZoom();");  // TODO fix me
         String zoomLevel = executeScriptWithResult(buffer.toString());
         return zoomLevel != null ? Transfer.parseDouble(zoomLevel).intValue() : 1;
     }
