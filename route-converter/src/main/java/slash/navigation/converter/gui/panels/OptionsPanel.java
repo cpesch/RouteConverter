@@ -28,6 +28,7 @@ import slash.navigation.converter.gui.helper.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
 import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
+import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.FrameAction;
@@ -123,6 +124,7 @@ public class OptionsPanel {
         travelModes.add(Driving);
         travelModes.add(Walking);
         comboboxTravelMode.setModel(new DefaultComboBoxModel(travelModes.toArray()));
+        comboboxTravelMode.setRenderer(new TravelModeListCellRenderer());
         comboboxTravelMode.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != ItemEvent.SELECTED)
