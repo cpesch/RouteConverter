@@ -37,7 +37,6 @@ package slash.navigation.base;
  * and their order is unimportant. They can be entered before, while or after
  * you actually visit the place and might have tags like name, comment and the
  * like. Usually used to mark special locations as your home, a hotel or a geocache.
- * 
  *
  * @author Christian Pesch
  */

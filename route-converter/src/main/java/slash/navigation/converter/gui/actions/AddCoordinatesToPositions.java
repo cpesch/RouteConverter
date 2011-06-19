@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 
 /**
  * {@link ActionListener} that adds coordinates to the selected rows of a {@link JTable}
- * with the help of a {@link slash.navigation.converter.gui.helper.BatchPositionAugmenter}.
+ * with the help of a {@link BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */

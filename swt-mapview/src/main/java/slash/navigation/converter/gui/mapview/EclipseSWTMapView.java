@@ -126,7 +126,6 @@ public class EclipseSWTMapView extends BaseMapView {
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
             Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
 
             final String url = html.toURI().toURL().toExternalForm();
             webBrowser.runInSequence(new Runnable() {
@@ -150,54 +149,54 @@ public class EclipseSWTMapView extends BaseMapView {
 
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
-                log.fine(System.currentTimeMillis() + " windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser windowWillOpen " + e.isConsumed() + " thread " + Thread.currentThread());
             }
 
             public void windowOpening(WebBrowserWindowOpeningEvent e) {
-                log.fine(System.currentTimeMillis() + " windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser windowOpening " + e.getLocation() + "/" + e.getSize() + " thread " + Thread.currentThread());
             }
 
             public void windowClosing(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " windowClosing " + e + " thread " + Thread.currentThread());
+                log.fine("WebBrowser windowClosing " + e + " thread " + Thread.currentThread());
             }
 
             public void locationChanging(WebBrowserNavigationEvent e) {
-                log.fine(System.currentTimeMillis() + " locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser locationChanging " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChanged(WebBrowserNavigationEvent e) {
-                log.fine(System.currentTimeMillis() + " locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser locationChanged " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             public void locationChangeCanceled(WebBrowserNavigationEvent e) {
-                log.fine(System.currentTimeMillis() + " locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser locationChangeCanceled " + e.getNewResourceLocation() + " thread " + Thread.currentThread());
             }
 
             private int startCount = 0;
 
             public void loadingProgressChanged(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser loadingProgressChanged " + e.getWebBrowser().getLoadingProgress() + " thread " + Thread.currentThread());
 
                 if (e.getWebBrowser().getLoadingProgress() == 100 && startCount == 0) {
                     // get out of the listener callback
                     new Thread(new Runnable() {
                         public void run() {
-                            tryToInitialize(startCount++);
+                            tryToInitialize(startCount++, System.currentTimeMillis());
                         }
                     }, "MapViewInitializer").start();
                 }
             }
 
             public void titleChanged(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser titleChanged " + e.getWebBrowser().getPageTitle() + " thread " + Thread.currentThread());
             }
 
             public void statusChanged(WebBrowserEvent e) {
-                log.fine(System.currentTimeMillis() + " statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
+                log.fine("WebBrowser statusChanged " + e.getWebBrowser().getStatusText() + " thread " + Thread.currentThread());
             }
 
             public void commandReceived(WebBrowserCommandEvent e) {
-                // log.fine(System.currentTimeMillis() + " commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
+                // log.fine("WebBrowser commandReceived " + e.getCommand() + " thread " + Thread.currentThread());
             }
         });
 
@@ -205,36 +204,45 @@ public class EclipseSWTMapView extends BaseMapView {
             dispose();
     }
 
-    private void tryToInitialize(int counter) {
-        boolean existsCompatibleBrowser = getComponent() != null && isCompatible();
+    private void tryToInitialize(int count, long start) {
+        boolean initialized = getComponent() != null && isMapInitialized();
         synchronized (this) {
-            initialized = existsCompatibleBrowser;
+            this.initialized = initialized;
         }
-        log.info(System.currentTimeMillis() + " initialized map: " + initialized);
+        log.fine("Initialized map: " + initialized);
 
         if (isInitialized()) {
-            log.fine(System.currentTimeMillis() + " compatible, further initializing map");
-            initializeAfterLoading();
-            initializeBrowserInteraction();
-            initializeCallbackListener();
-            checkLocalhostResolution();
-            checkCallback();
+            runBrowserInteractionCallbacksAndTests(start);
         } else {
-            if (counter++ < 50) {
-                log.info(System.currentTimeMillis() + " WAITING " + counter * 100 + " milliseconds");
-                try {
-                    Thread.sleep(counter * 100);
-                } catch (InterruptedException e) {
-                    // intentionally left empty
-                }
+            long end = System.currentTimeMillis();
+            int timeout = count++ * 100;
+            if(timeout > 3000)
+                timeout = 3000;
+            log.info("Failed to initialize map since " + (end - start) + " ms, sleeping for " + timeout + " ms");
 
-                tryToInitialize(counter);
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                // intentionally left empty
             }
+            tryToInitialize(count, start);
         }
     }
 
-    private boolean isCompatible() {
-        String result = executeScriptWithResult("return window.isCompatible && isCompatible();");
+    private void runBrowserInteractionCallbacksAndTests(long start) {
+        long end = System.currentTimeMillis();
+        log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
+        initializeAfterLoading();
+        initializeBrowserInteraction();
+        initializeCallbackListener();
+        checkLocalhostResolution();
+        checkCallback();
+        end = System.currentTimeMillis();
+        log.fine("Browser interaction is running after " + (end - start) + " ms");
+    }
+
+    private boolean isMapInitialized() {
+        String result = executeScriptWithResult("return initialized;");
         return Boolean.parseBoolean(result);
     }
 
@@ -295,12 +303,14 @@ public class EclipseSWTMapView extends BaseMapView {
         Wgs84Position southWest = Positions.southWest(positions);
 
         StringBuffer buffer = new StringBuffer();
+        /* TODO there is no map.getBoundsZoomLevel
         buffer.append("return map.getBoundsZoomLevel(new GLatLngBounds(").
                 append("new GLatLng(").append(northEast.getLatitude()).append(",").
                 append(northEast.getLongitude()).append("),").
                 append("new GLatLng(").append(southWest.getLatitude()).append(",").
                 append(southWest.getLongitude()).append(")").append("));");
-
+        */
+        buffer.append("return map.getZoom();");  // TODO fix me
         String zoomLevel = executeScriptWithResult(buffer.toString());
         return zoomLevel != null ? Transfer.parseDouble(zoomLevel).intValue() : 1;
     }

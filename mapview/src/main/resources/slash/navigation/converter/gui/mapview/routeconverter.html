@@ -1,19 +1,52 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <script src="http://${mapserver}/maps?file=api&amp;v=2&amp;key=ABQIAAAA3C3cggohQH044oJU10p9hRSfCfkamzr65RA-A3ZfXmc8dgIhVxTusI-8RzngggpTq0xoW5B1StZwug&amp;hl=${locale}" type="text/javascript"></script>
-    <script  src="./keydragzoom.js" type="text/javascript"></script>
-
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script src="http://${mapserver}/maps/api/js?sensor=false&amp;hl=${locale}" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
     <script src="./contextmenucontrol.js" type="text/javascript"></script>
-
     <style type="text/css">
-        body { position:absolute; top:0px; left:0px; width:${percent}%; height:${percent}%; margin: 0; padding: 0 }
+        body { position:absolute; top:0; left:0; width:${percent}%; height:${percent}%; margin: 0; padding: 0 }
         #map { width: 100%; height: 100% }
         #directions { display: none }
+
+        .ContextMenu {
+            position: absolute;
+            z-index: 1000;
+            display: none;
+            background: #f0f0f0;
+            border: 1px solid #a0a0a0;
+            min-width: 90px;
+        }
+        .ContextMenu ul {
+            padding: 1px 0 1px 0;
+            margin: 0;
+        }
+        .ContextMenu li {
+            list-style: none;
+            padding: 0 1px;
+            margin: 0;
+        }
+        .ContextMenu a {
+            display: block;
+            color: #000000;
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 10px;
+            text-decoration: none;
+            line-height: 22px;
+            padding: 1px 8px;
+        }
+        .ContextMenu li.hover a {
+            background-color: #ecf1f6;
+            border: 1px solid #aecff7;
+        }
+        .ContextMenu li.separator div {
+            border-top: solid 1px #cccccc;
+        }
     </style>
 </head>
-<body onunload="unload();"
+<body onload="initialize();"
       ondragstart="return false;" onselectstart="return false;"
       ondragenter="return false;" ondragover="return false;"
       ondrop="return false;" oncontextmenu="return false;">
@@ -21,19 +54,6 @@
 <div id="map"></div>
 <div id="directions"></div>
 <script type="text/javascript">
-   function isLoaded() {
-       return window.GBrowserIsCompatible;
-   }
-
-   function isCompatible() {
-       return isLoaded() && GBrowserIsCompatible();
-   }
-
-   function unload() {
-       if (isLoaded())
-           GUnload();
-   }
-
    function printMap(withDirections) {
        var div = document.getElementById("directions");
        if (withDirections)
@@ -89,28 +109,30 @@
        callJava("callback-port/" + callbackListenerPort);
    }
 
-   function setMapType(mapType) {
-       var types = map.getMapTypes();
-       for (var i=0; i < types.length; i++) {
-           var type = types[i];
-           if(type.getName() == mapType) {
-               map.setMapType(type);
-               break;
-           }
-       }
-   }
-
-   function addListener(marker, index) {
-       GEvent.addListener(marker, "dragend", function() {
-           var ll = marker.getLatLng();
-           callJava("move-position/" + index + "/" + ll.lat() + "/" + ll.lng());
+   function addListener(marker) {
+       google.maps.event.addListener(marker, "dragend", function() {
+           var position = marker.getPosition();
+           var index = marker.index_;
+           callJava("move-position/" + index + "/" + position.lat() + "/" + position.lng());
        });
    }
 
+   var oldMarkers = new Array();
+   var newMarkers = new Array();
+
    function addMarker(marker, index) {
        marker.index_ = index;
-       addListener(marker, index);
-       map.addOverlay(marker);
+       addListener(marker);
+       newMarkers.push(marker);
+       marker.setMap(map);
+   }
+
+   function removeMarkers() {
+       while (oldMarkers.length > 0) {
+           oldMarkers.pop().setMap(null);
+       }
+       oldMarkers = newMarkers;
+       newMarkers = new Array();
    }
 
    function centerMap(latlng) {
@@ -118,68 +140,83 @@
            map.panTo(latlng);
    }
 
-   function insertAllWaypoints(index) {
-       var directions = new GDirections(null, null);
-       GEvent.addListener(directions, "load", function() {
-           var polyline = directions.getPolyline();
-           var result = [];
-           for (var i = 0; i < polyline.getVertexCount(); i++) {
-               var vertex = polyline.getVertex(i);
-               result.push(vertex.lat());
-               result.push(vertex.lng());
-               result.push(0);
-               result.push(0);
-           }
-           callJavaWithPost("Insert-All-Waypoints: " + index + "/" + result.join("/") + "\n\n");
-       });
-       return directions;
-   }
-
-   function insertOnlyTurnpoints(index) {
-       var directions = new GDirections(null, null);
-       GEvent.addListener(directions, "load", function() {
-           for (var i = 0; i < directions.getNumRoutes(); i++) {
-               var route = directions.getRoute(i);
-               var result = [];
-               for (var j = 0; j < route.getNumSteps(); j++) {
-                   var step = route.getStep(j);
-                   result.push(step.getLatLng().lat());
-                   result.push(step.getLatLng().lng());
-                   result.push(step.getDistance().meters);
-                   result.push(step.getDuration().seconds);
+   function insertAllWaypoints(directionsRequest, index) {
+       directionsService.route(directionsRequest, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+               for (var i = 0; i < result.routes.length; i++) {
+                   var legs = result.routes[i].legs;
+                   var waypoints = [];
+                   for (var j = 0; j < legs.length; j++) {
+                       var steps = legs[j].steps;
+                       for (var k = 0; k < steps.length; k++) {
+                           var path = steps[k].path;
+                           for (var l = 0; l < path.length; l++) {
+                               waypoints.push(path[l].lat());
+                               waypoints.push(path[l].lng());
+                               waypoints.push(l == path.length - 1 ? steps[k].distance.value : 0);
+                               waypoints.push(l == path.length - 1 ? steps[k].duration.value : 0);
+                           }
+                       }
+                   }
+                   callJavaWithPost("Insert-All-Waypoints: " + index + "/" + waypoints.join("/") + "\n\n");
                }
-               callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + result.join("/") + "\n\n");
+           } else {
+               addDebug(status);
+               setError(result);
            }
        });
-       return directions;
    }
 
-   function createDirections() {
-       var directions = new GDirections(null, document.getElementById("directions"));
-       GEvent.addListener(directions, "load", function() {
-           callJava("load/" + directions.getDistance().meters + "/" + directions.getDuration().seconds);
-           for (var i = 0; i < directions.getNumGeocodes(); i++) {
-               directions.getMarker(i).hide();
+   function insertOnlyTurnpoints(directionsRequest, index) {
+       directionsService.route(directionsRequest, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+               for (var i = 0; i < result.routes.length; i++) {
+                   var legs = result.routes[i].legs;
+                   var turnpoints = [];
+                   for (var j = 0; j < legs.length; j++) {
+                       var steps = legs[j].steps;
+                       for (var k = 0; k < steps.length; k++) {
+                           turnpoints.push(steps[k].end_location.lat());
+                           turnpoints.push(steps[k].end_location.lng());
+                           turnpoints.push(steps[k].distance.value);
+                           turnpoints.push(steps[k].duration.value);
+                       }
+                   }
+                   callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + turnpoints.join("/") + "\n\n");
+               }
+           } else {
+               addDebug(status);
+               setError(result);
            }
-           addDirection(directions);
        });
-       return directions;
    }
 
-   var displayedDirections = new Array();
+   function addDirections(directionsRequest) {
+       directionsService.route(directionsRequest, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+               var directions = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true});
+               // TODO draggable: true
+               directions.setDirections(result);
+               addOverlay(directions);
 
-   function addDirection(direction) {
-       map.addOverlay(direction.getPolyline());
-       displayedDirections.push(direction);
+               var meters = 0;
+               var seconds = 0;
+               for (var i = 0; i < result.routes.length; i++) {
+                   var legs = result.routes[i].legs;
+                   for (var j = 0; j < legs.length; j++) {
+                       meters += legs[j].distance.value;
+                       seconds += legs[j].duration.value;
+                   }
+               }
+               callJava("load/" + meters + "/" + seconds);
+           } else {
+               addDebug(status);
+               setError(result.routes);
+           }
+       });
    }
 
    function removeDirections() {
-       while (displayedDirections.length > 0) {
-           var direction = displayedDirections.pop();
-           if (direction.getPolyline() != null)
-               map.removeOverlay(direction.getPolyline());
-       }
-       displayedDirections = new Array();
        var element = document.getElementById("directions");
        while (element.hasChildNodes()) {
            element.removeChild(element.lastChild);
@@ -190,13 +227,15 @@
    var newOverlays = new Array();
 
    function addOverlay(overlay) {
-       map.addOverlay(overlay);
        newOverlays.push(overlay);
    }
 
-   function removeOverlays() {
+   function toggleOverlays() {
+       for (i = 0; i < newOverlays.length; i++) {
+           newOverlays[i].setMap(map);
+       }
        while (oldOverlays.length > 0) {
-           map.removeOverlay(oldOverlays.pop());
+           oldOverlays.pop().setMap(null);
        }
        oldOverlays = newOverlays;
        newOverlays = new Array();
@@ -228,187 +267,133 @@
        error.appendChild(debug);
    }
 
-   if (isLoaded()) {
-       addDebug("1. isLoaded():" + (isLoaded() != null));
+   var initialized, map, directionsService, markerIcon, xmlhttp;
+
+   function initialize() {
+       initialized = false;
+       addDebug("1. initialize()");
        try {
-           if (GBrowserIsCompatible()) {
-               addDebug("2. GBrowserIsCompatible():" + GBrowserIsCompatible());
-               addDebug("3. isCompatible():" + isCompatible());
+           var mapnikMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: new google.maps.Size(256, 256),
+               maxZoom: 18,
+               alt: "Mapnik rendering of OpenStreetMap data",
+               name: "Mapnik"
+           });
+           var tahMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://tah.openstreetmap.org/Tiles/tile/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: new google.maps.Size(256, 256),
+               maxZoom: 17,
+               alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data",
+               name: "T@H"
+           });
+           var cycleMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://tile.opencyclemap.org/cycle/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: new google.maps.Size(256, 256),
+               maxZoom: 17,
+               alt: "opencyclemap rendering of OpenStreetMap data",
+               name: "Cycle"
+           });
+           var hikeMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: new google.maps.Size(256, 256),
+               maxZoom: 17,
+               alt: "hikebikemap rendering of OpenStreetMap data",
+               name: "Hike"
+           });
+           var outdoorMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   return "http://t3.outdooractive.com/portal/map/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: new google.maps.Size(256, 256),
+               minZoom: 8,
+               maxZoom: 17,
+               alt: "Outdoor Active Map",
+               name: "Outdoor"
+           });
 
-               var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "(CC-by-sa)");
-               var copyrightCollection = new GCopyrightCollection("&copy; OpenStreetMap");
-               copyrightCollection.addCopyright(copyright);
-               // "http://t3.outdooractive.com/portal/map/" + b + "/" + a.x + "/" + a.y + ".png"
-               // "http://toolserver.org/tiles/hikebike/" + b + "/" + a.x + "/" + a.y + ".png"
-               var tilelayers_mapnik = new Array();
-               tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
-               tilelayers_mapnik[0].getTileUrl = function(a, b) {
-                   return "http://tile.openstreetmap.org/" + b + "/" + a.x + "/" + a.y + ".png";
-               };
-               tilelayers_mapnik[0].getOpacity = function () {
-                   return 1.0;
-               };
-               var tilelayers_tah = new Array();
-               tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
-               tilelayers_tah[0].getTileUrl = function(a, b) {
-                   return "http://tah.openstreetmap.org/Tiles/tile/" + b + "/" + a.x + "/" + a.y + ".png";
-               };
-               tilelayers_tah[0].getOpacity = function () {
-                   return 1.0;
-               };
-               var tilelayers_cyc = new Array();
-               tilelayers_cyc[0] = new GTileLayer(copyrightCollection, 0, 17);
-               tilelayers_cyc[0].getTileUrl = function(a, b) {
-                   return "http://andy.sandbox.cloudmade.com/tiles/cycle/" + b + "/" + a.x + "/" + a.y + ".png";
-               };
-               tilelayers_cyc[0].getOpacity = function () {
-                   return 1.0;
-               };
-               var tilelayers_hike = new Array();
-               tilelayers_hike[0] = new GTileLayer(copyrightCollection, 0   , 17);
-               tilelayers_hike[0].getTileUrl = function(a, b) {
-                   return "http://toolserver.org/tiles/hikebike/" + b + "/" + a.x + "/" + a.y + ".png";
-               };
-               tilelayers_hike[0].getOpacity = function () {
-                   return 1.0;
-               };
-               mapnikMap = new GMapType(tilelayers_mapnik, new GMercatorProjection(19), "Mapnik", { alt: "Mapnik rendering of OpenStreetMap data", errorMessage: "We're sorry but the Mapnik server cannnot serve the map for this request. Try to zoom out." });
-               tahMap = new GMapType(tilelayers_tah, new GMercatorProjection(18), "T@H", { alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data", errorMessage: "We're sorry but the T@H server cannnot serve the map for this request. Try to zoom out." });
-               cycleMap = new GMapType(tilelayers_cyc, new GMercatorProjection(18), "Cycle", { alt: "OSM Cycle Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Cycle server cannnot serve the map for this request. Try to zoom out." });
-               hikeMap = new GMapType(tilelayers_hike, new GMercatorProjection(18), "Hike", { alt: "OSM Hike Map rendering of OpenStreetMap data", errorMessage: "We're sorry but the Hike server cannnot serve the map for this request. Try to zoom out." });
-               addDebug("4. added OSM tile layers");
+           var mapOptions = {
+               zoom: 2,
+               center: new google.maps.LatLng(35.0, -25.0),
+               mapTypeId: google.maps.MapTypeId.ROADMAP,
+               mapTypeControlOptions: {
+                   mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
+                       google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
+                       'Mapnik', 'T@H', 'Cycle', 'Hike', 'Outdoor'],
+                   style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+               },
+               disableDefaultUI: false,
+               streetViewControl: false,
+               scaleControl: true,
+               draggableCursor: 'default',
+               draggingCursor: 'pointer'
+           };
+           map = new google.maps.Map(document.getElementById("map"), mapOptions);
+           map.mapTypes.set('Mapnik', mapnikMapType);
+           map.mapTypes.set('T@H', tahMapType);
+           map.mapTypes.set('Cycle', cycleMapType);
+           map.mapTypes.set('Hike', hikeMapType);
+           // map.mapTypes.set('Outdoor', outdoorMapType);
+           addDebug("2. created map: " + map);
 
-               var map = new GMap2(document.getElementById("map"), { mapTypes:[G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP, mapnikMap, tahMap, cycleMap, hikeMap], draggableCursor: 'default', draggingCursor: 'pointer' });
-               map.addControl(new GLargeMapControl());
-               map.addControl(new GMapTypeControl());
-               map.addControl(new ContextMenuControl());
-               map.addControl(new GScaleControl());
+           var menu = new ContextMenu({map:map});
+           menu.addItem('Insert', function(map, latLng) {
+               callJava("insert-position/" + latLng.lat() + "/" + latLng.lng());
+           });
+           menu.addItem('Remove', function(map, latLng) {
+               callJava("remove-position/" + latLng.lat() + "/" + latLng.lng());
+           });
+           menu.addSep();
+           menu.addItem('Center Here', function(map, latLng) {
+               map.panTo(latLng);
+           });
+           menu.addItem('Zoom In', function(map, latLng) {
+               map.setZoom(map.getZoom() + 1);
+               map.panTo(latLng);
+           });
+           menu.addItem('Zoom Out', function(map, latLng) {
+               map.setZoom(map.getZoom() - 1);
+               map.panTo(latLng);
+           });
 
-               map.setCenter(new GLatLng(35.0, -25.0), 2);
-               map.enableScrollWheelZoom();
-//               map.disableDoubleClickZoom();
+           directionsService = new google.maps.DirectionsService();
+           markerIcon = new google.maps.MarkerImage(
+                   "http://${mapserver}/mapfiles/kml/shapes/placemark_circle_maps.png",
+                   new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
 
-//               if ( map.enableKeyDragZoom )
-//               map.enableKeyDragZoom({
-//                 key: "shift",
-//                 boxStyle: {
-//                   border: "2px blue",
-//                   backgroundColor: "transparent",
-//                   opacity: 1.0
-//                 },
-//                 veilStyle: {
-//                   backgroundColor: "white",
-//                   opacity: 0.15,
-//                   cursor: "crosshair"
-//                 },
-//                 visualEnabled: true
-//               });
+           google.maps.event.addListener(map, "maptypeid_changed", function() {
+               callJava("maptypechanged/" + map.getMapTypeId());
+           });
+           google.maps.event.addListener(map, "zoom_changed", function() {
+               callJava("zoomed");
+           });
 
-
-               addDebug("5. created GMap2: " + map);
-
-               var markerIcon = new GIcon();
-               markerIcon.image = "http://${mapserver}/mapfiles/kml/shapes/placemark_circle_maps.png";
-               markerIcon.iconSize = new GSize(32, 32);
-               markerIcon.shadowSize = markerIcon.iconSize;
-               markerIcon.iconAnchor = new GPoint(14, 16);
-
-               
-
-               GEvent.addListener(map, "maptypechanged", function() {
-                   callJava("maptypechanged/" + map.getCurrentMapType().getName());
-               });
-
-               GEvent.addListener(map, "zoomend", function(oldLevel, newLevel){
-                     callJava("zoomend/" + oldLevel + "/" + newLevel);
-               });
-
-               function getDistanceForPixelLength( latlng, pixel )
-               {
-                    var zoomlevel = map.getZoom()
-                    var   p = new GPoint();
-                    p = map.getCurrentMapType().getProjection().fromLatLngToPixel( latlng, zoomlevel );
-
-                    p.x = p.x + pixel;
-                    var P = new GLatLng();
-                    P = map.getCurrentMapType().getProjection().fromPixelToLatLng( p, zoomlevel );
-
-                    return latlng.distanceFrom( P )
-
-               }
-
-               function handleMouseClick( overlay, latlng, ovlerlaylatlng) {
-                   var shiftKey = event.shiftKey;
-                   var ctrlKey = event.ctrlKey;
-                   var altKey  = event.altKey;
-
-                   var distance = 0;
-                    //if ( shiftKey || ctrlKey || altKey )
-                    distance = getDistanceForPixelLength( latlng, referencePixelLength ) ;
-
-                    // select a position within a certain radius from the current mouse position
-                    // radius depends on current zoom level
-                    // this works quite well when working with waypoints
-                    if (!altKey && !shiftKey && !ctrlKey) {
-                        callJava("select-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
-                    }
-                    // select a position nearest to current mouse position
-                    // this works better for routes and tracks as we do not see the positions but only the connecting lines
-                    if (shiftKey && !altKey &&  !ctrlKey) {
-
-                        callJava("select-position/" + latlng.lat() + "/" + latlng.lng());
-                    }
-                    // select or toggle selection state within distance and keep other positions selected
-                    else if (ctrlKey && !altKey && !shiftKey) {
-                    }
-                    // select or toggle selection state nearest position to mouse and keep other positions selected
-                    else if (ctrlKey && shiftKey && !altKey) {
-                    }
-                    // add a position at current mouse location
-                    else if (altKey && !ctrlKey && !shiftKey) {
-                        callJava("insert-position/" + latlng.lat() + "/" + latlng.lng());
-
-                    }
-                    // delete a position within a certain radius from the current mouse position
-                    // radius depends on current zoom level
-                    else if (shiftKey && ctrlKey && altKey) {
-                        callJava("delete-position-within-distance/" + latlng.lat() + "/" + latlng.lng()+"/"+distance);
-                    }
-
-               }
-
-                var referencePixelLength = 15;
-
-               GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
-                   if (event.stopPropagation) event.stopPropagation();
-                   handleMouseClick( overlay, latlng, overlaylatlng );
-               });
-
-               GEvent.addListener(map, "dblclick", function(overlay, latlng, overlaylatlng) {
-                   handleMouseClick( overlay, latlng, overlaylatlng );
-                   if (event.stopPropagation) event.stopPropagation();
-               });
-
+           try {
+               xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+               addDebug("3. created Microsoft XMLHttpRequest");
+               initialized = true;
+           }
+           catch (e) {
                try {
-                   var xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                   xmlhttp = new XMLHttpRequest();
+                   addDebug("3. created XMLHttpRequest");
+                   initialized = true;
                }
                catch (e) {
-                   try {
-                       var xmlhttp = new XMLHttpRequest();
-                       addDebug("6. created XMLHttpRequest");
-                   }
-                   catch (e) {
-                       setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
-                   }
+                   setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
                }
-           } else {
-               setError("<p>Sorry, Google Maps is not compatible</p><p>with this browser.</p>");
            }
        } catch (e) {
            setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
        }
-   } else {
-       setError("<p>Sorry, could not access Google Maps.</p><p>Please check your Internet connection.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
    }
 </script>
 </body>

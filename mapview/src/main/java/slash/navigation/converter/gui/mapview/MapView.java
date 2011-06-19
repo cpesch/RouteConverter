@@ -39,7 +39,8 @@ public interface MapView extends PositionsSelectionModel {
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
                     PositionAugmenter positionAugmenter,
-                    boolean recenterAfterZooming, boolean pedestrians, boolean avoidHighways);
+                    boolean recenterAfterZooming,
+                    TravelMode travelMode, boolean avoidHighways, boolean avoidTolls);
     boolean isSupportedPlatform();
     boolean isInitialized();
     Throwable getInitializationCause();
@@ -49,11 +50,12 @@ public interface MapView extends PositionsSelectionModel {
 
     void resize();
     void setRecenterAfterZooming(boolean recenterAfterZooming);
-    void setPedestrians(boolean pedestrians);
+    void setTravelMode(TravelMode travelMode);
     void setAvoidHighways(boolean avoidHighways);
+    void setAvoidTolls(boolean avoidTolls);
     BaseNavigationPosition getCenter();
     void print(boolean withRoute);
-    
+
     void addMapViewListener(MapViewListener listener);
     void removeMapViewListener(MapViewListener listener);
 

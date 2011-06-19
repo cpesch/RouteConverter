@@ -31,6 +31,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.*;
+import static slash.navigation.util.NumberPattern.*;
+import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 public class BcrRouteTest {
     BcrRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
@@ -469,6 +471,21 @@ public class BcrRouteTest {
     }
 
     @Test
+    public void testGetNumberPositions() {
+        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_ONLY));
+        assertEquals("006Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "9 Position 9"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "8Position 9"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position7 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006 aPosition 6a", getNumberedPosition(new BcrPosition(1, 2, 3, "aPositiona5a"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006 a", getNumberedPosition(new BcrPosition(1, 2, 3, "04a"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " 3 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, "0002"), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
+    }
+
+    @Test
     public void testNumberPositionsWithGetNumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
@@ -477,7 +494,7 @@ public class BcrRouteTest {
 
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(RouteComments.getNumberedPosition(position, i, 0, false));
+            position.setComment(getNumberedPosition(position, i, 0, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
         }
 
         for (int i = 0; i < positions.size(); i++) {
@@ -490,7 +507,7 @@ public class BcrRouteTest {
         // check renumbering, add space
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(RouteComments.getNumberedPosition(position, i, 0, true));
+            position.setComment(getNumberedPosition(position, i, 0, NUMBER_SPACE_THEN_DESCRIPTION));
         }
 
         for (int i = 0; i < positions.size(); i++) {
@@ -503,21 +520,12 @@ public class BcrRouteTest {
         // check renumbering, check remove space again but have 2 digits and leading zeros
         for (int i = 0; i < positions.size(); i++) {
             BcrPosition position = positions.get(i);
-            position.setComment(RouteComments.getNumberedPosition(position, i, 2, false));
+            position.setComment(getNumberedPosition(position, i, 2, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
         }
 
         for (int i = 0; i < positions.size(); i++) {
             assertEquals(Transfer.formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
         }
-    }
-
-    @Test
-    public void testGetNumberPositions() {
-        assertEquals("006 Position 6", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, true));
-        assertEquals("006 Position 6", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, " Position9 "), 5, 3, true));
-        assertEquals("006 aPosition 6a", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, "aPositiona9a"), 5, 3, true));
-        assertEquals("006 a", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, "09a"), 5, 3, true));
-        assertEquals("006", RouteComments.getNumberedPosition(new BcrPosition(1, 2, 3, "09"), 5, 3, true));
     }
 
     @Test
