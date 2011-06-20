@@ -107,8 +107,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return getRoute().getInsignificantPositions(threshold);
     }
 
-    public int getClosestPositionFor(double longitude, double latitude) {
-        return getRoute().getClosestPositionFor(longitude, latitude);
+    public int getClosestPosition(double longitude, double latitude, double threshold) {
+        return getRoute().getClosestPosition(longitude, latitude, threshold);
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {

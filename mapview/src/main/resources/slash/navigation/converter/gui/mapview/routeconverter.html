@@ -267,6 +267,14 @@
        error.appendChild(debug);
    }
 
+   function getThresholdForPixel(map, latLng, pixel) {
+       var worldCoordinate = map.getProjection().fromLatLngToPoint(latLng);
+       var scale = Math.pow(2, map.getZoom());
+       worldCoordinate.x = worldCoordinate.x + pixel / scale;
+       var pixelAway = map.getProjection().fromPointToLatLng(worldCoordinate);
+       return google.maps.geometry.spherical.computeDistanceBetween(latLng, pixelAway);
+   }
+
    var initialized, map, directionsService, markerIcon, xmlhttp;
 
    function initialize() {
@@ -346,13 +354,13 @@
 
            var menu = new ContextMenu({map:map});
            menu.addItem('Select', function(map, latLng) {
-               callJava("select-position/" + latLng.lat() + "/" + latLng.lng());
+               callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
            });
            menu.addItem('Insert', function(map, latLng) {
                callJava("insert-position/" + latLng.lat() + "/" + latLng.lng());
            });
            menu.addItem('Remove', function(map, latLng) {
-               callJava("remove-position/" + latLng.lat() + "/" + latLng.lng());
+               callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
            });
            menu.addSep();
            menu.addItem('Center Here', function(map, latLng) {
