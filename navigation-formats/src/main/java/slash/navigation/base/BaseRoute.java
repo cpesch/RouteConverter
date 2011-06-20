@@ -194,6 +194,22 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public int getClosestPositionFor(double longitude, double latitude) {
+        int closestIndex = -1;
+        double closestDistance = Double.MAX_VALUE;
+
+        List<P> positions = getPositions();
+        for (int i = 0; i < positions.size(); ++i) {
+            P point = positions.get(i);
+            Double distance = point.calculateDistance(longitude, latitude);
+            if (distance != null && distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+        return closestIndex;
+    }
+
     public P getPosition(int index) {
         return getPositions().get(index);
     }

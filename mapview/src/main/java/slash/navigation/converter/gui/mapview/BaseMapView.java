@@ -1192,6 +1192,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
     private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)$");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
     private static final Pattern ZOOMED_PATTERN = Pattern.compile("^zoomed$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
@@ -1239,6 +1240,18 @@ public abstract class BaseMapView implements MapView {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     removePosition(longitude, latitude);
+                }
+            });
+            return true;
+        }
+
+        Matcher selectPositionMatcher = SELECT_POSITION_PATTERN.matcher(callback);
+        if (selectPositionMatcher.matches()) {
+            final Double latitude = Transfer.parseDouble(selectPositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(selectPositionMatcher.group(2));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPosition(longitude, latitude);
                 }
             });
             return true;
@@ -1409,15 +1422,6 @@ public abstract class BaseMapView implements MapView {
         return row;
     }
 
-    private int getDeleteRow(Double longitude, Double latitude) {
-        for (int i = 0; i < positionsModel.getRowCount(); i++) {
-            BaseNavigationPosition position = positionsModel.getPosition(i);
-            if (position.getLongitude().equals(longitude) && position.getLatitude().equals(latitude))
-                return i;
-        }
-        return -1;
-    }
-
     private void movePosition(int row, Double longitude, Double latitude) {
         positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
         positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
@@ -1440,8 +1444,14 @@ public abstract class BaseMapView implements MapView {
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
     }
 
+    private void selectPosition(Double longitude, Double latitude) {
+        int row = positionsModel.getClosestPositionFor(longitude, latitude);
+        if (row != -1)
+            positionsSelectionModel.setSelectedPositions(new int[]{row});
+    }
+
     private void removePosition(Double longitude, Double latitude) {
-        int row = getDeleteRow(longitude, latitude);
+        int row = positionsModel.getClosestPositionFor(longitude, latitude);
         if (row != -1) {
             positionsModel.remove(new int[]{row});
 

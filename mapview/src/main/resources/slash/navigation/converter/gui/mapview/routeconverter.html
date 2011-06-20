@@ -345,6 +345,9 @@
            addDebug("2. created map: " + map);
 
            var menu = new ContextMenu({map:map});
+           menu.addItem('Select', function(map, latLng) {
+               callJava("select-position/" + latLng.lat() + "/" + latLng.lng());
+           });
            menu.addItem('Insert', function(map, latLng) {
                callJava("insert-position/" + latLng.lat() + "/" + latLng.lng());
            });
