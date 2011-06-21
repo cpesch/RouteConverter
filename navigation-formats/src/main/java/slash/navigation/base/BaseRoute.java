@@ -172,6 +172,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         P previous = positions.get(0);
         for (int i = 1; i < positions.size() - 1; i++) {
             P next = positions.get(i);
+            // TODO this seems to be kind of odd, I would guess that if !next.hasCoordinates the index should not be added to the result
             if (!next.hasCoordinates() || next.calculateDistance(previous) <= distance)
                 result.add(i);
             else
@@ -356,8 +357,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     private List<Double> getDistances(double longitude, double latitude, List<P> positions)
     {
         List<Double> result = new ArrayList<Double>();
-        for (int i = 0; i < positions.size() ; ++i) {
-            P point = positions.get(i);
+        for (P point : positions) {
             if (point.hasCoordinates() )
                 result.add( point.calculateDistance(longitude, latitude) );
             else
