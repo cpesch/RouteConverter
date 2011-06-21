@@ -1459,12 +1459,10 @@ public abstract class BaseMapView implements MapView {
 
     }
 
-    private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance)
-    {
+    private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance) {
         int row = positionsModel.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
         if ( row < Integer.MAX_VALUE )
             positionsSelectionModel.setSelectedPositions(new int[]{row});
-
     }
 
 	private void deletePosition( Double longitude, Double latitude) {

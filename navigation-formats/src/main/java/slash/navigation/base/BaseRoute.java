@@ -353,10 +353,9 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         setName(routeName);
     }
 
-    public int getNearestPositionsToCoordinates( double longitude, double latitude) {
+    private List<Double> getDistances(double longitude, double latitude, List<P> positions)
+    {
         List<Double> result = new ArrayList<Double>();
-        List<P> positions = getPositions();
-
         for (int i = 0; i < positions.size() ; ++i) {
             P point = positions.get(i);
             if (point.hasCoordinates() )
@@ -364,43 +363,39 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             else
                 result.add( Double.MAX_VALUE);
         }
+        return result;
+    }
 
+    private int getMinimumIndexOfDistanceCollection( List<Double> distances )
+    {
         Double minimum = Double.MAX_VALUE;
         int index = Integer.MAX_VALUE;
-        int size = result.size();
+        int size = distances.size();
         for (int i = 0; i < size; ++i) {
-            if (minimum > result.get(i)) {
-                minimum = result.get(i);
+            if (minimum > distances.get(i)) {
+                minimum = distances.get(i);
                 index = i;
             }
         }
         return index;
     }
 
-    public int getNearestPositionsToCoordinatesWithinDistance( double longitude, double latitude, double distance) {
-        List<Double> result = new ArrayList<Double>();
+    public int getNearestPositionsToCoordinates( double longitude, double latitude) {
         List<P> positions = getPositions();
+        List<Double> result = getDistances( longitude, latitude, positions);
 
-        for (int i = 0; i < positions.size() ; ++i) {
-            P point = positions.get(i);
-            if (point.hasCoordinates() )
-                result.add( point.calculateDistance(longitude, latitude) );
-            else
-                result.add( Double.MAX_VALUE);
-        }
+        int indexMin = getMinimumIndexOfDistanceCollection( result );
+        return indexMin;
+    }
 
-        Double minimum = Double.MAX_VALUE;
-        int index = Integer.MAX_VALUE;
-        int size = result.size();
-        for (int i = 0; i < size; ++i) {
-            if (minimum > result.get(i)) {
-                minimum = result.get(i);
-                index = i;
-            }
-        }
+    public int getNearestPositionsToCoordinatesWithinDistance( double longitude, double latitude, double distance) {
+        List<P> positions = getPositions();
+        List<Double> result = getDistances( longitude, latitude, positions);
 
-        if (result.get(index) <= distance)
-            return index;
+        int indexMin = getMinimumIndexOfDistanceCollection( result );
+
+        if (result.get(indexMin) <= distance)
+            return indexMin;
 
         return Integer.MAX_VALUE;
     }
