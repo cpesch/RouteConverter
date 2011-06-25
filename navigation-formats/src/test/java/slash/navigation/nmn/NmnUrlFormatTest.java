@@ -32,6 +32,16 @@ import static slash.common.TestCase.assertDoubleEquals;
 public class NmnUrlFormatTest {
     private static final String TARGET_COORDINATE_URL = "<a href=\"navigonDEU://route/?target=coordinate//7.273085/51.411354&amp;target=coordinate//7.305422/51.410168&amp;target=coordinate//7.340269/51.428253&amp;target=coordinate//7.388512/51.407173&amp;target=coordinate//7.455643/51.422134&amp;target=coordinate//7.506969/51.422310&amp;target=coordinate//7.538937/51.405663&amp;target=coordinate//7.591082/51.411518&amp;target=coordinate//7.654833/51.411278&amp;target=coordinate//7.677935/51.402477&amp;target=coordinate//7.720705/51.407127&amp;target=coordinate//7.746279/51.434059&amp;target=coordinate//7.838520/51.438408&amp;target=coordinate//7.911991/51.426926&amp;target=coordinate//7.932663/51.411076&amp;target=coordinate//7.935606/51.377350&amp;target=coordinate//7.933142/51.357689&amp;target=coordinate//7.942778/51.343704&amp;target=coordinate//8.006210/51.285271&amp;target=coordinate//8.079313/51.290840&amp;target=coordinate//8.079969/51.346352&amp;target=coordinate//8.055506/51.392109&amp;target=coordinate//8.076488/51.437889&amp;target=coordinate//8.118202/51.483131&amp;target=coordinate//8.163364/51.491737\">51°24'41\"N, 07°16'23\"O, Kämpenstrasse, 58456 Witten ? 51°24'37\"N, 07°18'20\"O, Rauendahlstrasse, 58452 Witten ? 51°25'42\"N, 07°20'25\"O, Ruhrdeich, 58452 Witten ? 51°24'26\"N, 07°23'19\"O, Ender Talstrasse, 58313 Herdecke ? 51°25'20\"N, 07°27'20\"O, Wittbräucker Strasse, 58313 Herdecke ? 51°25'20\"N, 07°30'25\"O, Westhofener Strasse, 44265 Dortmund ? 51°24'20\"N, 07°32'20\"O, Ruhrtalstrasse, 58239 Schwerte ? 51°24'41\"N, 07°35'28\"O, Steinberg, 58239 Schwerte ? 51°24'41\"N, 07°39'17\"O, Schirrnbergstrasse, 58640 Iserlohn ? 51°24'09\"N, 07°40'41\"O, Leckingser Strasse, 58640 Iserlohn ? 51°24'26\"N, 07°43'15\"O, Landhauser Strasse, 58640 Iserlohn ? 51°26'03\"N, 07°44'47\"O, Bräukerweg, 58708 Menden (Sauerland) ? 51°26'18\"N, 07°50'19\"O, K21, 58708 Menden (Sauerland) ? 51°25'37\"N, 07°54'43\"O, Bieberstrasse, 59757 Arnsberg ? 51°24'40\"N, 07°55'58\"O, K1, 59757 Arnsberg ? 51°22'38\"N, 07°56'08\"O, L544, 59846 Sundern (Sauerland) ? 51°21'28\"N, 07°55'59\"O, L544, 59846 Sundern (Sauerland) ? 51°20'37\"N, 07°56'34\"O, L687, 59846 Sundern (Sauerland) ? 51°17'07\"N, 08°00'22\"O, L842, 59846 Sundern (Sauerland) ? 51°17'27\"N, 08°04'46\"O, K24, 59846 Sundern (Sauerland) ? 51°20'47\"N, 08°04'48\"O, L839, 59846 Sundern (Sauerland) ? 51°23'32\"N, 08°03'20\"O, Altes Feld, 59821 Arnsberg ? 51°26'16\"N, 08°04'35\"O, K8, 59823 Arnsberg ? 51°28'59\"N, 08°07'06\"O, L857, 59519 Möhnesee ? 51°29'30\"N, 08°09'48\"O, Seeuferstrasse, 59519 Möhnesee</a>";
     private static final String TARGET_ADDRESS_URL = "<a href=\"navigonDEU://route/?target=address//DEU/44797/BOCHUM/UNTERM%20KOLM/11/7.23153/51.43851&amp;target=address//DEU/44227/DORTMUND/MARTIN-SCHMEISSER-WEG/8/7.40361/51.49144\">Unterm Kolm 11, 44797 Bochum ? Martin-Schmeisser-Weg 8, 44227 Dorstfeld, Dortmund</a>";
+    private static final String TARGET_ADDRESS_URL2 = "<a\n" +
+            "href=\"navigonDEU://route/?target=address//DEU/79539/L%C3%96RRACH/BAHNHOFSPLATZ//7.66474/47.61403/////BAHNHOF%20L%C3%96RRACH&amp;target=coordinate//7.804354/47.537415&amp;target=coordinate//7.899921/47.467670&amp;target=coordinate//8.053896/46.813164&amp;target=address//CHE/3863/GADMEN/SUSTENPASS//8.44719/46.72941/////SUSTENPASS&amp;target=address//CHE/7482/BERG%C3%9CN%252FBRAVUOGN/ALBULA//9.79694/46.57997&amp;target=coordinate//10.379776/46.466843&amp;target=coordinate//10.581059/46.258007&amp;target=address//AUT/1050/WIEN/MARGARETENG%C3%9CRTEL//16.35795/48.18033/////BAHNHOF%20WIEN%20MATZLEINSDORFER%20PLATZ\">Bahnhof\n" +
+            "Lörrach, Bahnhofsplatz, 79539 Lörrach ? 47°32'15&quot;N, 07°48'16&quot;O,\n" +
+            "Hauptstrasse, 4312 Magden ? 47°28'04&quot;N, 07°54'00&quot;O,\n" +
+            "Ormalingerstrasse, 4467 Rothenfluh ? 46°48'47&quot;N, 08°03'14&quot;O,\n" +
+            "Panoramastrasse, 6173 Flühli ? Sustenpass, Sustenpass, 3863 Sustenpass, Gadmen\n" +
+            "? Albula, 7482 Preda, Bergün/Bravuogn ? 46°28'01&quot;N, 10°22'47&quot;O, Via\n" +
+            "Monte Cristallo, 23032 Bormio ? 46°15'29&quot;N, 10°34'52&quot;O, Passo Del\n" +
+            "Tonale, 25056 Ponte Di Legno ? Bahnhof Wien Matzleinsdorfer Platz,\n" +
+            "Margaretengürtel, 1050 5. Bezirk-Margareten, Wien</a>";
     private static final String USA_URL = "navigonUSA-CA://route/?target=address//USA-CA/CA%2092120/SAN%20DIEGO/ALVARADO%20CANYON%20RD/4620/-117.09521/32.78042&amp;target=address//USA-NV/NV%2089101/LAS%20VEGAS///-115.13997/36.17191";
 
     NmnUrlFormat urlFormat = new NmnUrlFormat();
@@ -79,6 +89,17 @@ public class NmnUrlFormatTest {
         assertDoubleEquals(7.40361, position2.getLongitude());
         assertDoubleEquals(51.49144, position2.getLatitude());
         assertEquals("44227 Dortmund, Martin-Schmeisser-Weg 8", position2.getComment());
+    }
+
+    @Test
+    public void testParsePositionsFromTargetAddressUrl2() {
+        List<Wgs84Position> positions = urlFormat.parsePositions(TARGET_ADDRESS_URL2);
+        assertNotNull(positions);
+        assertEquals(9, positions.size());
+        Wgs84Position position4 = positions.get(4);
+        assertDoubleEquals(8.44719, position4.getLongitude());
+        assertDoubleEquals(46.72941, position4.getLatitude());
+        assertEquals("3863 Gadmen, Sustenpass", position4.getComment());
     }
 
     @Test
