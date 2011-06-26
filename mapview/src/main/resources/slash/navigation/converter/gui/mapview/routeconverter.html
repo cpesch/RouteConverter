@@ -268,39 +268,13 @@
        error.appendChild(debug);
    }
 
-
-/**@private
-   * In V3 it is quite hard to gain access to Projection and Panes.
-   * This is a helper class
-   * @param {google.maps.Map} map
-   */
-  function ProjectionHelperOverlay(map) {
-    google.maps.OverlayView.call(this);
-    this.setMap(map);
-  }
-  ProjectionHelperOverlay.prototype = new google.maps.OverlayView();
-  ProjectionHelperOverlay.prototype.draw = function () {
-    if (!this.ready) {
-      this.ready = true;
-      google.maps.event.trigger(this, 'ready');
-    }
-  };
-
-   function getDistanceForPixelLength( latLng, pixel )
-   {
-        var zoom = map.getZoom() ;
-        var   p = new google.maps.Point(0,0);
-
-        p = projection.getProjection().fromLatLngToContainerPixel(latLng);
-
-        p.x = p.x + pixel;
-        var P = new google.maps.LatLng();
-        P = projection.getProjection().fromContainerPixelToLatLng( p );
-
-        var distance = google.maps.geometry.spherical.computeDistanceBetween(P, latLng);
-
-        return distance
-   }
+   function getThresholdForPixel(map, latLng, pixel) {
+       var worldCoordinate = map.getProjection().fromLatLngToPoint(latLng);
+       var scale = Math.pow(2, map.getZoom());
+       worldCoordinate.x = worldCoordinate.x + pixel / scale;
+       var pixelAway = map.getProjection().fromPointToLatLng(worldCoordinate);
+       return google.maps.geometry.spherical.computeDistanceBetween(latLng, pixelAway);
+	}
 
    var ctrlKey = false;
    var shiftKey = false;
@@ -320,7 +294,7 @@
 
    function handleMouseClick( latLng ) {
 
-        var  distance = getDistanceForPixelLength( latLng, referencePixelLength ) ;
+        var distance = getThresholdForPixel(map, latLng, referencePixelLength);
 
         // select a position within a certain radius from the current mouse position
         // radius depends on current zoom level
@@ -471,7 +445,6 @@
 
             });
 
-            projection = new ProjectionHelperOverlay(map);
    /**
    GEvent.addListener(map, "click", function(overlay, latlng, overlaylatlng) {
        if (event.stopPropagation) event.stopPropagation();
