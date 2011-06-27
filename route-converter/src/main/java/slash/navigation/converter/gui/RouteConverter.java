@@ -32,6 +32,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.catalog.domain.Route;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.helper.*;
@@ -76,7 +77,7 @@ import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 
 public class RouteConverter extends SingleFrameApplication {
     private static final Logger log = Logger.getLogger(RouteConverter.class.getName());
-    private final Preferences preferences = Preferences.userNodeForPackage(getClass());
+    private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
     public static void main(String[] args) {
         launch(RouteConverter.class, args);

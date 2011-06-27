@@ -62,6 +62,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -74,6 +75,9 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 
 public class ConvertPanel {
     private static final Logger log = Logger.getLogger(ConvertPanel.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(ConvertPanel.class);
+
+    private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
 
     private UrlDocument urlModel = new UrlDocument();
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
@@ -596,7 +600,8 @@ public class ConvertPanel {
             if (format.isSupportsMultipleRoutes()) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
             } else {
-                new NavigationFileParser().write(route, format, true, true, targets);
+                boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
+                new NavigationFileParser().write(route, format, duplicateFirstPosition, true, targets);
             }
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
