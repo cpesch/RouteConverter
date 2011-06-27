@@ -59,11 +59,11 @@ public class OptionsPanel {
     private JButton buttonChooseGPSBabel;
     private JCheckBox checkBoxAutomaticUpdateCheck;
     private JCheckBox checkBoxAvoidHighways;
+    private JCheckBox checkBoxAvoidTolls;
     private JCheckBox checkBoxRecenterAfterZooming;
     private JComboBox comboboxTravelMode;
     private JComboBox comboboxNumberPattern;
     private JComboBox comboBoxTimeZone;
-    private JCheckBox checkBoxAvoidTolls;
 
     public OptionsPanel() {
         initialize();
@@ -139,6 +139,12 @@ public class OptionsPanel {
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidHighways(checkBoxAvoidHighways.isSelected());
+            }
+        });
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, r.getPreferences(), RouteConverter.AVOID_TOLLS_PREFERENCE, true);
+        checkBoxAvoidTolls.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                r.setAvoidTolls(checkBoxAvoidTolls.isSelected());
             }
         });
 
