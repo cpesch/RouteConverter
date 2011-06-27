@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,15 +45,17 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 public abstract class RouteComments {
-    private static final int MAXIMUM_ROUTE_NAME_LENGTH = 50;
+    private static final Preferences preferences = Preferences.userNodeForPackage(RouteComments.class);
+    private static final String MAXIMUM_ROUTE_NAME_LENGTH_PREFERENCE = "maximumRouteNameLength";
 
     public static String shortenRouteName(BaseRoute route) {
         String result = "?";
         if (route != null) {
             if (route.getName() != null)
                 result = route.getName();
-            if (result.length() > MAXIMUM_ROUTE_NAME_LENGTH)
-                result = result.substring(0, MAXIMUM_ROUTE_NAME_LENGTH) + "...";
+            int maximumRouteNameLength = preferences.getInt(MAXIMUM_ROUTE_NAME_LENGTH_PREFERENCE, 50);
+            if (result.length() > maximumRouteNameLength)
+                result = result.substring(0, maximumRouteNameLength) + "...";
         }
         return result;
     }
