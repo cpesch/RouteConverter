@@ -37,7 +37,7 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
     public static final String HEADER_LINE = "<!-- " + GENERATED_BY + " -->\n";
 
     protected String asDescription(List<String> strings) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (strings != null) {
             for (String string : strings) {
                 buffer.append(string).append(",\n");
@@ -51,8 +51,9 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
     public static CompactCalendar parseTime(XMLGregorianCalendar calendar) {
         if (calendar == null)
             return null;
-        // by using TimeZone default, the original hours are not corrupted
-        return CompactCalendar.fromCalendar(calendar.toGregorianCalendar());
+        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar();
+        gregorianCalendar.setTimeZone(CompactCalendar.UTC);
+        return CompactCalendar.fromMillis(gregorianCalendar.getTimeInMillis());
     }
 
     private static DatatypeFactory datatypeFactory = null;
@@ -68,7 +69,6 @@ public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavig
         if (time == null)
             return null;
         try {
-            // by using UTC no timezone is written
             GregorianCalendar gregorianCalendar = new GregorianCalendar(CompactCalendar.UTC, Locale.getDefault());
             gregorianCalendar.clear();
             Calendar calendar = time.getCalendar();

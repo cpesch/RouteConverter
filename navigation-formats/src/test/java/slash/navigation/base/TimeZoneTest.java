@@ -66,11 +66,34 @@ public class TimeZoneTest {
     }
 
     @Test
+    public void testXMLGregorianCalendarWithTimeZoneViaDatatypeFactory() throws DatatypeConfigurationException {
+        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+        XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar("2007-06-07T14:04:42+02:00");
+        GregorianCalendar java = xml.toGregorianCalendar();
+        java.setTimeZone(CompactCalendar.UTC);
+        String javaTime = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH).format(java.getTime().getTime());
+        assertEquals("6/7/07 4:04 PM", javaTime);
+        Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
+        assertCalendarEquals(parsed, java);
+    }
+
+    @Test
     public void testXMLGregorianCalendarWithZasTimeZone() throws DatatypeConfigurationException {
         String xmlString = "2007-06-07T14:04:42Z";
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
         assertEquals("2007-06-07T14:04:42Z", xml.toXMLFormat());
+        GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
+        XMLGregorianCalendar formatted = XmlNavigationFormat.formatTime(CompactCalendar.fromCalendar(java));
+        assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
+    }
+
+    @Test
+    public void testXMLGregorianCalendarWithTimeZone() throws DatatypeConfigurationException {
+        String xmlString = "2007-06-07T14:04:42+02:00";
+        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+        XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar(xmlString);
+        assertEquals("2007-06-07T14:04:42+02:00", xml.toXMLFormat());
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
         XMLGregorianCalendar formatted = XmlNavigationFormat.formatTime(CompactCalendar.fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
