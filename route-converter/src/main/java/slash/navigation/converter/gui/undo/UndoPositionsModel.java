@@ -88,6 +88,11 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
     }
 
+    public int[] getPositionsWithinRectangle(double longitudeNE, double latitudeNE, double longitudeSW, double latitudeSW)
+    {
+        return getRoute().getPositionsWithinRectangle( longitudeNE, latitudeNE, longitudeSW, latitudeSW);
+    }
+
     // PositionsModel
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {

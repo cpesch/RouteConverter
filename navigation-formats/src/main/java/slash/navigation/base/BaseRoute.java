@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import com.sun.org.apache.xerces.internal.impl.dv.xs.YearDV;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Range;
 import slash.navigation.bcr.BcrRoute;
@@ -339,6 +340,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public void revert() {
         List<P> positions = getPositions();
         List<P> reverted = new ArrayList<P>();
+
         for (P position : positions) {
             reverted.add(0, position);
         }
@@ -400,6 +402,29 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return Integer.MAX_VALUE;
     }
 
+    public int[] getPositionsWithinRectangle(double longitudeNE, double latitudeNE, double longitudeSW, double latitudeSW)
+    {
+        List<P> positions = getPositions();
+        List<Integer> result = new ArrayList<Integer>();
+        int index = 0;
+        for ( P pos : positions)
+        {
+            double longP = pos.getLongitude();
+            double latP  = pos.getLatitude();
+            if( longitudeSW <= longP && longP <= longitudeNE)
+                if ( latitudeSW <= latP && latP <= latitudeNE)
+                    result.add( index );
+
+            index ++;
+        }
+
+        int[] r = new int[result.size()];
+
+        for ( int i = 0; i < result.size(); ++i)
+            r[i] = result.get( i );
+
+        return r;
+    }
 
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String comment);
 

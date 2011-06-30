@@ -1,6 +1,6 @@
 /**
  * @name KeyDragZoom for V3
- * @version 2.0.4 [December 7, 2010]
+ * @version 2.0.5 [December 8, 2010]
  * @author: Nianwei Liu [nianwei at gmail dot com] & Gary Little [gary at luxcentral dot com]
  * @fileoverview This library adds a drag zoom capability to a V3 Google map.
  *  When drag zoom is enabled, holding down a designated hot key <code>(shift | ctrl | alt)</code>
@@ -205,7 +205,7 @@
     if (typeof op !== "undefined") {
       h.style.opacity = op;
     }
-    if (typeof h.style.opacity !== "undefined") {
+    if (typeof h.style.opacity !== "undefined" && h.style.opacity !== "") {
       h.style.filter = "alpha(opacity=" + (h.style.opacity * 100) + ")";
     }
   };
@@ -286,7 +286,8 @@
     var me = this;
     this.map_ = map;
     opt_zoomOpts = opt_zoomOpts || {};
-    this.key_ = opt_zoomOpts.key || "shift";
+    this.key_ = opt_zoomOpts.key || "s";
+//    this.key_ = opt_zoomOpts.key || "shift";
     this.key_ = this.key_.toLowerCase();
     this.borderWidths_ = getBorderWidths(this.map_.getDiv());
     this.veilDiv_ = [];
@@ -470,7 +471,12 @@
   DragZoom.prototype.isHotKeyDown_ = function (e) {
     var isHot;
     e = e || window.event;
-    isHot = (e.shiftKey && this.key_ === "shift") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
+        isHot = (e.keyCode == 83 && this.key_ === "s") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
+         isHot = (e.keyCode == 83 || e.keyCode == 90);
+         if (isHot)
+            this.key_ = e.keyCode;
+
+//    isHot = (e.shiftKey && this.key_ === "shift") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
     if (!isHot) {
       // Need to look at keyCode for Opera because it
       // doesn't set the shiftKey, altKey, ctrlKey properties
@@ -730,12 +736,17 @@
       var ne = prj.fromContainerPixelToLatLng(new google.maps.Point(left + width, top));
       var bnds = new google.maps.LatLngBounds(sw, ne);
 
+if (this.key_ == 90 ) {
       // Sometimes fitBounds causes a zoom OUT, so restore original zoom level if this happens.
       z = this.map_.getZoom();
       this.map_.fitBounds(bnds);
       if (this.map_.getZoom() < z) {
         this.map_.setZoom(z);
       }
+      }
+if (this.key_ ==83 ){
+ callJava("select-positions-rectangle/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
+}
 
       // Redraw box after zoom:
       var swPt = prj.fromLatLngToContainerPixel(sw);

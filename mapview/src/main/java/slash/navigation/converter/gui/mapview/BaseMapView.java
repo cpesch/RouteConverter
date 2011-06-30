@@ -643,6 +643,17 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
+    @Override
+    public void clearSelection() {
+        synchronized (notificationMutex) {
+            this.selectedPositionIndices = null;
+            haveToRecenterMap = false;
+            haveToRepaintSelection = false;
+            selectionUpdateReason = "selected " + 0 + " positions";
+            notificationMutex.notifyAll();
+        }
+    }
+
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         this.recenterAfterZooming = recenterAfterZooming;
     }
@@ -1198,6 +1209,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_DISTANCE_PATTERN = Pattern.compile("^select-position-within-distance/(.*)/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITIONS_RECTANGLE = Pattern.compile("^select-positions-rectangle/(.*)/(.*)/(.*)/(.*)");
 
     private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)$");
     private static final Pattern DELETE_POSITION_DISTANCE_PATTERN = Pattern.compile("^delete-position-within-distance/(.*)/(.*)/(.*)$");
@@ -1336,6 +1348,21 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
+
+        Matcher selectPositionsRectangleMatcher = SELECT_POSITIONS_RECTANGLE.matcher(callback);
+        if (selectPositionsRectangleMatcher.matches()) {
+            final Double latitudeNE = Transfer.parseDouble(selectPositionsRectangleMatcher.group(1));
+            final Double longitudeNE = Transfer.parseDouble(selectPositionsRectangleMatcher.group(2));
+            final Double latitudeSW = Transfer.parseDouble(selectPositionsRectangleMatcher.group(3));
+            final Double longitudeSW = Transfer.parseDouble(selectPositionsRectangleMatcher.group(4));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPositionsWithinRectangle(longitudeNE, latitudeNE, longitudeSW, latitudeSW );
+                }
+            });
+            return true;
+        }
+
         Matcher deletePositionMatcher = DELETE_POSITION_PATTERN.matcher(callback);
         if (deletePositionMatcher.matches()) {
             final int row = getInsertRow();
@@ -1454,15 +1481,26 @@ public abstract class BaseMapView implements MapView {
 
     private void selectPosition( Double longitude, Double latitude) {
 
+        positionsSelectionModel.clearSelection();
         int row = positionsModel.getNearestPositionsToCoordinates(longitude, latitude);
         positionsSelectionModel.setSelectedPositions(new int[]{row});
 
     }
 
     private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance) {
+        positionsSelectionModel.clearSelection();
         int row = positionsModel.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
         if ( row < Integer.MAX_VALUE )
             positionsSelectionModel.setSelectedPositions(new int[]{row});
+    }
+
+    private void selectPositionsWithinRectangle( Double longitudeNE, Double latitudeNE, Double longitudeSW, Double latitudeSW)
+    {
+        positionsSelectionModel.clearSelection();
+        int[] rows = positionsModel.getPositionsWithinRectangle( longitudeNE, latitudeNE , longitudeSW , latitudeSW);
+        if ( 0 < rows.length ) {
+            positionsSelectionModel.setSelectedPositions( rows );
+        }
     }
 
 	private void deletePosition( Double longitude, Double latitude) {

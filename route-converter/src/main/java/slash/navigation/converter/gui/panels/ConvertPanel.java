@@ -115,7 +115,7 @@ public class ConvertPanel {
                 new ContinousRange(selectedPositions, new RangeOperation() {
                     public void performOnIndex(int index) {
                         ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                        selectionModel.clearSelection();
+                        //selectionModel.clearSelection();
                         selectionModel.addSelectionInterval(index, index);
                     }
 
@@ -127,6 +127,11 @@ public class ConvertPanel {
                         return false;
                     }
                 }).performMonotonicallyIncreasing(20);
+            }
+            public void clearSelection()
+            {
+                ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                selectionModel.clearSelection();
             }
         };
 
