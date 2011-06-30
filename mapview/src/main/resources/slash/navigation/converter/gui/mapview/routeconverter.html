@@ -307,7 +307,7 @@
         // this works better for routes and tracks as we do not see the positions but only the connecting lines
         if (shiftKey && !altKey &&  !ctrlKey) {
 
-            callJava("select-position/" + latLng.lat() + "/" + latLng.lng());
+            callJava("select-position-keep-previous-selection/" + latLng.lat() + "/" + latLng.lng()+"/"+distance);
         }
         // select or toggle selection state within distance and keep other positions selected
         else if (ctrlKey && !altKey && !shiftKey) {

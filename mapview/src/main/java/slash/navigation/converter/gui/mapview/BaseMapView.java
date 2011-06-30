@@ -1209,6 +1209,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_DISTANCE_PATTERN = Pattern.compile("^select-position-within-distance/(.*)/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITION_DISTANCE_KEEP_PREVIOUS_PATTERN = Pattern.compile("^select-position-keep-previous-selection/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_RECTANGLE = Pattern.compile("^select-positions-rectangle/(.*)/(.*)/(.*)/(.*)");
 
     private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)$");
@@ -1348,6 +1349,21 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
+        Matcher selectPositionWithinDistanceKeepPreviousMatcher = SELECT_POSITION_DISTANCE_KEEP_PREVIOUS_PATTERN.matcher(callback);
+        if (selectPositionWithinDistanceKeepPreviousMatcher.matches()) {
+            final Double latitude = Transfer.parseDouble(selectPositionWithinDistanceKeepPreviousMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(selectPositionWithinDistanceKeepPreviousMatcher.group(2));
+            final Double distance  = Transfer.parseDouble(selectPositionWithinDistanceKeepPreviousMatcher.group(3));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPositionWithinDistanceKeepPreviousSelection(longitude, latitude, distance);
+                }
+            });
+            return true;
+        }
+
+
+
 
         Matcher selectPositionsRectangleMatcher = SELECT_POSITIONS_RECTANGLE.matcher(callback);
         if (selectPositionsRectangleMatcher.matches()) {
@@ -1472,6 +1488,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
+
         positionsModel.add(row, longitude, latitude, null, null, null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row});
 
@@ -1487,11 +1504,16 @@ public abstract class BaseMapView implements MapView {
 
     }
 
-    private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance) {
-        positionsSelectionModel.clearSelection();
+    private void selectPositionWithinDistanceKeepPreviousSelection( Double longitude, Double latitude, Double distance) {
+
         int row = positionsModel.getNearestPositionsToCoordinatesWithinDistance(longitude, latitude, distance);
         if ( row < Integer.MAX_VALUE )
             positionsSelectionModel.setSelectedPositions(new int[]{row});
+    }
+
+    private void selectPositionWithinDistance( Double longitude, Double latitude, Double distance) {
+        positionsSelectionModel.clearSelection();
+        selectPositionWithinDistanceKeepPreviousSelection(longitude, latitude, distance);
     }
 
     private void selectPositionsWithinRectangle( Double longitudeNE, Double latitudeNE, Double longitudeSW, Double latitudeSW)
