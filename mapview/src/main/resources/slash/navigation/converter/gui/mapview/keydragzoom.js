@@ -745,7 +745,10 @@ if (this.key_ == 90 ) {
       }
       }
 if (this.key_ ==83 ){
- callJava("select-positions-rectangle/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
+    if (event.shiftKey)
+        callJava("select-positions-rectangle-keep-previous-selection/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
+    else
+        callJava("select-positions-rectangle/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
 }
 
       // Redraw box after zoom:

@@ -1211,6 +1211,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITION_DISTANCE_PATTERN = Pattern.compile("^select-position-within-distance/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_DISTANCE_KEEP_PREVIOUS_PATTERN = Pattern.compile("^select-position-keep-previous-selection/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_RECTANGLE = Pattern.compile("^select-positions-rectangle/(.*)/(.*)/(.*)/(.*)");
+    private static final Pattern SELECT_POSITIONS_RECTANGLE_KEEP_PREVIOUS_PATTERN = Pattern.compile("^select-positions-rectangle-keep-previous-selection/(.*)/(.*)/(.*)/(.*)");
 
     private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)$");
     private static final Pattern DELETE_POSITION_DISTANCE_PATTERN = Pattern.compile("^delete-position-within-distance/(.*)/(.*)/(.*)$");
@@ -1362,7 +1363,19 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-
+        Matcher selectPositionsRectangleKeepPreviousSelectionMatcher = SELECT_POSITIONS_RECTANGLE_KEEP_PREVIOUS_PATTERN.matcher(callback);
+        if (selectPositionsRectangleKeepPreviousSelectionMatcher.matches()) {
+            final Double latitudeNE = Transfer.parseDouble(selectPositionsRectangleKeepPreviousSelectionMatcher.group(1));
+            final Double longitudeNE = Transfer.parseDouble(selectPositionsRectangleKeepPreviousSelectionMatcher.group(2));
+            final Double latitudeSW = Transfer.parseDouble(selectPositionsRectangleKeepPreviousSelectionMatcher.group(3));
+            final Double longitudeSW = Transfer.parseDouble(selectPositionsRectangleKeepPreviousSelectionMatcher.group(4));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPositionsWithinRectangleKeepPreviousSelection(longitudeNE, latitudeNE, longitudeSW, latitudeSW );
+                }
+            });
+            return true;
+        }
 
 
         Matcher selectPositionsRectangleMatcher = SELECT_POSITIONS_RECTANGLE.matcher(callback);
@@ -1516,13 +1529,18 @@ public abstract class BaseMapView implements MapView {
         selectPositionWithinDistanceKeepPreviousSelection(longitude, latitude, distance);
     }
 
-    private void selectPositionsWithinRectangle( Double longitudeNE, Double latitudeNE, Double longitudeSW, Double latitudeSW)
+    private void selectPositionsWithinRectangleKeepPreviousSelection( Double longitudeNE, Double latitudeNE, Double longitudeSW, Double latitudeSW)
     {
-        positionsSelectionModel.clearSelection();
         int[] rows = positionsModel.getPositionsWithinRectangle( longitudeNE, latitudeNE , longitudeSW , latitudeSW);
         if ( 0 < rows.length ) {
             positionsSelectionModel.setSelectedPositions( rows );
         }
+    }
+
+    private void selectPositionsWithinRectangle( Double longitudeNE, Double latitudeNE, Double longitudeSW, Double latitudeSW)
+    {
+        positionsSelectionModel.clearSelection();
+        selectPositionsWithinRectangleKeepPreviousSelection( longitudeNE, latitudeNE , longitudeSW , latitudeSW);
     }
 
 	private void deletePosition( Double longitude, Double latitude) {
