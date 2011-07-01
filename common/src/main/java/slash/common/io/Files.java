@@ -211,7 +211,7 @@ public class Files {
             throw new IllegalArgumentException("Index " + number + " larger than maximum " + maximum);
 
         int numberLength = calculateNumberLength(maximum);
-        StringBuffer result = new StringBuffer(Integer.toString(number));
+        StringBuilder result = new StringBuilder(Integer.toString(number));
         while (result.length() < numberLength) {
             result.insert(0, "0");
         }
@@ -324,7 +324,7 @@ public class Files {
         if (array == null)
             return "null";
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
             if (i > 0)
                 if (i == array.length - 1)

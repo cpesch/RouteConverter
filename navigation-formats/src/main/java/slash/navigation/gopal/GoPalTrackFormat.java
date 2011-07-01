@@ -158,7 +158,7 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private String formatNumber(int number) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(number);
         while (buffer.length() < 2)
             buffer.insert(0, "0");

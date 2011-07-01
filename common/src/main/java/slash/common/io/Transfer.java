@@ -81,7 +81,7 @@ public class Transfer {
 
     public static String toMixedCase(String string) {
         if (string != null && string.toUpperCase().equals(string)) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             StringTokenizer tokenizer = new StringTokenizer(string, " -", true);
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
@@ -164,7 +164,7 @@ public class Transfer {
     }
 
     public static String formatDoubleAsString(Double aDouble, int exactFractionCount) {
-        StringBuffer buffer = new StringBuffer(formatDoubleAsString(aDouble));
+        StringBuilder buffer = new StringBuilder(formatDoubleAsString(aDouble));
         int index = buffer.indexOf(".");
         if (index == -1) {
             buffer.append(".");
@@ -209,7 +209,7 @@ public class Transfer {
     }
 
     public static String formatIntAsString(Integer anInteger, int exactDigitCount) {
-        StringBuffer buffer = new StringBuffer(formatIntAsString(anInteger));
+        StringBuilder buffer = new StringBuilder(formatIntAsString(anInteger));
         while (buffer.length() < exactDigitCount)
             buffer.insert(0, "0");
         return buffer.toString();
@@ -243,7 +243,7 @@ public class Transfer {
     }
 
     public static String formatDuration(long milliseconds) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         long seconds = milliseconds / 1000;
         long minutes = seconds / 60;
         long hours = minutes / 60;

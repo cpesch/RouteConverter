@@ -166,7 +166,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (position.getTime() != null) {
             buffer.append(firstOrLast).append(" : ");
         }
@@ -184,7 +184,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
 
     String formatIntermediateName(TomTomPosition position, Double distance) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(position.getComment());
         if (position.getTime() != null) {
             buffer.append(" : ").append(RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()));

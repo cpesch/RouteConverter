@@ -1085,7 +1085,7 @@ public class ConvertPanel {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

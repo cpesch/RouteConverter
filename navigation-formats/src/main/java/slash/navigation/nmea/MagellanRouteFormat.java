@@ -135,7 +135,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
 
     String formatRouteName(String name) {
         if (name != null) {
-            StringBuffer buffer = new StringBuffer(name.toLowerCase().trim().replaceAll(" ", "-"));
+            StringBuilder buffer = new StringBuilder(name.toLowerCase().trim().replaceAll(" ", "-"));
             int i = 0;
             while (i < buffer.length()) {
                 char c = buffer.charAt(i);

@@ -297,7 +297,7 @@ public class Kml20Format extends KmlFormat {
         placemarkList.add(multiGeometry);
         LineString lineString = objectFactory.createLineString();
         multiGeometry.getExtrudeOrTessellateOrAltitudeMode().add(lineString);
-        StringBuffer coordinates = new StringBuffer();
+        StringBuilder coordinates = new StringBuilder();
         for (KmlPosition position : route.getPositions()) {
             coordinates.append(Transfer.formatPositionAsString(position.getLongitude())).append(",").
                     append(Transfer.formatPositionAsString(position.getLatitude())).append(",").
@@ -315,7 +315,7 @@ public class Kml20Format extends KmlFormat {
         placemarkList.add(objectFactory.createStyleUrl("#" + TRACK_LINE_STYLE));
         LineString lineString = objectFactory.createLineString();
         placemarkList.add(lineString);
-        StringBuffer coordinates = new StringBuffer();
+        StringBuilder coordinates = new StringBuilder();
         for (KmlPosition position : route.getPositions()) {
             coordinates.append(Transfer.formatPositionAsString(position.getLongitude())).append(",").
                     append(Transfer.formatPositionAsString(position.getLatitude())).append(",").

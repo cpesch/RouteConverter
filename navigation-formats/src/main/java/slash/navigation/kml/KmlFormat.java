@@ -85,7 +85,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     protected List<KmlPosition> asKmlPositions(List<String> strings) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (String string : strings) {
             buffer.append(string);
             // to make sure the numbers are separated if they were already parsed by the XML parse

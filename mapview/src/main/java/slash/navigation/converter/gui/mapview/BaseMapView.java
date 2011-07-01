@@ -889,7 +889,7 @@ public abstract class BaseMapView implements MapView {
 
         int directionsCount = Transfer.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
         for (int j = 0; j < directionsCount; j++) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("var latlngs = [");
 
             int start = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH;
@@ -929,7 +929,7 @@ public abstract class BaseMapView implements MapView {
 
         int polylinesCount = Transfer.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
         for (int j = 0; j < polylinesCount; j++) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("var latlngs = [");
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
             for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++) {
@@ -949,7 +949,7 @@ public abstract class BaseMapView implements MapView {
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
         int markersCount = Transfer.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
         for (int j = 0; j < markersCount; j++) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
@@ -964,7 +964,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         // set map type only on first start
         if (haveToInitializeMapOnFirstStart) {
             String mapType = preferences.get(MAP_TYPE_PREFERENCE, "Map");
@@ -990,7 +990,7 @@ public abstract class BaseMapView implements MapView {
     private void selectPositions(List<BaseNavigationPosition> selectedPositions, boolean recenter) {
         lastSelectedPositions = new ArrayList<BaseNavigationPosition>(selectedPositions);
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
             buffer.append("addMarker(new google.maps.Marker({position: new google.maps.LatLng(").
@@ -1036,7 +1036,7 @@ public abstract class BaseMapView implements MapView {
                     List<BaseNavigationPosition> successorPredecessor = addToQueue.get(key);
                     BaseNavigationPosition from = successorPredecessor.get(0);
                     BaseNavigationPosition to = successorPredecessor.get(1);
-                    StringBuffer buffer = new StringBuffer();
+                    StringBuilder buffer = new StringBuilder();
                     buffer.append(mode).append("({");
                     buffer.append("origin: new google.maps.LatLng(").append(from.getLatitude()).append(",").append(from.getLongitude()).append("), ");
                     buffer.append("destination: new google.maps.LatLng(").append(to.getLatitude()).append(",").append(to.getLongitude()).append("), ");
@@ -1074,7 +1074,7 @@ public abstract class BaseMapView implements MapView {
     private String escape(String string) {
         if (string == null)
             return "";
-        StringBuffer buffer = new StringBuffer(string);
+        StringBuilder buffer = new StringBuilder(string);
         for (int i = 0; i < buffer.length(); i++) {
             char c = buffer.charAt(i);
             if (!(Character.isLetterOrDigit(c) || Character.isWhitespace(c) || c == '\'' || c == ',')) {
@@ -1120,7 +1120,7 @@ public abstract class BaseMapView implements MapView {
         final List<String> theLines = new ArrayList<String>(lines);
         executor.execute(new Runnable() {
             public void run() {
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 for (String line : theLines) {
                     buffer.append("  ").append(line).append("\n");
                 }

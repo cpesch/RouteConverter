@@ -71,7 +71,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         String template = new String(InputOutput.readBytes(getClass().getResourceAsStream("webpage.html")));
         List<Wgs84Position> positions = route.getPositions();
 
-        StringBuffer routeBuffer = new StringBuffer();
+        StringBuilder routeBuffer = new StringBuilder();
         if(route.getCharacteristics() == RouteCharacteristics.Route) {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
@@ -80,7 +80,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        StringBuffer trackBuffer = new StringBuffer();
+        StringBuilder trackBuffer = new StringBuilder();
         if(route.getCharacteristics() == RouteCharacteristics.Track) {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
@@ -89,7 +89,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        StringBuffer waypointsBuffer = new StringBuffer();
+        StringBuilder waypointsBuffer = new StringBuilder();
         if(route.getCharacteristics() == RouteCharacteristics.Waypoints) {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
@@ -101,13 +101,13 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         
         Wgs84Position northEast = Positions.northEast(positions);
         Wgs84Position southWest = Positions.southWest(positions);
-        StringBuffer boundsBuffer = new StringBuffer().
+        StringBuilder boundsBuffer = new StringBuilder().
                 append("new GLatLng(").append(northEast.getLatitude()).append(",").
                 append(northEast.getLongitude()).append("),").
                 append("new GLatLng(").append(southWest.getLatitude()).append(",").
                 append(southWest.getLongitude()).append(")");
         Wgs84Position center = Positions.center(positions);
-        StringBuffer centerBuffer = new StringBuffer().
+        StringBuilder centerBuffer = new StringBuilder().
                 append("new GLatLng(").append(center.getLatitude()).append(",").
                 append(center.getLongitude()).append(")");
 

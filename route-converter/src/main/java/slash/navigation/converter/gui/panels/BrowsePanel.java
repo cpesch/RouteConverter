@@ -323,7 +323,7 @@ public class BrowsePanel {
 
     private void deleteCategory() {
         final List<CategoryTreeNode> categories = getSelectedTreeNodes();
-        StringBuffer categoryNames = new StringBuffer();
+        StringBuilder categoryNames = new StringBuilder();
         for (int i = 0; i < categories.size(); i++) {
             CategoryTreeNode categoryTreeNode = categories.get(i);
             categoryNames.append(categoryTreeNode.getName());
@@ -585,7 +585,7 @@ public class BrowsePanel {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;
@@ -612,7 +612,7 @@ public class BrowsePanel {
      * @noinspection ALL
      */
     private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

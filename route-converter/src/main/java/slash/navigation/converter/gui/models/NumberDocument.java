@@ -64,7 +64,7 @@ public class NumberDocument extends PlainDocument {
 
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         // create a buffer with a simulated insert
-        StringBuffer buffer = new StringBuffer(getText(0, getLength()));
+        StringBuilder buffer = new StringBuilder(getText(0, getLength()));
         buffer.insert(offs, str);
 
         // test if buffer would be valid
@@ -77,7 +77,7 @@ public class NumberDocument extends PlainDocument {
     public void remove(int offs, int len) throws BadLocationException {
         // create a buffer with a simulated delete
         String content = getText(0, getLength());
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(content.substring(0, offs));
         buffer.append(content.substring(offs + len, content.length()));
 

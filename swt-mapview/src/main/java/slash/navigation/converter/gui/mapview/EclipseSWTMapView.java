@@ -302,7 +302,7 @@ public class EclipseSWTMapView extends BaseMapView {
         Wgs84Position northEast = Positions.northEast(positions);
         Wgs84Position southWest = Positions.southWest(positions);
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         /* TODO there is no map.getBoundsZoomLevel
         buffer.append("return map.getBoundsZoomLevel(new GLatLngBounds(").
                 append("new GLatLng(").append(northEast.getLatitude()).append(",").

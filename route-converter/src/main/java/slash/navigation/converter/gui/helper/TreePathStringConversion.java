@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
 
 public class TreePathStringConversion {
     public static String toString(TreePath treePath) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (Object pathElement : treePath.getPath()) {
             CategoryTreeNode treeNode = (CategoryTreeNode) pathElement;
             String nodeName = treeNode.getName();

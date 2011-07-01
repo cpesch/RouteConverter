@@ -122,7 +122,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private String fillWithSpaces(String string, int length) {
-        StringBuffer buffer = new StringBuffer(string != null ? string : "");
+        StringBuilder buffer = new StringBuilder(string != null ? string : "");
         while (buffer.length() < length) {
             buffer.insert(0, ' ');
         }

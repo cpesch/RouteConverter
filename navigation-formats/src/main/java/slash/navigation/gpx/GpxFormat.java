@@ -67,7 +67,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     protected String asDescription(List<String> strings) {
         if (strings == null)
             return null;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < strings.size(); i++) {
             buffer.append(strings.get(i));
             if (i != strings.size() - 1)

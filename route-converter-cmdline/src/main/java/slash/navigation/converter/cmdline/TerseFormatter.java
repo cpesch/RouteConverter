@@ -32,7 +32,7 @@ import java.util.logging.Level;
 
 public class TerseFormatter extends Formatter {
     public String format(LogRecord record) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (record.getLevel().intValue() > Level.INFO.intValue()) 
             buffer.append("Error: ");
         buffer.append(record.getMessage());

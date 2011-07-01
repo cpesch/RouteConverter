@@ -145,7 +145,7 @@ public final class ISO8601 {
             char delimiter = text.charAt(start++);
             if (delimiter == '.') {
                 // milliseconds (S), (SS), (SSS)
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 while(true) {
                     delimiter = text.charAt(start++);
                     if(Character.isDigit(delimiter))
@@ -256,7 +256,7 @@ public final class ISO8601 {
          * note that we cannot use java.text.SimpleDateFormat for
          * formatting because it can't handle years <= 0 and TZD's
          */
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         // year ([-]YYYY)
         buffer.append(XXXX_FORMAT.format(year));
         buffer.append('-');

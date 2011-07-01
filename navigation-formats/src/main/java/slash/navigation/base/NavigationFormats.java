@@ -243,7 +243,7 @@ public final class NavigationFormats {
     }
 
     private static String removeDigits(String string) {
-        StringBuffer buffer = new StringBuffer(string);
+        StringBuilder buffer = new StringBuilder(string);
         for (int i = 0; i < buffer.length(); i++) {
             char c = buffer.charAt(i);
             if (Character.isDigit(c)) {

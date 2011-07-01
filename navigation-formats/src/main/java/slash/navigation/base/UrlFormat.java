@@ -50,7 +50,7 @@ public abstract class UrlFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         while (buffer.length() < READ_BUFFER_SIZE) {
             String line = reader.readLine();

@@ -108,7 +108,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     }
 
     protected String fillWithZeros(String string, int length) {
-        StringBuffer buffer = new StringBuffer(string != null ? string : "");
+        StringBuilder buffer = new StringBuilder(string != null ? string : "");
         while (buffer.length() < length) {
             buffer.append('\u0000');
         }

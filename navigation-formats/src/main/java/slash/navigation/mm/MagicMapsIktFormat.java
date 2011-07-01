@@ -263,7 +263,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private String getProjectName(List<MagicMapsIktRoute> routes) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < routes.size(); i++) {
             MagicMapsIktRoute route = routes.get(i);
             buffer.append(route.getName());
@@ -274,7 +274,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     private String getDescription(List<MagicMapsIktRoute> routes) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < routes.size(); i++) {
             MagicMapsIktRoute route = routes.get(i);
             List<String> descriptions = route.getDescription();
