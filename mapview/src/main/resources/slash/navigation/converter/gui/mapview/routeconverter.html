@@ -161,8 +161,7 @@
                    callJavaWithPost("Insert-All-Waypoints: " + index + "/" + waypoints.join("/") + "\n\n");
                }
            } else {
-               addDebug(status);
-               setError(result);
+               setError("<p>Sorry, could not insert all waypoints.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        });
    }
@@ -185,8 +184,7 @@
                    callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + turnpoints.join("/") + "\n\n");
                }
            } else {
-               addDebug(status);
-               setError(result);
+               setError("<p>Sorry, could not insert only turnpoints.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        });
    }
@@ -194,8 +192,8 @@
    function addDirections(directionsRequest) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
-               var directions = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true});
-               // TODO draggable: true
+               var directions = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true,
+                   draggable: true, hideRouteList: true});
                directions.setDirections(result);
                addOverlay(directions);
 
@@ -210,8 +208,7 @@
                }
                callJava("load/" + meters + "/" + seconds);
            } else {
-               addDebug(status);
-               setError(result.routes);
+               setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        });
    }
