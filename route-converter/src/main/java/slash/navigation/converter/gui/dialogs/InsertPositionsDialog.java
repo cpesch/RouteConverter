@@ -110,10 +110,10 @@ public class InsertPositionsDialog extends SimpleDialog {
         });
 
         contentPane.registerKeyboardAction(new DialogAction(this) {
-            public void run() {
-                close();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    public void run() {
+                        close();
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         RouteConverter r = RouteConverter.getInstance();
         r.getPositionsView().getSelectionModel().addListSelectionListener(listSelectionListener);
@@ -226,7 +226,7 @@ public class InsertPositionsDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;
@@ -253,7 +253,7 @@ public class InsertPositionsDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

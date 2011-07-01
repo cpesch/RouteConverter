@@ -216,10 +216,10 @@ public class ConvertPanel {
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
-            public void run() {
-                actionManager.run("delete");
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                    public void run() {
+                        actionManager.run("delete");
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(DropMode.ON);
         tablePositions.setTransferHandler(new TableDragAndDropHandler());
@@ -1085,7 +1085,7 @@ public class ConvertPanel {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

@@ -122,7 +122,7 @@ public class AboutPanel {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

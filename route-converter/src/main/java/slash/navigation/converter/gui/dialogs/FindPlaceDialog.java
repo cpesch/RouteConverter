@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for finding and inserting {@link BaseNavigationPosition}s into the current {@link BaseRoute}.
+ * Dialog for finding and inserting {@link slash.navigation.base.BaseNavigationPosition}s into the current {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -85,19 +85,19 @@ public class FindPlaceDialog extends SimpleDialog {
         });
 
         contentPane.registerKeyboardAction(new DialogAction(this) {
-            public void run() {
-                close();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                    public void run() {
+                        close();
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
 
         textFieldSearch.setText(r.getSearchPositionPreference());
         textFieldSearch.registerKeyboardAction(new DialogAction(this) {
-            public void run() {
-                searchPositions();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                    public void run() {
+                        searchPositions();
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
         listResult.addListSelectionListener(new ListSelectionListener() {
@@ -158,7 +158,7 @@ public class FindPlaceDialog extends SimpleDialog {
                     position.getElevation(), null, null, position.getComment());
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
             r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
-            
+
             if (Transfer.isEmpty(position.getElevation()))
                 r.complementElevation(insertRow, position.getLongitude(), position.getLatitude());
             r.complementTime(insertRow, null);
@@ -227,7 +227,7 @@ public class FindPlaceDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;
@@ -254,7 +254,7 @@ public class FindPlaceDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

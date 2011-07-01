@@ -94,10 +94,10 @@ public class RenameDialog extends SimpleDialog {
         });
 
         contentPane.registerKeyboardAction(new DialogAction(this) {
-            public void run() {
-                cancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                    public void run() {
+                        cancel();
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void rename() {
@@ -163,7 +163,7 @@ public class RenameDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;
@@ -190,7 +190,7 @@ public class RenameDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;

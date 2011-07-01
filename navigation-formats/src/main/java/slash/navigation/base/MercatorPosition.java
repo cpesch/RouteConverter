@@ -92,19 +92,19 @@ public class MercatorPosition extends BaseNavigationPosition {
         MercatorPosition that = (MercatorPosition) o;
 
         return !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
-                !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
+                !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(x != null ? !x.equals(that.x) : that.x != null) &&
                 !(y != null ? !y.equals(that.y) : that.y != null) &&
-                !(time != null ? !time.equals(that.time) : that.time != null);
+                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
     }
 
     public int hashCode() {
         int result;
         result = (x != null ? x.hashCode() : 0);
         result = 31 * result + (y != null ? y.hashCode() : 0);
-        result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
+        result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
         return result;
     }
 }

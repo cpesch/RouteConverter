@@ -50,19 +50,19 @@ public class KmlPosition extends Wgs84Position {
 
         KmlPosition that = (KmlPosition) o;
 
-        return !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
+        return !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(time != null ? !time.equals(that.time) : that.time != null);
+                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
     }
 
     public int hashCode() {
         int result;
         result = (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
-        result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
+        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         return result;
     }

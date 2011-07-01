@@ -40,9 +40,9 @@ import java.util.Calendar;
  */
 
 public abstract class BaseNavigationPosition {
-    protected Double elevation;
+    private Double elevation;
     private Double speed;
-    protected CompactCalendar time;
+    private CompactCalendar time;
 
     protected BaseNavigationPosition(Double elevation, Double speed, CompactCalendar time) {
         setElevation(elevation);
@@ -117,13 +117,13 @@ public abstract class BaseNavigationPosition {
      * @param startDate the day/month/year-offset
      */
     public void setStartDate(CompactCalendar startDate) {
-        if (time != null && startDate != null) {
-            Calendar calendar = time.getCalendar();
+        if (getTime() != null && startDate != null) {
+            Calendar calendar = getTime().getCalendar();
             Calendar startDateCalendar = startDate.getCalendar();
             calendar.set(Calendar.YEAR, startDateCalendar.get(Calendar.YEAR));
             calendar.set(Calendar.MONTH, startDateCalendar.get(Calendar.MONTH));
             calendar.set(Calendar.DAY_OF_MONTH, startDateCalendar.get(Calendar.DAY_OF_MONTH));
-            time = CompactCalendar.fromCalendar(calendar);
+            setTime(CompactCalendar.fromCalendar(calendar));
         }
     }
 

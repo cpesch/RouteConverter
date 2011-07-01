@@ -109,8 +109,8 @@ public class GkPosition extends BaseNavigationPosition {
         return Double.compare(that.height, height) == 0 &&
                 Double.compare(that.right, right) == 0 &&
                 !(comment != null ? !comment.equals(that.comment) : that.comment != null) &&
-                !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
-                !(time != null ? !time.equals(that.time) : that.time != null);
+                !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
+                !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null);
     }
 
     public int hashCode() {
@@ -120,9 +120,9 @@ public class GkPosition extends BaseNavigationPosition {
         result = (int) (temp ^ (temp >>> 32));
         temp = height != +0.0d ? Double.doubleToLongBits(height) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (elevation != null ? elevation.hashCode() : 0);
+        result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (getTime() != null ? getTime().hashCode() : 0);
         return result;
     }
 }

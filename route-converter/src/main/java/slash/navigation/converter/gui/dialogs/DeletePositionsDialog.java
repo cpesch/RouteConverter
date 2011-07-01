@@ -42,7 +42,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog for selecting and deleting {@link BaseNavigationPosition}s from the current {@link BaseRoute}.
+ * Dialog for selecting and deleting {@link slash.navigation.base.BaseNavigationPosition}s from the current {@link slash.navigation.base.BaseRoute}.
  *
  * @author Christian Pesch
  */
@@ -132,10 +132,10 @@ public class DeletePositionsDialog extends SimpleDialog {
         });
 
         contentPane.registerKeyboardAction(new DialogAction(this) {
-            public void run() {
-                close();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+                    public void run() {
+                        close();
+                    }
+                }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         RouteConverter r = RouteConverter.getInstance();
         distance = new NumberDocument(r.getSelectByDistancePreference());
@@ -322,7 +322,7 @@ public class DeletePositionsDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;
@@ -349,7 +349,7 @@ public class DeletePositionsDialog extends SimpleDialog {
      * @noinspection ALL
      */
     private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         boolean haveMnemonic = false;
         char mnemonic = '\0';
         int mnemonicIndex = -1;
