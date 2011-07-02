@@ -23,6 +23,7 @@ package slash.common.io;
 import slash.common.TestCase;
 
 import java.text.DateFormat;
+import java.util.Locale;
 import java.util.Map;
 
 public class VersionTest extends TestCase {
@@ -63,7 +64,8 @@ public class VersionTest extends TestCase {
     }
 
     public void testGetDate() {
-        assertEquals(DateFormat.getDateInstance(DateFormat.LONG).format(calendar(2009, 11, 23, 20, 53, 49, 0, "UTC").getTime()),
+        assertEquals(DateFormat.getDateInstance(DateFormat.LONG, Locale.ENGLISH).
+                format(calendar(2009, 11, 23, 20, 53, 49, 0, "UTC").getTime()),
                 new Version(null, "2009-11-23 20:53:49").getDate());
     }
 
