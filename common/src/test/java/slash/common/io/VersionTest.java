@@ -64,7 +64,7 @@ public class VersionTest extends TestCase {
     }
 
     public void testGetDate() {
-        assertEquals(DateFormat.getDateInstance(DateFormat.LONG).format(calendar(2009, 11, 23, 20, 53, 49).getTime()),
+        assertEquals(DateFormat.getDateInstance(DateFormat.LONG).format(calendar(2009, 11, 23, 20, 53, 49, 0, "GMT").getTime()),
                 new Version(null, "2009-11-23 20:53:49").getDate());
     }
 
