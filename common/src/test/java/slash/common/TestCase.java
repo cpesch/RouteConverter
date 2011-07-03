@@ -23,11 +23,12 @@ package slash.common;
 import slash.common.io.CompactCalendar;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.text.DateFormat;
 
 public abstract class TestCase extends junit.framework.TestCase {
-    private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+    private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH);
 
     public static void assertNotEquals(Object expected, Object was) {
         assertTrue("expected:<" + expected + "> but was:<" + was + ">", !expected.equals(was));
@@ -86,9 +87,7 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static void assertCalendarEquals(CompactCalendar expected, CompactCalendar actual) {
-        String expectedString = LONG_DATE_TIME_FORMAT.format(expected.getTime());
-        String actualString = LONG_DATE_TIME_FORMAT.format(actual.getTime());
-        assertEquals(expectedString, actualString);
+        assertCalendarEquals(expected.getCalendar(), actual.getCalendar());
     }
 
     public static CompactCalendar calendar(int year, int month, int day, int hour, int minute, int second, int millisecond, String timeZone) {

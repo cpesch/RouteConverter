@@ -59,22 +59,31 @@ public class TimeZoneTest {
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar("2007-06-07T14:04:42Z");
         GregorianCalendar java = xml.toGregorianCalendar();
-        java.setTimeZone(CompactCalendar.UTC);
-        String javaTime = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH).format(java.getTime().getTime());
-        assertEquals("6/7/07 4:04 PM", javaTime);
+        assertEquals(TimeZone.getTimeZone("GMT+00:00"), java.getTimeZone());
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
+        dateFormat.setTimeZone(java.getTimeZone());
+        assertEquals(TimeZone.getTimeZone("GMT+00:00"), dateFormat.getTimeZone());
+        String javaTime = dateFormat.format(java.getTime().getTime());
+        assertEquals("6/7/07 2:04 PM", javaTime);
         Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
+        assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         assertCalendarEquals(parsed, java);
     }
 
     @Test
     public void testXMLGregorianCalendarWithTimeZoneViaDatatypeFactory() throws DatatypeConfigurationException {
+        TimeZone.setDefault(TimeZone.getTimeZone("PST"));
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar("2007-06-07T14:04:42+02:00");
         GregorianCalendar java = xml.toGregorianCalendar();
-        java.setTimeZone(TimeZone.getTimeZone("+02:00"));
-        String javaTime = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH).format(java.getTime().getTime());
-        assertEquals("6/7/07 4:04 PM", javaTime);
+        assertEquals(TimeZone.getTimeZone("GMT+02:00"), java.getTimeZone());
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
+        dateFormat.setTimeZone(java.getTimeZone());
+        String javaTime = dateFormat.format(java.getTime().getTime());
+        assertEquals("6/7/07 2:04 PM", javaTime);
         Calendar parsed = XmlNavigationFormat.parseTime(xml).getCalendar();
+        assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
+        java.roll(Calendar.HOUR, 2);
         assertCalendarEquals(parsed, java);
     }
 
