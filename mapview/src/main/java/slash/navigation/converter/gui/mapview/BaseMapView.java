@@ -873,8 +873,12 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void toggleOverlays() {
-        executeScript("toggleOverlays();");
+    private void removeOverlays() {
+        executeScript("removeOverlays();");
+    }
+
+    private void removeDirections() {
+        executeScript("removeDirections();");
     }
 
     private void addDirectionsToMap(List<BaseNavigationPosition> positions) {
@@ -886,6 +890,8 @@ public abstract class BaseMapView implements MapView {
             addMarkersToMap(positions);
             return;
         }
+
+        removeOverlays();
 
         int directionsCount = Transfer.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
         for (int j = 0; j < directionsCount; j++) {
@@ -904,20 +910,15 @@ public abstract class BaseMapView implements MapView {
 
             BaseNavigationPosition origin = positions.get(start);
             BaseNavigationPosition destination = positions.get(end - 1);
-            buffer.append("addDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
+            buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
             buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
             buffer.append("waypoints: latlngs, travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
             buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
             buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
-            buffer.append("region: '").append(Locale.getDefault()).append("'});\n");
+            buffer.append("region: '").append(Locale.getDefault()).append("'}, ");
+            buffer.append(j == directionsCount - 1).append(");\n");
             executeScript(buffer.toString());
         }
-        try {
-             Thread.sleep(500);
-         } catch (InterruptedException e) {
-             // don't care if this happens
-         }
-        toggleOverlays();
     }
 
     private void addPolylinesToMap(final List<BaseNavigationPosition> positions) {
@@ -943,7 +944,8 @@ public abstract class BaseMapView implements MapView {
                     append("strokeWeight: 2, strokeOpacity: 1, clickable: false}));");
             executeScript(buffer.toString());
         }
-        toggleOverlays();
+        removeOverlays();
+        removeDirections();
     }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
@@ -960,7 +962,8 @@ public abstract class BaseMapView implements MapView {
             }
             executeScript(buffer.toString());
         }
-        toggleOverlays();
+        removeOverlays();
+        removeDirections();
     }
 
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
@@ -1005,7 +1008,7 @@ public abstract class BaseMapView implements MapView {
             buffer.append("centerMap(new google.maps.LatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("));\n");
         }
-        buffer.append("removeMarkers();\n");
+        buffer.append("removeMarkers();");
         executeScript(buffer.toString());
     }
 

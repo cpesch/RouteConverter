@@ -189,13 +189,13 @@
        });
    }
 
-   function addDirections(directionsRequest) {
+   function renderDirections(directionsRequest, lastSegment) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
                var directions = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true,
                    draggable: true, hideRouteList: true});
                directions.setDirections(result);
-               addOverlay(directions);
+               addDirections(directions);
 
                var meters = 0;
                var seconds = 0;
@@ -207,10 +207,20 @@
                    }
                }
                callJava("load/" + meters + "/" + seconds);
+
+               if (lastSegment)
+                   removeDirections();
            } else {
                setError("<p>Sorry, could not render directions.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        });
+   }
+
+   var oldDirections = new Array();
+   var newDirections = new Array();
+
+   function addDirections(directions) {
+       newDirections.push(directions);
    }
 
    function removeDirections() {
@@ -218,6 +228,15 @@
        while (element.hasChildNodes()) {
            element.removeChild(element.lastChild);
        }
+
+       for (i = 0; i < newDirections.length; i++) {
+           newDirections[i].setMap(map);
+       }
+       while (oldDirections.length > 0) {
+           oldDirections.pop().setMap(null);
+       }
+       oldDirections = newDirections;
+       newDirections = new Array();
    }
 
    var oldOverlays = new Array();
@@ -227,7 +246,7 @@
        newOverlays.push(overlay);
    }
 
-   function toggleOverlays() {
+   function removeOverlays() {
        for (i = 0; i < newOverlays.length; i++) {
            newOverlays[i].setMap(map);
        }
