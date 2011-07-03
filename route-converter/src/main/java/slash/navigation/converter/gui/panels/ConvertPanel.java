@@ -581,7 +581,7 @@ public class ConvertPanel {
 
     private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount,
                           boolean confirmOverwrite, boolean openAfterSave) {
-        File[] targets = Files.createTargetFiles(file, fileCount, format.getExtension(), format.getMaximumFileNameLength());
+        File[] targets = Files.createTargetFiles(file, fileCount, format.getExtension(), 255);
         if (confirmOverwrite) {
             for (File target : targets) {
                 if (target.exists()) {
@@ -787,9 +787,7 @@ public class ConvertPanel {
         String fileName = file.getName();
         if (format instanceof GoPal3RouteFormat)
             fileName = Files.createGoPalFileName(fileName);
-        return new File(Files.calculateConvertFileName(new File(path, fileName),
-                "",
-                format.getMaximumFileNameLength()));
+        return new File(Files.calculateConvertFileName(new File(path, fileName), "", format.getMaximumFileNameLength()));
     }
 
     private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat> formats, String selectedFormat) {
