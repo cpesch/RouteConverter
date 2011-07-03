@@ -63,7 +63,7 @@ public class VersionTest extends TestCase {
     }
 
     public void testGetDate() {
-        Date date = calendar(2009, 11, 22, 20, 53, 49, 0, "UTC").getCalendar().getTime();
+        Date date = calendar(2009, 11, 24, 20, 53, 49, 0, "UTC").getCalendar().getTime();
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG);
         String expected = dateFormat.format(date);
         String actual = new Version(null, "2009-11-23 20:53:49").getDate();
