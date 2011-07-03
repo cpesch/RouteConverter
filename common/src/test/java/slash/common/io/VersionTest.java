@@ -23,8 +23,10 @@ package slash.common.io;
 import slash.common.TestCase;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class VersionTest extends TestCase {
 
@@ -64,9 +66,12 @@ public class VersionTest extends TestCase {
     }
 
     public void testGetDate() {
-        assertEquals(DateFormat.getDateInstance(DateFormat.LONG, Locale.ENGLISH).
-                format(calendar(2009, 11, 23, 20, 53, 49, 0, "UTC").getTime()),
-                new Version(null, "2009-11-23 20:53:49").getDate());
+        Calendar calendar = calendar(2009, 11, 23, 20, 53, 49, 0, "UTC").getCalendar();
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG);
+        dateFormat.setTimeZone(calendar.getTimeZone());
+        String expected = dateFormat.format(calendar.getTime());
+        String actual = new Version(null, "2009-11-23 20:53:49").getDate();
+        assertEquals(expected, actual);
     }
 
     public void testIsLatestVersion() {

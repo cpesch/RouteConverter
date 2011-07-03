@@ -156,10 +156,10 @@ public class Version {
     public String getDate() {
         if (date != null) {
             try {
-                Date date = BUILD_DATE.parse(this.date);
                 DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
                 format.setTimeZone(CompactCalendar.UTC);
-                return format.format(date);
+                Date java = BUILD_DATE.parse(date);
+                return format.format(java);
             }
             catch (ParseException e) {
                 // intentionally ignored

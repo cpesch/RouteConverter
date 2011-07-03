@@ -72,7 +72,6 @@ public class TimeZoneTest {
 
     @Test
     public void testXMLGregorianCalendarWithTimeZoneViaDatatypeFactory() throws DatatypeConfigurationException {
-        TimeZone.setDefault(TimeZone.getTimeZone("PST"));
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar xml = datatypeFactory.newXMLGregorianCalendar("2007-06-07T14:04:42+02:00");
         GregorianCalendar java = xml.toGregorianCalendar();
