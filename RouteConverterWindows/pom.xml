@@ -52,7 +52,12 @@
                     </execution>
                 </executions>
             </plugin>
+        </plugins>
+    </build>
 
+    <profiles><profile><id>launcher</id>
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
                 <artifactId>launch4j-plugin</artifactId>
@@ -100,6 +105,7 @@
             </plugin>
         </plugins>
     </build>
+    </profile></profiles>
 
     <dependencies>
         <dependency>
