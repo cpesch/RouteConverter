@@ -21,26 +21,17 @@
 package slash.navigation.converter.gui.mapview;
 
 import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserCommandEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
-import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
+import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
 import slash.common.io.TokenResolver;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -125,7 +116,7 @@ public class EclipseSWTMapView extends BaseMapView {
             });
             if (html == null)
                 throw new IllegalArgumentException("Cannot extract routeconverter.html");
-            Externalization.extractFile("slash/navigation/converter/gui/mapview/contextmenucontrol.js");
+            Externalization.extractFile("slash/navigation/converter/gui/mapview/keydragzoom.js");
 
             final String url = html.toURI().toURL().toExternalForm();
             webBrowser.runInSequence(new Runnable() {
@@ -294,26 +285,6 @@ public class EclipseSWTMapView extends BaseMapView {
     }
 
     // zoom level and bounds
-
-    protected int getBoundsZoomLevel(List<BaseNavigationPosition> positions) {
-        if ((positions == null) || (positions.size() < 1))
-            return 0;
-
-        Wgs84Position northEast = Positions.northEast(positions);
-        Wgs84Position southWest = Positions.southWest(positions);
-
-        StringBuilder buffer = new StringBuilder();
-        /* TODO there is no map.getBoundsZoomLevel
-        buffer.append("return map.getBoundsZoomLevel(new GLatLngBounds(").
-                append("new GLatLng(").append(northEast.getLatitude()).append(",").
-                append(northEast.getLongitude()).append("),").
-                append("new GLatLng(").append(southWest.getLatitude()).append(",").
-                append(southWest.getLongitude()).append(")").append("));");
-        */
-        buffer.append("return map.getZoom();");  // TODO fix me
-        String zoomLevel = executeScriptWithResult(buffer.toString());
-        return zoomLevel != null ? Transfer.parseDouble(zoomLevel).intValue() : 1;
-    }
 
     protected int getCurrentZoomLevel() {
         String zoomLevel = executeScriptWithResult("return map.getZoom();");

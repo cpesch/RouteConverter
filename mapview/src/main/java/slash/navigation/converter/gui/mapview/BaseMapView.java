@@ -293,7 +293,7 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     setCenterOfMap(copiedPositions, recenter);
-                    copiedPositions = reducePositions(copiedPositions, recenter, getMaximumPositionCount());
+                    copiedPositions = reducePositions(copiedPositions, getMaximumPositionCount());
                     switch (positionsModel.getRoute().getCharacteristics()) {
                         case Route:
                             addDirectionsToMap(copiedPositions);
@@ -717,11 +717,9 @@ public abstract class BaseMapView implements MapView {
         return significant;
     }
 
-    private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions, boolean recenter) {
-        int zoomLevel = recenter ? getBoundsZoomLevel(positions) : getCurrentZoomLevel();
-
+    private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions) {
+        int zoomLevel = getCurrentZoomLevel();
         BitSet pointStatus = calculateSignificantPositionsForZoomLevel(positions, zoomLevel);
-
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int i = 0; i < positions.size(); i++)
             if (pointStatus.get(i))
@@ -729,12 +727,12 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
-    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, boolean recenter, int maximumPositionCount) {
+    private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
         if (positions.size() < 2)
             return positions;
 
         // determine significant positions for this zoom level
-        positions = filterSignificantPositions(positions, recenter);
+        positions = filterSignificantPositions(positions);
 
         // reduce the number of significant positions by a visibility heuristic
         if (positions.size() > maximumPositionCount)
@@ -761,8 +759,6 @@ public abstract class BaseMapView implements MapView {
 
         return positions;
     }
-
-    protected abstract int getBoundsZoomLevel(List<BaseNavigationPosition> positions);
 
     protected abstract int getCurrentZoomLevel();
 
