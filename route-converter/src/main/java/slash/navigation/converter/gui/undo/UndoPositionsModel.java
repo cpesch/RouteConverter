@@ -107,6 +107,10 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getPositions(firstIndex, lastIndex);
     }
 
+    public int[] getContainedPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
+        return delegate.getContainedPositions(northEastCorner, southWestCorner);
+    }
+
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
         return delegate.getPositionsWithinDistanceToPredecessor(distance);
     }

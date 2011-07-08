@@ -40,6 +40,8 @@ import slash.navigation.viamichelin.ViaMichelinRoute;
 
 import java.util.*;
 
+import static slash.navigation.util.Positions.contains;
+
 /**
  * The base of all routes formats.
  *
@@ -162,6 +164,18 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             }
             previous = next;
         }
+    }
+
+    public int[] getContainedPositions(BaseNavigationPosition northEastCorner,
+                                       BaseNavigationPosition southWestCorner) {
+        List<Integer> result = new ArrayList<Integer>();
+        List<P> positions = getPositions();
+        for (int i = 1; i < positions.size() - 1; i++) {
+            P position = positions.get(i);
+            if (position.hasCoordinates() && contains(northEastCorner, southWestCorner, position))
+                result.add(i);
+        }
+        return Range.toArray(result);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {

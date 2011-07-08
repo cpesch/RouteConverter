@@ -25,11 +25,12 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.FrameAction;
-import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import java.text.MessageFormat;
-import java.util.Arrays;
+
+import static java.util.Arrays.asList;
+import static slash.navigation.util.Positions.center;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after
@@ -58,7 +59,7 @@ public class NewPositionAction extends FrameAction {
         BaseNavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
-        return Positions.center(Arrays.asList(second, position));
+        return center(asList(second, position));
     }
 
     public void run() {

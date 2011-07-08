@@ -32,7 +32,6 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.catalog.domain.Route;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.helper.*;

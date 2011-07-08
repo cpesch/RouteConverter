@@ -25,7 +25,6 @@ import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionColumns;
@@ -61,6 +60,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.util.Positions.*;
+import static slash.navigation.util.Positions.southWest;
 
 /**
  * Interface for a component that displays the positions of a route.
@@ -643,6 +644,10 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
+    public void clearSelection() {
+        setSelectedPositions(new int[0]);
+    }
+
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
         this.recenterAfterZooming = recenterAfterZooming;
     }
@@ -668,7 +673,7 @@ public abstract class BaseMapView implements MapView {
     public BaseNavigationPosition getCenter() {
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
-        return northEast != null && southWest != null ? Positions.center(Arrays.asList(northEast, southWest)) : null;
+        return northEast != null && southWest != null ? center(Arrays.asList(northEast, southWest)) : null;
     }
 
     protected abstract BaseNavigationPosition getNorthEastBounds();
@@ -686,7 +691,7 @@ public abstract class BaseMapView implements MapView {
 
         String latitude = tokenizer.nextToken();
         String longitude = tokenizer.nextToken();
-        return new Wgs84Position(Double.parseDouble(longitude), Double.parseDouble(latitude), null, null, null, null);
+        return asPosition(Double.parseDouble(longitude), Double.parseDouble(latitude));
     }
 
     // reduction of positions
@@ -783,7 +788,7 @@ public abstract class BaseMapView implements MapView {
 
         for (int i = 1; i < positions.size() - 1; i += 1) {
             BaseNavigationPosition position = positions.get(i);
-            if (Positions.contains(northEast, southWest, position)) {
+            if (contains(northEast, southWest, position)) {
                 result.add(position);
             }
         }
@@ -972,12 +977,12 @@ public abstract class BaseMapView implements MapView {
 
         // if there are positions center on first start or if we have to recenter
         if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
-            Wgs84Position northEast = Positions.northEast(positions);
-            Wgs84Position southWest = Positions.southWest(positions);
+            BaseNavigationPosition northEast = northEast(positions);
+            BaseNavigationPosition southWest = southWest(positions);
             buffer.append("map.fitBounds(new google.maps.LatLngBounds(").
                     append("new google.maps.LatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append("),").
                     append("new google.maps.LatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(")));\n");
-            Wgs84Position center = Positions.center(positions);
+            BaseNavigationPosition center = center(positions);
             buffer.append("map.setCenter(new google.maps.LatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("));\n");
             ignoreNextZoomCallback = true;
@@ -1192,6 +1197,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
     private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
     private static final Pattern ZOOMED_PATTERN = Pattern.compile("^zoomed$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
@@ -1253,6 +1259,21 @@ public abstract class BaseMapView implements MapView {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     selectPosition(longitude, latitude, threshold);
+                }
+            });
+            return true;
+        }
+
+        Matcher selectPositionsMatcher = SELECT_POSITIONS_PATTERN.matcher(callback);
+        if (selectPositionsMatcher.matches()) {
+            final Double latitudeNorthEast = Transfer.parseDouble(selectPositionsMatcher.group(1));
+            final Double longitudeNorthEast = Transfer.parseDouble(selectPositionsMatcher.group(2));
+            final Double latitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(3));
+            final Double longitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(4));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    selectPositions(asPosition(longitudeNorthEast, latitudeNorthEast),
+                            asPosition(longitudeSouthWest, latitudeSouthWest));
                 }
             });
             return true;
@@ -1446,9 +1467,20 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void selectPosition(Double longitude, Double latitude, Double threshold) {
+        positionsSelectionModel.clearSelection();
+
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1)
             positionsSelectionModel.setSelectedPositions(new int[]{row});
+    }
+
+    private void selectPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
+        positionsSelectionModel.clearSelection();
+
+        int[] rows = positionsModel.getContainedPositions(northEastCorner, southWestCorner);
+        if (rows.length > 0) {
+            positionsSelectionModel.setSelectedPositions(rows);
+        }
     }
 
     private void removePosition(Double longitude, Double latitude, Double threshold) {

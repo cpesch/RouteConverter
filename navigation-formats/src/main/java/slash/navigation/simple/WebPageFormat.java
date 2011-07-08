@@ -23,12 +23,15 @@ package slash.navigation.simple;
 import slash.common.io.CompactCalendar;
 import slash.common.io.InputOutput;
 import slash.navigation.base.*;
-import slash.navigation.util.Positions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+
+import static slash.navigation.util.Positions.center;
+import static slash.navigation.util.Positions.northEast;
+import static slash.navigation.util.Positions.southWest;
 
 /**
  * Writes a Web Page (*.html).
@@ -99,14 +102,14 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
             }
         }
         
-        Wgs84Position northEast = Positions.northEast(positions);
-        Wgs84Position southWest = Positions.southWest(positions);
+        BaseNavigationPosition northEast = northEast(positions);
+        BaseNavigationPosition southWest = southWest(positions);
         StringBuilder boundsBuffer = new StringBuilder().
                 append("new GLatLng(").append(northEast.getLatitude()).append(",").
                 append(northEast.getLongitude()).append("),").
                 append("new GLatLng(").append(southWest.getLatitude()).append(",").
                 append(southWest.getLongitude()).append(")");
-        Wgs84Position center = Positions.center(positions);
+        BaseNavigationPosition center = center(positions);
         StringBuilder centerBuffer = new StringBuilder().
                 append("new GLatLng(").append(center.getLatitude()).append(",").
                 append(center.getLongitude()).append(")");

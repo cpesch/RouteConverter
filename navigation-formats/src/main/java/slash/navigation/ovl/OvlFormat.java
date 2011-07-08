@@ -21,7 +21,6 @@
 package slash.navigation.ovl;
 
 import slash.navigation.base.*;
-import slash.navigation.util.Positions;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 
@@ -29,6 +28,8 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.navigation.util.Positions.center;
 
 /**
  * Reads and writes Top50 OVL ASCII (.ovl) files.
@@ -282,7 +283,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "MapName", "Bundesrepublik 1:1 Mio");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
-        Wgs84Position center = Positions.center(route.getPositions());
+        BaseNavigationPosition center = center(route.getPositions());
         writeMissingAttribute(route.getMapLage(), writer, "CenterLat", Transfer.formatPositionAsString(center.getLatitude()));
         writeMissingAttribute(route.getMapLage(), writer, "CenterLong", Transfer.formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);

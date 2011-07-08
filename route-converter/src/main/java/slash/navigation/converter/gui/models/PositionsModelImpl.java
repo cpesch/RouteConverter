@@ -99,6 +99,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return result;
     }
 
+    public int[] getContainedPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
+        return getRoute().getContainedPositions(northEastCorner, southWestCorner);
+    }
+
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
         return getRoute().getPositionsWithinDistanceToPredecessor(distance);
     }

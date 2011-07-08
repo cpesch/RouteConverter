@@ -100,9 +100,9 @@ public class Positions {
         return CompactCalendar.fromMillis(time);
     }
 
-    public static Wgs84Position center(List<? extends BaseNavigationPosition> positions) {
-        Wgs84Position northEast = northEast(positions);
-        Wgs84Position southWest = southWest(positions);
+    public static BaseNavigationPosition center(List<? extends BaseNavigationPosition> positions) {
+        BaseNavigationPosition northEast = northEast(positions);
+        BaseNavigationPosition southWest = southWest(positions);
         double longitude = (southWest.getLongitude() + northEast.getLongitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         double latitude = (southWest.getLatitude() + northEast.getLatitude() + DIV_BY_ZERO_AVOIDANCE_OFFSET) / 2;
         CompactCalendar time = null;
@@ -111,10 +111,10 @@ public class Positions {
                     (southWest.getTime().getTimeInMillis() - northEast.getTime().getTimeInMillis()) / 2;
             time = CompactCalendar.fromMillis(millis);
         }
-        return new Wgs84Position(longitude, latitude, null, null, time, null);
+        return asPosition(longitude, latitude, time);
     }
 
-    public static Wgs84Position northEast(List<? extends BaseNavigationPosition> positions) {
+    public static BaseNavigationPosition northEast(List<? extends BaseNavigationPosition> positions) {
         double minimumLongitude = 180.0, minimumLatitude = 180.0;
         Calendar minimumTime = null;
         for (BaseNavigationPosition position : positions) {
@@ -135,11 +135,11 @@ public class Positions {
             if (minimumTime == null || calendar.before(minimumTime))
                 minimumTime = calendar;
         }
-        return new Wgs84Position(minimumLongitude, minimumLatitude, null, null,
-                minimumTime != null ? CompactCalendar.fromCalendar(minimumTime) : null, null);
+        return asPosition(minimumLongitude, minimumLatitude,
+                minimumTime != null ? CompactCalendar.fromCalendar(minimumTime) : null);
     }
 
-    public static Wgs84Position southWest(List<? extends BaseNavigationPosition> positions) {
+    public static BaseNavigationPosition southWest(List<? extends BaseNavigationPosition> positions) {
         double maximumLongitude = -180.0, maximumLatitude = -180.0;
         Calendar maximumTime = null;
         for (BaseNavigationPosition position : positions) {
@@ -160,8 +160,8 @@ public class Positions {
             if (maximumTime == null || calendar.after(maximumTime))
                 maximumTime = calendar;
         }
-        return new Wgs84Position(maximumLongitude, maximumLatitude, null, null,
-                maximumTime != null ? CompactCalendar.fromCalendar(maximumTime) : null, null);
+        return asPosition(maximumLongitude, maximumLatitude,
+                maximumTime != null ? CompactCalendar.fromCalendar(maximumTime) : null);
     }
 
     public static boolean contains(BaseNavigationPosition northEastCorner,
@@ -172,5 +172,13 @@ public class Positions {
         result = result && (position.getLatitude() > southWestCorner.getLatitude());
         result = result && (position.getLatitude() < northEastCorner.getLatitude());
         return result;
+    }
+
+    public static Wgs84Position asPosition(double longitude, double latitude) {
+        return asPosition(longitude, latitude, null);
+    }
+
+    private static Wgs84Position asPosition(double longitude, double latitude, CompactCalendar time) {
+        return new Wgs84Position(longitude, latitude, null, null, time, null);
     }
 }
