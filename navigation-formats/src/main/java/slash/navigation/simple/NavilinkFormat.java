@@ -50,9 +50,9 @@ import java.util.List;
  */
 
 public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
-    private static final int HEADER_SIZE = 64;
-    private static final int SBP_RECORD_LENGTH = 32;
-    private static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    protected static final int HEADER_SIZE = 64;
+    protected static final int SBP_RECORD_LENGTH = 32;
+    protected static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     static {
         TRACK_NAME_DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
@@ -118,7 +118,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
     private static final long MINUTE_MASK = Long.parseLong("00000000000000000000111111000000", 2);
     private static final long SECOND_MASK = Long.parseLong("00000000000000000000000000111111", 2);
 
-    private CompactCalendar decodeDateTime(long dateTime) {
+    protected CompactCalendar decodeDateTime(long dateTime) {
         /*
           Packed_Date_Time_UTC:
           bit 31..22: year*12+month (10 bits) : real year= year+2000
@@ -152,7 +152,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return CompactCalendar.fromCalendar(calendar);
     }
 
-    private boolean isTrackStart(ByteBuffer buffer) {
+    protected boolean isTrackStart(ByteBuffer buffer) {
         short bitFlags = buffer.get(30);
         /*
           this is the behaviour of gpsbabel:
@@ -163,7 +163,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return (bitFlags & 0x01) == 1;
     }
 
-    private Wgs84Position decodePosition(ByteBuffer buffer) {
+    protected Wgs84Position decodePosition(ByteBuffer buffer) {
         buffer.position(0);
 
         /*
