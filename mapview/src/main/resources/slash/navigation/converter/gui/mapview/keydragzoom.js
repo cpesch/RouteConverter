@@ -471,11 +471,10 @@
   DragZoom.prototype.isHotKeyDown_ = function (e) {
     var isHot;
     e = e || window.event;
-        isHot = (e.keyCode == 83 && this.key_ === "s") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
-         isHot = (e.keyCode == 83 || e.keyCode == 90);
-         if (isHot)
-            this.key_ = e.keyCode;
-
+//    isHot = (e.keyCode == 83 && this.key_ === "s") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
+    isHot = (e.keyCode == 83 || e.keyCode == 90);
+    if (isHot)
+      this.key_ = e.keyCode;
 //    isHot = (e.shiftKey && this.key_ === "shift") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
     if (!isHot) {
       // Need to look at keyCode for Opera because it
@@ -736,18 +735,18 @@
       var ne = prj.fromContainerPixelToLatLng(new google.maps.Point(left + width, top));
       var bnds = new google.maps.LatLngBounds(sw, ne);
 
-if (this.key_ == 90 ) {
+if (this.key_ == 90) {
       // Sometimes fitBounds causes a zoom OUT, so restore original zoom level if this happens.
       z = this.map_.getZoom();
       this.map_.fitBounds(bnds);
       if (this.map_.getZoom() < z) {
         this.map_.setZoom(z);
       }
-      }
-if (this.key_ ==83 ){
-    if (event.shiftKey)
+}
+if (this.key_ == 83) {
+      if (event.shiftKey)
         callJava("select-positions-extend-selection/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
-    else
+      else
         callJava("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng());
 }
 

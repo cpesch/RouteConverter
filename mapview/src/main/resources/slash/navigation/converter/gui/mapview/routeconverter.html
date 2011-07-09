@@ -414,6 +414,8 @@
            google.maps.event.addListener(map, "click", function(event) {
                if (!shiftKey && !altKey && !ctrlKey) {
                    callJava("select-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
+               } else if (shiftKey && !altKey && !ctrlKey) {
+                   callJava("select-position-extend-selection/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                } else if (!shiftKey && !altKey && ctrlKey) {
                    callJava("insert-position/" + event.latLng.lat() + "/" + event.latLng.lng());
                } else if (!shiftKey && altKey && ctrlKey) {
