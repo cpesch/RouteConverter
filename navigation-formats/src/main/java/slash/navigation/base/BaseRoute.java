@@ -170,7 +170,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                                        BaseNavigationPosition southWestCorner) {
         List<Integer> result = new ArrayList<Integer>();
         List<P> positions = getPositions();
-        for (int i = 1; i < positions.size() - 1; i++) {
+        for (int i = 0; i < positions.size(); i++) {
             P position = positions.get(i);
             if (position.hasCoordinates() && contains(northEastCorner, southWestCorner, position))
                 result.add(i);
