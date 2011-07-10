@@ -287,7 +287,6 @@
     this.map_ = map;
     opt_zoomOpts = opt_zoomOpts || {};
     this.key_ = opt_zoomOpts.key || "s";
-//    this.key_ = opt_zoomOpts.key || "shift";
     this.key_ = this.key_.toLowerCase();
     this.borderWidths_ = getBorderWidths(this.map_.getDiv());
     this.veilDiv_ = [];
@@ -341,7 +340,7 @@
     this.boxDiv_ = document.createElement("div");
     // Apply default style values for the zoom box:
     setVals(this.boxDiv_.style, {
-      border: "4px solid #736AFF"
+      border: "3px solid #736AFF"
     });
     // Apply style values specified in boxStyle parameter:
     setVals(this.boxDiv_.style, opt_zoomOpts.boxStyle);
