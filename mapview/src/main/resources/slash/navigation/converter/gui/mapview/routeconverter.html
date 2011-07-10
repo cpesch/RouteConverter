@@ -373,7 +373,7 @@
 
            var menu = new ContextMenu({map:map});
            menu.addItem('Select', function(map, latLng) {
-               callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+               callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
            });
            menu.addItem('Insert', function(map, latLng) {
                callJava("insert-position/" + latLng.lat() + "/" + latLng.lng());
