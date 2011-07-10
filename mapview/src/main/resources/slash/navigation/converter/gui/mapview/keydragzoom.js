@@ -85,9 +85,9 @@
       if (h.currentStyle) {
         // The current styles may not be in pixel units so try to convert (bad!)
         bw.top = parseInt(toPixels(h.currentStyle.borderTopWidth), 10) || 0;
-        bw.bottom = parseInt(toPixels(h.currentStyle.borderBottomWidth), 10) || 0;
+        bw.bottom = -parseInt(toPixels(h.currentStyle.borderBottomWidth), 10) || 0;
         bw.left = parseInt(toPixels(h.currentStyle.borderLeftWidth), 10) || 0;
-        bw.right = parseInt(toPixels(h.currentStyle.borderRightWidth), 10) || 0;
+        bw.right = -parseInt(toPixels(h.currentStyle.borderRightWidth), 10) || 0;
         return bw;
       }
     }
