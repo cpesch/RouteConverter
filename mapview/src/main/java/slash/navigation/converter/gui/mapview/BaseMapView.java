@@ -125,7 +125,7 @@ public abstract class BaseMapView implements MapView {
     private TravelMode travelMode;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
-    private int meters = 0, seconds = 0;
+    private int meters = 0, seconds = 0, lastZoomLevel = -1;
     private PositionAugmenter positionAugmenter;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -1196,8 +1196,8 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
     private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)/(.*)$");
-    private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)$");
-    private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)");
+    private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
+    private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
     private static final Pattern ZOOMED_PATTERN = Pattern.compile("^zoomed$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
@@ -1256,9 +1256,10 @@ public abstract class BaseMapView implements MapView {
             final Double latitude = Transfer.parseDouble(selectPositionMatcher.group(1));
             final Double longitude = Transfer.parseDouble(selectPositionMatcher.group(2));
             final Double threshold = Transfer.parseDouble(selectPositionMatcher.group(3));
+            final Boolean clearSelection = Boolean.parseBoolean(selectPositionMatcher.group(4));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    selectPosition(longitude, latitude, threshold);
+                    selectPosition(longitude, latitude, threshold, clearSelection);
                 }
             });
             return true;
@@ -1270,10 +1271,11 @@ public abstract class BaseMapView implements MapView {
             final Double longitudeNorthEast = Transfer.parseDouble(selectPositionsMatcher.group(2));
             final Double latitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(3));
             final Double longitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(4));
+            final Boolean clearSelection = Boolean.parseBoolean(selectPositionsMatcher.group(5));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     selectPositions(asPosition(longitudeNorthEast, latitudeNorthEast),
-                            asPosition(longitudeSouthWest, latitudeSouthWest));
+                            asPosition(longitudeSouthWest, latitudeSouthWest), clearSelection);
                 }
             });
             return true;
@@ -1292,14 +1294,17 @@ public abstract class BaseMapView implements MapView {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
                     ignoreNextZoomCallback = false;
-                else
+                else {
                     haveToRepaintRouteImmediately = true;
-                // if enabled, recenter map to selected positions after zooming
-                if (recenterAfterZooming)
-                    haveToRecenterMap = true;
-                haveToRepaintSelectionImmediately = true;
-                selectionUpdateReason = "zoomed";
-                notificationMutex.notifyAll();
+                    // if enabled, recenter map to selected positions after zooming
+                    if (recenterAfterZooming)
+                        haveToRecenterMap = true;
+                    haveToRepaintSelectionImmediately = true;
+                    int currentZoomLevel = getCurrentZoomLevel();
+                    selectionUpdateReason = "zoomed from " + lastZoomLevel + " to " + currentZoomLevel;
+                    lastZoomLevel = currentZoomLevel;
+                    notificationMutex.notifyAll();
+                }
             }
             return true;
         }
@@ -1466,16 +1471,18 @@ public abstract class BaseMapView implements MapView {
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
     }
 
-    private void selectPosition(Double longitude, Double latitude, Double threshold) {
-        positionsSelectionModel.clearSelection();
+    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean clearSelection) {
+        if (clearSelection)
+            positionsSelectionModel.clearSelection();
 
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1)
             positionsSelectionModel.setSelectedPositions(new int[]{row});
     }
 
-    private void selectPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner) {
-        positionsSelectionModel.clearSelection();
+    private void selectPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner, boolean clearSelection) {
+        if (clearSelection)
+            positionsSelectionModel.clearSelection();
 
         int[] rows = positionsModel.getContainedPositions(northEastCorner, southWestCorner);
         if (rows.length > 0) {
