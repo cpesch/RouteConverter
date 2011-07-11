@@ -53,6 +53,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
     protected static final int HEADER_SIZE = 64;
     protected static final int SBP_RECORD_LENGTH = 32;
     protected static final SimpleDateFormat TRACK_NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     static {
         TRACK_NAME_DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
@@ -194,8 +195,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         int longitude = buffer.getInt();
         int altitudeCm = buffer.getInt();
         short speedMeterPerSecond = buffer.getShort();
-        short heading = buffer.getShort();
-
+        int heading = buffer.getShort() & 0xFFFF;
         Wgs84Position position = new Wgs84Position(longitude / 10000000.0,
                 latitude / 10000000.0,
                 altitudeCm / 100.0,
