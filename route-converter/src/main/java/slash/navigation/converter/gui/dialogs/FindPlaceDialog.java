@@ -157,7 +157,7 @@ public class FindPlaceDialog extends SimpleDialog {
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getComment());
             r.setLastMapCenter(position.getLongitude(), position.getLatitude());
-            r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow});
+            r.getPositionsSelectionModel().setSelectedPositions(new int[]{insertRow}, true);
 
             if (Transfer.isEmpty(position.getElevation()))
                 r.complementElevation(insertRow, position.getLongitude(), position.getLatitude());

@@ -634,18 +634,22 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    public void setSelectedPositions(int[] selectedPositions) {
+    public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
         synchronized (notificationMutex) {
-            this.selectedPositionIndices = selectedPositions;
+            if (replaceSelection)
+                this.selectedPositionIndices = selectedPositions;
+            else {
+                int[] indices = new int[selectedPositionIndices.length + selectedPositions.length];
+                System.arraycopy(selectedPositionIndices, 0, indices, 0, selectedPositionIndices.length);
+                System.arraycopy(selectedPositions, 0, indices, selectedPositionIndices.length, selectedPositions.length);
+                this.selectedPositionIndices = indices;
+            }
             haveToRecenterMap = true;
             haveToRepaintSelection = true;
-            selectionUpdateReason = "selected " + selectedPositions.length + " positions";
+            selectionUpdateReason = "selected " + selectedPositions.length + " positions; " +
+                    "replacing selection: " + replaceSelection;
             notificationMutex.notifyAll();
         }
-    }
-
-    public void clearSelection() {
-        setSelectedPositions(new int[0]);
     }
 
     public void setRecenterAfterZooming(boolean recenterAfterZooming) {
@@ -1256,10 +1260,10 @@ public abstract class BaseMapView implements MapView {
             final Double latitude = Transfer.parseDouble(selectPositionMatcher.group(1));
             final Double longitude = Transfer.parseDouble(selectPositionMatcher.group(2));
             final Double threshold = Transfer.parseDouble(selectPositionMatcher.group(3));
-            final Boolean clearSelection = Boolean.parseBoolean(selectPositionMatcher.group(4));
+            final Boolean replaceSelection = Boolean.parseBoolean(selectPositionMatcher.group(4));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    selectPosition(longitude, latitude, threshold, clearSelection);
+                    selectPosition(longitude, latitude, threshold, replaceSelection);
                 }
             });
             return true;
@@ -1271,11 +1275,11 @@ public abstract class BaseMapView implements MapView {
             final Double longitudeNorthEast = Transfer.parseDouble(selectPositionsMatcher.group(2));
             final Double latitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(3));
             final Double longitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(4));
-            final Boolean clearSelection = Boolean.parseBoolean(selectPositionsMatcher.group(5));
+            final Boolean replaceSelection = Boolean.parseBoolean(selectPositionsMatcher.group(5));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     selectPositions(asPosition(longitudeNorthEast, latitudeNorthEast),
-                            asPosition(longitudeSouthWest, latitudeSouthWest), clearSelection);
+                            asPosition(longitudeSouthWest, latitudeSouthWest), replaceSelection);
                 }
             });
             return true;
@@ -1426,7 +1430,7 @@ public abstract class BaseMapView implements MapView {
 
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
-        positionsSelectionModel.setSelectedPositions(new int[]{row});
+        positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
         positionAugmenter.complementElevation(row, longitude, latitude);
         positionAugmenter.complementTime(row, null);
@@ -1471,22 +1475,16 @@ public abstract class BaseMapView implements MapView {
         positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
     }
 
-    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean clearSelection) {
-        if (clearSelection)
-            positionsSelectionModel.clearSelection();
-
+    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1)
-            positionsSelectionModel.setSelectedPositions(new int[]{row});
+            positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
     }
 
-    private void selectPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner, boolean clearSelection) {
-        if (clearSelection)
-            positionsSelectionModel.clearSelection();
-
+    private void selectPositions(BaseNavigationPosition northEastCorner, BaseNavigationPosition southWestCorner, boolean replaceSelection) {
         int[] rows = positionsModel.getContainedPositions(northEastCorner, southWestCorner);
         if (rows.length > 0) {
-            positionsSelectionModel.setSelectedPositions(rows);
+            positionsSelectionModel.setSelectedPositions(rows, replaceSelection);
         }
     }
 

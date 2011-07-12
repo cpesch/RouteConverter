@@ -569,9 +569,9 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void selectPositions(int[] selectedPositions) {
         if (isMapViewAvailable())
-            mapView.setSelectedPositions(selectedPositions);
+            mapView.setSelectedPositions(selectedPositions, true);
         if (elevationView != null)
-            elevationView.setSelectedPositions(selectedPositions);
+            elevationView.setSelectedPositions(selectedPositions, true);
     }
 
     public void insertAllWaypoints() {

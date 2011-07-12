@@ -27,6 +27,5 @@ package slash.navigation.converter.gui.models;
  */
 
 public interface PositionsSelectionModel {
-    void setSelectedPositions(int[] selectedPositions);
-    void clearSelection();
+    void setSelectedPositions(int[] selectedPositions, boolean replaceSelection);
 }

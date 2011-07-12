@@ -115,7 +115,12 @@ public class ConvertPanel {
 
         formatAndRoutesModel = new FormatAndRoutesModel(r.getContext().getUndoManager());
         positionsSelectionModel = new PositionsSelectionModel() {
-            public void setSelectedPositions(int[] selectedPositions) {
+            public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
+                if (replaceSelection) {
+                    ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                    selectionModel.clearSelection();
+                }
+
                 new ContinousRange(selectedPositions, new RangeOperation() {
                     public void performOnIndex(int index) {
                         ListSelectionModel selectionModel = tablePositions.getSelectionModel();
@@ -130,10 +135,6 @@ public class ConvertPanel {
                         return false;
                     }
                 }).performMonotonicallyIncreasing(20);
-            }
-            public void clearSelection() {
-                ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                selectionModel.clearSelection();
             }
         };
 

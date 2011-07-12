@@ -68,8 +68,8 @@ public class ElevationView {
                 ChartEntity entity = e.getEntity();
                 if (!(entity instanceof XYItemEntity))
                     return;
-                int index = ((XYItemEntity) entity).getItem();
-                positionsSelectionModel.setSelectedPositions(new int[]{index});
+                int row = ((XYItemEntity) entity).getItem();
+                positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
             }
 
             public void chartMouseMoved(ChartMouseEvent e) {
@@ -126,8 +126,9 @@ public class ElevationView {
         return chartPanel;
     }
 
-    public void setSelectedPositions(int[] selectPositions) {
-        plot.clearDomainMarkers();
+    public void setSelectedPositions(int[] selectPositions, boolean replaceSelection) {
+        if (replaceSelection)
+            plot.clearDomainMarkers();
 
         double[] distances = positionsModel.getRoute().getDistancesFromStart(selectPositions);
         for (double distance : distances) {

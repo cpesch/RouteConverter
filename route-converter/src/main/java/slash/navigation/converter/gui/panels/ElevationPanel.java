@@ -54,8 +54,8 @@ public class ElevationPanel {
         return elevationPanel;
     }
 
-    public void setSelectedPositions(int[] selectedPositions) {
-        elevationView.setSelectedPositions(selectedPositions);
+    public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
+        elevationView.setSelectedPositions(selectedPositions, replaceSelection);
     }
 
     public void print() {

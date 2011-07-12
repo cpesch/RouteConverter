@@ -77,7 +77,7 @@ public class NewPositionAction extends FrameAction {
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
                 center.getElevation(), center.getSpeed(), center.getTime(),
                 MessageFormat.format(RouteConverter.getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
-        positionsSelectionModel.setSelectedPositions(new int[]{insertRow});
+        positionsSelectionModel.setSelectedPositions(new int[]{insertRow}, true);
 
         r.complementElevation(insertRow, center.getLongitude(), center.getLatitude());
         r.complementTime(insertRow, center.getTime());
