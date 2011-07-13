@@ -23,6 +23,7 @@ package slash.navigation.geonames;
 import slash.common.io.Transfer;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
+import slash.navigation.rest.ServiceUnavailableException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -44,10 +45,20 @@ public class GeoNamesService {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://ws.geonames.org/");
     }
 
-    private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
-        Get get = new Get(getGeoNamesUrlPreference() + uri + "?lat=" + latitude + "&lng=" + longitude);
+    private String execute(String uri) throws IOException {
+        String url = getGeoNamesUrlPreference() + uri;
+        Get get = new Get(url);
         String result = get.execute();
-        if (get.isSuccessful())
+        if (get.isSuccessful()) {
+            checkCurrentlyOverloaded(url, result);
+            return result;
+        }
+        return null;
+    }
+
+    private Integer getElevationFor(String uri, double longitude, double latitude, Integer nullValue) throws IOException {
+        String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude);
+        if (result != null) {
             try {
                 Integer elevation = Transfer.parseInt(result);
                 if (elevation != null && !elevation.equals(nullValue))
@@ -57,7 +68,13 @@ public class GeoNamesService {
                 io.setStackTrace(e.getStackTrace());
                 throw io;
             }
+        }
         return null;
+    }
+
+    private void checkCurrentlyOverloaded(String url, String result) throws ServiceUnavailableException {
+        if (result.contains("<html>") && result.contains("currently overloaded"))
+            throw new ServiceUnavailableException("geonames.org", url);
     }
 
     Integer getSrtm3ElevationFor(double longitude, double latitude) throws IOException {
@@ -76,9 +93,8 @@ public class GeoNamesService {
     }
 
     private Geonames getGeonamesFor(String uri) throws IOException {
-        Get get = new Get(getGeoNamesUrlPreference() + uri);
-        String result = get.execute();
-        if (get.isSuccessful())
+        String result = execute(uri);
+        if (result != null) {
             try {
                 return GeoNamesUtil.unmarshal(result);
             } catch (JAXBException e) {
@@ -86,6 +102,7 @@ public class GeoNamesService {
                 io.setStackTrace(e.getStackTrace());
                 throw io;
             }
+        }
         return null;
     }
 
