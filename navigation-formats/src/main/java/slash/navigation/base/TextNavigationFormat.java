@@ -33,6 +33,7 @@ import java.util.List;
  */
 
 public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
+    protected static final char BYTE_ORDER_MARK = '\ufeff';
 
     protected boolean isValidStartDate(CompactCalendar startDate) {
         if(startDate == null)

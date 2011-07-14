@@ -30,7 +30,6 @@ public abstract class SimpleFormat<R extends SimpleRoute> extends TextNavigation
     protected static final String WHITE_SPACE = "\\s*";
     protected static final String BEGIN_OF_LINE = "^";
     protected static final String END_OF_LINE = "$";
-    protected static final char BYTE_ORDER_MARK = '\ufeff';
 
     public boolean isSupportsMultipleRoutes() {
         return false;

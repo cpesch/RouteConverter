@@ -44,11 +44,8 @@ public class CoPilot6Format extends CoPilotFormat {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
-        writer.println(DATA_VERSION + "=6.0.0.27");
-        writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());
-        writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
-        writer.println("TollClosed=0");
-        writer.println(END_TRIP);
+        writer.println(DATA_VERSION + NAME_VALUE_SEPARATOR + "6.0.0.27");
+        writeHeader(route, writer);
 
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {

@@ -26,9 +26,13 @@ import slash.navigation.base.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.trim;
 
 /**
  * The base of all CoPilot formats.
@@ -57,7 +61,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     protected static final String CITY = "City";
     protected static final String COUNTY = "County";
     protected static final String ADDRESS = "Address"; // houseNumber<space>street
-
+    protected static final String SHOW = "Show";
 
     public String getExtension() {
         return ".trp";
@@ -86,7 +90,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (Transfer.trim(line) == null)
+            if (trim(line) == null)
                 continue;
 
             if (isDataVersion(line) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
@@ -135,17 +139,69 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     Wgs84Position parsePosition(Map<String, String> map) {
         Integer latitude = Transfer.parseInt(map.get(LATITUDE));
         Integer longitude = Transfer.parseInt(map.get(LONGITUDE));
-        String state = Transfer.trim(map.get(STATE));
-        String zip = Transfer.trim(map.get(ZIP));
-        String city = Transfer.trim(map.get(CITY));
-        String county = Transfer.trim(map.get(COUNTY));
-        String address = Transfer.trim(map.get(ADDRESS));
+        String state = trim(map.get(STATE));
+        String zip = trim(map.get(ZIP));
+        String city = trim(map.get(CITY));
+        String county = trim(map.get(COUNTY));
+        String address = trim(map.get(ADDRESS));
         String comment = (state != null ? state + (zip != null ? "-" : " ") : "") +
                 (zip != null ? zip + " " : "") + (city != null ? city : "") +
                 (county != null ? ", " + county : "") + (address != null ? ", " + address : "");
         return new Wgs84Position(longitude != null ? longitude / INTEGER_FACTOR : null,
                 latitude != null ? latitude / INTEGER_FACTOR : null,
-                null, null, null, Transfer.trim(comment));
+                null, null, null, trim(comment));
     }
 
+    protected void writeHeader(Wgs84Route route, PrintWriter writer) {
+        writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());
+        writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
+        writer.println("TollClosed=0");
+        writer.println(END_TRIP);
+        writer.println();
+    }
+
+    protected void writePositions(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
+        List<Wgs84Position> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            Wgs84Position position = positions.get(i);
+            writer.println(START_STOP + NAME_VALUE_SEPARATOR + "Stop " + i);
+            String longitude = formatIntAsString(position.getLongitude() != null ? (int) (position.getLongitude() * INTEGER_FACTOR) : null);
+            writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
+            String latitude = formatIntAsString(position.getLatitude() != null ? (int) (position.getLatitude() * INTEGER_FACTOR) : null);
+            writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
+
+            // TODO write decomposed comment
+            // Name=
+            // Address=11 Veilchenstrasse
+            // City=Gladbeck
+            // State=DE
+            // County=Recklinghausen
+            // Zip=47853
+
+            String comment = position.getComment();
+            int index = comment.indexOf(',');
+            String city = index != -1 ? comment.substring(0, index) : comment;
+            city = trim(city);
+            String address = index != -1 ? comment.substring(index + 1) : comment;
+            address = trim(address);
+            boolean first = i == startIndex;
+            boolean last = i == endIndex - 1;
+
+            // only store address if there was a comma in the comment
+            writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));
+            // otherwise store comment als city
+            writer.println(CITY + NAME_VALUE_SEPARATOR + city);
+            if (first || last)
+                writer.println(SHOW + NAME_VALUE_SEPARATOR + "1"); // Target/Stop target
+            else
+                writer.println(SHOW + NAME_VALUE_SEPARATOR + "0"); // Waypoint
+            writer.println(END_STOP);
+            writer.println();
+
+            writer.println(START_STOP_OPT + NAME_VALUE_SEPARATOR + "Stop " + i);
+            writer.println("Loaded=1");
+            writer.println(END_STOP_OPT);
+            writer.println();
+        }
+    }
 }

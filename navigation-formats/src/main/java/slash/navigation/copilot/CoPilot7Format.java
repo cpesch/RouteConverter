@@ -58,47 +58,7 @@ public class CoPilot7Format extends CoPilotFormat {
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me
         writer.write(BYTE_ORDER_MARK);
         writer.println(DATA_VERSION + NAME_VALUE_SEPARATOR + "7.0.0.x");
-        writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());
-        writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
-        writer.println("TollClosed=0");
-        writer.println(END_TRIP);
-        writer.println();
-
-        List<Wgs84Position> positions = route.getPositions();
-        for (int i = startIndex; i < endIndex; i++) {
-            Wgs84Position position = positions.get(i);
-            writer.println(START_STOP + NAME_VALUE_SEPARATOR + "Stop " + i);
-            String longitude = Transfer.formatIntAsString(position.getLongitude() != null ? (int)(position.getLongitude() * INTEGER_FACTOR) : null);
-            writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
-            String latitude = Transfer.formatIntAsString(position.getLatitude() != null ? (int)(position.getLatitude() * INTEGER_FACTOR) : null);
-            writer.println(LATITUDE + NAME_VALUE_SEPARATOR + latitude);
-
-            // TODO write decomposed comment
-            // Name=
-            // Address=11 Veilchenstrasse
-            // City=Gladbeck
-            // State=DE
-            // County=Recklinghausen
-            // Zip=47853
-
-            String comment = position.getComment();
-            int index = comment.indexOf(',');
-            String city = index != -1 ? comment.substring(0, index) : comment;
-            city = Transfer.trim(city);
-            String address = index != -1 ? comment.substring(index + 1) : comment;
-            address = Transfer.trim(address);
-
-            // only store address if there was a comma in the comment
-            writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));
-            // otherwhise store comment als city
-            writer.println(CITY + NAME_VALUE_SEPARATOR + city);
-            writer.println(END_STOP);
-            writer.println();
-
-            writer.println(START_STOP_OPT + NAME_VALUE_SEPARATOR + "Stop " + i);
-            writer.println("Loaded=1");
-            writer.println(END_STOP_OPT);
-            writer.println();
-        }
+        writeHeader(route, writer);
+        writePositions(route, writer, startIndex, endIndex);
     }
 }
