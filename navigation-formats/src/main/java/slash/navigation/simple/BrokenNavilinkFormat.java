@@ -110,6 +110,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
 
         int readBytes = 0, pointCount = 0;
         while (source.read(record) == SBP_RECORD_LENGTH) {
+            readBytes += SBP_RECORD_LENGTH;
             do {
                 sbpRecordByteBuffer.position(0);
                 position = decodePosition(sbpRecordByteBuffer);
@@ -120,6 +121,9 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
                     if (count != 1) {
                         break;
                     }
+                    //is correct format? The first point must inside the first 40 bytes
+                    if ((pointCount == 0) && (readBytes > 40))
+                        break;
                 }
             } while (position == null);
 
@@ -144,6 +148,11 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
             previousPosition = position;
         }
         deleteLogicalWrongPositions(result);
+        
+        //It must be 95% of the file valid
+        int minCorrectPositions = (int) ((readBytes / SBP_RECORD_LENGTH) * 0.95);
+        if (pointCount < minCorrectPositions)
+            return null;
         return result;
     }
 }
