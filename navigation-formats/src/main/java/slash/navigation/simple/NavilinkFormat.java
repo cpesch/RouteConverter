@@ -155,12 +155,6 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
 
     protected boolean isTrackStart(ByteBuffer buffer) {
         short bitFlags = buffer.get(30);
-        /*
-          this is the behaviour of gpsbabel:
-          short reserved = buffer.get(31);
-          return (((bitFlags & 0x01) == 1) && (reserved == 0x14));
-          but I like it that every poweron starts a new track:
-        */
         return (bitFlags & 0x01) == 1;
     }
 

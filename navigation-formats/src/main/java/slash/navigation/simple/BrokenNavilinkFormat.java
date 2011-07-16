@@ -31,6 +31,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Track;
+
 /**
  * Reads broken Navilink (.sbp) files.
  *
@@ -42,6 +44,12 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
 
     public String getName() {
         return "Navilink Garble (*" + getExtension() + ")";
+    }
+
+    protected boolean isTrackStart(ByteBuffer buffer) {
+        short bitFlags = buffer.get(30);
+        short reserved = buffer.get(31);
+        return ((bitFlags & 0x01) == 1) && (reserved == 0x14);
     }
 
     private int readOneByteFromInput(InputStream source, byte[] record) throws IOException {
@@ -121,25 +129,25 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
                     if (count != 1) {
                         break;
                     }
-                    //is correct format? The first point must inside the first 40 bytes
-                    if ((pointCount == 0) && (readBytes > 40))
+                    // the first position must inside the first 40 bytes
+                    if (pointCount == 0 && readBytes > 40)
                         break;
                 }
             } while (position == null);
 
-            // is format correct?
+            // at least three positions in the first 100 bytes
             if (readBytes > 100 && pointCount < 3) {
                 return null;
             }
 
             if ((activeRoute == null || isTrackStart(sbpRecordByteBuffer)) && position != null) {
-                activeRoute = createRoute(RouteCharacteristics.Track,
+                activeRoute = createRoute(Track,
                         TRACK_NAME_DATE_FORMAT.format(position.getTime().getTime()),
                         new ArrayList<BaseNavigationPosition>());
                 result.add(activeRoute);
             }
 
-            if ((position != null) && (activeRoute != null))
+            if (position != null && activeRoute != null)
                 activeRoute.getPositions().add(position);
             else
                 return result;
@@ -149,7 +157,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         }
         deleteLogicalWrongPositions(result);
         
-        //It must be 95% of the file valid
+        // it must be 95% of the file valid
         int minCorrectPositions = (int) ((readBytes / SBP_RECORD_LENGTH) * 0.95);
         if (pointCount < minCorrectPositions)
             return null;
