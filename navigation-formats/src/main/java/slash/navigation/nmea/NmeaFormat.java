@@ -74,8 +74,8 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d
     private static final Pattern GGA_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "GGA" + SEPARATOR + "([\\d\\.]*)" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
                     "([\\d+])" + SEPARATOR +         // Fix quality, 0=invalid
                     "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
                     "[\\d\\.]*" + SEPARATOR +
@@ -94,8 +94,8 @@ public class NmeaFormat extends BaseNmeaFormat {
             compile(BEGIN_OF_LINE + "RMC" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // UTC Time
                     "[AV]" + SEPARATOR +            // Status, A=active, V=void
-                    "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR + "([EW])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([EW])" + SEPARATOR +
                     "([\\d\\.]*)" + SEPARATOR +     // Speed over ground, knots
                     "[\\d\\.]*" + SEPARATOR +
                     "(\\d*)" + SEPARATOR +          // Date, ddmmyy
@@ -108,8 +108,8 @@ public class NmeaFormat extends BaseNmeaFormat {
     // $GPWPL,5334.169,N,01001.920,E,STATN1*22
     private static final Pattern WPL_PATTERN = Pattern.
             compile(BEGIN_OF_LINE + "WPL" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
+                    "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
                     "(.*)" +
                     END_OF_LINE);
 

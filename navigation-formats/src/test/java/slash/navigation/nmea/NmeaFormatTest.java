@@ -112,6 +112,8 @@ public class NmeaFormatTest {
         assertTrue(format.isPosition("$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"));
         assertTrue(format.isPosition("$GPVTG,000.0,T,,M,000.0,N,000.0,K,A*0D"));
         assertTrue(format.isPosition("$GPGGA,132713,5509.7861,N,00140.5854,W,1,07,1.0,98.9,M,,M,,*7d"));
+        assertTrue(format.isPosition("$GPRMC,171624,A,5341.1395,N, 951.2163,E,1.285115,0.000000,150711,,*34"));
+        assertTrue(format.isPosition("$GPGGA,171624,5341.1395,N, 951.2163,E,1,00,0.0,173.773102,M,0.0,M,,*66"));
 
         assertFalse(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertFalse(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));

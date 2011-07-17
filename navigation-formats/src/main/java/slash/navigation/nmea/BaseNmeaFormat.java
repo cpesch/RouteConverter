@@ -37,6 +37,9 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.trim;
+
 /**
  * The base of all NMEA-like formats.
  *
@@ -103,7 +106,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (Transfer.trim(line) == null)
+            if (trim(line) == null)
                 continue;
 
             if (isValidLine(line)) {
@@ -142,29 +145,29 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     private void mergePositions(NmeaPosition position, NmeaPosition toBeMergedInto, CompactCalendar originalStartDate) {
-        if (Transfer.isEmpty(position.getComment()) && !Transfer.isEmpty(toBeMergedInto.getComment()))
+        if (isEmpty(position.getComment()) && !isEmpty(toBeMergedInto.getComment()))
             position.setComment(toBeMergedInto.getComment());
-        if (Transfer.isEmpty(position.getElevation()) && !Transfer.isEmpty(toBeMergedInto.getElevation()))
+        if (isEmpty(position.getElevation()) && !isEmpty(toBeMergedInto.getElevation()))
             position.setElevation(toBeMergedInto.getElevation());
-        if (Transfer.isEmpty(position.getSpeed()) && !Transfer.isEmpty(toBeMergedInto.getSpeed()))
+        if (isEmpty(position.getSpeed()) && !isEmpty(toBeMergedInto.getSpeed()))
             position.setSpeed(toBeMergedInto.getSpeed());
-        if (Transfer.isEmpty(position.getHeading()) && !Transfer.isEmpty(toBeMergedInto.getHeading()))
+        if (isEmpty(position.getHeading()) && !isEmpty(toBeMergedInto.getHeading()))
             position.setHeading(toBeMergedInto.getHeading());
-        if (Transfer.isEmpty(position.getLatitude()) && !Transfer.isEmpty(toBeMergedInto.getLatitude()))
+        if (isEmpty(position.getLatitude()) && !isEmpty(toBeMergedInto.getLatitude()))
             position.setLatitude(toBeMergedInto.getLatitude());
-        if (Transfer.isEmpty(position.getLongitude()) && !Transfer.isEmpty(toBeMergedInto.getLongitude()))
+        if (isEmpty(position.getLongitude()) && !isEmpty(toBeMergedInto.getLongitude()))
             position.setLongitude(toBeMergedInto.getLongitude());
         if ((toBeMergedInto.getTime() != null) &&
                 (position.getTime() == null || isStartDateEqual(position.getTime(), originalStartDate) ||
                         position.getTime().getCalendar().before(toBeMergedInto.getTime().getCalendar())))
             position.setTime(toBeMergedInto.getTime());
-        if (Transfer.isEmpty(position.getHdop()) && !Transfer.isEmpty(toBeMergedInto.getHdop()))
+        if (isEmpty(position.getHdop()) && !isEmpty(toBeMergedInto.getHdop()))
             position.setHdop(toBeMergedInto.getHdop());
-        if (Transfer.isEmpty(position.getPdop()) && !Transfer.isEmpty(toBeMergedInto.getPdop()))
+        if (isEmpty(position.getPdop()) && !isEmpty(toBeMergedInto.getPdop()))
             position.setPdop(toBeMergedInto.getPdop());
-        if (Transfer.isEmpty(position.getVdop()) && !Transfer.isEmpty(toBeMergedInto.getVdop()))
+        if (isEmpty(position.getVdop()) && !isEmpty(toBeMergedInto.getVdop()))
             position.setVdop(toBeMergedInto.getVdop());
-        if (Transfer.isEmpty(position.getSatellites()) && !Transfer.isEmpty(toBeMergedInto.getSatellites()))
+        if (isEmpty(position.getSatellites()) && !isEmpty(toBeMergedInto.getSatellites()))
             position.setSatellites(toBeMergedInto.getSatellites());
     }
 
@@ -217,7 +220,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     protected abstract NmeaPosition parsePosition(String line);
 
     protected CompactCalendar parseTime(String time) {
-        time = Transfer.trim(time);
+        time = trim(time);
         if (time == null)
             return null;
         // 130441.89
@@ -238,8 +241,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
-        time = Transfer.trim(time);
-        date = Transfer.trim(date);
+        time = trim(time);
+        date = trim(date);
         if (date == null)
             return parseTime(time);
         String dateAndTime = date + " " + time;
