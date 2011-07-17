@@ -58,18 +58,18 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
     }
 
     private boolean isValidPosition(Wgs84Position position, Wgs84Position previous) {
-        boolean valid = (position.getHdop() > -0.0000000001 &&
-                position.getHdop() < 10.21);
+        boolean valid = (position.getHdop() >= 0 &&
+                position.getHdop() < 10);
         valid = valid && (position.getLatitude() >= -90 &&
                 position.getLatitude() <= 90);
         valid = valid && (position.getLongitude() >= -180 &&
                 position.getLatitude() <= 180);
         valid = valid && (position.getElevation() > -100 &&
                 position.getElevation() < 14000);
-        valid = valid && (position.getSpeed() >= -0.9999999 &&
+        valid = valid && (position.getSpeed() >= 0 &&
                 position.getSpeed() < 1200);
-        valid = valid && (position.getHeading() > -0.999999 &&
-                position.getHeading() < 360.000001);
+        valid = valid && (position.getHeading() >= 0 &&
+                position.getHeading() <= 360);
         valid = valid && (position.getTime().getTimeInMillis() > MINIMUM_TIME_MILLISECONDS &&
                 position.getTime().getTimeInMillis() < System.currentTimeMillis());
 
