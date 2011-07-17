@@ -20,15 +20,12 @@
 
 package slash.navigation.babel;
 
-import slash.common.io.Transfer;
-import slash.navigation.gpx.GpxRoute;
 import slash.navigation.gpx.GpxPosition;
-import slash.common.io.CompactCalendar;
+import slash.navigation.gpx.GpxRoute;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+
+import static slash.common.io.Transfer.isEmpty;
 
 /**
  * Reads and writes Garmin PCX5 (.wpt) files.
@@ -61,27 +58,17 @@ public class GarminPcx5Format extends BabelFormat {
         return true;
     }
 
-    private boolean isValidRoute(List<GpxPosition> positions) {
+    protected boolean isValidRoute(GpxRoute route) {
+        // clashes with some TomTom POI .ov2 files
+        List<GpxPosition> positions = route.getPositions();
+        if (positions.size() == 0)
+            return false;
         int count = 0;
         for (GpxPosition position : positions) {
-            if ((Transfer.isEmpty(position.getLongitude()) && position.getElevation() != null && position.getElevation() > 100000.0) ||
-                (Transfer.isEmpty(position.getLongitude()) && Transfer.isEmpty(position.getLatitude())))
+            if ((isEmpty(position.getLongitude()) && (position.getElevation() != null) && (position.getElevation() > 100000.0)) ||
+                    (isEmpty(position.getLongitude()) && isEmpty(position.getLatitude())))
                 count++;
         }
         return count != positions.size();
-    }
-
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        List<GpxRoute> routes = super.read(source, startDate);
-        if (routes == null)
-            return null;
-
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
-        for (GpxRoute route : routes) {
-            // clashes with some TomTom POI .ov2 files
-            if (route.getPositionCount() > 0 && isValidRoute(route.getPositions()))
-                result.add(route);
-        }
-        return result.size() > 0 ? result : null;
     }
 }

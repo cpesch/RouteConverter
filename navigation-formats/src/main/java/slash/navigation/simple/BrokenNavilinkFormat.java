@@ -58,18 +58,18 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
     }
 
     private boolean isValidPosition(Wgs84Position position, Wgs84Position previous) {
-        boolean valid = (position.getHdop() >= 0 &&
-                position.getHdop() < 10);
-        valid = valid && (position.getLatitude() >= -90 &&
-                position.getLatitude() <= 90);
-        valid = valid && (position.getLongitude() >= -180 &&
-                position.getLatitude() <= 180);
-        valid = valid && (position.getElevation() > -100 &&
-                position.getElevation() < 14000);
-        valid = valid && (position.getSpeed() >= 0 &&
-                position.getSpeed() < 1200);
-        valid = valid && (position.getHeading() >= 0 &&
-                position.getHeading() <= 360);
+        boolean valid = (position.getHdop() >= 0.0 &&
+                position.getHdop() < 10.0);
+        valid = valid && (position.getLatitude() >= -90.0 &&
+                position.getLatitude() <= 90.0);
+        valid = valid && (position.getLongitude() >= -180.0 &&
+                position.getLatitude() <= 180.0);
+        valid = valid && (position.getElevation() > -100.0 &&
+                position.getElevation() < 14000.0);
+        valid = valid && (position.getSpeed() >= 0.0 &&
+                position.getSpeed() < 1200.0);
+        valid = valid && (position.getHeading() >= 0.0 &&
+                position.getHeading() <= 360.0);
         valid = valid && (position.getTime().getTimeInMillis() > MINIMUM_TIME_MILLISECONDS &&
                 position.getTime().getTimeInMillis() < System.currentTimeMillis());
 
@@ -78,7 +78,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
             // would ignore too much points, thus I've build an after read check function
             Double speed = position.calculateSpeed(previous);
             if (speed != null)
-                valid = valid && (speed < 1200);
+                valid = valid && (speed < 1200.0);
         }
 
         return valid;

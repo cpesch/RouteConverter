@@ -21,12 +21,6 @@
 package slash.navigation.babel;
 
 import slash.navigation.gpx.GpxRoute;
-import slash.common.io.CompactCalendar;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Reads and writes IGO8 Track (.trk) files.
@@ -55,23 +49,10 @@ public class Igo8TrackFormat extends BabelFormat {
         return false;
     }
 
-    private boolean isValidRoute(GpxRoute route) {
+    protected boolean isValidRoute(GpxRoute route) {
+        // is really greedy in parsing the data of NetS files
         double length = route.getDistance();
         double distancePerPosition = length / route.getPositionCount();
         return distancePerPosition < 1000000.0;
-    }
-
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        List<GpxRoute> routes = super.read(source, startDate);
-        if (routes == null)
-            return null;
-
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
-        for (GpxRoute route : routes) {
-            // is really greedy in parsing the data of NetS files
-            if (isValidRoute(route))
-                result.add(route);
-        }
-        return result.size() > 0 ? result : null;
     }
 }
