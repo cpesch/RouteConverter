@@ -41,6 +41,11 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     }
 
     @SuppressWarnings("unchecked")
+    protected R createRoute(RouteCharacteristics characteristics, List<Wgs84Position> positions) {
+        return (R)new Wgs84Route(this, characteristics, positions);
+    }
+
+    @SuppressWarnings("unchecked")
     public List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
 
@@ -63,7 +68,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
             }
         }
 
-        if (shouldCreateRoute(positions))
+        if (positions.size() > 0)
             return Arrays.asList(createRoute(getRouteCharacteristics(), positions));
         else
             return null;
@@ -71,15 +76,6 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
 
     protected int getGarbleCount() {
         return 0;
-    }
-
-    protected boolean shouldCreateRoute(List<Wgs84Position> positions) {
-        return positions.size() > 0;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected R createRoute(RouteCharacteristics characteristics, List<Wgs84Position> positions) {
-        return (R)new Wgs84Route(this, characteristics, positions);
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
