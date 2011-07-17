@@ -20,6 +20,13 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
+
+import java.util.List;
+
+import static slash.common.io.Transfer.isEmpty;
+
 /**
  * Reads and writes CompeGPS Data (.trk) files.
  *
@@ -47,5 +54,16 @@ public class CompeGPSDataFormat extends BabelFormat {
 
     protected boolean isStreamingCapable() {
         return true;
+    }
+
+    protected boolean isValidRoute(GpxRoute route) {
+        // clashes with some iGo8 .trk files
+        List<GpxPosition> positions = route.getPositions();
+        int count = 0;
+        for (GpxPosition position : positions) {
+            if (isEmpty(position.getLongitude()) && isEmpty(position.getLatitude()))
+                count++;
+        }
+        return count != positions.size();
     }
 }
