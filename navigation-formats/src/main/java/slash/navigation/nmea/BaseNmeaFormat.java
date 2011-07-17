@@ -205,7 +205,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     protected boolean hasValidFix(String line, String field, String valueThatIndicatesNoFix) {
-        if (field.equals(valueThatIndicatesNoFix)) {
+        if (field != null && field.equals(valueThatIndicatesNoFix)) {
             log.severe("Fix for '" + line + "' is invalid. Contains '" + valueThatIndicatesNoFix + "'");
             return preferences.getBoolean("ignoreInvalidFix", false);
         }
