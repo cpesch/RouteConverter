@@ -178,7 +178,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(903.4036, position.getLongitudeAsDdmm());
         assertDoubleEquals(4837.4374, position.getLatitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
-        assertEquals("E", position.getWestOrEast());
+        assertEquals("E", position.getEastOrWest());
         assertDoubleEquals(9.0567266, position.getLongitude());
         assertDoubleEquals(48.6239566, position.getLatitude());
         assertDoubleEquals(16.76, position.getElevation());
@@ -197,7 +197,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(10619.4966, position.getLongitudeAsDdmm());
         assertDoubleEquals(3554.2367, position.getLatitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
-        assertEquals("W", position.getWestOrEast());
+        assertEquals("W", position.getEastOrWest());
         assertDoubleEquals(-106.3249433, position.getLongitude());
         assertDoubleEquals(35.9039449, position.getLatitude());
         assertDoubleEquals(2300.3, position.getElevation());

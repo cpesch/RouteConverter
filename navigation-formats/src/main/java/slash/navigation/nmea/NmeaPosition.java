@@ -36,14 +36,14 @@ import slash.common.io.Transfer;
 
 public class NmeaPosition extends BaseNavigationPosition {
     private Double longitude, latitude, heading, hdop, vdop, pdop;
-    private String northOrSouth /*latitude*/, westOrEast /*longitude*/;
+    private String northOrSouth /*latitude*/, eastOrWest /*longitude*/;
     private String comment;
     protected Integer satellites;
 
-    public NmeaPosition(Double longitude, String westOrEast, Double latitude, String northOrSouth, Double elevation, Double speed, Double heading, CompactCalendar time, String comment) {
+    public NmeaPosition(Double longitude, String eastOrWest, Double latitude, String northOrSouth, Double elevation, Double speed, Double heading, CompactCalendar time, String comment) {
         super(elevation, speed, time);
         this.longitude = longitude;
-        this.westOrEast = westOrEast;
+        this.eastOrWest = eastOrWest;
         this.latitude = latitude;
         this.northOrSouth = northOrSouth;
         this.heading = heading;
@@ -67,17 +67,17 @@ public class NmeaPosition extends BaseNavigationPosition {
     }
 
     public Double getLongitude() {
-        return toDegrees(getLongitudeAsDdmm(), westOrEast);
+        return toDegrees(getLongitudeAsDdmm(), eastOrWest);
     }
 
     public void setLongitude(Double longitude) {
         if(longitude == null) {
             this.longitude = null;
-            this.westOrEast = null;
+            this.eastOrWest = null;
         } else {
             double ddmm = Conversion.degrees2ddmm(longitude);
             this.longitude = Math.abs(ddmm);
-            this.westOrEast = ddmm >= 0.0 ? "E" : "W";
+            this.eastOrWest = ddmm >= 0.0 ? "E" : "W";
         }
     }
 
@@ -108,8 +108,8 @@ public class NmeaPosition extends BaseNavigationPosition {
         return latitude;
     }
 
-    public String getWestOrEast() {
-        return westOrEast;
+    public String getEastOrWest() {
+        return eastOrWest;
     }
 
     public String getComment() {
@@ -204,7 +204,7 @@ public class NmeaPosition extends BaseNavigationPosition {
                 !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
                 !(northOrSouth != null ? !northOrSouth.equals(that.northOrSouth) : that.northOrSouth != null) &&
                 !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(westOrEast != null ? !westOrEast.equals(that.westOrEast) : that.westOrEast != null) &&
+                !(eastOrWest != null ? !eastOrWest.equals(that.eastOrWest) : that.eastOrWest != null) &&
                 !(getTime() != null ? !getTime().equals(that.getTime()) : that.getTime() != null) &&
                 !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
                 !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
@@ -214,7 +214,7 @@ public class NmeaPosition extends BaseNavigationPosition {
     public int hashCode() {
         int result;
         result = (longitude != null ? longitude.hashCode() : 0);
-        result = 31 * result + (westOrEast != null ? westOrEast.hashCode() : 0);
+        result = 31 * result + (eastOrWest != null ? eastOrWest.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + (northOrSouth != null ? northOrSouth.hashCode() : 0);
         result = 31 * result + (getElevation() != null ? getElevation().hashCode() : 0);

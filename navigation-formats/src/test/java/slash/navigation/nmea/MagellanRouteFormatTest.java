@@ -77,7 +77,7 @@ public class MagellanRouteFormatTest extends NavigationTestCase {
         assertEquals(4808.98261, position.getLatitudeAsDdmm());
         assertEquals(1135.84141, position.getLongitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
-        assertEquals("E", position.getWestOrEast());
+        assertEquals("E", position.getEastOrWest());
         assertEquals(11.5973568, position.getLongitude());
         assertEquals(48.1497101, position.getLatitude());
         assertEquals(54.5, position.getElevation());

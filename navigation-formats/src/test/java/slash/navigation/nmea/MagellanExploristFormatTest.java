@@ -75,7 +75,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertEquals(4914.967, position.getLatitudeAsDdmm());
         assertEquals(651.208, position.getLongitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
-        assertEquals("E", position.getWestOrEast());
+        assertEquals("E", position.getEastOrWest());
         assertEquals(6.8534666, position.getLongitude());
         assertEquals(49.2494499, position.getLatitude());
         assertEquals(199.0, position.getElevation());
@@ -99,7 +99,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertEquals(4914.9672, position.getLatitudeAsDdmm());
         assertEquals(651.2081, position.getLongitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
-        assertEquals("E", position.getWestOrEast());
+        assertEquals("E", position.getEastOrWest());
         assertEquals(6.8534683, position.getLongitude());
         assertEquals(49.2494533, position.getLatitude());
         assertEquals(199.0, position.getElevation());

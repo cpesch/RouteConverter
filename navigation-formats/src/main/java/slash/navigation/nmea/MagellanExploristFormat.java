@@ -99,7 +99,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
 
     protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
         String longitude = formatLongitude(position.getLongitudeAsDdmm());
-        String westOrEast = position.getWestOrEast();
+        String westOrEast = position.getEastOrWest();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
         String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');

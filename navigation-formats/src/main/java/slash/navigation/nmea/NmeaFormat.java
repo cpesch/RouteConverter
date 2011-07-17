@@ -324,7 +324,7 @@ public class NmeaFormat extends BaseNmeaFormat {
 
     protected void writePosition(NmeaPosition position, PrintWriter writer, int index) {
         String longitude = formatLongitude(position.getLongitudeAsDdmm());
-        String westOrEast = position.getWestOrEast();
+        String westOrEast = position.getEastOrWest();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
         String satellites = position.getSatellites() != null ? Transfer.formatIntAsString(position.getSatellites()) : "";
