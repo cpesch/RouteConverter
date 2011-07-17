@@ -177,11 +177,11 @@ public class NmeaFormat extends BaseNmeaFormat {
     protected boolean isPosition(String line) {
         Matcher rmcMatcher = RMC_PATTERN.matcher(line);
         if (rmcMatcher.matches())
-            return hasValidChecksum(line) && !"N".equals(rmcMatcher.group(8));
+            return hasValidChecksum(line) && hasValidFix(line, rmcMatcher.group(8), "N");
 
         Matcher ggaMatcher = GGA_PATTERN.matcher(line);
         if (ggaMatcher.matches())
-            return hasValidChecksum(line) && !"0".equals(ggaMatcher.group(6));
+            return hasValidChecksum(line) && hasValidFix(line, ggaMatcher.group(6), "0");
 
         Matcher wplMatcher = WPL_PATTERN.matcher(line);
         if (wplMatcher.matches())
@@ -196,7 +196,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             return hasValidChecksum(line);
 
         Matcher gsaMatcher = GSA_PATTERN.matcher(line);
-        return gsaMatcher.matches() && hasValidChecksum(line) && !"1".equals(gsaMatcher.group(1));
+        return gsaMatcher.matches() && hasValidChecksum(line) && hasValidFix(line, gsaMatcher.group(1), "1");
     }
 
     protected NmeaPosition parsePosition(String line) {
@@ -377,7 +377,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String pdop = formatAccuracy(position.getPdop());
             String vdop = formatAccuracy(position.getVdop());
             // $GPGSA,A,3,,,,15,17,18,23,,,,,,4.7,4.4,1.5*3F
-            String gsa = "GPGSA" + SEPARATOR + "A" + SEPARATOR + "2" + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR +
+            String gsa = "GPGSA" + SEPARATOR + "A" + SEPARATOR + "3" + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR +
                     SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR +
                     SEPARATOR + pdop + SEPARATOR + hdop + SEPARATOR + vdop;
             writeSentence(writer, gsa);

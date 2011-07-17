@@ -204,6 +204,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return true;
     }
 
+    protected boolean hasValidFix(String line, String field, String valueThatIndicatesNoFix) {
+        if (field.equals(valueThatIndicatesNoFix)) {
+            log.severe("Fix for '" + line + "' is invalid. Contains '" + valueThatIndicatesNoFix + "'");
+            return preferences.getBoolean("ignoreInvalidFix", false);
+        }
+        return true;
+    }
+
     protected abstract boolean isPosition(String line);
 
     protected abstract NmeaPosition parsePosition(String line);
