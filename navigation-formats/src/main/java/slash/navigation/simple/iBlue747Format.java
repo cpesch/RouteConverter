@@ -136,8 +136,8 @@ public class iBlue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         if ("S".equals(northOrSouth) && latitude != null)
             latitude = -latitude;
         Double longitude = Transfer.parseDouble(lineMatcher.group(8));
-        String westOrEasth = lineMatcher.group(9);
-        if ("W".equals(westOrEasth) && longitude != null)
+        String eastOrWest = lineMatcher.group(9);
+        if ("W".equals(eastOrWest) && longitude != null)
             longitude = -longitude;
         String height = lineMatcher.group(10);
         String speed = lineMatcher.group(11);
