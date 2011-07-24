@@ -236,6 +236,11 @@ public class ReadIT {
     }
 
     @Test
+    public void testNavigonRouteFilesAreValid() throws IOException {
+        readFiles(".route");
+    }
+
+    @Test
     public void testRteFilesAreValid() throws IOException {
         // Magellan Route
         // Navigon Mobile Navigator
