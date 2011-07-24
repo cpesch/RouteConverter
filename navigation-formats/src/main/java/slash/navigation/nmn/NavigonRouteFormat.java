@@ -22,13 +22,17 @@ package slash.navigation.nmn;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
+
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * Reads and writes Navigon (.route) files.
@@ -37,7 +41,8 @@ import slash.navigation.base.*;
  */
 
 public class NavigonRouteFormat extends SimpleFormat<Wgs84Route> {
-  private static final Preferences preferences = Preferences.userNodeForPackage(NavigonRouteFormat.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(NavigonRouteFormat.class);
+    private static final Logger log = Logger.getLogger(NavigonRouteFormat.class.getName());
 
     public String getName() {
         return "Navigon (*" + getExtension() + ")";
@@ -57,9 +62,7 @@ public class NavigonRouteFormat extends SimpleFormat<Wgs84Route> {
 
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        Wgs84Route newRoute = new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
-        newRoute.setName(name);
-        return newRoute;
+        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
     public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
@@ -132,18 +135,17 @@ public class NavigonRouteFormat extends SimpleFormat<Wgs84Route> {
  */
 
     private boolean checkHeader(InputStream source) throws IOException {
-        byte[] fileHeaderContent = new byte[16];
-        if(source.read(fileHeaderContent) != fileHeaderContent.length)
-            throw new IOException("Could not read " + fileHeaderContent.length + " bytes");
+        byte[] headerBytes = new byte[16];
+        if (source.read(headerBytes) != headerBytes.length)
+            throw new IOException("Could not read " + headerBytes.length + " bytes");
 
-        ByteBuffer header = ByteBuffer.allocate(16);
-        header.put(fileHeaderContent);
-        header.order(ByteOrder.LITTLE_ENDIAN);
-        header.position(0);
+        ByteBuffer headerBuffer = ByteBuffer.wrap(headerBytes);
+        headerBuffer.order(LITTLE_ENDIAN);
+        headerBuffer.position(0);
 
-        if ((header.getInt() == 0xFFFF) && (header.getLong() == 1)) {
-            long fileSize = header.getInt();
-            return (source.available() == fileSize - 4);
+        if (headerBuffer.getInt() == 0xFFFF && headerBuffer.getLong() == 1) {
+            long fileSize = headerBuffer.getInt();
+            return source.available() == fileSize - 4;
         }
         return false;
     }
@@ -166,79 +168,75 @@ public class NavigonRouteFormat extends SimpleFormat<Wgs84Route> {
     public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         if (checkHeader(source)) {
             // copy whole file to a bytebuffer
-            byte[] fileContentArray = new byte[source.available()];
-            if (source.read(fileContentArray) != fileContentArray.length)
-                throw new IOException("Could not read " + fileContentArray.length + " bytes");
+            byte[] bodyBytes = new byte[source.available()];
+            if (source.read(bodyBytes) != bodyBytes.length)
+                throw new IOException("Could not read " + bodyBytes.length + " bytes");
 
-            ByteBuffer fileContent = ByteBuffer.wrap(fileContentArray);
-            fileContent.order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer fileContent = ByteBuffer.wrap(bodyBytes);
+            fileContent.order(LITTLE_ENDIAN);
             fileContent.position(0);
 
-            Wgs84Route route = createRoute(RouteCharacteristics.Route,
-                    "",
-                    new ArrayList<BaseNavigationPosition>());
-            List<Wgs84Route> routes = new ArrayList<Wgs84Route>();
-            routes.add(route);
-
-            // 4 byte Anzahl Punkte
-            fileContent.getInt();
-
-            // Erstellungsdatum
-            getText(fileContent);
-
-            int expectedWaypointCount = fileContent.getInt();
-
-            fileContent.getInt(); // gesehen 0, 1
-
-            while (fileContent.position() < fileContent.capacity() - 4) {
-                Wgs84Position waypoint = readWaypoint(fileContent);
-                if (waypoint != null)
-                    route.getPositions().add(waypoint);
+            // 4 Byte: position count - TODO always 0?
+            int positionCount = fileContent.getInt();
+            // 4 Byte: length + creation date - TODO always empty?
+            String creationDate = getText(fileContent);
+            // 4 Byte: expected position count
+            int expectedPositionCount = fileContent.getInt();
+            // 4 Byte: TODO unknown - seen: 0, 1
+            int unknown = fileContent.getInt();
+            if (unknown != 0 && unknown != 1) {
+                log.fine("Unknown 13-16: seen " + unknown + ", not expected 0 or 1");
             }
 
-            if (route.getPositionCount() == expectedWaypointCount)
-                return routes;
-            return null;
+            List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
+            while (fileContent.position() < fileContent.capacity() - 4) {
+                Wgs84Position position = readPosition(fileContent);
+                if (position != null)
+                    positions.add(position);
+            }
+
+            if (positions.size() == expectedPositionCount)
+                return Arrays.asList(createRoute(Route, null, positions));
         }
         return null;
     }
 
-    protected Wgs84Position readWaypoint(ByteBuffer fileContent) {
+    protected Wgs84Position readPosition(ByteBuffer fileContent) {
         // 4 Byte length
-        int trackPointLength = fileContent.getInt();
-        int trackPointEndPosition = trackPointLength + fileContent.position();
+        int positionLength = fileContent.getInt();
+        int positionEndPosition = positionLength + fileContent.position();
 
         // 8 Byte 0. unknown
         fileContent.position(fileContent.position() + 8);
 
-        // 4 byte Länge + Text
-        getText(fileContent);
+        // 4 Byte: length + text
+        String text = getText(fileContent);
 
-        // 4 byte int
-        fileContent.getInt();
+        // 4 Byte: unknown
+        int unknown = fileContent.getInt();
 
-        // 4 byte int Anzahl der folgenden Datenpunkte mit 04
-        fileContent.getInt();
+        // 4 Byte: number of following 04 data points
+        int numberOf04DataPoints = fileContent.getInt();
 
-        // 8 byte ?
-        fileContent.getInt();
-        fileContent.getInt();
+        // 8 Byte: unknown
+        unknown = fileContent.getInt();
+        unknown = fileContent.getInt();
 
-        Wgs84Position waypoint = null;
+        Wgs84Position position = null;
         int countBlock_04 = 0;
-        while (fileContent.position() < trackPointEndPosition) {
+        while (fileContent.position() < positionEndPosition) {
             int blockType = fileContent.getInt();
             if (blockType == 4) {
-                waypoint = readBlocktype_04(fileContent, waypoint, countBlock_04++);
+                position = readBlocktype_04(fileContent, position, countBlock_04++);
                 // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
                 if (countBlock_04 > 2)
-                    fileContent.position(trackPointEndPosition);
+                    fileContent.position(positionEndPosition);
             } else if (blockType == 0) {
                 //?? Immer am Ende des Bereichs -> alles überspringen. ist unterschiedlich lang
-                fileContent.position(trackPointEndPosition);
+                fileContent.position(positionEndPosition);
             }
         }
-        return waypoint;
+        return position;
     }
 
     protected Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
@@ -366,7 +364,7 @@ public class NavigonRouteFormat extends SimpleFormat<Wgs84Route> {
         // geschrieben.
         // Es wird für jeden Routenpunkt ein Unterpunkt erstellt.
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        byteBuffer.order(LITTLE_ENDIAN);
         byteBuffer.position(0);
 
         byteBuffer.putInt(0); // bytelength of whole point will be filled at the end
@@ -433,7 +431,7 @@ public class NavigonRouteFormat extends SimpleFormat<Wgs84Route> {
 
         byte[] header = new byte[16];
         ByteBuffer headerBuffer = ByteBuffer.wrap(header);
-        headerBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        headerBuffer.order(LITTLE_ENDIAN);
         headerBuffer.position(0);
 
         headerBuffer.putInt(0xFFFF);// start byte
