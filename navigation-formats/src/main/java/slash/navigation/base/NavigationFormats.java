@@ -134,6 +134,7 @@ public final class NavigationFormats {
         addFormat(GroundTrackFormat.class);
         addFormat(OpelNaviFormat.class);
         addFormat(NavigatingPoiWarnerFormat.class);
+        addFormat(NavigonRouteFormat.class);
 
         // BabelFormats
         addFormat(GarminMapSource6Format.class);
