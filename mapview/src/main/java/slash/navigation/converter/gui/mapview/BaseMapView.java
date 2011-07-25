@@ -59,6 +59,8 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Math.min;
+import static slash.common.io.Transfer.ceiling;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.util.Positions.*;
 import static slash.navigation.util.Positions.southWest;
@@ -79,8 +81,8 @@ public abstract class BaseMapView implements MapView {
 
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount", 50 * 35);
-    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength3", 9);
-    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount3", 50 * 9);
+    private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = preferences.getInt("maximumRouteSegmentLength3", 8);
+    private static final int MAXIMUM_DIRECTIONS_POSITION_COUNT = preferences.getInt("maximumRoutePositionCount3", 50 * 8);
     private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength", 10);
     private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount", 50 * 10);
     private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount", 5 * 10);
@@ -898,30 +900,46 @@ public abstract class BaseMapView implements MapView {
 
         removeOverlays();
 
-        int directionsCount = Transfer.ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
+        int directionsCount = ceiling(positions.size(), MAXIMUM_DIRECTIONS_SEGMENT_LENGTH, false);
         for (int j = 0; j < directionsCount; j++) {
             StringBuilder buffer = new StringBuilder();
-            buffer.append("var latlngs = [");
+            buffer.append("var latlngs").append(j).append(" = [");
 
-            int start = j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH;
-            int end = Math.min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH + 1);
-            for (int i = start + 1; i < end - 1; i++) {
+            int start = Math.max(0, j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH - 1);
+            System.out.println("start=" + start);
+            int end = min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH) - 1;
+            for (int i = start + 1; i < end; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").append(position.getLongitude()).append(")}");
-                if (i < end - 2)
+                System.out.println("  i=" + i);
+                buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
+                        append(position.getLongitude()).append(")}");
+                if (i < end - 1)
                     buffer.append(",");
             }
             buffer.append("];\n");
+            System.out.println("end=" + end);
 
             BaseNavigationPosition origin = positions.get(start);
-            BaseNavigationPosition destination = positions.get(end - 1);
-            buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).append(",").append(origin.getLongitude()).append("), ");
-            buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).append(",").append(destination.getLongitude()).append("), ");
-            buffer.append("waypoints: latlngs, travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
+            BaseNavigationPosition destination = positions.get(end);
+            buffer.append("renderDirections({origin: new google.maps.LatLng(").append(origin.getLatitude()).
+                    append(",").append(origin.getLongitude()).append("), ");
+            buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
+                    append(",").append(destination.getLongitude()).append("), ");
+            buffer.append("waypoints: latlngs").append(j).
+                    append(", travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
             buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
             buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
             buffer.append("region: '").append(Locale.getDefault()).append("'}, ");
-            buffer.append(j == directionsCount - 1).append(");\n");
+            int startIndex = positionsModel.getIndex(origin);
+            buffer.append(startIndex).append(", ");
+            boolean lastSegment = (j == directionsCount - 1);
+            buffer.append(lastSegment).append(");\n");
+            if(lastSegment)
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    // intentionally left empty
+                }
             executeScript(buffer.toString());
         }
     }
@@ -933,14 +951,15 @@ public abstract class BaseMapView implements MapView {
             return;
         }
 
-        int polylinesCount = Transfer.ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
+        int polylinesCount = ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuilder buffer = new StringBuilder();
             buffer.append("var latlngs = [");
-            int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
+            int maximum = min(positions.size(), (j + 1) * MAXIMUM_POLYLINE_SEGMENT_LENGTH + 1);
             for (int i = j * MAXIMUM_POLYLINE_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").append(position.getLongitude()).append(")");
+                buffer.append("new google.maps.LatLng(").append(position.getLatitude()).append(",").
+                        append(position.getLongitude()).append(")");
                 if (i < maximum - 1)
                     buffer.append(",");
             }
@@ -954,10 +973,10 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addMarkersToMap(List<BaseNavigationPosition> positions) {
-        int markersCount = Transfer.ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
+        int markersCount = ceiling(positions.size(), MAXIMUM_MARKER_SEGMENT_LENGTH, false);
         for (int j = 0; j < markersCount; j++) {
             StringBuilder buffer = new StringBuilder();
-            int maximum = Math.min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
+            int maximum = min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
                 buffer.append("addOverlay(new google.maps.Marker({position: new google.maps.LatLng(").
@@ -1197,7 +1216,8 @@ public abstract class BaseMapView implements MapView {
     }
 
     private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^load/(\\d*)/(\\d*)$");
-    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)$");
+    private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");
+    private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
     private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
@@ -1218,9 +1238,22 @@ public abstract class BaseMapView implements MapView {
 
         Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
         if (insertPositionMatcher.matches()) {
-            final int row = getInsertRow();
-            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(1));
-            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+            final int row = Transfer.parseInt(insertPositionMatcher.group(1)) + 1;
+            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(2));
+            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(3));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    insertPosition(row, longitude, latitude);
+                }
+            });
+            return true;
+        }
+
+        Matcher addPositionMatcher = ADD_POSITION_PATTERN.matcher(callback);
+        if (addPositionMatcher.matches()) {
+            final int row = getAddRow();
+            final Double latitude = Transfer.parseDouble(addPositionMatcher.group(1));
+            final Double longitude = Transfer.parseDouble(addPositionMatcher.group(2));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
@@ -1436,7 +1469,7 @@ public abstract class BaseMapView implements MapView {
         positionAugmenter.complementTime(row, null);
     }
 
-    private int getInsertRow() {
+    private int getAddRow() {
         BaseNavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
         // quite crude logic to be as robust as possible on failures
         if (position == null && positionsModel.getRowCount() > 0)

@@ -191,12 +191,28 @@
        });
    }
 
-   function renderDirections(directionsRequest, lastSegment) {
+   function insertPosition(result, startIndex) {
+       for (var i = 0; i < result.routes.length; i++) {
+           var legs = result.routes[i].legs;
+           for (var j = 0; j < legs.length; j++) {
+               var via_waypoints = legs[j].via_waypoints;
+ // alert("startIndex " + startIndex + " legs " + legs.length + " via_waypoints:"+via_waypoints.length);
+               for (var k = 0; k < via_waypoints.length; k++) {
+                   var latLng = via_waypoints[k];
+                   callJava("insert-position/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
+               }
+           }
+       }
+   }
+
+   function renderDirections(directionsRequest, startIndex, lastSegment) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
                var directions = new google.maps.DirectionsRenderer({preserveViewport: true, suppressMarkers: true,
-                   draggable: true, hideRouteList: true});
-               directions.setDirections(result);
+                   draggable: true, hideRouteList: true, directions: result});
+               google.maps.event.addListener(directions, "directions_changed", function() {
+                   insertPosition(directions.directions, startIndex);
+               });
                addDirections(directions);
 
                var meters = 0;
@@ -377,7 +393,7 @@
                callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
            });
            menu.addItem('Insert', function(map, latLng) {
-               callJava("insert-position/" + latLng.lat() + "/" + latLng.lng());
+               callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
            });
            menu.addItem('Remove', function(map, latLng) {
                callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
@@ -418,7 +434,7 @@
                } else if (shiftKey && !altKey && !ctrlKey) {
                    callJava("select-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15) + "/false");
                } else if (!shiftKey && !altKey && ctrlKey) {
-                   callJava("insert-position/" + event.latLng.lat() + "/" + event.latLng.lng());
+                   callJava("add-position/" + event.latLng.lat() + "/" + event.latLng.lng());
                } else if (!shiftKey && altKey && ctrlKey) {
                    callJava("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
