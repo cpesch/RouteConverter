@@ -20,12 +20,18 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link Action} that copies the selected rows of a {@link JTable}.
@@ -44,11 +50,25 @@ public class CopyAction extends FrameAction {
         this.clipboardInteractor = clipboardInteractor;
     }
 
+    private List<BaseNavigationPosition> copy(List<BaseNavigationPosition> positions) throws IOException {
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+        for (BaseNavigationPosition position : positions) {
+            // TODO should copy extra properties, too
+            result.add(new GpxPosition(position.getLongitude(), position.getLatitude(), position.getElevation(),
+                    position.getSpeed(), position.getTime(), position.getComment()));
+        }
+        return result;
+    }
+
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            clipboardInteractor.putIntoClipboard(new PositionSelection(positionsModel.getPositions(selectedRows),
-                    positionsModel.getRoute().getFormat()));
+            BaseNavigationFormat format = positionsModel.getRoute().getFormat();
+            try {
+                clipboardInteractor.putIntoClipboard(new PositionSelection(copy(positionsModel.getPositions(selectedRows)), format));
+            } catch (IOException e) {
+                // intentionally left empty
+            }
         }
     }
 }

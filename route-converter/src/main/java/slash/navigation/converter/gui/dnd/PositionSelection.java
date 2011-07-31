@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.navigation.base.NavigationFormats.asFormat;
+
 /**
  * Acts as a container for drag and drop operations with {@link BaseNavigationPosition}s.
  *
@@ -58,7 +60,7 @@ public class PositionSelection implements Transferable {
         NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
         List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
         try {
-            targetPositions = NavigationFormats.asFormat(sourcePositions, targetFormat);
+            targetPositions = asFormat(sourcePositions, targetFormat);
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e.getMessage());
         }

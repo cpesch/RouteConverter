@@ -34,6 +34,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import static slash.navigation.base.NavigationFormats.asFormat;
+
 /**
  * {@link Action} that copies the selected rows of a {@link JTable}.
  *
@@ -81,7 +83,7 @@ public class PasteAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         final int insertRow = selectedRows.length > 0 ? selectedRows[0] + 1 : table.getRowCount();
 
-        List<BaseNavigationPosition> targetPositions = NavigationFormats.asFormat(sourcePositions, targetFormat);
+        List<BaseNavigationPosition> targetPositions = asFormat(sourcePositions, targetFormat);
         positionsModel.add(insertRow, targetPositions);
 
         final int lastRow = insertRow - 1 + targetPositions.size();
