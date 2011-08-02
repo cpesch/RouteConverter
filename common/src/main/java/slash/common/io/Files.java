@@ -191,7 +191,6 @@ public class Files {
 
     public static String calculateConvertFileName(File file, String extension, int fileNameLength) {
         String name = file.getName();
-        name = removeExtension(name);
         name = name.substring(0, Math.min(name.length(), fileNameLength));
         name = setExtension(name, extension);
         String path = file.getParentFile() != null ? file.getParentFile().getPath() : "";
