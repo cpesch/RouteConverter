@@ -238,6 +238,7 @@ public class ReadIT {
     @Test
     public void testNavigonRouteFilesAreValid() throws IOException {
         readFiles(".route");
+        readFiles(".targets");
     }
 
     @Test
