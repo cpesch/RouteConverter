@@ -75,7 +75,7 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86_64</artifactId>
-            <version>3.6.2</version>
+            <version>3.7</version>
         </dependency>
     </dependencies>
 </project>
