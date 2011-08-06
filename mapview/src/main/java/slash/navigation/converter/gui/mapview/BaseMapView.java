@@ -906,18 +906,15 @@ public abstract class BaseMapView implements MapView {
             buffer.append("var latlngs").append(j).append(" = [");
 
             int start = Math.max(0, j * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH - 1);
-            System.out.println("start=" + start);
             int end = min(positions.size(), (j + 1) * MAXIMUM_DIRECTIONS_SEGMENT_LENGTH) - 1;
             for (int i = start + 1; i < end; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                System.out.println("  i=" + i);
                 buffer.append("{location: new google.maps.LatLng(").append(position.getLatitude()).append(",").
                         append(position.getLongitude()).append(")}");
                 if (i < end - 1)
                     buffer.append(",");
             }
             buffer.append("];\n");
-            System.out.println("end=" + end);
 
             BaseNavigationPosition origin = positions.get(start);
             BaseNavigationPosition destination = positions.get(end);
