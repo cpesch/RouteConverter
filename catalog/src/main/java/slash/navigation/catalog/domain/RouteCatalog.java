@@ -35,7 +35,7 @@ import java.io.*;
 import java.util.logging.Logger;
 
 /**
- * Encapsulates REST access to the RouteCatalog of RouteConverter.
+ * Encapsulates REST access to the RouteCatalog server of RouteConverter.
  *
  * @author Christian Pesch
  */
@@ -70,7 +70,7 @@ public class RouteCatalog {
     }
 
     GpxType fetchGpx(String url) throws IOException {
-        log.fine(System.currentTimeMillis() + " fetching gpx from " + url);
+        log.fine("Fetching gpx from " + url);
         Get get = new Get(url);
         String result = get.execute();
         if (get.isSuccessful())
@@ -166,15 +166,15 @@ public class RouteCatalog {
     }
 
     private Delete prepareDelete(String url) {
-        log.fine(System.currentTimeMillis() + " deleting " + url);
+        log.fine("Deleting " + url);
         Delete request = new Delete(url);
         request.setAuthentication(userName, password);
         return request;
     }
 
     private Post prepareAddCategory(String categoryUrl, String name) throws IOException {
-        categoryUrl = ensureEndsWithSlash(removeDotGpx(categoryUrl)); // // TODO removeDotGpx is silly
-        log.fine(System.currentTimeMillis() + " adding " + name + " to " + categoryUrl);
+        categoryUrl = ensureEndsWithSlash(removeDotGpx(categoryUrl));
+        log.fine("Adding " + name + " to " + categoryUrl);
         String xml = createCategoryXml(null, name);
         Post request = new Post(categoryUrl);
         request.setAuthentication(userName, password);
@@ -197,7 +197,7 @@ public class RouteCatalog {
     }
 
     private Put prepareUpdateCategory(String categoryUrl, String parentUrl, String name) throws IOException {
-        log.fine(System.currentTimeMillis() + " updating " + categoryUrl + " to " + parentUrl + " with name " + name);
+        log.fine("Updating " + categoryUrl + " to " + parentUrl + " with name " + name);
         String xml = createCategoryXml(parentUrl, name);
         Put request = new Put(categoryUrl);
         request.setAuthentication(userName, password);
@@ -237,7 +237,7 @@ public class RouteCatalog {
     }
 
     private Post prepareAddFile(File file) throws IOException {
-        log.fine(System.currentTimeMillis() + " adding " + file.getAbsolutePath());
+        log.fine("Adding " + file.getAbsolutePath());
         Post request = new Post(getFilesUrl());
         request.setAuthentication(userName, password);
         request.addFile("file", file);
@@ -279,7 +279,7 @@ public class RouteCatalog {
     }
 
     private Post prepareAddRoute(String categoryUrl, String description, String fileUrl) throws IOException {
-        log.fine(System.currentTimeMillis() + " adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
+        log.fine("Adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         System.out.print(xml);
         Post request = new Post(getRoutesUrl());
@@ -289,7 +289,7 @@ public class RouteCatalog {
     }
 
     private Put prepareUpdateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
-        log.fine(System.currentTimeMillis() + " updating " + routeUrl + " to " + categoryUrl + "," + description + "," + fileUrl);
+        log.fine("Updating " + routeUrl + " to " + categoryUrl + "," + description + "," + fileUrl);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         Put request = new Put(routeUrl);
         request.setAuthentication(userName, password);
@@ -349,7 +349,7 @@ public class RouteCatalog {
     }
 
     private Post prepareAddUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        log.fine(System.currentTimeMillis() + " adding " + userName + "," + firstName + "," + lastName + "," + email);
+        log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
         String xml = createUserXml(userName, password, firstName, lastName, email);
         Post request = new Post(getUsersUrl());
         request.setAuthentication(userName, password);
