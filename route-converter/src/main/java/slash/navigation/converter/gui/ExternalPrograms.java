@@ -44,7 +44,7 @@ public class ExternalPrograms {
     }
 
     public void startBrowserForTerms(Window window) {
-        startBrowser(window, "http://www.routeconverter.com/routecatalog/terms/" + Locale.getDefault().getLanguage());
+        startBrowser(window, "http://www.routeconverter.com/routecatalog_terms/" + Locale.getDefault().getLanguage());
     }
 
     public void startBrowserForForum(Window window) {
