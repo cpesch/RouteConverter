@@ -156,8 +156,10 @@
         <module>elevationview</module>
         <module>geonames</module>
         <module>googlemaps</module>
+        <module>gpx</module>
         <module>hgt</module>
         <module>jaxb6</module>
+        <module>kml</module>
         <module>mapview</module>
         <module>navigation-formats</module>
         <module>position-completer</module>
