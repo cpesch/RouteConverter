@@ -28,6 +28,9 @@ import javax.swing.*;
 import java.text.DateFormat;
 import java.util.TimeZone;
 
+import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.SHORT;
+
 /**
  * Renders the time column of the positions table.
  *
@@ -35,7 +38,7 @@ import java.util.TimeZone;
  */
 
 public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
-    private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+    private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private String currentTimeZone = "";
 
     public TimeColumnTableCellEditor() {

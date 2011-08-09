@@ -24,6 +24,7 @@ import slash.common.io.*;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
@@ -32,6 +33,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 
+import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.SHORT;
 import static slash.navigation.base.NavigationFormats.asFormat;
 
 /**
@@ -41,12 +44,6 @@ import static slash.navigation.base.NavigationFormats.asFormat;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
-    private static final DateFormat TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-
-    static {
-        TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
-    }
-
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
@@ -145,7 +142,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 position.setComment(string);
                 break;
             case PositionColumns.TIME_COLUMN_INDEX:
-                position.setTime(parseDate(aValue, string));
+                position.setTime(parseTime(aValue, string));
                 break;
             case PositionColumns.LONGITUDE_COLUMN_INDEX:
                 Double longitude = parseDouble(aValue, string, null);
@@ -174,15 +171,24 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             fireTableRowsUpdated(rowIndex, rowIndex, columnIndex);
     }
 
-    private CompactCalendar parseDate(Object objectValue, String stringValue) {
+    private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private String currentTimeZone = "";
+
+    CompactCalendar parseTime(String stringValue, String timeZonePreference) throws ParseException {
+        if (!currentTimeZone.equals(timeZonePreference)) {
+            timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
+            currentTimeZone = timeZonePreference;
+        }
+        Date parsed = timeFormat.parse(stringValue);
+        return CompactCalendar.fromDate(parsed);
+    }
+
+    private CompactCalendar parseTime(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                Date date = TIME_FORMAT.parse(stringValue);
-                Calendar calendar = Calendar.getInstance(CompactCalendar.UTC);
-                calendar.setTime(date);
-                return CompactCalendar.fromCalendar(calendar);
+                return parseTime(stringValue, RouteConverter.getInstance().getTimeZonePreference());
             } catch (ParseException e) {
                 // intentionally left empty
             }
