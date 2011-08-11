@@ -170,9 +170,10 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void parseArgs(String[] args) {
+        log.info("Processing arguments: " + Arrays.toString(args));
         if (args.length > 0) {
             List<URL> urls = Files.toUrls(args);
-            log.info("Processing arguments: " + urls);
+            log.info("Processing urls: " + urls);
             getConvertPanel().openUrls(urls);
         } else {
             getConvertPanel().newFile();
