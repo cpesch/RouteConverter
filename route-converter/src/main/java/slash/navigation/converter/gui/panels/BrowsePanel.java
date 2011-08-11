@@ -81,8 +81,7 @@ import java.util.logging.Logger;
 
 public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"));
-    private final RouteServiceOperator operator = new RouteServiceOperator(RouteConverter.getInstance().getFrame(), routeCatalog);
+    private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
 
     private JPanel browsePanel;
     protected JTree treeCategories;
@@ -147,7 +146,7 @@ public class BrowsePanel {
 
         buttonLogin.addActionListener(new FrameAction() {
             public void run() {
-                operator.showLogin();
+                getOperator().showLogin();
             }
         });
 
@@ -192,7 +191,7 @@ public class BrowsePanel {
                     if (url == null)
                         return;
                 } catch (Throwable t) {
-                    operator.handleServiceError(t);
+                    getOperator().handleServiceError(t);
                     return;
                 }
 
@@ -202,7 +201,6 @@ public class BrowsePanel {
 
         new Thread(new Runnable() {
             public void run() {
-                routeCatalog.setAuthentication(r.getUserNamePreference(), r.getPasswordPreference());
                 final CategoryTreeNode root = new CategoryTreeNode(routeCatalog.getRootCategory());
                 final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
@@ -284,6 +282,9 @@ public class BrowsePanel {
         return (RoutesListModel) tableRoutes.getModel();
     }
 
+    private RouteServiceOperator getOperator() {
+        return RouteConverter.getInstance().getOperator();
+    }
 
     private void addCategory() {
         final CategoryTreeNode selected = getSelectedTreeNode();
@@ -293,7 +294,7 @@ public class BrowsePanel {
         if (Transfer.trim(name) == null)
             return;
 
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 final CategoryTreeNode subCategory = selected.addSubCategory(name);
                 SwingUtilities.invokeLater(new Runnable() {
@@ -314,7 +315,7 @@ public class BrowsePanel {
         if (Transfer.trim(name) == null)
             return;
 
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 selected.renameCategory(name);
             }
@@ -337,7 +338,7 @@ public class BrowsePanel {
         if (confirm != JOptionPane.YES_OPTION)
             return;
 
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 for (CategoryTreeNode category : categories) {
                     category.delete();
@@ -430,14 +431,14 @@ public class BrowsePanel {
     }
 
     private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
-        AddUrlDialog addUrlDialog = new AddUrlDialog(operator, categoryTreeNode, description, url);
+        AddUrlDialog addUrlDialog = new AddUrlDialog(getOperator(), categoryTreeNode, description, url);
         addUrlDialog.pack();
         addUrlDialog.restoreLocation();
         addUrlDialog.setVisible(true);
     }
 
     private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
-        AddFileDialog addFileDialog = new AddFileDialog(operator, categoryTreeNode, description, length, file);
+        AddFileDialog addFileDialog = new AddFileDialog(getOperator(), categoryTreeNode, description, length, file);
         addFileDialog.pack();
         addFileDialog.restoreLocation();
         addFileDialog.setVisible(true);
@@ -460,13 +461,13 @@ public class BrowsePanel {
                     MessageFormat.format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
                     RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getDescription());
         } catch (IOException e) {
-            operator.handleServiceError(e);
+            getOperator().handleServiceError(e);
         }
         if (Transfer.trim(description) == null)
             return;
 
         final String theDescription = description;
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 // strange way to handle cache invalidations
                 categoryTreeNode.renameRoute(selected, theDescription);
@@ -483,7 +484,7 @@ public class BrowsePanel {
         if (category == null)
             return;
 
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 for (int selectedRow : selectedRows) {
                     Route route = getRoutesListModel().getRoute(selectedRow);
@@ -496,7 +497,7 @@ public class BrowsePanel {
 
 
     protected void moveCategory(final List<CategoryTreeNode> categories, final CategoryTreeNode parent) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 for (CategoryTreeNode category : categories) {
                     category.moveCategory(parent);
@@ -506,7 +507,7 @@ public class BrowsePanel {
     }
 
     protected void moveRoute(final List<Route> routes, final CategoryTreeNode source, final CategoryTreeNode target) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 for (Route route : routes) {
                     source.moveRoute(route, target);

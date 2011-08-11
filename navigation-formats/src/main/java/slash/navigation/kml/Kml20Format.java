@@ -38,6 +38,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.navigation.googlemaps.GoogleMapsPosition.parsePosition;
+import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
+
 /**
  * Reads and writes Google Earth 3 (.kml) files.
  *
@@ -234,7 +237,7 @@ public class Kml20Format extends KmlFormat {
 
     private List<KmlPosition> extractPositions(LineString lineString) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (GoogleMapsPosition position : GoogleMapsPosition.parsePositions(lineString.getCoordinates())) {
+        for (GoogleMapsPosition position : parsePositions(lineString.getCoordinates())) {
             result.add(asKmlPosition(position));
         }
         return result;
@@ -245,7 +248,7 @@ public class Kml20Format extends KmlFormat {
         for (Object element : elements) {
             if (element instanceof Point) {
                 Point point = (Point) element;
-                result.add(asKmlPosition(GoogleMapsPosition.parsePosition(point.getCoordinates(), null)));
+                result.add(asKmlPosition(parsePosition(point.getCoordinates(), null)));
             }
             if (element instanceof LineString) {
                 LineString lineString = (LineString) element;

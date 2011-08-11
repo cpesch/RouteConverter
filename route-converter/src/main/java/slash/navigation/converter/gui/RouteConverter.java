@@ -44,8 +44,10 @@ import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.ElevationPanel;
+import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.*;
+import slash.navigation.rest.Credentials;
 import slash.navigation.util.NumberPattern;
 
 import javax.help.CSH;
@@ -57,6 +59,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -66,6 +69,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.Integer.MAX_VALUE;
+import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 
 /**
@@ -120,6 +125,9 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
     private static final String CATEGORY_PREFERENCE = "category";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
+
+    private RouteFeedback routeFeedback;
+    private RouteServiceOperator routeServiceOperator;
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, elevationSplitPane;
@@ -226,6 +234,7 @@ public class RouteConverter extends SingleFrameApplication {
         openElevationView();
 
         initializeActions();
+        initializeRouteConverterServices();
     }
 
     private void openFrame() {
@@ -403,16 +412,19 @@ public class RouteConverter extends SingleFrameApplication {
         preferences.put(SEARCH_POSITION_PREFERENCE, searchPositionPreference);
     }
 
-    public String getUserNamePreference() {
-        return preferences.get(USERNAME_PREFERENCE, "");
-    }
+    public Credentials getCredentials() {
+        return new Credentials() {
+            public String getUserName() {
+                return preferences.get(USERNAME_PREFERENCE, "");
+            }
 
-    public String getPasswordPreference() {
-        return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]));
+            public String getPassword() {
+                return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]));
+            }
+        };
     }
 
     public void setUserNamePreference(String userNamePreference, String passwordPreference) {
-        // TODO unifiy username password stuff with that from UploadDialog
         preferences.put(USERNAME_PREFERENCE, userNamePreference);
         preferences.putByteArray(PASSWORD_PREFERENCE, passwordPreference.getBytes());
     }
@@ -539,6 +551,16 @@ public class RouteConverter extends SingleFrameApplication {
 
     // helpers for external components
 
+    public void sendErrorReport() {
+        final File file = LoggingHelper.getFile();
+        // TODO bring up dialog
+        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
+            public void run() throws IOException {
+                routeFeedback.addErrorReport(file);
+            }
+        });
+    }
+
     public void addFilesToCatalog(List<File> files) {
         getBrowsePanel().addFilesToCatalog(files);
     }
@@ -611,6 +633,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void complementTime(final int row, final CompactCalendar time) {
         getPositionAugmenter().complementTime(row, time);
+    }
+
+    public RouteServiceOperator getOperator() {
+        return routeServiceOperator;
     }
 
     public JTable getPositionsView() {
@@ -878,6 +904,11 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    private void initializeRouteConverterServices() {
+        routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
+        routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
+    }
+
     private void initializeActions() {
         final ActionManager actionManager = getInstance().getContext().getActionManager();
         actionManager.register("exit", new ExitAction());
@@ -887,8 +918,8 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("find-place", new FindPlaceAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
         actionManager.register("show-elevation-profile", new ShowElevationProfileAction());
-        actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, Integer.MAX_VALUE, elevationSplitPane, Integer.MAX_VALUE));
-        actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, elevationSplitPane, Integer.MAX_VALUE));
+        actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, MAX_VALUE, elevationSplitPane, MAX_VALUE));
+        actionManager.register("maximize-positionlist", new MoveSplitPaneDividersAction(mapSplitPane, 0, elevationSplitPane, MAX_VALUE));
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
         actionManager.register("revert-positions", new RevertPositionListAction());
@@ -897,8 +928,9 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("options", new OptionsAction());
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("search-for-updates", new SearchForUpdatesAction());
+        actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("about", new AboutAction());
-        JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist");
+        JMenu mergeMenu = (JMenu) findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getConvertPanel().getFormatAndRoutesModel());
 
         CSH.setHelpIDString(frame.getRootPane(), "top");

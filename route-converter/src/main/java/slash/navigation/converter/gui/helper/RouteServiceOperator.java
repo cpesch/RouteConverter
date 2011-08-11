@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.catalog.domain.RouteCatalog;
-import slash.navigation.catalog.domain.exception.UnAuthorizedException;
-import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.dialogs.LoginDialog;
+import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Constants;
+import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -32,23 +32,23 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 /**
- * Helps to interact with the route service.
+ * Helps to interact with the RouteCatalog and RouteFeedback service.
  *
  * @author Christian Pesch
  */
 
 public class RouteServiceOperator {
     private static final Logger log = Logger.getLogger(RouteServiceOperator.class.getName());
-    private final RouteCatalog routeCatalog;
+    private final RouteFeedback routeFeedback;
     private final JFrame frame;
 
-    public RouteServiceOperator(JFrame frame, RouteCatalog routeCatalog) {
+    public RouteServiceOperator(JFrame frame, RouteFeedback routeFeedback) {
         this.frame = frame;
-        this.routeCatalog = routeCatalog;
+        this.routeFeedback = routeFeedback;
     }
 
     public boolean showLogin() {
-        LoginDialog loginDialog = new LoginDialog(routeCatalog);
+        LoginDialog loginDialog = new LoginDialog(routeFeedback);
         loginDialog.pack();
         loginDialog.restoreLocation();
         loginDialog.setVisible(true);
@@ -59,9 +59,9 @@ public class RouteServiceOperator {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 t.printStackTrace();
-                log.severe("Error while operating on RouteCatalog: " + t.getMessage());
+                log.severe("Error while operating on RouteConverter service: " + t.getMessage());
                 JOptionPane.showMessageDialog(frame,
-                        MessageFormat.format(RouteConverter.getBundle().getString("service-error"), t.getClass(), t.getMessage()),
+                        MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), t.getMessage()),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });

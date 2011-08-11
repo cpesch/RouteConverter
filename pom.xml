@@ -154,6 +154,7 @@
         <module>common-gui</module>
         <module>earthtools</module>
         <module>elevationview</module>
+        <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>
         <module>gpx</module>

@@ -1,5 +1,6 @@
 package slash.navigation.catalog.client;
 
+import org.junit.Test;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.rest.*;
@@ -8,12 +9,13 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 
-public class CategoryIT extends CatalogClientBase {
+import static org.junit.Assert.*;
+
+public class CategoryIT extends RouteCatalogClientBase {
 
     private Post createCategoryFromFile(String fileName,
                                         String authenticationUserName, String authenticationPassword) throws IOException {
-        Post request = new Post(CATEGORIES_URL);
-        request.setAuthentication(authenticationUserName, authenticationPassword);
+        Post request = new Post(CATEGORIES_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
@@ -26,8 +28,7 @@ public class CategoryIT extends CatalogClientBase {
                                 String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Post request = new Post(CATEGORIES_URL + Helper.encodeUri(parent) + "/");
-        request.setAuthentication(authenticationUserName, authenticationPassword);
+        Post request = new Post(CATEGORIES_URL + Helper.encodeUri(parent) + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -44,8 +45,7 @@ public class CategoryIT extends CatalogClientBase {
                                String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createCategoryXml(name);
 
-        Put request = new Put(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX);
-        request.setAuthentication(authenticationUserName, authenticationPassword);
+        Put request = new Put(CATEGORIES_URL + Helper.encodeUri(key) + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -54,7 +54,7 @@ public class CategoryIT extends CatalogClientBase {
         return updateCategory(key, name, USERNAME, PASSWORD);
     }
 
-
+    @Test
     public void testCreateFromFile() throws Exception {
         Post request2 = createCategoryFromFile("categoriestest.gpx");
         String result = request2.execute();
@@ -66,6 +66,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(request2.isSuccessful());
     }
 
+    @Test
     public void testCreateRootCategoryFromJAXB() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Post request2 = createCategory("", name);
@@ -79,6 +80,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(request2.isSuccessful());
     }
 
+    @Test
     public void testCreateUploadCategoryFromJAXB() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Post request2 = createCategory("Upload", name);
@@ -92,6 +94,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(request2.isSuccessful());
     }
 
+    @Test
     public void testRead() throws Exception {
         Post request1 = createCategoryFromFile("categoriestest.gpx");
         request1.execute();
@@ -111,6 +114,7 @@ public class CategoryIT extends CatalogClientBase {
         assertEquals(0, gpxType.getMetadata().getLink().size());
     }
 
+    @Test
     public void testReadRoot() throws Exception {
         HttpRequest request1 = readCategory("");
         String result1 = request1.execute();
@@ -126,6 +130,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(gpxType.getMetadata().getLink().size() > 0);
     }
 
+    @Test
     public void testReadWithSpaces() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Post request1 = createCategory("Upload", name);
@@ -146,6 +151,7 @@ public class CategoryIT extends CatalogClientBase {
         assertEquals(0, gpxType.getMetadata().getLink().size());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
         request1.execute();
@@ -166,6 +172,7 @@ public class CategoryIT extends CatalogClientBase {
         // TODO test more
     }
 
+    @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
         request1.execute();
@@ -177,6 +184,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testUpdateNotMyUser() throws Exception {
         createUser("alif", "topr", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
         Post request1 = createCategory("Upload", "Interesting");
@@ -189,6 +197,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(request2.isForbidden());
     }
 
+    @Test
     public void testDelete() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
         request1.execute();
@@ -205,6 +214,7 @@ public class CategoryIT extends CatalogClientBase {
         assertFalse(request3.isSuccessful());
     }
 
+    @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request1 = createCategory("Upload", "Interesting");
         request1.execute();
@@ -216,6 +226,7 @@ public class CategoryIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testDeleteNotMyUser() throws Exception {
         createUser("alif", "toup", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
         Post request1 = createCategory("Upload", "Interesting");

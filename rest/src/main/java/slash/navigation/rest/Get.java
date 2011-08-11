@@ -34,6 +34,10 @@ import java.util.regex.Pattern;
 public class Get extends HttpRequest {
     private static final Pattern CONTENT_DISPOSITION_PATTERN = Pattern.compile(".*filename=\"(.+)\"");
 
+    public Get(String url, Credentials credentials) {
+        super(new GetMethod(url), credentials);
+    }
+
     public Get(String url) {
         super(new GetMethod(url));
     }

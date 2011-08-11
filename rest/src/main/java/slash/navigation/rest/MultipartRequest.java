@@ -24,12 +24,13 @@ import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static slash.navigation.rest.Helper.encodeUri;
 
 /**
  * Wrapper for a HTTP Multipart Request.
@@ -39,17 +40,20 @@ import java.util.List;
 
 abstract class MultipartRequest extends HttpRequest {
     private List<Part> parts = new ArrayList<Part>();
+    private boolean containsFileLargerThan4k = false;
 
-    MultipartRequest(HttpMethod method) {
-        super(method);
-    }
-
-    public void addString(String name, String value) {
-        parts.add(new StringPart(name, value));
+    MultipartRequest(HttpMethod method, Credentials credentials) {
+        super(method, credentials);
     }
 
     public void addFile(String name, File value) throws IOException {
-        parts.add(new FilePart(name, Helper.encodeUri(value.getName()), value, "application/octet-stream", "UTF-8"));
+        if (value.exists() && value.length() > 4096)
+            containsFileLargerThan4k = true;
+        parts.add(new FilePart(name, encodeUri(value.getName()), value, "application/octet-stream", "UTF-8"));
+    }
+
+    protected boolean throwsSocketExceptionIfUnAuthorized() {
+        return containsFileLargerThan4k;
     }
 
     protected void doExecute() throws IOException {

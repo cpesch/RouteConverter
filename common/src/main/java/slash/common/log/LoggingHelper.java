@@ -33,9 +33,12 @@ import java.util.logging.*;
 public class LoggingHelper {
     private static PrintStream stdout = System.out, stderr = System.err;
 
+    public static File getFile() {
+        return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
+    }
+
     public static void logToFile() {
-        File logFile = new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
-        System.out.println("Logging to " + logFile.getAbsolutePath());
+        System.out.println("Logging to " + getFile().getAbsolutePath());
         readDebugConfig();
         redirectStdOutAndErrToLog();
     }

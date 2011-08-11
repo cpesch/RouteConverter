@@ -7,20 +7,22 @@
 */
 package slash.navigation.catalog.client;
 
+import org.junit.Test;
 import slash.navigation.rest.*;
 
 import java.io.File;
 import java.io.IOException;
 
-public class FileIT extends CatalogClientBase {
+import static org.junit.Assert.*;
+
+public class FileIT extends RouteCatalogClientBase {
 
     private Get readFile(int key) throws IOException {
         return new Get(FILES_URL + key + "/");
     }
 
-    private Put updateFile(int key, String fileName, String userName, String password) throws IOException {
-        Put request = new Put(FILES_URL + key + "/");
-        request.setAuthentication(userName, password);
+    private Put updateFile(int key, String fileName, String authenticationUserName, String authenticationPassword) throws IOException {
+        Put request = new Put(FILES_URL + key + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
@@ -29,10 +31,8 @@ public class FileIT extends CatalogClientBase {
         return updateFile(key, fileName, USERNAME, PASSWORD);
     }
 
-    private Delete deleteFile(int key,  String userName, String password) throws IOException {
-        Delete request = new Delete(FILES_URL + key + "/");
-        request.setAuthentication(userName, password);
-        return request;
+    private Delete deleteFile(int key,  String authenticationUserName, String authenticationPassword) throws IOException {
+        return new Delete(FILES_URL + key + "/", new SimpleCredentials(authenticationUserName, authenticationPassword));
     }
 
     private Delete deleteFile(int key) throws IOException {
@@ -40,6 +40,7 @@ public class FileIT extends CatalogClientBase {
     }
 
 
+    @Test
     public void testCreate() throws Exception {
         Post request = createFile("filestest.gpx");
         String result = request.execute();
@@ -51,6 +52,7 @@ public class FileIT extends CatalogClientBase {
         assertTrue(request.isSuccessful());
     }
 
+    @Test
     public void testCreateWithNotExistingUser() throws Exception {
         HttpRequest request = createFile("filestest.gpx", "user-does-not-exist", PASSWORD);
         assertNull(request.execute());
@@ -59,6 +61,7 @@ public class FileIT extends CatalogClientBase {
         assertTrue(request.isUnAuthorized());
     }
 
+    @Test
     public void testCreateWithWrongPassword() throws Exception {
         HttpRequest request = createFile("filestest.gpx", USERNAME, "password-is-wrong");
         assertNull(request.execute());
@@ -67,6 +70,7 @@ public class FileIT extends CatalogClientBase {
         assertTrue(request.isUnAuthorized());
     }
 
+    @Test
     public void testCreateCheckIncreasingIds() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -79,6 +83,7 @@ public class FileIT extends CatalogClientBase {
         assertEquals(key1 + 1, key2);
     }
 
+    @Test
     public void testRead() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -91,6 +96,7 @@ public class FileIT extends CatalogClientBase {
         assertEquals(readFileToString("filestest.gpx"), result2);
     }
 
+    @Test
     public void testReadNotExisting() throws Exception {
         HttpRequest request = readFile(Integer.MAX_VALUE);
         assertNotNull(request.execute());
@@ -98,6 +104,7 @@ public class FileIT extends CatalogClientBase {
         assertFalse(request.isSuccessful());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -117,6 +124,7 @@ public class FileIT extends CatalogClientBase {
         assertEquals(expected3, result3);
     }
 
+    @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -129,6 +137,7 @@ public class FileIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testUpdateNotMyRoute() throws Exception {
         createUser("userstest.gpx").execute();
         Post request1 = createFile("filestest.gpx");
@@ -142,6 +151,7 @@ public class FileIT extends CatalogClientBase {
         assertTrue(request2.isForbidden());
     }
 
+    @Test
     public void testDelete() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -159,6 +169,7 @@ public class FileIT extends CatalogClientBase {
         assertFalse(request3.isSuccessful());
     }
 
+    @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -171,6 +182,7 @@ public class FileIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testDeleteNotMyRoute() throws Exception {
         createUser("userstest.gpx").execute();
         Post request1 = createFile("filestest.gpx");

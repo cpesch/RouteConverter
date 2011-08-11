@@ -30,8 +30,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 
 public class Post extends MultipartRequest {
 
-    public Post(String url) {
-        super(new PostMethod(url));
+    public Post(String url, Credentials credentials) {
+        super(new PostMethod(url), credentials);
     }
 
     public String getHeader(String name) {

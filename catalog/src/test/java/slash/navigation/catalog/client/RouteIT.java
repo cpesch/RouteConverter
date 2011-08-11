@@ -7,6 +7,7 @@
 */
 package slash.navigation.catalog.client;
 
+import org.junit.Test;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.RteType;
@@ -17,7 +18,9 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class RouteIT extends CatalogClientBase {
+import static org.junit.Assert.*;
+
+public class RouteIT extends RouteCatalogClientBase {
 
     private Get readRoute(int key) throws IOException {
         return new Get(ROUTES_URL + key + GPX_URL_POSTFIX);
@@ -27,8 +30,7 @@ public class RouteIT extends CatalogClientBase {
                             String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createRouteXml(category, fileKey, description);
 
-        Put request = new Put(ROUTES_URL + routeKey + GPX_URL_POSTFIX);
-        request.setAuthentication(authenticationUserName, authenticationPassword);
+        Put request = new Put(ROUTES_URL + routeKey + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
@@ -38,15 +40,14 @@ public class RouteIT extends CatalogClientBase {
     }
 
     private Delete deleteRoute(int key, String authenticationUserName, String authenticationPassword) {
-        Delete request = new Delete(ROUTES_URL + key + GPX_URL_POSTFIX);
-        request.setAuthentication(authenticationUserName, authenticationPassword);
-        return request;
+        return new Delete(ROUTES_URL + key + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
     }
 
     private Delete deleteRoute(int key) {
         return deleteRoute(key, USERNAME, PASSWORD);
     }
 
+    @Test
     public void testCreateFromJAXB() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -63,6 +64,7 @@ public class RouteIT extends CatalogClientBase {
         assertTrue(request2.isSuccessful());
     }
 
+    @Test
     public void testCreateWithInvalidCategory() throws Exception {
         Post request1 = createRoute("Invalid category " + System.currentTimeMillis(), -1, "Description");
         String result = request1.execute();
@@ -73,6 +75,7 @@ public class RouteIT extends CatalogClientBase {
         assertFalse(request1.isSuccessful());
     }
 
+    @Test
     public void testRead() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
@@ -108,6 +111,7 @@ public class RouteIT extends CatalogClientBase {
         assertEquals(FILES_URL + fileKey, rteType.getLink().get(0).getHref());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         Post request0 = createFile("filestest.gpx");
         request0.execute();
@@ -130,6 +134,7 @@ public class RouteIT extends CatalogClientBase {
         // TODO test more
     }
 
+    @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request0 = createFile("filestest.gpx");
         request0.execute();
@@ -145,6 +150,7 @@ public class RouteIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testUpdateNotMyUser() throws Exception {
         createUser("alif", "toop", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
 
@@ -162,6 +168,7 @@ public class RouteIT extends CatalogClientBase {
         assertTrue(request2.isForbidden());
     }
 
+    @Test
     public void testUpdateWithInvalidCategory() throws Exception {
         Post request0 = createFile("filestest.gpx");
         request0.execute();
@@ -179,6 +186,7 @@ public class RouteIT extends CatalogClientBase {
         assertFalse(request2.isSuccessful());
     }
 
+    @Test
     public void testDelete() throws Exception {
         Post request0 = createFile("filestest.gpx");
         request0.execute();
@@ -199,6 +207,7 @@ public class RouteIT extends CatalogClientBase {
         assertFalse(request3.isSuccessful());
     }
 
+    @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request0 = createFile("filestest.gpx");
         request0.execute();
@@ -214,6 +223,7 @@ public class RouteIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testDeleteNotMyUser() throws Exception {
         createUser("alif", "topg", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
 

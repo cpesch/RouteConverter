@@ -19,13 +19,11 @@
 */
 package slash.navigation.catalog.client;
 
+import org.junit.Test;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
-import slash.navigation.rest.Get;
-import slash.navigation.rest.HttpRequest;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
+import slash.navigation.rest.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -33,7 +31,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class UserIT extends CatalogClientBase {
+import static org.junit.Assert.*;
+
+public class UserIT extends RouteCatalogClientBase {
 
     private Get readUser(String user) throws IOException {
         return new Get(USERS_URL + user + GPX_URL_POSTFIX);
@@ -41,8 +41,7 @@ public class UserIT extends CatalogClientBase {
 
     private Put updateUser(String key, String fileName,
                            String authenticationUserName, String authenticationPassword) throws IOException {
-        Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX);
-        request.setAuthentication(authenticationUserName, authenticationPassword);
+        Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
@@ -53,13 +52,13 @@ public class UserIT extends CatalogClientBase {
                              String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createUserXml(userName, password, firstName, lastName, email);
 
-        Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX);
-        request.setAuthentication(authenticationUserName, authenticationPassword);
+        Put request = new Put(USERS_URL + key + GPX_URL_POSTFIX, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
 
+    @Test
     public void testCreateFromFile() throws Exception {
         Post request = createUser("userstest.gpx");
         String result = request.execute();
@@ -71,6 +70,7 @@ public class UserIT extends CatalogClientBase {
         assertTrue(request.isSuccessful());
     }
 
+    @Test
     public void testCreateFromJAXB() throws Exception {
         Post request = createUser("ivan", "secret", "Ivan", "Secret", "ivan@secret.org", USERNAME, PASSWORD);
         String result = request.execute();
@@ -82,6 +82,7 @@ public class UserIT extends CatalogClientBase {
         assertTrue(request.isSuccessful());
     }
 
+    @Test
     public void testCreateWithSameNameNotAllowed() throws Exception {
         HttpRequest request1 = createUser("userstest.gpx");
         request1.execute();
@@ -91,6 +92,7 @@ public class UserIT extends CatalogClientBase {
         assertFalse(request2.isSuccessful());
     }
 
+    @Test
     public void testRead() throws Exception {
         Post request1 = createUser("userstest.gpx");
         request1.execute();
@@ -116,6 +118,7 @@ public class UserIT extends CatalogClientBase {
         assertNull(extension.getPassword());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         Post request1 = createUser("userstest.gpx");
         request1.execute();
@@ -145,6 +148,7 @@ public class UserIT extends CatalogClientBase {
         assertEquals("Top", extension.getLastname());
         assertNull(extension.getPassword());    }
 
+    @Test
     public void testUpdateWithWrongPassword() throws Exception {
         Post request1 = createUser("userstest.gpx");
         request1.execute();
@@ -156,6 +160,7 @@ public class UserIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testUpdateNotMyUser() throws Exception {
         createUser("alif", "topr", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
         Post request1 = createUser("userstest.gpx");
@@ -168,6 +173,7 @@ public class UserIT extends CatalogClientBase {
         assertTrue(request2.isForbidden());
     }
 
+    @Test
     public void testDelete() throws Exception {
         Post request1 = createUser("userstest.gpx");
         request1.execute();
@@ -184,6 +190,7 @@ public class UserIT extends CatalogClientBase {
         assertFalse(request3.isSuccessful());
     }
 
+    @Test
     public void testDeleteWithWrongPassword() throws Exception {
         Post request1 = createUser("userstest.gpx");
         request1.execute();
@@ -195,6 +202,7 @@ public class UserIT extends CatalogClientBase {
         assertTrue(request2.isUnAuthorized());
     }
 
+    @Test
     public void testDeleteNotMyUser() throws Exception {
         createUser("alif", "stop", "Ali", "Top", "ali@top.org", USERNAME, PASSWORD).execute();
         Post request1 = createUser("userstest.gpx");

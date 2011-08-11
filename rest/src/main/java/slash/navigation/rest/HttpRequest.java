@@ -21,13 +21,10 @@ package slash.navigation.rest;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.util.logging.Logger;
 
 /**
@@ -49,8 +46,13 @@ public abstract class HttpRequest {
         client.getParams().setIntParameter("http.connection.timeout", 15 * 1000);
         client.getParams().setIntParameter("http.socket.timeout", 60 * 1000);
         client.getParams().setParameter("http.method.retry-handler", new DefaultHttpMethodRetryHandler(0, false));
-        client.getParams().setParameter("http.useragent", "RouteConverter Web Client/0.2");
+        client.getParams().setParameter("http.useragent", "RouteConverter Web Client/0.3");
         this.method = method;
+    }
+
+    HttpRequest(HttpMethod method, Credentials credentials) {
+        this(method);
+        setAuthentication(credentials);
     }
 
     private void setAuthentication(String userName, String password, AuthScope authScope) {
@@ -59,29 +61,29 @@ public abstract class HttpRequest {
         method.setDoAuthentication(true);
     }
 
-    public void setAuthentication(String userName, String password, String authScopeUrl, String authScopeScheme) {
-        setAuthentication(userName, password, new AuthScope(authScopeUrl, 80, AuthScope.ANY_REALM, authScopeScheme));
-    }
-
-    public void setAuthentication(String userName, String password) {
+    private void setAuthentication(Credentials credentials) {
         try {
             URI uri = method.getURI();
-            setAuthentication(userName, password, new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
+            setAuthentication(credentials.getUserName(), credentials.getPassword(), new AuthScope(uri.getHost(), uri.getPort(), "Restricted Access"));
         } catch (URIException e) {
             log.severe("Cannot set authentication: " + e.getMessage());
         }
     }
 
-    public void setBody(String body) {
-        try {
-            ((EntityEnclosingMethod) method).setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE, Helper.UTF8_ENCODING));
-        } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot set body: " + e.getMessage());
-        }
+    protected boolean throwsSocketExceptionIfUnAuthorized() {
+        return false;
     }
 
     protected void doExecute() throws IOException {
-        statusCode = client.executeMethod(method);
+        try {
+            statusCode = client.executeMethod(method);
+        }
+        catch(SocketException e) {
+            if(throwsSocketExceptionIfUnAuthorized())
+                statusCode = 401;
+            else
+                throw e;
+        }
     }
 
     public String execute() throws IOException {
@@ -98,8 +100,7 @@ public abstract class HttpRequest {
             if (!isSuccessful() && logUnsuccessful)
                 log.warning(body);
             return body;
-        }
-        finally {
+        } finally {
             release();
         }
     }

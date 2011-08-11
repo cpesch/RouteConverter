@@ -30,8 +30,8 @@ import org.apache.commons.httpclient.Header;
 
 public class Put extends MultipartRequest {
 
-    public Put(String url) {
-        super(new PutMethod(url));
+    public Put(String url, Credentials credentials) {
+        super(new PutMethod(url), credentials);
     }
 
     public String getLocation() {

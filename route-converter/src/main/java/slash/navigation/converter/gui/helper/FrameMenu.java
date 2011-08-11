@@ -24,6 +24,9 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.helper.JMenuHelper.createItem;
+import static slash.navigation.converter.gui.helper.JMenuHelper.createMenu;
+
 /**
  * Creates a {@link JMenuBar} for a {@link RouteConverter}.
  *
@@ -32,72 +35,73 @@ import javax.swing.*;
 
 public class FrameMenu {
     public JMenuBar createMenuBar() {
-        JMenu fileMenu = JMenuHelper.createMenu("file");
-        fileMenu.add(JMenuHelper.createItem("new-file"));
-        fileMenu.add(JMenuHelper.createItem("open"));
-        fileMenu.add(JMenuHelper.createMenu("reopen"));
-        fileMenu.add(JMenuHelper.createItem("save"));
-        fileMenu.add(JMenuHelper.createItem("save-as"));
-        JMenu printMenu = JMenuHelper.createMenu("print");
-        printMenu.add(JMenuHelper.createItem("print-map"));
-        printMenu.add(JMenuHelper.createItem("print-map-and-route"));
-        printMenu.add(JMenuHelper.createItem("print-elevation-profile"));
+        JMenu fileMenu = createMenu("file");
+        fileMenu.add(createItem("new-file"));
+        fileMenu.add(createItem("open"));
+        fileMenu.add(createMenu("reopen"));
+        fileMenu.add(createItem("save"));
+        fileMenu.add(createItem("save-as"));
+        JMenu printMenu = createMenu("print");
+        printMenu.add(createItem("print-map"));
+        printMenu.add(createItem("print-map-and-route"));
+        printMenu.add(createItem("print-elevation-profile"));
         fileMenu.add(printMenu);
         fileMenu.addSeparator();
-        fileMenu.add(JMenuHelper.createItem("exit"));
+        fileMenu.add(createItem("exit"));
 
-        JMenu editMenu = JMenuHelper.createMenu("edit");
-        editMenu.add(JMenuHelper.createItem("undo"));
-        editMenu.add(JMenuHelper.createItem("redo"));
+        JMenu editMenu = createMenu("edit");
+        editMenu.add(createItem("undo"));
+        editMenu.add(createItem("redo"));
         editMenu.addSeparator();
-        editMenu.add(JMenuHelper.createItem("cut"));
-        editMenu.add(JMenuHelper.createItem("copy"));
-        editMenu.add(JMenuHelper.createItem("paste"));
-        editMenu.add(JMenuHelper.createItem("select-all"));
+        editMenu.add(createItem("cut"));
+        editMenu.add(createItem("copy"));
+        editMenu.add(createItem("paste"));
+        editMenu.add(createItem("select-all"));
 
-        JMenu positionMenu = JMenuHelper.createMenu("position");
-        positionMenu.add(JMenuHelper.createItem("new-position"));
-        positionMenu.add(JMenuHelper.createItem("delete"));
+        JMenu positionMenu = createMenu("position");
+        positionMenu.add(createItem("new-position"));
+        positionMenu.add(createItem("delete"));
         positionMenu.addSeparator();
-        positionMenu.add(JMenuHelper.createItem("find-place"));
-        JMenu completeMenu = JMenuHelper.createMenu("complete");
-        completeMenu.add(JMenuHelper.createItem("add-coordinates"));
-        completeMenu.add(JMenuHelper.createItem("add-elevation"));
-        completeMenu.add(JMenuHelper.createItem("add-postal-address"));
-        completeMenu.add(JMenuHelper.createItem("add-populated-place"));
-        completeMenu.add(JMenuHelper.createItem("add-speed"));
-        completeMenu.add(JMenuHelper.createItem("add-number"));
+        positionMenu.add(createItem("find-place"));
+        JMenu completeMenu = createMenu("complete");
+        completeMenu.add(createItem("add-coordinates"));
+        completeMenu.add(createItem("add-elevation"));
+        completeMenu.add(createItem("add-postal-address"));
+        completeMenu.add(createItem("add-populated-place"));
+        completeMenu.add(createItem("add-speed"));
+        completeMenu.add(createItem("add-number"));
         positionMenu.add(completeMenu);
         positionMenu.addSeparator();
-        positionMenu.add(JMenuHelper.createItem("insert-positions"));
-        positionMenu.add(JMenuHelper.createItem("delete-positions"));
+        positionMenu.add(createItem("insert-positions"));
+        positionMenu.add(createItem("delete-positions"));
 
-        JMenu positionlistMenu = JMenuHelper.createMenu("positionlist");
-        positionlistMenu.add(JMenuHelper.createItem("new-positionlist"));
-        positionlistMenu.add(JMenuHelper.createItem("delete-positionlist"));
+        JMenu positionlistMenu = createMenu("positionlist");
+        positionlistMenu.add(createItem("new-positionlist"));
+        positionlistMenu.add(createItem("delete-positionlist"));
         positionlistMenu.addSeparator();
-        positionlistMenu.add(JMenuHelper.createItem("rename-positionlist"));
-        positionlistMenu.add(JMenuHelper.createItem("revert-positions"));
-        positionlistMenu.add(JMenuHelper.createItem("convert-route-to-track"));
-        positionlistMenu.add(JMenuHelper.createItem("convert-track-to-route"));
+        positionlistMenu.add(createItem("rename-positionlist"));
+        positionlistMenu.add(createItem("revert-positions"));
+        positionlistMenu.add(createItem("convert-route-to-track"));
+        positionlistMenu.add(createItem("convert-track-to-route"));
         positionlistMenu.addSeparator();
-        positionlistMenu.add(JMenuHelper.createItem("split-positionlist"));
-        positionlistMenu.add(JMenuHelper.createMenu("merge-positionlist"));
-        positionlistMenu.add(JMenuHelper.createItem("import-positionlist"));
+        positionlistMenu.add(createItem("split-positionlist"));
+        positionlistMenu.add(createMenu("merge-positionlist"));
+        positionlistMenu.add(createItem("import-positionlist"));
 
-        JMenu viewMenu = JMenuHelper.createMenu("view");
-        viewMenu.add(JMenuHelper.createItem("show-map-and-positionlist"));
-        viewMenu.add(JMenuHelper.createItem("show-elevation-profile"));
-        viewMenu.add(JMenuHelper.createItem("maximize-map"));
-        viewMenu.add(JMenuHelper.createItem("maximize-positionlist"));
+        JMenu viewMenu = createMenu("view");
+        viewMenu.add(createItem("show-map-and-positionlist"));
+        viewMenu.add(createItem("show-elevation-profile"));
+        viewMenu.add(createItem("maximize-map"));
+        viewMenu.add(createItem("maximize-positionlist"));
 
-        JMenu extrasMenu = JMenuHelper.createMenu("extras");
-        extrasMenu.add(JMenuHelper.createItem("options"));
+        JMenu extrasMenu = createMenu("extras");
+        extrasMenu.add(createItem("options"));
 
-        JMenu helpMenu = JMenuHelper.createMenu("help");
-        helpMenu.add(JMenuHelper.createItem("help-topics"));
-        helpMenu.add(JMenuHelper.createItem("search-for-updates"));
-        helpMenu.add(JMenuHelper.createItem("about"));
+        JMenu helpMenu = createMenu("help");
+        helpMenu.add(createItem("help-topics"));
+        helpMenu.add(createItem("search-for-updates"));
+        helpMenu.add(createItem("send-error-report"));
+        helpMenu.add(createItem("about"));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);

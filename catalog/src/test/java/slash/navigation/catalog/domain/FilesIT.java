@@ -1,5 +1,6 @@
 package slash.navigation.catalog.domain;
 
+import org.junit.Test;
 import slash.common.io.InputOutput;
 
 import java.io.File;
@@ -7,11 +8,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-public class FilesIT extends RouteServiceBase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public class FilesIT extends RouteCatalogServiceBase {
+
+    @Test
     public void testAddFileWithUmlauts() throws Exception {
         String name = "Category for files with umlauts " + System.currentTimeMillis();
-        Category root = adminCatalog.getRootCategory();
+        Category root = routeCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         File in = File.createTempFile("дцья", ".file");

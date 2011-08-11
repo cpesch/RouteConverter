@@ -29,7 +29,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 
 public class Delete extends HttpRequest {
 
-    public Delete(String url) {
-        super(new DeleteMethod(url));
+    public Delete(String url, Credentials credentials) {
+        super(new DeleteMethod(url), credentials);
     }
 }

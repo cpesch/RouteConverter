@@ -20,13 +20,12 @@
 
 package slash.navigation.catalog.domain;
 
-import slash.navigation.catalog.domain.exception.DuplicateNameException;
+import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.catalog.domain.exception.NotFoundException;
 import slash.navigation.catalog.domain.exception.NotOwnerException;
-import slash.navigation.catalog.domain.exception.UnAuthorizedException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
-import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.*;
 import slash.common.io.Files;
 
@@ -35,7 +34,7 @@ import java.io.*;
 import java.util.logging.Logger;
 
 /**
- * Encapsulates REST access to the RouteCatalog server of RouteConverter.
+ * Encapsulates REST access to the RouteCatalog service of RouteConverter.
  *
  * @author Christian Pesch
  */
@@ -46,23 +45,13 @@ public class RouteCatalog {
     private static final String ROOT_CATEGORY_URI = "categories/.gpx";
     private static final String ROUTES_URI = "routes/";
     private static final String FILES_URI = "files/";
-    private static final String USERS_URI = "users/";
 
     private final String rootUrl;
-    private String userName, password;
+    private final Credentials credentials;
 
-    public RouteCatalog(String rootUrl, String userName, String password) {
+    public RouteCatalog(String rootUrl, Credentials credentials) {
         this.rootUrl = rootUrl;
-        setAuthentication(userName, password);
-    }
-
-    public RouteCatalog(String rootUrl) {
-        this(rootUrl, "anonymous", null);
-    }
-
-    public void setAuthentication(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
+        this.credentials = credentials;
     }
 
     public Category getRootCategory() {
@@ -86,7 +75,6 @@ public class RouteCatalog {
     }
 
     private static final ObjectFactory gpxFactory = new ObjectFactory();
-    private static final slash.navigation.gpx.routecatalog10.ObjectFactory rcFactory = new slash.navigation.gpx.routecatalog10.ObjectFactory();
 
     private static GpxType createGpxType() {
         GpxType gpxType = gpxFactory.createGpxType();
@@ -123,26 +111,6 @@ public class RouteCatalog {
         return toXml(gpxType);
     }
 
-    private static String createUserXml(String userName, String password, String firstName, String lastName, String email) {
-        MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setName(Helper.asUtf8(userName));
-
-        UserextensionType userextensionType = rcFactory.createUserextensionType();
-        userextensionType.setEmail(Helper.asUtf8(email));
-        userextensionType.setFirstname(Helper.asUtf8(firstName));
-        userextensionType.setLastname(Helper.asUtf8(lastName));
-        userextensionType.setPassword(Helper.asUtf8(password));
-
-        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(userextensionType);
-        metadataType.setExtensions(extensionsType);
-
-        GpxType gpxType = createGpxType();
-        gpxType.setMetadata(metadataType);
-
-        return toXml(gpxType);
-    }
-
     private static String toXml(GpxType gpxType) {
         StringWriter writer = new StringWriter();
         try {
@@ -167,17 +135,14 @@ public class RouteCatalog {
 
     private Delete prepareDelete(String url) {
         log.fine("Deleting " + url);
-        Delete request = new Delete(url);
-        request.setAuthentication(userName, password);
-        return request;
+        return new Delete(url, credentials);
     }
 
     private Post prepareAddCategory(String categoryUrl, String name) throws IOException {
         categoryUrl = ensureEndsWithSlash(removeDotGpx(categoryUrl));
         log.fine("Adding " + name + " to " + categoryUrl);
         String xml = createCategoryXml(null, name);
-        Post request = new Post(categoryUrl);
-        request.setAuthentication(userName, password);
+        Post request = new Post(categoryUrl, credentials);
         request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
@@ -199,8 +164,7 @@ public class RouteCatalog {
     private Put prepareUpdateCategory(String categoryUrl, String parentUrl, String name) throws IOException {
         log.fine("Updating " + categoryUrl + " to " + parentUrl + " with name " + name);
         String xml = createCategoryXml(parentUrl, name);
-        Put request = new Put(categoryUrl);
-        request.setAuthentication(userName, password);
+        Put request = new Put(categoryUrl, credentials);
         request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
@@ -237,9 +201,8 @@ public class RouteCatalog {
     }
 
     private Post prepareAddFile(File file) throws IOException {
-        log.fine("Adding " + file.getAbsolutePath());
-        Post request = new Post(getFilesUrl());
-        request.setAuthentication(userName, password);
+        log.fine("Adding file " + file.getAbsolutePath());
+        Post request = new Post(getFilesUrl(), credentials);
         request.addFile("file", file);
         return request;
     }
@@ -282,8 +245,7 @@ public class RouteCatalog {
         log.fine("Adding " + fileUrl + " to category " + categoryUrl + " with description " + description);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         System.out.print(xml);
-        Post request = new Post(getRoutesUrl());
-        request.setAuthentication(userName, password);
+        Post request = new Post(getRoutesUrl(), credentials);
         request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
@@ -291,8 +253,7 @@ public class RouteCatalog {
     private Put prepareUpdateRoute(String categoryUrl, String routeUrl, String description, String fileUrl) throws IOException {
         log.fine("Updating " + routeUrl + " to " + categoryUrl + "," + description + "," + fileUrl);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
-        Put request = new Put(routeUrl);
-        request.setAuthentication(userName, password);
+        Put request = new Put(routeUrl, credentials);
         request.addFile("file", Files.writeToTempFile(xml));
         return request;
     }
@@ -341,31 +302,5 @@ public class RouteCatalog {
             throw new NotOwnerException("Cannot delete route", routeUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + routeUrl + " not successful: " + result);
-    }
-
-
-    private String getUsersUrl() {
-        return rootUrl + USERS_URI;
-    }
-
-    private Post prepareAddUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
-        String xml = createUserXml(userName, password, firstName, lastName, email);
-        Post request = new Post(getUsersUrl());
-        request.setAuthentication(userName, password);
-        request.addFile("file", Files.writeToTempFile(xml));
-        return request;
-    }
-
-    public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        Post request = prepareAddUser(userName, password, firstName, lastName, email);
-        String result = request.execute();
-        if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add user " + userName, getUsersUrl());
-        if (request.isForbidden())
-            throw new DuplicateNameException("Cannot add user " + userName, getUsersUrl());
-        if (!request.isSuccessful())
-            throw new IOException("POST on " + getUsersUrl() + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
-        return request.getLocation();
     }
 }

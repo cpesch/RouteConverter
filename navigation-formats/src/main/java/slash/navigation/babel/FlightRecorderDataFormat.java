@@ -54,9 +54,10 @@ public class FlightRecorderDataFormat extends BabelFormat {
     protected boolean isStreamingCapable() {
         return true;
     }
-
+    /*
     public boolean isSupportsWriting() {
         // since gpsbabel 1.4.2 cannot read its own igc files and prints: IGC bad input record: '20'
         return false;
     }
+    */
 }
