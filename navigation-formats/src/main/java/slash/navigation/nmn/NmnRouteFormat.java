@@ -189,13 +189,18 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             }
 
             List<BaseNavigationPosition> positions = new ArrayList<BaseNavigationPosition>();
+            int readedPositions = 0;
+            //Ws ist möglich, dass bei einer "Position" überhaupt keine Koordinaten da
+            //sind. Dieser Punkt muss trotzdem am Ende mitgezählt werden für die Anzahl.
+            //Daher nicht am Ende positions.size() == expectedPositionCount testen
             while (fileContent.position() < fileContent.capacity() - 4) {
                 Wgs84Position position = readPosition(fileContent);
                 if (position != null)
                     positions.add(position);
+                readedPositions++;
             }
 
-            if (positions.size() == expectedPositionCount)
+            if (readedPositions == expectedPositionCount)
                 return Arrays.asList(createRoute(Route, null, positions));
         }
         return null;
@@ -215,12 +220,14 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // 4 Byte: unknown
         int unknown = fileContent.getInt();
 
-        // 4 Byte: number of following data points (1, 4) 
+        // 4 Byte: number of following data points (1, 2, 4) 
         int numberOfDataPoints = fileContent.getInt();
 
         // 8 Byte: unknown
-        unknown = fileContent.getInt();
-        unknown = fileContent.getInt();
+        if (fileContent.position() < positionEndPosition)
+            unknown = fileContent.getInt();
+        if (fileContent.position() < positionEndPosition)
+            unknown = fileContent.getInt();
 
         Wgs84Position position = null;
         int countBlock = 0;
@@ -229,6 +236,11 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             if (blockType == 1) {
                 position = readBlocktype_01(fileContent, position);
                 countBlock++;
+            } else if (blockType == 2){
+                position = readBlocktype_02(fileContent, position, countBlock++);
+                // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
+                if (countBlock > 2)
+                    fileContent.position(positionEndPosition);
             } else if (blockType == 4) {
                 position = readBlocktype_04(fileContent, position, countBlock++);
                 // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
@@ -311,6 +323,52 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         if (positionPoint == null)
             return new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
         return positionPoint;
+    }
+    
+    protected Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount){
+        /*
+        4 byte int 01 00 00 00 
+        8 byte int Länge. diese 8 bytes nicht mitzählen
+        4 byte Textlänge
+        n byte Text. Wegpunktbeschreibung. PLZ,Ort,
+        evtl. hier zu ende
+        4 byte 0
+        8 byte breite double
+        8 byte länge double
+        4 byte count following items??:
+          4 byte identifier
+             0x08: city ?
+             0x32: zip code ?            
+          4 byte textlength
+          n byte Textlength
+        8 byte ?  
+        */ 
+        long blockLength = byteBuffer.getLong();
+        int startPosition = byteBuffer.position();
+        String waypointDescription = getText(byteBuffer);
+        //unknown 4 bytes
+        byteBuffer.getInt();
+        double longitude = 0, latitude = 0;
+        if (byteBuffer.position() < startPosition + blockLength - 8) {
+            longitude = byteBuffer.getDouble();
+            latitude = byteBuffer.getDouble();
+        }
+
+        // skip the additional information like city, zip
+        byteBuffer.position((int) (startPosition + blockLength));
+
+        
+        Wgs84Position resultPoint;
+        if (positionPoint == null) {
+            resultPoint = new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
+        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getComment()))) {
+            resultPoint = positionPoint;
+            resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
+        } else
+            resultPoint = positionPoint;
+        
+        return resultPoint;
+        
     }
 
     protected Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
