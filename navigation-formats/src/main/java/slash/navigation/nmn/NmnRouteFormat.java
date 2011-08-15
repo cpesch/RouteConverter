@@ -160,11 +160,16 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             byte[] text = new byte[count];
             for (int i = 0; i < text.length; i++)
                 text[i] = byteBuffer.get();
-            return new String(text);
+            try {
+                return new String(text, UTF8_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                return "?";
+            }
         }
         return "";
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         if (checkHeader(source)) {
             // copy whole file to a bytebuffer
@@ -206,6 +211,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return null;
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     protected Wgs84Position readPosition(ByteBuffer fileContent) {
         // 4 Byte length
         int positionLength = fileContent.getInt();
@@ -218,16 +224,16 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         String text = getText(fileContent);
 
         // 4 Byte: unknown
-        int unknown = fileContent.getInt();
+        fileContent.getInt();
 
         // 4 Byte: number of following data points (1, 2, 4) 
         int numberOfDataPoints = fileContent.getInt();
 
         // 8 Byte: unknown
         if (fileContent.position() < positionEndPosition)
-            unknown = fileContent.getInt();
+            fileContent.getInt();
         if (fileContent.position() < positionEndPosition)
-            unknown = fileContent.getInt();
+            fileContent.getInt();
 
         Wgs84Position position = null;
         int countBlock = 0;
