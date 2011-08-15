@@ -28,6 +28,8 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.*;
+
 /**
  * Reads and writes Navigon Mobile Navigator 6 Favorites (.storage) files.
  * <p/>
@@ -72,12 +74,12 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        String city = Transfer.trim(lineMatcher.group(1));
+        String city = trim(lineMatcher.group(1));
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
-        String street = Transfer.trim(lineMatcher.group(4));
-        String comment = Transfer.toMixedCase(city != null ? city + (street != null ? ", " + street : "") : "");
-        return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), (Double) null, null, null, Transfer.trim(comment));
+        String street = trim(lineMatcher.group(4));
+        String comment = toMixedCase(city != null ? city + (street != null ? ", " + street : "") : "");
+        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), (Double) null, null, null, trim(comment));
     }
 
     private static String formatComment(String string) {
@@ -85,8 +87,8 @@ public class Nmn6FavoritesFormat extends NmnFormat {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatPositionAsString(position.getLongitude());
-        String latitude = Transfer.formatPositionAsString(position.getLatitude());
+        String longitude = formatPositionAsString(position.getLongitude());
+        String latitude = formatPositionAsString(position.getLatitude());
         String comment = formatComment(position.getComment());
         writer.println(LEFT_BRACE + comment + SEPARATOR + RIGHT_BRACE +
                 LEFT_BRACE + "0" + RIGHT_BRACE + LEFT_BRACE + "10" + RIGHT_BRACE +

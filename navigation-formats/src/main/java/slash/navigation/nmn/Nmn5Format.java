@@ -28,6 +28,10 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+
 /**
  * Reads and writes Navigon Mobile Navigator 5 (.rte) files.
  * <p/>
@@ -64,7 +68,7 @@ public class Nmn5Format extends NmnFormat {
         if (result != null && "-".equals(result))
             result = null;
         if (result != null && result.length() > 2)
-            result = Transfer.toMixedCase(result);
+            result = toMixedCase(result);
         return result;
     }
 
@@ -78,7 +82,7 @@ public class Nmn5Format extends NmnFormat {
         String number = parseForNmn5(lineMatcher.group(3));
         String longitude = lineMatcher.group(4);
         String latitude = lineMatcher.group(5);
-        return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), null, city, street, number);
+        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), null, city, street, number);
     }
 
     private static String formatComment(String string) {
@@ -87,8 +91,8 @@ public class Nmn5Format extends NmnFormat {
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
-        String longitude = Transfer.formatPositionAsString(nmnPosition.getLongitude());
-        String latitude = Transfer.formatPositionAsString(nmnPosition.getLatitude());
+        String longitude = formatPositionAsString(nmnPosition.getLongitude());
+        String latitude = formatPositionAsString(nmnPosition.getLatitude());
         String city = formatComment(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
         String street = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet());
         String number = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());

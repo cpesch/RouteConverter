@@ -32,6 +32,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -161,7 +162,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             for (int i = 0; i < text.length; i++)
                 text[i] = byteBuffer.get();
             try {
-                return new String(text, UTF8_ENCODING);
+                return toMixedCase(new String(text, UTF8_ENCODING));
             } catch (UnsupportedEncodingException e) {
                 return "?";
             }

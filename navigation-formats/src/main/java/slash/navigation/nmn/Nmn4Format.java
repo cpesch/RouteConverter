@@ -28,6 +28,8 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.*;
+
 /**
  * Reads and writes Navigon Mobile Navigator 4 (.rte) files.
  * <p/>
@@ -74,7 +76,7 @@ public class Nmn4Format extends NmnFormat {
             result = null;
         // this was currently only in NMN5, try it out for NMN4, too
         if (result != null && result.length() > 2)
-            result = Transfer.toMixedCase(result);
+            result = toMixedCase(result);
         return result;
     }
 
@@ -94,17 +96,17 @@ public class Nmn4Format extends NmnFormat {
             street = parseForNmn4(lineMatcher.group(5));
         String longitude = parseForNmn4(lineMatcher.group(7));
         String latitude = parseForNmn4(lineMatcher.group(8));
-        return new NmnPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), zip, city, street, null);
+        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), zip, city, street, null);
     }
 
     private static String formatComment(String string) {
-        return string != null ? Transfer.escape(string, SEPARATOR, ';') : "-";
+        return string != null ? escape(string, SEPARATOR, ';') : "-";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         NmnPosition nmnPosition = (NmnPosition) position;
-        String longitude = Transfer.formatPositionAsString(nmnPosition.getLongitude());
-        String latitude = Transfer.formatPositionAsString(nmnPosition.getLatitude());
+        String longitude = formatPositionAsString(nmnPosition.getLongitude());
+        String latitude = formatPositionAsString(nmnPosition.getLatitude());
         String zip = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getZip());
         String city = formatComment(nmnPosition.isUnstructured() ? nmnPosition.getComment() : nmnPosition.getCity());
         String street = formatComment(nmnPosition.isUnstructured() ? null : nmnPosition.getStreet() + (nmnPosition.getNumber() != null ? " " + nmnPosition.getNumber() : ""));

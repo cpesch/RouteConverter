@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+
 /**
  * Reads and writes Route 66 POI (.csv) files.
  * <p/>
@@ -71,8 +75,8 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = Transfer.toMixedCase(Transfer.trim(lineMatcher.group(3)));
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+        String comment = toMixedCase(Transfer.trim(lineMatcher.group(3)));
+        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, null, null, comment);
     }
 
@@ -82,8 +86,8 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = formatDoubleAsString(position.getLongitude(), 6);
+        String latitude = formatDoubleAsString(position.getLatitude(), 6);
         String comment = formatComment(position.getComment());
         writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
     }

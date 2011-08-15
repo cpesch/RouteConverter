@@ -33,6 +33,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
+
 /**
  * Reads and writes Navigon Mobile Navigator for iPhone/iPad URL from/to files.
  *
@@ -64,28 +68,28 @@ public class NmnUrlFormat extends UrlFormat {
         Matcher urlMatcher = URL_PATTERN.matcher(text);
         if (!urlMatcher.matches())
             return null;
-        return Transfer.trim(urlMatcher.group(1));
+        return trim(urlMatcher.group(1));
     }
 
     Wgs84Position parsePosition(String position) {
         Matcher addressPattern = ADDRESS_PATTERN.matcher(position);
         if (addressPattern.matches()) {
-            String zip = Transfer.trim(addressPattern.group(1));
-            String city = Transfer.trim(addressPattern.group(2));
-            String street = Transfer.trim(addressPattern.group(3));
-            String houseNumber = Transfer.trim(addressPattern.group(4));
-            String comment = Transfer.toMixedCase(decodeComment((zip != null ? zip + " " : "") +
-                (city != null ? city : "") +
-                (street != null ? ", " + street : "") +
-                (houseNumber != null ? " " + houseNumber : "")));
-            Double longitude = Transfer.parseDouble(addressPattern.group(5));
-            Double latitude = Transfer.parseDouble(addressPattern.group(6));
-            return new Wgs84Position(longitude, latitude, null, null, null, Transfer.trim(comment));
+            String zip = trim(addressPattern.group(1));
+            String city = trim(addressPattern.group(2));
+            String street = trim(addressPattern.group(3));
+            String houseNumber = trim(addressPattern.group(4));
+            String comment = toMixedCase(decodeComment((zip != null ? zip + " " : "") +
+                    (city != null ? city : "") +
+                    (street != null ? ", " + street : "") +
+                    (houseNumber != null ? " " + houseNumber : "")));
+            Double longitude = parseDouble(addressPattern.group(5));
+            Double latitude = parseDouble(addressPattern.group(6));
+            return new Wgs84Position(longitude, latitude, null, null, null, trim(comment));
         }
         Matcher coordinatesMatcher = COORDINATE_PATTERN.matcher(position);
         if (coordinatesMatcher.matches()) {
-            Double longitude = Transfer.parseDouble(coordinatesMatcher.group(1));
-            Double latitude = Transfer.parseDouble(coordinatesMatcher.group(2));
+            Double longitude = parseDouble(coordinatesMatcher.group(1));
+            Double latitude = parseDouble(coordinatesMatcher.group(2));
             return new Wgs84Position(longitude, latitude, null, null, null, null);
         }
         throw new IllegalArgumentException("'" + position + "' does not match");
