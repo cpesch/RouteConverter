@@ -44,6 +44,8 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.converter.gui.mapview.TravelMode.*;
 
 /**
@@ -56,7 +58,7 @@ public class OptionsPanel {
     private JPanel miscPanel;
     private JComboBox comboBoxLocale;
     private JTextField textFieldBabelPath;
-    private JButton buttonChooseGPSBabel;
+    private JButton buttonChooseBabelPath;
     private JCheckBox checkBoxAutomaticUpdateCheck;
     private JCheckBox checkBoxAvoidHighways;
     private JCheckBox checkBoxAvoidTolls;
@@ -72,7 +74,7 @@ public class OptionsPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        buttonChooseGPSBabel.addActionListener(new FrameAction() {
+        buttonChooseBabelPath.addActionListener(new FrameAction() {
             public void run() {
                 chooseBabelPath();
             }
@@ -184,10 +186,10 @@ public class OptionsPanel {
         JFileChooser chooser = Constants.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != JFileChooser.APPROVE_OPTION)
+        if (open != APPROVE_OPTION)
             return;
 
         File selected = chooser.getSelectedFile();
@@ -233,11 +235,11 @@ public class OptionsPanel {
         panel1.add(label2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldBabelPath = new JTextField();
         panel1.add(textFieldBabelPath, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        buttonChooseGPSBabel = new JButton();
-        buttonChooseGPSBabel.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/select.png")));
-        buttonChooseGPSBabel.setText("");
-        buttonChooseGPSBabel.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-gpsbabel-path"));
-        panel1.add(buttonChooseGPSBabel, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonChooseBabelPath = new JButton();
+        buttonChooseBabelPath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/select.png")));
+        buttonChooseBabelPath.setText("");
+        buttonChooseBabelPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-gpsbabel-path"));
+        panel1.add(buttonChooseBabelPath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("automatic-update-check"));
         panel1.add(label3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

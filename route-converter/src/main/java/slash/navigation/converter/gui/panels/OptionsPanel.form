@@ -3,7 +3,7 @@
   <grid id="64360" binding="miscPanel" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="3" left="3" bottom="3" right="3"/>
     <constraints>
-      <xy x="0" y="0" width="489" height="580"/>
+      <xy x="0" y="0" width="489" height="603"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -46,7 +46,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="9d479" class="javax.swing.JButton" binding="buttonChooseGPSBabel">
+          <component id="9d479" class="javax.swing.JButton" binding="buttonChooseBabelPath">
             <constraints>
               <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>

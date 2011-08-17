@@ -24,7 +24,8 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.panels.AboutPanel;
 import slash.navigation.gui.FrameAction;
 
-import javax.swing.*;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Show information about the program.
@@ -34,7 +35,6 @@ import javax.swing.*;
 
 public class AboutAction extends FrameAction {
     public void run() {
-        JOptionPane.showMessageDialog(getFrame(),
-                new AboutPanel().getRootComponent(), RouteConverter.getTitle(), JOptionPane.INFORMATION_MESSAGE);
+        showMessageDialog(getFrame(), new AboutPanel().getRootComponent(), RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 }

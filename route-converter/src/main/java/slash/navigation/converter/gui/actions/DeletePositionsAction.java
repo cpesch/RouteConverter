@@ -31,9 +31,9 @@ import slash.navigation.gui.FrameAction;
 
 public class DeletePositionsAction extends FrameAction {
     public void run() {
-        DeletePositionsDialog options = new DeletePositionsDialog();
-        options.pack();
-        options.restoreLocation();
-        options.setVisible(true);
+        DeletePositionsDialog dialog = new DeletePositionsDialog();
+        dialog.pack();
+        dialog.restoreLocation();
+        dialog.setVisible(true);
     }
 }

@@ -31,9 +31,9 @@ import slash.navigation.gui.FrameAction;
 
 public class FindPlaceAction extends FrameAction {
     public void run() {
-        FindPlaceDialog options = new FindPlaceDialog();
-        options.pack();
-        options.restoreLocation();
-        options.setVisible(true);
+        FindPlaceDialog dialog = new FindPlaceDialog();
+        dialog.pack();
+        dialog.restoreLocation();
+        dialog.setVisible(true);
     }
 }

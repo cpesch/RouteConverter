@@ -31,9 +31,9 @@ import slash.navigation.gui.FrameAction;
 
 public class InsertPositionsAction extends FrameAction {
     public void run() {
-        InsertPositionsDialog options = new InsertPositionsDialog();
-        options.pack();
-        options.restoreLocation();
-        options.setVisible(true);
+        InsertPositionsDialog dialog = new InsertPositionsDialog();
+        dialog.pack();
+        dialog.restoreLocation();
+        dialog.setVisible(true);
     }
 }
