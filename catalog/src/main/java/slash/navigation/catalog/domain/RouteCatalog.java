@@ -20,18 +20,23 @@
 
 package slash.navigation.catalog.domain;
 
-import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.catalog.domain.exception.NotFoundException;
 import slash.navigation.catalog.domain.exception.NotOwnerException;
-import slash.navigation.rest.exception.UnAuthorizedException;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.rest.*;
-import slash.common.io.Files;
+import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.logging.Logger;
+
+import static slash.common.io.Files.writeToTempFile;
+import static slash.navigation.rest.Helper.asUtf8;
+import static slash.navigation.rest.Helper.decodeUri;
 
 /**
  * Encapsulates REST access to the RouteCatalog service of RouteConverter.
@@ -85,9 +90,10 @@ public class RouteCatalog {
 
     private static String createCategoryXml(String parentUrl, String name) {
         MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setName(Helper.asUtf8(name));
-        if (parentUrl != null)
-            metadataType.setKeywords(Helper.asUtf8(Helper.decodeUri(parentUrl)));
+        metadataType.setName(asUtf8(name));
+        if (parentUrl != null) {
+            metadataType.setKeywords(asUtf8(decodeUri(parentUrl)));
+        }
 
         GpxType gpxType = createGpxType();
         gpxType.setMetadata(metadataType);
@@ -96,8 +102,8 @@ public class RouteCatalog {
 
     private static String createRouteXml(String category, String description, String fileUrl) {
         MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setDesc(Helper.asUtf8(description));
-        metadataType.setKeywords(Helper.asUtf8(Helper.decodeUri(category)));
+        metadataType.setDesc(asUtf8(description));
+        metadataType.setKeywords(asUtf8(decodeUri(category)));
 
         GpxType gpxType = createGpxType();
         gpxType.setMetadata(metadataType);
@@ -143,7 +149,7 @@ public class RouteCatalog {
         log.fine("Adding " + name + " to " + categoryUrl);
         String xml = createCategoryXml(null, name);
         Post request = new Post(categoryUrl, credentials);
-        request.addFile("file", Files.writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -165,7 +171,7 @@ public class RouteCatalog {
         log.fine("Updating " + categoryUrl + " to " + parentUrl + " with name " + name);
         String xml = createCategoryXml(parentUrl, name);
         Put request = new Put(categoryUrl, credentials);
-        request.addFile("file", Files.writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -246,7 +252,7 @@ public class RouteCatalog {
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         System.out.print(xml);
         Post request = new Post(getRoutesUrl(), credentials);
-        request.addFile("file", Files.writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -254,7 +260,7 @@ public class RouteCatalog {
         log.fine("Updating " + routeUrl + " to " + categoryUrl + "," + description + "," + fileUrl);
         String xml = createRouteXml(categoryUrl, description, fileUrl);
         Put request = new Put(routeUrl, credentials);
-        request.addFile("file", Files.writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 

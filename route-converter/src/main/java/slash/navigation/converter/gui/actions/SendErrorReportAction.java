@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.dialogs.SendErrorReportDialog;
 import slash.navigation.gui.FrameAction;
 
 /**
@@ -31,6 +31,9 @@ import slash.navigation.gui.FrameAction;
 
 public class SendErrorReportAction extends FrameAction {
     public void run() {
-        RouteConverter.getInstance().sendErrorReport();
+        SendErrorReportDialog dialog = new SendErrorReportDialog();
+        dialog.pack();
+        dialog.restoreLocation();
+        dialog.setVisible(true);
     }
 }

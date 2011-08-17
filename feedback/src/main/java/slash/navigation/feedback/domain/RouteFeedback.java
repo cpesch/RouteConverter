@@ -20,7 +20,6 @@
 
 package slash.navigation.feedback.domain;
 
-import slash.common.io.Files;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
@@ -29,7 +28,6 @@ import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.Credentials;
 import slash.navigation.rest.Get;
-import slash.navigation.rest.Helper;
 import slash.navigation.rest.Post;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
@@ -39,6 +37,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.logging.Logger;
+
+import static slash.common.io.Files.writeToTempFile;
+import static slash.navigation.rest.Helper.asUtf8;
 
 /**
  * Encapsulates REST access to the RouteFeedback service of RouteConverter.
@@ -98,13 +99,13 @@ public class RouteFeedback {
 
     private static String createUserXml(String userName, String password, String firstName, String lastName, String email) {
         MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setName(Helper.asUtf8(userName));
+        metadataType.setName(asUtf8(userName));
 
         UserextensionType userextensionType = rcFactory.createUserextensionType();
-        userextensionType.setEmail(Helper.asUtf8(email));
-        userextensionType.setFirstname(Helper.asUtf8(firstName));
-        userextensionType.setLastname(Helper.asUtf8(lastName));
-        userextensionType.setPassword(Helper.asUtf8(password));
+        userextensionType.setEmail(asUtf8(email));
+        userextensionType.setFirstname(asUtf8(firstName));
+        userextensionType.setLastname(asUtf8(lastName));
+        userextensionType.setPassword(asUtf8(password));
 
         ExtensionsType extensionsType = gpxFactory.createExtensionsType();
         extensionsType.getAny().add(userextensionType);
@@ -124,7 +125,7 @@ public class RouteFeedback {
         log.fine("Adding " + userName + "," + firstName + "," + lastName + "," + email);
         String xml = createUserXml(userName, password, firstName, lastName, email);
         Post request = new Post(getUsersUrl(), credentials);
-        request.addFile("file", Files.writeToTempFile(xml));
+        request.addFile("file", writeToTempFile(xml));
         return request;
     }
 
@@ -144,20 +145,25 @@ public class RouteFeedback {
         return rootUrl + ERROR_REPORT_URI;
     }
 
-    private Post prepareAddErrorReport(File file) throws IOException {
-        log.fine("Adding error report " + file.getAbsolutePath());
+    private Post prepareSendErrorReport(String log, String description, File file) throws IOException {
+        RouteFeedback.log.fine("Sending error report with log \"" + log + "\", description \"" + description +
+                "\"" + (file != null ? ", file " + file.getAbsolutePath() : ""));
         Post request = new Post(getErrorReportUrl(), credentials);
-        request.addFile("file", file);
+        request.addString("log", log);
+        request.addString("description", description);
+        if (file != null)
+            request.addFile("file", file);
         return request;
     }
 
-    public String addErrorReport(File file) throws IOException {
-        Post request = prepareAddErrorReport(file);
+    public String sendErrorReport(String log, String description, File file) throws IOException {
+        Post request = prepareSendErrorReport(log, description, file);
         String result = request.execute();
         if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot add error report " + file.getAbsolutePath(), getErrorReportUrl());
+            throw new UnAuthorizedException("Cannot send error report " + file.getAbsolutePath(), getErrorReportUrl());
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getErrorReportUrl() + " with file " + file.getAbsolutePath() + " not successful: " + result);
+            throw new IOException("POST on " + getErrorReportUrl() + " with log " + log.length() + " characters" +
+                    ", description \"" + description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
     }
 }

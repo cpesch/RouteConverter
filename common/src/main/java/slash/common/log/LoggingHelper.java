@@ -20,9 +20,10 @@
 
 package slash.common.log;
 
-import java.io.File;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.logging.*;
+
+import static java.util.logging.Level.ALL;
 
 /**
  * Allows to control log output
@@ -32,49 +33,104 @@ import java.util.logging.*;
 
 public class LoggingHelper {
     private static PrintStream stdout = System.out, stderr = System.err;
+    private static final int LOG_SIZE = 1024 * 1024;
+    private static LoggingHelper instance;
 
-    public static File getFile() {
-        return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
+    private LoggingHelper() {
     }
 
-    public static void logToFile() {
-        System.out.println("Logging to " + getFile().getAbsolutePath());
-        readDebugConfig();
+    public static LoggingHelper getInstance() {
+        if (instance == null)
+            instance = new LoggingHelper();
+        return instance;
+    }
+
+    public void logToFile() {
+        System.out.println("Logging to " + getLogFile().getAbsolutePath());
+        logAsDefault();
+
+        FileHandler handler = null;
+        try {
+            handler = new FileHandler("%t/RouteConverter.log", LOG_SIZE, 1, true);
+            handler.setLevel(ALL);
+            handler.setFilter(FILTER);
+            handler.setFormatter(new SimpleFormatter());
+        } catch (IOException e) {
+            System.err.println("Cannot configure file logging");
+            e.printStackTrace();
+        }
+        Logger logger = Logger.getLogger("");
+        logger.addHandler(handler);
+        logger.setLevel(ALL);
         redirectStdOutAndErrToLog();
     }
 
-
-    public static void logToStdOut() {
+    public void logToConsole() {
         // to avoid cycles between logging and stdout
         resetStdOutAndErr();
         logAsDefault();
 
-        Handler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.ALL);
-        consoleHandler.setFilter(new Filter() {
-            public boolean isLoggable(LogRecord record) {
-                return record.getLoggerName().startsWith("slash");
-            }
-        });
-        consoleHandler.setFormatter(new SimpleFormatter());
+        Handler handler = new ConsoleHandler();
+        handler.setLevel(ALL);
+        handler.setFilter(FILTER);
+        handler.setFormatter(new SimpleFormatter());
         Logger logger = Logger.getLogger("");
-        logger.addHandler(consoleHandler);
-        logger.setLevel(Level.ALL);
+        logger.addHandler(handler);
+        logger.setLevel(ALL);
     }
 
-    private static void readDebugConfig() {
-        try {
-            LogManager.getLogManager().readConfiguration(LoggingHelper.class.getResourceAsStream("logging.properties"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void logAsDefault() {
+    public void logAsDefault() {
         LogManager.getLogManager().reset();
     }
 
-    private static void redirectStdOutAndErrToLog() {
+
+    public String getLogFileAsString() {
+        logAsDefault();
+        String logAsString = readFile(getLogFile());
+        logToFile();
+        return logAsString;
+    }
+
+    private static final Filter FILTER = new Filter() {
+        public boolean isLoggable(LogRecord record) {
+            return record.getLoggerName().startsWith("slash");
+        }
+    };
+
+    private File getLogFile() {
+        return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
+    }
+
+    private String readFile(File file) {
+        StringBuilder buffer = new StringBuilder();
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            while (buffer.length() < LOG_SIZE) {
+                String line = reader.readLine();
+                if (line == null)
+                    break;
+                buffer.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Cannot read file " + file.getAbsolutePath());
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    // intentionally left empty
+                }
+            }
+        }
+
+        return buffer.toString();
+    }
+
+
+    private void redirectStdOutAndErrToLog() {
         Logger logger = Logger.getLogger("stdout");
         LoggingOutputStream los = new LoggingOutputStream(logger, Level.INFO);
         System.setOut(new PrintStream(los, true));
@@ -84,7 +140,7 @@ public class LoggingHelper {
         System.setErr(new PrintStream(los, true));
     }
 
-    private static void resetStdOutAndErr() {
+    private void resetStdOutAndErr() {
         System.setOut(stdout);
         System.setErr(stderr);
     }

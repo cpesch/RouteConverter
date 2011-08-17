@@ -148,9 +148,10 @@ public class RouteConverter extends SingleFrameApplication {
     // application lifecycle callbacks
 
     protected void initialize(String[] args) {
-        LoggingHelper.logToFile();
+        LoggingHelper loggingHelper = LoggingHelper.getInstance();
+        loggingHelper.logToFile();
         if (preferences.getBoolean(DEBUG_PREFERENCE, false)) {
-            LoggingHelper.logToStdOut();
+            loggingHelper.logToConsole();
         }
         this.args = args;
     }
@@ -551,12 +552,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     // helpers for external components
 
-    public void sendErrorReport() {
-        final File file = LoggingHelper.getFile();
-        // TODO bring up dialog
+    public void sendErrorReport(final String log, final String description, final File file) {
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
-                routeFeedback.addErrorReport(file);
+                routeFeedback.sendErrorReport(log, description, file);
             }
         });
     }

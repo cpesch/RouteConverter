@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,10 @@ abstract class MultipartRequest extends HttpRequest {
 
     MultipartRequest(HttpMethod method, Credentials credentials) {
         super(method, credentials);
+    }
+
+    public void addString(String name, String value) {
+        parts.add(new StringPart(name, value));
     }
 
     public void addFile(String name, File value) throws IOException {
