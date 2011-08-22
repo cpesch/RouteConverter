@@ -38,6 +38,8 @@ import slash.navigation.util.RouteComments;
 import javax.swing.*;
 import java.text.MessageFormat;
 
+import static slash.navigation.util.RouteComments.getNumberedPosition;
+
 /**
  * Helps to augment a batch of positions with geocoded coordinates, elevation,
  * position number for its comment, postal address, populated place and speed
@@ -371,7 +373,7 @@ public class BatchPositionAugmenter {
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String previousComment = position.getComment();
-                        String nextComment = RouteComments.getNumberedPosition(position, index, digitCount, numberPattern);
+                        String nextComment = getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextComment != null && !nextComment.equals(previousComment);
                         if (changed)
                             positionsModel.edit(nextComment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
