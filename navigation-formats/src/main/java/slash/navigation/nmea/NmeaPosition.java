@@ -28,6 +28,9 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.util.Conversion;
 import slash.common.io.Transfer;
 
+import static slash.navigation.util.Conversion.ddmm2degrees;
+import static slash.navigation.util.Conversion.degrees2ddmm;
+
 /**
  * Represents a position in a NMEA 0183 Sentences (.nmea) file.
  *
@@ -60,7 +63,7 @@ public class NmeaPosition extends BaseNavigationPosition {
     private static Double toDegrees(Double ddmm2, String direction) {
         if (ddmm2 == null)
             return null;
-        double decimal = Conversion.ddmm2degrees(ddmm2);
+        double decimal = ddmm2degrees(ddmm2);
         direction = Transfer.trim(direction);
         boolean southOrWest = "S".equals(direction) || "W".equals(direction);
         return southOrWest ? -decimal : decimal;
@@ -75,7 +78,7 @@ public class NmeaPosition extends BaseNavigationPosition {
             this.longitude = null;
             this.eastOrWest = null;
         } else {
-            double ddmm = Conversion.degrees2ddmm(longitude);
+            double ddmm = degrees2ddmm(longitude);
             this.longitude = Math.abs(ddmm);
             this.eastOrWest = ddmm >= 0.0 ? "E" : "W";
         }
@@ -90,7 +93,7 @@ public class NmeaPosition extends BaseNavigationPosition {
             this.latitude = null;
             this.northOrSouth = null;
         } else {
-            double ddmm = Conversion.degrees2ddmm(latitude);
+            double ddmm = degrees2ddmm(latitude);
             this.latitude = Math.abs(ddmm);
             this.northOrSouth = ddmm >= 0.0 ? "N" : "S";
         }

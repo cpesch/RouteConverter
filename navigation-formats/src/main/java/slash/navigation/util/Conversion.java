@@ -20,7 +20,9 @@
 
 package slash.navigation.util;
 
-import slash.common.io.Transfer;
+import static java.lang.Math.atan;
+import static slash.common.io.Transfer.ceilFraction;
+import static slash.common.io.Transfer.floorFraction;
 
 /**
  * Provides geo conversion functionality.
@@ -64,7 +66,7 @@ public class Conversion {
     }
 
     public static double mercatorYToWgs84Latitude(long y) {
-        double latitude = 2.0 * (Math.atan(Math.exp(y / EARTH_RADIUS)) - Math.PI / 4.0) / Math.PI * 180.0;
+        double latitude = 2.0 * (atan(Math.exp(y / EARTH_RADIUS)) - Math.PI / 4.0) / Math.PI * 180.0;
         return roundWgs84(latitude);
     }
 
@@ -163,9 +165,9 @@ public class Conversion {
 
         // Vektoren (in ETRF89)
         double s = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        double T = Math.atan(z * aWgs84 / (s * bWgs84));
-        double B2 = Math.atan((z + e2Wgs84 * Math.pow(aWgs84, 2) / bWgs84 * Math.pow(Math.sin(T), 3)) / (s - e2Wgs84 * aWgs84 * Math.pow(Math.cos(T), 3)));
-        double L2 = Math.atan(y / x);
+        double T = atan(z * aWgs84 / (s * bWgs84));
+        double B2 = atan((z + e2Wgs84 * Math.pow(aWgs84, 2) / bWgs84 * Math.pow(Math.sin(T), 3)) / (s - e2Wgs84 * aWgs84 * Math.pow(Math.cos(T), 3)));
+        double L2 = atan(y / x);
         // double N2 = aWgs84 / Math.sqrt(1 - e2Wgs84 * Math.pow(Math.sin(B2), 2));
         // h = s / Math.cos(B2) - N2;
         double latitude = B2 * 180 / Math.PI;
@@ -228,9 +230,9 @@ public class Conversion {
 
         // Vektoren (in ETRF89)
         double s = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        double T = Math.atan(z * aBessel / (s * bBessel));
-        double B = Math.atan((z + e2Bessel * Math.pow(aBessel, 2) / bBessel * Math.pow(Math.sin(T), 3)) / (s - e2Bessel * aBessel * Math.pow(Math.cos(T), 3)));
-        double L = Math.atan(y / x);
+        double T = atan(z * aBessel / (s * bBessel));
+        double B = atan((z + e2Bessel * Math.pow(aBessel, 2) / bBessel * Math.pow(Math.sin(T), 3)) / (s - e2Bessel * aBessel * Math.pow(Math.cos(T), 3)));
+        double L = atan(y / x);
         double N = aBessel / Math.sqrt(1 - e2Bessel * Math.pow(Math.sin(B), 2));
         // h = s / Math.cos(B) - N;
         double B1 = B * 180 / Math.PI;
@@ -269,7 +271,7 @@ public class Conversion {
         double feet = (altitude - ALTITUDE_6m) *
                 (meterToFeets(ELEVATION_146m - ELEVATION_6m) / (ALTITUDE_146m - ALTITUDE_6m));
         double meters = feetToMeters(feet) + ELEVATION_6m;
-        return Transfer.ceilFraction(meters, 2);
+        return ceilFraction(meters, 2);
     }
 
     public static long elevationMetersToBcrAltitude(double elevation) {
@@ -283,14 +285,14 @@ public class Conversion {
     public static double ddmm2degrees(double ddmm) {
         double decimal = ddmm / 100.0;
         int asInt = (int) decimal;
-        double behindDot = Transfer.floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
+        double behindDot = floorFraction(((decimal - asInt) * 100.0) / 60.0, 7);
         return asInt + behindDot;
     }
 
     public static double degrees2ddmm(double decimal) {
         int asInt = (int) decimal;
-        double behindDot = Transfer.ceilFraction(decimal - asInt, 7);
-        double behindDdMm = Transfer.ceilFraction(behindDot * 60.0, 4);
+        double behindDot = ceilFraction(decimal - asInt, 7);
+        double behindDdMm = ceilFraction(behindDot * 60.0, 4);
         return asInt * 100.0 + behindDdMm;
     }
 

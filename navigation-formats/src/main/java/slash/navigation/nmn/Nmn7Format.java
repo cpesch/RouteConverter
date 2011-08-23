@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.formatDouble;
+
 /**
  * Reads and writes Navigon Mobile Navigator 7 (.freshroute) files.
  *
@@ -68,7 +70,7 @@ public class Nmn7Format extends NmnFormat {
     private NmnRoute process(Route route) {
         List<NmnPosition> positions = new ArrayList<NmnPosition>();
         for (Route.Point point : route.getPoint()) {
-            positions.add(new NmnPosition(Transfer.formatDouble(point.getX()), Transfer.formatDouble(point.getY()), (Double)null, null, null, point.getName()));
+            positions.add(new NmnPosition(formatDouble(point.getX()), formatDouble(point.getY()), (Double)null, null, null, point.getName()));
         }
         return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
     }

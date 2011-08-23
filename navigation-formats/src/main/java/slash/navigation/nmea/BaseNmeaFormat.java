@@ -37,6 +37,9 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.hex.HexDecoder.decodeBytes;
+import static slash.common.hex.HexEncoder.encodeByte;
+import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 
@@ -198,9 +201,9 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         String lineForChecksum = line.substring(1, line.length() - 3);
         byte expected = computeChecksum(lineForChecksum);
         String actualStr = line.substring(line.length() - 2);
-        byte[] actual = HexDecoder.decodeBytes(actualStr);
+        byte[] actual = decodeBytes(actualStr);
         if (actual.length != 1 || actual[0] != expected) {
-            String expectedStr = HexEncoder.encodeByte(expected);
+            String expectedStr = encodeByte(expected);
             log.severe("Checksum of '" + line + "' is invalid. Expected '" + expectedStr + "' but found '" + actualStr + "'");
             return preferences.getBoolean("ignoreInvalidChecksum", false);
         }
@@ -226,14 +229,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         // 130441.89
         try {
             Date parsed = PRECISE_TIME_FORMAT.parse(time);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // 130441
         try {
             Date parsed = TIME_FORMAT.parse(time);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse time '" + time + "'");
         }
@@ -249,14 +252,14 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         // date: 160607 time: 130441.89
         try {
             Date parsed = PRECISE_DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             // intentionally left empty
         }
         // date: 160607 time: 130441
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -289,7 +292,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     protected void writeSentence(PrintWriter writer, String sentence) {
-        String ggaChecksum = HexEncoder.encodeByte(computeChecksum(sentence));
+        String ggaChecksum = encodeByte(computeChecksum(sentence));
         writer.println("$" + sentence + "*" + ggaChecksum);
     }
 
