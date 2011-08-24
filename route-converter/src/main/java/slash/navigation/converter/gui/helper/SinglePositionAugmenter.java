@@ -21,11 +21,12 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.completer.CompletePositionService;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.util.NumberPattern;
 import slash.navigation.util.Positions;
 
 import javax.swing.*;
@@ -34,6 +35,10 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+
+import static slash.common.io.Transfer.isEmpty;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
 /**
  * Helps to augment a newly created position with elevation, postal address
@@ -56,6 +61,17 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         completePositionService.dispose();
     }
 
+    public String createComment(int index) {
+        String description = RouteConverter.getBundle().getString("new-position-name");
+        return createComment(index, description);
+    }
+
+    public String createComment(int index, String description) {
+        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
+        String number = Integer.toString(index);
+        return formatNumberedPosition(numberPattern, number, description);
+    }
+
     public void complementElevation(final int row, final Double longitude, final Double latitude) {
         executor.execute(new Runnable() {
             public void run() {
@@ -69,7 +85,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 if (elevation[0] != null) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            if (!Transfer.isEmpty(elevation[0])) {
+                            if (!isEmpty(elevation[0])) {
                                 positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
                             }
                         }
@@ -92,8 +108,10 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 if (comment[0] != null) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            if (comment[0] != null)
-                                positionsModel.edit(comment[0], row, PositionColumns.DESCRIPTION_COLUMN_INDEX, true, false);
+                            if (comment[0] != null) {
+                                String description = createComment(row + 1, comment[0]);
+                                positionsModel.edit(description, row, DESCRIPTION_COLUMN_INDEX, true, false);
+                            }
                         }
                     });
                 }

@@ -70,8 +70,10 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
+import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -452,8 +454,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public NumberPattern getNumberPatternPreference() {
-        return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE,
-                NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION.toString()));
+        return NumberPattern.valueOf(preferences.get(NUMBER_PATTERN_PREFERENCE, NUMBER_SPACE_THEN_DESCRIPTION.toString()));
     }
 
     public void setNumberPatternPreference(NumberPattern numberPattern) {
@@ -475,7 +476,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 JOptionPane.showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                        ERROR_MESSAGE);
             }
         });
     }
@@ -491,7 +492,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 JOptionPane.showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter),
-                        frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                        frame.getTitle(), ERROR_MESSAGE);
             }
         });
     }
@@ -507,7 +508,7 @@ public class RouteConverter extends SingleFrameApplication {
                         new ExternalPrograms().startMail(frame);
                     }
                 });
-                JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
             }
         });
     }
@@ -523,7 +524,7 @@ public class RouteConverter extends SingleFrameApplication {
                         new ExternalPrograms().startMail(frame);
                     }
                 });
-                JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
             }
         });
     }

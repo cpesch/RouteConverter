@@ -47,6 +47,7 @@ import java.util.List;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.converter.gui.mapview.TravelMode.*;
+import static slash.navigation.util.NumberPattern.*;
 
 /**
  * The misc panel of the route converter user interface.
@@ -151,9 +152,7 @@ public class OptionsPanel {
         });
 
         comboboxNumberPattern.setModel(new DefaultComboBoxModel(new Object[]{
-                NumberPattern.NUMBER_ONLY,
-                NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION,
-                NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION
+                DESCRIPTION_ONLY, NUMBER_ONLY, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION, NUMBER_SPACE_THEN_DESCRIPTION
         }));
         comboboxNumberPattern.setRenderer(new NumberPatternListCellRenderer());
         comboboxNumberPattern.addItemListener(new ItemListener() {

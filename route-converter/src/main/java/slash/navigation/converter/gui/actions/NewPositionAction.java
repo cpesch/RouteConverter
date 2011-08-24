@@ -26,12 +26,12 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.FrameAction;
 import slash.navigation.util.NumberPattern;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 
 import static java.util.Arrays.asList;
 import static slash.navigation.util.Positions.center;
+import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
 /**
  * {@link Action} that inserts a new {@link BaseNavigationPosition} after
@@ -67,7 +67,7 @@ public class NewPositionAction extends FrameAction {
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(positionsModel.getRowCount() + 1);
         String description = RouteConverter.getBundle().getString("new-position-name");
-        return RouteComments.formatNumberedPosition(numberPattern, number, description);
+        return formatNumberedPosition(numberPattern, number, description);
     }
 
     public void run() {
@@ -86,6 +86,7 @@ public class NewPositionAction extends FrameAction {
                 center.getSpeed(), center.getTime(), getRouteComment());
         positionsSelectionModel.setSelectedPositions(new int[]{insertRow}, true);
 
+        r.complementComment(insertRow, center.getLongitude(), center.getLatitude());
         r.complementElevation(insertRow, center.getLongitude(), center.getLatitude());
         r.complementTime(insertRow, center.getTime());
     }

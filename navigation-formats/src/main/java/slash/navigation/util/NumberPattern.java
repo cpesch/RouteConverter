@@ -23,6 +23,8 @@ package slash.navigation.util;
 /**
  * Enumeration of the ways to add numbers to {@link slash.navigation.base.BaseNavigationPosition}s.
  *
+ * DESCRIPTION_ONLY: Hamburg
+ *
  * NUMBER_ONLY: 1234
  *
  * NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION: 1234Hamburg
@@ -33,5 +35,5 @@ package slash.navigation.util;
  */
 
 public enum NumberPattern {
-    NUMBER_ONLY, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION, NUMBER_SPACE_THEN_DESCRIPTION
+    DESCRIPTION_ONLY, NUMBER_ONLY, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION, NUMBER_SPACE_THEN_DESCRIPTION
 }

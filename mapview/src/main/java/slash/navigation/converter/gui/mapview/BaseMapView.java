@@ -24,13 +24,11 @@ import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.gui.Application;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.util.Positions;
 
@@ -49,7 +47,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -60,10 +57,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
-import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.Positions.*;
-import static slash.navigation.util.Positions.southWest;
 
 /**
  * Interface for a component that displays the positions of a route.
@@ -1189,7 +1187,7 @@ public abstract class BaseMapView implements MapView {
             log.fine("processing line " + line);
             Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
             if (matcher.matches()) {
-                int callbackNumber = Transfer.parseInt(matcher.group(2));
+                int callbackNumber = parseInt(matcher.group(2));
                 if (lastCallbackNumber >= callbackNumber) {
                     log.info("ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber);
                     break;
@@ -1227,17 +1225,17 @@ public abstract class BaseMapView implements MapView {
     boolean processCallback(String callback) {
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
         if (directionsLoadMatcher.matches()) {
-            meters += Transfer.parseInt(directionsLoadMatcher.group(1));
-            seconds += Transfer.parseInt(directionsLoadMatcher.group(2));
+            meters += parseInt(directionsLoadMatcher.group(1));
+            seconds += parseInt(directionsLoadMatcher.group(2));
             fireCalculatedDistance(meters, seconds);
             return true;
         }
 
         Matcher insertPositionMatcher = INSERT_POSITION_PATTERN.matcher(callback);
         if (insertPositionMatcher.matches()) {
-            final int row = Transfer.parseInt(insertPositionMatcher.group(1)) + 1;
-            final Double latitude = Transfer.parseDouble(insertPositionMatcher.group(2));
-            final Double longitude = Transfer.parseDouble(insertPositionMatcher.group(3));
+            final int row = parseInt(insertPositionMatcher.group(1)) + 1;
+            final Double latitude = parseDouble(insertPositionMatcher.group(2));
+            final Double longitude = parseDouble(insertPositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
@@ -1249,8 +1247,8 @@ public abstract class BaseMapView implements MapView {
         Matcher addPositionMatcher = ADD_POSITION_PATTERN.matcher(callback);
         if (addPositionMatcher.matches()) {
             final int row = getAddRow();
-            final Double latitude = Transfer.parseDouble(addPositionMatcher.group(1));
-            final Double longitude = Transfer.parseDouble(addPositionMatcher.group(2));
+            final Double latitude = parseDouble(addPositionMatcher.group(1));
+            final Double longitude = parseDouble(addPositionMatcher.group(2));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     insertPosition(row, longitude, latitude);
@@ -1261,9 +1259,9 @@ public abstract class BaseMapView implements MapView {
 
         Matcher movePositionMatcher = MOVE_POSITION_PATTERN.matcher(callback);
         if (movePositionMatcher.matches()) {
-            final int row = getMoveRow(Transfer.parseInt(movePositionMatcher.group(1)));
-            final Double latitude = Transfer.parseDouble(movePositionMatcher.group(2));
-            final Double longitude = Transfer.parseDouble(movePositionMatcher.group(3));
+            final int row = getMoveRow(parseInt(movePositionMatcher.group(1)));
+            final Double latitude = parseDouble(movePositionMatcher.group(2));
+            final Double longitude = parseDouble(movePositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     movePosition(row, longitude, latitude);
@@ -1274,9 +1272,9 @@ public abstract class BaseMapView implements MapView {
 
         Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(callback);
         if (removePositionMatcher.matches()) {
-            final Double latitude = Transfer.parseDouble(removePositionMatcher.group(1));
-            final Double longitude = Transfer.parseDouble(removePositionMatcher.group(2));
-            final Double threshold = Transfer.parseDouble(removePositionMatcher.group(3));
+            final Double latitude = parseDouble(removePositionMatcher.group(1));
+            final Double longitude = parseDouble(removePositionMatcher.group(2));
+            final Double threshold = parseDouble(removePositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     removePosition(longitude, latitude, threshold);
@@ -1287,9 +1285,9 @@ public abstract class BaseMapView implements MapView {
 
         Matcher selectPositionMatcher = SELECT_POSITION_PATTERN.matcher(callback);
         if (selectPositionMatcher.matches()) {
-            final Double latitude = Transfer.parseDouble(selectPositionMatcher.group(1));
-            final Double longitude = Transfer.parseDouble(selectPositionMatcher.group(2));
-            final Double threshold = Transfer.parseDouble(selectPositionMatcher.group(3));
+            final Double latitude = parseDouble(selectPositionMatcher.group(1));
+            final Double longitude = parseDouble(selectPositionMatcher.group(2));
+            final Double threshold = parseDouble(selectPositionMatcher.group(3));
             final Boolean replaceSelection = Boolean.parseBoolean(selectPositionMatcher.group(4));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -1301,10 +1299,10 @@ public abstract class BaseMapView implements MapView {
 
         Matcher selectPositionsMatcher = SELECT_POSITIONS_PATTERN.matcher(callback);
         if (selectPositionsMatcher.matches()) {
-            final Double latitudeNorthEast = Transfer.parseDouble(selectPositionsMatcher.group(1));
-            final Double longitudeNorthEast = Transfer.parseDouble(selectPositionsMatcher.group(2));
-            final Double latitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(3));
-            final Double longitudeSouthWest = Transfer.parseDouble(selectPositionsMatcher.group(4));
+            final Double latitudeNorthEast = parseDouble(selectPositionsMatcher.group(1));
+            final Double longitudeNorthEast = parseDouble(selectPositionsMatcher.group(2));
+            final Double latitudeSouthWest = parseDouble(selectPositionsMatcher.group(3));
+            final Double longitudeSouthWest = parseDouble(selectPositionsMatcher.group(4));
             final Boolean replaceSelection = Boolean.parseBoolean(selectPositionsMatcher.group(5));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -1345,14 +1343,14 @@ public abstract class BaseMapView implements MapView {
 
         Matcher callbackPortMatcher = CALLBACK_PORT_PATTERN.matcher(callback);
         if (callbackPortMatcher.matches()) {
-            int port = Transfer.parseInt(callbackPortMatcher.group(1));
+            int port = parseInt(callbackPortMatcher.group(1));
             fireReceivedCallback(port);
             return true;
         }
 
         Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(callback);
         if (insertWaypointsMatcher.matches()) {
-            Integer key = Transfer.parseInt(insertWaypointsMatcher.group(2));
+            Integer key = parseInt(insertWaypointsMatcher.group(2));
             List<Double> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
 
             List<BaseNavigationPosition> successorPredecessor;
@@ -1393,13 +1391,13 @@ public abstract class BaseMapView implements MapView {
         List<Double> result = new ArrayList<Double>();
         StringTokenizer tokenizer = new StringTokenizer(coordinates, "/");
         while (tokenizer.hasMoreTokens()) {
-            Double latitude = Transfer.parseDouble(tokenizer.nextToken());
+            Double latitude = parseDouble(tokenizer.nextToken());
             if (tokenizer.hasMoreTokens()) {
-                Double longitude = Transfer.parseDouble(tokenizer.nextToken());
+                Double longitude = parseDouble(tokenizer.nextToken());
                 if (tokenizer.hasMoreTokens()) {
-                    Double meters = Transfer.parseDouble(tokenizer.nextToken());
+                    Double meters = parseDouble(tokenizer.nextToken());
                     if (tokenizer.hasMoreTokens()) {
-                        Double seconds = Transfer.parseDouble(tokenizer.nextToken());
+                        Double seconds = parseDouble(tokenizer.nextToken());
                         result.add(latitude);
                         result.add(longitude);
                         result.add(meters);
@@ -1413,23 +1411,23 @@ public abstract class BaseMapView implements MapView {
 
     @SuppressWarnings("unchecked")
     private BaseRoute parseRoute(List<Double> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
-        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(RouteCharacteristics.Waypoints, null, new ArrayList<BaseNavigationPosition>());
+        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<BaseNavigationPosition>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
         int positionInsertionCount = coordinates.size() / 4;
         for (int i = coordinates.size() - 1; i > 0; i -= 4) {
             Double seconds = coordinates.get(i);
-            seconds = Transfer.isEmpty(seconds) ? seconds : null;
+            seconds = isEmpty(seconds) ? seconds : null;
             // Double meters = coordinates.get(i - 1);
             Double longitude = coordinates.get(i - 2);
             Double latitude = coordinates.get(i - 3);
             if (seconds != null && time != null) {
                 Calendar calendar = time.getCalendar();
                 calendar.add(Calendar.SECOND, -seconds.intValue());
-                time = CompactCalendar.fromCalendar(calendar);
+                time = fromCalendar(calendar);
             }
             int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionNumber));
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, positionAugmenter.createComment(positionNumber));
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
@@ -1459,9 +1457,10 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void insertPosition(int row, Double longitude, Double latitude) {
-        positionsModel.add(row, longitude, latitude, null, null, null, MessageFormat.format(Application.getInstance().getContext().getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
+        positionsModel.add(row, longitude, latitude, null, null, null, positionAugmenter.createComment(positionsModel.getRowCount() + 1));
         positionsSelectionModel.setSelectedPositions(new int[]{row}, true);
 
+        positionAugmenter.complementComment(row, longitude, latitude);
         positionAugmenter.complementElevation(row, longitude, latitude);
         positionAugmenter.complementTime(row, null);
     }

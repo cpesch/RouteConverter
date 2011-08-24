@@ -134,6 +134,8 @@ public abstract class RouteComments {
 
     public static String formatNumberedPosition(NumberPattern numberPattern, String number, String description) {
         switch (numberPattern) {
+            case DESCRIPTION_ONLY:
+                return description;
             case NUMBER_ONLY:
                 return number;
             case NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION:

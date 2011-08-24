@@ -471,7 +471,8 @@ public class BcrRouteTest {
     }
 
     @Test
-    public void testGetNumberPositions() {
+    public void getNumberPositions() {
+        assertEquals("Hamburg", getNumberedPosition(new BcrPosition(1, 2, 3, "1234 Hamburg"), 5, 3, DESCRIPTION_ONLY));
         assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_ONLY));
         assertEquals("006Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION));
         assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, NUMBER_SPACE_THEN_DESCRIPTION));
