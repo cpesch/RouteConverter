@@ -25,9 +25,10 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.gui.FrameAction;
+import slash.navigation.util.NumberPattern;
+import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
-import java.text.MessageFormat;
 
 import static java.util.Arrays.asList;
 import static slash.navigation.util.Positions.center;
@@ -62,6 +63,13 @@ public class NewPositionAction extends FrameAction {
         return center(asList(second, position));
     }
 
+    private String getRouteComment() {
+        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
+        String number = Integer.toString(positionsModel.getRowCount() + 1);
+        String description = RouteConverter.getBundle().getString("new-position-name");
+        return RouteComments.formatNumberedPosition(numberPattern, number, description);
+    }
+
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : table.getRowCount();
@@ -74,9 +82,8 @@ public class NewPositionAction extends FrameAction {
             center = r.getMapCenter();
         r.setLastMapCenter(center.getLongitude(), center.getLatitude());
 
-        positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(),
-                center.getElevation(), center.getSpeed(), center.getTime(),
-                MessageFormat.format(RouteConverter.getBundle().getString("new-position-name"), positionsModel.getRowCount() + 1));
+        positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(), center.getElevation(),
+                center.getSpeed(), center.getTime(), getRouteComment());
         positionsSelectionModel.setSelectedPositions(new int[]{insertRow}, true);
 
         r.complementElevation(insertRow, center.getLongitude(), center.getLatitude());

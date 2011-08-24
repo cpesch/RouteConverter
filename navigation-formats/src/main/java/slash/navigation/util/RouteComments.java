@@ -125,20 +125,21 @@ public abstract class RouteComments {
 
     public static String getNumberedPosition(BaseNavigationPosition position, int index,
                                              int digitCount, NumberPattern numberPattern) {
+        String number = formatIntAsString((index + 1), digitCount);
         String comment = getPositionComment(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(comment);
         String description = matcher.matches() ? matcher.group(2) : comment;
+        return formatNumberedPosition(numberPattern, number, trim(description));
+    }
 
-        String prefix = formatIntAsString((index + 1), digitCount);
-        String postfix = trim(description);
-
+    public static String formatNumberedPosition(NumberPattern numberPattern, String number, String description) {
         switch (numberPattern) {
             case NUMBER_ONLY:
-                return prefix;
+                return number;
             case NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION:
-                return postfix != null ? prefix + postfix : prefix;
+                return description != null ? number + description : number;
             case NUMBER_SPACE_THEN_DESCRIPTION:
-                return  postfix != null ? prefix + " " + postfix : prefix;
+                return  description != null ? number + " " + description : number;
             default:
                 throw new IllegalArgumentException("Number pattern " + numberPattern + " is not supported");
         }
