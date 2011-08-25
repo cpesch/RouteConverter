@@ -35,6 +35,7 @@ import java.util.*;
 
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
+import static slash.common.io.CompactCalendar.fromDate;
 import static slash.navigation.base.NavigationFormats.asFormat;
 
 /**
@@ -179,8 +180,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
             currentTimeZone = timeZonePreference;
         }
+        try {
         Date parsed = timeFormat.parse(stringValue);
-        return CompactCalendar.fromDate(parsed);
+        return fromDate(parsed);
+        }
+        catch(ParseException e) {
+            System.out.println("TIME ZONE IS " + timeFormat.getTimeZone());
+            System.out.println("DATE FORMAT IS " + timeFormat.format(new Date()));
+            throw e;
+        }
     }
 
     private CompactCalendar parseTime(Object objectValue, String stringValue) {
