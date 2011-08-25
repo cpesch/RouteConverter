@@ -20,14 +20,14 @@
 
 package slash.navigation.nmea;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.itn.TomTomPosition;
 import slash.navigation.gpx.GpxPosition;
-import slash.common.io.CompactCalendar;
-import slash.navigation.util.Conversion;
-import slash.common.io.Transfer;
+import slash.navigation.itn.TomTomPosition;
 
+import static java.lang.Math.abs;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.util.Conversion.ddmm2degrees;
 import static slash.navigation.util.Conversion.degrees2ddmm;
 
@@ -64,7 +64,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         if (ddmm2 == null)
             return null;
         double decimal = ddmm2degrees(ddmm2);
-        direction = Transfer.trim(direction);
+        direction = trim(direction);
         boolean southOrWest = "S".equals(direction) || "W".equals(direction);
         return southOrWest ? -decimal : decimal;
     }
@@ -79,7 +79,7 @@ public class NmeaPosition extends BaseNavigationPosition {
             this.eastOrWest = null;
         } else {
             double ddmm = degrees2ddmm(longitude);
-            this.longitude = Math.abs(ddmm);
+            this.longitude = abs(ddmm);
             this.eastOrWest = ddmm >= 0.0 ? "E" : "W";
         }
     }
@@ -94,7 +94,7 @@ public class NmeaPosition extends BaseNavigationPosition {
             this.northOrSouth = null;
         } else {
             double ddmm = degrees2ddmm(latitude);
-            this.latitude = Math.abs(ddmm);
+            this.latitude = abs(ddmm);
             this.northOrSouth = ddmm >= 0.0 ? "N" : "S";
         }
     }
