@@ -185,6 +185,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return fromDate(parsed);
         }
         catch(ParseException e) {
+            System.out.println("LOCALE IS " + Locale.getDefault());
             System.out.println("TIME ZONE IS " + timeFormat.getTimeZone());
             System.out.println("DATE FORMAT IS " + timeFormat.format(new Date()));
             throw e;
