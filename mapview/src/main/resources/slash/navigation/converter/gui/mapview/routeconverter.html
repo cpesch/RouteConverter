@@ -386,8 +386,10 @@
            map.mapTypes.set('Outdoor', outdoorMapType);
            addDebug("2. created map: " + map);
 
-           map.enableKeyDragZoom();
-
+           map.enableKeyDragZoom({
+               visualEnabled: true,
+               visualPosition: google.maps.ControlPosition.LEFT
+           });
            var menu = new ContextMenu({map:map});
            menu.addItem('Select', function(map, latLng) {
                callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");

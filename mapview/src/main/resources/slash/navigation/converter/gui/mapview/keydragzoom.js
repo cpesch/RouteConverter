@@ -332,10 +332,13 @@
     this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(35, 0);
     this.visualPositionIndex_ = opt_zoomOpts.visualPositionIndex || null;
     this.visualSprite_ = opt_zoomOpts.visualSprite || "http://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png";
+    this.visualSpriteSelect_ = opt_zoomOpts.visualSpriteSelect || "http://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png"
     this.visualSize_ = opt_zoomOpts.visualSize || new google.maps.Size(20, 20);
     this.visualTips_ = opt_zoomOpts.visualTips || {};
-    this.visualTips_.off =  this.visualTips_.off || "Turn on drag zoom mode";
-    this.visualTips_.on =  this.visualTips_.on || "Turn off drag zoom mode";
+    this.visualTips_.selectOff =  this.visualTips_.selectOff || "Turn on select mode";
+    this.visualTips_.selectOn =  this.visualTips_.selectOn || "Turn off select mode";
+    this.visualTips_.zoomOff =  this.visualTips_.zoomOff || "Turn on zoom mode";
+    this.visualTips_.zoomOn =  this.visualTips_.zoomOn || "Turn off zoom mode";
 
     this.boxDiv_ = document.createElement("div");
     // Apply default style values for the zoom box:
@@ -396,10 +399,14 @@
 
     if (this.visualEnabled_) {
       this.buttonDiv_ = this.initControl_(this.visualPositionOffset_);
+      this.buttonDiv2_ = this.initControl2_(this.visualPositionOffset_);
+
       if (this.visualPositionIndex_ !== null) {
         this.buttonDiv_.index = this.visualPositionIndex_;
+        this.buttonDiv2_.index = this.visualPositionIndex_;
       }
       this.map_.controls[this.visualPosition_].push(this.buttonDiv_);
+      this.map_.controls[this.visualPosition_].push(this.buttonDiv2_);
       this.controlIndex_ = this.map_.controls[this.visualPosition_].length - 1;
     }
   };
@@ -408,7 +415,7 @@
    * @param {Size} offset The offset of the control from its normal position.
    * @return {Node} The DOM element containing the visual control.
    */
-  DragZoom.prototype.initControl_ = function (offset) {
+   DragZoom.prototype.initControl_ = function (offset) {
     var control;
     var image;
     var me = this;
@@ -419,7 +426,7 @@
     control.style.overflow = "hidden";
     control.style.height = this.visualSize_.height + "px";
     control.style.width = this.visualSize_.width + "px";
-    control.title = this.visualTips_.off;
+    control.title = this.visualTips_.zoomOff;
     image = document.createElement("img");
     image.src = this.visualSprite_;
     image.style.position = "absolute";
@@ -430,12 +437,13 @@
       me.hotKeyDown_ = !me.hotKeyDown_;
       if (me.hotKeyDown_) {
         me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 0) + "px";
-        me.buttonDiv_.title = me.visualTips_.on;
+        me.buttonDiv_.title = me.visualTips_.zoomOn;
         me.activatedByControl_ = true;
         google.maps.event.trigger(me, "activate");
+        me.key_ = 90;
       } else {
         me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 2) + "px";
-        me.buttonDiv_.title = me.visualTips_.off;
+        me.buttonDiv_.title = me.visualTips_.zoomOff;
         google.maps.event.trigger(me, "deactivate");
       }
       me.onMouseMove_(e); // Updates the veil
@@ -446,10 +454,10 @@
     control.onmouseout = function () {
       if (me.hotKeyDown_) {
         me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 0) + "px";
-        me.buttonDiv_.title = me.visualTips_.on;
+        me.buttonDiv_.title = me.visualTips_.zoomOn;
       } else {
         me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 2) + "px";
-        me.buttonDiv_.title = me.visualTips_.off;
+        me.buttonDiv_.title = me.visualTips_.zoomOff;
       }
     };
     control.ondragstart = function () {
@@ -462,6 +470,66 @@
     });
     return control;
   };
+
+  DragZoom.prototype.initControl2_ = function (offset) {
+    var control2;
+    var image2;
+    var me = this;
+
+    control2 = document.createElement("div");
+    control2.className = this.visualClass_;
+    control2.style.position = "relative";
+    control2.style.overflow = "hidden";
+    control2.style.height = this.visualSize_.height + "px";
+    control2.style.width = this.visualSize_.width + "px";
+    control2.title = this.visualTips_.selectOff;
+    image2 = document.createElement("img");
+    image2.src = this.visualSprite_;
+    image2.style.position = "absolute";
+    image2.style.left = -(this.visualSize_.width * 2) + "px";
+    image2.style.top = 0 + "px";
+    control2.appendChild(image2);
+
+    control2.onclick = function (e) {
+      me.hotKeyDown_ = !me.hotKeyDown_;
+      if (me.hotKeyDown_) {
+        me.buttonDiv2_.firstChild.style.left = -(me.visualSize_.width * 0) + "px";
+        me.buttonDiv2_.title = me.visualTips_.selectOn;
+        me.activatedByControl_ = true;
+        google.maps.event.trigger(me, "activate");
+        me.key_ = 83;
+      } else {
+        me.buttonDiv2_.firstChild.style.left = -(me.visualSize_.width * 2) + "px";
+        me.buttonDiv2_.title = me.visualTips_.selectOff;
+        google.maps.event.trigger(me, "deactivate");
+      }
+      me.onMouseMove_(e); // Updates the veil
+    };
+
+    control2.onmouseover = function () {
+      me.buttonDiv2_.firstChild.style.left = -(me.visualSize_.width * 1) + "px";
+    };
+    control2.onmouseout = function () {
+      if (me.hotKeyDown_) {
+        me.buttonDiv2_.firstChild.style.left = -(me.visualSize_.width * 0) + "px";
+        me.buttonDiv2_.title = me.visualTips_.selectOn;
+      } else {
+        me.buttonDiv2_.firstChild.style.left = -(me.visualSize_.width * 2) + "px";
+        me.buttonDiv2_.title = me.visualTips_.selectOff;
+      }
+    };
+    control2.ondragstart = function () {
+      return false;
+    };
+    setVals(control2.style, {
+      cursor: "pointer",
+      marginTop: offset.height + "px",
+      marginLeft: offset.width + "px"
+    });
+
+    return control2;
+  };
+
   /**
    * Returns <code>true</code> if the hot key is being pressed when an event occurs.
    * @param {Event} e The keyboard event.
@@ -470,36 +538,9 @@
   DragZoom.prototype.isHotKeyDown_ = function (e) {
     var isHot;
     e = e || window.event;
-//    isHot = (e.keyCode == 83 && this.key_ === "s") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
     isHot = (e.keyCode == 83 || e.keyCode == 90);
     if (isHot)
       this.key_ = e.keyCode;
-//    isHot = (e.shiftKey && this.key_ === "shift") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
-    if (!isHot) {
-      // Need to look at keyCode for Opera because it
-      // doesn't set the shiftKey, altKey, ctrlKey properties
-      // unless a non-modifier event is being reported.
-      //
-      // See http://cross-browser.com/x/examples/shift_mode.php
-      // Also see http://unixpapa.com/js/key.html
-      switch (e.keyCode) {
-      case 16:
-        if (this.key_ === "shift") {
-          isHot = true;
-        }
-        break;
-      case 17:
-        if (this.key_ === "ctrl") {
-          isHot = true;
-        }
-        break;
-      case 18:
-        if (this.key_ === "alt") {
-          isHot = true;
-        }
-        break;
-      }
-    }
     return isHot;
   };
   /**
@@ -595,6 +636,7 @@
     }
     if (this.visualEnabled_ && this.isHotKeyDown_(e)) {
       this.buttonDiv_.style.display = "none";
+      this.buttonDiv2_.style.display = "none";
     }
   };
   /**
@@ -627,6 +669,7 @@
       var latlng = prj.fromContainerPixelToLatLng(this.startPt_);
       if (this.visualEnabled_) {
         this.buttonDiv_.style.display = "none";
+        this.buttonDiv2_.style.display = "none";
       }
       /**
        * This event is fired when the drag operation begins.
@@ -734,20 +777,20 @@
       var ne = prj.fromContainerPixelToLatLng(new google.maps.Point(left + width, top));
       var bnds = new google.maps.LatLngBounds(sw, ne);
 
-if (this.key_ == 90) {
+      if (this.key_ == 90 ) {
       // Sometimes fitBounds causes a zoom OUT, so restore original zoom level if this happens.
-      z = this.map_.getZoom();
-      this.map_.fitBounds(bnds);
-      if (this.map_.getZoom() < z) {
-        this.map_.setZoom(z);
+        z = this.map_.getZoom();
+        this.map_.fitBounds(bnds);
+        if (this.map_.getZoom() < z) {
+            this.map_.setZoom(z);
+        }
       }
-}
-if (this.key_ == 83) {
-      if (event.shiftKey)
-        callJava("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng() + "/false");
-      else
-        callJava("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng() + "/true");
-}
+      if (this.key_ == 83) {
+        if (event.shiftKey)
+            callJava("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng()+"/false");
+        else
+            callJava("select-positions/" + ne.lat() + "/" + ne.lng() + "/" + sw.lat() + "/" + sw.lng()+"/true");
+      }
 
       // Redraw box after zoom:
       var swPt = prj.fromLatLngToContainerPixel(sw);
@@ -801,8 +844,11 @@ if (this.key_ == 83) {
       }
       if (this.visualEnabled_) {
         this.buttonDiv_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
-        this.buttonDiv_.title = this.visualTips_.off;
+        this.buttonDiv_.title = this.visualTips_.zoomOff;
         this.buttonDiv_.style.display = "";
+        this.buttonDiv2_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
+        this.buttonDiv2_.title = this.visualTips_.selectOff;
+        this.buttonDiv2_.style.display = "";
       }
       /**
        * This event is fired when the hot key is released.
