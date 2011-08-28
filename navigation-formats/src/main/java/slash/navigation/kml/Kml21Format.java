@@ -25,7 +25,6 @@ import slash.common.io.ISO8601;
 import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.kml.binding21.*;
-import slash.navigation.util.RouteComments;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -37,6 +36,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
  * Reads and writes Google Earth 4 (.kml) files.
@@ -105,11 +109,11 @@ public class Kml21Format extends KmlFormat {
             for (KmlPosition position : positions) {
                 enrichPosition(position, extractTime(placemarkType.getTimePrimitive()), placemarkName, placemarkType.getDescription(), startDate);
             }
-            routes = Arrays.asList(new KmlRoute(this, RouteCharacteristics.Waypoints, placemarkName, null, positions));
+            routes = Arrays.asList(new KmlRoute(this, Waypoints, placemarkName, null, positions));
         }
 
         if (routes != null)
-            RouteComments.commentRoutePositions(routes);
+            commentRoutePositions(routes);
         return routes;
     }
 
@@ -162,7 +166,7 @@ public class Kml21Format extends KmlFormat {
             }
         }
         if (wayPoints.size() > 0) {
-            RouteCharacteristics characteristics = parseCharacteristics(name, RouteCharacteristics.Waypoints);
+            RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
             result.add(0, new KmlRoute(this, characteristics, name, asDescription(description), wayPoints));
         }
         return result;
@@ -236,9 +240,9 @@ public class Kml21Format extends KmlFormat {
             }
             PointType pointType = objectFactory.createPointType();
             placemarkType.setGeometry(objectFactory.createPoint(pointType));
-            pointType.getCoordinates().add(Transfer.formatPositionAsString(position.getLongitude()) + "," +
-                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
-                    Transfer.formatElevationAsString(position.getElevation()));
+            pointType.getCoordinates().add(formatPositionAsString(position.getLongitude()) + "," +
+                    formatPositionAsString(position.getLatitude()) + "," +
+                    formatElevationAsString(position.getElevation()));
         }
         return folderType;
     }
@@ -254,9 +258,9 @@ public class Kml21Format extends KmlFormat {
         multiGeometryType.getGeometry().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(Transfer.formatPositionAsString(position.getLongitude()) + "," +
-                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
-                    Transfer.formatElevationAsString(position.getElevation()));
+            coordinates.add(formatPositionAsString(position.getLongitude()) + "," +
+                    formatPositionAsString(position.getLatitude()) + "," +
+                    formatElevationAsString(position.getElevation()));
         }
         return placemarkType;
     }
@@ -270,9 +274,9 @@ public class Kml21Format extends KmlFormat {
         placemarkType.setGeometry(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(Transfer.formatPositionAsString(position.getLongitude()) + "," +
-                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
-                    Transfer.formatElevationAsString(position.getElevation()));
+            coordinates.add(formatPositionAsString(position.getLongitude()) + "," +
+                    formatPositionAsString(position.getLatitude()) + "," +
+                    formatElevationAsString(position.getElevation()));
         }
         return placemarkType;
     }
@@ -303,7 +307,6 @@ public class Kml21Format extends KmlFormat {
         FolderType folderType = createWayPoints(route);
         documentType.getFeature().add(objectFactory.createFolder(folderType));
 
-        // TODO no TIME for track - exchange waypoints and track?
         PlacemarkType placemarkTrack = createTrack(route);
         documentType.getFeature().add(objectFactory.createPlacemark(placemarkTrack));
         return kmlType;

@@ -26,7 +26,6 @@ import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding20.*;
-import slash.navigation.util.RouteComments;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -38,8 +37,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parsePosition;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
+import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
  * Reads and writes Google Earth 3 (.kml) files.
@@ -92,7 +96,7 @@ public class Kml20Format extends KmlFormat {
             return null;
 
         List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements, startDate);
-        RouteComments.commentRoutePositions(routes);
+        commentRoutePositions(routes);
         return routes;
     }
 
@@ -213,12 +217,12 @@ public class Kml20Format extends KmlFormat {
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
                 if (routeDescription == null)
                     routeDescription = description;
-                RouteCharacteristics characteristics = parseCharacteristics(routeName, RouteCharacteristics.Track);
+                RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (wayPoints.size() != 0) {
-            RouteCharacteristics characteristics = parseCharacteristics(name, RouteCharacteristics.Waypoints);
+            RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
             result.add(0, new KmlRoute(this, characteristics, name, description, wayPoints));
         }
         return result;
@@ -283,9 +287,9 @@ public class Kml20Format extends KmlFormat {
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));
             Point point = objectFactory.createPoint();
             placemarkList.add(point);
-            point.setCoordinates(Transfer.formatPositionAsString(position.getLongitude()) + "," +
-                    Transfer.formatPositionAsString(position.getLatitude()) + "," +
-                    Transfer.formatElevationAsString(position.getElevation()));
+            point.setCoordinates(formatPositionAsString(position.getLongitude()) + "," +
+                    formatPositionAsString(position.getLatitude()) + "," +
+                    formatElevationAsString(position.getElevation()));
         }
         return folder;
     }
@@ -302,9 +306,9 @@ public class Kml20Format extends KmlFormat {
         multiGeometry.getExtrudeOrTessellateOrAltitudeMode().add(lineString);
         StringBuilder coordinates = new StringBuilder();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(Transfer.formatPositionAsString(position.getLongitude())).append(",").
-                    append(Transfer.formatPositionAsString(position.getLatitude())).append(",").
-                    append(Transfer.formatElevationAsString(position.getElevation())).append(" ");
+            coordinates.append(formatPositionAsString(position.getLongitude())).append(",").
+                    append(formatPositionAsString(position.getLatitude())).append(",").
+                    append(formatElevationAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
@@ -320,9 +324,9 @@ public class Kml20Format extends KmlFormat {
         placemarkList.add(lineString);
         StringBuilder coordinates = new StringBuilder();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(Transfer.formatPositionAsString(position.getLongitude())).append(",").
-                    append(Transfer.formatPositionAsString(position.getLatitude())).append(",").
-                    append(Transfer.formatElevationAsString(position.getElevation())).append(" ");
+            coordinates.append(formatPositionAsString(position.getLongitude())).append(",").
+                    append(formatPositionAsString(position.getLatitude())).append(",").
+                    append(formatElevationAsString(position.getElevation())).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
@@ -352,7 +356,6 @@ public class Kml20Format extends KmlFormat {
         rootList.add(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor()));
         rootList.add(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor()));
 
-        // TODO no TIME for track - exchange waypoints and track?
         rootList.add(createWayPoints(route));
         rootList.add(createTrack(route));
         return kml;
