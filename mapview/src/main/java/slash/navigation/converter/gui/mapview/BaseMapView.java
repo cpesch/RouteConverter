@@ -989,7 +989,7 @@ public abstract class BaseMapView implements MapView {
         StringBuilder buffer = new StringBuilder();
         // set map type only on first start
         if (haveToInitializeMapOnFirstStart) {
-            String mapType = preferences.get(MAP_TYPE_PREFERENCE, "Map");
+            String mapType = preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
             buffer.append("map.setMapTypeId(\"").append(mapType).append("\");\n");
         }
 
