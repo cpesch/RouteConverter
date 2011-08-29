@@ -73,7 +73,7 @@ public abstract class BaseMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
-    private static final String MAP_TYPE_PREFERENCE = "mapType";
+    private static final String MAP_TYPE_PREFERENCE = "mapType3";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
 
