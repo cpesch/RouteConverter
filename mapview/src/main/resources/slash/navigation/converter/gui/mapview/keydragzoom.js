@@ -331,14 +331,14 @@
     this.visualPosition_ = opt_zoomOpts.visualPosition || google.maps.ControlPosition.LEFT_TOP;
     this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(35, 0);
     this.visualPositionIndex_ = opt_zoomOpts.visualPositionIndex || null;
-    this.visualSprite_ = opt_zoomOpts.visualSprite || "http://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png";
-    this.visualSpriteSelect_ = opt_zoomOpts.visualSpriteSelect || "http://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png"
+    this.visualSprite_ = opt_zoomOpts.visualSprite || "http://www.routeconverter.com/images/zoom_button.png";
+    this.visualSpriteSelect_ = opt_zoomOpts.visualSpriteSelect || "http://www.routeconverter.com/images/select_button.png"
     this.visualSize_ = opt_zoomOpts.visualSize || new google.maps.Size(20, 20);
     this.visualTips_ = opt_zoomOpts.visualTips || {};
-    this.visualTips_.selectOff =  this.visualTips_.selectOff || "Turn on select mode";
-    this.visualTips_.selectOn =  this.visualTips_.selectOn || "Turn off select mode";
     this.visualTips_.zoomOff =  this.visualTips_.zoomOff || "Turn on zoom mode";
     this.visualTips_.zoomOn =  this.visualTips_.zoomOn || "Turn off zoom mode";
+    this.visualTips_.selectOff =  this.visualTips_.selectOff || "Turn on select mode";
+    this.visualTips_.selectOn =  this.visualTips_.selectOn || "Turn off select mode";
 
     this.boxDiv_ = document.createElement("div");
     // Apply default style values for the zoom box:
@@ -484,7 +484,7 @@
     control2.style.width = this.visualSize_.width + "px";
     control2.title = this.visualTips_.selectOff;
     image2 = document.createElement("img");
-    image2.src = this.visualSprite_;
+    image2.src = this.visualSpriteSelect_;
     image2.style.position = "absolute";
     image2.style.left = -(this.visualSize_.width * 2) + "px";
     image2.style.top = 0 + "px";
