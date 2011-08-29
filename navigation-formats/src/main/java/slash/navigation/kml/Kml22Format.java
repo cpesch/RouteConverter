@@ -20,7 +20,6 @@
 
 package slash.navigation.kml;
 
-import slash.common.hex.HexDecoder;
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.navigation.base.RouteCharacteristics;
@@ -28,7 +27,6 @@ import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.binding22gx.TrackType;
 import slash.navigation.kml.bindingatom.Link;
-import slash.navigation.util.Bearing;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -41,10 +39,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.Math.*;
+import static slash.common.hex.HexDecoder.decodeBytes;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parseExtensionPositions;
+import static slash.navigation.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
@@ -55,6 +56,7 @@ import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 public class Kml22Format extends KmlFormat {
     private static final Logger log = Logger.getLogger(Kml22Format.class.getName());
+    private static final int METERS_BETWEEN_MARKS = 1000;
 
     public String getName() {
         return "Google Earth 5 (*" + getExtension() + ")";
@@ -373,18 +375,18 @@ public class Kml22Format extends KmlFormat {
     }
 
     private boolean isWriteMarks() {
-        return preferences.getBoolean("writeMarks", false);
+        return preferences.getBoolean("writeMarks", true);
     }
 
     private boolean isWriteSpeed() {
-        return preferences.getBoolean("writeSpeed", false);
+        return preferences.getBoolean("writeSpeed", true);
     }
 
     private List<StyleType> createSpeedTrackColors(float width) {
         List<StyleType> styleTypeList = new ArrayList<StyleType>();
         for (int i = 0; i < SPEED_COLORS.length; i++) {
             String styleName = getSpeedColorName((i) * getSpeedScale());
-            StyleType styleType = createLineStyle(styleName, width, HexDecoder.decodeBytes(SPEED_COLORS[i]));
+            StyleType styleType = createLineStyle(styleName, width, decodeBytes(SPEED_COLORS[i]));
             styleTypeList.add(styleType);
         }
         return styleTypeList;
@@ -425,30 +427,25 @@ public class Kml22Format extends KmlFormat {
         //  |-Startpoint
         //  |-Endpoint
 
-        // check if the first point of the route has as all neccesary data: position and time
-        // without time -> no speed
-        KmlPosition firstPos = route.getPositions().get(0);
-        if ((firstPos.getTime() == null) || (route.getPositionCount() < 2)) {
-            return null;
-        }
-
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType speedSegments = objectFactory.createFolderType();
         speedSegments.setName("Segments");
-        speedSegments.setOpen(false);
         speedSegments.setVisibility(false);
+        speedSegments.setOpen(false);
 
+        boolean foundSpeed = false;
         String previousSpeedColorCode = null;
-        int segmentNumber = 0;
-        List<String> coordinates = null;
+        int currentSegment = 1;
+        List<String> coordinates = null; // new ArrayList<String>();
         List<KmlPosition> positions = route.getPositions();
         for (int i = 0; i < positions.size() - 1; i++) {
-            Double speed = positions.get(i).calculateSpeed(positions.get(i + 1));
+            KmlPosition nextPosition = positions.get(i + 1);
+            Double speed = positions.get(i).calculateSpeed(nextPosition);
             if (speed == null)
                 continue;
-            String speedColorCode = getSpeedColorCode(speed);
+            foundSpeed = true;
 
-            // if speed class is different
+            String speedColorCode = getSpeedColorCode(speed);
             if (!speedColorCode.equals(previousSpeedColorCode)) {
                 previousSpeedColorCode = speedColorCode;
 
@@ -458,10 +455,12 @@ public class Kml22Format extends KmlFormat {
                             formatElevationAsString(positions.get(i).getElevation()));
 
                 PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-                placemarkType.setName("Segment " + (++segmentNumber));
+                placemarkType.setName("Segment " + currentSegment);
                 placemarkType.setDescription(getSpeedDescription(speed));
                 placemarkType.setStyleUrl('#' + getSpeedColorName(speed));
                 placemarkType.setVisibility(false);
+
+                currentSegment++;
 
                 LineStringType lineStringType = objectFactory.createLineStringType();
                 coordinates = lineStringType.getCoordinates();
@@ -483,79 +482,90 @@ public class Kml22Format extends KmlFormat {
                     formatElevationAsString(lastPosition.getElevation()));
         }
 
+        if(!foundSpeed)
+            return null;
+
         FolderType speed = objectFactory.createFolderType();
         speed.setName("Speed [Km/h]");
-        speed.setOpen(false);
         speed.setVisibility(false);
+        speed.setOpen(false);
 
+        speed.getAbstractFeatureGroup().add(objectFactory.createScreenOverlay(createSpeedbar()));
+        speed.getAbstractFeatureGroup().add(objectFactory.createFolder(speedSegments));
+        return speed;
+    }
+
+    private ScreenOverlayType createSpeedbar() {
         ScreenOverlayType speedbar = createScreenOverlayImage("Speedbar",
                 SPEEDBAR_URL,
                 createVec2Type(0.0, 0.01, UnitsEnumType.FRACTION, UnitsEnumType.FRACTION),
                 createVec2Type(0.0, 0.01, UnitsEnumType.FRACTION, UnitsEnumType.FRACTION),
                 createVec2Type(250, 0, UnitsEnumType.PIXELS, UnitsEnumType.PIXELS));
         speedbar.setVisibility(false);
-
-        speed.getAbstractFeatureGroup().add(objectFactory.createScreenOverlay(speedbar));
-        speed.getAbstractFeatureGroup().add(objectFactory.createFolder(speedSegments));
-        return speed;
+        return speedbar;
     }
 
     private FolderType createMarks(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
 
         FolderType marks = objectFactory.createFolderType();
-        marks.setName("Marks [km]");
+        marks.setName("Marks [Km]");
         marks.setVisibility(false);
         marks.setOpen(false);
 
-        double distance = 0, previousDistance = 0;
-        int distPoint = 0;
+        double currentDistance = 0, previousDistance = 0;
+        int currentKilometer = 1;
         for (int i = 1; i < route.getPositions().size(); i++) {
-            KmlPosition position = route.getPositions().get(i);
             KmlPosition previousPosition = route.getPositions().get(i - 1);
+            KmlPosition currentPosition = route.getPositions().get(i);
 
-            // TODO check hasCoordinates
-            distance += position.calculateDistance(previousPosition);
-            if (distance >= 1000) {
-                // calculate the point at the Kilometermark that's between the current position and the
-                // previous one. It is possible, that there's more than one point to create
-                // See: http://www.movable-type.co.uk/scripts/latlong.html and http://williams.best.vwh.net/avform.htm#LL
-                KmlPosition lastPosition = new KmlPosition(previousPosition.getLongitude(), previousPosition.getLatitude(), 0d, null, null, null);
+            Double distance = currentPosition.calculateDistance(previousPosition);
+            if (distance == null)
+                continue;
+
+            currentDistance += distance;
+            if (currentDistance >= METERS_BETWEEN_MARKS) {
+                // calculate the point at the kilometer mark that's between the current position and the previous one.
+                // it is possible, that there's more than one point to create
+                // see: http://www.movable-type.co.uk/scripts/latlong.html and http://williams.best.vwh.net/avform.htm#LL
+                KmlPosition intermediate = new KmlPosition(previousPosition.getLongitude(), previousPosition.getLatitude(), null, null, null, null);
 
                 // remaining distance between the last point and the mark
-                double remaining = 1000 - (previousDistance % (1000));
+                double remainingDistance = METERS_BETWEEN_MARKS - (previousDistance % METERS_BETWEEN_MARKS);
                 do {
-                    // TODO check hasCoordinates
-                    double angle = Math.toRadians(lastPosition.calculateAngle(position));
-                    double latitude1 = Math.toRadians(lastPosition.getLatitude());
-                    double longitude1 = Math.toRadians(lastPosition.getLongitude());
-                    double latitude2 = Math.asin(Math.sin(latitude1) * Math.cos(remaining / Bearing.EARTH_RADIUS) +
-                            Math.cos(latitude1) * Math.sin(remaining / Bearing.EARTH_RADIUS) * Math.cos(angle));
+                    double angle = toRadians(intermediate.calculateAngle(currentPosition));
+                    double latitude1 = toRadians(intermediate.getLatitude());
+                    double longitude1 = toRadians(intermediate.getLongitude());
+                    double latitude2 = asin(sin(latitude1) * cos(remainingDistance / EARTH_RADIUS) +
+                            cos(latitude1) * sin(remainingDistance / EARTH_RADIUS) * cos(angle));
                     double longitude2 = longitude1 +
-                            Math.atan2(Math.sin(angle) * Math.sin(remaining / Bearing.EARTH_RADIUS) * Math.cos(latitude1),
-                                    Math.cos(remaining / Bearing.EARTH_RADIUS) - Math.sin(latitude1) * Math.sin(latitude2));
+                            atan2(sin(angle) * sin(remainingDistance / EARTH_RADIUS) * cos(latitude1),
+                                    cos(remainingDistance / EARTH_RADIUS) - sin(latitude1) * sin(latitude2));
+                    intermediate.setLatitude(toDegrees(latitude2));
+                    intermediate.setLongitude(toDegrees(longitude2));
 
-                    lastPosition.setLatitude(Math.toDegrees(latitude2));
-                    lastPosition.setLongitude(Math.toDegrees(longitude2));
-
-                    PlacemarkType placeMark = objectFactory.createPlacemarkType();
-                    placeMark.setName((++distPoint) + ". km");
-                    placeMark.setVisibility(false);
-                    PointType point = objectFactory.createPointType();
-                    point.getCoordinates().add(formatPositionAsString(lastPosition.getLongitude()) + "," +
-                            formatPositionAsString(lastPosition.getLatitude()) + "," + "0");
-                    placeMark.setAbstractGeometryGroup(objectFactory.createPoint(point));
-
+                    PlacemarkType placeMark = createMark(currentKilometer++, intermediate.getLongitude(), intermediate.getLatitude());
                     marks.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placeMark));
 
-                    remaining = 1000;
-                } while (lastPosition.calculateDistance(position) > 1000);
+                    remainingDistance = METERS_BETWEEN_MARKS;
+                } while (intermediate.calculateDistance(currentPosition) > METERS_BETWEEN_MARKS);
 
-                distance = distance % 1000;
+                currentDistance = currentDistance % METERS_BETWEEN_MARKS;
             }
-            previousDistance = distance;
+            previousDistance = currentDistance;
         }
         return marks;
+    }
+
+    private PlacemarkType createMark(int kilometer, double longitude, double latitude) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        PlacemarkType placeMark = objectFactory.createPlacemarkType();
+        placeMark.setName(kilometer + ". Km");
+        placeMark.setVisibility(kilometer % 10 == 0);
+        PointType point = objectFactory.createPointType();
+        point.getCoordinates().add(formatPositionAsString(longitude) + "," + formatPositionAsString(latitude) + ",0");
+        placeMark.setAbstractGeometryGroup(objectFactory.createPoint(point));
+        return placeMark;
     }
 
     private StyleType createLineStyle(String styleName, double width, byte[] color) {
@@ -589,12 +599,13 @@ public class Kml22Format extends KmlFormat {
 
         PlacemarkType placemarkTrack = createTrack(route);
         documentType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkTrack));
-        if (isWriteSpeed()) {
+
+        if (route.getCharacteristics().equals(Track) && isWriteSpeed()) {
             FolderType speed = createSpeed(route);
             if (speed != null)
                 documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(speed));
         }
-        if (isWriteMarks()) {
+        if (!route.getCharacteristics().equals(Waypoints) && isWriteMarks()) {
             FolderType marks = createMarks(route);
             documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(marks));
         }
@@ -625,11 +636,6 @@ public class Kml22Format extends KmlFormat {
                 case Route:
                     PlacemarkType placemarkRoute = createRoute(route);
                     documentType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkRoute));
-                    if (isWriteSpeed()) {
-                        FolderType speed = createSpeed(route);
-                        if (speed != null)
-                            documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(speed));
-                    }
                     if (isWriteMarks())
                         documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route)));
                     break;
