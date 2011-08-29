@@ -28,6 +28,10 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
+import static java.lang.Math.*;
+import static java.lang.Math.log;
+import static java.lang.Math.max;
+
 /**
  * Provides value transfer functionality.
  *
@@ -41,32 +45,32 @@ public class Transfer {
     }
 
     public static double roundFraction(double number, int fractionCount) {
-        double factor = Math.pow(10, fractionCount);
-        return Math.round(number * factor) / factor;
+        double factor = pow(10, fractionCount);
+        return round(number * factor) / factor;
     }
 
     public static double ceilFraction(double number, int fractionCount) {
-        double factor = Math.pow(10, fractionCount);
-        return Math.ceil(number * factor) / factor;
+        double factor = pow(10, fractionCount);
+        return ceil(number * factor) / factor;
     }
 
     public static double floorFraction(double number, int fractionCount) {
-        double factor = Math.pow(10, fractionCount);
-        return Math.floor(number * factor) / factor;
+        double factor = pow(10, fractionCount);
+        return floor(number * factor) / factor;
     }
 
     public static double roundMeterToMillimeterPrecision(double number) {
-        return Math.floor(number * 10000.0) / 10000.0;
+        return floor(number * 10000.0) / 10000.0;
     }
 
     public static int ceiling(int dividend, int divisor, boolean roundUpToAtLeastOne) {
         double fraction = (double) dividend / divisor;
-        double result = Math.ceil(fraction);
-        return Math.max((int) result, roundUpToAtLeastOne ? 1 : 0);
+        double result = ceil(fraction);
+        return max((int) result, roundUpToAtLeastOne ? 1 : 0);
     }
 
     public static int widthInDigits(long number) {
-        return 1 + (int) (Math.log(number) / Math.log(10));
+        return 1 + (int) (log(number) / log(10));
     }
 
     public static String trim(String string) {

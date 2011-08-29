@@ -33,6 +33,10 @@ import slash.navigation.util.Bearing;
 
 import java.util.Calendar;
 
+import static java.lang.Double.isNaN;
+import static java.lang.Math.abs;
+import static slash.navigation.util.Bearing.calculateBearing;
+
 /**
  * The base of all navigation positions.
  *
@@ -144,9 +148,9 @@ public abstract class BaseNavigationPosition {
 
     public Double calculateDistance(double longitude, double latitude) {
         if (hasCoordinates()) {
-            Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), longitude, latitude);
+            Bearing bearing = calculateBearing(getLongitude(), getLatitude(), longitude, latitude);
             double distance = bearing.getDistance();
-            if (!Double.isNaN(distance))
+            if (!isNaN(distance))
                 return distance;
         }
         return null;
@@ -189,7 +193,7 @@ public abstract class BaseNavigationPosition {
      */
     public Double calculateAngle(BaseNavigationPosition other) {
         if (hasCoordinates() && other.hasCoordinates()) {
-            Bearing bearing = Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
+            Bearing bearing = calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
             return bearing.getAngle();
         }
         return null;
@@ -230,7 +234,7 @@ public abstract class BaseNavigationPosition {
      */
     public Double calculateSpeed(BaseNavigationPosition other) {
         if (getTime() != null && other.getTime() != null) {
-            double interval = Math.abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
+            double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
 
             Double distance = calculateDistance(other);
             if (distance != null && interval > 0.0)

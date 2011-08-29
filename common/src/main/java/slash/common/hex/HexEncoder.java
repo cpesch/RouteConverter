@@ -20,7 +20,7 @@
 
 package slash.common.hex;
 
-import org.apache.commons.codec.binary.Hex;
+import static org.apache.commons.codec.binary.Hex.encodeHex;
 
 /**
  * Helps to encode bytes to hexadecimal encoded digits.
@@ -30,6 +30,6 @@ import org.apache.commons.codec.binary.Hex;
 
 public class HexEncoder {
     public static String encodeByte(byte aByte) {
-        return new String(Hex.encodeHex(new byte[]{aByte})).toUpperCase();
+        return new String(encodeHex(new byte[]{aByte})).toUpperCase();
     }
 }
