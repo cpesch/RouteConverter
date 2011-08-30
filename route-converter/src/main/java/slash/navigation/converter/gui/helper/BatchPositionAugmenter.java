@@ -33,7 +33,6 @@ import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.Constants;
 import slash.navigation.util.NumberPattern;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import java.text.MessageFormat;

@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Math.*;
+import static java.lang.String.valueOf;
 import static slash.common.hex.HexDecoder.decodeBytes;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -271,6 +272,12 @@ public class Kml22Format extends KmlFormat {
     }
 
 
+    private String createCoordinates(KmlPosition position) {
+        return formatPositionAsString(position.getLongitude()) + "," +
+                formatPositionAsString(position.getLatitude()) + "," +
+                formatElevationAsString(position.getElevation());
+    }
+
     private FolderType createWayPoints(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
@@ -287,9 +294,7 @@ public class Kml22Format extends KmlFormat {
             }
             PointType pointType = objectFactory.createPointType();
             placemarkType.setAbstractGeometryGroup(objectFactory.createPoint(pointType));
-            pointType.getCoordinates().add(formatPositionAsString(position.getLongitude()) + "," +
-                    formatPositionAsString(position.getLatitude()) + "," +
-                    formatElevationAsString(position.getElevation()));
+            pointType.getCoordinates().add(createCoordinates(position));
         }
         return folderType;
     }
@@ -305,9 +310,7 @@ public class Kml22Format extends KmlFormat {
         multiGeometryType.getAbstractGeometryGroup().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(formatPositionAsString(position.getLongitude()) + "," +
-                    formatPositionAsString(position.getLatitude()) + "," +
-                    formatElevationAsString(position.getElevation()));
+            coordinates.add(createCoordinates(position));
         }
         return placemarkType;
     }
@@ -321,11 +324,17 @@ public class Kml22Format extends KmlFormat {
         placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(formatPositionAsString(position.getLongitude()) + "," +
-                    formatPositionAsString(position.getLatitude()) + "," +
-                    formatElevationAsString(position.getElevation()));
+            coordinates.add(createCoordinates(position));
         }
         return placemarkType;
+    }
+
+    private boolean isWriteMarks() {
+        return preferences.getBoolean("writeMarks", true);
+    }
+
+    private boolean isWriteSpeed() {
+        return preferences.getBoolean("writeSpeed", true);
     }
 
     private static final String[] SPEED_COLORS = {
@@ -353,39 +362,27 @@ public class Kml22Format extends KmlFormat {
         return preferences.getInt("speedScale", 10);
     }
 
-    private String getSpeedColorCode(double speed) {
-        int arrayPos = (int) speed / getSpeedScale();
-        if (arrayPos < SPEED_COLORS.length)
-            return SPEED_COLORS[arrayPos];
-        return SPEED_COLORS[SPEED_COLORS.length - 1];
+    private int getSpeedClass(double speed) {
+        int speedClass = (int) speed / getSpeedScale();
+        return speedClass < SPEED_COLORS.length ? speedClass >= 0 ? speedClass : 0 : SPEED_COLORS.length - 1;
     }
 
-    private String getSpeedColorName(double speed) {
-        int speedInt = (int) speed / getSpeedScale();
-        return "speedColor_" + String.valueOf(speedInt < SPEED_COLORS.length ? speedInt : SPEED_COLORS.length - 1);
+    private String getSpeedColor(int speedClass) {
+        return "speedColor_" + valueOf(speedClass);
     }
 
-    private String getSpeedDescription(double speed) {
-        int speedGroup = (int) speed / getSpeedScale();
-        if (speedGroup == 0)
-            return "< " + String.valueOf(getSpeedScale()) + " Km/h";
-        else if (speedGroup <= SPEED_COLORS.length)
-            return String.valueOf(speedGroup * getSpeedScale()) + " - " + String.valueOf((speedGroup + 1) * getSpeedScale()) + " Km/h";
-        return "> " + String.valueOf(speedGroup * getSpeedScale()) + " Km/h";
-    }
-
-    private boolean isWriteMarks() {
-        return preferences.getBoolean("writeMarks", true);
-    }
-
-    private boolean isWriteSpeed() {
-        return preferences.getBoolean("writeSpeed", true);
+    private String getSpeedDescription(int speedClass) {
+        if (speedClass == 0)
+            return "< " + valueOf(getSpeedScale()) + " Km/h";
+        else if (speedClass <= SPEED_COLORS.length)
+            return valueOf(speedClass * getSpeedScale()) + " - " + valueOf((speedClass + 1) * getSpeedScale()) + " Km/h";
+        return "> " + valueOf(speedClass * getSpeedScale()) + " Km/h";
     }
 
     private List<StyleType> createSpeedTrackColors(float width) {
         List<StyleType> styleTypeList = new ArrayList<StyleType>();
         for (int i = 0; i < SPEED_COLORS.length; i++) {
-            String styleName = getSpeedColorName((i) * getSpeedScale());
+            String styleName = getSpeedColor(i);
             StyleType styleType = createLineStyle(styleName, width, decodeBytes(SPEED_COLORS[i]));
             styleTypeList.add(styleType);
         }
@@ -418,15 +415,6 @@ public class Kml22Format extends KmlFormat {
     }
 
     private FolderType createSpeed(KmlRoute route) {
-        // Structure for Speedtrack:
-        // -Speedtrack
-        //  |-Speedbar
-        //  |-Speedsegments
-        //  | |-Segment 1
-        //  | |-Segment n
-        //  |-Startpoint
-        //  |-Endpoint
-
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType speedSegments = objectFactory.createFolderType();
         speedSegments.setName("Segments");
@@ -434,9 +422,9 @@ public class Kml22Format extends KmlFormat {
         speedSegments.setOpen(false);
 
         boolean foundSpeed = false;
-        String previousSpeedColorCode = null;
         int currentSegment = 1;
-        List<String> coordinates = null; // new ArrayList<String>();
+        int previousSpeedClass = -1;
+        List<String> coordinates = new ArrayList<String>();
         List<KmlPosition> positions = route.getPositions();
         for (int i = 0; i < positions.size() - 1; i++) {
             KmlPosition nextPosition = positions.get(i + 1);
@@ -445,45 +433,26 @@ public class Kml22Format extends KmlFormat {
                 continue;
             foundSpeed = true;
 
-            String speedColorCode = getSpeedColorCode(speed);
-            if (!speedColorCode.equals(previousSpeedColorCode)) {
-                previousSpeedColorCode = speedColorCode;
-
-                if (coordinates != null)
-                    coordinates.add(formatPositionAsString(positions.get(i).getLongitude()) + "," +
-                            formatPositionAsString(positions.get(i).getLatitude()) + "," +
-                            formatElevationAsString(positions.get(i).getElevation()));
-
-                PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-                placemarkType.setName("Segment " + currentSegment);
-                placemarkType.setDescription(getSpeedDescription(speed));
-                placemarkType.setStyleUrl('#' + getSpeedColorName(speed));
-                placemarkType.setVisibility(false);
-
-                currentSegment++;
-
-                LineStringType lineStringType = objectFactory.createLineStringType();
-                coordinates = lineStringType.getCoordinates();
-
-                placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
+            int speedClass = getSpeedClass(speed);
+            if (previousSpeedClass != speedClass && previousSpeedClass != -1) {
+                PlacemarkType placemarkType = createSpeedSegment(currentSegment, speedClass, coordinates);
                 speedSegments.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
+
+                coordinates.clear();
+                currentSegment++;
             }
 
-            if (coordinates != null)
-                coordinates.add(formatPositionAsString(positions.get(i).getLongitude()) + "," +
-                        formatPositionAsString(positions.get(i).getLatitude()) + "," +
-                        formatElevationAsString(positions.get(i).getElevation()));
+            previousSpeedClass = speedClass;
+            coordinates.add(createCoordinates(positions.get(i)));
         }
 
-        if (coordinates != null) {
-            KmlPosition lastPosition = positions.get(positions.size() - 1);
-            coordinates.add(formatPositionAsString(lastPosition.getLongitude()) + "," +
-                    formatPositionAsString(lastPosition.getLatitude()) + "," +
-                    formatElevationAsString(lastPosition.getElevation()));
-        }
-
-        if(!foundSpeed)
+        if (!foundSpeed)
             return null;
+
+        KmlPosition lastPosition = positions.get(positions.size() - 1);
+        coordinates.add(createCoordinates(lastPosition));
+        PlacemarkType placemarkType = createSpeedSegment(currentSegment, previousSpeedClass, coordinates);
+        speedSegments.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
 
         FolderType speed = objectFactory.createFolderType();
         speed.setName("Speed [Km/h]");
@@ -493,6 +462,19 @@ public class Kml22Format extends KmlFormat {
         speed.getAbstractFeatureGroup().add(objectFactory.createScreenOverlay(createSpeedbar()));
         speed.getAbstractFeatureGroup().add(objectFactory.createFolder(speedSegments));
         return speed;
+    }
+
+    private PlacemarkType createSpeedSegment(int currentSegment, int speedClass, List<String> coordinates) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        PlacemarkType placemarkType = objectFactory.createPlacemarkType();
+        placemarkType.setName("Segment " + currentSegment);
+        placemarkType.setDescription(getSpeedDescription(speedClass));
+        placemarkType.setStyleUrl('#' + getSpeedColor(speedClass));
+        placemarkType.setVisibility(false);
+        LineStringType lineStringType = objectFactory.createLineStringType();
+        lineStringType.getCoordinates().addAll(coordinates);
+        placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
+        return placemarkType;
     }
 
     private ScreenOverlayType createSpeedbar() {
