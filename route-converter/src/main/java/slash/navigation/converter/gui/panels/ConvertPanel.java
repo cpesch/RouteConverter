@@ -64,8 +64,15 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static slash.common.io.Files.*;
+import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
+import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
+import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferredFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.gui.Constants.createJFileChooser;
+import static slash.navigation.gui.Constants.startWaitCursor;
+import static slash.navigation.gui.Constants.stopWaitCursor;
 
 /**
  * The convert panel of the route converter user interface.
@@ -360,7 +367,7 @@ public class ConvertPanel {
         if (!confirmDiscard())
             return;
 
-        JFileChooser chooser = Constants.createJFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("open-file-dialog-title"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
@@ -379,17 +386,17 @@ public class ConvertPanel {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
 
-        List<URL> urls = Files.toUrls(selected);
+        List<URL> urls = toUrls(selected);
         List<NavigationFormat> formats = selectedFormat != null ?
-                NavigationFormats.getReadFormatsWithPreferredFormat(selectedFormat) :
-                NavigationFormats.getReadFormatsPreferredByExtension(Files.getExtension(urls));
+                getReadFormatsWithPreferredFormat(selectedFormat) :
+                getReadFormatsPreferredByExtension(Files.getExtension(urls));
         openPositionList(urls, formats);
     }
 
     public void openPositionList(final List<URL> urls) {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
-        openPositionList(urls, NavigationFormats.getReadFormatsPreferredByExtension(Files.getExtension(urls)));
+        openPositionList(urls, getReadFormatsPreferredByExtension(Files.getExtension(urls)));
     }
 
     @SuppressWarnings("unchecked")
@@ -397,10 +404,10 @@ public class ConvertPanel {
         final RouteConverter r = RouteConverter.getInstance();
 
         final URL url = urls.get(0);
-        final String path = Files.createReadablePath(url);
+        final String path = createReadablePath(url);
         r.setOpenPathPreference(path);
 
-        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -462,7 +469,7 @@ public class ConvertPanel {
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                            stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
                         }
                     });
                 }
@@ -476,7 +483,7 @@ public class ConvertPanel {
 
         try {
             for (final URL url : urls) {
-                String path = Files.createReadablePath(url);
+                String path = createReadablePath(url);
 
                 final NavigationFileParser parser = new NavigationFileParser();
                 if (parser.read(url)) {
@@ -522,7 +529,7 @@ public class ConvertPanel {
         if (!confirmDiscard())
             return;
 
-        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         try {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
@@ -532,12 +539,12 @@ public class ConvertPanel {
             UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
             undoManager.discardAllEdits();
         } finally {
-            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+            stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         }
     }
 
     public File[] selectFilesToImport() {
-        JFileChooser chooser = Constants.createJFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
@@ -562,7 +569,7 @@ public class ConvertPanel {
 
         BaseRoute route = formatAndRoutesModel.getSelectedRoute();
         boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
-        int fileCount = NavigationFileParser.getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
+        int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
@@ -585,11 +592,11 @@ public class ConvertPanel {
 
     private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount,
                           boolean confirmOverwrite, boolean openAfterSave) {
-        File[] targets = Files.createTargetFiles(file, fileCount, format.getExtension(), 255);
+        File[] targets = createTargetFiles(file, fileCount, format.getExtension(), 255);
         if (confirmOverwrite) {
             for (File target : targets) {
                 if (target.exists()) {
-                    String path = Files.createReadablePath(target);
+                    String path = createReadablePath(target);
                     if (confirmOverwrite(path))
                         return;
                     break;
@@ -598,8 +605,8 @@ public class ConvertPanel {
         }
 
         RouteConverter r = RouteConverter.getInstance();
-        String targetsAsString = Files.printArrayToDialogString(targets);
-        Constants.startWaitCursor(r.getFrame().getRootPane());
+        String targetsAsString = printArrayToDialogString(targets);
+        startWaitCursor(r.getFrame().getRootPane());
         try {
             if (format.isSupportsMultipleRoutes()) {
                 new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
@@ -611,12 +618,12 @@ public class ConvertPanel {
             log.info("Saved: " + targetsAsString);
 
             if (openAfterSave && format.isSupportsReading()) {
-                openPositionList(Files.toUrls(targets), NavigationFormats.getReadFormatsWithPreferredFormat(format));
+                openPositionList(toUrls(targets), getReadFormatsWithPreferredFormat(format));
                 log.info("Open after save: " + targets[0]);
             }
             if (confirmOverwrite) {
                 URL url = targets[0].toURI().toURL();
-                String path = Files.createReadablePath(url);
+                String path = createReadablePath(url);
                 urlModel.setString(path);
                 recentUrlsModel.addUrl(url);
             }
@@ -627,7 +634,7 @@ public class ConvertPanel {
                     MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
                     r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
         } finally {
-            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+            stopWaitCursor(r.getFrame().getRootPane());
         }
     }
 
@@ -636,7 +643,7 @@ public class ConvertPanel {
     }
 
     public void saveAsFile() {
-        JFileChooser chooser = Constants.createJFileChooser();
+        JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
         setWriteFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedTarget());
