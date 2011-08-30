@@ -20,13 +20,12 @@
 
 package slash.navigation.kml;
 
-import slash.common.hex.HexDecoder;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.base.NavigationFileParser;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 
 import javax.xml.bind.JAXBException;
@@ -42,6 +41,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.hex.HexDecoder.decodeBytes;
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
 
 /**
  * The base of all Google Earth formats.
@@ -121,6 +122,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 name = tokenizer.nextToken();
         }
         return name;
+    }
+
+    protected String createCoordinates(KmlPosition position, boolean separateWithSpace) {
+        return formatPositionAsString(position.getLongitude()) + (separateWithSpace ? " " : ",") +
+                formatPositionAsString(position.getLatitude()) + (separateWithSpace ? " " : ",") +
+                formatElevationAsString(position.getElevation());
     }
 
     protected RouteCharacteristics parseCharacteristics(String nameToParse, RouteCharacteristics fallback) {

@@ -25,7 +25,8 @@ import slash.common.io.ISO8601;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding22.*;
-import slash.navigation.kml.binding22gx.TrackType;
+import slash.navigation.kml.binding22.ObjectFactory;
+import slash.navigation.kml.binding22gx.*;
 import slash.navigation.kml.bindingatom.Link;
 
 import javax.xml.bind.JAXBElement;
@@ -237,7 +238,7 @@ public class Kml22Format extends KmlFormat {
             String when = whens.get(i);
             if (when != null) {
                 Calendar calendar = ISO8601.parse(when);
-                if (calendar != null)
+                if (calendar != null && i < result.size())
                     result.get(i).setTime(CompactCalendar.fromCalendar(calendar));
             }
         }
@@ -271,13 +272,6 @@ public class Kml22Format extends KmlFormat {
         return positions;
     }
 
-
-    private String createCoordinates(KmlPosition position) {
-        return formatPositionAsString(position.getLongitude()) + "," +
-                formatPositionAsString(position.getLatitude()) + "," +
-                formatElevationAsString(position.getElevation());
-    }
-
     private FolderType createWayPoints(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
@@ -294,7 +288,7 @@ public class Kml22Format extends KmlFormat {
             }
             PointType pointType = objectFactory.createPointType();
             placemarkType.setAbstractGeometryGroup(objectFactory.createPoint(pointType));
-            pointType.getCoordinates().add(createCoordinates(position));
+            pointType.getCoordinates().add(createCoordinates(position, false));
         }
         return folderType;
     }
@@ -310,7 +304,7 @@ public class Kml22Format extends KmlFormat {
         multiGeometryType.getAbstractGeometryGroup().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(createCoordinates(position));
+            coordinates.add(createCoordinates(position, false));
         }
         return placemarkType;
     }
@@ -320,12 +314,24 @@ public class Kml22Format extends KmlFormat {
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         placemarkType.setName(TRACK + ": " + createPlacemarkName(route));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
+        slash.navigation.kml.binding22gx.ObjectFactory gxObjectFactory = new slash.navigation.kml.binding22gx.ObjectFactory();
+        TrackType trackType = gxObjectFactory.createTrackType();
+        for (KmlPosition position : route.getPositions()) {
+            String time = position.getTime() != null ? ISO8601.format(position.getTime()) : "";
+            trackType.getWhen().add(time);
+        }
+        for (KmlPosition position : route.getPositions()) {
+            trackType.getCoord().add(createCoordinates(position, true));
+        }
+        placemarkType.setAbstractGeometryGroup(gxObjectFactory.createTrack(trackType));
+        /* TODO
         LineStringType lineStringType = objectFactory.createLineStringType();
         placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
             coordinates.add(createCoordinates(position));
         }
+        */
         return placemarkType;
     }
 
@@ -443,14 +449,14 @@ public class Kml22Format extends KmlFormat {
             }
 
             previousSpeedClass = speedClass;
-            coordinates.add(createCoordinates(positions.get(i)));
+            coordinates.add(createCoordinates(positions.get(i), false));
         }
 
         if (!foundSpeed)
             return null;
 
         KmlPosition lastPosition = positions.get(positions.size() - 1);
-        coordinates.add(createCoordinates(lastPosition));
+        coordinates.add(createCoordinates(lastPosition, false));
         PlacemarkType placemarkType = createSpeedSegment(currentSegment, previousSpeedClass, coordinates);
         speedSegments.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
 

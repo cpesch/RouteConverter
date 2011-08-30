@@ -37,8 +37,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static slash.common.io.Transfer.formatElevationAsString;
-import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
@@ -240,9 +238,7 @@ public class Kml21Format extends KmlFormat {
             }
             PointType pointType = objectFactory.createPointType();
             placemarkType.setGeometry(objectFactory.createPoint(pointType));
-            pointType.getCoordinates().add(formatPositionAsString(position.getLongitude()) + "," +
-                    formatPositionAsString(position.getLatitude()) + "," +
-                    formatElevationAsString(position.getElevation()));
+            pointType.getCoordinates().add(createCoordinates(position, false));
         }
         return folderType;
     }
@@ -258,9 +254,7 @@ public class Kml21Format extends KmlFormat {
         multiGeometryType.getGeometry().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(formatPositionAsString(position.getLongitude()) + "," +
-                    formatPositionAsString(position.getLatitude()) + "," +
-                    formatElevationAsString(position.getElevation()));
+            coordinates.add(createCoordinates(position, false));
         }
         return placemarkType;
     }
@@ -274,9 +268,7 @@ public class Kml21Format extends KmlFormat {
         placemarkType.setGeometry(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.add(formatPositionAsString(position.getLongitude()) + "," +
-                    formatPositionAsString(position.getLatitude()) + "," +
-                    formatElevationAsString(position.getElevation()));
+            coordinates.add(createCoordinates(position, false));
         }
         return placemarkType;
     }
