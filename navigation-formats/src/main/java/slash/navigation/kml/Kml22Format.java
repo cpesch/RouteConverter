@@ -324,23 +324,15 @@ public class Kml22Format extends KmlFormat {
             trackType.getCoord().add(createCoordinates(position, true));
         }
         placemarkType.setAbstractGeometryGroup(gxObjectFactory.createTrack(trackType));
-        /* TODO
-        LineStringType lineStringType = objectFactory.createLineStringType();
-        placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
-        List<String> coordinates = lineStringType.getCoordinates();
-        for (KmlPosition position : route.getPositions()) {
-            coordinates.add(createCoordinates(position));
-        }
-        */
         return placemarkType;
     }
 
     private boolean isWriteMarks() {
-        return preferences.getBoolean("writeMarks", true);
+        return preferences.getBoolean("writeMarks", false);
     }
 
     private boolean isWriteSpeed() {
-        return preferences.getBoolean("writeSpeed", true);
+        return preferences.getBoolean("writeSpeed", false);
     }
 
     private static final String[] SPEED_COLORS = {
