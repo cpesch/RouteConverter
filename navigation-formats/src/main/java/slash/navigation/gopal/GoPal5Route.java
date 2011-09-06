@@ -281,6 +281,10 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
         return asNmnFormat(new Nmn7Format());
     }
 
+    public SimpleRoute asNmnRouteFormat() {
+        return asSimpleFormat(new NmnRouteFormat());
+    }
+
     public SimpleRoute asNmnUrlFormat() {
         return asSimpleFormat(new NmnUrlFormat());
     }

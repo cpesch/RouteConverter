@@ -76,6 +76,10 @@ public class NmnRoute extends SimpleRoute<NmnPosition, NmnFormat> {
         return asNmnFormat(new Nmn7Format());
     }
     
+    public SimpleRoute asNmnRouteFormat() {
+        return asSimpleFormat(new NmnRouteFormat());
+    }
+
     public SimpleRoute asNmnUrlFormat() {
         return asSimpleFormat(new NmnUrlFormat());
     }

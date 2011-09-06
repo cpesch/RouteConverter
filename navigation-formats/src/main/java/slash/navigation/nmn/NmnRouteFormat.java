@@ -31,6 +31,7 @@ import java.util.prefs.Preferences;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.*;
 
+import static java.lang.String.format;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -55,10 +56,6 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
     public int getMaximumPositionCount() {
         return preferences.getInt("maximumNavigonRoutePositionCount", 99);
-    }
-
-    public boolean isSupportsWriting() {
-        return false;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -496,7 +493,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    private byte[] encodePoint(Wgs84Position position, int positionNo) {
+    private byte[] encodePoint(Wgs84Position position, int positionNo) throws UnsupportedEncodingException {
         // Die Route besteht aus einem Punkt der mehrere weitere Unterpunktbeschreibungen hat.
         // Im Navigongerät werden dort weitere Informationen wie übergeorgnete Stadt, Land, usw-
         // gespeichert. Diese Informationen liegen nicht vor und werden daher auch nicht
@@ -508,9 +505,10 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         byteBuffer.putInt(0); // bytelength of whole point will be filled at the end
         byteBuffer.putLong(0); // 8 byte 0
-        String posNoString = String.format("%02d", positionNo);
-        byteBuffer.putInt(posNoString.getBytes().length); // 4 byte textlength
-        byteBuffer.put(posNoString.getBytes()); // text
+        String posNoString = format("%02d", positionNo);
+        byte[] posNoBytes = posNoString.getBytes(UTF8_ENCODING);
+        byteBuffer.putInt(posNoBytes.length); // 4 byte textlength
+        byteBuffer.put(posNoBytes); // text
         byteBuffer.putInt(1); // 4 byte always 1
         byteBuffer.putInt(1); // count following "04 00 00 00" Block. write only one 04 block in every waypoint
         if (positionNo == 0) {// 8 byte ?
@@ -524,8 +522,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(4); // starttag
         int positionStarttag = byteBuffer.position(); // save position to fill the bytelength at the end
         byteBuffer.putLong(0); // length of following data. filled at the end
-        byteBuffer.putInt(position.getComment().getBytes().length);
-        byteBuffer.put(position.getComment().getBytes());
+        byte[] commentBytes = position.getComment().getBytes(UTF8_ENCODING);
+        byteBuffer.putInt(commentBytes.length);
+        byteBuffer.put(commentBytes);
         byteBuffer.putInt(0); // 4 byte ?
         byteBuffer.putDouble(position.getLongitude());
         byteBuffer.putDouble(position.getLatitude());

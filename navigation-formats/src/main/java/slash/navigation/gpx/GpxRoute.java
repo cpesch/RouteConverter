@@ -313,10 +313,13 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asNmnFormat(new Nmn7Format());
     }
 
+    public SimpleRoute asNmnRouteFormat() {
+        return asSimpleFormat(new NmnRouteFormat());
+    }
+
     public SimpleRoute asNmnUrlFormat() {
         return asSimpleFormat(new NmnUrlFormat());
     }
-
 
     public SimpleRoute asOpelNaviFormat() {
         return asSimpleFormat(new OpelNaviFormat());

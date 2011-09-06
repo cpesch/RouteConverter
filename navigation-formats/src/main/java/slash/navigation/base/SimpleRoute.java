@@ -416,6 +416,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asNmnFormat(new Nmn7Format());
     }
 
+    public SimpleRoute asNmnRouteFormat() {
+        if (getFormat() instanceof NmnRouteFormat)
+            return this;
+        return asSimpleFormat(new NmnRouteFormat());
+    }
+
     public SimpleRoute asNmnUrlFormat() {
         if (getFormat() instanceof NmnUrlFormat)
             return this;

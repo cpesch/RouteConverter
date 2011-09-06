@@ -471,6 +471,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract NmnRoute asNmn7Format();
 
+    public abstract SimpleRoute asNmnRouteFormat();
+
     public abstract SimpleRoute asNmnUrlFormat();
 
     public abstract SimpleRoute asOpelNaviFormat();
