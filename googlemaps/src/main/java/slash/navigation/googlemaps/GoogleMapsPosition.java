@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import java.util.List;
 import java.util.ArrayList;
 
+import static slash.common.io.Transfer.parseDouble;
+
 /**
  * A position that is the result of an access to the Google Maps API Geocoding Service.
  *
@@ -78,7 +80,7 @@ public class GoogleMapsPosition {
         String elevation = matcher.group(3);
         if(elevation != null && elevation.startsWith(","))
             elevation = elevation.substring(1);
-        return new GoogleMapsPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), Transfer.parseDouble(elevation), Transfer.trim(comment));
+        return new GoogleMapsPosition(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), Transfer.trim(comment));
     }
 
     public static List<GoogleMapsPosition> parsePositions(String listOfCoordinates) {
@@ -97,7 +99,7 @@ public class GoogleMapsPosition {
             String longitude = matcher.group(1);
             String latitude = matcher.group(2);
             String elevation = matcher.group(3);
-            result.add(new GoogleMapsPosition(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude), Transfer.parseDouble(elevation), null));
+            result.add(new GoogleMapsPosition(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), null));
         }
         return result;
     }

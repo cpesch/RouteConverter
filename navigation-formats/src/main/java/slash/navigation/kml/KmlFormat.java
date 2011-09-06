@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 import static slash.common.hex.HexDecoder.decodeBytes;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.trim;
 
 /**
  * The base of all Google Earth formats.
@@ -57,6 +58,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
     static final String WAYPOINTS = "Waypoints";
     static final String ROUTE = "Route";
     static final String TRACK = "Track";
+    static final String SPEED = "Speed [Km/h]";
+    static final String MARKS = "Marks [Km]";
     static final String ROUTE_LINE_STYLE = "routeStyle";
     static final String TRACK_LINE_STYLE = "trackStyle";
 
@@ -282,8 +285,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     protected String concatPath(String path, String fragment) {
-        path = Transfer.trim(path);
-        fragment = Transfer.trim(fragment);
+        path = trim(path);
+        fragment = trim(fragment);
         String result = path != null ? path : "";
         if(fragment != null)
             result = result + "/" + fragment;

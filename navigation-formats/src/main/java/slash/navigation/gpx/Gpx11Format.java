@@ -22,7 +22,6 @@ package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
@@ -39,8 +38,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.*;
-import static slash.common.io.Transfer.formatSpeed;
-import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 /**

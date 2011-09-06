@@ -302,7 +302,7 @@ public class Kml20Format extends KmlFormat {
         multiGeometry.getExtrudeOrTessellateOrAltitudeMode().add(lineString);
         StringBuilder coordinates = new StringBuilder();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(createCoordinates(position, false));
+            coordinates.append(createCoordinates(position, false)).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
@@ -318,7 +318,7 @@ public class Kml20Format extends KmlFormat {
         placemarkList.add(lineString);
         StringBuilder coordinates = new StringBuilder();
         for (KmlPosition position : route.getPositions()) {
-            coordinates.append(createCoordinates(position, false));
+            coordinates.append(createCoordinates(position, false)).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;

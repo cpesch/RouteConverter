@@ -63,6 +63,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 public abstract class NavigationTestCase extends TestCase {
     protected static final Logger log = Logger.getLogger(NavigationTestCase.class.getName());
 
@@ -167,10 +169,11 @@ public abstract class NavigationTestCase extends TestCase {
 
     @SuppressWarnings("unchecked")
     public static void compareRouteMetaData(BaseRoute sourceRoute, BaseRoute targetRoute) {
-        if (targetRoute instanceof KmlRoute && targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
+        if (targetRoute instanceof KmlRoute && targetRoute.getCharacteristics().equals(Waypoints)) {
             String sourceName = getKmlRouteName(sourceRoute);
             String targetName = getKmlRouteName(targetRoute);
-            assertEquals(sourceName, targetName);
+            // multiple routes per file: no waypoint name
+            assertTrue("Waypoints".equals(targetName) || sourceName.equals(targetName));
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 sourceRoute.getName().contains(" to ") && sourceRoute.getName().endsWith("/") &&
                 targetRoute.getName().endsWith("/")) {
@@ -191,7 +194,9 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals(sourceName, targetName);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
-                !targetRoute.getName().contains("Track: ") && !targetRoute.getName().equals("MapLage"))
+                !targetRoute.getName().endsWith("/Route") &&
+                !targetRoute.getName().equals("MapLage") && !targetRoute.getName().contains("Track: ") &&
+                !targetRoute.getName().endsWith("/Track"))
             // Test only if this is not the multiple routes per file case & the route has not been named by us
             assertEquals(sourceRoute.getName(), targetRoute.getName());
 
@@ -279,8 +284,7 @@ public abstract class NavigationTestCase extends TestCase {
                 targetFormat instanceof Route66Format || targetFormat instanceof TourFormat)
             assertNull(targetPosition.getElevation());
         else if (sourcePosition.getElevation() == null &&
-                (targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat ||
-                        targetFormat instanceof Nmn5Format))
+                (targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat))
             assertEquals(0.0, targetPosition.getElevation());
         else if (sourcePosition.getElevation() == null &&
                 targetFormat instanceof MagellanMapSendFormat)
@@ -569,7 +573,7 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
                     (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
                     (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(RouteCharacteristics.Track)) ||
-                    ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(RouteCharacteristics.Waypoints) && !commentPositionNames))
+                    ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !commentPositionNames))
                 assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
             else if (sourceFormat instanceof AlanTrackLogFormat)
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), targetPosition.getComment());
@@ -590,7 +594,7 @@ public abstract class NavigationTestCase extends TestCase {
                 String sourceName = getGarminPoiPositionComment(sourcePosition);
                 String targetName = getGarminPoiPositionComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
-            } else if (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Waypoints))
+            } else if (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(Waypoints))
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(trimSpeedComment(targetPosition.getComment()), 50));
             else if (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Route))
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 8)), trim(trimSpeedComment(targetPosition.getComment()), 8));
@@ -804,7 +808,7 @@ public abstract class NavigationTestCase extends TestCase {
             // comparePositions(sourceRoute.getPositions().subList(1, sourceRoute.getPositionCount() - 1), sourceFormat, targetRoute.getPositions().subList(2, targetRoute.getPositionCount() - 2), targetFormat, false, targetRoute.getCharacteristics());
         } else if (sourceFormat instanceof MicrosoftAutoRouteFormat &&
                 (targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format || targetFormat instanceof KmlFormat) &&
-                targetRoute.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
+                targetRoute.getCharacteristics().equals(Waypoints)) {
             int sourcePositionCount = sourceRoute.getPositionCount() - 1;
             assertEquals(sourcePositionCount, targetRoute.getPositionCount());
             comparePositions(sourceRoute.getPositions().subList(0, sourcePositionCount), sourceFormat, targetRoute.getPositions(), targetFormat, commentPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());

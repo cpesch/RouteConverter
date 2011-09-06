@@ -26,7 +26,6 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
-import slash.navigation.util.Conversion;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -39,8 +38,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.*;
-import static slash.common.io.Transfer.formatBigDecimal;
-import static slash.common.io.Transfer.formatInt;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.util.Conversion.kmhToMs;
