@@ -38,6 +38,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.formatBigDecimal;
+import static slash.common.io.Transfer.formatInt;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.util.Conversion.kmhToMs;
+
 /**
  * Reads and writes GPS Exchange Format 1.0 (.gpx) files.
  *
@@ -95,7 +102,7 @@ public class Gpx10Format extends GpxFormat {
             String desc = rte.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractRoute(rte, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
-            result.add(new GpxRoute(this, RouteCharacteristics.Route, name, descriptions, positions, gpx, rte));
+            result.add(new GpxRoute(this, Route, name, descriptions, positions, gpx, rte));
         }
 
         return result;
@@ -105,7 +112,7 @@ public class Gpx10Format extends GpxFormat {
         String name = gpx.getName();
         List<String> descriptions = asDescription(gpx.getDesc());
         List<GpxPosition> positions = extractWayPoints(gpx.getWpt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
-        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Waypoints, name, descriptions, positions, gpx);
+        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? Track : RouteCharacteristics.Waypoints, name, descriptions, positions, gpx);
     }
 
     boolean isTripmasterTrack(List<GpxPosition> positions) {
@@ -118,16 +125,14 @@ public class Gpx10Format extends GpxFormat {
 
     private List<GpxRoute> extractTracks(Gpx gpx, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
-
         for (Gpx.Trk trk : gpx.getTrk()) {
             String name = trk.getName();
             String desc = trk.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractTrack(trk, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
             if (positions.size() > 0)
-                result.add(new GpxRoute(this, RouteCharacteristics.Track, name, descriptions, positions, gpx, trk));
+                result.add(new GpxRoute(this, Track, name, descriptions, positions, gpx, trk));
         }
-
         return result;
     }
 
@@ -175,14 +180,14 @@ public class Gpx10Format extends GpxFormat {
         if (Transfer.isEmpty(speed))
             return comment;
         return (comment != null ? comment + " " : "") +
-                "Speed: " + Transfer.formatSpeedAsString(speed) + " Km/h";
+                "Speed: " + formatSpeedAsString(speed) + " Km/h";
     }
 
     private String formatHeading(String comment, Double heading) {
         if (Transfer.isEmpty(heading))
             return comment;
         return (comment != null ? comment + " " : "") +
-                "Heading: " + Transfer.formatHeadingAsString(heading);
+                "Heading: " + formatHeadingAsString(heading);
     }
 
     private List<Gpx.Wpt> createWayPoints(GpxRoute route, int startIndex, int endIndex) {
@@ -191,8 +196,8 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
-            BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+            BigDecimal latitude = formatPosition(position.getLatitude());
+            BigDecimal longitude = formatPosition(position.getLongitude());
             if(latitude == null || longitude == null)
                 continue;
             Gpx.Wpt wpt = position.getOrigin(Gpx.Wpt.class);
@@ -201,19 +206,19 @@ public class Gpx10Format extends GpxFormat {
             wpt.setLat(latitude);
             wpt.setLon(longitude);
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            wpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
+            wpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             wpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
-            wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? Transfer.formatBigDecimal(Conversion.kmhToMs(position.getSpeed()), 3) : null);
+            wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatHeading(wpt.getCmt(), position.getHeading()));
             wpt.setName(isWriteName() ? asName(position.getComment()) : null);
             wpt.setDesc(isWriteName() ? asDesc(position.getComment(), wpt.getDesc()) : null);
-            wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatBigDecimal(position.getHdop(), 6) : null);
-            wpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatBigDecimal(position.getPdop(), 6) : null);
-            wpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatBigDecimal(position.getVdop(), 6) : null);
-            wpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
+            wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
+            wpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
+            wpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
+            wpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
             wpts.add(wpt);
         }
         return wpts;
@@ -237,8 +242,8 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
-            BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+            BigDecimal latitude = formatPosition(position.getLatitude());
+            BigDecimal longitude = formatPosition(position.getLongitude());
             if(latitude == null || longitude == null)
                 continue;
             Gpx.Rte.Rtept rtept = position.getOrigin(Gpx.Rte.Rtept.class);
@@ -247,19 +252,19 @@ public class Gpx10Format extends GpxFormat {
             rtept.setLat(latitude);
             rtept.setLon(longitude);
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            rtept.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
+            rtept.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             rtept.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
-            rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? Transfer.formatBigDecimal(Conversion.kmhToMs(position.getSpeed()), 3) : null);
+            rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatHeading(rtept.getCmt(), position.getHeading()));
             rtept.setName(isWriteName() ? asName(position.getComment()) : null);
             rtept.setDesc(isWriteName() ? asDesc(position.getComment(), rtept.getDesc()) : null);
-            rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatBigDecimal(position.getHdop(), 6) : null);
-            rtept.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatBigDecimal(position.getPdop(), 6) : null);
-            rtept.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatBigDecimal(position.getVdop(), 6) : null);
-            rtept.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
+            rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
+            rtept.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
+            rtept.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
+            rtept.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
             rte.getRtept().add(rtept);
         }
         return rtes;
@@ -284,8 +289,8 @@ public class Gpx10Format extends GpxFormat {
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            BigDecimal latitude = Transfer.formatPosition(position.getLatitude());
-            BigDecimal longitude = Transfer.formatPosition(position.getLongitude());
+            BigDecimal latitude = formatPosition(position.getLatitude());
+            BigDecimal longitude = formatPosition(position.getLongitude());
             if(latitude == null || longitude == null)
                 continue;
             Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
@@ -294,16 +299,16 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setLat(latitude);
             trkpt.setLon(longitude);
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
-            trkpt.setEle(isWriteElevation() ? Transfer.formatElevation(position.getElevation()) : null);
+            trkpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
             trkpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
-                    Transfer.formatBigDecimal(Conversion.kmhToMs(position.getSpeed()), 3) : null);
+                    formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
             trkpt.setName(isWriteName() ? asName(position.getComment()) : null);
             trkpt.setDesc(isWriteName() ? asDesc(position.getComment(), trkpt.getDesc()) : null);
-            trkpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? Transfer.formatBigDecimal(position.getHdop(), 6) : null);
-            trkpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? Transfer.formatBigDecimal(position.getPdop(), 6) : null);
-            trkpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? Transfer.formatBigDecimal(position.getVdop(), 6) : null);
-            trkpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? Transfer.formatInt(position.getSatellites()) : null);
+            trkpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
+            trkpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
+            trkpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
+            trkpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
             trkseg.getTrkpt().add(trkpt);
         }
         trk.getTrkseg().add(trkseg);
@@ -379,7 +384,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
-        write(route, target, startIndex, endIndex, Arrays.asList(RouteCharacteristics.Route, RouteCharacteristics.Track, RouteCharacteristics.Waypoints));
+        write(route, target, startIndex, endIndex, Arrays.asList(Route, Track, RouteCharacteristics.Waypoints));
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {
