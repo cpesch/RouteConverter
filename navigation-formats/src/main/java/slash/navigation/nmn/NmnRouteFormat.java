@@ -45,6 +45,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     private static final Preferences preferences = Preferences.userNodeForPackage(NmnRouteFormat.class);
     private static final Logger log = Logger.getLogger(NmnRouteFormat.class.getName());
+    public static final int START_BYTES = 0xFFFF;
+    public static final long UNKNOWN_START_BYTES = 1L;
 
     public String getName() {
         return "Navigon Mobile Navigator (*" + getExtension() + ")";
@@ -141,7 +143,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         headerBuffer.order(LITTLE_ENDIAN);
         headerBuffer.position(0);
 
-        if (headerBuffer.getInt() == 0xFFFF && headerBuffer.getLong() == 1) {
+        if (headerBuffer.getInt() == START_BYTES && headerBuffer.getLong() == UNKNOWN_START_BYTES) {
             long fileSize = headerBuffer.getInt();
             return source.available() == fileSize - 4;
         }
@@ -361,7 +363,6 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // skip the additional information like city, zip
         byteBuffer.position((int) (startPosition + blockLength));
 
-        
         Wgs84Position resultPoint;
         if (positionPoint == null) {
             resultPoint = new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
@@ -441,7 +442,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 case 0x0:
                     if (byteBuffer.position() < startPosition + blockLength - 8) {
                         int textLen = byteBuffer.getInt();
-                        if (textLen > 0xFFFF)
+                        if (textLen > START_BYTES)
                             textLen = byteBuffer.getInt();
                         getText(byteBuffer, textLen);
                     }
@@ -548,7 +549,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // write all waypoints to buffer since we need at the end the size of all position bytes
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        // 4 bytes always 0
+        // 4 Byte always 0
         byteArrayOutputStream.write(new byte[]{0, 0, 0, 0});
         // 4 Byte Textlength Date - we write no date
         byteArrayOutputStream.write(new byte[]{0, 0, 0, 0});
@@ -557,7 +558,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteArrayOutputStream.write((byte) (endIndex - startIndex));
         byteArrayOutputStream.write(new byte[]{0, 0, 0});
 
-        //4 byte int. Seen 0 and 1, currently writing always 1
+        // 4 Byte int. Seen 0 and 1, currently writing always 1
         byteArrayOutputStream.write(new byte[]{1, 0, 0, 0});
 
         int positionNo = 1;
@@ -572,8 +573,8 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         headerBuffer.order(LITTLE_ENDIAN);
         headerBuffer.position(0);
 
-        headerBuffer.putInt(0xFFFF);// start byte
-        headerBuffer.putLong(1); // 8 byte ?. always 1
+        headerBuffer.putInt(START_BYTES);
+        headerBuffer.putLong(UNKNOWN_START_BYTES);
         headerBuffer.putInt(byteArrayOutputStream.size() + 4);
 
         target.write(header);
