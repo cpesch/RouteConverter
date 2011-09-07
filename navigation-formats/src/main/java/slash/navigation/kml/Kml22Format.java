@@ -331,11 +331,11 @@ public class Kml22Format extends KmlFormat {
     }
 
     private boolean isWriteMarks() {
-        return preferences.getBoolean("writeMarks", false);
+        return preferences.getBoolean("writeMarks", true);
     }
 
     private boolean isWriteSpeed() {
-        return preferences.getBoolean("writeSpeed", false);
+        return preferences.getBoolean("writeSpeed", true);
     }
 
     private static final String[] SPEED_COLORS = {
