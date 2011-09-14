@@ -35,6 +35,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine("$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII"));
         assertTrue(format.isValidLine("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertTrue(format.isValidLine("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
+        assertTrue(format.isValidLine("$PMGNTRK,4348.1258,N,08735.0978,E,000000,M,,A,???,*E1"));
 
         assertFalse(format.isValidLine("# Comment"));
     }
