@@ -35,6 +35,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.parseDouble;
+
 /**
  * Displays the positions of a route.
  *
@@ -289,7 +291,7 @@ public class EclipseSWTMapView extends BaseMapView {
 
     protected int getCurrentZoomLevel() {
         String zoomLevel = executeScriptWithResult("return map.getZoom();");
-        return zoomLevel != null ? Transfer.parseDouble(zoomLevel).intValue() : 1;
+        return zoomLevel != null ? parseDouble(zoomLevel).intValue() : 1;
     }
 
     protected BaseNavigationPosition getNorthEastBounds() {
