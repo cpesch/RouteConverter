@@ -138,9 +138,9 @@ public class Kml22Format extends KmlFormat {
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
-            String folderName = folderTypeValue.getName();
+            String folderName = trim(folderTypeValue.getName());
             // ignore speed and marks folders
-            if (!folderName.equals(SPEED) && !folderName.equals(MARKS))
+            if (folderName == null || (!folderName.equals(SPEED) && !folderName.equals(MARKS)))
                 result.addAll(extractTracks(concatPath(name, folderName), description, folderTypeValue.getAbstractFeatureGroup(), startDate));
         }
 
