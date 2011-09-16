@@ -69,13 +69,21 @@ public class GpxFormatTest extends NavigationTestCase {
 
     public void testExtractSpeed() {
         Gpx10Format format = new Gpx10Format();
+        assertEquals(9.0, format.parseSpeed("9Km/h"));
         assertEquals(9.0, format.parseSpeed(" 9 Km/h "));
         assertEquals(99.0, format.parseSpeed(" 99 Km/h "));
         assertEquals(99.9, format.parseSpeed(" 99.9 km/h "));
         assertEquals(99.99999, format.parseSpeed(" 99.99999 Km/h "));
         assertEquals(9.0, format.parseSpeed("Speed: 9 Km/h "));
         assertEquals(9.0, format.parseSpeed("Geschwindigkeit: 9 Km/h "));
+        assertEquals(9.0, format.parseSpeed("Lat.=54.144422, Long.=12.098487, Alt.=5.000000m, Speed=9Km/h, Course=270deg."));
         assertNull(format.parseSpeed("egal"));
+    }
+
+    public void testExtractHeading() {
+        Gpx10Format format = new Gpx10Format();
+        assertEquals(270.0, format.parseHeading("Lat.=54.144422, Long.=12.098487, Alt.=5.000000m, Speed=9Km/h, Course=270deg."));
+        assertNull(format.parseHeading("egal"));
     }
 
     public void testExtractReason() {

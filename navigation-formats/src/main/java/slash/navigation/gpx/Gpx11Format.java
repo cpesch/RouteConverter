@@ -196,6 +196,8 @@ public class Gpx11Format extends GpxFormat {
         }
         if (result == null)
             result = parseSpeed(wptType.getCmt());
+        if (result == null)
+            result = parseSpeed(wptType.getName());
         return result;
     }
 
@@ -246,18 +248,20 @@ public class Gpx11Format extends GpxFormat {
     }
 
     private Double getHeading(WptType wptType) {
-        Double heading = null;
+        Double result = null;
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
                 if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("course".equals(element.getLocalName()))
-                        heading = parseDouble(element.getTextContent());
+                        result = parseDouble(element.getTextContent());
                 }
             }
         }
-        return heading;
+        if (result == null)
+            result = parseHeading(wptType.getCmt());
+        return result;
     }
 
     @SuppressWarnings("unchecked")

@@ -20,17 +20,18 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.XmlNavigationFormat;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.util.Conversion;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.XmlNavigationFormat;
 
 import java.util.List;
 import java.util.prefs.Preferences;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.util.Conversion.msToKmh;
 
 /**
  * The base of all GPS Exchange formats.
@@ -42,6 +43,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     private static final Preferences preferences = Preferences.userNodeForPackage(GpxFormat.class);
     static final Pattern TRIPMASTER_REASON_PATTERN = Pattern.compile("(Punkt|Richtung \\d+|Abstand \\d+|Dur. \\d+:\\d+:\\d+|Course \\d+|Dist. \\d+) (-|:) (.+)");
     private static final Pattern TRIPMASTER_SPEED_PATTERN = Pattern.compile("[^-\\d\\.]*([-\\d\\.]+)\\s*(K|k)m/h\\s*");
+    private static final Pattern QSTARTZ_SPEED_PATTERN = Pattern.compile(".*Speed[^-\\d\\.]*([-\\d\\.]+)(K|k)m/h.*Course[^\\d\\.]*([\\d]+).*");
 
     public String getExtension() {
         return ".gpx";
@@ -82,9 +84,21 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
 
     protected Double parseSpeed(String comment) {
         if (comment != null) {
-            Matcher matcher = TRIPMASTER_SPEED_PATTERN.matcher(comment);
-            if (matcher.matches())
-                return Transfer.parseDouble(matcher.group(1));
+            Matcher tripMasterPattern = TRIPMASTER_SPEED_PATTERN.matcher(comment);
+            if (tripMasterPattern.matches())
+                return parseDouble(tripMasterPattern.group(1));
+            Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(comment);
+            if (qstartzPattern.matches())
+                return parseDouble(qstartzPattern.group(1));
+        }
+        return null;
+    }
+
+    protected Double parseHeading(String comment) {
+        if (comment != null) {
+            Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(comment);
+            if (qstartzPattern.matches())
+                return parseDouble(qstartzPattern.group(3));
         }
         return null;
     }
@@ -92,7 +106,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     protected Double asKmh(Double metersPerSecond) {
         if (metersPerSecond == null)
             return null;
-        return Conversion.msToKmh(metersPerSecond);
+        return msToKmh(metersPerSecond);
     }
 
     protected boolean isWriteName() {
