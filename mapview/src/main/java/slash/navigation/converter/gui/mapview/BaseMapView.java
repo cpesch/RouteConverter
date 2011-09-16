@@ -213,7 +213,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     public boolean isInitialized() {
-        synchronized (notificationMutex) {
+        synchronized (this) {
             return initialized;
         }
     }
