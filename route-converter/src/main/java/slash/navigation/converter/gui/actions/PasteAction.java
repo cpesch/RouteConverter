@@ -64,7 +64,7 @@ public class PasteAction extends FrameAction {
                 Object selection = transferable.getTransferData(PositionSelection.positionFlavor);
                 if (selection != null) {
                     PositionSelection positionsSelection = (PositionSelection) selection;
-                    paste(positionsSelection.getPositions(), positionsSelection.getFormat());
+                    paste(positionsSelection.getPositions());
                 }
             } else if (transferable.isDataFlavorSupported(PositionSelection.stringFlavor)) {
                 Object string = transferable.getTransferData(PositionSelection.stringFlavor);
@@ -79,11 +79,11 @@ public class PasteAction extends FrameAction {
         }
     }
 
-    protected void paste(List<BaseNavigationPosition> sourcePositions, BaseNavigationFormat targetFormat) throws IOException {
+    protected void paste(List<BaseNavigationPosition> sourcePositions) throws IOException {
         int[] selectedRows = table.getSelectedRows();
         final int insertRow = selectedRows.length > 0 ? selectedRows[0] + 1 : table.getRowCount();
 
-        List<BaseNavigationPosition> targetPositions = asFormat(sourcePositions, targetFormat);
+        List<BaseNavigationPosition> targetPositions = asFormat(sourcePositions, positionsModel.getRoute().getFormat());
         positionsModel.add(insertRow, targetPositions);
 
         final int lastRow = insertRow - 1 + targetPositions.size();
@@ -100,7 +100,7 @@ public class PasteAction extends FrameAction {
         try {
             if (parser.read(new ByteArrayInputStream(string.getBytes()))) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
-                paste(route.getPositions(), route.getFormat());
+                paste(route.getPositions());
             }
         } catch (IOException e) {
             // intentionally left empty
