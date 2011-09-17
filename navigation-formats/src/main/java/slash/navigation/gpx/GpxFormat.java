@@ -109,10 +109,6 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return msToKmh(metersPerSecond);
     }
 
-    protected boolean isWriteName() {
-        return preferences.getBoolean("writeName", true);
-    }
-
     protected boolean isWriteAccuracy() {
         return preferences.getBoolean("writeAccuracy", true);
     }
@@ -121,12 +117,16 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return preferences.getBoolean("writeElevation", true);
     }
 
-    protected boolean isWriteSpeed() {
-        return preferences.getBoolean("writeSpeed", true);
-    }
-
     protected boolean isWriteHeading() {
         return preferences.getBoolean("writeHeading", true);
+    }
+
+    protected boolean isWriteName() {
+        return preferences.getBoolean("writeName", true);
+    }
+
+    protected boolean isWriteSpeed() {
+        return preferences.getBoolean("writeSpeed", true);
     }
 
     protected boolean isWriteTime() {
