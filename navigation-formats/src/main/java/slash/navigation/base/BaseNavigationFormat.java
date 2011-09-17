@@ -20,14 +20,14 @@
 
 package slash.navigation.base;
 
-import slash.common.io.Transfer;
-
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
-import java.io.InputStream;
-import java.io.IOException;
+
+import static slash.common.io.Transfer.trim;
 
 /**
  * The base of all navigation formats.
@@ -74,25 +74,30 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
     }
 
     protected String asName(String comment) {
-        if(comment == null)
+        if (comment == null)
             return null;
         int index = comment.indexOf(';');
-        if (index != -1) 
+        if (index != -1)
             comment = comment.substring(0, index);
-        return Transfer.trim(comment);
+        return trim(comment);
     }
 
-    protected String asDesc(String comment, String description) {
-        if (comment != null) {
-            int index = comment.indexOf(';');
-            if (index != -1) {
-                description = comment.substring(index);
-                if (description.startsWith("; "))
-                    description = description.substring(2);
-            } else 
-                return null;
-        }
-        return Transfer.trim(description);
+    protected String asDesc(String comment) {
+        if (comment == null)
+            return null;
+        int index = comment.indexOf(';');
+        if (index != -1) {
+            comment = comment.substring(index + 1);
+            return trim(comment);
+        } else
+            return null;
+    }
+
+    protected String asDesc(String comment, String defaultValue) {
+        String result = asDesc(comment);
+        if (result == null)
+            result = trim(defaultValue);
+        return result;
     }
 
     public boolean isSupportsReading() {
@@ -108,7 +113,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
     }
 
     public int getMaximumRouteNameLength() {
-        return preferences.getInt("maximumRouteNameLength", 64); 
+        return preferences.getInt("maximumRouteNameLength", 64);
     }
 
     public abstract <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);

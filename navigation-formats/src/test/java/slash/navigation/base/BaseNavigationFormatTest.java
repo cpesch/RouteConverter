@@ -20,41 +20,56 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
 import slash.navigation.gpx.Gpx10Format;
 
-public class BaseNavigationFormatTest extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+
+public class BaseNavigationFormatTest {
     Gpx10Format format = new Gpx10Format();
 
-    private void check(String name, String desc, String expectedComment, String expectedName, String expectedDesc) {
+    private void check(String name, String desc, String expectedComment, String expectedName, String expectedDesc, String expectedDesc2) {
         String comment = format.asComment(name, desc);
         assertEquals(expectedComment, comment);
         String actualName = format.asName(comment);
         assertEquals(expectedName, actualName);
         String actualDesc = format.asDesc(comment, desc);
         assertEquals(expectedDesc, actualDesc);
+        String actualDesc2 = format.asDesc(comment);
+        assertEquals(expectedDesc2, actualDesc2);
+    }
+
+    private void check(String name, String desc, String expectedComment, String expectedName, String expectedDesc) {
+        check(name, desc, expectedComment, expectedName, expectedDesc, expectedDesc);
     }
 
     private void check(String name, String desc, String expectedComment) {
         check(name, desc, expectedComment, name, desc);
     }
 
-    public void testNameAndDescRoundtrip() {
+    @Test
+    public void nameAndDescRoundtrip() {
         check("name", "description", "name; description");
     }
 
-    public void testNameRoundtrip() {
+    @Test
+    public void nameRoundtrip() {
         check("name", null, "name");
     }
 
-    public void testDescRoundtrip() {
-        check(null, "description", "description", "description", null);
+    @Test
+    public void descRoundtrip() {
+        check(null, "description", "description", "description", "description", null);
     }
 
-    public void testNameWithSemicolonRoundtrip() {
+    @Test
+    public void nameWithSemicolonRoundtrip() {
         check("name; description", null, "name; description", "name", "description");
     }
 
-    public void testNameWithoutSemicolonAndDescription() {
-        assertEquals(null, format.asDesc("name", "desc"));
+    @Test
+    public void nameWithoutSemicolonAndDescription() {
+        assertEquals("desc", format.asDesc("name", "desc"));
+        assertEquals(null, format.asDesc("name"));
     }
 }

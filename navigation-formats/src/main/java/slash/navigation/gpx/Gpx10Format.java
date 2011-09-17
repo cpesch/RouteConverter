@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.*;
 import static slash.common.io.Transfer.formatDouble;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.util.Conversion.kmhToMs;
@@ -175,14 +176,14 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private String formatSpeed(String comment, Double speed) {
-        if (Transfer.isEmpty(speed))
+        if (isEmpty(speed))
             return comment;
         return (comment != null ? comment + " " : "") +
                 "Speed: " + formatSpeedAsString(speed) + " Km/h";
     }
 
     private String formatHeading(String comment, Double heading) {
-        if (Transfer.isEmpty(heading))
+        if (isEmpty(heading))
             return comment;
         return (comment != null ? comment + " " : "") +
                 "Heading: " + formatHeadingAsString(heading);
