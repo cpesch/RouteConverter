@@ -34,7 +34,8 @@ import slash.navigation.util.Bearing;
 import java.util.Calendar;
 
 import static java.lang.Double.isNaN;
-import static java.lang.Math.abs;
+import static java.lang.Math.*;
+import static slash.navigation.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.util.Bearing.calculateBearing;
 
 /**
@@ -216,10 +217,10 @@ public abstract class BaseNavigationPosition {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
             Double distanceAtoD = calculateDistance(pointA);
             if (distanceAtoD != null) {
-                double courseAtoD = Math.toRadians(pointA.calculateAngle(this));
-                double courseAtoB = Math.toRadians(pointA.calculateAngle(pointB));
-                return Math.asin(Math.sin(distanceAtoD / Bearing.EARTH_RADIUS) *
-                        Math.sin(courseAtoD - courseAtoB)) * Bearing.EARTH_RADIUS;
+                double courseAtoD = toRadians(pointA.calculateAngle(this));
+                double courseAtoB = toRadians(pointA.calculateAngle(pointB));
+                return asin(sin(distanceAtoD / EARTH_RADIUS) *
+                        sin(courseAtoD - courseAtoB)) * EARTH_RADIUS;
             }
         }
         return null;

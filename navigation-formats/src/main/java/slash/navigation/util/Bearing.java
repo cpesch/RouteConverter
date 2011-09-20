@@ -22,7 +22,8 @@
 
 package slash.navigation.util;
 
-import slash.common.io.Transfer;
+import static java.lang.Math.*;
+import static slash.common.io.Transfer.roundMeterToMillimeterPrecision;
 
 /**
  * Computes the distance, azimuth, and back azimuth between
@@ -74,12 +75,12 @@ public class Bearing {
     /**
      * conversion for degrees to radians
      */
-    private static final double rad = Math.toRadians(1.0);
+    private static final double rad = toRadians(1.0);
 
     /**
      * conversion for radians to degrees
      */
-    private static final double deg = Math.toDegrees(1.0);
+    private static final double deg = toDegrees(1.0);
 
     public Bearing(double azimuth, double backazimuth, double distance) {
         this.azimuth = azimuth;
@@ -178,11 +179,11 @@ public class Bearing {
         // COMMON/ELIPSOID/EARTH_RADIUS,F
         double GLAT1 = rad * latitude1;
         double GLAT2 = rad * latitude2;
-        double TU1 = R * Math.sin(GLAT1) / Math.cos(GLAT1);
-        double TU2 = R * Math.sin(GLAT2) / Math.cos(GLAT2);
-        double CU1 = 1. / Math.sqrt(TU1 * TU1 + 1.);
+        double TU1 = R * sin(GLAT1) / cos(GLAT1);
+        double TU2 = R * sin(GLAT2) / cos(GLAT2);
+        double CU1 = 1. / sqrt(TU1 * TU1 + 1.);
         double SU1 = CU1 * TU1;
-        double CU2 = 1. / Math.sqrt(TU2 * TU2 + 1.);
+        double CU2 = 1. / sqrt(TU2 * TU2 + 1.);
         double S = CU1 * CU2;
         double BAZ = S * TU2;
         double FAZ = BAZ * TU1;
@@ -192,13 +193,13 @@ public class Bearing {
         double D, SX, CX, SY, CY, Y, SA, C2A, CZ, E, C;
         int count = 0;
         do {
-            SX = Math.sin(X);
-            CX = Math.cos(X);
+            SX = sin(X);
+            CX = cos(X);
             TU1 = CU2 * SX;
             TU2 = BAZ - SU1 * CU2 * CX;
-            SY = Math.sqrt(TU1 * TU1 + TU2 * TU2);
+            SY = sqrt(TU1 * TU1 + TU2 * TU2);
             CY = S * CX + FAZ;
-            Y = Math.atan2(SY, CY);
+            Y = atan2(SY, CY);
             SA = S * SX / SY;
             C2A = -SA * SA + 1.;
             CZ = FAZ + FAZ;
@@ -213,11 +214,11 @@ public class Bearing {
             if(count++ > 100000)
                 return new Bearing(0, 0, 0);
             //IF(DABS(D-X).GT.EPS) GO TO 100
-        } while (Math.abs(D - X) > EPS);
+        } while (abs(D - X) > EPS);
 
-        FAZ = Math.atan2(TU1, TU2);
-        BAZ = Math.atan2(CU1 * SX, BAZ * CX - SU1 * CU2) + Math.PI;
-        X = Math.sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
+        FAZ = atan2(TU1, TU2);
+        BAZ = atan2(CU1 * SX, BAZ * CX - SU1 * CU2) + Math.PI;
+        X = sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
         X = (X - 2.) / X;
         C = 1. - X;
         C = (X * X / 4. + 1.) / C;
@@ -231,7 +232,7 @@ public class Bearing {
             azimuth += 360.0;  // reset azs from -180 to 180 to 0 to 360
         }
         double backazimuth = BAZ * deg;  // radians to degrees; already in 0 to 360 range
-        return new Bearing(azimuth, backazimuth, Transfer.roundMeterToMillimeterPrecision(S));
+        return new Bearing(azimuth, backazimuth, roundMeterToMillimeterPrecision(S));
     }
 }
 
