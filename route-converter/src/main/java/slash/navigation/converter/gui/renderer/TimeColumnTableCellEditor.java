@@ -20,16 +20,11 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
-import java.text.DateFormat;
-import java.util.TimeZone;
 
-import static java.text.DateFormat.MEDIUM;
-import static java.text.DateFormat.SHORT;
+import static slash.navigation.converter.gui.helper.PositionHelper.extractTime;
 
 /**
  * Renders the time column of the positions table.
@@ -38,20 +33,8 @@ import static java.text.DateFormat.SHORT;
  */
 
 public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
-    private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-    private String currentTimeZone = "";
-
     public TimeColumnTableCellEditor() {
         super(RIGHT);
-    }
-
-    private String formatTime(CompactCalendar time) {
-        String timeZonePreference = RouteConverter.getInstance().getTimeZonePreference();
-        if (!currentTimeZone.equals(timeZonePreference)) {
-            timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeZone = timeZonePreference;
-        }
-        return timeFormat.format(time.getTime());
     }
 
     protected void formatCell(JLabel label, BaseNavigationPosition position) {
@@ -59,7 +42,6 @@ public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected String extractValue(BaseNavigationPosition position) {
-        CompactCalendar time = position.getTime();
-        return time != null ? formatTime(time) : "";
+        return extractTime(position);
     }
 }

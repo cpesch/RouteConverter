@@ -24,6 +24,8 @@ import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
+
 /**
  * Renders the elevation column of the positions table.
  *
@@ -31,10 +33,6 @@ import javax.swing.*;
  */
 
 public class ElevationColumnTableCellEditor extends PositionsTableCellEditor {
-    static String formatElevation(Double elevation) {
-        return elevation != null ? Math.round(elevation) + " m" : "";
-    }
-
     public ElevationColumnTableCellEditor() {
         super(RIGHT);
     }
@@ -44,6 +42,6 @@ public class ElevationColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected String extractValue(BaseNavigationPosition position) {
-        return formatElevation(position.getElevation());
+        return extractElevation(position);
     }
 }

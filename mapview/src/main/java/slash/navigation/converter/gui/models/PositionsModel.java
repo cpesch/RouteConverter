@@ -39,6 +39,7 @@ public interface PositionsModel extends TableModel {
     BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute();
     void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route);
 
+    String getStringAt(int rowIndex, int columnIndex);
     BaseNavigationPosition getPosition(int rowIndex);
     int getIndex(BaseNavigationPosition position);
     List<BaseNavigationPosition> getPositions(int[] rowIndices);

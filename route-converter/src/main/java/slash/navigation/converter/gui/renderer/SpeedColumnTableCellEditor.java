@@ -20,10 +20,11 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
+
+import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
 
 /**
  * Renders the speed column of the positions table.
@@ -32,17 +33,6 @@ import javax.swing.*;
  */
 
 public class SpeedColumnTableCellEditor extends PositionsTableCellEditor {
-    private String formatSpeed(Double speed) {
-        if (Transfer.isEmpty(speed))
-            return "";
-        String speedStr;
-        if (Math.abs(speed) < 10.0)
-            speedStr = Double.toString(Transfer.roundFraction(speed, 1));
-        else
-            speedStr = Long.toString(Math.round(speed));
-        return speedStr + " Km/h";
-    }
-
     public SpeedColumnTableCellEditor() {
         super(RIGHT);
     }
@@ -52,6 +42,6 @@ public class SpeedColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected String extractValue(BaseNavigationPosition position) {
-        return formatSpeed(position.getSpeed());
+        return extractSpeed(position);
     }
 }

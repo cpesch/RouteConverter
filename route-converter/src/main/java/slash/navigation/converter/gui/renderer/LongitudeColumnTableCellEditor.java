@@ -24,7 +24,7 @@ import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
 
-import static java.lang.Math.abs;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitudeOrLatitude;
 
 /**
  * Renders the longitude column of the positions table.
@@ -33,19 +33,6 @@ import static java.lang.Math.abs;
  */
 
 public class LongitudeColumnTableCellEditor extends PositionsTableCellEditor {
-    static String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (longitudeOrLatitude == null)
-            return "";
-        String result = Double.toString(longitudeOrLatitude) + " ";
-        if (abs(longitudeOrLatitude) < 10.0)
-            result = " " + result;
-        if (abs(longitudeOrLatitude) < 100.0)
-            result = " " + result;
-        if (result.length() > 12)
-            result = result.substring(0, 12 - 1);
-        return result;
-    }
-
     public LongitudeColumnTableCellEditor() {
         super(RIGHT);
     }

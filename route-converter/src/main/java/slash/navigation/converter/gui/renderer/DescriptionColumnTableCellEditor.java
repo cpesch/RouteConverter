@@ -24,6 +24,8 @@ import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
+
 /**
  * Renders the description column of the positions table.
  *
@@ -40,6 +42,6 @@ public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected String extractValue(BaseNavigationPosition position) {
-        return position.getComment();
+        return extractComment(position);
     }
 }

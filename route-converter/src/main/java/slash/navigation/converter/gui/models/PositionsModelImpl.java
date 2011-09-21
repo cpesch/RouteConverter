@@ -38,6 +38,8 @@ import static java.text.DateFormat.SHORT;
 import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormat;
+import static slash.navigation.converter.gui.helper.PositionHelper.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -65,13 +67,32 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
     }
 
+    public String getStringAt(int rowIndex, int columnIndex) {
+        BaseNavigationPosition position = getPosition(rowIndex);
+        switch (columnIndex) {
+            case DESCRIPTION_COLUMN_INDEX:
+                return extractComment(position);
+            case TIME_COLUMN_INDEX:
+                return extractTime(position);
+            case LONGITUDE_COLUMN_INDEX:
+                return formatLongitudeOrLatitude(position.getLongitude());
+            case LATITUDE_COLUMN_INDEX:
+                return formatLongitudeOrLatitude(position.getLatitude());
+            case ELEVATION_COLUMN_INDEX:
+                return extractElevation(position);
+            case SPEED_COLUMN_INDEX:
+                return extractSpeed(position);
+        }
+        throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+    }
+
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
-            case PositionColumns.DISTANCE_COLUMN_INDEX:
+            case DISTANCE_COLUMN_INDEX:
                 return getRoute().getDistance(0, rowIndex);
-            case PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX:
+            case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
-            case PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX:
+            case ELEVATION_DESCEND_COLUMN_INDEX:
                 return getRoute().getElevationDescend(0, rowIndex);
         }
         return getPosition(rowIndex);
@@ -117,12 +138,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         switch (columnIndex) {
-            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
-            case PositionColumns.TIME_COLUMN_INDEX:
-            case PositionColumns.LONGITUDE_COLUMN_INDEX:
-            case PositionColumns.LATITUDE_COLUMN_INDEX:
-            case PositionColumns.ELEVATION_COLUMN_INDEX:
-            case PositionColumns.SPEED_COLUMN_INDEX:
+            case DESCRIPTION_COLUMN_INDEX:
+            case TIME_COLUMN_INDEX:
+            case LONGITUDE_COLUMN_INDEX:
+            case LATITUDE_COLUMN_INDEX:
+            case ELEVATION_COLUMN_INDEX:
+            case SPEED_COLUMN_INDEX:
                 return true;
             default:
                 return false;
@@ -140,28 +161,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         BaseNavigationPosition position = getPosition(rowIndex);
         String string = aValue != null ? trim(aValue.toString()) : null;
         switch (columnIndex) {
-            case PositionColumns.DESCRIPTION_COLUMN_INDEX:
+            case DESCRIPTION_COLUMN_INDEX:
                 position.setComment(string);
                 break;
-            case PositionColumns.TIME_COLUMN_INDEX:
+            case TIME_COLUMN_INDEX:
                 position.setTime(parseTime(aValue, string));
                 break;
-            case PositionColumns.LONGITUDE_COLUMN_INDEX:
+            case LONGITUDE_COLUMN_INDEX:
                 Double longitude = parseDouble(aValue, string, null);
                 if (longitude != null)
                     position.setLongitude(longitude);
                 break;
-            case PositionColumns.LATITUDE_COLUMN_INDEX:
+            case LATITUDE_COLUMN_INDEX:
                 Double latitude = parseDouble(aValue, string, null);
                 if (latitude != null)
                     position.setLatitude(latitude);
                 break;
-            case PositionColumns.ELEVATION_COLUMN_INDEX:
+            case ELEVATION_COLUMN_INDEX:
                 Double elevation = parseDouble(aValue, string, "m");
                 if (elevation != null)
                     position.setElevation(elevation);
                 break;
-            case PositionColumns.SPEED_COLUMN_INDEX:
+            case SPEED_COLUMN_INDEX:
                 Double speed = parseDouble(aValue, string, "Km/h");
                 if (speed != null)
                     position.setSpeed(speed);

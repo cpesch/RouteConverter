@@ -26,6 +26,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
 
+import static java.util.Locale.ROOT;
+
 /**
  * Renders the {@link Locale} labels of the language combo box.
  *
@@ -39,7 +41,7 @@ public class LocaleListCellRenderer extends DefaultListCellRenderer {
         Locale locale = (Locale) value;
 
         String text;
-        if (Locale.ROOT.equals(locale))
+        if (ROOT.equals(locale))
             text = RouteConverter.getBundle().getString("locale-default");
         else {
             String language = locale.getLanguage();

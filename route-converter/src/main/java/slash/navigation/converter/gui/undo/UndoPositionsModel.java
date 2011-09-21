@@ -81,12 +81,15 @@ public class UndoPositionsModel implements PositionsModel {
         edit(aValue, rowIndex, columnIndex, true, true);
     }
 
+    public String getStringAt(int rowIndex, int columnIndex) {
+        return delegate.getStringAt(rowIndex, columnIndex);
+    }
+
     public void edit(Object aValue, int rowIndex, int columnIndex, boolean fireEvent, boolean trackUndo) {
         if (rowIndex == getRowCount())
             return;
 
-        // TODO: getValueAt() returns now the Position not the cell value
-        Object previousValue = trackUndo ? getValueAt(rowIndex, columnIndex) : null;
+        Object previousValue = trackUndo ? getStringAt(rowIndex, columnIndex) : null;
         delegate.edit(aValue, rowIndex, columnIndex, fireEvent, trackUndo);
         if (trackUndo)
             undoManager.addEdit(new EditPosition(this, rowIndex, columnIndex, previousValue, aValue));
