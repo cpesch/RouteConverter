@@ -41,11 +41,11 @@ class RevertPositions extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "revert-undo";
+        return "revert-position-undo";
     }
 
     public String getRedoPresentationName() {
-        return "revert-redo";
+        return "revert-position-redo";
     }
 
     public void undo() throws CannotUndoException {

@@ -48,11 +48,11 @@ class EditPosition extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "edit-undo";
+        return "edit-position-undo";
     }
 
     public String getRedoPresentationName() {
-        return "edit-redo";
+        return "edit-position-redo";
     }
 
     public void undo() throws CannotUndoException {

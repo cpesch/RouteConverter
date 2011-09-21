@@ -138,14 +138,33 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
     }
 
     public void renameRoute(String name) {
+        renameRoute(name, true);
+    }
+
+    public void renameRoute(String name, boolean trackUndo) {
+        String previousName = getSelectedRoute().getName();
         delegate.renameRoute(name);
+        if (trackUndo)
+            undoManager.addEdit(new RenameRoute(this, previousName, name));
     }
 
     public void addRoute(int index, BaseRoute route) {
+        addRoute(index, route, true);
+    }
+
+    public void addRoute(int index, BaseRoute route, boolean trackUndo) {
         delegate.addRoute(index, route);
+        if (trackUndo)
+            undoManager.addEdit(new AddRoute(this, index, route));
     }
 
     public void removeRoute(BaseRoute route) {
+        removeRoute(route, true);
+    }
+
+    public void removeRoute(BaseRoute route, boolean trackUndo) {
         delegate.removeRoute(route);
+        if (trackUndo)
+            undoManager.addEdit(new RemoveRoute(this, route));
     }
 }

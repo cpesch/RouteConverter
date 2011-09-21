@@ -46,11 +46,11 @@ class DownPositions extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "down-undo";
+        return "down-position-undo";
     }
 
     public String getRedoPresentationName() {
-        return "down-redo";
+        return "down-position-redo";
     }
 
     public void undo() throws CannotUndoException {

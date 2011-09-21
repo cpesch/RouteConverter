@@ -43,11 +43,11 @@ class TopPositions extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "top-undo";
+        return "top-position-undo";
     }
 
     public String getRedoPresentationName() {
-        return "top-redo";
+        return "top-position-redo";
     }
 
     public void undo() throws CannotUndoException {

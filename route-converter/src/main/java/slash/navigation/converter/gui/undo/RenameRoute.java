@@ -20,44 +20,42 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for changing the route of a {@link UndoFormatAndRoutesModel}.
+ * Acts as a {@link UndoableEdit} for renaming the route of a {@link UndoFormatAndRoutesModel}.
  *
  * @author Christian Pesch
  */
 
-class ChangeRoute extends AbstractUndoableEdit {
+class RenameRoute extends AbstractUndoableEdit {
     private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute, nextRoute;
+    private String previousName, nextName;
 
-    public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel,
-                       BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute,
-                       BaseRoute<BaseNavigationPosition, BaseNavigationFormat> nextRoute) {
+    public RenameRoute(UndoFormatAndRoutesModel formatAndRoutesModel, String previousName, String nextName) {
         this.formatAndRoutesModel = formatAndRoutesModel;
-        this.previousRoute = previousRoute;
-        this.nextRoute = nextRoute;
+        this.previousName = previousName;
+        this.nextName = nextName;
     }
 
-    public boolean isSignificant() {
-        return false;
+    public String getUndoPresentationName() {
+        return "rename-route-undo";
+    }
+
+    public String getRedoPresentationName() {
+        return "rename-route-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        formatAndRoutesModel.setSelectedRoute(previousRoute, false);
+        formatAndRoutesModel.renameRoute(previousName, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        formatAndRoutesModel.setSelectedRoute(nextRoute, false);
+        formatAndRoutesModel.renameRoute(nextName, false);
     }
 }

@@ -47,11 +47,11 @@ class AddPositions extends AbstractUndoableEdit {
     }
 
     public String getUndoPresentationName() {
-        return "add-undo"; 
+        return "add-position-undo";
     }
 
     public String getRedoPresentationName() {
-        return "add-redo";
+        return "add-position-redo";
     }
 
     public void undo() throws CannotUndoException {

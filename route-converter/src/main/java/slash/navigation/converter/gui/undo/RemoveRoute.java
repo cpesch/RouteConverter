@@ -20,8 +20,6 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -30,34 +28,36 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for changing the route of a {@link UndoFormatAndRoutesModel}.
+ * Acts as a {@link UndoableEdit} for removing the route of a {@link UndoFormatAndRoutesModel}.
  *
  * @author Christian Pesch
  */
 
-class ChangeRoute extends AbstractUndoableEdit {
+class RemoveRoute extends AbstractUndoableEdit {
     private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute, nextRoute;
+    private BaseRoute route;
 
-    public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel,
-                       BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute,
-                       BaseRoute<BaseNavigationPosition, BaseNavigationFormat> nextRoute) {
+    public RemoveRoute(UndoFormatAndRoutesModel formatAndRoutesModel, BaseRoute route) {
         this.formatAndRoutesModel = formatAndRoutesModel;
-        this.previousRoute = previousRoute;
-        this.nextRoute = nextRoute;
+        this.route = route;
     }
 
-    public boolean isSignificant() {
-        return false;
+    public String getUndoPresentationName() {
+        return "remove-route-undo";
+    }
+
+    public String getRedoPresentationName() {
+        return "remove-route-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        formatAndRoutesModel.setSelectedRoute(previousRoute, false);
+        // TODO insert where it was before not at 0
+        formatAndRoutesModel.addRoute(0, route, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        formatAndRoutesModel.setSelectedRoute(nextRoute, false);
+        formatAndRoutesModel.removeRoute(route, false);
     }
 }
