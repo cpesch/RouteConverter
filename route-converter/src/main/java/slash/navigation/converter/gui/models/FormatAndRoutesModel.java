@@ -48,6 +48,7 @@ public interface FormatAndRoutesModel extends ComboBoxModel {
     BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getSelectedRoute();
     void setSelectedRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route);
     BaseRoute getRoute(int index);
+    int getIndex(BaseRoute route);
 
     void renameRoute(String name);
     void addRoute(int index, BaseRoute route);

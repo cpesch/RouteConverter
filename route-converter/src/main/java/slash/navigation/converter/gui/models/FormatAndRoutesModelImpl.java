@@ -114,7 +114,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
     }
 
     public void removeRoute(BaseRoute route) {
-        int index = getRoutes().indexOf(route);
+        int index = getIndex(route);
         if (index != -1) {
             if (getElementAt(index) == getSelectedRoute()) {
                 if (index == 0) {
@@ -145,6 +145,10 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
     public BaseRoute getRoute(int index) {
         return getRoutes().get(index);
+    }
+
+    public int getIndex(BaseRoute route) {
+        return getRoutes().indexOf(route);
     }
 
     public PositionsModel getPositionsModel() {

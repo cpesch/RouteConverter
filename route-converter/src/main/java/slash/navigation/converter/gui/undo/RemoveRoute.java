@@ -35,10 +35,12 @@ import javax.swing.undo.UndoableEdit;
 
 class RemoveRoute extends AbstractUndoableEdit {
     private UndoFormatAndRoutesModel formatAndRoutesModel;
+    private int index;
     private BaseRoute route;
 
-    public RemoveRoute(UndoFormatAndRoutesModel formatAndRoutesModel, BaseRoute route) {
+    public RemoveRoute(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
         this.formatAndRoutesModel = formatAndRoutesModel;
+        this.index = index;
         this.route = route;
     }
 
@@ -52,8 +54,7 @@ class RemoveRoute extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        // TODO insert where it was before not at 0
-        formatAndRoutesModel.addRoute(0, route, false);
+        formatAndRoutesModel.addRoute(index, route, false);
     }
 
     public void redo() throws CannotRedoException {

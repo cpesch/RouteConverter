@@ -137,6 +137,10 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         return delegate.getRoute(index);
     }
 
+    public int getIndex(BaseRoute route) {
+        return delegate.getIndex(route);
+    }
+
     public void renameRoute(String name) {
         renameRoute(name, true);
     }
@@ -163,8 +167,9 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
     }
 
     public void removeRoute(BaseRoute route, boolean trackUndo) {
+        int index = getIndex(route);
         delegate.removeRoute(route);
         if (trackUndo)
-            undoManager.addEdit(new RemoveRoute(this, route));
+            undoManager.addEdit(new RemoveRoute(this, index, route));
     }
 }
