@@ -21,8 +21,8 @@
 package slash.navigation.converter.cmdline;
 
 import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * Formats log messages in a terse style.

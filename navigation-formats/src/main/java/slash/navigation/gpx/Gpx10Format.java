@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.*;
-import static slash.common.io.Transfer.formatDouble;
-import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.util.Conversion.kmhToMs;

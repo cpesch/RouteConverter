@@ -20,12 +20,12 @@
 
 package slash.navigation.klicktel;
 
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.XmlNavigationFormat;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 

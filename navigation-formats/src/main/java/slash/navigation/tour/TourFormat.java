@@ -20,11 +20,11 @@
 
 package slash.navigation.tour;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.RouteCharacteristics;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 
 import java.io.*;
 import java.util.*;

@@ -20,8 +20,8 @@
 
 package slash.navigation.kml;
 
-import slash.navigation.base.Wgs84Position;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.Wgs84Position;
 
 /**
  * Represents a position in a Google Earth (.kml) file.

@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.FrameAction;
+
 import javax.swing.*;
 
 /**

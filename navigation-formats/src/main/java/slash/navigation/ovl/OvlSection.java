@@ -20,9 +20,9 @@
 
 package slash.navigation.ovl;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.IniFileSection;
 import slash.navigation.base.Wgs84Position;
-import slash.common.io.Transfer;
 
 import java.util.HashSet;
 import java.util.regex.Matcher;

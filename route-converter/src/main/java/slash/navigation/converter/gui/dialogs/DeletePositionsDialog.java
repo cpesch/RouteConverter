@@ -29,13 +29,12 @@ import slash.navigation.converter.gui.helper.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.models.NumberDocument;
 import slash.navigation.gui.SimpleDialog;
-import slash.navigation.base.*;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.MessageFormat;

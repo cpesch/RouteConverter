@@ -20,8 +20,8 @@
 
 package slash.common.io;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * An {@link InputStream} which protects the underlying {@link InputStream} from beeing {@link #close()}ed.

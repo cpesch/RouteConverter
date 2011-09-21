@@ -20,9 +20,9 @@
 
 package slash.navigation.ovl;
 
-import slash.navigation.base.*;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.*;
 
 import java.io.*;
 import java.util.*;

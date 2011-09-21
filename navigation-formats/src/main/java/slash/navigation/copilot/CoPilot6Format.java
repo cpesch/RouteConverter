@@ -20,12 +20,9 @@
 
 package slash.navigation.copilot;
 
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
-import slash.common.io.Transfer;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 /**
  * Reads and writes CoPilot 6 (.trp) files.

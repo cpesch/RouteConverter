@@ -20,8 +20,8 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.gpx.binding10.Gpx;
 import slash.common.io.CompactCalendar;
+import slash.navigation.gpx.binding10.Gpx;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

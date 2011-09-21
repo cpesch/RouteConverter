@@ -29,8 +29,6 @@ import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.*;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
 
 /**
  * Provides value transfer functionality.

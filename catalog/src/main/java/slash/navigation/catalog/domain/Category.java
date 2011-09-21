@@ -25,8 +25,8 @@ import slash.navigation.gpx.binding11.LinkType;
 import slash.navigation.gpx.binding11.MetadataType;
 import slash.navigation.gpx.binding11.RteType;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

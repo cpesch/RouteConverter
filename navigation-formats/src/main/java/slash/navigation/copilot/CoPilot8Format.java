@@ -21,8 +21,6 @@
 package slash.navigation.copilot;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
@@ -30,8 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
-
-import static slash.common.io.Transfer.formatIntAsString;
 
 /**
  * Reads and writes CoPilot 8 (.trp) files.

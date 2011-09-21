@@ -32,7 +32,6 @@ import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRendere
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.gui.SimpleDialog;
-import slash.navigation.base.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

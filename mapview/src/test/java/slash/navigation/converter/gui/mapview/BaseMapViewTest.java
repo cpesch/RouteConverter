@@ -1,7 +1,6 @@
 package slash.navigation.converter.gui.mapview;
 
 import org.junit.Test;
-import slash.common.io.Transfer;
 
 import java.util.ArrayList;
 import java.util.Arrays;

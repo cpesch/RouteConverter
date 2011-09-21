@@ -22,8 +22,8 @@ package slash.navigation.converter.gui.mapview;
 
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 
 import java.awt.*;

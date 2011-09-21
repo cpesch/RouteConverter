@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.gui.FrameAction;
+
 import javax.swing.*;
 
 /**

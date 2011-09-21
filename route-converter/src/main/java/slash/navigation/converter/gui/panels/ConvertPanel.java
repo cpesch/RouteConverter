@@ -70,9 +70,7 @@ import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByE
 import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferredFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.gui.Constants.createJFileChooser;
-import static slash.navigation.gui.Constants.startWaitCursor;
-import static slash.navigation.gui.Constants.stopWaitCursor;
+import static slash.navigation.gui.Constants.*;
 
 /**
  * The convert panel of the route converter user interface.

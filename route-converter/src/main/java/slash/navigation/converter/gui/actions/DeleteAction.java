@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.helper.JTableHelper;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;

@@ -29,9 +29,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import static slash.navigation.util.Positions.center;
-import static slash.navigation.util.Positions.northEast;
-import static slash.navigation.util.Positions.southWest;
+import static slash.navigation.util.Positions.*;
 
 /**
  * Writes a Web Page (*.html).

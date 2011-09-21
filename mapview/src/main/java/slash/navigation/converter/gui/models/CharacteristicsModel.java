@@ -21,9 +21,9 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
 
 import javax.swing.*;
 

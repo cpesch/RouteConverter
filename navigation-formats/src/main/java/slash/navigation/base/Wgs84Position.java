@@ -21,10 +21,10 @@
 package slash.navigation.base;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.util.RouteComments;
-import slash.navigation.itn.TomTomPosition;
 import slash.navigation.gpx.GpxPosition;
+import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmea.NmeaPosition;
+import slash.navigation.util.RouteComments;
 
 /**
  * Represents a WGS84 position in a route.

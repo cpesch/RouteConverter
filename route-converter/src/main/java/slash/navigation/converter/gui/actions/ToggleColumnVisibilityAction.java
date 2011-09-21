@@ -20,7 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.models.PositionTableColumn;
+import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.gui.FrameAction;
 
 /**

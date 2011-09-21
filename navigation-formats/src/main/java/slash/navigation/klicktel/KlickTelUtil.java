@@ -20,14 +20,16 @@
 
 package slash.navigation.klicktel;
 
+import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
-import slash.navigation.base.XmlNavigationFormat;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 class KlickTelUtil {
     private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);

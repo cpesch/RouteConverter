@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui;
 
 import slash.common.io.InputOutput;
-import slash.common.io.Version;
 import slash.common.io.Transfer;
+import slash.common.io.Version;
 
 import javax.swing.*;
 import java.awt.*;

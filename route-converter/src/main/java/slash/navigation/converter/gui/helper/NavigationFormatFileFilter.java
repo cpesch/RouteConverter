@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.helper;
 
+import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.NavigationFormat;
-import slash.common.io.Files;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;

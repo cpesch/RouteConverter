@@ -20,15 +20,19 @@
 
 package slash.navigation.viamichelin;
 
-import slash.navigation.base.*;
-import slash.navigation.base.XmlNavigationFormat;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.viamichelin.binding.*;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

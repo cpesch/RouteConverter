@@ -20,11 +20,11 @@
 
 package slash.navigation.bcr;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.RouteCharacteristics;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,8 +32,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.prefs.Preferences;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -23,7 +23,8 @@ package slash.common.io;
 import slash.common.TestCase;
 
 import java.text.DateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
 
 public class VersionTest extends TestCase {
 

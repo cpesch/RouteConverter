@@ -8,14 +8,15 @@
 
 package slash.navigation.kml.binding22;
 
-import java.util.ArrayList;
-import java.util.List;
+import slash.navigation.kml.binding22gx.TourType;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import slash.navigation.kml.binding22gx.TourType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

@@ -20,7 +20,8 @@
 
 package slash.navigation.converter.cmdline;
 
-import slash.common.io.*;
+import slash.common.io.Platform;
+import slash.common.io.Version;
 import slash.navigation.base.*;
 
 import java.io.File;
@@ -29,9 +30,7 @@ import java.util.List;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import static slash.common.io.Files.absolutize;
-import static slash.common.io.Files.createTargetFiles;
-import static slash.common.io.Files.removeExtension;
+import static slash.common.io.Files.*;
 import static slash.common.io.Version.parseVersionFromManifest;
 import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;

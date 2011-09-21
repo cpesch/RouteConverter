@@ -20,20 +20,23 @@
 
 package slash.navigation.nmn;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
-import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.prefs.Preferences;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.formatDouble;
 

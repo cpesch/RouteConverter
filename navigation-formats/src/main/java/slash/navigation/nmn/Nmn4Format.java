@@ -20,9 +20,9 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.Wgs84Position;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
+import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;

@@ -21,8 +21,6 @@
 package slash.navigation.util;
 
 import static java.lang.Math.*;
-import static java.lang.Math.ceil;
-import static java.lang.Math.exp;
 import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.floorFraction;
 

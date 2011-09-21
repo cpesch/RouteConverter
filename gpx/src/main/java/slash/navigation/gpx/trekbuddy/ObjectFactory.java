@@ -8,11 +8,11 @@
 
 package slash.navigation.gpx.trekbuddy;
 
-import java.math.BigDecimal;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
+import java.math.BigDecimal;
 
 
 /**

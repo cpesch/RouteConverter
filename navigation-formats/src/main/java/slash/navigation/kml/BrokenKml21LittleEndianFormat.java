@@ -24,9 +24,9 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.kml.binding21.KmlType;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 

@@ -19,8 +19,8 @@
 */
 package slash.navigation.rest;
 
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.PutMethod;
 
 /**
  * Wrapper to initiate an HTTP PUT Request.

@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.util.RouteComments;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import java.awt.*;

@@ -20,17 +20,17 @@
 
 package slash.navigation.nmea;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.common.io.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.prefs.Preferences;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

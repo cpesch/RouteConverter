@@ -1,8 +1,8 @@
 package slash.navigation.nmea;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.common.io.Transfer;
 
 import java.io.PrintWriter;
 import java.text.DecimalFormat;

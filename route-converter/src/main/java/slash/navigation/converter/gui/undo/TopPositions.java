@@ -21,9 +21,11 @@
 package slash.navigation.converter.gui.undo;
 
 import slash.navigation.converter.gui.models.PositionsModel;
-import javax.swing.undo.*;
+
+import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
 
 /**
  * Acts as a {@link UndoableEdit} for moving positions of a {@link PositionsModel} upwards.

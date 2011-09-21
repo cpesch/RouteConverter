@@ -20,9 +20,9 @@
 
 package slash.navigation.nmea;
 
+import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.NavigationTestCase;
-import slash.common.io.CompactCalendar;
 
 import java.io.*;
 import java.text.DateFormat;

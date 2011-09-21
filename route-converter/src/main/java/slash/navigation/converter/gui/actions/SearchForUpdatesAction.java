@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.gui.FrameAction;
 import slash.navigation.converter.gui.Updater;
+import slash.navigation.gui.FrameAction;
 
 /**
  * Search for {@link Updater updates}.

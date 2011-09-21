@@ -41,9 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.hex.HexDecoder.decodeBytes;
-import static slash.common.io.Transfer.formatElevationAsString;
-import static slash.common.io.Transfer.formatPositionAsString;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 
 /**
  * The base of all Google Earth formats.

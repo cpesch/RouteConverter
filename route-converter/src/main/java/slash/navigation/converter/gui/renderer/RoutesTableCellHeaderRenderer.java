@@ -22,8 +22,8 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**

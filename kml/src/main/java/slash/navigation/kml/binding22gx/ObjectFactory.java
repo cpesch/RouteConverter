@@ -8,13 +8,14 @@
 
 package slash.navigation.kml.binding22gx;
 
-import java.math.BigInteger;
+import slash.navigation.kml.binding22.TimeSpanType;
+import slash.navigation.kml.binding22.TimeStampType;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import slash.navigation.kml.binding22.TimeSpanType;
-import slash.navigation.kml.binding22.TimeStampType;
+import java.math.BigInteger;
 
 
 /**

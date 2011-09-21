@@ -28,9 +28,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.*;
 
 /**
  * Reads and writes Route 66 POI (.csv) files.

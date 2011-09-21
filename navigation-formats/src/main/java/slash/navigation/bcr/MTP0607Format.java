@@ -20,8 +20,6 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.util.Conversion;
-
 import java.io.PrintWriter;
 
 /**

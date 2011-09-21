@@ -22,10 +22,10 @@ package slash.navigation.googlemaps;
 
 import slash.common.io.Transfer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
 
 import static slash.common.io.Transfer.parseDouble;
 

@@ -23,8 +23,8 @@ package slash.navigation.catalog.model;
 import slash.navigation.catalog.domain.Route;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.text.Collator;
+import java.util.Comparator;
 
 /**
  * Compares routes by name.

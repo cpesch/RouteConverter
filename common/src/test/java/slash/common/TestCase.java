@@ -22,10 +22,10 @@ package slash.common;
 
 import slash.common.io.CompactCalendar;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.text.DateFormat;
 
 public abstract class TestCase extends junit.framework.TestCase {
     private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH);

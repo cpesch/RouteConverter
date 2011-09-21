@@ -20,10 +20,10 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.base.Wgs84Position;
 import slash.common.io.CompactCalendar;
-import slash.navigation.util.RouteComments;
 import slash.common.io.Transfer;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.util.RouteComments;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -20,12 +20,12 @@
 
 package slash.navigation.bcr;
 
+import slash.common.io.CompactCalendar;
+import slash.common.io.Transfer;
 import slash.navigation.base.MercatorPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.tour.TourPosition;
-import slash.common.io.CompactCalendar;
 import slash.navigation.util.Conversion;
-import slash.common.io.Transfer;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;

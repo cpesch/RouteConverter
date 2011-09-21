@@ -20,6 +20,9 @@
 
 package slash.navigation.nmn;
 
+import slash.common.io.CompactCalendar;
+import slash.navigation.base.*;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -27,9 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-
-import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
 
 import static java.lang.String.format;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;

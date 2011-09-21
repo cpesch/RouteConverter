@@ -20,7 +20,10 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import java.awt.datatransfer.DataFlavor;

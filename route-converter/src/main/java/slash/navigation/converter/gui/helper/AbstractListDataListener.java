@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.helper;
 
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
  * A {@link ListDataListener} that treats all events the same

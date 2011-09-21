@@ -8,11 +8,12 @@
 
 package slash.navigation.kml.binding22gx;
 
+import slash.navigation.kml.binding22.AbstractFeatureType;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import slash.navigation.kml.binding22.AbstractFeatureType;
 
 
 /**
