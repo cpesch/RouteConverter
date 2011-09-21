@@ -24,6 +24,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static slash.navigation.gui.Constants.startWaitCursor;
+import static slash.navigation.gui.Constants.stopWaitCursor;
+
 /**
  * An {@link Action} and {@link ActionListener} that starts and stops the wait cursor on the application frame.
  *
@@ -46,11 +49,11 @@ public abstract class FrameAction extends AbstractAction implements ActionListen
 
     public final void actionPerformed(ActionEvent e) {
         ACTION_EVENT.set(e);
-        Constants.startWaitCursor(getFrame().getRootPane());
+        startWaitCursor(getFrame().getRootPane());
         try {
             run();
         } finally {
-            Constants.stopWaitCursor(getFrame().getRootPane());
+            stopWaitCursor(getFrame().getRootPane());
         }
     }
 

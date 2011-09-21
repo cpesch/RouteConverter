@@ -36,6 +36,7 @@ import java.util.*;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
 import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormat;
 
 /**
@@ -137,7 +138,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             return;
 
         BaseNavigationPosition position = getPosition(rowIndex);
-        String string = aValue != null ? Transfer.trim(aValue.toString()) : null;
+        String string = aValue != null ? trim(aValue.toString()) : null;
         switch (columnIndex) {
             case PositionColumns.DESCRIPTION_COLUMN_INDEX:
                 position.setComment(string);

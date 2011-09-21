@@ -38,6 +38,7 @@ import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
+import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -118,7 +119,7 @@ public class ConvertPanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        formatAndRoutesModel = new FormatAndRoutesModel(r.getContext().getUndoManager());
+        formatAndRoutesModel = new UndoFormatAndRoutesModel(r.getContext().getUndoManager());
         positionsSelectionModel = new PositionsSelectionModel() {
             public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
                 if (replaceSelection) {
@@ -715,7 +716,7 @@ public class ConvertPanel {
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
         boolean existsMoreThanOnePosition = getPositionsModel().getRowCount() > 1;
-        RouteCharacteristics characteristics = formatAndRoutesModel.getCharacteristicsModel().getSelectedCharacteristics();
+        RouteCharacteristics characteristics = getCharacteristicsModel().getSelectedCharacteristics();
 
         comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
 
