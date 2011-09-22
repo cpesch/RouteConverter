@@ -841,6 +841,7 @@ public abstract class BaseMapView implements MapView {
 
     // draw on map
 
+    @SuppressWarnings({"unchecked"})
     protected void update(boolean haveToReplaceRoute) {
         if (!isInitialized() || !getComponent().isShowing())
             return;

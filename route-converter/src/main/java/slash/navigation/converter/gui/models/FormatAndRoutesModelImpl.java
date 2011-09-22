@@ -187,7 +187,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         return getSelectedRoute();
     }
 
-    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getSelectedRoute() {
+    public BaseRoute getSelectedRoute() {
         return getPositionsModel().getRoute();
     }
 
@@ -196,7 +196,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         setSelectedRoute((BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) anItem);
     }
 
-    public void setSelectedRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public void setSelectedRoute(BaseRoute route) {
         if ((getSelectedRoute() != null && !getSelectedRoute().equals(route)) ||
                 getSelectedRoute() == null && route != null) {
             getPositionsModel().setRoute(route);

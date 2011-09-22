@@ -50,11 +50,11 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
-    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
+    public BaseRoute getRoute() {
         return route;
     }
 
-    public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public void setRoute(BaseRoute route) {
         this.route = route;
         fireTableDataChanged();
     }

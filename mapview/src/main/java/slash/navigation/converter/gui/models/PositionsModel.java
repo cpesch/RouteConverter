@@ -36,8 +36,8 @@ import java.util.List;
  */
 
 public interface PositionsModel extends TableModel {
-    BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute();
-    void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route);
+    BaseRoute getRoute();
+    void setRoute(BaseRoute route);
 
     String getStringAt(int rowIndex, int columnIndex);
     BaseNavigationPosition getPosition(int rowIndex);

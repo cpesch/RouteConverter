@@ -109,11 +109,11 @@ public class UndoPositionsModel implements PositionsModel {
 
     // PositionsModel
 
-    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
+    public BaseRoute getRoute() {
         return delegate.getRoute();
     }
 
-    public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public void setRoute(BaseRoute route) {
         delegate.setRoute(route);
     }
 

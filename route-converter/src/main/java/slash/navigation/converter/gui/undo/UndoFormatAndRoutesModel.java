@@ -114,19 +114,18 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         delegate.addModifiedListener(listener);
     }
 
-    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getSelectedRoute() {
+    public BaseRoute getSelectedRoute() {
         return delegate.getSelectedRoute();
     }
 
-    public void setSelectedRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public void setSelectedRoute(BaseRoute route) {
         setSelectedRoute(route, true);
     }
 
-    public void setSelectedRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route,
-                                 boolean trackUndo) {
+    public void setSelectedRoute(BaseRoute route, boolean trackUndo) {
         if ((getSelectedRoute() != null && !getSelectedRoute().equals(route)) ||
                 getSelectedRoute() == null && route != null) {
-            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute = trackUndo ? getSelectedRoute() : null;
+            BaseRoute previousRoute = trackUndo ? getSelectedRoute() : null;
             delegate.setSelectedRoute(route);
             if (trackUndo)
                 undoManager.addEdit(new ChangeRoute(this, previousRoute, route));

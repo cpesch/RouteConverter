@@ -21,8 +21,6 @@
 package slash.navigation.converter.gui.elevationview;
 
 import org.jfree.data.xy.XYSeries;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.PositionsModel;
 
@@ -69,7 +67,7 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
         if (itemCount > 0 && firstRow < itemCount - 1)
             getSeries().delete(firstRow, itemCount - 1);
 
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = getPositions().getRoute();
+        BaseRoute route = getPositions().getRoute();
         if(route == null)
             return;
 

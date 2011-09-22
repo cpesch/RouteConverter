@@ -20,8 +20,6 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -37,11 +35,9 @@ import javax.swing.undo.UndoableEdit;
 
 class ChangeRoute extends AbstractUndoableEdit {
     private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute, nextRoute;
+    private BaseRoute previousRoute, nextRoute;
 
-    public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel,
-                       BaseRoute<BaseNavigationPosition, BaseNavigationFormat> previousRoute,
-                       BaseRoute<BaseNavigationPosition, BaseNavigationFormat> nextRoute) {
+    public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel, BaseRoute previousRoute, BaseRoute nextRoute) {
         this.formatAndRoutesModel = formatAndRoutesModel;
         this.previousRoute = previousRoute;
         this.nextRoute = nextRoute;

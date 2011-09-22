@@ -55,6 +55,7 @@ class RemoveRoute extends AbstractUndoableEdit {
     public void undo() throws CannotUndoException {
         super.undo();
         formatAndRoutesModel.addRoute(index, route, false);
+        formatAndRoutesModel.setSelectedRoute(route);
     }
 
     public void redo() throws CannotRedoException {
