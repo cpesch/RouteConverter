@@ -36,7 +36,9 @@ import slash.navigation.util.NumberPattern;
 
 import javax.swing.*;
 import java.text.MessageFormat;
+import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 /**
@@ -48,6 +50,7 @@ import static slash.navigation.util.RouteComments.getNumberedPosition;
  */
 
 public class BatchPositionAugmenter {
+    private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
     private JFrame frame;
 
     public BatchPositionAugmenter(JFrame frame) {
@@ -107,6 +110,8 @@ public class BatchPositionAugmenter {
                                     // range operations outweights the possible optimization 
                                     operation.run(index, position);
                                 } catch (Exception e) {
+                                    log.warning(format("Error while running operation %s on position %d: %s", operation, index, e));
+                                    e.printStackTrace();
                                     lastException[0] = e;
                                 }
                             }
