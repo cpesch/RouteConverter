@@ -20,92 +20,118 @@
 
 package slash.navigation.util;
 
-import slash.common.TestCase;
+import org.junit.Test;
 
-public class ConversionTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.assertNearBy;
+import static slash.navigation.util.Conversion.*;
+
+public class ConversionTest {
+    @Test
     public void testFeetToMeters() {
-        assertEquals(4.572, Conversion.feetToMeters(15));
+        assertDoubleEquals(3.048, feetToMeters(10));
     }
 
+    @Test
+    public void testMilesToKilometers() {
+        assertDoubleEquals(6.2137119223733395, kilometerToMiles(10));
+    }
+
+    @Test
     public void testMetersPerSecondToKilometersPerHour() {
-        assertEquals(3.6, Conversion.msToKmh(1.0));
-        assertEquals(20.0, Conversion.kmhToMs(72.0));
+        assertDoubleEquals(3.6, msToKmh(1.0));
+        assertDoubleEquals(20.0, kmhToMs(72.0));
     }
 
+    @Test
     public void testMercatorToWgs84() {
-        assertEquals(10.03200, Conversion.mercatorXToWgs84Longitude(1115508));
-        assertEquals(53.56948, Conversion.mercatorYToWgs84Latitude(7081108));
+        assertDoubleEquals(10.03200, mercatorXToWgs84Longitude(1115508));
+        assertDoubleEquals(53.56948, mercatorYToWgs84Latitude(7081108));
 
-        assertEquals(9.45327, Conversion.mercatorXToWgs84Longitude(1051156));
-        assertEquals(50.79276, Conversion.mercatorYToWgs84Latitude(6577349));
+        assertDoubleEquals(9.45327, mercatorXToWgs84Longitude(1051156));
+        assertDoubleEquals(50.79276, mercatorYToWgs84Latitude(6577349));
     }
 
+    @Test
     public void testWgs84ToMercator() {
-        assertEquals(1115508, Conversion.wgs84LongitudeToMercatorX(10.03200));
+        assertEquals(1115508, wgs84LongitudeToMercatorX(10.03200));
         // NH-TopTrans makes 7081108 from this - don't know why
-        assertEquals(7081107, Conversion.wgs84LatitudeToMercatorY(53.56948));
+        assertEquals(7081107, wgs84LatitudeToMercatorY(53.56948));
 
-        assertEquals(1051156, Conversion.wgs84LongitudeToMercatorX(9.45327));
-        assertEquals(6577349, Conversion.wgs84LatitudeToMercatorY(50.79276));
+        assertEquals(1051156, wgs84LongitudeToMercatorX(9.45327));
+        assertEquals(6577349, wgs84LatitudeToMercatorY(50.79276));
     }
 
 
+    @Test
     public void testGaussKruegerRightToWgs84LongitudeSouthWest() {
-        assertNearBy(13.35573, Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude(4592172, 5819212)[0]);
+        assertNearBy(13.35573, gaussKruegerRightHeightToWgs84LongitudeLatitude(4592172, 5819212)[0]);
     }
 
+    @Test
     public void testGaussKruegerHeightToWgs84LatitudeSouthWest() {
-        assertNearBy(52.49830, Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude(4592172, 5819212)[1]);
+        assertNearBy(52.49830, gaussKruegerRightHeightToWgs84LongitudeLatitude(4592172, 5819212)[1]);
     }
 
+    @Test
     public void testWgs84LongitudeToGaussKruegerRightSouthWest() {
-        assertNearBy(4592172, Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.35573, 52.49830)[0]);
+        assertNearBy(4592172, wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.35573, 52.49830)[0]);
     }
 
+    @Test
     public void testWgs84LatitudeToGaussKruegerHeightSouthWest() {
-        assertNearBy(5819212, Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.35573, 52.49830)[1]);
+        assertNearBy(5819212, wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.35573, 52.49830)[1]);
     }
 
 
+    @Test
     public void testGaussKruegerRightToWgs84LongitudeNorthEast() {
-        assertNearBy(13.53667, Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude(5400904, 5826585)[0]);
+        assertNearBy(13.53667, gaussKruegerRightHeightToWgs84LongitudeLatitude(5400904, 5826585)[0]);
     }
 
+    @Test
     public void testGaussKruegerHeightToWgs84LatitudeNorthEast() {
-        assertNearBy(52.56332, Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude(5400904, 5826585)[1]);
+        assertNearBy(52.56332, gaussKruegerRightHeightToWgs84LongitudeLatitude(5400904, 5826585)[1]);
     }
 
+    @Test
     public void testWgs84LongitudeToGaussKruegerRightNorthEast() {
-        assertNearBy(5400904, Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.53667, 52.56332)[0]);
+        assertNearBy(5400904, wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.53667, 52.56332)[0]);
     }
 
+    @Test
     public void testWgs84LatitudeToGaussKruegerHeightNorthEast() {
-        assertNearBy(5826585, Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.53667, 52.56332)[1]);
+        assertNearBy(5826585, wgs84LongitudeLatitudeToGaussKruegerRightHeight(13.53667, 52.56332)[1]);
     }
 
 
+    @Test
     public void testBcrToElevation() {
-        assertEquals(-0.09, Conversion.bcrAltitudeToElevationMeters(210945415705L));
-        assertEquals(6.0, Conversion.bcrAltitudeToElevationMeters(210945415755L));
-        assertEquals(146.0, Conversion.bcrAltitudeToElevationMeters(210945416903L));
+        assertDoubleEquals(-0.09, bcrAltitudeToElevationMeters(210945415705L));
+        assertDoubleEquals(6.0, bcrAltitudeToElevationMeters(210945415755L));
+        assertDoubleEquals(146.0, bcrAltitudeToElevationMeters(210945416903L));
     }
 
+    @Test
     public void testElevationToBcr() {
-        assertEquals(210945415755L, Conversion.elevationMetersToBcrAltitude(6.0));
-        assertEquals(210945416903L, Conversion.elevationMetersToBcrAltitude(146.0));
-        assertEquals(210945415705L, Conversion.elevationMetersToBcrAltitude(0.0));
+        assertEquals(210945415755L, elevationMetersToBcrAltitude(6.0));
+        assertEquals(210945416903L, elevationMetersToBcrAltitude(146.0));
+        assertEquals(210945415705L, elevationMetersToBcrAltitude(0.0));
     }
 
+    @Test
     public void testDegrees2Ddmm() {
-        assertEquals(4837.4374, Conversion.degrees2ddmm(48.6239566));
-        assertEquals(903.4036, Conversion.degrees2ddmm(9.0567266));
+        assertDoubleEquals(4837.4374, degrees2ddmm(48.6239566));
+        assertDoubleEquals(903.4036, degrees2ddmm(9.0567266));
 
-        assertEquals(5047.5657, Conversion.degrees2ddmm(50.79276));
-        assertEquals(927.1962, Conversion.degrees2ddmm(9.45327));
+        assertDoubleEquals(5047.5657, degrees2ddmm(50.79276));
+        assertDoubleEquals(927.1962, degrees2ddmm(9.45327));
     }
 
+    @Test
     public void testDdmm2Degrees() {
-        assertEquals(48.6239566, Conversion.ddmm2degrees(4837.4374));
-        assertEquals(9.0557233, Conversion.ddmm2degrees(903.3434));
+        assertDoubleEquals(48.6239566, ddmm2degrees(4837.4374));
+        assertDoubleEquals(9.0557233, ddmm2degrees(903.3434));
     }
 }

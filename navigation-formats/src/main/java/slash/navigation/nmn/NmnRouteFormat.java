@@ -181,13 +181,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             fileContent.order(LITTLE_ENDIAN);
             fileContent.position(0);
 
-            // 4 Byte: position count - TODO always 0?
+            // 4 Byte: position count - always 0?
             int positionCount = fileContent.getInt();
             // 4 Byte: length + creation date
             String creationDate = getText(fileContent);
             // 4 Byte: expected position count
             int expectedPositionCount = fileContent.getInt();
-            // 4 Byte: TODO unknown - seen: 0, 1
+            // 4 Byte: unknown - seen: 0, 1
             int unknown = fileContent.getInt();
             if (unknown != 0 && unknown != 1) {
                 log.fine("Unknown 13-16: seen " + unknown + ", not expected 0 or 1");

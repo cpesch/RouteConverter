@@ -21,10 +21,8 @@
 package slash.navigation.nmea;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.util.Conversion;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -37,7 +35,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.*;
+import static slash.navigation.util.Conversion.kilometerToKnots;
+import static slash.navigation.util.Conversion.knotsToKilometers;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.
@@ -214,7 +214,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             if (speedStr != null) {
                 Double knots = parseDouble(speedStr);
                 if (knots != null)
-                    speed = Conversion.knotsToKilometers(knots);
+                    speed = knotsToKilometers(knots);
             }
             String date = rmcMatcher.group(7);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
@@ -232,7 +232,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             String altitude = ggaMatcher.group(8);
             NmeaPosition position = new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
                     parseDouble(altitude), null, null, parseTime(time), null);
-            position.setSatellites(Transfer.parseInt(satellites));
+            position.setSatellites(parseInt(satellites));
             return position;
         }
 
@@ -244,15 +244,15 @@ public class NmeaFormat extends BaseNmeaFormat {
             String westOrEast = wplMatcher.group(4);
             String comment = wplMatcher.group(5);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
-                    null, null, null, null, Transfer.trim(comment));
+                    null, null, null, null, trim(comment));
         }
 
         Matcher zdaMatcher = ZDA_PATTERN.matcher(line);
         if (zdaMatcher.matches()) {
             String time = zdaMatcher.group(1);
-            String day = Transfer.trim(zdaMatcher.group(2));
-            String month = Transfer.trim(zdaMatcher.group(3));
-            String year = Transfer.trim(zdaMatcher.group(4));
+            String day = trim(zdaMatcher.group(2));
+            String month = trim(zdaMatcher.group(3));
+            String year = trim(zdaMatcher.group(4));
             String date = (day != null ? day : "") + (month != null ? month : "") + (year != null ? year : "");
             return new NmeaPosition(null, null, null, null, null, null, null, parseDateAndTime(date, time), null);
         }
@@ -261,14 +261,14 @@ public class NmeaFormat extends BaseNmeaFormat {
         if (vtgMatcher.matches()) {
             Double heading = parseDouble(vtgMatcher.group(1));
             boolean knots = false;
-            String speedStr = Transfer.trim(vtgMatcher.group(3));
+            String speedStr = trim(vtgMatcher.group(3));
             if (speedStr == null) {
-                speedStr = Transfer.trim(vtgMatcher.group(2));
+                speedStr = trim(vtgMatcher.group(2));
                 knots = true;
             }
             Double speed = parseDouble(speedStr);
             if (knots && speed != null)
-                speed = Conversion.knotsToKilometers(speed);
+                speed = knotsToKilometers(speed);
             return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
         }
 
@@ -329,12 +329,12 @@ public class NmeaFormat extends BaseNmeaFormat {
         String westOrEast = position.getEastOrWest();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
-        String satellites = position.getSatellites() != null ? Transfer.formatIntAsString(position.getSatellites()) : "";
-        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
+        String satellites = position.getSatellites() != null ? formatIntAsString(position.getSatellites()) : "";
+        String comment = escape(position.getComment(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
-        String speedKnots = position.getSpeed() != null ? formatSpeed(Conversion.kilometerToKnots(position.getSpeed())) : "";
+        String speedKnots = position.getSpeed() != null ? formatSpeed(kilometerToKnots(position.getSpeed())) : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +

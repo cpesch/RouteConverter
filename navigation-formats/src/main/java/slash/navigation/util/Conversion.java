@@ -39,6 +39,7 @@ public class Conversion {
 
     private static final double METER_OF_A_FEET = 0.3048;
     private static final double KILOMETER_OF_A_KNOT = 1.8520043;
+    private static final double KILOMETER_OF_A_MILE = 1.609344;
     private static final double METERS_OF_A_KILOMETER = 1000.0;
     private static final double SECONDS_OF_AN_HOUR = 3600.0;
     private static final double ALTITUDE_146m = 210945416903L;
@@ -301,7 +302,7 @@ public class Conversion {
         return feet * METER_OF_A_FEET;
     }
 
-    private static double meterToFeets(double meter) {
+    public static double meterToFeets(double meter) {
         return meter / METER_OF_A_FEET;
     }
 
@@ -311,6 +312,14 @@ public class Conversion {
 
     public static double kilometerToKnots(double kilometer) {
         return kilometer / KILOMETER_OF_A_KNOT;
+    }
+
+    public static double kilometerToMiles(double kilometer) {
+        return kilometer / KILOMETER_OF_A_MILE;
+    }
+
+    public static double milesToKilometer(double miles) {
+        return miles * KILOMETER_OF_A_MILE;
     }
 
     public static double msToKmh(double metersPerSecond) {

@@ -52,7 +52,6 @@ public class TomTomPosition extends BaseNavigationPosition {
         setLongitude(longitude);
         setLatitude(latitude);
         setComment(comment);
-        // TODO check this out
         // there could be an elevation/time already parsed from comment or one given as a parameter
         if (getElevation() == null || elevation != null)
             setElevation(elevation);

@@ -25,21 +25,24 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helper.PositionHelper;
+import slash.navigation.util.Unit;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import static java.text.DateFormat.MEDIUM;
-import static java.text.DateFormat.SHORT;
-import static slash.common.io.CompactCalendar.fromDate;
+import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.converter.gui.helper.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.util.Conversion.feetToMeters;
+import static slash.navigation.util.Conversion.milesToKilometer;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -48,7 +51,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
+    private BaseRoute route;
 
     public BaseRoute getRoute() {
         return route;
@@ -102,6 +105,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return getRoute().getPosition(rowIndex);
     }
 
+    @SuppressWarnings({"unchecked"})
     public int getIndex(BaseNavigationPosition position) {
         return getRoute().getIndex(position);
     }
@@ -178,12 +182,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                     position.setLatitude(latitude);
                 break;
             case ELEVATION_COLUMN_INDEX:
-                Double elevation = parseDouble(aValue, string, "m");
+                Double elevation = parseElevation(aValue, string);
                 if (elevation != null)
                     position.setElevation(elevation);
                 break;
             case SPEED_COLUMN_INDEX:
-                Double speed = parseDouble(aValue, string, "Km/h");
+                Double speed = parseSpeed(aValue, string);
                 if (speed != null)
                     position.setSpeed(speed);
                 break;
@@ -194,29 +198,30 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             fireTableRowsUpdated(rowIndex, rowIndex, columnIndex);
     }
 
-    private static final DateFormat timeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-    private String currentTimeZone = "";
-
-    CompactCalendar parseTime(String stringValue, String timeZonePreference) throws ParseException {
-        if (!currentTimeZone.equals(timeZonePreference)) {
-            timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeZone = timeZonePreference;
+    private Double parseElevation(Object objectValue, String stringValue) {
+        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
+        switch (unitPreference) {
+            case METRIC:
+                return parseDouble(objectValue, stringValue, "m");
+            case STATUTE:
+                Double feet = parseDouble(objectValue, stringValue, "ft");
+                return feet != null ? feetToMeters(feet) : null;
+            default:
+                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
         }
-        Date parsed = timeFormat.parse(stringValue);
-        return fromDate(parsed);
     }
 
-    private CompactCalendar parseTime(Object objectValue, String stringValue) {
-        if (objectValue == null || objectValue instanceof CompactCalendar) {
-            return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                return parseTime(stringValue, RouteConverter.getInstance().getTimeZonePreference());
-            } catch (ParseException e) {
-                // intentionally left empty
-            }
+    private Double parseSpeed(Object objectValue, String stringValue) {
+        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
+        switch (unitPreference) {
+            case METRIC:
+                return parseDouble(objectValue, stringValue, "Km/h");
+            case STATUTE:
+                Double milesPerHour = parseDouble(objectValue, stringValue, "mi/h");
+                return milesPerHour != null ? milesToKilometer(milesPerHour) : null;
+            default:
+                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
         }
-        return null;
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
@@ -228,6 +233,19 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                     stringValue = stringValue.replaceAll(replaceAll, "");
                 return Transfer.parseDouble(stringValue);
             } catch (NumberFormatException e) {
+                // intentionally left empty
+            }
+        }
+        return null;
+    }
+
+    private CompactCalendar parseTime(Object objectValue, String stringValue) {
+        if (objectValue == null || objectValue instanceof CompactCalendar) {
+            return (CompactCalendar) objectValue;
+        } else if (stringValue != null) {
+            try {
+                return PositionHelper.parseTime(stringValue);
+            } catch (ParseException e) {
                 // intentionally left empty
             }
         }
@@ -249,6 +267,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         add(rowIndex, positions);
     }
 
+    @SuppressWarnings({"unchecked"})
     public void add(int rowIndex, List<BaseNavigationPosition> positions) {
         for (int i = positions.size() - 1; i >= 0; i--) {
             BaseNavigationPosition position = positions.get(i);

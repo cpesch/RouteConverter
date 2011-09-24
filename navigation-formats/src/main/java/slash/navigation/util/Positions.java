@@ -21,12 +21,16 @@
 package slash.navigation.util;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.Calendar;
 import java.util.List;
+
+import static java.lang.Math.abs;
+import static java.lang.System.arraycopy;
+import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.common.io.Transfer.isEmpty;
 
 /**
  * Provides {@link BaseNavigationPosition} calculation functionality.
@@ -46,7 +50,7 @@ public class Positions {
         for (int i = from + 1; i < to; i++) {
             BaseNavigationPosition position = positions.get(i);
             if (position.hasCoordinates()) {
-                double distance = Math.abs(position.calculateOrthogonalDistance(pointA, pointB));
+                double distance = abs(position.calculateOrthogonalDistance(pointA, pointB));
                 if (distance > maximumDistance) {
                     maximumDistance = distance;
                     maximumDistanceIndex = i;
@@ -60,8 +64,8 @@ public class Positions {
             int[] res2 = douglasPeuckerSimplify(positions, maximumDistanceIndex, to, threshold);
 
             int[] result = new int[res1.length - 1 + res2.length];
-            System.arraycopy(res1, 0, result, 0, res1.length - 1);
-            System.arraycopy(res2, 0, result, res1.length - 1, res2.length);
+            arraycopy(res1, 0, result, 0, res1.length - 1);
+            arraycopy(res2, 0, result, res1.length - 1, res2.length);
             return result;
         } else
             return new int[]{from, to};
@@ -84,16 +88,16 @@ public class Positions {
         if (beforePrevious.getTime() == null || previous.getTime() == null)
             return null;
 
-        long previousTime = Math.abs(beforePrevious.getTime().getTimeInMillis() - previous.getTime().getTimeInMillis());
+        long previousTime = abs(beforePrevious.getTime().getTimeInMillis() - previous.getTime().getTimeInMillis());
         if (previousTime == 0)
             return null;
 
         Double previousDistance = beforePrevious.calculateDistance(previous);
-        if (Transfer.isEmpty(previousDistance))
+        if (isEmpty(previousDistance))
             return null;
 
         Double distance = previous.calculateDistance(position);
-        if (Transfer.isEmpty(distance))
+        if (isEmpty(distance))
             return null;
 
         long time = new Double(previous.getTime().getTimeInMillis() + (double) previousTime * (distance / previousDistance)).longValue();
@@ -136,7 +140,7 @@ public class Positions {
                 minimumTime = calendar;
         }
         return asPosition(minimumLongitude, minimumLatitude,
-                minimumTime != null ? CompactCalendar.fromCalendar(minimumTime) : null);
+                minimumTime != null ? fromCalendar(minimumTime) : null);
     }
 
     public static BaseNavigationPosition southWest(List<? extends BaseNavigationPosition> positions) {
@@ -161,7 +165,7 @@ public class Positions {
                 maximumTime = calendar;
         }
         return asPosition(maximumLongitude, maximumLatitude,
-                maximumTime != null ? CompactCalendar.fromCalendar(maximumTime) : null);
+                maximumTime != null ? fromCalendar(maximumTime) : null);
     }
 
     public static boolean contains(BaseNavigationPosition northEastCorner,

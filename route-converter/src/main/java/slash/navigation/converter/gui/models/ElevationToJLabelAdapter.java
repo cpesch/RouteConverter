@@ -21,12 +21,12 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.JTableHelper;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import java.text.MessageFormat;
+
+import static slash.navigation.converter.gui.helper.JTableHelper.isFirstToLastRow;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatElevation;
 
 /**
  * A bidirectional adapter that extracts the elevation ascend and descend
@@ -55,14 +55,14 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     private void updateLabel(double ascend, double descend) {
-        labelAscend.setText(ascend > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), ascend) : "-");
-        labelDescend.setText(descend > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("elevation-value"), descend) : "-");
+        labelAscend.setText(ascend > 0 ? formatElevation(ascend) : "-");
+        labelDescend.setText(descend > 0 ? formatElevation(descend) : "-");
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for ascend and descent calculation
         if (e.getType() == TableModelEvent.UPDATE &&
-                !JTableHelper.isFirstToLastRow(e) &&
+                !isFirstToLastRow(e) &&
                 !(e.getColumn() == PositionColumns.ELEVATION_COLUMN_INDEX))
             return;
 

@@ -14,7 +14,8 @@
 	 * Create the context menu
 	 *
 	 * @param array opts Array of options.
-	 * @todo Menu id needs to be unique, in case of multiple maps and context menus
+	 *
+	 * Note: Menu id needs to be unique, in case of multiple maps and context menus
 	 */
 	function ContextMenu(opts)
 	{

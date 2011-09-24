@@ -176,7 +176,7 @@ public class LengthCalculator {
                     recalculateDistance();
                 }
             }
-        }, "BeelineLengthCalculator");
+        }, "LengthCalculator");
         lengthCalculator.start();
     }
 
@@ -194,7 +194,7 @@ public class LengthCalculator {
                 // intentionally left empty
             }
             long end = System.currentTimeMillis();
-            log.info("BeelineLengthCalculator stopped after " + (end - start) + " ms");
+            log.info("LengthCalculator stopped after " + (end - start) + " ms");
         }
     }
 }

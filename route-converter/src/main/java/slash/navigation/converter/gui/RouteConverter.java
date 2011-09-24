@@ -49,6 +49,7 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.*;
 import slash.navigation.rest.Credentials;
 import slash.navigation.util.NumberPattern;
+import slash.navigation.util.Unit;
 
 import javax.help.CSH;
 import javax.swing.*;
@@ -74,6 +75,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
+import static slash.navigation.util.Unit.METRIC;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -115,6 +117,7 @@ public class RouteConverter extends SingleFrameApplication {
     public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
+    public static final String UNIT_PREFERENCE = "unit";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
@@ -467,6 +470,14 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setTimeZonePreference(String timeZoneId) {
         preferences.put(TIME_ZONE_PREFERENCE, timeZoneId);
+    }
+
+    public Unit getUnitPreference() {
+        return Unit.valueOf(preferences.get(UNIT_PREFERENCE, METRIC.toString()));
+    }
+
+    public void setUnitPreference(Unit unit) {
+        preferences.put(UNIT_PREFERENCE, unit.toString());
     }
 
     // dialogs for external components
@@ -828,8 +839,7 @@ public class RouteConverter extends SingleFrameApplication {
                 Constants.startWaitCursor(frame.getRootPane());
                 try {
                     runnable.run();
-                }
-                finally {
+                } finally {
                     Constants.stopWaitCursor(frame.getRootPane());
                 }
             }

@@ -21,23 +21,15 @@
 package slash.navigation.converter.gui.models;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import static java.text.DateFormat.MEDIUM;
-import static java.text.DateFormat.SHORT;
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.calendar;
 
 public class PositionsModelTest {
     PositionsModelImpl model = new PositionsModelImpl();
@@ -89,32 +81,5 @@ public class PositionsModelTest {
         assertEquals(2, model.getRowCount());
         assertEquals("a", model.getPosition(0).getComment());
         assertEquals("e", model.getPosition(1).getComment());
-    }
-
-    private String asDefaultLocaleTime(String germanString) throws ParseException {
-        DateFormat germanFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM, Locale.GERMAN);
-        Date date = germanFormat.parse(germanString);
-        DateFormat defaultFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-        return defaultFormat.format(date);
-    }
-
-    @Test
-    public void testParseTimeUTC() throws ParseException {
-        CompactCalendar expectedCal = calendar(2010, 9, 18, 3, 13, 32, 0, "UTC");
-        CompactCalendar actualCal = model.parseTime(asDefaultLocaleTime("18.09.2010 03:13:32"), "UTC");
-        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
-        String actual = DateFormat.getDateTimeInstance().format(actualCal.getTime());
-        assertEquals(expected, actual);
-        assertEquals(expectedCal, actualCal);
-    }
-
-    @Test
-    public void testParseTimeLocalTime() throws ParseException {
-        CompactCalendar expectedCal = calendar(2010, 9, 18, 2, 13, 32, 0, "UTC");
-        CompactCalendar actualCal = model.parseTime(asDefaultLocaleTime("18.09.2010 03:13:32"), "GMT+1");
-        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
-        String actual = DateFormat.getDateTimeInstance().format(actualCal.getTime());
-        assertEquals(expected, actual);
-        assertEquals(expectedCal, actualCal);
     }
 }

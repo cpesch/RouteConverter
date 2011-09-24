@@ -29,6 +29,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.regex.Matcher;
 
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
+import static slash.navigation.util.RouteComments.parseComment;
+import static slash.navigation.util.RouteComments.parseTripmasterHeading;
+
 /**
  * Represents a position in a GPS Exchange Format (.gpx) file.
  *
@@ -68,15 +73,15 @@ public class GpxPosition extends Wgs84Position {
         if (comment == null)
             return;
 
-        RouteComments.parseComment(this, comment);
+        parseComment(this, comment);
 
         // TODO move this logic up
-        Matcher matcher = GpxFormat.TRIPMASTER_REASON_PATTERN.matcher(this.comment);
+        Matcher matcher = TRIPMASTER_REASON_PATTERN.matcher(this.comment);
         if (matcher.matches()) {
-            this.reason = Transfer.trim(matcher.group(1));
-            this.comment = Transfer.trim(matcher.group(3));
+            this.reason = trim(matcher.group(1));
+            this.comment = trim(matcher.group(3));
 
-            Double heading = RouteComments.parseTripmasterHeading(reason);
+            Double heading = parseTripmasterHeading(reason);
             if(heading != null)
                 this.heading = heading;
         } /* TODO think about how to solve this with that much errors

@@ -20,16 +20,16 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.LengthCalculator;
 import slash.navigation.converter.gui.helper.LengthCalculatorListener;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import java.text.MessageFormat;
+
+import static slash.common.io.Transfer.formatDuration;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -66,10 +66,9 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     private void updateLabel(int meters, int seconds) {
-        Double kilometers = (double) meters / 1000.0;
-        labelLength.setText(meters > 0 ? MessageFormat.format(RouteConverter.getBundle().getString("length-value"), kilometers) : "-");
+        labelLength.setText(meters > 0 ? formatDistance(new Integer(meters).doubleValue()) : "-");
         Long milliseconds = (long) seconds * 1000;
-        labelDuration.setText(milliseconds > 0 ? Transfer.formatDuration(milliseconds) : "-");
+        labelDuration.setText(milliseconds > 0 ? formatDuration(milliseconds) : "-");
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {

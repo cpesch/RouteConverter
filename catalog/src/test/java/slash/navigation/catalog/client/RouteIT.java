@@ -131,7 +131,6 @@ public class RouteIT extends RouteCatalogClientBase {
         assertTrue(request3.isSuccessful());
         GpxType gpxType = GpxUtil.unmarshal11(result3);
         assertNotNull(gpxType);
-        // TODO test more
     }
 
     @Test

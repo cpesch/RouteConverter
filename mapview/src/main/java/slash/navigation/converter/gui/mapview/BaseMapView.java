@@ -57,6 +57,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -407,8 +408,7 @@ public abstract class BaseMapView implements MapView {
                             }
                         }
                         break;
-                    }
-                    finally {
+                    } finally {
                         try {
                             if (is != null)
                                 is.close();
@@ -528,8 +528,7 @@ public abstract class BaseMapView implements MapView {
                             log.warning("Switched from callback to polling the browser");
                         }
                     }
-                }
-                finally {
+                } finally {
                     removeMapViewListener(callbackWaiter);
                 }
             }
@@ -727,12 +726,18 @@ public abstract class BaseMapView implements MapView {
     }
 
     private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions) {
+        long start = System.currentTimeMillis();
+
         int zoomLevel = getCurrentZoomLevel();
         BitSet pointStatus = calculateSignificantPositionsForZoomLevel(positions, zoomLevel);
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int i = 0; i < positions.size(); i++)
             if (pointStatus.get(i))
                 result.add(positions.get(i));
+
+        long end = System.currentTimeMillis();
+        log.info(format("Filtered significant positions to reduce %d positions to %d in %d milliseconds",
+                positions.size(), result.size(), (end - start)));
         return result;
     }
 
@@ -740,12 +745,15 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() < 2)
             return positions;
 
+        if (positions.size() > 50000)
+            positions = filterEveryNthPosition(positions, 50000);
+
         // determine significant positions for this zoom level
         positions = filterSignificantPositions(positions);
 
         // reduce the number of significant positions by a visibility heuristic
         if (positions.size() > maximumPositionCount)
-            positions = filterVisiblePositions(positions, 2.5);
+            positions = filterVisiblePositions(positions, 2.5, false);
 
         // reduce the number of visible positions by a JS-stability heuristic
         if (positions.size() > maximumPositionCount)
@@ -760,7 +768,7 @@ public abstract class BaseMapView implements MapView {
 
         // reduce the number of selected positions by a visibility heuristic
         if (positions.size() > MAXIMUM_SELECTION_COUNT)
-            positions = filterVisiblePositions(positions, 1.25);
+            positions = filterVisiblePositions(positions, 1.25, true);
 
         // reduce the number of visible positions by a JS-stability heuristic
         if (positions.size() > MAXIMUM_SELECTION_COUNT)
@@ -771,7 +779,10 @@ public abstract class BaseMapView implements MapView {
 
     protected abstract int getCurrentZoomLevel();
 
-    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions, double factor) {
+    private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions,
+                                                                double factor, boolean addFirstAndLast) {
+        long start = System.currentTimeMillis();
+
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
         if (northEast == null || southWest == null)
@@ -788,7 +799,8 @@ public abstract class BaseMapView implements MapView {
         southWest.setLatitude(southWest.getLatitude() + height);
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        result.add(positions.get(0));
+        if (addFirstAndLast)
+            result.add(positions.get(0));
 
         for (int i = 1; i < positions.size() - 1; i += 1) {
             BaseNavigationPosition position = positions.get(i);
@@ -797,13 +809,18 @@ public abstract class BaseMapView implements MapView {
             }
         }
 
-        result.add(positions.get(positions.size() - 1));
+        if (addFirstAndLast)
+            result.add(positions.get(positions.size() - 1));
 
-        log.info("Filtered visible positions to reduce " + positions.size() + " positions to " + result.size());
+        long end = System.currentTimeMillis();
+        log.info(format("Filtered visible positions to reduce %d positions to %d in %d milliseconds",
+                positions.size(), result.size(), (end - start)));
         return result;
     }
 
     private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
+        long start = System.currentTimeMillis();
+
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         result.add(positions.get(0));
 
@@ -814,21 +831,31 @@ public abstract class BaseMapView implements MapView {
 
         result.add(positions.get(positions.size() - 1));
 
-        log.info("Filtered every " + increment + "th position to reduce " + positions.size() + " positions to " + result.size() + " (maximum was " + maximumPositionCount + ")");
+        long end = System.currentTimeMillis();
+        log.info(format("Filtered every %fth position to reduce %d positions to %d in %d milliseconds",
+                increment, positions.size(), result.size(), (end - start)));
         return result;
     }
 
     private List<BaseNavigationPosition> filterSelectedPositions(List<BaseNavigationPosition> positions, int[] selectedIndices) {
+        long start = System.currentTimeMillis();
+
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int selectedIndex : selectedIndices) {
             if (selectedIndex >= positions.size())
                 continue;
             result.add(positions.get(selectedIndex));
         }
+
+        long end = System.currentTimeMillis();
+        log.info(format("Filtered selected positions to reduce %d positions to %d in %d milliseconds",
+                positions.size(), result.size(), (end - start)));
         return result;
     }
 
     private List<BaseNavigationPosition> filterPositionsWithoutCoordinates(List<BaseNavigationPosition> positions) {
+        long start = System.currentTimeMillis();
+
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         // copy to avoid ConcurrentModificationException
         positions = new ArrayList<BaseNavigationPosition>(positions);
@@ -836,7 +863,11 @@ public abstract class BaseMapView implements MapView {
             if (position.hasCoordinates())
                 result.add(position);
         }
-        return result;
+
+        long end = System.currentTimeMillis();
+         log.info(format("Filtered positions without coordinates to reduce %d positions to %d in %d milliseconds",
+                 positions.size(), result.size(), (end - start)));
+         return result;
     }
 
     // draw on map
@@ -930,7 +961,7 @@ public abstract class BaseMapView implements MapView {
             buffer.append(startIndex).append(", ");
             boolean lastSegment = (j == directionsCount - 1);
             buffer.append(lastSegment).append(");\n");
-            if(lastSegment)
+            if (lastSegment)
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
