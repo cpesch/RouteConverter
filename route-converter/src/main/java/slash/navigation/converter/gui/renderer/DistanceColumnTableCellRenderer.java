@@ -20,14 +20,10 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.common.io.Transfer;
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.prefs.Preferences;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.round;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
 
 /**
  * Renders the distance column of the positions table.
@@ -36,20 +32,6 @@ import static java.lang.Math.round;
  */
 
 public class DistanceColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
-    private static final Preferences preferences = Preferences.userNodeForPackage(DistanceColumnTableCellRenderer.class);
-    private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
-    private static final double maximumDistanceDisplayedInHundredMeters = preferences.getDouble("maximumDistanceDisplayedInHundredMeters", 200000.0);
-
-    private String formatDistance(double distance) {
-        if (distance <= 0.0)
-            return "";
-        if (abs(distance) < maximumDistanceDisplayedInMeters)
-            return round(distance) + " m";
-        if (abs(distance) < maximumDistanceDisplayedInHundredMeters)
-            return Transfer.roundFraction(distance / 1000.0, 1) + " Km";
-        return round(distance / 1000.0) + " Km";
-    }
-
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(RIGHT);
