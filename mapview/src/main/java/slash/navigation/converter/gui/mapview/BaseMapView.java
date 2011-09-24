@@ -58,6 +58,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -169,7 +170,7 @@ public abstract class BaseMapView implements MapView {
                             !(e.getColumn() == PositionColumns.DESCRIPTION_COLUMN_INDEX ||
                                     e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
                                     e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
-                                    e.getColumn() == TableModelEvent.ALL_COLUMNS))
+                                    e.getColumn() == ALL_COLUMNS))
                         return;
                     update(allRowsChanged || insertOrDelete);
                 }
@@ -177,7 +178,7 @@ public abstract class BaseMapView implements MapView {
                 if (e.getType() == TableModelEvent.UPDATE &&
                         (e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
                                 e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
-                                e.getColumn() == TableModelEvent.ALL_COLUMNS)) {
+                                e.getColumn() == ALL_COLUMNS)) {
                     for (int selectedPositionIndex : selectedPositionIndices) {
                         if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
                             updateSelection();
@@ -1533,7 +1534,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
-        positionsModel.fireTableRowsUpdated(row, size, TableModelEvent.ALL_COLUMNS);
+        positionsModel.fireTableRowsUpdated(row, size, ALL_COLUMNS);
     }
 
     private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {

@@ -21,22 +21,22 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.mapview.TravelMode;
+import slash.navigation.util.Unit;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link TravelMode} labels of the route travel mode combo box.
+ * Renders the {@link Unit} labels of the unit combo box.
  *
  * @author Christian Pesch
  */
 
-public class TravelModeListCellRenderer extends DefaultListCellRenderer {
+public class UnitListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        TravelMode travelMode = TravelMode.class.cast(value);
-        String text = RouteConverter.getBundle().getString("travel-mode-" + travelMode.toString().toLowerCase());
+        Unit unit = Unit.class.cast(value);
+        String text = RouteConverter.getBundle().getString("unit-" + unit.toString().toLowerCase());
         label.setText(text);
         return label;
     }
