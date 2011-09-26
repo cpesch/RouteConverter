@@ -551,7 +551,7 @@ public abstract class NavigationTestCase extends TestCase {
             return comment;
         String name = comment.substring(0, index);
         String description = comment.substring(index + 1);
-        return trimDot1Substring(name) + ";" + description;
+        return trimDot1Substring(name) + ";" + Transfer.trim(description);
 
     }
 
@@ -651,9 +651,13 @@ public abstract class NavigationTestCase extends TestCase {
                 String sourceName = getTourExchangePositionComment(sourcePosition);
                 String targetName = getTourExchangePositionComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
-            } else if (sourceFormat instanceof GpxFormat)
+            } else if (sourceFormat instanceof GpxFormat) {
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment().trim(), trimSpeedComment(targetPosition.getComment()));
-            else
+            } else if (sourceFormat instanceof OpelNaviFormat) {
+                String sourceName = getTourExchangePositionComment(sourcePosition);
+                String targetName = getTourExchangePositionComment(targetPosition);
+               assertEquals("Comment " + index + " does not match", sourceName, targetName);
+            } else
                 assertEquals("Comment " + index + " does not match", sourcePosition.getComment(), targetPosition.getComment());
         }
     }
