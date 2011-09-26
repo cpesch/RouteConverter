@@ -119,6 +119,8 @@ public class Kml20Format extends KmlFormat {
         if (name == null)
             return null;
         String string = (String) name.getValue();
+        if (string == null)
+            return null;
         string = string.replace("&#160;", " ");
         string = string.replace("&#169;", "(c)");
         return string;
