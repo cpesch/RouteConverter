@@ -63,6 +63,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public abstract class NavigationTestCase extends TestCase {
@@ -501,7 +502,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (comment.startsWith("STATION")) {
             int index = comment.indexOf(';');
             if (index != -1)
-                return comment.substring(index);
+                return Transfer.trim(comment.substring(index + 1));
         }
         return comment;
     }
@@ -633,7 +634,7 @@ public abstract class NavigationTestCase extends TestCase {
                 String targetName = getMicrosoftAutoroutePositionComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof Route66Format)
-                assertEquals("Comment " + index + " does not match", Transfer.toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
+                assertEquals("Comment " + index + " does not match", toMixedCase(sourcePosition.getComment()), targetPosition.getComment());
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format) {
                 String sourceName = getGarminMapSource6PositionComment(sourcePosition);
                 String targetName = getGarminMapSource6PositionComment(targetPosition);
@@ -780,7 +781,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static String escapeNmn4and5(String str) {
         if (str != null && str.length() > 2)
-            str = Transfer.toMixedCase(str);
+            str = toMixedCase(str);
         return str != null ? str.replaceAll("\\|", ";") : null;
     }
 
@@ -789,7 +790,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String escapeNmn6Favorites(String str) {
-        return str != null ? Transfer.toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("ß", "ss")) : null;
+        return str != null ? toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("ß", "ss")) : null;
     }
 
     private static String trimSpaces(String str) {
