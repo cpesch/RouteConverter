@@ -332,7 +332,7 @@
     this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(35, 0);
     this.visualPositionIndex_ = opt_zoomOpts.visualPositionIndex || null;
     this.visualSprite_ = opt_zoomOpts.visualSprite || "http://www.routeconverter.com/images/zoom_button.png";
-    this.visualSpriteSelect_ = opt_zoomOpts.visualSpriteSelect || "http://www.routeconverter.com/images/select_button.png"
+    this.visualSpriteSelect_ = opt_zoomOpts.visualSpriteSelect || "http://www.routeconverter.com/images/select_button.png";
     this.visualSize_ = opt_zoomOpts.visualSize || new google.maps.Size(20, 20);
     this.visualTips_ = opt_zoomOpts.visualTips || {};
     this.visualTips_.zoomOff =  this.visualTips_.zoomOff || "Turn on zoom mode";
