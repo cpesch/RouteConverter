@@ -196,7 +196,6 @@
            var legs = result.routes[i].legs;
            for (var j = 0; j < legs.length; j++) {
                var via_waypoints = legs[j].via_waypoints;
- // alert("startIndex " + startIndex + " legs " + legs.length + " via_waypoints:"+via_waypoints.length);
                for (var k = 0; k < via_waypoints.length; k++) {
                    var latLng = via_waypoints[k];
                    callJava("insert-position/" + (startIndex + j) + "/" + latLng.lat() + "/" + latLng.lng());
@@ -427,7 +426,6 @@
 
            var shiftKey = false, altKey = false, ctrlKey = false;
            google.maps.event.addDomListener(document, "mousedown", function (event) {
-              // alert("mousedown " + event.shiftKey + "/" + event.altKey + "/" + event.ctrlKey);
              shiftKey = event.shiftKey; altKey = event.altKey; ctrlKey = event.ctrlKey;
            });
            google.maps.event.addListener(map, "click", function(event) {
