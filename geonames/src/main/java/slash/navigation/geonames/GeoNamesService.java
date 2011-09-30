@@ -40,13 +40,18 @@ import java.util.prefs.Preferences;
 public class GeoNamesService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
+    private static final String GEONAMES_USERNAME_PREFERENCE = "geonamesUserName";
 
-    private static String getGeoNamesUrlPreference() {
-        return preferences.get(GEONAMES_URL_PREFERENCE, "http://ws.geonames.org/");
+    private String getGeoNamesNamesUrl() {
+        return preferences.get(GEONAMES_URL_PREFERENCE, "http://api.geonames.org/");
+    }
+
+    private String getGeoNamesUserName() {
+        return preferences.get(GEONAMES_USERNAME_PREFERENCE, "routeconverter");
     }
 
     private String execute(String uri) throws IOException {
-        String url = getGeoNamesUrlPreference() + uri;
+        String url = getGeoNamesNamesUrl() + uri + getGeoNamesUserName();
         Get get = new Get(url);
         String result = get.execute();
         if (get.isSuccessful()) {
@@ -164,7 +169,7 @@ public class GeoNamesService {
      * Return longitude and latitude for the given country and postal code.
      *
      * @param countryCode the country code to search a position for
-     * @param postalCode the postal code to search a position for
+     * @param postalCode  the postal code to search a position for
      * @return the longitude and latitude for the given country and postal code
      * @throws IOException if an error occurs while accessing geonames.org
      */

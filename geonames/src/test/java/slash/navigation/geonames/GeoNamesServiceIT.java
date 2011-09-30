@@ -79,8 +79,8 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByFor() throws IOException {
-        // was: assertEquals("Kreuzegg", service.getNearByFor(9.0, 47.3));
-        assertEquals("Atzmännig", service.getNearByFor(9.0, 47.3));
+        // was: Kreuzegg, Atzmännig
+        assertEquals("Chrüzegg", service.getNearByFor(9.0, 47.3));
         assertEquals("Grafenrheinfeld", service.getNearByFor(10.2, 50.001));
         // was: assertEquals("Hoher Gaif", service.getNearByFor(11.06561, 47.42428));
         assertEquals("Hammersbach", service.getNearByFor(11.06561, 47.42428));
@@ -95,7 +95,7 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByPlaceNameFor() throws IOException {
-        assertEquals("Atzmännig", service.getNearByPlaceNameFor(9.0, 47.3));
+        assertEquals("Chrüzegg", service.getNearByPlaceNameFor(9.0, 47.3));
         assertEquals("Grafenrheinfeld", service.getNearByPlaceNameFor(10.2, 50.001));
         assertEquals("Hammersbach", service.getNearByPlaceNameFor(11.06561, 47.42428));
         assertEquals(null, service.getNearByPlaceNameFor(0.0, 0.0));
@@ -131,7 +131,7 @@ public class GeoNamesServiceIT {
     public void testPositionFor() throws IOException {
         assertDoubleArrayEquals(new double[]{9.05033, 47.31507}, service.getPositionFor("CH", "9622"));
         assertDoubleArrayEquals(new double[]{10.1982, 50.0002}, service.getPositionFor("DE", "97506"));
-        assertDoubleArrayEquals(new double[]{11.1603, 47.3694}, service.getPositionFor("AT", "6105"));
+        assertDoubleArrayEquals(new double[]{11.14404, 47.3689}, service.getPositionFor("AT", "6105"));
         assertDoubleArrayEquals(new double[]{8.64415, 49.30075}, service.getPositionFor("DE", "69190"));
         assertDoubleArrayEquals(new double[]{8.64415, 49.30075}, service.getPositionFor("de", "69190"));
     }
