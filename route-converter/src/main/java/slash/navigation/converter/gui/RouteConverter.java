@@ -915,6 +915,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeRouteConverterServices() {
+        Version version = Version.parseVersionFromManifest();
+        System.setProperty("rest", version.getVersion());
         routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
     }
