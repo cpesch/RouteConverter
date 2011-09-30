@@ -52,9 +52,17 @@ import static slash.navigation.util.RouteComments.getNumberedPosition;
 public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
     private JFrame frame;
+    private static final Object mutex = new Object();
+    private boolean running = true;
 
     public BatchPositionAugmenter(JFrame frame) {
         this.frame = frame;
+    }
+
+    public void interrupt() {
+        synchronized (mutex) {
+            this.running = false;
+        }
     }
 
 
@@ -89,8 +97,11 @@ public class BatchPositionAugmenter {
                                   final boolean slowOperation,
                                   final OverwritePredicate predicate,
                                   final Operation operation) {
-        Constants.startWaitCursor(frame.getRootPane());
+        synchronized (mutex) {
+            this.running = true;
+        }
 
+        Constants.startWaitCursor(frame.getRootPane());
         final ProgressMonitor progress = new ProgressMonitor(frame, "", RouteConverter.getBundle().getString("progress-started"), 0, 100);
         new Thread(new Runnable() {
             public void run() {
@@ -107,7 +118,7 @@ public class BatchPositionAugmenter {
                             if (predicate.shouldOverwrite(position)) {
                                 try {
                                     // ignoring the result since the performance boost of the continous
-                                    // range operations outweights the possible optimization 
+                                    // range operations outweights the possible optimization
                                     operation.run(index, position);
                                 } catch (Exception e) {
                                     log.warning(format("Error while running operation %s on position %d: %s", operation, index, e));
@@ -138,7 +149,9 @@ public class BatchPositionAugmenter {
                         }
 
                         public boolean isInterrupted() {
-                            return progress.isCanceled();
+                            synchronized (mutex) {
+                                return progress.isCanceled() || !running;
+                            }
                         }
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 

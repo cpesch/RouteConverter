@@ -89,6 +89,8 @@ public class ConvertPanel {
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
+    private LengthCalculator lengthCalculator;
+    private BatchPositionAugmenter positionAugmenter;
 
     protected JPanel convertPanel;
     private JLabel labelFormat;
@@ -110,7 +112,6 @@ public class ConvertPanel {
     private JButton buttonDeletePosition;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
-    private LengthCalculator lengthCalculator;
 
     public ConvertPanel() {
         initialize();
@@ -146,6 +147,7 @@ public class ConvertPanel {
 
         lengthCalculator = new LengthCalculator();
         lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
+        positionAugmenter = new BatchPositionAugmenter(r.getFrame());
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
@@ -226,10 +228,10 @@ public class ConvertPanel {
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
         tablePositions.registerKeyboardAction(new FrameAction() {
-                    public void run() {
-                        actionManager.run("delete");
-                    }
-                }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+            public void run() {
+                actionManager.run("delete");
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
         tablePositions.setDropMode(DropMode.ON);
         tablePositions.setTransferHandler(new TableDragAndDropHandler());
@@ -263,13 +265,12 @@ public class ConvertPanel {
         actionManager.register("new-positionlist", new NewPositionListAction(getFormatAndRoutesModel()));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
-        BatchPositionAugmenter augmenter = new BatchPositionAugmenter(r.getFrame());
-        actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), augmenter));
-        actionManager.register("add-number", new AddNumberToPositions(tablePositions, getPositionsModel(), augmenter));
+        actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-number", new AddNumberToPositions(tablePositions, getPositionsModel(), positionAugmenter));
         actionManager.register("split-positionlist", new SplitPositionList(tablePositions, getPositionsModel(), formatAndRoutesModel));
         actionManager.register("import-positionlist", new ImportPositionList(RouteConverter.getInstance(), tablePositions, getPositionsModel()));
 
@@ -298,8 +299,10 @@ public class ConvertPanel {
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
         comboBoxChoosePositionList.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED)
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    positionAugmenter.interrupt();
                     formatAndRoutesModel.setSelectedItem(e.getItem());
+                }
             }
         });
         comboBoxChoosePositionListCharacteristics.setModel(getCharacteristicsModel());
