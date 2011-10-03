@@ -957,7 +957,7 @@ public abstract class BaseMapView implements MapView {
                     append(", travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
             buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
             buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
-            buffer.append("region: '").append(Locale.getDefault()).append("'}, ");
+            buffer.append("region: '").append(Locale.getDefault().getCountry().toLowerCase()).append("'}, ");
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(", ");
             boolean lastSegment = (j == directionsCount - 1);
@@ -1098,7 +1098,7 @@ public abstract class BaseMapView implements MapView {
                     buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
                     buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
                     buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
-                    buffer.append("region: '").append(Locale.getDefault()).append("'}, ").append(key).append(");\n");
+                    buffer.append("region: '").append(Locale.getDefault().getCountry().toLowerCase()).append("'}, ").append(key).append(");\n");
                     executeScript(buffer.toString());
                     try {
                         Thread.sleep(500);

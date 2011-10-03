@@ -25,7 +25,6 @@ import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
 import slash.common.io.TokenResolver;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
@@ -104,11 +103,11 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private boolean loadWebPage(final JWebBrowser webBrowser) {
         try {
-            final String language = Locale.getDefault().getLanguage();
-            File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", language, new TokenResolver() {
+            final String country = Locale.getDefault().getCountry().toLowerCase();
+            File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", country, new TokenResolver() {
                 public String resolveToken(String tokenName) {
                     if (tokenName.equals("locale"))
-                        return language;
+                        return country;
                     if (tokenName.equals("percent"))
                         return Platform.isWindows() ? "99" : "100";
                     if (tokenName.equals("mapserver"))
