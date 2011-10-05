@@ -244,9 +244,6 @@ public class EclipseSWTMapView extends BaseMapView {
         update(true);
     }
 
-    protected void disposeBrowser() {
-    }
-
     // resizing
 
     private boolean hasBeenResizedToInvisible = false;

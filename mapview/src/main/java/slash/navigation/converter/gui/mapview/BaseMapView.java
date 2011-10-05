@@ -547,6 +547,8 @@ public abstract class BaseMapView implements MapView {
 
         if (selectionUpdater != null) {
             try {
+                selectionUpdater.join(500);
+                selectionUpdater.interrupt();
                 selectionUpdater.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
@@ -557,6 +559,8 @@ public abstract class BaseMapView implements MapView {
 
         if (routeUpdater != null) {
             try {
+                routeUpdater.join(500);
+                routeUpdater.interrupt();
                 routeUpdater.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
@@ -564,8 +568,6 @@ public abstract class BaseMapView implements MapView {
             long end = System.currentTimeMillis();
             log.info("RouteUpdater stopped after " + (end - start) + " ms");
         }
-
-        disposeBrowser();
 
         if (callbackListenerServerSocket != null) {
             try {
@@ -602,8 +604,6 @@ public abstract class BaseMapView implements MapView {
         long end = System.currentTimeMillis();
         log.info("Executors stopped after " + (end - start) + " ms");
     }
-
-    protected abstract void disposeBrowser();
 
     // getter and setter
 
