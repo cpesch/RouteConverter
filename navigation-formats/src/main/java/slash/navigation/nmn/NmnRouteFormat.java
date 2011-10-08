@@ -511,13 +511,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.position(0);
 
         byteBuffer.putInt(0); // bytelength of whole point will be filled at the end
-        byteBuffer.putLong(0); // 8 byte 0
-        byteBuffer.putInt(0); // 4 byte textlength
-        byteBuffer.putInt(1); // 4 byte always 1
+        byteBuffer.putLong(0); // 8 Byte 0
+        byteBuffer.putInt(0); // 4 Byte textlength
+        byteBuffer.putInt(1); // 4 Byte always 1
         byteBuffer.putInt(2); // count following "02 00 00 00" Block. 
          
         int timeStamp = (int) (System.currentTimeMillis() / 1000L); 
-        byte unknownBytes[] = { //copyied from itconv export
+        byte unknownBytes[] = { //copied from itconv export
             (byte)0x28, (byte)0x00, (byte)0x00, (byte)0x00
         };
         //unix timestamp
@@ -540,7 +540,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         //unknown copyied from itconv export.  wechselt in itconf an den ersten Stellen. Timestamp
         //passt nicht. Datum ist von 1990
-        //Sind eigentlich 2x 4 bytes. Die ersten 4 werden im Land nochmal verwendet
+        //Sind eigentlich 2x 4 Bytes. Die ersten 4 werden im Land nochmal verwendet
         byte rawData[] = {
             (byte)0x90, (byte)0xF9, (byte)0x46, (byte)0x27, 
             (byte)0x0A, (byte)0x00, (byte)0x00, (byte)0x00
@@ -560,7 +560,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(timeStamp); 
         byteBuffer.put(rawData, 0, 4); 
      
-        //20 byte 0
+        //20 Byte 0
         byteBuffer.putLong(0); 
         byteBuffer.putLong(0);
         byteBuffer.putInt(0);
