@@ -211,6 +211,7 @@ public class RouteConverter extends SingleFrameApplication {
         patchUIManager("FileChooser.openButtonText");
         patchUIManager("FileChooser.saveButtonText");
         patchUIManager("FileChooser.cancelButtonText");
+        patchUIManager("FileChooser.acceptAllFileFilterText");
 
         createFrame(getTitle(), "slash/navigation/converter/gui/RouteConverter.png", contentPane, null, new FrameMenu().createMenuBar());
 
