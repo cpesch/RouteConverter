@@ -54,7 +54,7 @@ public class ResourceBundleTest {
             // skip keys which are only present in the default bundle
             if (key.startsWith("locale-") ||
                     key.endsWith("-icon") || key.endsWith("-keystroke") ||
-                    key.equals("help-set"))
+                    key.equals("help-set") || key.equals("FileChooser.acceptAllFileFilterText"))
                 continue;
 
             for (Locale locale : LOCALES) {
