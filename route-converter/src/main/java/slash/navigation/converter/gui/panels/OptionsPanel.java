@@ -47,11 +47,9 @@ import java.util.*;
 import java.util.List;
 
 import static java.awt.event.ItemEvent.SELECTED;
-import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.sort;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.converter.gui.mapview.TravelMode.*;
 import static slash.navigation.util.NumberPattern.*;
 import static slash.navigation.util.Unit.METRIC;
@@ -184,7 +182,6 @@ public class OptionsPanel {
                     return;
                 Unit unit = Unit.class.cast(e.getItem());
                 r.setUnitPreference(unit);
-                r.getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
             }
         });
         comboBoxUnit.setSelectedItem(r.getUnitPreference());

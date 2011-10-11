@@ -72,6 +72,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
@@ -479,6 +480,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void setUnitPreference(Unit unit) {
         preferences.put(UNIT_PREFERENCE, unit.toString());
+        getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
     }
 
     // dialogs for external components
