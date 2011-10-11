@@ -554,8 +554,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         int positionStarttagCountry = byteBuffer.position(); // save position to fill the bytelength at the end
         //bytelength 
         byteBuffer.putLong(0); //filled at the end
-        byteBuffer.putInt(3); //textlänge
-        byteBuffer.put("DEU".getBytes()); //3 bytes text
+        String mapName = preferences.get("navigonRouteMapName", "DEU");
+        byteBuffer.putInt(mapName.length()); //textlänge
+        byteBuffer.put(mapName.getBytes()); //3 bytes text
      
         byteBuffer.putInt(timeStamp); 
         byteBuffer.put(rawData, 0, 4); 
