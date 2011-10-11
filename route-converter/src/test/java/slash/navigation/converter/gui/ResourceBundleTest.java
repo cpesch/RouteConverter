@@ -42,7 +42,7 @@ public class ResourceBundleTest {
     };
 
     @Test
-    public void testEnglishAgainstOtherBundles() {
+    public void englishAgainstOtherBundles() {
         compareEnglishAgainstOtherBundles(true);
     }
 
@@ -52,8 +52,8 @@ public class ResourceBundleTest {
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             // skip keys which are only present in the default bundle
-            if (key.startsWith("locale-") ||
-                    key.endsWith("-icon") || key.endsWith("-keystroke") ||
+            if (key.startsWith("locale-") || key.endsWith("-icon") ||
+                    key.endsWith("-mnemonic") || key.endsWith("-keystroke") ||
                     key.equals("help-set") || key.equals("FileChooser.acceptAllFileFilterText"))
                 continue;
 
@@ -62,19 +62,24 @@ public class ResourceBundleTest {
                     continue;
 
                 ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, NO_FALLBACK_CONTROL);
+                String value = null;
                 try {
-                    bundle.getString(key);
+                    value = bundle.getString(key);
                 } catch (MissingResourceException e) {
                     System.out.println("key " + key + " does not exist in " + locale);
                     if (throwException)
                         assertTrue("key " + key + " does not exist in " + locale, false);
                 }
+
+                String rootValue = root.getString(key);
+                if (rootValue.equals(value))
+                    System.out.println("key " + key + " is not translated in " + locale);
             }
         }
     }
 
     @Test
-    public void testMnemonicsAreUnique() {
+    public void mnemonicsAreUnique() {
         for (Locale locale : LOCALES) {
             if (locale.equals(Locale.US))
                 continue;
