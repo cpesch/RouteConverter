@@ -106,6 +106,10 @@ public class NmnUrlFormat extends UrlFormat {
     }
 
     private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
+        String mapName = preferences.get("navigonUrlMapName", null);
+        if(mapName != null)
+            return mapName;
+
         int westCount = 0;
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
