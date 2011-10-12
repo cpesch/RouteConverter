@@ -59,6 +59,10 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     public int getMaximumPositionCount() {
         return preferences.getInt("maximumNavigonRoutePositionCount", 99);
     }
+    
+    public boolean isSupportsWriting() {
+        return true;
+    }
 
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
@@ -89,7 +93,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     n Byte Text
     4 Byte int bisher nur 1
     4 Byte int Anzahl der folgenden Datenpunkte mit 04
-    8 Byte unterschiedlichster Inhalt. Ab zweiten Punkt 0
+    8 Byte unterschiedlichster Inhalt. 1. 4 Byte Unixtimestamp. 1. 4 Byte Unixtimestamp. Ab zweiten Punkt 0
     4 Byte (int )Datentyp bisher gesehen: 0, 1, 4. 0 immer nach Datentyp 4
 
   Sind Länge Bytes gelesen kommt der nächste Punkt in identischem Aufbau
@@ -499,43 +503,74 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // Im Navigongerät werden dort weitere Informationen wie übergeorgnete Stadt, Land, usw-
         // gespeichert. Diese Informationen liegen nicht vor und werden daher auch nicht
         // geschrieben.
-        // Es wird für jeden Routenpunkt ein Unterpunkt erstellt.
+        // Nach nochmaliger Analyse (08.10.2011) mit einem von itconv geschriebenen .route
+        // scheint es notwendig zu sein, dass Land mit anzugeben.
+        
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
         byteBuffer.order(LITTLE_ENDIAN);
         byteBuffer.position(0);
 
         byteBuffer.putInt(0); // bytelength of whole point will be filled at the end
-        byteBuffer.putLong(0); // 8 byte 0
-        String posNoString = format("%02d", positionNo);
-        byte[] posNoBytes = posNoString.getBytes(UTF8_ENCODING);
-        byteBuffer.putInt(posNoBytes.length); // 4 byte textlength
-        byteBuffer.put(posNoBytes); // text
-        byteBuffer.putInt(1); // 4 byte always 1
-        byteBuffer.putInt(1); // count following "04 00 00 00" Block. write only one 04 block in every waypoint
-        if (positionNo == 0) {// 8 byte ?
-            // copied from example cleverParking.route
-            byte unknownBytes[] = {(byte) 0x60, (byte) 0x81, (byte) 0x83, (byte) 0x05,
-                    (byte) 0x64, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-            byteBuffer.put(unknownBytes);
-        } else
-            byteBuffer.putLong(0);
+        byteBuffer.putLong(0); // 8 Byte 0
+        byteBuffer.putInt(0); // 4 Byte textlength
+        byteBuffer.putInt(1); // 4 Byte always 1
+        byteBuffer.putInt(2); // count following "02 00 00 00" Block. 
+         
+        int timeStamp = (int) (System.currentTimeMillis() / 1000L); 
+        byte unknownBytes[] = { //copied from itconv export
+            (byte)0x28, (byte)0x00, (byte)0x00, (byte)0x00
+        };
+        //unix timestamp
+        byteBuffer.putInt(timeStamp);
+        byteBuffer.put(unknownBytes);
 
-        byteBuffer.putInt(4); // starttag
+        byteBuffer.putInt(1); // starttag
         int positionStarttag = byteBuffer.position(); // save position to fill the bytelength at the end
         byteBuffer.putLong(0); // length of following data. filled at the end
-        byte[] commentBytes = position.getComment().getBytes(UTF8_ENCODING);
-        byteBuffer.putInt(commentBytes.length);
-        byteBuffer.put(commentBytes);
-        byteBuffer.putInt(0); // 4 byte ?
+        byteBuffer.putInt(position.getComment().getBytes().length);
+        byteBuffer.put(position.getComment().getBytes());
         byteBuffer.putDouble(position.getLongitude());
         byteBuffer.putDouble(position.getLatitude());
-        byteBuffer.putInt(2); // 4 byte ??
-        byteBuffer.putLong(0); // 8 byte ??
+        byteBuffer.putInt(0); //4 byte ??
+        
+        //0x32 ist plz wenn Daten von navigon kommen. Liegt nicht vor -> mit 0 füllen
+        //macht itconv ebenso
+        byteBuffer.putInt(0x32);
+        byteBuffer.putLong(0); //8 byte 
 
+        //unknown copyied from itconv export.  wechselt in itconf an den ersten Stellen. Timestamp
+        //passt nicht. Datum ist von 1990
+        //Sind eigentlich 2x 4 Bytes. Die ersten 4 werden im Land nochmal verwendet
+        byte rawData[] = {
+            (byte)0x90, (byte)0xF9, (byte)0x46, (byte)0x27, 
+            (byte)0x0A, (byte)0x00, (byte)0x00, (byte)0x00
+        };
+        rawData[0] += positionNo; //erhöht sich mit jedem Punkt
+        byteBuffer.put(rawData);  
+
+        //Countrycode 
+        //type 1
+        byteBuffer.putInt(1);
+        int positionStarttagCountry = byteBuffer.position(); // save position to fill the bytelength at the end
+        //bytelength 
+        byteBuffer.putLong(0); //filled at the end
+        String mapName = preferences.get("navigonRouteMapName", "DEU");
+        byteBuffer.putInt(mapName.length()); //textlänge
+        byteBuffer.put(mapName.getBytes()); //3 bytes text
+     
+        byteBuffer.putInt(timeStamp); 
+        byteBuffer.put(rawData, 0, 4); 
+     
+        //20 Byte 0
+        byteBuffer.putLong(0); 
+        byteBuffer.putLong(0);
+        byteBuffer.putInt(0);
+     
         int pointByteLength = byteBuffer.position();
         // fill the bytelength fields
         byteBuffer.putInt(0, pointByteLength - 4);
-        byteBuffer.putInt(positionStarttag, pointByteLength - positionStarttag - 8);
+        byteBuffer.putInt(positionStarttag, positionStarttagCountry - positionStarttag - 12);
+        byteBuffer.putInt(positionStarttagCountry, pointByteLength - positionStarttagCountry - 20 - 8);
 
         byte[] result = new byte[pointByteLength];
         byteBuffer.position(0);
