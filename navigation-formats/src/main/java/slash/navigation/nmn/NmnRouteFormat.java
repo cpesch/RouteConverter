@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.String.format;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -60,10 +59,6 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return preferences.getInt("maximumNavigonRoutePositionCount", 99);
     }
     
-    public boolean isSupportsWriting() {
-        return true;
-    }
-
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
@@ -498,7 +493,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    private byte[] encodePoint(Wgs84Position position, int positionNo) throws UnsupportedEncodingException {
+    private byte[] encodePoint(Wgs84Position position, int positionNo, String mapName) throws UnsupportedEncodingException {
         // Die Route besteht aus einem Punkt der mehrere weitere Unterpunktbeschreibungen hat.
         // Im Navigongerät werden dort weitere Informationen wie übergeorgnete Stadt, Land, usw-
         // gespeichert. Diese Informationen liegen nicht vor und werden daher auch nicht
@@ -554,7 +549,6 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         int positionStarttagCountry = byteBuffer.position(); // save position to fill the bytelength at the end
         //bytelength 
         byteBuffer.putLong(0); //filled at the end
-        String mapName = preferences.get("navigonRouteMapName", "DEU");
         byteBuffer.putInt(mapName.length()); //textlänge
         byteBuffer.put(mapName.getBytes()); //3 bytes text
      
@@ -579,6 +573,21 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
+    private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
+        String mapName = preferences.get("navigonRouteMapName", null);
+        if(mapName != null)
+            return mapName;
+
+        int westCount = 0;
+        for (int i = startIndex; i < endIndex; i++) {
+            Wgs84Position position = positions.get(i);
+            if(position.getLongitude() < -27.0)
+                westCount++;
+        }
+        int eastCount = endIndex - startIndex - westCount;
+        return westCount > eastCount ? "USA-CA" : "DEU";
+    }
+
     public void write(Wgs84Route route, OutputStream target, int startIndex,
                       int endIndex) throws IOException {
         // write all waypoints to buffer since we need at the end the size of all position bytes
@@ -596,10 +605,11 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // 4 Byte int. Seen 0 and 1, currently writing always 1
         byteArrayOutputStream.write(new byte[]{1, 0, 0, 0});
 
+        String mapName = calculateMapName(route.getPositions(), startIndex, endIndex);
         int positionNo = 1;
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = route.getPosition(i);
-            byte[] waypointBytes = encodePoint(position, positionNo++);
+            byte[] waypointBytes = encodePoint(position, positionNo++, mapName);
             byteArrayOutputStream.write(waypointBytes);
         }
 
