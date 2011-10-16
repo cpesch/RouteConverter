@@ -40,12 +40,12 @@ import java.util.prefs.Preferences;
 
 public class RecentUrlsModel {
     private static final Logger log = Logger.getLogger(RecentUrlsModel.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(RecentUrlsModel.class);
     private static final String RECENT_URLS_PREFERENCE = "recentUrls";
     private static final String RECENT_PREFERENCE = "recent";
     private static final String MAXIMUM_RECENT_URL_COUNT_PREFERENCE = "maximumRecentUrlCount";
     private static final char FIRST_CHAR = 'a';
 
-    private final Preferences preferences = Preferences.userNodeForPackage(RecentUrlsModel.class);
     private EventListenerList listenerList = new EventListenerList();
 
     private int getMaximumCount() {

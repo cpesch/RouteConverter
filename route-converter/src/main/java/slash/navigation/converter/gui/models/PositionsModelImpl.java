@@ -199,7 +199,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
-        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
+        Unit unitPreference = RouteConverter.getInstance().getUnitModel().getCurrent();
         switch (unitPreference) {
             case METRIC:
                 return parseDouble(objectValue, stringValue, "m");
@@ -212,7 +212,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
-        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
+        Unit unitPreference = RouteConverter.getInstance().getUnitModel().getCurrent();
         switch (unitPreference) {
             case METRIC:
                 return parseDouble(objectValue, stringValue, "Km/h");

@@ -25,6 +25,8 @@ import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.elevationview.ElevationView;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 /**
@@ -45,9 +47,16 @@ public class ElevationPanel {
         final RouteConverter r = RouteConverter.getInstance();
 
         elevationView = new ElevationView(r.getPositionsModel(), r.getPositionsSelectionModel());
+        elevationView.setUnit(r.getUnitModel().getCurrent());
         elevationPanel = new JPanel(new BorderLayout());
         elevationPanel.add(elevationView.getComponent(), BorderLayout.CENTER);
         elevationPanel.setTransferHandler(new PanelDropHandler());
+
+        r.getUnitModel().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                elevationView.setUnit(r.getUnitModel().getCurrent());
+            }
+        });
     }
 
     public Component getRootComponent() {

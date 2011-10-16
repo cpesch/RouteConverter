@@ -65,6 +65,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.Integer.MAX_VALUE;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Files.*;
 import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
@@ -212,6 +214,11 @@ public class ConvertPanel {
                 String url = urlModel.getShortUrl();
                 String title = (url != null ? url + " - " : "") + RouteConverter.getTitle();
                 RouteConverter.getInstance().getFrame().setTitle(title);
+            }
+        });
+        r.getUnitModel().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
             }
         });
 

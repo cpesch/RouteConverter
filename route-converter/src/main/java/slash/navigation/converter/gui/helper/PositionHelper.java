@@ -64,45 +64,33 @@ public class PositionHelper {
     public static String formatDistance(Double distance) {
         if (isEmpty(distance) || distance <= 0.0)
             return "";
-        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
-        switch (unitPreference) {
+        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
+        double distanceInMeters = convertMetersToUnit(distance, unit);
+        if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
+            return format("%d %s", round(distanceInMeters), unit.getElevation());
+        double distanceInKilometers = convertKilometersToUnit(distance / 1000.0, unit);
+        if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
+            return format("%s %s", roundFraction(distanceInKilometers, 1), unit.getDistance());
+        return format("%d %s", round(distanceInKilometers), unit.getDistance());
+    }
+
+    private static double convertMetersToUnit(Double value, Unit unit) {
+        switch (unit) {
             case METRIC:
-                return formatMetricDistance(distance);
+                return value;
             case STATUTE:
-                return formatStatuteDistance(distance);
+                return meterToFeets(value);
             default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
+                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
         }
-    }
-
-    private static String formatMetricDistance(Double distance) {
-        if (abs(distance) < maximumDistanceDisplayedInMeters)
-            return round(distance) + " m";
-        if (abs(distance) < maximumDistanceDisplayedInHundredMeters)
-            return roundFraction(distance / 1000.0, 1) + " Km";
-        return round(distance / 1000.0) + " Km";
-    }
-
-    private static String formatStatuteDistance(Double distance) {
-        if (abs(distance) < maximumDistanceDisplayedInMeters)
-            return round(meterToFeets(distance)) + " ft";
-        if (abs(distance) < maximumDistanceDisplayedInHundredMeters)
-            return roundFraction(kilometerToMiles(distance / 1000.0), 1) + " mi";
-        return round(kilometerToMiles(distance / 1000.0)) + " mi";
     }
 
     public static String formatElevation(Double elevation) {
         if (isEmpty(elevation))
             return "";
-        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
-        switch (unitPreference) {
-            case METRIC:
-                return round(elevation) + " m";
-            case STATUTE:
-                return round(meterToFeets(elevation)) + " ft";
-            default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
-        }
+        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
+        double distanceInUnit = convertMetersToUnit(elevation, unit);
+        return format("%d %s", round(distanceInUnit), unit.getElevation());
     }
 
     public static String extractElevation(BaseNavigationPosition position) {
@@ -122,27 +110,26 @@ public class PositionHelper {
         return result;
     }
 
-    private static String formatSpeed(Double speed) {
-        if (isEmpty(speed))
-            return "";
-        Unit unitPreference = RouteConverter.getInstance().getUnitPreference();
-        switch (unitPreference) {
+    private static double convertKilometersToUnit(Double value, Unit unit) {
+        switch (unit) {
             case METRIC:
-                return formatSpeedWithFraction(speed) + " Km/h";
+                return value;
             case STATUTE:
-                return formatSpeedWithFraction(kilometerToMiles(speed)) + " mi/h";
+                return kilometerToMiles(value);
             default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
+                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
         }
     }
 
-    private static String formatSpeedWithFraction(Double speed) {
-        String speedStr;
-        if (abs(speed) < 10.0)
-            speedStr = Double.toString(roundFraction(speed, 1));
+    private static String formatSpeed(Double speed) {
+        if (isEmpty(speed))
+            return "";
+        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
+        double speedInUnit = convertKilometersToUnit(speed, unit);
+        if (abs(speedInUnit) < 10.0)
+             return format("%s %s/h", roundFraction(speedInUnit, 1), unit.getDistance());
         else
-            speedStr = Long.toString(round(speed));
-        return speedStr;
+            return format("%d %s/h", round(speedInUnit), unit.getDistance());
     }
 
     public static String extractSpeed(BaseNavigationPosition position) {

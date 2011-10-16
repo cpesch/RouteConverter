@@ -41,6 +41,7 @@ import slash.navigation.converter.gui.mapview.TravelMode;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
+import slash.navigation.converter.gui.models.UnitModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.converter.gui.panels.ElevationPanel;
@@ -49,7 +50,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.*;
 import slash.navigation.rest.Credentials;
 import slash.navigation.util.NumberPattern;
-import slash.navigation.util.Unit;
 
 import javax.help.CSH;
 import javax.swing.*;
@@ -72,11 +72,9 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
-import static slash.navigation.util.Unit.METRIC;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -118,7 +116,6 @@ public class RouteConverter extends SingleFrameApplication {
     public static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
     public static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     public static final String TIME_ZONE_PREFERENCE = "timeZone";
-    public static final String UNIT_PREFERENCE = "unit";
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
@@ -134,6 +131,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
+    private UnitModel unitModel = new UnitModel();
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, elevationSplitPane;
@@ -474,13 +472,14 @@ public class RouteConverter extends SingleFrameApplication {
         preferences.put(TIME_ZONE_PREFERENCE, timeZoneId);
     }
 
-    public Unit getUnitPreference() {
-        return Unit.valueOf(preferences.get(UNIT_PREFERENCE, METRIC.toString()));
+    // helpers for external components
+
+    public RouteServiceOperator getOperator() {
+        return routeServiceOperator;
     }
 
-    public void setUnitPreference(Unit unit) {
-        preferences.put(UNIT_PREFERENCE, unit.toString());
-        getPositionsModel().fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
+    public UnitModel getUnitModel() {
+        return unitModel;
     }
 
     // dialogs for external components
@@ -647,10 +646,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void complementTime(final int row, final CompactCalendar time) {
         getPositionAugmenter().complementTime(row, time);
-    }
-
-    public RouteServiceOperator getOperator() {
-        return routeServiceOperator;
     }
 
     public JTable getPositionsView() {

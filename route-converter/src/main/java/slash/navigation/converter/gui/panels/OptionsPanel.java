@@ -181,10 +181,10 @@ public class OptionsPanel {
                 if (e.getStateChange() != SELECTED)
                     return;
                 Unit unit = Unit.class.cast(e.getItem());
-                r.setUnitPreference(unit);
+                r.getUnitModel().setCurrent(unit);
             }
         });
-        comboBoxUnit.setSelectedItem(r.getUnitPreference());
+        comboBoxUnit.setSelectedItem(r.getUnitModel().getCurrent());
 
         comboBoxTimeZone.setModel(new DefaultComboBoxModel(getTimeZoneIds()));
         comboBoxTimeZone.addItemListener(new ItemListener() {
