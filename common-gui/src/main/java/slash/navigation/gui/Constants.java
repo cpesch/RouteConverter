@@ -25,6 +25,7 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Locale;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * Constants used throughout the UI
@@ -33,7 +34,9 @@ import java.util.logging.Logger;
  */
 
 public class Constants {
+    private static final Preferences preferences = Preferences.userNodeForPackage(Constants.class);
     private static final Logger log = Logger.getLogger(Constants.class.getName());
+    private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
 
     // for language support which is not defined by a constant in Locale
     public static final Locale ARABIA = new Locale("ar", "SA");
@@ -46,7 +49,10 @@ public class Constants {
 
     public static void setLookAndFeel() {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            String lookAndFeelClass = preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, "default");
+            if("default".equals(lookAndFeelClass))
+                lookAndFeelClass = UIManager.getSystemLookAndFeelClassName();
+            UIManager.setLookAndFeel(lookAndFeelClass);
         } catch (Exception e) {
             // intentionally do nothing
         }
