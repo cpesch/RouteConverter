@@ -94,7 +94,7 @@ public class ConvertPanel {
     private LengthCalculator lengthCalculator;
     private BatchPositionAugmenter positionAugmenter;
 
-    protected JPanel convertPanel;
+    private JPanel convertPanel;
     private JLabel labelFormat;
     private JLabel labelPositionLists;
     private JLabel labelPositions;
@@ -102,7 +102,7 @@ public class ConvertPanel {
     private JLabel labelDuration;
     private JLabel labelOverallAscend;
     private JLabel labelOverallDescend;
-    protected JTable tablePositions;
+    private JTable tablePositions;
     private JComboBox comboBoxChoosePositionList;
     private JComboBox comboBoxChoosePositionListCharacteristics;
     private JButton buttonNewPositionList;

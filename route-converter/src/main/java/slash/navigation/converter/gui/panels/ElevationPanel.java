@@ -36,7 +36,7 @@ import java.awt.*;
  */
 
 public class ElevationPanel {
-    protected JPanel elevationPanel;
+    private JPanel elevationPanel;
     private ElevationView elevationView;
 
     public ElevationPanel() {

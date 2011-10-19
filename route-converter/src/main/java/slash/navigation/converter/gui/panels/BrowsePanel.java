@@ -84,7 +84,7 @@ public class BrowsePanel {
     private final RouteCatalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
 
     private JPanel browsePanel;
-    protected JTree treeCategories;
+    private JTree treeCategories;
     private JTable tableRoutes;
     private JButton buttonDeleteCategory;
     private JButton buttonAddCategory;
