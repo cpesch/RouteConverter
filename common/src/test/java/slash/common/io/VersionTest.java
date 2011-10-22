@@ -82,8 +82,8 @@ public class VersionTest {
 
     @Test
     public void testGetPlatform() {
-        assertEquals("Windows", new Version(null, null, "Windows64").getPlatform());
-        assertEquals("Linux", new Version(null, null, "Linux32").getPlatform());
+        assertEquals("Windows", new Version(null, null, "Windows64").getOperationSystem());
+        assertEquals("Linux", new Version(null, null, "Linux32").getOperationSystem());
     }
 
     @Test

@@ -169,7 +169,7 @@ public class Version {
         return "?";
     }
 
-    public String getPlatform() {
+    public String getOperationSystem() {
         if (name != null) {
             return name.substring(0, name.length() - 2);
         }
@@ -184,7 +184,7 @@ public class Version {
                 // intentionally left empty
             }
         }
-        return -1;
+        return 0;
     }
 
     public static Version parseVersionFromManifest() {

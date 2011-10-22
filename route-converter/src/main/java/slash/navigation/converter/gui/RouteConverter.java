@@ -72,7 +72,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static slash.common.io.Platform.getJvm;
+import static slash.common.io.Platform.getJava;
 import static slash.common.io.Platform.getMaximumMemory;
 import static slash.common.io.Platform.getPlatform;
 import static slash.common.io.Version.parseVersionFromManifest;
@@ -109,9 +109,9 @@ public class RouteConverter extends SingleFrameApplication {
         return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
     }
 
-    private static String getRelease() {
+    private static String getRouteConverter() {
         Version version = parseVersionFromManifest();
-        return version.getPlatform() + " (" + version.getBits() + "-bit)";
+        return version.getOperationSystem() + " (" + version.getBits() + "-bit)";
     }
 
     private static final String OPEN_PATH_PREFERENCE = "source";
@@ -172,8 +172,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void startup() {
-        log.info("Started " + getTitle() + " for " + getRelease() + " with locale " + Locale.getDefault() + " on " +
-                getPlatform() + " with " + getJvm() + " and " + getMaximumMemory() + " MByte heap");
+        log.info("Started " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
+                " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
         show();
         checkJreVersion();
         new Updater().implicitCheck(frame);
@@ -341,8 +341,8 @@ public class RouteConverter extends SingleFrameApplication {
             positionAugmenter.close();
         super.shutdown();
 
-        log.info("Shutdown " + getTitle() + " for " + getRelease() + " with locale " + Locale.getDefault() +
-                " on " + getPlatform() + " with " + getJvm() + " and " + getMaximumMemory() + " MByte heap");
+        log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
+                " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
     }
 
     // Preferences handling

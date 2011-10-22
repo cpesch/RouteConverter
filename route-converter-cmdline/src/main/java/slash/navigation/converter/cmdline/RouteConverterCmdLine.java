@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.cmdline;
 
-import slash.common.io.Platform;
 import slash.common.io.Version;
 import slash.navigation.base.*;
 
@@ -31,6 +30,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import static slash.common.io.Files.*;
+import static slash.common.io.Platform.*;
 import static slash.common.io.Version.parseVersionFromManifest;
 import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
@@ -56,21 +56,22 @@ public class RouteConverterCmdLine {
 
     private void logFormatNames(List<NavigationFormat> formats) {
         log.info("Supported formats:");
-        for(NavigationFormat format : formats)
+        for (NavigationFormat format : formats)
             log.info(format.getClass().getSimpleName() + " for " + format.getName());
     }
 
     private BaseNavigationFormat findFormat(String formatName) {
         List<NavigationFormat> formats = NavigationFormats.getWriteFormats();
-        for(NavigationFormat format : formats)
-            if(formatName.equals(format.getClass().getSimpleName()))
+        for (NavigationFormat format : formats)
+            if (formatName.equals(format.getClass().getSimpleName()))
                 return (BaseNavigationFormat) format;
         return null;
     }
 
     private void run(String[] args) {
         Version version = parseVersionFromManifest();
-        log.info("Started RouteConverter " + version.getVersion() + " from " + version.getDate() + " on " + Platform.getOsName() + " with " + Platform.getJvm());
+        log.info("Started RouteConverter " + version.getVersion() + " from " + version.getDate() +
+                " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
             logFormatNames(getWriteFormatsSortedByName());

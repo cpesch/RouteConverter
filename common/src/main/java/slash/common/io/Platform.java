@@ -28,15 +28,15 @@ package slash.common.io;
 
 public class Platform {
     public static boolean isLinux() {
-        return getOsName().indexOf("linux") != -1;
+        return getOperationSystem().contains("linux");
     }
 
     public static boolean isMac() {
-        return getOsName().indexOf("mac") != -1;
+        return getOperationSystem().contains("mac");
     }
 
     public static boolean isWindows() {
-        return getOsName().indexOf("windows") != -1;
+        return getOperationSystem().contains("windows");
     }
 
     public static String getPlatform() {
@@ -45,8 +45,8 @@ public class Platform {
                 System.getProperty("os.arch");
     }
 
-    public static String getJvm() {
-        return "Java " + System.getProperty("java.version");
+    public static String getJava() {
+        return "Java " + System.getProperty("java.version") + " (" + System.getProperty("sun.arch.data.model") + "-bit)";
     }
 
     public static boolean isCurrentAtLeastMinimumVersion(String currentVersion, String minimumVersion) {
@@ -57,18 +57,14 @@ public class Platform {
         return value.toLowerCase().replaceAll("[\\\\/ ]", "_");
     }
 
-    public static String getOsName() {
+    public static String getOperationSystem() {
         String osName = System.getProperty("os.name");
         if (osName.startsWith("Windows"))
             return "windows";
         return canonical(osName);
     }
 
-    public static boolean is64Bit() {
-        return getOsArchitecture().contains("64");
-    }
-
-    public static String getOsArchitecture() {
+    public static String getArchitecture() {
         String osArch = System.getProperty("os.arch");
         if (osArch.endsWith("86"))
             return "x86";

@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 import chrriis.dj.nativeswing.swtimpl.components.*;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
@@ -34,6 +33,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
+import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
+import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
+import static slash.common.io.Platform.isLinux;
 import static slash.common.io.Transfer.parseDouble;
 
 /**
@@ -51,7 +54,7 @@ public class EclipseSWTMapView extends BaseMapView {
     private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
 
     public boolean isSupportedPlatform() {
-        return Platform.isLinux() || Platform.isMac() || Platform.isWindows();
+        return isLinux() || Platform.isMac() || Platform.isWindows();
     }
 
     public Component getComponent() {
@@ -62,31 +65,19 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private JWebBrowser createWebBrowser() {
         try {
-            if (!NativeInterface.isOpen())
+            if (!isOpen())
                 throw new Exception("Native Interface is not initialized");
             JWebBrowser browser;
-            if (Platform.isLinux()) {
-                if (Platform.is64Bit()) {
-                    try {
-                        System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
-                        // System.setProperty("nativeswing.webbrowser.runtime", "webkit");
-                        browser = new JWebBrowser(JWebBrowser.useWebkitRuntime());
-                        log.info("Using WebKit runtime to create WebBrowser");
-                    } catch (IllegalStateException e) {
-                        System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
-                        browser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
-                        log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
-                    }
-                } else {
-                    try {
-                        System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
-                        browser = new JWebBrowser(JWebBrowser.useWebkitRuntime());
-                        log.info("Using WebKit runtime to create WebBrowser");
-                    } catch (IllegalStateException e) {
-                        System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
-                        browser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
-                        log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
-                    }
+            if (isLinux()) {
+                try {
+                    System.setProperty("org.eclipse.swt.browser.UseWebKitGTK", "true");
+                    // System.setProperty("nativeswing.webbrowser.runtime", "webkit");
+                    browser = new JWebBrowser(useWebkitRuntime());
+                    log.info("Using WebKit runtime to create WebBrowser");
+                } catch (IllegalStateException e) {
+                    System.clearProperty("org.eclipse.swt.browser.UseWebKitGTK");
+                    browser = new JWebBrowser(useXULRunnerRuntime());
+                    log.info("Using XULRunner runtime to create WebBrowser: " + e.getMessage());
                 }
             } else {
                 browser = new JWebBrowser();
@@ -209,7 +200,7 @@ public class EclipseSWTMapView extends BaseMapView {
         } else {
             long end = System.currentTimeMillis();
             int timeout = count++ * 100;
-            if(timeout > 3000)
+            if (timeout > 3000)
                 timeout = 3000;
             log.info("Failed to initialize map since " + (end - start) + " ms, sleeping for " + timeout + " ms");
 
