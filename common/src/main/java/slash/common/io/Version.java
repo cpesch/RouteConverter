@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Provides version parsing functionality.
  *
@@ -45,8 +47,7 @@ public class Version {
             propertyValue += System.getProperty(propertyName);
             if (propertyValue == null)
                 propertyValue = "";
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             propertyValue += t.getMessage();
         }
         propertyValue += ",";
@@ -86,15 +87,16 @@ public class Version {
 
 
     private static final SimpleDateFormat BUILD_DATE = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private String version, date;
+    private String version, date, name;
 
-    public Version(String version, String date) {
+    public Version(String version, String date, String name) {
         this.version = version;
         this.date = date;
+        this.name = name;
     }
 
     public Version(String version) {
-        this(version, null);
+        this(version, null, null);
     }
 
     public String getMajor() {
@@ -160,16 +162,35 @@ public class Version {
                 format.setTimeZone(CompactCalendar.UTC);
                 Date java = BUILD_DATE.parse(date);
                 return format.format(java);
-            }
-            catch (ParseException e) {
+            } catch (ParseException e) {
                 // intentionally ignored
             }
         }
         return "?";
     }
 
+    public String getPlatform() {
+        if (name != null) {
+            return name.substring(0, name.length() - 2);
+        }
+        return "?";
+    }
+
+    public int getBits() {
+        if (name != null) {
+            try {
+                return parseInt(name.substring(name.length() - 2, name.length()));
+            } catch (NumberFormatException e) {
+                // intentionally left empty
+            }
+        }
+        return -1;
+    }
+
     public static Version parseVersionFromManifest() {
-        return new Version(Version.class.getPackage().getSpecificationVersion(),
-                Version.class.getPackage().getImplementationVersion());
+        Package aPackage = Version.class.getPackage();
+        return new Version(aPackage.getSpecificationVersion(),
+                aPackage.getImplementationVersion(),
+                aPackage.getImplementationVendor());
     }
 }

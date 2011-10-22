@@ -72,8 +72,14 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static slash.common.io.Platform.getJvm;
+import static slash.common.io.Platform.getMaximumMemory;
+import static slash.common.io.Platform.getPlatform;
+import static slash.common.io.Version.parseVersionFromManifest;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
+import static slash.navigation.gui.Constants.startWaitCursor;
+import static slash.navigation.gui.Constants.stopWaitCursor;
 import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 
 /**
@@ -99,8 +105,13 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public static String getTitle() {
-        Version version = Version.parseVersionFromManifest();
+        Version version = parseVersionFromManifest();
         return MessageFormat.format(getBundle().getString("title"), version.getVersion(), version.getDate());
+    }
+
+    private static String getRelease() {
+        Version version = parseVersionFromManifest();
+        return version.getPlatform() + " (" + version.getBits() + "-bit)";
     }
 
     private static final String OPEN_PATH_PREFERENCE = "source";
@@ -161,7 +172,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void startup() {
-        log.info("Started " + getTitle() + " with locale " + Locale.getDefault() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
+        log.info("Started " + getTitle() + " for " + getRelease() + " with locale " + Locale.getDefault() + " on " +
+                getPlatform() + " with " + getJvm() + " and " + getMaximumMemory() + " MByte heap");
         show();
         checkJreVersion();
         new Updater().implicitCheck(frame);
@@ -329,7 +341,8 @@ public class RouteConverter extends SingleFrameApplication {
             positionAugmenter.close();
         super.shutdown();
 
-        log.info("Shutdown " + getTitle() + " with locale " + Locale.getDefault() + " on " + Platform.getPlatform() + " with " + Platform.getJvm() + " and " + Platform.getMaximumMemory() + " MByte heap");
+        log.info("Shutdown " + getTitle() + " for " + getRelease() + " with locale " + Locale.getDefault() +
+                " on " + getPlatform() + " with " + getJvm() + " and " + getMaximumMemory() + " MByte heap");
     }
 
     // Preferences handling
@@ -499,7 +512,7 @@ public class RouteConverter extends SingleFrameApplication {
         System.gc();
         System.runFinalization();
 
-        final long limitBefore = Platform.getMaximumMemory();
+        final long limitBefore = getMaximumMemory();
         final long limitAfter = limitBefore * 2;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -834,11 +847,11 @@ public class RouteConverter extends SingleFrameApplication {
             if (runnable != null) {
                 lazyInitializers.remove(selected);
 
-                Constants.startWaitCursor(frame.getRootPane());
+                startWaitCursor(frame.getRootPane());
                 try {
                     runnable.run();
                 } finally {
-                    Constants.stopWaitCursor(frame.getRootPane());
+                    stopWaitCursor(frame.getRootPane());
                 }
             }
         }
@@ -913,8 +926,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeRouteConverterServices() {
-        Version version = Version.parseVersionFromManifest();
-        System.setProperty("rest", version.getVersion());
+        System.setProperty("rest", parseVersionFromManifest().getVersion());
         routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
     }

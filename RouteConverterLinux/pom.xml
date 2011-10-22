@@ -37,6 +37,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Implementation-Vendor>Linux32</Implementation-Vendor>
                                         <Download-At>http://www.routeconverter.com</Download-At>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>

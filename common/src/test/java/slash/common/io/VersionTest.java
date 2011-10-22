@@ -20,14 +20,18 @@
 
 package slash.common.io;
 
-import slash.common.TestCase;
+import org.junit.Test;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 
-public class VersionTest extends TestCase {
+import static org.junit.Assert.*;
+import static slash.common.TestCase.calendar;
 
+public class VersionTest {
+
+    @Test
     public void testParseParameters() {
         Map<String, String> params = Version.parseParameters("b=c,routeconverter.version=1.3,a=b");
         assertEquals("c", params.get("b"));
@@ -36,17 +40,20 @@ public class VersionTest extends TestCase {
         assertNull( params.get("c"));
     }
 
+    @Test
     public void testParseVersion() {
         assertEquals("1.3", Version.parseVersionFromParameters("b=c,routeconverter.version=1.3,a=b"));
         assertEquals("2", Version.parseVersionFromParameters("x=y,routeconverter.version=2,y=z"));
     }
 
+    @Test
     public void testGetVersion() {
         assertEquals("1.2.3", new Version("1.2.3").getVersion());
         assertEquals("1.2", new Version("1.2-3").getVersion());
         assertEquals("1.2-SNAPSHOT-3", new Version("1.2-SNAPSHOT-3").getVersion());
     }
 
+    @Test
     public void testGetMajor() {
         assertEquals("1", new Version("1").getMajor());
         assertEquals("1", new Version("1.2").getMajor());
@@ -54,6 +61,7 @@ public class VersionTest extends TestCase {
         assertEquals("1", new Version("1.2-SNAPSHOT-3").getMajor());
     }
 
+    @Test
     public void testGetMinor() {
         assertEquals("1", new Version("1").getMinor());
         assertEquals("2", new Version("1.2").getMinor());
@@ -63,14 +71,28 @@ public class VersionTest extends TestCase {
         assertEquals("2.3-SNAPSHOT-4", new Version("1.2.3-SNAPSHOT-4").getMinor());
     }
 
+    @Test
     public void testGetDate() {
         Date date = calendar(2009, 11, 23, 13, 53, 49, 0, "UTC").getCalendar().getTime();
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG);
         String expected = dateFormat.format(date);
-        String actual = new Version(null, "2009-11-23 13:53:49").getDate();
+        String actual = new Version(null, "2009-11-23 13:53:49", null).getDate();
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testGetPlatform() {
+        assertEquals("Windows", new Version(null, null, "Windows64").getPlatform());
+        assertEquals("Linux", new Version(null, null, "Linux32").getPlatform());
+    }
+
+    @Test
+    public void testGetBits() {
+        assertEquals(64, new Version(null, null, "Windows64").getBits());
+        assertEquals(32, new Version(null, null, "Linux32").getBits());
+    }
+
+    @Test
     public void testIsLatestVersion() {
         assertTrue(new Version("1").isLaterVersionThan(new Version("1")));
         assertTrue(new Version("2").isLaterVersionThan(new Version("1.3")));
@@ -98,6 +120,7 @@ public class VersionTest extends TestCase {
         assertTrue(new Version("1.30.1").isLaterVersionThan(new Version("1.29.2")));
     }
 
+    @Test
     public void testIsNotLatestVersion() {
         assertFalse(new Version("1").isLaterVersionThan(new Version("1.3")));
         assertFalse(new Version("1.2").isLaterVersionThan(new Version("1.3")));

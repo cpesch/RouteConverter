@@ -34,6 +34,9 @@ import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static javax.swing.JOptionPane.*;
+import static slash.common.io.Version.parseVersionFromManifest;
+
 /**
  * Knows how to retrieve the information which is the latest version.
  *
@@ -43,6 +46,7 @@ public class Updater {
     private static final Logger log = Logger.getLogger(Updater.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(Updater.class);
     private static final String START_COUNT_PREFERENCE = "startCount";
+    private static final String START_TIME_PREFERENCE = "startTime";
     private static final String CHARSET = "ISO8859-1";
 
     public static int getStartCount() {
@@ -51,12 +55,14 @@ public class Updater {
 
     static {
         preferences.putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
+        if(preferences.getLong(START_TIME_PREFERENCE, -1) == -1)
+            preferences.putLong(START_TIME_PREFERENCE, System.currentTimeMillis());
     }
 
     private UpdateResult check(int timeout) {
         UpdateResult result = new UpdateResult();
         try {
-            result.myVersion = Version.parseVersionFromManifest().getVersion();
+            result.myVersion = parseVersionFromManifest().getVersion();
             String payload = Version.getRouteConverterVersion(result.myVersion) +
                     "routeconverter.startcount=" + getStartCount() + "," +
                     "user.locale=" + Locale.getDefault() + "," +
@@ -102,17 +108,17 @@ public class Updater {
     }
 
     private void offerUpdate(Window window, UpdateResult result) {
-        int confirm = JOptionPane.showConfirmDialog(window,
+        int confirm = showConfirmDialog(window,
                 MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.myVersion, result.latestVersion),
-                RouteConverter.getTitle(), JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION)
+                RouteConverter.getTitle(), YES_NO_OPTION);
+        if (confirm == YES_OPTION)
             new ExternalPrograms().startBrowserForUpdate(window);
     }
 
     private void noUpdateAvailable(Window window) {
-        JOptionPane.showMessageDialog(window,
+        showMessageDialog(window,
                 RouteConverter.getBundle().getString("no-update-available"),
-                RouteConverter.getTitle(), JOptionPane.INFORMATION_MESSAGE);
+                RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 
 
