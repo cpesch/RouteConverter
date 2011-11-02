@@ -24,7 +24,6 @@ import org.junit.Test;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.SimpleRoute;
-import slash.navigation.util.Conversion;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -33,6 +32,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.navigation.util.Conversion.nauticMilesToKilometers;
 
 public class NmeaFormatTest {
     private NmeaFormat format = new NmeaFormat();
@@ -219,7 +219,7 @@ public class NmeaFormatTest {
         assertEquals(expectedCal, position.getTime());
         assertNull(position.getElevation());
         assertNull(position.getComment());
-        assertDoubleEquals(Conversion.knotsToKilometers(14.32), position.getSpeed());
+        assertDoubleEquals(nauticMilesToKilometers(14.32), position.getSpeed());
     }
 
     @Test

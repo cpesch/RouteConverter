@@ -35,7 +35,7 @@ public class ConversionTest {
 
     @Test
     public void testMilesToKilometers() {
-        assertDoubleEquals(6.2137119223733395, kilometerToMiles(10));
+        assertDoubleEquals(6.2137119223733395, kilometerToStatuteMiles(10));
     }
 
     @Test

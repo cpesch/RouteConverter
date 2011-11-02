@@ -53,6 +53,7 @@ import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.converter.gui.mapview.TravelMode.*;
 import static slash.navigation.util.NumberPattern.*;
 import static slash.navigation.util.Unit.METRIC;
+import static slash.navigation.util.Unit.NAUTIC;
 import static slash.navigation.util.Unit.STATUTE;
 
 /**
@@ -173,7 +174,7 @@ public class OptionsPanel {
         comboboxNumberPattern.setSelectedItem(r.getNumberPatternPreference());
 
         comboBoxUnit.setModel(new DefaultComboBoxModel(new Object[]{
-                METRIC, STATUTE
+                METRIC, STATUTE, NAUTIC
         }));
         comboBoxUnit.setRenderer(new UnitListCellRenderer());
         comboBoxUnit.addItemListener(new ItemListener() {

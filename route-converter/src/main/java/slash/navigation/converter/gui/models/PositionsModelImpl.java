@@ -42,7 +42,8 @@ import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.converter.gui.helper.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.util.Conversion.feetToMeters;
-import static slash.navigation.util.Conversion.milesToKilometer;
+import static slash.navigation.util.Conversion.nauticMilesToKilometers;
+import static slash.navigation.util.Conversion.statuteMilesToKilometer;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -199,28 +200,32 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
-        Unit unitPreference = RouteConverter.getInstance().getUnitModel().getCurrent();
-        switch (unitPreference) {
+        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
+        switch (unit) {
             case METRIC:
+            case NAUTIC:
                 return parseDouble(objectValue, stringValue, "m");
             case STATUTE:
                 Double feet = parseDouble(objectValue, stringValue, "ft");
                 return feet != null ? feetToMeters(feet) : null;
             default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
+                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
         }
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
-        Unit unitPreference = RouteConverter.getInstance().getUnitModel().getCurrent();
-        switch (unitPreference) {
+        Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
+        switch (unit) {
             case METRIC:
                 return parseDouble(objectValue, stringValue, "Km/h");
+            case NAUTIC:
+                Double nauticMilesPerHour = parseDouble(objectValue, stringValue, "nm/h");
+                return nauticMilesPerHour != null ? nauticMilesToKilometers(nauticMilesPerHour) : null;
             case STATUTE:
-                Double milesPerHour = parseDouble(objectValue, stringValue, "mi/h");
-                return milesPerHour != null ? milesToKilometer(milesPerHour) : null;
+                Double statuteMilesPerHour = parseDouble(objectValue, stringValue, "mi/h");
+                return statuteMilesPerHour != null ? statuteMilesToKilometer(statuteMilesPerHour) : null;
             default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unitPreference));
+                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
         }
     }
 

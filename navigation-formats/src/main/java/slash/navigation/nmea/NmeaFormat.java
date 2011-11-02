@@ -36,8 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.*;
-import static slash.navigation.util.Conversion.kilometerToKnots;
-import static slash.navigation.util.Conversion.knotsToKilometers;
+import static slash.navigation.util.Conversion.kilometerToNauticMiles;
+import static slash.navigation.util.Conversion.nauticMilesToKilometers;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.
@@ -212,9 +212,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             Double speed = null;
             String speedStr = rmcMatcher.group(6);
             if (speedStr != null) {
-                Double knots = parseDouble(speedStr);
-                if (knots != null)
-                    speed = knotsToKilometers(knots);
+                Double miles = parseDouble(speedStr);
+                if (miles != null)
+                    speed = nauticMilesToKilometers(miles);
             }
             String date = rmcMatcher.group(7);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
@@ -260,15 +260,15 @@ public class NmeaFormat extends BaseNmeaFormat {
         Matcher vtgMatcher = VTG_PATTERN.matcher(line);
         if (vtgMatcher.matches()) {
             Double heading = parseDouble(vtgMatcher.group(1));
-            boolean knots = false;
+            boolean miles = false;
             String speedStr = trim(vtgMatcher.group(3));
             if (speedStr == null) {
                 speedStr = trim(vtgMatcher.group(2));
-                knots = true;
+                miles = true;
             }
             Double speed = parseDouble(speedStr);
-            if (knots && speed != null)
-                speed = knotsToKilometers(speed);
+            if (miles && speed != null)
+                speed = nauticMilesToKilometers(speed);
             return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
         }
 
@@ -334,7 +334,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
-        String speedKnots = position.getSpeed() != null ? formatSpeed(kilometerToKnots(position.getSpeed())) : "";
+        String speedKnots = position.getSpeed() != null ? formatSpeed(kilometerToNauticMiles(position.getSpeed())) : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +

@@ -39,7 +39,8 @@ import static java.text.DateFormat.SHORT;
 import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
-import static slash.navigation.util.Conversion.kilometerToMiles;
+import static slash.navigation.util.Conversion.kilometerToNauticMiles;
+import static slash.navigation.util.Conversion.kilometerToStatuteMiles;
 import static slash.navigation.util.Conversion.meterToFeets;
 
 /**
@@ -74,9 +75,10 @@ public class PositionHelper {
         return format("%d %s", round(distanceInKilometers), unit.getDistance());
     }
 
-    private static double convertMetersToUnit(Double value, Unit unit) {
+    private static double convertMetersToUnit(double value, Unit unit) {
         switch (unit) {
             case METRIC:
+            case NAUTIC:
                 return value;
             case STATUTE:
                 return meterToFeets(value);
@@ -110,12 +112,14 @@ public class PositionHelper {
         return result;
     }
 
-    private static double convertKilometersToUnit(Double value, Unit unit) {
+    private static double convertKilometersToUnit(double kilometers, Unit unit) {
         switch (unit) {
             case METRIC:
-                return value;
+                return kilometers;
+            case NAUTIC:
+                return kilometerToNauticMiles(kilometers);
             case STATUTE:
-                return kilometerToMiles(value);
+                return kilometerToStatuteMiles(kilometers);
             default:
                 throw new IllegalArgumentException(format("Unit %s is not supported", unit));
         }

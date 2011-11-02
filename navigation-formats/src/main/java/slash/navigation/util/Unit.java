@@ -27,7 +27,7 @@ package slash.navigation.util;
  */
 
 public enum Unit {
-    METRIC("Km", "m"), STATUTE("mi", "ft");
+    METRIC("Km", "m"), STATUTE("mi", "ft"), NAUTIC("nm", "m");
 
     private String distance, elevation;
 
