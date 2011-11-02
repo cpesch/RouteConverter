@@ -306,7 +306,7 @@ public class Conversion {
         return meter / METER_OF_A_FEET;
     }
 
-    public static double nauticMilesToKilometers(double miles) {
+    public static double nauticMilesToKilometer(double miles) {
         return miles * KILOMETER_OF_A_NAUTIC_MILE;
     }
 

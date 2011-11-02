@@ -39,9 +39,6 @@ import static java.text.DateFormat.SHORT;
 import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
-import static slash.navigation.util.Conversion.kilometerToNauticMiles;
-import static slash.navigation.util.Conversion.kilometerToStatuteMiles;
-import static slash.navigation.util.Conversion.meterToFeets;
 
 /**
  * A helper for rendering aspects of {@link BaseNavigationPosition}.
@@ -66,33 +63,21 @@ public class PositionHelper {
         if (isEmpty(distance) || distance <= 0.0)
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double distanceInMeters = convertMetersToUnit(distance, unit);
+        double distanceInMeters = unit.elevationToUnit(distance);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
-            return format("%d %s", round(distanceInMeters), unit.getElevation());
-        double distanceInKilometers = convertKilometersToUnit(distance / 1000.0, unit);
+            return format("%d %s", round(distanceInMeters), unit.getElevationName());
+        double distanceInKilometers = unit.distanceToUnit(distance / 1000.0);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
-            return format("%s %s", roundFraction(distanceInKilometers, 1), unit.getDistance());
-        return format("%d %s", round(distanceInKilometers), unit.getDistance());
-    }
-
-    private static double convertMetersToUnit(double value, Unit unit) {
-        switch (unit) {
-            case METRIC:
-            case NAUTIC:
-                return value;
-            case STATUTE:
-                return meterToFeets(value);
-            default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
-        }
+            return format("%s %s", roundFraction(distanceInKilometers, 1), unit.getDistanceName());
+        return format("%d %s", round(distanceInKilometers), unit.getDistanceName());
     }
 
     public static String formatElevation(Double elevation) {
         if (isEmpty(elevation))
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double distanceInUnit = convertMetersToUnit(elevation, unit);
-        return format("%d %s", round(distanceInUnit), unit.getElevation());
+        double distanceInUnit = unit.elevationToUnit(elevation);
+        return format("%d %s", round(distanceInUnit), unit.getElevationName());
     }
 
     public static String extractElevation(BaseNavigationPosition position) {
@@ -112,28 +97,15 @@ public class PositionHelper {
         return result;
     }
 
-    private static double convertKilometersToUnit(double kilometers, Unit unit) {
-        switch (unit) {
-            case METRIC:
-                return kilometers;
-            case NAUTIC:
-                return kilometerToNauticMiles(kilometers);
-            case STATUTE:
-                return kilometerToStatuteMiles(kilometers);
-            default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
-        }
-    }
-
     private static String formatSpeed(Double speed) {
         if (isEmpty(speed))
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double speedInUnit = convertKilometersToUnit(speed, unit);
+        Double speedInUnit = unit.distanceToUnit(speed);
         if (abs(speedInUnit) < 10.0)
-             return format("%s %s/h", roundFraction(speedInUnit, 1), unit.getDistance());
+             return format("%s %s", roundFraction(speedInUnit, 1), unit.getSpeedName());
         else
-            return format("%d %s/h", round(speedInUnit), unit.getDistance());
+            return format("%d %s", round(speedInUnit), unit.getSpeedName());
     }
 
     public static String extractSpeed(BaseNavigationPosition position) {

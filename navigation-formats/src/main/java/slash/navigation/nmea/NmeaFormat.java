@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.*;
 import static slash.navigation.util.Conversion.kilometerToNauticMiles;
-import static slash.navigation.util.Conversion.nauticMilesToKilometers;
+import static slash.navigation.util.Conversion.nauticMilesToKilometer;
 
 /**
  * Reads and writes NMEA 0183 Sentences (.nmea) files.
@@ -214,7 +214,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             if (speedStr != null) {
                 Double miles = parseDouble(speedStr);
                 if (miles != null)
-                    speed = nauticMilesToKilometers(miles);
+                    speed = nauticMilesToKilometer(miles);
             }
             String date = rmcMatcher.group(7);
             return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
@@ -268,7 +268,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             }
             Double speed = parseDouble(speedStr);
             if (miles && speed != null)
-                speed = nauticMilesToKilometers(speed);
+                speed = nauticMilesToKilometer(speed);
             return new NmeaPosition(null, null, null, null, null, speed, heading, null, null);
         }
 

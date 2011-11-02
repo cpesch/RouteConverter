@@ -120,10 +120,10 @@ public class ElevationView {
 
     public void setUnit(Unit unit) {
         elevationModel.setUnit(unit);
-        plot.getDomainAxis().setLabel(format(getBundle().getString("distance-axis"), unit.getDistance()));
-        plot.getRangeAxis().setLabel(format(getBundle().getString("elevation-axis"), unit.getElevation()));
+        plot.getDomainAxis().setLabel(format(getBundle().getString("distance-axis"), unit.getDistanceName()));
+        plot.getRangeAxis().setLabel(format(getBundle().getString("elevation-axis"), unit.getElevationName()));
         plot.getRenderer().setBaseToolTipGenerator(new StandardXYToolTipGenerator(String.
-                format("{2} %s @ {1} %s", unit.getElevation(), unit.getDistance()),
+                format("{2} %s @ {1} %s", unit.getElevationName(), unit.getDistanceName()),
                 getIntegerInstance(), getIntegerInstance()));
     }
 

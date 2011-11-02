@@ -25,11 +25,6 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.Unit;
 
-import static java.lang.String.format;
-import static slash.navigation.util.Conversion.kilometerToNauticMiles;
-import static slash.navigation.util.Conversion.kilometerToStatuteMiles;
-import static slash.navigation.util.Conversion.meterToFeets;
-
 /**
  * Provides a {@link XYSeries} model by extracting the elevation from a {@link PositionsModel}.
  *
@@ -92,29 +87,11 @@ public class ElevationModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     double formatDistance(double distance) {
-        double kilometers = distance / 1000.0;
-        switch (unit) {
-            case METRIC:
-                return kilometers;
-            case STATUTE:
-                return kilometerToStatuteMiles(kilometers);
-            case NAUTIC:
-                return kilometerToNauticMiles(kilometers);
-            default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
-        }
+        return unit.distanceToUnit(distance / 1000.0);
     }
 
     private Double formatElevation(Double elevation) {
-        switch (unit) {
-            case METRIC:
-            case NAUTIC:
-                return elevation;
-            case STATUTE:
-                return elevation != null ? meterToFeets(elevation) : null;
-            default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
-        }
+        return unit.elevationToUnit(elevation);
     }
 
     public void setUnit(Unit unit) {

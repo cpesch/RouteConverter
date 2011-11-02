@@ -20,6 +20,8 @@
 
 package slash.navigation.util;
 
+import static slash.navigation.util.Conversion.*;
+
 /**
  * Enumeration of supported unit systems.
  *
@@ -27,20 +29,73 @@ package slash.navigation.util;
  */
 
 public enum Unit {
-    METRIC("Km", "m"), STATUTE("mi", "ft"), NAUTIC("nm", "m");
+    METRIC("Km", "m", "Km/h", new UnitTransfer() {
+        public Double distanceToUnit(Double distance) {
+            return distance;
+        }
+        public Double elevationToUnit(Double elevation) {
+            return elevation;
+        }
+        public Double speedToDefault(Double speed) {
+            return speed;
+        }
+    }),
 
-    private String distance, elevation;
+    STATUTE("mi", "ft", "mi/h", new UnitTransfer() {
+        public Double distanceToUnit(Double distance) {
+            return distance != null ? kilometerToStatuteMiles(distance) : null;
+        }
+        public Double elevationToUnit(Double elevation) {
+            return elevation != null ? meterToFeets(elevation) : null;
+        }
+        public Double speedToDefault(Double speed) {
+            return speed != null ? statuteMilesToKilometer(speed) : null;
+        }
+    }),
 
-    Unit(String distance, String elevation) {
-        this.distance = distance;
-        this.elevation = elevation;
+    NAUTIC("nm", "m", "knots", new UnitTransfer() {
+        public Double distanceToUnit(Double distance) {
+            return distance != null ? kilometerToNauticMiles(distance) : null;
+        }
+        public Double elevationToUnit(Double elevation) {
+            return elevation;
+        }
+        public Double speedToDefault(Double speed) {
+            return speed != null ? nauticMilesToKilometer(speed) : null;
+        }
+    });
+
+    private String distanceName, elevationName, speedName;
+    private UnitTransfer unitTransfer;
+
+    Unit(String distanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
+        this.distanceName = distanceName;
+        this.elevationName = elevationName;
+        this.speedName = speedName;
+        this.unitTransfer = unitTransfer;
     }
 
-    public String getDistance() {
-        return distance;
+    public String getDistanceName() {
+        return distanceName;
     }
 
-    public String getElevation() {
-        return elevation;
+    public String getElevationName() {
+        return elevationName;
+    }
+
+    public String getSpeedName() {
+        return speedName;
+    }
+
+    public Double distanceToUnit(Double distance) {
+        return unitTransfer.distanceToUnit(distance);
+    }
+
+    public Double elevationToUnit(Double elevation) {
+        return unitTransfer.elevationToUnit(elevation);
+    }
+
+    public Double speedToDefault(Double speed) {
+        return unitTransfer.speedToDefault(speed);
     }
 }
