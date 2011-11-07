@@ -94,7 +94,7 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private boolean loadWebPage(final JWebBrowser webBrowser) {
         try {
-            final String country = Locale.getDefault().getCountry().toLowerCase();
+            final String country = Locale.getDefault().getLanguage().toLowerCase();
             File html = Externalization.extractFile("slash/navigation/converter/gui/mapview/routeconverter.html", country, new TokenResolver() {
                 public String resolveToken(String tokenName) {
                     if (tokenName.equals("locale"))
