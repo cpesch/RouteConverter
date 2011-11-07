@@ -51,7 +51,7 @@ public class GeoNamesService {
     }
 
     private String execute(String uri) throws IOException {
-        String url = getGeoNamesNamesUrl() + uri + getGeoNamesUserName();
+        String url = getGeoNamesNamesUrl() + uri + "&username=" + getGeoNamesUserName();
         Get get = new Get(url);
         String result = get.execute();
         if (get.isSuccessful()) {
