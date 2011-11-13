@@ -398,12 +398,22 @@
                draggableCursor: 'default',
                draggingCursor: 'pointer'
            };
+
+           var copyrightControl = document.createElement('div');
+           copyrightControl.id = 'copyright-control';
+           copyrightControl.style.fontSize = '10px';
+           copyrightControl.style.fontFamily = 'Arial, sans-serif';
+           copyrightControl.style.margin = '0 2px 4px 0';
+           copyrightControl.style.whitespace = 'nowrap';
+           copyrightControl.index = 1;
+
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
            map.mapTypes.set('Mapnik', mapnikMapType);
            map.mapTypes.set('T@H', tahMapType);
            map.mapTypes.set('Cycle', cycleMapType);
            map.mapTypes.set('Hike', hikeMapType);
            map.mapTypes.set('Outdoor', outdoorMapType);
+           map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
            addDebug("2. created map: " + map);
 
            map.enableKeyDragZoom({
@@ -439,6 +449,13 @@
                    new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
 
            google.maps.event.addListener(map, "maptypeid_changed", function() {
+               if (map.getMapTypeId() == 'Mapnik' || map.getMapTypeId() == 'T@H' || map.getMapTypeId() == 'Cycle' || map.getMapTypeId() == 'Hike') {
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a> -';
+               } else if (map.getMapTypeId() == 'Outdoor') {
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/">OutdoorActive</a> -';
+               } else {
+                   copyrightControl.innerHTML = '';
+               }
                callJava("maptypechanged/" + map.getMapTypeId());
            });
            google.maps.event.addListener(map, "zoom_changed", function() {
