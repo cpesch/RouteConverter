@@ -450,9 +450,9 @@
 
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                if (map.getMapTypeId() == 'Mapnik' || map.getMapTypeId() == 'T@H' || map.getMapTypeId() == 'Cycle' || map.getMapTypeId() == 'Hike') {
-                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a> -';
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
                } else if (map.getMapTypeId() == 'Outdoor') {
-                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/">OutdoorActive</a> -';
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
                } else {
                    copyrightControl.innerHTML = '';
                }
