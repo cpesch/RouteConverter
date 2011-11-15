@@ -48,7 +48,7 @@ public class ExternalPrograms {
     }
 
     public void startBrowserForForum(Window window) {
-        startBrowser(window, "http://www.routeconverter.com/forum/");
+        startBrowser(window, "http://forum.routeconverter.com/");
     }
 
     public void startBrowserForGeonames(Window window) {
