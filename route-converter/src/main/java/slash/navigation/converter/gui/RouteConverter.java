@@ -241,8 +241,6 @@ public class RouteConverter extends SingleFrameApplication {
         openFrame();
 
         mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView == null)
-            mapView = createMapView("slash.navigation.converter.gui.mapview.JdicMapView");
         if (mapView != null && mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
