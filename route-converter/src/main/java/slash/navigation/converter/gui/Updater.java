@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.System.currentTimeMillis;
 import static javax.swing.JOptionPane.*;
 import static slash.common.io.Version.parseVersionFromManifest;
 
@@ -49,14 +50,18 @@ public class Updater {
     private static final String START_TIME_PREFERENCE = "startTime";
     private static final String CHARSET = "ISO8859-1";
 
-    public static int getStartCount() {
-        return preferences.getInt(START_COUNT_PREFERENCE, 0);
-    }
-
     static {
         preferences.putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
         if(preferences.getLong(START_TIME_PREFERENCE, -1) == -1)
-            preferences.putLong(START_TIME_PREFERENCE, System.currentTimeMillis());
+            preferences.putLong(START_TIME_PREFERENCE, currentTimeMillis());
+    }
+
+    private static int getStartCount() {
+        return preferences.getInt(START_COUNT_PREFERENCE, 0);
+    }
+
+    private static long getStartTime() {
+        return preferences.getLong(START_TIME_PREFERENCE, currentTimeMillis());
     }
 
     private UpdateResult check(int timeout) {
@@ -112,7 +117,7 @@ public class Updater {
                 MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.myVersion, result.latestVersion),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
-            new ExternalPrograms().startBrowserForUpdate(window);
+            new ExternalPrograms().startBrowserForUpdate(window, parseVersionFromManifest().getVersion(), getStartTime());
     }
 
     private void noUpdateAvailable(Window window) {

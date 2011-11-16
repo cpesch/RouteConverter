@@ -24,8 +24,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.logging.Logger;
+
+import static java.awt.Desktop.getDesktop;
+import static java.awt.Desktop.isDesktopSupported;
+import static java.util.Locale.GERMAN;
+import static java.util.Locale.getDefault;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -35,28 +39,33 @@ import java.util.logging.Logger;
 public class ExternalPrograms {
     protected static final Logger log = Logger.getLogger(ExternalPrograms.class.getName());
 
-    public void startBrowserForHomepage(Window window) {
-        startBrowser(window, "http://www.routeconverter.com");
+    private boolean isGerman() {
+        return getDefault().getLanguage().equals(GERMAN.getLanguage());
     }
 
-    public void startBrowserForUpdate(Window window) {
-        startBrowser(window, "http://www.routeconverter.com/downloads/" + Locale.getDefault().getLanguage());
+    public void startBrowserForHomepage(Window window) {
+        startBrowser(window, isGerman() ? "http://www.routeconverter.de/" : "http://www.routeconverter.com/");
+    }
+
+    public void startBrowserForUpdate(Window window, String version, long startTime) {
+        String rootUrl = System.getProperty("feedback", "http://www.routeconverter.com/feedback/");
+        startBrowser(window, rootUrl + "update-check/" + getDefault().getLanguage() + "/" + version + "/" + startTime);
     }
 
     public void startBrowserForTerms(Window window) {
-        startBrowser(window, "http://www.routeconverter.com/routecatalog_terms/" + Locale.getDefault().getLanguage());
+        startBrowser(window, "http://www.routeconverter.com/routecatalog_terms/" + getDefault().getLanguage());
     }
 
     public void startBrowserForForum(Window window) {
-        startBrowser(window, "http://forum.routeconverter.com/");
+        startBrowser(window, isGerman() ? "http://forum.routeconverter.de/" : "http://forum.routeconverter.com/");
     }
 
     public void startBrowserForGeonames(Window window) {
-        startBrowser(window, "http://www.geonames.org");
+        startBrowser(window, "http://www.geonames.org/");
     }
 
     public void startBrowserForDouglasPeucker(Window window) {
-        String url = Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()) ?
+        String url = isGerman() ?
                 "http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
                 "http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm";
         startBrowser(window, url);
@@ -67,9 +76,9 @@ public class ExternalPrograms {
     }
 
     protected void startBrowser(Window window, String uri) {
-        if (Desktop.isDesktopSupported())
+        if (isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI(uri));
+                getDesktop().browse(new URI(uri));
             } catch (Exception e) {
                 log.severe("Start browser error: " + e.getMessage());
 
@@ -77,16 +86,17 @@ public class ExternalPrograms {
                         MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
+        }
     }
 
     public void startMail(Window window) {
-        startMail(window, "mailto:support@routeconverter.com");
+        startMail(window, isGerman() ? "mailto:support@routeconverter.de" : "mailto:support@routeconverter.com");
     }
 
     protected void startMail(Window window, String uri) {
-        if (Desktop.isDesktopSupported()) {
+        if (isDesktopSupported()) {
             try {
-                Desktop.getDesktop().mail(new URI(uri));
+                getDesktop().mail(new URI(uri));
             } catch (Exception e) {
                 log.severe("Start mail error: " + e.getMessage());
 
