@@ -427,8 +427,8 @@
            menu.addItem('Insert', function(map, latLng) {
                callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
            });
-           menu.addItem('Remove', function(map, latLng) {
-               callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+           menu.addItem('Delete', function(map, latLng) {
+               callJava("delete-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
            });
            menu.addSep();
            menu.addItem('Center Here', function(map, latLng) {
@@ -474,7 +474,7 @@
                } else if (!shiftKey && !altKey && ctrlKey) {
                    callJava("add-position/" + event.latLng.lat() + "/" + event.latLng.lng());
                } else if (!shiftKey && altKey && ctrlKey) {
-                   callJava("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
+                   callJava("delete-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
            });
 
