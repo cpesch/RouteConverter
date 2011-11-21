@@ -764,7 +764,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int[] indices) {
-        // reduced selected positions if they're not selected
+        // reduce selected positions if they're not selected
         positions = filterSelectedPositions(positions, indices);
 
         // reduce the number of selected positions by a visibility heuristic
