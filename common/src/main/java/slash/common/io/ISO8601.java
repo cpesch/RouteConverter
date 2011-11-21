@@ -146,26 +146,27 @@ public final class ISO8601 {
             if (delimiter == '.') {
                 // milliseconds (S), (SS), (SSS)
                 StringBuilder buffer = new StringBuilder();
-                while(true) {
+                while (true) {
                     delimiter = text.charAt(start++);
-                    if(Character.isDigit(delimiter))
+                    if (Character.isDigit(delimiter))
                         buffer.append(delimiter);
                     else
                         break;
                 }
-                while(buffer.length() < 3) {
-                    buffer.append('0');                            
+                while (buffer.length() < 3) {
+                    buffer.append('0');
                 }
                 milliseconds = Integer.parseInt(buffer.toString());
             }
-            if (delimiter == 'Z')
+
+            if (delimiter == 'T')
+                delimiter = '+';
+            if (delimiter == 'Z') {
                 timeZone = CompactCalendar.UTC;
-            else if (delimiter == '+' || delimiter == 'T') {
-                // hour (hh)
-                // delimiter ':'
-                // minute (mm)
+            } else if (delimiter == '+' || delimiter == '-') {
+                // delimiter hour (hh)  ':' minute (mm)
                 String tzString = text.substring(start, start + 5);
-                timeZone = TimeZone.getTimeZone("GMT+"+tzString);
+                timeZone = TimeZone.getTimeZone("GMT" + delimiter + tzString);
             } else
                 return null;
         } catch (IndexOutOfBoundsException e) {
@@ -229,7 +230,7 @@ public final class ISO8601 {
     /**
      * Formats a {@link Calendar} value into an ISO8601-compliant date/time string.
      *
-     * @param calendar the time value to be formatted into a date/time string
+     * @param calendar            the time value to be formatted into a date/time string
      * @param includeMilliseconds if milli seconds should be included although the spec does not include them
      * @return the formatted date/time string
      * @throws IllegalArgumentException if a <code>null</code> argument is passed
@@ -274,13 +275,13 @@ public final class ISO8601 {
         buffer.append(':');
         // second (ss)
         buffer.append(XX_FORMAT.format(calendar.get(Calendar.SECOND)));
-        if(includeMilliseconds) {
+        if (includeMilliseconds) {
             // millisecond (SSS)
             buffer.append('.');
             buffer.append(XXX_FORMAT.format(calendar.get(Calendar.MILLISECOND)));
         }
-        if(calendar.getTimeZone().equals(CompactCalendar.UTC))
-           buffer.append('Z');
+        if (calendar.getTimeZone().equals(CompactCalendar.UTC))
+            buffer.append('Z');
         else {
             buffer.append('+');
             int offsetHours = calendar.getTimeZone().getRawOffset() / 1000 / 3600;
