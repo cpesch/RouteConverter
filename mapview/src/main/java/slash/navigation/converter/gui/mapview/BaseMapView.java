@@ -979,6 +979,8 @@ public abstract class BaseMapView implements MapView {
             return;
         }
 
+        String color = preferences.get("trackLineColor", "0033FF");
+        int width = preferences.getInt("trackLineWidth", 2);
         int polylinesCount = ceiling(positions.size(), MAXIMUM_POLYLINE_SEGMENT_LENGTH, true);
         for (int j = 0; j < polylinesCount; j++) {
             StringBuilder buffer = new StringBuilder();
@@ -992,8 +994,8 @@ public abstract class BaseMapView implements MapView {
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("addOverlay(new google.maps.Polyline({path: latlngs, strokeColor: \"#0033FF\", ").
-                    append("strokeWeight: 2, strokeOpacity: 1, clickable: false}));");
+            buffer.append("addOverlay(new google.maps.Polyline({path: latlngs, strokeColor: \"#").append(color).append("\", ").
+                    append("strokeWeight: ").append(width).append(", strokeOpacity: 1, clickable: false}));");
             executeScript(buffer.toString());
         }
         removeOverlays();
