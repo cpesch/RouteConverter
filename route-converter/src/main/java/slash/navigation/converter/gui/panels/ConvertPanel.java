@@ -66,6 +66,10 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JOptionPane.*;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Files.*;
 import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
@@ -380,10 +384,10 @@ public class ConvertPanel {
         chooser.setDialogTitle(RouteConverter.getBundle().getString("open-file-dialog-title"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != JFileChooser.APPROVE_OPTION)
+        if (open != APPROVE_OPTION)
             return;
 
         File[] selected = chooser.getSelectedFiles();
@@ -557,10 +561,10 @@ public class ConvertPanel {
         chooser.setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != JFileChooser.APPROVE_OPTION)
+        if (open != APPROVE_OPTION)
             return null;
 
         File[] selected = chooser.getSelectedFiles();
@@ -584,11 +588,11 @@ public class ConvertPanel {
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
                             Files.shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
-                    r.getFrame().getTitle(), JOptionPane.YES_NO_CANCEL_OPTION);
+                    r.getFrame().getTitle(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
-                case JOptionPane.YES_OPTION:
+                case YES_OPTION:
                     break;
-                case JOptionPane.NO_OPTION:
+                case NO_OPTION:
                     fileCount = 1;
                     break;
                 default:
@@ -641,7 +645,7 @@ public class ConvertPanel {
 
             JOptionPane.showMessageDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
-                    r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+                    r.getFrame().getTitle(), ERROR_MESSAGE);
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
         }
@@ -656,10 +660,10 @@ public class ConvertPanel {
         chooser.setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
         setWriteFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedTarget());
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
-        if (save != JFileChooser.APPROVE_OPTION)
+        if (save != APPROVE_OPTION)
             return;
 
         File selected = chooser.getSelectedFile();
@@ -686,12 +690,12 @@ public class ConvertPanel {
         if (formatAndRoutesModel.isModified()) {
             int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
                     RouteConverter.getBundle().getString("confirm-discard"),
-                    urlModel.getShortUrl(), JOptionPane.YES_NO_CANCEL_OPTION);
+                    urlModel.getShortUrl(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
-                case JOptionPane.YES_OPTION:
+                case YES_OPTION:
                     saveFile();
                     break;
-                case JOptionPane.NO_OPTION:
+                case NO_OPTION:
                     break;
                 default:
                     return false;
@@ -703,8 +707,8 @@ public class ConvertPanel {
     private boolean confirmOverwrite(String file) {
         int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
-                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_OPTION);
-        return confirm != JOptionPane.YES_OPTION;
+                RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
+        return confirm != YES_OPTION;
     }
 
     public JTable getPositionsView() {
