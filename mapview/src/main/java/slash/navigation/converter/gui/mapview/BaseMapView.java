@@ -781,7 +781,7 @@ public abstract class BaseMapView implements MapView {
     protected abstract int getCurrentZoomLevel();
 
     private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions,
-                                                                double factor, boolean addFirstAndLast) {
+                                                                double factor, boolean includeFirstAndLastPosition) {
         long start = System.currentTimeMillis();
 
         BaseNavigationPosition northEast = getNorthEastBounds();
@@ -800,17 +800,20 @@ public abstract class BaseMapView implements MapView {
         southWest.setLatitude(southWest.getLatitude() + height);
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
-        if (addFirstAndLast)
-            result.add(positions.get(0));
 
-        for (int i = 1; i < positions.size() - 1; i += 1) {
+        if (includeFirstAndLastPosition)
+            result.add(positions.get(0));
+        int firstIndex = includeFirstAndLastPosition ? 1 : 0;
+        int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
+
+        for (int i = firstIndex; i < lastIndex; i += 1) {
             BaseNavigationPosition position = positions.get(i);
             if (contains(northEast, southWest, position)) {
                 result.add(position);
             }
         }
 
-        if (addFirstAndLast)
+        if (includeFirstAndLastPosition)
             result.add(positions.get(positions.size() - 1));
 
         long end = System.currentTimeMillis();
