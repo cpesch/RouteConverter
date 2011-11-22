@@ -79,23 +79,15 @@ public class Externalization {
     }
 
     public static File extractFile(String fileName, String targetInfix, TokenResolver tokenResolver) throws IOException {
-        File target = getTempFile(fileName.replace(".", "_" + targetInfix + "."));
-        long lastModifiedInClassPath = getLastModified(fileName);
-        long lastModifiedTarget = target.lastModified();
-        if (target.exists() && lastModifiedTarget / 1000 == lastModifiedInClassPath / 1000)
-            return target;
-
         InputStream in = Externalization.class.getClassLoader().getResourceAsStream(fileName);
         if (in == null)
             return null;
 
+        File target = getTempFile(fileName.replace(".", "_" + targetInfix + "."));
         log.info("Extracting " + fileName + " to " + target);
         Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
         FileWriter writer = new FileWriter(target);
         InputOutput.copy(reader, writer);
-        //noinspection ResultOfMethodCallIgnored
-        target.setLastModified(lastModifiedInClassPath);
         return target;
     }
-
 }

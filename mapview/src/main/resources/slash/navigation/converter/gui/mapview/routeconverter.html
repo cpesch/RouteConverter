@@ -413,6 +413,7 @@
            map.mapTypes.set('Cycle', cycleMapType);
            map.mapTypes.set('Hike', hikeMapType);
            map.mapTypes.set('Outdoor', outdoorMapType);
+           map.setMapTypeId('${maptype}');
            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
            addDebug("2. created map: " + map);
 

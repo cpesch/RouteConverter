@@ -75,7 +75,7 @@ public abstract class BaseMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
-    private static final String MAP_TYPE_PREFERENCE = "mapType3";
+    protected static final String MAP_TYPE_PREFERENCE = "mapType3";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
 
@@ -1022,12 +1022,6 @@ public abstract class BaseMapView implements MapView {
 
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
         StringBuilder buffer = new StringBuilder();
-        // set map type only on first start
-        if (haveToInitializeMapOnFirstStart) {
-            String mapType = preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
-            buffer.append("map.setMapTypeId(\"").append(mapType).append("\");\n");
-        }
-
         // if there are positions center on first start or if we have to recenter
         if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
             BaseNavigationPosition northEast = northEast(positions);

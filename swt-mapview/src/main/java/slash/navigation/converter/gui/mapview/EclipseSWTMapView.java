@@ -103,6 +103,8 @@ public class EclipseSWTMapView extends BaseMapView {
                         return Platform.isWindows() ? "99" : "100";
                     if (tokenName.equals("mapserver"))
                         return preferences.get(MAP_SERVER_PREFERENCE, "maps.google.com");
+                    if (tokenName.equals("maptype"))
+                        return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
                     return tokenName;
                 }
             });
