@@ -174,7 +174,7 @@ public class RouteConverter extends SingleFrameApplication {
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
         show();
         checkJreVersion();
-        new Updater().implicitCheck(frame);
+        new UpdateChecker().implicitCheck(frame);
         parseArgs(args);
     }
 

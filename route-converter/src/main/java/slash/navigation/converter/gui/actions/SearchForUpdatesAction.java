@@ -20,17 +20,17 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.Updater;
+import slash.navigation.converter.gui.UpdateChecker;
 import slash.navigation.gui.FrameAction;
 
 /**
- * Search for {@link Updater updates}.
+ * Search for {@link slash.navigation.converter.gui.UpdateChecker updates}.
  *
  * @author Christian Pesch
  */
 
 public class SearchForUpdatesAction extends FrameAction {
     public void run() {
-        new Updater().explicitCheck(getFrame());
+        new UpdateChecker().explicitCheck(getFrame());
     }
 }
