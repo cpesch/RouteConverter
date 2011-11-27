@@ -489,7 +489,7 @@ public class ConvertPanel {
         }, "UrlOpener").start();
     }
 
-    private void appendPositionList(final int row, final List<URL> urls) { // TODO very similar to ImportPositionList#importPositionList()
+    private void appendPositionList(final int row, final List<URL> urls) { // TODO very similar to ImportPositionList#importFile()
         final RouteConverter r = RouteConverter.getInstance();
 
         new Thread(new Runnable() {
@@ -551,34 +551,27 @@ public class ConvertPanel {
         }
     }
 
-    public void importPositionList() {
+    public void importFile() {
         int selectedRow = getPositionsView().getSelectedRow() + 1;
 
-        File[] files = selectFilesToImport();
-        if (files == null)
-            return;
-
-        appendPositionList(selectedRow, reverse(toUrls(files)));
-    }
-
-    private File[] selectFilesToImport() {
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("import-positionlist-source"));
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("import-file-dialog-title"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
         if (open != APPROVE_OPTION)
-            return null;
+            return;
 
         File[] selected = chooser.getSelectedFiles();
         if (selected == null || selected.length == 0)
-            return null;
+            return;
 
         NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
-        return selected;
+
+        appendPositionList(selectedRow, reverse(toUrls(selected)));
     }
 
     private void saveFile(File file, NavigationFormat format, boolean confirmOverwrite, boolean openAfterSave) {
