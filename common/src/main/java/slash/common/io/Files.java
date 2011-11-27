@@ -183,6 +183,13 @@ public class Files {
         return urls;
     }
 
+    public static List<URL> reverse(List<URL> urls) {
+        List<URL> result = new ArrayList<URL>();
+        for (URL url : urls)
+            result.add(0, url);
+        return result;
+    }
+
     public static String createGoPalFileName(String fileName) {
         fileName = fileName.toUpperCase();
         fileName = fileName.replaceAll("[^\\w.]", " ");
