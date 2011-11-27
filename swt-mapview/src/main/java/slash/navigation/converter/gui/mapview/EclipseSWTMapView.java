@@ -47,7 +47,7 @@ import static slash.common.io.Transfer.parseDouble;
 
 public class EclipseSWTMapView extends BaseMapView {
     private static final Logger log = Logger.getLogger(EclipseSWTMapView.class.getName());
-    private static final String MAP_SERVER_PREFERENCE = "mapServer";
+    private static final String GOOGLE_MAPS_SERVER_PREFERENCE = "mapServer";
     private static final String DEBUG_PREFERENCE = "debug";
 
     private JWebBrowser webBrowser;
@@ -102,7 +102,7 @@ public class EclipseSWTMapView extends BaseMapView {
                     if (tokenName.equals("percent"))
                         return Platform.isWindows() ? "99" : "100";
                     if (tokenName.equals("mapserver"))
-                        return preferences.get(MAP_SERVER_PREFERENCE, "maps.google.com");
+                        return preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, "maps.google.com");
                     if (tokenName.equals("maptype"))
                         return preferences.get(MAP_TYPE_PREFERENCE, "roadmap");
                     return tokenName;

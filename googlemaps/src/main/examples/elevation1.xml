@@ -1,0 +1,17 @@
+<ElevationResponse>
+ <status>OK</status>
+ <result>
+  <location>
+   <lat>39.7391536</lat>
+   <lng>-104.9847034</lng>
+  </location>
+  <elevation>1608.8402100</elevation>
+ </result>
+ <result>
+  <location>
+   <lat>36.4555560</lat>
+   <lng>-116.8666670</lng>
+  </location>
+  <elevation>-50.7890358</elevation>
+ </result>
+</ElevationResponse>

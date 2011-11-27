@@ -49,7 +49,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parseExtensionPositions;
-import static slash.navigation.util.Bearing.EARTH_RADIUS;
+import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**

@@ -19,4 +19,6 @@ bin\xjc -verbose -d generated -p slash.navigation.geonames.binding c:\p4\RouteCo
 bin\xjc -verbose -d generated -p slash.navigation.nmn.binding7 c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\nmn\nmn7.xsd
 bin\xjc -verbose -d generated -p slash.navigation.klicktel.binding c:\p4\RouteConverter\trunk\navigation-formats\src\main\doc\klicktel\klicktel.xsd
 bin\xjc -verbose -d generated -p slash.navigation.earthtools.binding c:\p4\RouteConverter\trunk\earthtools\src\main\doc\height.xsd
+bin\xjc -verbose -d generated -p slash.navigation.googlemaps.elevation c:\p4\RouteConverter-git\googlemaps\src\main\doc\elevation.xsd
+bin\xjc -verbose -d generated -p slash.navigation.googlemaps.geocode c:\p4\RouteConverter-git\googlemaps\src\main\doc\geocode.xsd
 

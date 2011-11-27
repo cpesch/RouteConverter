@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="GeocodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="status" type="xs:string" />
+        <xs:element maxOccurs="unbounded" name="result">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="type" type="xs:string" />
+              <xs:element name="formatted_address" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="address_component">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="long_name" type="xs:string" />
+                    <xs:element name="short_name" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" name="type" type="xs:string" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="geometry">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="location">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="lat" type="xs:decimal" />
+                          <xs:element name="lng" type="xs:decimal" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="location_type" type="xs:string" />
+                    <xs:element name="viewport">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="southwest">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="lat" type="xs:decimal" />
+                                <xs:element name="lng" type="xs:decimal" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="northeast">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="lat" type="xs:decimal" />
+                                <xs:element name="lng" type="xs:decimal" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="bounds">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="southwest">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="lat" type="xs:decimal" />
+                                <xs:element name="lng" type="xs:decimal" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="northeast">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="lat" type="xs:decimal" />
+                                <xs:element name="lng" type="xs:decimal" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

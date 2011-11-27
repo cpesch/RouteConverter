@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import slash.common.io.CompactCalendar;
+import slash.common.util.Bearing;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
@@ -29,14 +30,13 @@ import slash.navigation.kml.KmlPosition;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.tour.TourPosition;
-import slash.navigation.util.Bearing;
 
 import java.util.Calendar;
 
 import static java.lang.Double.isNaN;
 import static java.lang.Math.*;
-import static slash.navigation.util.Bearing.EARTH_RADIUS;
-import static slash.navigation.util.Bearing.calculateBearing;
+import static slash.common.util.Bearing.EARTH_RADIUS;
+import static slash.common.util.Bearing.calculateBearing;
 
 /**
  * The base of all navigation positions.
