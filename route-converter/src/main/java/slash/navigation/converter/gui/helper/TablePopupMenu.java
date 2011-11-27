@@ -60,7 +60,7 @@ public class TablePopupMenu extends AbstractTablePopupMenu {
         menu.add(JMenuHelper.createItem("split-positionlist"));
         menu.add(JMenuHelper.createMenu("merge-positionlist"));
         menu.add(JMenuHelper.createItem("import-positionlist"));
-
+        menu.add(JMenuHelper.createItem("export-positionlist"));
         return menu;
     }
 }

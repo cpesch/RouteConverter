@@ -39,6 +39,6 @@ public class ImportPositionList extends FrameAction {
     }
 
     public void run() {
-        convertPanel.importFile();
+        convertPanel.importPositionList();
     }
 }

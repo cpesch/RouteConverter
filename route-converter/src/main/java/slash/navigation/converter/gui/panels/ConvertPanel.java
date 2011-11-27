@@ -283,6 +283,7 @@ public class ConvertPanel {
         actionManager.register("add-number", new AddNumberToPositions(tablePositions, getPositionsModel(), positionAugmenter));
         actionManager.register("split-positionlist", new SplitPositionList(tablePositions, getPositionsModel(), formatAndRoutesModel));
         actionManager.register("import-positionlist", new ImportPositionList(this));
+        actionManager.register("export-positionlist", new ExportPositionList(this));
 
         JMenuHelper.registerKeyStroke(tablePositions, "copy");
         JMenuHelper.registerKeyStroke(tablePositions, "cut");
@@ -489,7 +490,7 @@ public class ConvertPanel {
         }, "UrlOpener").start();
     }
 
-    private void appendPositionList(final int row, final List<URL> urls) { // TODO very similar to ImportPositionList#importFile()
+    private void appendPositionList(final int row, final List<URL> urls) {
         final RouteConverter r = RouteConverter.getInstance();
 
         new Thread(new Runnable() {
@@ -551,7 +552,7 @@ public class ConvertPanel {
         }
     }
 
-    public void importFile() {
+    public void importPositionList() {
         int selectedRow = getPositionsView().getSelectedRow() + 1;
 
         JFileChooser chooser = createJFileChooser();
@@ -574,7 +575,31 @@ public class ConvertPanel {
         appendPositionList(selectedRow, reverse(toUrls(selected)));
     }
 
-    private void saveFile(File file, NavigationFormat format, boolean confirmOverwrite, boolean openAfterSave) {
+    public void exportPositionList() {
+        JFileChooser chooser = createJFileChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("export-file-dialog-title"));
+        setWriteFormatFileFilters(chooser);
+        chooser.setSelectedFile(createSelectedTarget());
+        chooser.setFileSelectionMode(FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
+        if (save != APPROVE_OPTION)
+            return;
+
+        File selected = chooser.getSelectedFile();
+        if (selected == null || selected.getName().length() == 0)
+            return;
+
+        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        if (selectedFormat == null)
+            selectedFormat = formatAndRoutesModel.getFormat();
+        setWriteFormatFileFilterPreference(selectedFormat);
+        saveFile(selected, selectedFormat,
+                true, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
+    }
+
+    private void saveFile(File file, NavigationFormat format,
+                          boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         RouteConverter r = RouteConverter.getInstance();
         r.setSavePathPreference(format, file.getParent());
 
@@ -598,11 +623,11 @@ public class ConvertPanel {
             }
         }
 
-        saveFile(file, format, route, fileCount, confirmOverwrite, openAfterSave);
+        saveFile(file, format, route, fileCount, exportSelectedRoute, confirmOverwrite, openAfterSave);
     }
 
     private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount,
-                          boolean confirmOverwrite, boolean openAfterSave) {
+                          boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         File[] targets = createTargetFiles(file, fileCount, format.getExtension(), 255);
         if (confirmOverwrite) {
             for (File target : targets) {
@@ -620,7 +645,8 @@ public class ConvertPanel {
         startWaitCursor(r.getFrame().getRootPane());
         try {
             if (format.isSupportsMultipleRoutes()) {
-                new NavigationFileParser().write(formatAndRoutesModel.getRoutes(), (MultipleRoutesFormat) format, targets[0]);
+                List<BaseRoute> routes = exportSelectedRoute ? Arrays.asList(route) : formatAndRoutesModel.getRoutes();
+                new NavigationFileParser().write(routes, (MultipleRoutesFormat) format, targets[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
                 new NavigationFileParser().write(route, format, duplicateFirstPosition, true, targets);
@@ -628,15 +654,17 @@ public class ConvertPanel {
             formatAndRoutesModel.setModified(false);
             log.info("Saved: " + targetsAsString);
 
-            if (openAfterSave && format.isSupportsReading()) {
-                openPositionList(toUrls(targets), getReadFormatsWithPreferredFormat(format));
-                log.info("Open after save: " + targets[0]);
-            }
-            if (confirmOverwrite) {
-                URL url = targets[0].toURI().toURL();
-                String path = createReadablePath(url);
-                urlModel.setString(path);
-                recentUrlsModel.addUrl(url);
+            if (!exportSelectedRoute) {
+                if (openAfterSave && format.isSupportsReading()) {
+                    openPositionList(toUrls(targets), getReadFormatsWithPreferredFormat(format));
+                    log.info("Open after save: " + targets[0]);
+                }
+                if (confirmOverwrite) {
+                    URL url = targets[0].toURI().toURL();
+                    String path = createReadablePath(url);
+                    urlModel.setString(path);
+                    recentUrlsModel.addUrl(url);
+                }
             }
         } catch (Throwable t) {
             log.severe("Save error " + file + "," + format + ": " + t.getMessage());
@@ -650,7 +678,7 @@ public class ConvertPanel {
     }
 
     public void saveFile() {
-        saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false);
+        saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false, false);
     }
 
     public void saveAsFile() {
@@ -672,7 +700,7 @@ public class ConvertPanel {
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
-        saveFile(selected, selectedFormat, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
+        saveFile(selected, selectedFormat, false, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
     private NavigationFormat getSelectedFormat(FileFilter fileFilter) {

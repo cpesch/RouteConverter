@@ -87,6 +87,7 @@ public class FrameMenu {
         positionlistMenu.add(createItem("split-positionlist"));
         positionlistMenu.add(createMenu("merge-positionlist"));
         positionlistMenu.add(createItem("import-positionlist"));
+        positionlistMenu.add(createItem("export-positionlist"));
 
         JMenu viewMenu = createMenu("view");
         viewMenu.add(createItem("show-map-and-positionlist"));
