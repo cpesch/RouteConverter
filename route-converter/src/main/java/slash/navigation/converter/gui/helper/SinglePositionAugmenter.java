@@ -24,7 +24,6 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
-import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.util.NumberPattern;
 import slash.navigation.util.Positions;
@@ -37,7 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.isEmpty;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
 /**
@@ -75,7 +74,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
     public void complementElevation(final int row, final Double longitude, final Double latitude) {
         executor.execute(new Runnable() {
             public void run() {
-                final Integer[] elevation = new Integer[1];
+                final Double[] elevation = new Double[1];
                 try {
                     elevation[0] = completePositionService.getElevationFor(longitude, latitude);
                 } catch (IOException e) {
@@ -86,7 +85,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             if (!isEmpty(elevation[0])) {
-                                positionsModel.edit(elevation[0], row, PositionColumns.ELEVATION_COLUMN_INDEX, true, false);
+                                positionsModel.edit(elevation[0], row, ELEVATION_COLUMN_INDEX, true, false);
                             }
                         }
                     });
@@ -133,7 +132,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        positionsModel.edit(time[0], row, PositionColumns.TIME_COLUMN_INDEX, true, false);
+                        positionsModel.edit(time[0], row, TIME_COLUMN_INDEX, true, false);
                     }
                 });
             }

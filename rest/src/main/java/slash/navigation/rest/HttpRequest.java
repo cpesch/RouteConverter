@@ -46,7 +46,7 @@ public abstract class HttpRequest {
         client.getParams().setIntParameter("http.connection.timeout", 15 * 1000);
         client.getParams().setIntParameter("http.socket.timeout", 60 * 1000);
         client.getParams().setParameter("http.method.retry-handler", new DefaultHttpMethodRetryHandler(0, false));
-        client.getParams().setParameter("http.useragent", "RouteConverter REST Client/" + System.getProperty("rest", "0.4"));
+        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "0.4"));
         this.method = method;
     }
 
@@ -84,6 +84,11 @@ public abstract class HttpRequest {
             else
                 throw e;
         }
+    }
+
+
+    public void setUserAgent(String userAgent) {
+        client.getParams().setParameter("http.useragent", userAgent);
     }
 
     public String execute() throws IOException {

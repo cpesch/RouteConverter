@@ -90,11 +90,14 @@ public class GeoNamesService {
         return getElevationFor("gtopo30", longitude, latitude, -9999);
     }
 
-    public Integer getElevationFor(double longitude, double latitude) throws IOException {
-        if (latitude < 60.0 && latitude > -56.0)
-            return getSrtm3ElevationFor(longitude, latitude);
-        else
-            return getGtopo30ElevationFor(longitude, latitude);
+    public Double getElevationFor(double longitude, double latitude) throws IOException {
+        if (latitude < 60.0 && latitude > -56.0) {
+            Integer elevation = getSrtm3ElevationFor(longitude, latitude);
+            return elevation != null ? elevation.doubleValue() : null;
+        } else {
+            Integer elevation = getGtopo30ElevationFor(longitude, latitude);
+            return elevation != null ? elevation.doubleValue() : null;
+        }
     }
 
     private Geonames getGeonamesFor(String uri) throws IOException {

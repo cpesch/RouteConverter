@@ -64,4 +64,17 @@ public class GoogleMapsServiceIT {
         List<GoogleMapsPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(Arrays.asList(expected), actual);
     }
+
+    @Test
+    public void getElevationFor() throws IOException {
+        assertEquals(39.3, service.getElevationFor(11.2, 59.0), 0.5);
+        assertEquals(185.6, service.getElevationFor(11.2, 60.0), 0.5);
+        assertEquals(650.1, service.getElevationFor(11.2, 61.0), 0.5);
+
+        assertEquals(77.2, service.getElevationFor(-68.0, -54.0), 0.5);
+        assertEquals(457.6, service.getElevationFor(-68.0, -55.0), 0.5);
+        assertEquals(-112.5, service.getElevationFor(-68.0, -56.0), 0.5);
+        assertEquals(-105.0, service.getElevationFor(-68.0, -56.1), 0.5);
+        assertEquals(-2861.2, service.getElevationFor(-68.0, -57.0), 0.5);
+    }
 }

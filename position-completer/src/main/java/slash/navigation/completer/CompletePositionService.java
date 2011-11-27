@@ -34,19 +34,19 @@ import java.io.IOException;
  */
 
 public class CompletePositionService {
-    private HgtFiles hgtFiles = new HgtFiles();
-    private GeoNamesService geoNamesService = new GeoNamesService();
     private EarthToolsService earthToolsService = new EarthToolsService();
-
+    private GeoNamesService geoNamesService = new GeoNamesService();
     private GoogleMapsService googleMapsService = new GoogleMapsService();
-    private GeoNamesService geonamesService = new GeoNamesService();
+    private HgtFiles hgtFiles = new HgtFiles();
 
     public void dispose() {
         hgtFiles.dispose();
     }
 
-    public Integer getElevationFor(double longitude, double latitude) throws IOException {
-        Integer elevation = hgtFiles.getElevationFor(longitude, latitude);
+    public Double getElevationFor(double longitude, double latitude) throws IOException {
+        Double elevation = hgtFiles.getElevationFor(longitude, latitude);
+        if (elevation == null)
+            elevation = googleMapsService.getElevationFor(longitude, latitude);
         if (elevation == null)
             elevation = geoNamesService.getElevationFor(longitude, latitude);
         if (elevation == null)
@@ -57,7 +57,7 @@ public class CompletePositionService {
     public String getCommentFor(double longitude, double latitude) throws IOException {
         String comment = googleMapsService.getLocationFor(longitude, latitude);
         if (comment == null)
-            comment = geonamesService.getNearByFor(longitude, latitude);
+            comment = geoNamesService.getNearByFor(longitude, latitude);
         return comment;
     }
 }

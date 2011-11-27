@@ -26,7 +26,6 @@ import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsPosition;
@@ -39,6 +38,8 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 /**
@@ -158,7 +159,7 @@ public class BatchPositionAugmenter {
                     if (lastException[0] != null)
                         JOptionPane.showMessageDialog(frame,
                                 MessageFormat.format(operation.getErrorMessage(), lastException[0].getMessage()),
-                                frame.getTitle(), JOptionPane.ERROR_MESSAGE);
+                                frame.getTitle(), ERROR_MESSAGE);
                 } finally {
                     operation.postRunning();
 
@@ -188,14 +189,14 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return PositionColumns.LONGITUDE_COLUMN_INDEX;  // + PositionColumns.LATITUDE_COLUMN_INDEX
+                        return LONGITUDE_COLUMN_INDEX;  // + PositionColumns.LATITUDE_COLUMN_INDEX
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         GoogleMapsPosition coordinates = googleMapsService.getPositionFor(position.getComment());
                         if (coordinates != null) {
-                            positionsModel.edit(coordinates.getLongitude(), index, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
-                            positionsModel.edit(coordinates.getLatitude(), index, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
+                            positionsModel.edit(coordinates.getLongitude(), index, LONGITUDE_COLUMN_INDEX, false, true);
+                            positionsModel.edit(coordinates.getLatitude(), index, LATITUDE_COLUMN_INDEX, false, true);
                         }
                         return coordinates != null;
                     }
@@ -228,13 +229,13 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return PositionColumns.ELEVATION_COLUMN_INDEX;
+                        return ELEVATION_COLUMN_INDEX;
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
-                        Integer elevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
+                        Double elevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
                         if (elevation != null)
-                            positionsModel.edit(elevation.doubleValue(), index, PositionColumns.ELEVATION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(elevation, index, ELEVATION_COLUMN_INDEX, false, true);
                         return elevation != null;
                     }
 
@@ -267,13 +268,13 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return PositionColumns.DESCRIPTION_COLUMN_INDEX;
+                        return DESCRIPTION_COLUMN_INDEX;
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String comment = geonamesService.getNearByFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
-                            positionsModel.edit(comment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(comment, index, DESCRIPTION_COLUMN_INDEX, false, true);
                         return comment != null;
                     }
 
@@ -305,13 +306,13 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return PositionColumns.DESCRIPTION_COLUMN_INDEX;
+                        return DESCRIPTION_COLUMN_INDEX;
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         String comment = googleMapsService.getLocationFor(position.getLongitude(), position.getLatitude());
                         if (comment != null)
-                            positionsModel.edit(comment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(comment, index, DESCRIPTION_COLUMN_INDEX, false, true);
                         return comment != null;
                     }
 
@@ -341,7 +342,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return PositionColumns.SPEED_COLUMN_INDEX;
+                        return SPEED_COLUMN_INDEX;
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
@@ -351,7 +352,7 @@ public class BatchPositionAugmenter {
                             Double nextSpeed = position.calculateSpeed(predecessor);
                             boolean changed = nextSpeed != null && !nextSpeed.equals(previousSpeed);
                             if (changed)
-                                positionsModel.edit(nextSpeed, index, PositionColumns.SPEED_COLUMN_INDEX, false, true);
+                                positionsModel.edit(nextSpeed, index, SPEED_COLUMN_INDEX, false, true);
                             return changed;
                         }
                         return false;
@@ -385,7 +386,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return PositionColumns.DESCRIPTION_COLUMN_INDEX;
+                        return DESCRIPTION_COLUMN_INDEX;
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
@@ -393,7 +394,7 @@ public class BatchPositionAugmenter {
                         String nextComment = getNumberedPosition(position, index, digitCount, numberPattern);
                         boolean changed = nextComment != null && !nextComment.equals(previousComment);
                         if (changed)
-                            positionsModel.edit(nextComment, index, PositionColumns.DESCRIPTION_COLUMN_INDEX, false, true);
+                            positionsModel.edit(nextComment, index, DESCRIPTION_COLUMN_INDEX, false, true);
                         return changed;
                     }
 

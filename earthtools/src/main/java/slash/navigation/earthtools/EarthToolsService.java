@@ -41,7 +41,7 @@ public class EarthToolsService {
         return preferences.get(GEONAMES_URL_PREFERENCE, "http://www.earthtools.org/");
     }
 
-    public Integer getElevationFor(double longitude, double latitude) throws IOException {
+    public Double getElevationFor(double longitude, double latitude) throws IOException {
         Get get = new Get(getEarthToolsUrlPreference() + "height/" + latitude + "/" + longitude);
         String result = get.execute();
         if (get.isSuccessful())
@@ -49,7 +49,7 @@ public class EarthToolsService {
                 Height height = EarthToolsUtil.unmarshal(result);
                 Integer elevation = Transfer.parseInt(height.getMeters());
                 if (elevation != null && !elevation.equals(-9999))
-                    return elevation;
+                    return elevation.doubleValue();
             } catch (Exception e) {
                 IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
                 io.setStackTrace(e.getStackTrace());

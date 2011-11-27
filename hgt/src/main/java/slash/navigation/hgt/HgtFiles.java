@@ -58,7 +58,7 @@ public class HgtFiles {
                 (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);
     }
 
-    public Integer getElevationFor(double longitude, double latitude) throws IOException {
+    public Double getElevationFor(double longitude, double latitude) throws IOException {
         Integer tileKey = createTileKey(longitude, latitude);
         ElevationTile tile = tileCache.get(tileKey);
         if (tile == null) {

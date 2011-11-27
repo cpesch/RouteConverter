@@ -49,7 +49,7 @@ public class ElevationTile {
         return (dHeight12 * dDiff) / dLength12;
     }
 
-    public Integer getElevationFor(Double longitude, Double latitude) throws IOException {
+    public Double getElevationFor(Double longitude, Double latitude) throws IOException {
         if (elevationFile == null)
             return null;
 
@@ -128,6 +128,6 @@ public class ElevationTile {
         // Interpolate between the interpolated left elevation and interpolated right elevation
         dElevation = dLonHeightLeft - calculateElevation(dLonHeightLeft - dLonHeightRight, 1.0 / (double) nAS, dDeltaLon);
 
-        return (int) (dElevation + 0.5);   // Do a rounding of the calculated elevation
+        return dElevation + 0.5;   // Do a rounding of the calculated elevation
     }
 }
