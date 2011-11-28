@@ -20,7 +20,6 @@
 
 package slash.navigation.nmn;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.UrlFormat;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
@@ -33,6 +32,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Math.max;
 import static slash.common.io.Transfer.*;
 
 /**
@@ -106,7 +106,7 @@ public class NmnUrlFormat extends UrlFormat {
     }
 
     private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
-        String mapName = preferences.get("navigonUrlMapName", null);
+        String mapName = trim(preferences.get("navigonUrlMapName", null));
         if(mapName != null)
             return mapName;
 
@@ -125,8 +125,8 @@ public class NmnUrlFormat extends UrlFormat {
         buffer.append("navigon").append(calculateMapName(positions, startIndex, endIndex)).append("://route/?");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
-            String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+            String longitude = formatDoubleAsString(position.getLongitude(), 6);
+            String latitude = formatDoubleAsString(position.getLatitude(), 6);
             if (i > startIndex)
                 buffer.append("&");
             buffer.append("target=coordinate//").append(longitude).append("/").append(latitude);
@@ -138,7 +138,7 @@ public class NmnUrlFormat extends UrlFormat {
         List<Wgs84Position> positions = route.getPositions();
         // idea from forum: add start point from previous route section since your not at the
         // last position of the previous segment heading for the first position of the next segment
-        startIndex = Math.max(startIndex - 1, 0);
+        startIndex = max(startIndex - 1, 0);
         writer.println(createURL(positions, startIndex, endIndex));
         writer.println();
     }
