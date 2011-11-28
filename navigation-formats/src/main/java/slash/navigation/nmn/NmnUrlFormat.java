@@ -122,7 +122,7 @@ public class NmnUrlFormat extends UrlFormat {
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("navigon").append(calculateMapName(positions, startIndex, endIndex)).append("://route/?");
+        buffer.append("navigon")./*append(calculateMapName(positions, startIndex, endIndex)).*/append("://route/?");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             String longitude = formatDoubleAsString(position.getLongitude(), 6);
