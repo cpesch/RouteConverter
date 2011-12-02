@@ -460,7 +460,10 @@
                callJava("maptypechanged/" + map.getMapTypeId());
            });
            google.maps.event.addListener(map, "zoom_changed", function() {
-               callJava("zoomed");
+               callJava("zoomchanged");
+           });
+           google.maps.event.addListener(map, "center_changed", function() {
+               callJava("centerchanged");
            });
 
            var shiftKey = false, altKey = false, ctrlKey = false;

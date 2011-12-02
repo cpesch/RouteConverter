@@ -118,7 +118,7 @@ public class Positions {
         return asPosition(longitude, latitude, time);
     }
 
-    public static BaseNavigationPosition northEast(List<? extends BaseNavigationPosition> positions) {
+    public static BaseNavigationPosition southWest(List<? extends BaseNavigationPosition> positions) {
         double minimumLongitude = 180.0, minimumLatitude = 180.0;
         Calendar minimumTime = null;
         for (BaseNavigationPosition position : positions) {
@@ -143,7 +143,7 @@ public class Positions {
                 minimumTime != null ? fromCalendar(minimumTime) : null);
     }
 
-    public static BaseNavigationPosition southWest(List<? extends BaseNavigationPosition> positions) {
+    public static BaseNavigationPosition northEast(List<? extends BaseNavigationPosition> positions) {
         double maximumLongitude = -180.0, maximumLatitude = -180.0;
         Calendar maximumTime = null;
         for (BaseNavigationPosition position : positions) {

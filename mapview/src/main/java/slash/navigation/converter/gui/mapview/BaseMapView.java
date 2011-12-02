@@ -115,7 +115,7 @@ public abstract class BaseMapView implements MapView {
     private int[] selectedPositionIndices = new int[0];
 
     private ServerSocket callbackListenerServerSocket;
-    private Thread routeUpdater, selectionUpdater, callbackListener, callbackPoller;
+    private Thread positionListUpdater, selectionUpdater, callbackListener, callbackPoller;
 
     protected final Object notificationMutex = new Object();
     protected boolean initialized = false;
@@ -236,7 +236,7 @@ public abstract class BaseMapView implements MapView {
             }
         });
 
-        routeUpdater = new Thread(new Runnable() {
+        positionListUpdater = new Thread(new Runnable() {
             public void run() {
                 long lastTime = 0;
                 boolean recenter;
@@ -307,13 +307,13 @@ public abstract class BaseMapView implements MapView {
                         default:
                             addPolylinesToMap(copiedPositions);
                     }
-                    log.info("Route updated for " + copiedPositions.size() + " positions of type " +
+                    log.info("Position list updated for " + copiedPositions.size() + " positions of type " +
                             positionsModel.getRoute().getCharacteristics() + ", recentering: " + recenter);
                     lastTime = System.currentTimeMillis();
                 }
             }
-        }, "MapViewRouteUpdater");
-        routeUpdater.start();
+        }, "MapViewPositionListUpdater");
+        positionListUpdater.start();
 
         selectionUpdater = new Thread(new Runnable() {
             public void run() {
@@ -557,11 +557,11 @@ public abstract class BaseMapView implements MapView {
             log.info("PositionUpdater stopped after " + (end - start) + " ms");
         }
 
-        if (routeUpdater != null) {
+        if (positionListUpdater != null) {
             try {
-                routeUpdater.join(500);
-                routeUpdater.interrupt();
-                routeUpdater.join();
+                positionListUpdater.join(500);
+                positionListUpdater.interrupt();
+                positionListUpdater.join();
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
@@ -742,6 +742,8 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
+    private BaseNavigationPosition visibleNorthWest, visibleNorthEast, visibleSouthWest, visibleSouthEast;
+
     private List<BaseNavigationPosition> reducePositions(List<BaseNavigationPosition> positions, int maximumPositionCount) {
         if (positions.size() < 2)
             return positions;
@@ -753,8 +755,18 @@ public abstract class BaseMapView implements MapView {
         positions = filterSignificantPositions(positions);
 
         // reduce the number of significant positions by a visibility heuristic
-        if (positions.size() > maximumPositionCount)
+        if (positions.size() > maximumPositionCount) {
             positions = filterVisiblePositions(positions, 2.5, false);
+            visibleNorthEast = northEast(positions);
+            visibleSouthWest = southWest(positions);
+            visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
+            visibleSouthEast = asPosition(visibleNorthEast.getLongitude(), visibleSouthWest.getLatitude());
+         } else {
+            visibleNorthEast = null;
+            visibleSouthWest = null;
+            visibleNorthWest = null;
+            visibleSouthEast = null;
+        }
 
         // reduce the number of visible positions by a JS-stability heuristic
         if (positions.size() > maximumPositionCount)
@@ -869,9 +881,9 @@ public abstract class BaseMapView implements MapView {
         }
 
         long end = System.currentTimeMillis();
-         log.info(format("Filtered positions without coordinates to reduce %d positions to %d in %d milliseconds",
-                 positions.size(), result.size(), (end - start)));
-         return result;
+        log.info(format("Filtered positions without coordinates to reduce %d positions to %d in %d milliseconds",
+                positions.size(), result.size(), (end - start)));
+        return result;
     }
 
     // draw on map
@@ -1030,8 +1042,8 @@ public abstract class BaseMapView implements MapView {
             BaseNavigationPosition northEast = northEast(positions);
             BaseNavigationPosition southWest = southWest(positions);
             buffer.append("map.fitBounds(new google.maps.LatLngBounds(").
-                    append("new google.maps.LatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append("),").
-                    append("new google.maps.LatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(")));\n");
+                    append("new google.maps.LatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append("),").
+                    append("new google.maps.LatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(")));\n");
             BaseNavigationPosition center = center(positions);
             buffer.append("map.setCenter(new google.maps.LatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("));\n");
@@ -1250,7 +1262,8 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
-    private static final Pattern ZOOMED_PATTERN = Pattern.compile("^zoomed$");
+    private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoomchanged$");
+    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^centerchanged$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
@@ -1352,8 +1365,8 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher zoomedMatcher = ZOOMED_PATTERN.matcher(callback);
-        if (zoomedMatcher.matches()) {
+        Matcher zoomChangedMatcher = ZOOM_CHANGED_PATTERN.matcher(callback);
+        if (zoomChangedMatcher.matches()) {
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
@@ -1368,6 +1381,31 @@ public abstract class BaseMapView implements MapView {
                     selectionUpdateReason = "zoomed from " + lastZoomLevel + " to " + currentZoomLevel;
                     lastZoomLevel = currentZoomLevel;
                     notificationMutex.notifyAll();
+                }
+            }
+            return true;
+        }
+
+        Matcher centerChangedMatcher = CENTER_CHANGED_PATTERN.matcher(callback);
+        if (centerChangedMatcher.matches()) {
+            if (visibleNorthEast != null && visibleSouthWest != null && visibleNorthWest != null && visibleSouthEast != null) {
+                BaseNavigationPosition mapNorthEast = getNorthEastBounds();
+                BaseNavigationPosition mapSouthWest = getSouthWestBounds();
+
+                log.fine("map contains NE " + contains(mapNorthEast, mapSouthWest, visibleNorthEast));
+                log.fine("map contains NW " + contains(mapNorthEast, mapSouthWest, visibleNorthWest));
+                log.fine("map contains SE " + contains(mapNorthEast, mapSouthWest, visibleSouthEast));
+                log.fine("map contains SW " + contains(mapNorthEast, mapSouthWest, visibleSouthWest));
+
+                if (contains(mapNorthEast, mapSouthWest, visibleNorthEast) ||
+                        contains(mapNorthEast, mapSouthWest, visibleNorthWest) ||
+                        contains(mapNorthEast, mapSouthWest, visibleSouthEast) ||
+                        contains(mapNorthEast, mapSouthWest, visibleSouthWest)) {
+                    synchronized (notificationMutex) {
+                        haveToRepaintRouteImmediately = true;
+                        routeUpdateReason = "repaint not visible positions";
+                        notificationMutex.notifyAll();
+                    }
                 }
             }
             return true;
