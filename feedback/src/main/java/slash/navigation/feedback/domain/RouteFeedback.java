@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.logging.Logger;
 
+import static java.lang.String.valueOf;
+import static java.util.Locale.getDefault;
 import static slash.common.io.Files.writeToTempFile;
 import static slash.navigation.rest.Helper.asUtf8;
 
@@ -52,6 +54,7 @@ public class RouteFeedback {
 
     private static final String USERS_URI = "users/";
     private static final String ERROR_REPORT_URI = "error-report/";
+    private static final String UPDATE_CHECK_URI = "update-check/";
 
     private final String rootUrl;
     private final Credentials credentials;
@@ -145,11 +148,11 @@ public class RouteFeedback {
         return rootUrl + ERROR_REPORT_URI;
     }
 
-    private Post prepareSendErrorReport(String log, String description, File file) throws IOException {
-        RouteFeedback.log.fine("Sending error report with log \"" + log + "\", description \"" + description +
+    private Post prepareSendErrorReport(String logOutput, String description, File file) throws IOException {
+        log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description +
                 "\"" + (file != null ? ", file " + file.getAbsolutePath() : ""));
         Post request = new Post(getErrorReportUrl(), credentials);
-        request.addString("log", log);
+        request.addString("log", logOutput);
         request.addString("description", description);
         if (file != null)
             request.addFile("file", file);
@@ -165,5 +168,27 @@ public class RouteFeedback {
             throw new IOException("POST on " + getErrorReportUrl() + " with log " + log.length() + " characters" +
                     ", description \"" + description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
+    }
+
+    private String getUpdateCheckUrl() {
+        return rootUrl + UPDATE_CHECK_URI;
+    }
+
+    public String checkForUpdate(String routeConverterVersion, long startCount, String javaVersion,
+                                 String osName, String osVersion, String osArch,
+                                 String webstartVersion, long startTime) throws IOException {
+        log.fine("Checking for update for version \"" + routeConverterVersion + "\"");
+        Post request = new Post(getUpdateCheckUrl(), credentials);
+        request.addString("id", valueOf(startTime));
+        request.addString("javaVersion", javaVersion);
+        request.addString("locale", getDefault().getLanguage());
+        request.addString("osArch", osArch);
+        request.addString("osName", osName);
+        request.addString("osVersion", osVersion);
+        request.addString("rcStartCount", Long.toString(startCount));
+        request.addString("rcVersion", routeConverterVersion);
+        if (webstartVersion != null)
+            request.addString("webstartVersion", webstartVersion);
+        return request.execute().replace("\"", "");
     }
 }

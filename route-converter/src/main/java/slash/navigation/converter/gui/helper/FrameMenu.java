@@ -100,7 +100,7 @@ public class FrameMenu {
 
         JMenu helpMenu = createMenu("help");
         helpMenu.add(createItem("help-topics"));
-        helpMenu.add(createItem("search-for-updates"));
+        helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
         helpMenu.add(createItem("about"));
 

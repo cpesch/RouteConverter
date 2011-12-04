@@ -49,7 +49,7 @@ public class ExternalPrograms {
 
     public void startBrowserForUpdateCheck(Window window, String version, long startTime) {
         String rootUrl = System.getProperty("feedback", "http://www.routeconverter.com/feedback/");
-        startBrowser(window, rootUrl + "update-check/" + getDefault().getLanguage() + "/" + version + "/" + startTime);
+        startBrowser(window, rootUrl + "update-check/" + getDefault().getLanguage() + "/" + version + "/" + startTime + "/");
     }
 
     public void startBrowserForTerms(Window window) {

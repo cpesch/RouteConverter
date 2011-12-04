@@ -20,23 +20,20 @@
 
 package slash.navigation.converter.gui;
 
-import slash.common.io.InputOutput;
 import slash.common.io.Transfer;
 import slash.common.io.Version;
+import slash.navigation.feedback.domain.RouteFeedback;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.System.currentTimeMillis;
 import static javax.swing.JOptionPane.*;
 import static slash.common.io.Version.parseVersionFromManifest;
+import static slash.common.io.Version.parseVersionFromParameters;
 
 /**
  * Knows how to retrieve the information which is the latest version.
@@ -48,12 +45,16 @@ public class UpdateChecker {
     private static final Preferences preferences = Preferences.userNodeForPackage(UpdateChecker.class);
     private static final String START_COUNT_PREFERENCE = "startCount";
     private static final String START_TIME_PREFERENCE = "startTime";
-    private static final String CHARSET = "ISO8859-1";
+    private RouteFeedback routeFeedback;
 
     static {
         preferences.putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
         if(preferences.getLong(START_TIME_PREFERENCE, -1) == -1)
             preferences.putLong(START_TIME_PREFERENCE, currentTimeMillis());
+    }
+
+    public UpdateChecker(RouteFeedback routeFeedback) {
+        this.routeFeedback = routeFeedback;
     }
 
     private static int getStartCount() {
@@ -64,37 +65,20 @@ public class UpdateChecker {
         return preferences.getLong(START_TIME_PREFERENCE, currentTimeMillis());
     }
 
-    private UpdateResult check(int timeout) {
+    private UpdateResult check() {
         UpdateResult result = new UpdateResult();
         try {
             result.myVersion = parseVersionFromManifest().getVersion();
-            String payload = Version.getRouteConverterVersion(result.myVersion) +
-                    "routeconverter.startcount=" + getStartCount() + "," +
-                    "user.locale=" + Locale.getDefault() + "," +
-                    Version.getSystemProperty("java.version") +
-                    Version.getSystemProperty("javawebstart.version") +
-                    Version.getSystemProperty("os.name") +
-                    Version.getSystemProperty("os.version") +
-                    Version.getSystemProperty("os.arch");
-            log.fine("Payload: " + payload);
 
-            URL url = new URL(System.getProperty("updater", "http://www.routeconverter.com/") + "routeconverter/versioncheck.jsp");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setUseCaches(false);
-            connection.setConnectTimeout(timeout * 1000);
-            connection.setReadTimeout(timeout * 1000);
+            String parameters = routeFeedback.checkForUpdate(result.myVersion, getStartCount(),
+                    System.getProperty("java.version"),
+                    System.getProperty("os.arch"),
+                    System.getProperty("os.name"),
+                    System.getProperty("os.version"),
+                    System.getProperty("javawebstart.version"),
+                    getStartTime());
 
-            OutputStream os = connection.getOutputStream();
-            os.write(payload.getBytes(CHARSET));
-            os.close();
-
-            byte[] resultArray = InputOutput.readBytes(connection.getInputStream());
-            String parameters = new String(resultArray, CHARSET);
-
-            result.latestVersion = Version.parseVersionFromParameters(parameters);
+            result.latestVersion = parseVersionFromParameters(parameters);
             log.fine("My version: " + result.myVersion);
             log.fine("Latest version on server: " + result.latestVersion);
 
@@ -117,7 +101,7 @@ public class UpdateChecker {
                 MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.myVersion, result.latestVersion),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
-            new ExternalPrograms().startBrowserForUpdateCheck(window, parseVersionFromManifest().getVersion(), getStartTime());
+            new ExternalPrograms().startBrowserForUpdateCheck(window, result.myVersion, getStartTime());
     }
 
     private void noUpdateAvailable(Window window) {
@@ -133,7 +117,7 @@ public class UpdateChecker {
 
         new Thread(new Runnable() {
             public void run() {
-                final UpdateResult result = check(60);
+                final UpdateResult result = check();
                 if (result.existsLaterVersion()) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -146,8 +130,7 @@ public class UpdateChecker {
     }
 
     public void explicitCheck(Window window) {
-        // synchronous call, 20 seconds timeout
-        final UpdateResult result = check(20);
+        UpdateResult result = check();
         if (!result.existsLaterVersion())
             noUpdateAvailable(window);
         else {

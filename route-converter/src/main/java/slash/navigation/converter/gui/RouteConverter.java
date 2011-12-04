@@ -140,6 +140,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
+    private UpdateChecker updateChecker;
     private UnitModel unitModel = new UnitModel();
 
     protected JPanel contentPane;
@@ -174,7 +175,7 @@ public class RouteConverter extends SingleFrameApplication {
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
         show();
         checkJreVersion();
-        new UpdateChecker().implicitCheck(frame);
+        updateChecker.implicitCheck(getFrame());
         parseArgs(args);
     }
 
@@ -247,8 +248,8 @@ public class RouteConverter extends SingleFrameApplication {
         }
         openElevationView();
 
-        initializeActions();
         initializeRouteConverterServices();
+        initializeActions();
     }
 
     private void openFrame() {
@@ -921,6 +922,7 @@ public class RouteConverter extends SingleFrameApplication {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
         routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
+        updateChecker = new UpdateChecker(routeFeedback);
     }
 
     private void initializeActions() {
@@ -941,7 +943,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("options", new OptionsAction());
         actionManager.register("help-topics", new HelpTopicsAction());
-        actionManager.register("search-for-updates", new SearchForUpdatesAction());
+        actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("about", new AboutAction());
         JMenu mergeMenu = (JMenu) findMenuComponent(getContext().getMenuBar(), "positionlist", "merge-positionlist");

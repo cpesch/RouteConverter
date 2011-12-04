@@ -38,25 +38,7 @@ import static java.lang.Integer.parseInt;
 
 public class Version {
     private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
-    private static final String ROUTECONVERTER_IS_LATEST_KEY = "routeconverter.islatest";
-
-    public static String getSystemProperty(String propertyName) {
-        String propertyValue = propertyName;
-        propertyValue += "=";
-        try {
-            propertyValue += System.getProperty(propertyName);
-            if (propertyValue == null)
-                propertyValue = "";
-        } catch (Throwable t) {
-            propertyValue += t.getMessage();
-        }
-        propertyValue += ",";
-        return propertyValue;
-    }
-
-    public static String getRouteConverterVersion(String version) {
-        return ROUTECONVERTER_VERSION_KEY + "=" + version + ",";
-    }
+    private static final String ROUTECONVERTER_LATEST_KEY = "routeconverter.latest";
 
     public static Map<String, String> parseParameters(String parameters) {
         StringTokenizer tokenizer = new StringTokenizer(parameters, ",");
@@ -82,7 +64,7 @@ public class Version {
 
     public static boolean isLatestVersionFromParameters(String parameters) {
         Map<String, String> map = parseParameters(parameters);
-        return Boolean.parseBoolean(map.get(ROUTECONVERTER_IS_LATEST_KEY));
+        return Boolean.parseBoolean(map.get(ROUTECONVERTER_LATEST_KEY));
     }
 
 
