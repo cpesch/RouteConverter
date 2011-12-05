@@ -79,8 +79,7 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByFor() throws IOException {
-        // was: Kreuzegg, Atzmännig
-        assertEquals("Chrüzegg", service.getNearByFor(9.0, 47.3));
+        assertEquals("St. Margarethen", service.getNearByFor(9.0, 47.5));
         assertEquals("Grafenrheinfeld", service.getNearByFor(10.2, 50.001));
         // was: assertEquals("Hoher Gaif", service.getNearByFor(11.06561, 47.42428));
         assertEquals("Hammersbach", service.getNearByFor(11.06561, 47.42428));
@@ -95,7 +94,7 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByPlaceNameFor() throws IOException {
-        assertEquals("Chrüzegg", service.getNearByPlaceNameFor(9.0, 47.3));
+        assertEquals("St. Margarethen", service.getNearByPlaceNameFor(9.0, 47.5));
         assertEquals("Grafenrheinfeld", service.getNearByPlaceNameFor(10.2, 50.001));
         assertEquals("Hammersbach", service.getNearByPlaceNameFor(11.06561, 47.42428));
         assertEquals(null, service.getNearByPlaceNameFor(0.0, 0.0));
