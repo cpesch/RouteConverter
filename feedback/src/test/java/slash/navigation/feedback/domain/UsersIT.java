@@ -50,8 +50,8 @@ public class UsersIT extends RouteFeedbackServiceBase {
 
     @Test
     public void testAddUserWithUmlauts() throws Exception {
-        String name = "User ‰ˆ¸ﬂƒ÷‹ Umlauts " + System.currentTimeMillis();
-        String location = routeFeedback.addUser(name, "secretƒ÷‹", "First ƒ÷‹", "Last ƒ÷‹", "first@last.com");
+        String name = "User √§√∂√º√ü√Ñ√ñ√ú Umlauts " + System.currentTimeMillis();
+        String location = routeFeedback.addUser(name, "secret√Ñ√ñ√ú", "First √Ñ√ñ√ú", "Last √Ñ√ñ√ú", "first@last.com");
         Assert.assertNotNull(location);
         GpxType gpxType = routeFeedback.fetchGpx(location);
         Assert.assertNotNull(gpxType);
@@ -61,9 +61,9 @@ public class UsersIT extends RouteFeedbackServiceBase {
         JAXBElement any = (JAXBElement) anys.get(0);
         UserextensionType extension = (UserextensionType) any.getValue();
         Assert.assertEquals("first@last.com", extension.getEmail());
-        Assert.assertEquals("First ƒ÷‹", extension.getFirstname());
+        Assert.assertEquals("First √Ñ√ñ√ú", extension.getFirstname());
         Assert.assertNotNull(extension.getLastlogin());
-        Assert.assertEquals("Last ƒ÷‹", extension.getLastname());
+        Assert.assertEquals("Last √Ñ√ñ√ú", extension.getLastname());
         Assert.assertNull(extension.getPassword());
     }
 }
