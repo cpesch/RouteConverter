@@ -1561,7 +1561,7 @@ public abstract class BaseMapView implements MapView {
             positionsModel.edit(null, row, ELEVATION_COLUMN_INDEX, false, false);
         if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
             positionsModel.edit(null, row, TIME_COLUMN_INDEX, false, false);
-        if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true))
+        if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false))
             positionAugmenter.complementTime(row, null);
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance

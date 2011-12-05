@@ -26,14 +26,21 @@ import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.hgt.HgtFiles;
 
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 /**
- * Helps to complete positions with elevation, postal address and populated place information.
+ * Helps to complement positions with elevation, postal address and populated place information.
  *
  * @author Christian Pesch
  */
 
 public class CompletePositionService {
+    protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
+    private static final String COMPLEMENT_ELEVATION_FROM_HGT_FILES = "complementElevationFromHgtFiles";
+    private static final String COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS = "complementElevationFromGoogleMaps";
+    private static final String COMPLEMENT_ELEVATION_FROM_GEONAMES = "complementElevationFromGeonames";
+    private static final String COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS = "complementElevationFromEarthTools";
+
     private EarthToolsService earthToolsService = new EarthToolsService();
     private GeoNamesService geoNamesService = new GeoNamesService();
     private GoogleMapsService googleMapsService = new GoogleMapsService();
@@ -44,12 +51,14 @@ public class CompletePositionService {
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        Double elevation = hgtFiles.getElevationFor(longitude, latitude);
-        if (elevation == null)
+        Double elevation = null;
+        if (preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_HGT_FILES, true))
+            elevation = hgtFiles.getElevationFor(longitude, latitude);
+        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS, true))
             elevation = googleMapsService.getElevationFor(longitude, latitude);
-        if (elevation == null)
+        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GEONAMES, true))
             elevation = geoNamesService.getElevationFor(longitude, latitude);
-        if (elevation == null)
+        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS, true))
             elevation = earthToolsService.getElevationFor(longitude, latitude);
         return elevation;
     }
