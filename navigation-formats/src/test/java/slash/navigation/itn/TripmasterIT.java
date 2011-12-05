@@ -65,8 +65,8 @@ public class TripmasterIT extends NavigationTestCase {
         assertEquals(53.9783, position1.getLatitude());
         assertEquals(11.148, position1.getLongitude());
         assertEquals(22.6, position1.getElevation());
-        assertEquals("Klütz", position1.getComment());
-        assertEquals("Klütz", position1.getCity());
+        assertEquals("Kl\u00fctz", position1.getComment());
+        assertEquals("Kl\u00fctz", position1.getCity());
         assertEquals("Richtung 248", position1.getReason());
         assertEquals(248.0, position1.getHeading());
         CompactCalendar actual = position1.getTime();
@@ -81,16 +81,16 @@ public class TripmasterIT extends NavigationTestCase {
         assertEquals(53.978, position2.getLatitude());
         assertEquals(11.1451, position2.getLongitude());
         assertEquals(18.0, position2.getElevation());
-        assertEquals("Klütz", position2.getComment());
-        assertEquals("Klütz", position2.getCity());
+        assertEquals("Kl\u00fctz", position2.getComment());
+        assertEquals("Kl\u00fctz", position2.getCity());
         assertEquals("Punkt", position2.getReason());
 
         GpxPosition position3 = route.getPositions().get(443);
         assertEquals(53.9778, position3.getLatitude());
         assertEquals(11.1386, position3.getLongitude());
         assertEquals(20.3, position3.getElevation());
-        assertEquals("Klütz", position3.getComment());
-        assertEquals("Klütz", position3.getCity());
+        assertEquals("Kl\u00fctz", position3.getComment());
+        assertEquals("Kl\u00fctz", position3.getCity());
         assertEquals("Abstand 211", position3.getReason());
     }
 

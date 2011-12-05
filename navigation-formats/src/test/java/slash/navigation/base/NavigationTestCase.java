@@ -795,7 +795,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String escapeNmn6Favorites(String str) {
-        return str != null ? toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("ß", "ss")) : null;
+        return str != null ? toMixedCase(str.replaceAll("[\\[|\\||\\]]", "").replaceAll("\u00df", "ss")) : null;
     }
 
     private static String trimSpaces(String str) {

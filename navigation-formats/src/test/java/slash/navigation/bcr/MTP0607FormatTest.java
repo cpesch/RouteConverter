@@ -77,21 +77,21 @@ public class MTP0607FormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        BcrPosition position = format.parsePosition("Standort,999999999", "1139093,7081574", "bei D 22885,Barsb¸ttel/Stemwarde,,0,");
+        BcrPosition position = format.parsePosition("Standort,999999999", "1139093,7081574", "bei D 22885,Barsb√ºttel/Stemwarde,,0,");
         assertEquals(999999999, position.getAltitude());
         assertEquals(1139093, position.getX());
         assertEquals(7081574, position.getY());
         assertEquals("bei D 22885", position.getZipCode());
-        assertEquals("Barsb¸ttel/Stemwarde", position.getCity());
+        assertEquals("Barsb√ºttel/Stemwarde", position.getCity());
         assertNull(position.getStreet());
         assertEquals("0", position.getType());
         assertFalse(position.isUnstructured());
     }
 
     public void testParsePositionFromMotorradTourenplaner() {
-        BcrPosition position = format.parsePosition("Standort,999999999", "1115508,7081108", "Groﬂensee/Schwarzeka,,@,0,");
+        BcrPosition position = format.parsePosition("Standort,999999999", "1115508,7081108", "Gro√üensee/Schwarzeka,,@,0,");
         assertNull(position.getZipCode());
-        assertEquals("Groﬂensee/Schwarzeka", position.getCity());
+        assertEquals("Gro√üensee/Schwarzeka", position.getCity());
         assertEquals(BcrPosition.STREET_DEFINES_CENTER_NAME, position.getStreet());
         assertEquals("0", position.getType());
         assertFalse(position.isUnstructured());

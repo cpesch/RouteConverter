@@ -93,9 +93,9 @@ public class TripmasterTest extends NavigationTestCase {
         assertNull(position1.getSpeed());
         assertEquals(calendar(2006, 11, 23, 8, 50, 26), position1.getTime());
 
-        TomTomPosition position2a = new TomTomPosition(0, 0, "Finish : Cesson-Sévigné - 09:03:23 - 51.9 m - 8.6 Km");
+        TomTomPosition position2a = new TomTomPosition(0, 0, "Finish : Cesson-SÃ©vignÃ© - 09:03:23 - 51.9 m - 8.6 Km");
         assertEquals("Finish : 09:03:23", position2a.getReason());
-        assertEquals("Cesson-Sévigné", position2a.getCity());
+        assertEquals("Cesson-SÃ©vignÃ©", position2a.getCity());
         assertEquals(51.9, position2a.getElevation());
         assertNull(position2a.getSpeed());
         String actualStr = DateFormat.getDateTimeInstance().format(position2a.getTime().getTime());
@@ -122,9 +122,9 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(408.3, position3a.getElevation());
         assertEquals(calendar(1970, 1, 1, 13, 39, 33), position3a.getTime());
 
-        TomTomPosition position4 = new TomTomPosition(0, 0, "09:01:31 - Cape 125: Cesson-Sévigné - 62.0 m - 7.1 Km");
+        TomTomPosition position4 = new TomTomPosition(0, 0, "09:01:31 - Cape 125: Cesson-SÃ©vignÃ© - 62.0 m - 7.1 Km");
         assertEquals("Cape 125", position4.getReason());
-        assertEquals("Cesson-Sévigné", position4.getCity());
+        assertEquals("Cesson-SÃ©vignÃ©", position4.getCity());
         assertEquals(62.0, position4.getElevation());
         assertNull(position4.getSpeed());
         assertEquals(calendar(1970, 1, 1, 9, 1, 31), position4.getTime());
@@ -145,9 +145,9 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(5.0, position1.getSpeed());
         assertEquals(calendar(1970, 1, 1, 18, 51, 59), position1.getTime());
 
-        TomTomPosition position2 = new TomTomPosition(0, 0, "08:51:25 - Km 1.4: Acigné - 26.5 m - 1.4 km - 69 Km/h");
+        TomTomPosition position2 = new TomTomPosition(0, 0, "08:51:25 - Km 1.4: AcignÃ© - 26.5 m - 1.4 km - 69 Km/h");
         assertEquals("Km 1.4", position2.getReason());
-        assertEquals("Acigné", position2.getCity());
+        assertEquals("AcignÃ©", position2.getCity());
         assertEquals(26.5, position2.getElevation());
         assertEquals(69.0, position2.getSpeed());
         assertEquals(calendar(1970, 1, 1, 8, 51, 25), position2.getTime());
@@ -197,13 +197,13 @@ public class TripmasterTest extends NavigationTestCase {
         checkTripmasterComment("Altona-Altstadt", "Course 327", "19:57:24 - Course 327 : Altona-Altstadt - 27.5 m - 8.4 Km - 25 Km/h - 11");
         checkTripmasterComment("Altona-Altstadt", "Finish : 31/08/2007 20:15:11", "20:15:11 - Finish : 31/08/2007 20:15:11 : Altona-Altstadt - 24.6 m - 10.3 Km - 7 Km/h - 7");
 
-        checkTripmasterComment("Abtsgmünd", "Start : 30/09/2007 09:34:55", "09:34:55 - Start : 30/09/2007 09:34:55 : Abtsgmünd - 369.2 m - 0.0 km - 0 km/h - 6");
-        checkTripmasterComment("Abtsgmünd", "Kurs 193", "09:36:43 - Kurs 193 : Abtsgmünd - 371.1 m - 0.1 km - 18 km/h - 6");
+        checkTripmasterComment("Abtsgm\u00fcnd", "Start : 30/09/2007 09:34:55", "09:34:55 - Start : 30/09/2007 09:34:55 : Abtsgm\u00fcnd - 369.2 m - 0.0 km - 0 km/h - 6");
+        checkTripmasterComment("Abtsgm\u00fcnd", "Kurs 193", "09:36:43 - Kurs 193 : Abtsgm\u00fcnd - 371.1 m - 0.1 km - 18 km/h - 6");
         checkTripmasterComment("Neuschmiede", "Distanz 2", "09:39:18 - Distanz 2 : Neuschmiede - 379.5 m - 2.0 km - 67 km/h - 6");
-        checkTripmasterComment("Hüttlingen DE", "Dauer 0:10:04", "09:44:58 - Dauer 0:10:04 : Hüttlingen DE - 407.8 m - 8.6 km - 71 km/h - 7");
+        checkTripmasterComment("H\u00fcttlingen DE", "Dauer 0:10:04", "09:44:58 - Dauer 0:10:04 : H\u00fcttlingen DE - 407.8 m - 8.6 km - 71 km/h - 7");
         checkTripmasterComment("Weil Der Stadt", "Kurs 83", "13:35:50 - Kurs 83 : Weil Der Stadt - 411.4 m - 0.0 km - 5 km/h");
         checkTripmasterComment("Weil Der Stadt", "Wpt", "13:36:13 - Wpt : Weil Der Stadt - 408.5 m - 0.1 km - 25 km/h");
-        checkTripmasterComment("Acigné", "Cape 155", "08:52:25 - Cape 155 : Acigné - 39.4 m - 2.1 km - 54 Km/h");
+        checkTripmasterComment("AcignÃ©", "Cape 155", "08:52:25 - Cape 155 : AcignÃ© - 39.4 m - 2.1 km - 54 Km/h");
     }
 
     private void checkTripmasterGpxComment(String expectedComment, String expectedReason, String comment) {

@@ -27,18 +27,18 @@ public class OpelNaviFormatTest extends NavigationTestCase {
     OpelNaviFormat format = new OpelNaviFormat();
 
     public void testIsValidLine() {
-        assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\""));
-        assertTrue(format.isPosition(" 8.402824 , 49.986889 , \"Tor 45\" , \"Opel, Rüsselsheim\" , \"+49-6142-77-0\" "));
-        assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"\""));
+        assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"Opel, RÃ¼sselsheim\",\"+49-6142-77-0\""));
+        assertTrue(format.isPosition(" 8.402824 , 49.986889 , \"Tor 45\" , \"Opel, RÃ¼sselsheim\" , \"+49-6142-77-0\" "));
+        assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"Opel, RÃ¼sselsheim\",\"\""));
         assertTrue(format.isPosition("8.402824,49.986889,\"Tor 45\",\"\",\"\""));
         assertTrue(format.isPosition("\ufeff8.402824,49.986889,\"Tor 45\",\"\",\"\""));
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("8.402824,49.986889,\"Tor 45\",\"Opel, Rüsselsheim\",\"+49-6142-77-0\"", null);
+        Wgs84Position position = format.parsePosition("8.402824,49.986889,\"Tor 45\",\"Opel, RÃ¼sselsheim\",\"+49-6142-77-0\"", null);
         assertEquals(8.402824, position.getLongitude());
         assertEquals(49.986889, position.getLatitude());
-        assertEquals("Tor 45;Opel, Rüsselsheim;+49-6142-77-0", position.getComment());
+        assertEquals("Tor 45;Opel, RÃ¼sselsheim;+49-6142-77-0", position.getComment());
     }
 
     public void testParseNegativePosition() {
