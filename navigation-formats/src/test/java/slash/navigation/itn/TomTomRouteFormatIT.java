@@ -67,6 +67,7 @@ public class TomTomRouteFormatIT {
         assertEquals("Eis essen in Ratzeburg", parser.getTheRoute().getName());
     }
 
+    private static final String UMLAUTS = "\u00e4\u00f6\u00fc\u00df";
     private static final char EURO = '\u20ac';
 
     @Test
@@ -76,7 +77,7 @@ public class TomTomRouteFormatIT {
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abcäöüß" + EURO, first.getComment());
+        assertEquals("abc" + UMLAUTS + EURO, first.getComment());
     }
 
     @Test
@@ -86,7 +87,7 @@ public class TomTomRouteFormatIT {
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abcäöüß" + EURO, first.getComment());
+        assertEquals("abc" + UMLAUTS + EURO, first.getComment());
     }
 
     @Test

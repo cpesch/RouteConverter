@@ -31,7 +31,7 @@ public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
     }
 
     public void testIsPosition() {
-        assertTrue(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\""));
+        assertTrue(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\""));
         assertTrue(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));
         assertTrue(format.isPosition("11.107167,49.375783,\"HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5\""));
 
@@ -39,10 +39,10 @@ public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
     }
 
     public void testParsePosition() {
-        Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\"", null);
+        Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\"", null);
         assertEquals(8.6180901, position.getLongitude());
         assertEquals(50.2175101, position.getLatitude());
-        assertEquals("[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]", position.getComment());
+        assertEquals("[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]", position.getComment());
     }
 
     public void testParseNegativePosition() {

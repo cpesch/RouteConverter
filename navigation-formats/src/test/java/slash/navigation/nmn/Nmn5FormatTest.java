@@ -35,7 +35,7 @@ public class Nmn5FormatTest {
         assertTrue(format.isPosition("-|-|-|-|-|STATION1|-|-|-|-|-|-10.031982|-53.569403|-|-|-|-|"));
 
         // Alpenpaesse Frankreich Sued Alpen.rte
-        assertFalse(format.isPosition("Col d Izoard,2361,12|-|-|05100|Cervières|05100|D902|-|-|-|6.73139|44.82497|-|"));
+        assertFalse(format.isPosition("Col d Izoard,2361,12|-|-|05100|Cervieres|05100|D902|-|-|-|6.73139|44.82497|-|"));
     }
 
     @Test

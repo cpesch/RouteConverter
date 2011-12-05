@@ -34,7 +34,7 @@ public class Nmn6FormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("[COMMENT|][2][12]|||-8.8128300|-49.0006140[0]||"));
         assertTrue(format.isPosition("[D 22081,Hamburg/Uhlenhorst,Finkenau,0,|][0][10]|||10.03200|53.56949"));
         assertTrue(format.isPosition("[||][0][10]|7.89442,50.57314|56459|7.89442|50.57314[8]|L304|56459|7.88732|50.57211[6]|ROTHENBACH|56459|7.90153|50.56437[3]|WESTERWALDKREIS|[2]|Rheinland-Pfalz||4363[0]|Deutschland||17"));
-        assertFalse(format.isPosition("[HYGIENE4YOU|UserWords3|][0][10]|15.43511,47.07848||15.43511|47.07848[8]|WICKENBURGGASSE|8010|15.43655|47.07876[6]|GRAZ|8010|15.44273|47.06833[3]|GRAZ|[2]|Steiermark||1030[0]|Österreich||4"));
+        assertFalse(format.isPosition("[HYGIENE4YOU|UserWords3|][0][10]|15.43511,47.07848||15.43511|47.07848[8]|WICKENBURGGASSE|8010|15.43655|47.07876[6]|GRAZ|8010|15.44273|47.06833[3]|GRAZ|[2]|Steiermark||1030[0]|Oesterreich||4"));
         assertFalse(format.isPosition("[||][2]"));
         assertFalse(format.isPosition("[|][0][10]||8.8128300|49.0006140[0]||"));
     }

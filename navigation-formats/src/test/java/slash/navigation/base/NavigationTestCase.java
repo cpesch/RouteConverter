@@ -63,6 +63,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.Math.min;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -165,7 +166,7 @@ public abstract class NavigationTestCase extends TestCase {
     private static String getTrainingCenterRouteName(BaseRoute route) {
         String name = route.getName();
         name = name.replaceAll("\\d+: ", "");
-        return name.substring(0, Math.min(15 - 3, name.length()));
+        return name.substring(0, min(15 - 3, name.length()));
     }
 
     @SuppressWarnings("unchecked")
@@ -760,7 +761,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String garminUmlauts(String str) {
-        return str.replace("ä", "a").replace("ö", "o").replace("ü", "u").replace("ß", "$").replace("Ö", "O");
+        return str.replace("\u00e4", "a").replace("\u00f6", "o").replace("u00fc", "u").replace("\u00df", "$").replace("\u00dc", "O");
     }
 
     private static String nameDescription(String str, int nameMaximum, int descriptionMaximum, boolean trim) {
@@ -769,11 +770,11 @@ public abstract class NavigationTestCase extends TestCase {
         int index = str.indexOf(";");
         if (index == -1)
             return str;
-        String name = str.substring(0, Math.min(nameMaximum, index));
+        String name = str.substring(0, min(nameMaximum, index));
         if (trim)
             name = name.trim();
         String description = str.substring(index + 1);
-        description = description.substring(0, Math.min(description.length(), descriptionMaximum));
+        description = description.substring(0, min(description.length(), descriptionMaximum));
         if (trim)
             description = description.trim();
         return name + ";" + description;

@@ -32,9 +32,9 @@ public class LogposTest {
 
     @Test
     public void testLogpos1aPosition() {
-        TomTomPosition position = new TomTomPosition(0, 0, "080629 07:33:00: + Eschelbach (Rhein-Neckar-Kreis, Baden-Württemberg); L612 @196.9m (s=66 d=91)");
+        TomTomPosition position = new TomTomPosition(0, 0, "080629 07:33:00: + Eschelbach (Rhein-Neckar-Kreis, Baden-Wuerttemberg); L612 @196.9m (s=66 d=91)");
         assertEquals("s=66 d=91", position.getReason());
-        assertEquals("Eschelbach (Rhein-Neckar-Kreis, Baden-Württemberg); L612", position.getCity());
+        assertEquals("Eschelbach (Rhein-Neckar-Kreis, Baden-Wuerttemberg); L612", position.getCity());
         assertDoubleEquals(66.0, position.getSpeed());
         assertDoubleEquals(91.0, position.getHeading());
         assertDoubleEquals(196.9, position.getElevation());
