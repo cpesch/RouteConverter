@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.util.Positions.interpolateTime;
 import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
 /**
@@ -125,7 +126,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         executor.execute(new Runnable() {
             public void run() {
                 final CompactCalendar time[] = new CompactCalendar[1];
-                time[0] = row - 2 >= 0 ? Positions.interpolateTime(positionsModel.getPosition(row),
+                time[0] = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),
                         positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
                 if (time[0] == null)
                     time[0] = CompactCalendar.fromCalendar(Calendar.getInstance(CompactCalendar.UTC));

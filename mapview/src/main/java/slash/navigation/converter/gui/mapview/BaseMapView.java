@@ -63,6 +63,7 @@ import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.util.Positions.*;
 
 /**
@@ -78,6 +79,7 @@ public abstract class BaseMapView implements MapView {
     protected static final String MAP_TYPE_PREFERENCE = "mapType3";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
+    private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
 
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength3", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount3", 50 * 35);
@@ -168,16 +170,16 @@ public abstract class BaseMapView implements MapView {
                     // ignored updates on columns not displayed
                     if (e.getType() == TableModelEvent.UPDATE &&
                             !(e.getColumn() == PositionColumns.DESCRIPTION_COLUMN_INDEX ||
-                                    e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                                    e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
+                                    e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                                    e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                     e.getColumn() == ALL_COLUMNS))
                         return;
                     update(allRowsChanged || insertOrDelete);
                 }
                 // update position marker on updates of longitude and latitude
                 if (e.getType() == TableModelEvent.UPDATE &&
-                        (e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                                e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX ||
+                        (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                                e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                 e.getColumn() == ALL_COLUMNS)) {
                     for (int selectedPositionIndex : selectedPositionIndices) {
                         if (selectedPositionIndex >= e.getFirstRow() && selectedPositionIndex <= e.getLastRow()) {
@@ -1553,12 +1555,14 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void movePosition(int row, Double longitude, Double latitude) {
-        positionsModel.edit(longitude, row, PositionColumns.LONGITUDE_COLUMN_INDEX, false, true);
-        positionsModel.edit(latitude, row, PositionColumns.LATITUDE_COLUMN_INDEX, false, true);
+        positionsModel.edit(longitude, row, LONGITUDE_COLUMN_INDEX, false, true);
+        positionsModel.edit(latitude, row, LATITUDE_COLUMN_INDEX, false, true);
         if (preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false))
-            positionsModel.edit(null, row, PositionColumns.ELEVATION_COLUMN_INDEX, false, false);
+            positionsModel.edit(null, row, ELEVATION_COLUMN_INDEX, false, false);
         if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
-            positionsModel.edit(null, row, PositionColumns.TIME_COLUMN_INDEX, false, false);
+            positionsModel.edit(null, row, TIME_COLUMN_INDEX, false, false);
+        if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true))
+            positionAugmenter.complementTime(row, null);
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
