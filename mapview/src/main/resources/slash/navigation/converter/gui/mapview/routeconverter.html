@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>RouteConverter MapView</title>
     <script src="http://${mapserver}/maps/api/js?sensor=false&amp;libraries=geometry&amp;language=${locale}" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
     <script src="./contextmenu.js" type="text/javascript"></script>
@@ -331,6 +332,10 @@
 
    var initialized, map, directionsService, markerIcon, xmlhttp;
 
+   function isInitialized() {
+       return initialized;
+   }
+
    function initialize() {
        initialized = false;
        addDebug("1. initialize()");
@@ -415,34 +420,39 @@
            map.mapTypes.set('Outdoor', outdoorMapType);
            map.setMapTypeId('${maptype}');
            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
-           addDebug("2. created map: " + map);
-
            map.enableKeyDragZoom({
                visualEnabled: true,
                visualPosition: google.maps.ControlPosition.LEFT
            });
-           var menu = new ContextMenu({map:map});
-           menu.addItem('Select', function(map, latLng) {
-               callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
-           });
-           menu.addItem('Insert', function(map, latLng) {
-               callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
-           });
-           menu.addItem('Delete', function(map, latLng) {
-               callJava("delete-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
-           });
-           menu.addSep();
-           menu.addItem('Center Here', function(map, latLng) {
-               map.panTo(latLng);
-           });
-           menu.addItem('Zoom In', function(map, latLng) {
-               map.setZoom(map.getZoom() + 1);
-               map.panTo(latLng);
-           });
-           menu.addItem('Zoom Out', function(map, latLng) {
-               map.setZoom(map.getZoom() - 1);
-               map.panTo(latLng);
-           });
+           addDebug("2. created map: " + map);
+
+           try {
+               var menu = new ContextMenu({map:map});
+               menu.addItem('Select', function(map, latLng) {
+                   callJava("select-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15) + "/true");
+               });
+               menu.addItem('Insert', function(map, latLng) {
+                   callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
+               });
+               menu.addItem('Delete', function(map, latLng) {
+                   callJava("delete-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+               });
+               menu.addSep();
+               menu.addItem('Center Here', function(map, latLng) {
+                   map.panTo(latLng);
+               });
+               menu.addItem('Zoom In', function(map, latLng) {
+                   map.setZoom(map.getZoom() + 1);
+                   map.panTo(latLng);
+               });
+               menu.addItem('Zoom Out', function(map, latLng) {
+                   map.setZoom(map.getZoom() - 1);
+                   map.panTo(latLng);
+               });
+               addDebug("3. created menu: " + menu);
+           } catch (e) {
+               setError("<p>Sorry, could not initialize ContextMenu.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+           }
 
            directionsService = new google.maps.DirectionsService();
            markerIcon = new google.maps.MarkerImage(
@@ -481,16 +491,17 @@
                    callJava("delete-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
            });
+           addDebug("4. added listeners");
 
            try {
                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-               addDebug("3. created Microsoft XMLHttpRequest");
+               addDebug("5. created Microsoft XMLHttpRequest");
                initialized = true;
            }
            catch (e) {
                try {
                    xmlhttp = new XMLHttpRequest();
-                   addDebug("3. created XMLHttpRequest");
+                   addDebug("6. created XMLHttpRequest");
                    initialized = true;
                }
                catch (e) {

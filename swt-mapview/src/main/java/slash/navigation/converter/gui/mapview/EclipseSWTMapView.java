@@ -228,7 +228,7 @@ public class EclipseSWTMapView extends BaseMapView {
     }
 
     private boolean isMapInitialized() {
-        String result = executeScriptWithResult("return initialized;");
+        String result = executeScriptWithResult("return isInitialized();");
         return Boolean.parseBoolean(result);
     }
 
