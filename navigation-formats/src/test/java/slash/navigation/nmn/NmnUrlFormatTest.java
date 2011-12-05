@@ -120,7 +120,7 @@ public class NmnUrlFormatTest {
         positions.add(new Wgs84Position(10.20026067, 53.57662034, null, 4.5, null, "Stemwarde, Germany"));
         positions.add(new Wgs84Position(10.35735078, 53.59171021, null, 3.5, null, "Groﬂensee, Germany"));
         positions.add(new Wgs84Position(10.45696089, 53.64781001, null, 2.5, null, "Linau, Germany"));
-        String expected = "navigonDEU://route/?target=coordinate//10.025711/53.574977&target=coordinate//10.200260/53.576620&target=coordinate//10.357350/53.591710&target=coordinate//10.456960/53.647810";
+        String expected = "navigon://route/?target=coordinate//10.025711/53.574977&target=coordinate//10.200260/53.576620&target=coordinate//10.357350/53.591710&target=coordinate//10.456960/53.647810";
         String actual = urlFormat.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
@@ -130,7 +130,7 @@ public class NmnUrlFormatTest {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         positions.add(new Wgs84Position(-113.240014, 36.114526, 1134.0, null, null, "Grand Canyon, Arizona, USA"));
         positions.add(new Wgs84Position(-115.139973, 53.574977, 648.0, null, null, "Las Vegas, Nevada, USA"));
-        String expected = "navigonUSA-CA://route/?target=coordinate//-113.240014/36.114526&target=coordinate//-115.139973/53.574977";
+        String expected = "navigon://route/?target=coordinate//-113.240014/36.114526&target=coordinate//-115.139973/53.574977";
         String actual = urlFormat.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
