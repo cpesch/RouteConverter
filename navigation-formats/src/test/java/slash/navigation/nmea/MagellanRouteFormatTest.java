@@ -87,7 +87,7 @@ public class MagellanRouteFormatTest extends NavigationTestCase {
 
     public void testFormatRouteName() {
         assertEquals("acooltour-name", format.formatRouteName("A;Cool,Tour Name"));
-        assertEquals("0189", format.formatRouteName("äöüß0189"));
+        assertEquals("0189", format.formatRouteName("Ã¤Ã¶Ã¼ÃŸÃ„Ã–Ãœ0189"));
         assertEquals("123456789o123456789o", format.formatRouteName("123456789o123456789oBUTNOTTHIS"));
     }
 

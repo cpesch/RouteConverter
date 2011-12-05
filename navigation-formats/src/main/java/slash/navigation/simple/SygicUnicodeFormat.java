@@ -37,7 +37,7 @@ import java.util.List;
  * ; unicode<br/>
  * ; Created from User Poi file sample.upi<br/>
  * ; longitude    latitude    name    phone<br/>
- * Standard Format: 2.324360	48.826760	Rue Antoine Chantin(14ème Arrondissement Paris), Paris	+123456789
+ * Standard Format: 2.324360	48.826760	Rue Antoine Chantin(14eme Arrondissement Paris), Paris	+123456789
  *
  * @author Christian Pesch
  */
