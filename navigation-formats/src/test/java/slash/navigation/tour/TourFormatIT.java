@@ -32,8 +32,8 @@ public class TourFormatIT extends NavigationTestCase {
         List<TourRoute> routeList = new TourFormat().read(new FileInputStream(TEST_PATH + "from.tour"));
         assertEquals(1, routeList.size());
         TourRoute route = routeList.get(0);
-        assertEquals("10787 Berlin, Hardenbergstraße 8, Zoologischer Garten", route.getPosition(0).getComment());
+        assertEquals("10787 Berlin, Hardenbergstra\u00dfe 8, Zoologischer Garten", route.getPosition(0).getComment());
         assertEquals("10117 Berlin/Mitte, Platz Vor Dem Brandenburger Tor 1, Home", route.getPosition(1).getComment());
-        assertEquals("10789 Berlin, Breitscheidplatz, Kaiser-Wilhelm-Gedächtniskirche", route.getPosition(2).getComment());
+        assertEquals("10789 Berlin, Breitscheidplatz, Kaiser-Wilhelm-Ged\u00e4chtniskirche", route.getPosition(2).getComment());
     }
 }

@@ -22,7 +22,6 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
-import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding20.*;
@@ -37,6 +36,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parsePosition;
@@ -111,7 +111,7 @@ public class Kml20Format extends KmlFormat {
 
     private String extractName(List<Object> elements) {
         JAXBElement name = findElement(elements, "name");
-        return name != null ? Transfer.trim((String) name.getValue()) : null;
+        return name != null ? trim((String) name.getValue()) : null;
     }
 
     private String extractDescription(List<Object> elements) {
@@ -123,7 +123,7 @@ public class Kml20Format extends KmlFormat {
             return null;
         string = string.replace("&#160;", " ");
         string = string.replace("&#169;", "(c)");
-        return string;
+        return trim(string);
     }
 
     private String extractTime(TimeInstant timeInstant) {

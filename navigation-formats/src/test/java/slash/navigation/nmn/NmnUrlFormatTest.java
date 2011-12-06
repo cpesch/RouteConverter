@@ -43,6 +43,7 @@ public class NmnUrlFormatTest {
             "Tonale, 25056 Ponte Di Legno ? Bahnhof Wien Matzleinsdorfer Platz,\n" +
             "Margaretengörtel, 1050 5. Bezirk-Margareten, Wien</a>";
     private static final String USA_URL = "navigonUSA-CA://route/?target=address//USA-CA/CA%2092120/SAN%20DIEGO/ALVARADO%20CANYON%20RD/4620/-117.09521/32.78042&amp;target=address//USA-NV/NV%2089101/LAS%20VEGAS///-115.13997/36.17191";
+    private static final String NO_MAP_URL = "<a href=\"navigon://route/?target=address//DEU/44797/BOCHUM/UNTERM%20KOLM/11/7.23153/51.43851&amp;target=address//DEU/44227/DORTMUND/MARTIN-SCHMEISSER-WEG/8/7.40361/51.49144\">Unterm Kolm 11, 44797 Bochum ? Martin-Schmeisser-Weg 8, 44227 Dorstfeld, Dortmund</a>";
 
     NmnUrlFormat urlFormat = new NmnUrlFormat();
 
@@ -111,6 +112,17 @@ public class NmnUrlFormatTest {
         assertDoubleEquals(-115.13997, position2.getLongitude());
         assertDoubleEquals(36.17191, position2.getLatitude());
         assertEquals("Nv 89101 Las Vegas", position2.getComment());
+    }
+
+    @Test
+    public void testParsePositionsFromNoMapUrl() {
+        List<Wgs84Position> positions = urlFormat.parsePositions(NO_MAP_URL);
+        assertNotNull(positions);
+        assertEquals(2, positions.size());
+        Wgs84Position position2 = positions.get(1);
+        assertDoubleEquals(7.40361, position2.getLongitude());
+        assertDoubleEquals(51.49144, position2.getLatitude());
+        assertEquals("44227 Dortmund, Martin-Schmeisser-Weg 8", position2.getComment());
     }
 
     @Test

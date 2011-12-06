@@ -43,7 +43,7 @@ import static slash.common.io.Transfer.*;
 
 public class NmnUrlFormat extends UrlFormat {
     private static final Preferences preferences = Preferences.userNodeForPackage(NmnUrlFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*navigon.+://route/\\?([^\\s|\"]+).*");
+    private static final Pattern URL_PATTERN = Pattern.compile(".*navigon.*://route/\\?([^\\s|\"]+).*");
     private static final Pattern COORDINATE_PATTERN = Pattern.compile("coordinate//(" + POSITION + ")/(" + POSITION + ")");
     private static final Pattern ADDRESS_PATTERN = Pattern.compile("address//[^/]*/([^/]*)/([^/]*)/([^/]*)/([^/]*)/" +
             "(" + POSITION + ")/(" + POSITION + ").*");

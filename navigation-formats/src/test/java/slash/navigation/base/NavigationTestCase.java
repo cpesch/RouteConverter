@@ -761,7 +761,8 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String garminUmlauts(String str) {
-        return str.replace("\u00e4", "a").replace("\u00f6", "o").replace("\u00fc", "u").replace("\u00df", "$").replace("\u00dc", "O");
+        return str.replace("\u00e4", "a").replace("\u00f6", "o").replace("\u00fc", "u").replace("\u00df", "$").replace("\u00d6", "O").
+                replace("ä", "a").replace("ö", "o").replace("ü", "u").replace("ß", "$").replace("Ö", "O");
     }
 
     private static String nameDescription(String str, int nameMaximum, int descriptionMaximum, boolean trim) {
