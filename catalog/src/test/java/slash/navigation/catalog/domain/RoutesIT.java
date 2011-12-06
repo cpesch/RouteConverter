@@ -47,11 +47,11 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
     @Test
     public void testAddRouteWithUmlauts() throws Exception {
-        String name = "Category äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
+        String name = "Category Ã¤Ã¶Ã¼ÃŸÃ„Ã–Ãœ Umlauts " + System.currentTimeMillis();
         Category root = routeCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
-        String description = "Route äöüßÄÖÜ " + System.currentTimeMillis();
+        String description = "Route Ã¤Ã¶Ã¼ÃŸÃ„Ã–Ãœ " + System.currentTimeMillis();
         Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());

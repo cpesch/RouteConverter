@@ -55,13 +55,13 @@ public class CategorysIT extends RouteCatalogServiceBase {
 
     @Test
     public void testAddSubCategoryWithUmlauts() throws Exception {
-        addSubCategory(routeCatalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
+        addSubCategory(routeCatalog.getRootCategory(), "Umlauts Ã¤Ã¶Ã¼ÃŸÃ„Ã–Ãœ Category " + System.currentTimeMillis());
     }
 
     @Test
     public void testAddSubCategoryWithUmlautsBelowCategoryWithUmlauts() throws Exception {
-        Category category = addSubCategory(routeCatalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
-        addSubCategory(category, "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
+        Category category = addSubCategory(routeCatalog.getRootCategory(), "Umlauts Ã¤Ã¶Ã¼ÃŸÃ„Ã–Ãœ Category " + System.currentTimeMillis());
+        addSubCategory(category, "Umlauts Ã¤Ã¶Ã¼ÃŸÃ„Ã–Ãœ Category " + System.currentTimeMillis());
     }
 
     @Test

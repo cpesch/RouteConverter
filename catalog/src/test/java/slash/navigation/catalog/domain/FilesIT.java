@@ -18,7 +18,7 @@ public class FilesIT extends RouteCatalogServiceBase {
         Category root = routeCatalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
-        File in = File.createTempFile("äöüß", ".file");
+        File in = File.createTempFile("Ã¤Ã¶Ã¼ÃŸ", ".file");
         FileInputStream fis = new FileInputStream(new File(TEST_PATH + "filestest.gpx"));
         FileOutputStream fos = new FileOutputStream(in);
         InputOutput.copy(fis, fos);
