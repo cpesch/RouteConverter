@@ -27,13 +27,13 @@ public class SygicFormatTest extends NavigationTestCase {
 
     public void testIsValidLine() {
         assertTrue(format.isValidLine("; something"));
-        assertTrue(format.isValidLine("2.324360\t48.826760\tRue Antoine Chantin(14ème Arrondissement Paris), Paris"));
+        assertTrue(format.isValidLine("2.324360\t48.826760\tRue Antoine Chantin(14Ã¨me Arrondissement Paris), Paris"));
         assertTrue(format.isValidLine("17.556660\t54.758830\tLeba Lebska\t+48598662069"));
         assertTrue(format.isValidLine(""));
     }
 
     public void testIsPosition() {
-        assertTrue(format.isPosition("2.324360\t48.826760\tRue Antoine Chantin(14ème Arrondissement Paris), Paris"));
+        assertTrue(format.isPosition("2.324360\t48.826760\tRue Antoine Chantin(14Ã¨me Arrondissement Paris), Paris"));
         assertTrue(format.isPosition("17.556660\t54.758830\tLeba Lebska\t+48598662069"));
 
         assertFalse(format.isPosition("17.556660    54.758830    Leba Lebska"));
@@ -49,10 +49,10 @@ public class SygicFormatTest extends NavigationTestCase {
     }
 
     public void testParsePositionWithoutElevation() {
-        Wgs84Position position = format.parsePosition("2.324360\t48.826760\tRue Antoine Chantin(14ème Arrondissement Paris), Paris", null);
+        Wgs84Position position = format.parsePosition("2.324360\t48.826760\tRue Antoine Chantin(14Ã¨me Arrondissement Paris), Paris", null);
         assertEquals(2.324360, position.getLongitude());
         assertEquals(48.82676, position.getLatitude());
         assertNull(position.getElevation());
-        assertEquals("Rue Antoine Chantin(14ème Arrondissement Paris), Paris", position.getComment());
+        assertEquals("Rue Antoine Chantin(14Ã¨me Arrondissement Paris), Paris", position.getComment());
     }
 }

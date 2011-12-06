@@ -40,7 +40,7 @@ public class GlopusFormatTest {
         assertFalse(format.isPosition("51.0450,7.0508"));
         assertFalse(format.isPosition("51.045038,7.050830"));
         assertFalse(format.isPosition("51.0450383,7.0508300"));
-        assertFalse(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstraﬂe 7 [Bad Homburg]\""));
+        assertFalse(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstra√üe 7 [Bad Homburg]\""));
         assertFalse(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));
         assertFalse(format.isPosition("11.90206,51.11136,[06618] Finke-Biodiesel;,[06618] Finke-Biodiesel; Gorschen 8 [Gorschen]"));
         assertFalse(format.isPosition("11.10717,49.37578,HOLSTEINBRUCH BEI WORZEL,HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5"));        

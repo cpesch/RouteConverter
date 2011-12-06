@@ -32,22 +32,22 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class GoogleMapsUrlFormatTest {
-    private static final String INPUT1_EMAIL = "Betreff: Route nach/zu Riehler Straﬂe 190 50735 Kˆln (Google Maps)\n" +
+    private static final String INPUT1_EMAIL = "Betreff: Route nach/zu Riehler Stra√üe 190 50735 K√∂ln (Google Maps)\n" +
             "\n" +
             "> Routenplaner\n" +
             "> Link:\n" +
             "<http://maps.google.de/maps?f=d&hl=de&geocode=&saddr=H%C3%B6lderlinstra%C3%9Fe,+51545+Br%C3%B6l,+Oberbergischer+Kreis,+Nordrhein-Westfalen,+Deutschland&daddr=L339%2FWuppertaler+Stra%C3%9Fe+%4050.918890,+7.560880+to%3AL350+%4050.885180,+7.463950+to%3AB%C3%B6vingen%2FK11+%4050.917200,+7.376600+to%3AL312+%4050.916380,+7.327030+to%3AK%C3%B6ln,+Riehler+Str.+190&mrcr=2&mra=mr&sll=50.954318,7.311401&sspn=0.142091,0.32135&ie=UTF8&ll=50.952371,7.261276&spn=0.284193,0.6427&z=11&om=1>\n" +
             ">\n" +
-            "> Startadresse: Hˆlderlinstraﬂe 51545 Brˆl\n" +
-            "> Zieladresse: Riehler Straﬂe 190 50735 Kˆln";
+            "> Startadresse: H√∂lderlinstra√üe 51545 Br√∂l\n" +
+            "> Zieladresse: Riehler Stra√üe 190 50735 K√∂ln";
 
     private static final String INPUT2 = "http://maps.google.de/maps?f=d&hl=de&geocode=&saddr=51545+Waldbroel,+Hoelderlinstr.&daddr=50389+Wesseling,+Urfelder+Strasse+221+to%3A50.876178,6.962585&mrcr=1&mrsp=2&sz=10&mra=mi&sll=50.892745,7.312145&sspn=0.569114,1.2854&ie=UTF8&z=10&om=1";
 
     private static final String INPUT3 = "http://maps.google.com/maps?f=d&hl=de&geocode=&time=&date=&ttype=&saddr=L%C3%BCbeck,+Germany&daddr=Hamburg,+Germany&sll=37.0625,-95.677068&sspn=48.374125,76.464844&ie=UTF8&z=10&om=1";
 
-    private static final String INPUT4 = "http://maps.google.de/maps?f=d&hl=de&geocode=17223560710991701360,51.125340,10.480100%3B12158345081209133212,51.126450,10.720920%3B7678232323906648676,50.944500,10.743250&time=&date=&ttype=&saddr=L1042%2FLangensaltzaer+Straﬂe+%4051.125340,+10.480100&daddr=51.116994,10.723944+to:Friedhofsweg+%4050.944500,+10.743250&mra=dme&mrcr=0,1&mrsp=1&sz=14&sll=51.128953,10.722742&sspn=0.035766,0.079136&ie=UTF8&ll=51.021962,10.661545&spn=0.286792,0.633087&z=11&om=1";
+    private static final String INPUT4 = "http://maps.google.de/maps?f=d&hl=de&geocode=17223560710991701360,51.125340,10.480100%3B12158345081209133212,51.126450,10.720920%3B7678232323906648676,50.944500,10.743250&time=&date=&ttype=&saddr=L1042%2FLangensaltzaer+Stra√üe+%4051.125340,+10.480100&daddr=51.116994,10.723944+to:Friedhofsweg+%4050.944500,+10.743250&mra=dme&mrcr=0,1&mrsp=1&sz=14&sll=51.128953,10.722742&sspn=0.035766,0.079136&ie=UTF8&ll=51.021962,10.661545&spn=0.286792,0.633087&z=11&om=1";
 
-    private static final String INPUT4_STRIPPED = "http://maps.google.de/maps?saddr=L1042%2FLangensaltzaer+Straﬂe+%4051.125340,+10.480100&daddr=51.116994,10.723944+to:Friedhofsweg+%4050.944500,+10.743250";
+    private static final String INPUT4_STRIPPED = "http://maps.google.de/maps?saddr=L1042%2FLangensaltzaer+Stra√üe+%4051.125340,+10.480100&daddr=51.116994,10.723944+to:Friedhofsweg+%4050.944500,+10.743250";
 
     private static final String INPUT5 = "http://maps.google.com/maps?f=d&hl=en&geocode=7153851080862447280,40.323122,-78.922058%3B658155100876861845,40.443995,-79.950354&saddr=326+Napoleon+St,+Johnstown,+PA+15901+(War+Memorial)&daddr=4400+Forbes+Ave,+Pittsburgh,+PA+15213+(Carnegie+Museums+)&mra=pe&mrcr=0&doflg=ptm&sll=40.412722,-79.572054&sspn=1.327888,2.39502&ie=UTF8&t=h&z=10";
 
@@ -83,20 +83,20 @@ public class GoogleMapsUrlFormatTest {
 
     @Test
     public void testParseDestinationPosition() {
-        Wgs84Position position = urlFormat.parseCommentPosition("L339/Wuppertaler Straﬂe @50.918890,7.560880 ");
+        Wgs84Position position = urlFormat.parseCommentPosition("L339/Wuppertaler Stra√üe @50.918890,7.560880 ");
         assertDoubleEquals(7.560880, position.getLongitude());
         assertDoubleEquals(50.918890, position.getLatitude());
-        assertEquals("L339/Wuppertaler Straﬂe", position.getComment());
+        assertEquals("L339/Wuppertaler Stra√üe", position.getComment());
     }
 
     @Test
     public void testParseDestinationPositions() {
-        List<Wgs84Position> positions = urlFormat.parseDestinationPositions("L339/Wuppertaler Straﬂe @50.918890,7.560880 to: B @ -1.1 , -2.2to:C@3.3,4.4");
+        List<Wgs84Position> positions = urlFormat.parseDestinationPositions("L339/Wuppertaler Stra√üe @50.918890,7.560880 to: B @ -1.1 , -2.2to:C@3.3,4.4");
         assertEquals(3, positions.size());
         Wgs84Position position1 = positions.get(0);
         assertDoubleEquals(7.560880, position1.getLongitude());
         assertDoubleEquals(50.918890, position1.getLatitude());
-        assertEquals("L339/Wuppertaler Straﬂe", position1.getComment());
+        assertEquals("L339/Wuppertaler Stra√üe", position1.getComment());
         Wgs84Position position2 = positions.get(1);
         assertDoubleEquals(-2.2, position2.getLongitude());
         assertDoubleEquals(-1.1, position2.getLatitude());
@@ -115,7 +115,7 @@ public class GoogleMapsUrlFormatTest {
         Wgs84Position position1 = positions.get(0);
         assertNull(position1.getLongitude());
         assertNull(position1.getLatitude());
-        assertEquals("Hˆlderlinstraﬂe, 51545 Brˆl, Oberbergischer Kreis, Nordrhein-Westfalen, Deutschland", position1.getComment());
+        assertEquals("H√∂lderlinstra√üe, 51545 Br√∂l, Oberbergischer Kreis, Nordrhein-Westfalen, Deutschland", position1.getComment());
         Wgs84Position position3 = positions.get(2);
         assertDoubleEquals(7.46395, position3.getLongitude());
         assertDoubleEquals(50.88518, position3.getLatitude());
@@ -123,7 +123,7 @@ public class GoogleMapsUrlFormatTest {
         Wgs84Position position6 = positions.get(5);
         assertNull(position6.getLongitude());
         assertNull(position6.getLatitude());
-        assertEquals("Kˆln, Riehler Str. 190", position6.getComment());
+        assertEquals("K√∂ln, Riehler Str. 190", position6.getComment());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class GoogleMapsUrlFormatTest {
         Wgs84Position position1 = positions.get(0);
         assertNull(position1.getLongitude());
         assertNull(position1.getLatitude());
-        assertEquals("L¸beck, Germany", position1.getComment());
+        assertEquals("L√ºbeck, Germany", position1.getComment());
         Wgs84Position position2 = positions.get(1);
         assertNull(position2.getLongitude());
         assertNull(position2.getLatitude());
@@ -168,7 +168,7 @@ public class GoogleMapsUrlFormatTest {
         Wgs84Position position1 = positions.get(0);
         assertDoubleEquals(10.480100, position1.getLongitude());
         assertDoubleEquals(51.125340, position1.getLatitude());
-        assertEquals("L1042/Langensaltzaer Straﬂe", position1.getComment());
+        assertEquals("L1042/Langensaltzaer Stra√üe", position1.getComment());
         Wgs84Position position2 = positions.get(1);
         assertDoubleEquals(10.723944, position2.getLongitude());
         assertDoubleEquals(51.116994, position2.getLatitude());
@@ -187,7 +187,7 @@ public class GoogleMapsUrlFormatTest {
         Wgs84Position position1 = positions.get(0);
         assertDoubleEquals(10.480100, position1.getLongitude());
         assertDoubleEquals(51.125340, position1.getLatitude());
-        assertEquals("L1042/Langensaltzaer Straﬂe", position1.getComment());
+        assertEquals("L1042/Langensaltzaer Stra√üe", position1.getComment());
         Wgs84Position position2 = positions.get(1);
         assertDoubleEquals(10.723944, position2.getLongitude());
         assertDoubleEquals(51.116994, position2.getLatitude());
@@ -275,7 +275,7 @@ public class GoogleMapsUrlFormatTest {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         positions.add(new Wgs84Position(10.02571156, 53.57497745, null, 5.5, null, "Hamburg, Germany"));
         positions.add(new Wgs84Position(10.20026067, 53.57662034, null,4.5, null, "Stemwarde, Germany"));
-        positions.add(new Wgs84Position(10.35735078, 53.59171021, null,3.5, null, "Groﬂensee, Germany"));
+        positions.add(new Wgs84Position(10.35735078, 53.59171021, null,3.5, null, "Gro√üensee, Germany"));
         positions.add(new Wgs84Position(10.45696089, 53.64781001, null,2.5, null, "Linau, Germany"));
         String expected = "http://maps.google.com/maps?ie=UTF8&saddr=Hamburg,+Germany%4053.574977,10.025711&daddr=Stemwarde,+Germany%4053.576620,10.200260+to:Gro%C3%9Fensee,+Germany%4053.591710,10.357350+to:Linau,+Germany%4053.647810,10.456960";
         String actual = urlFormat.createURL(positions, 0, positions.size());

@@ -32,14 +32,14 @@ public class KienzleGpsFormatTest extends NavigationTestCase {
     public void testIsValidLine() {
         assertTrue(format.isValidLine("101;7.0894440000;50.7405550000;;;53111;Bonn;Dorotheenstr.;103;16:10;"));
         assertTrue(format.isValidLine("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;"));
-        assertTrue(format.isValidLine("Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos"));
+        assertTrue(format.isValidLine("Position;X;Y;EmpfÃ¤nger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos"));
     }
 
     public void testIsPosition() {
         assertTrue(format.isPosition("113;7.0475000000;50.7500000000;PHE I;;53119;Bonn;Oppelner Str.;126;16:49;"));
-        assertTrue(format.isPosition("103;7.0997220000;50.7494440000;;;53117;Bonn;Am Jesuitenhof/Am Römerlager;;16:16;"));
+        assertTrue(format.isPosition("103;7.0997220000;50.7494440000;;;53117;Bonn;Am Jesuitenhof/Am RÃ¶merlager;;16:16;"));
 
-        assertFalse(format.isPosition("Position;X;Y;Empfänger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos"));
+        assertFalse(format.isPosition("Position;X;Y;EmpfÃ¤nger;Land;PLZ;Ort;Strasse;Hausnummer;Planankunft;Zusatzinfos"));
     }
 
     public void testParsePosition() {
