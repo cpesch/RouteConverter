@@ -81,7 +81,7 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>gtk.linux.x86</artifactId>
-            <version>3.7</version>
+            <version>3.7.1</version>
         </dependency>
         <dependency>
             <groupId>gpsbabel.gpsbabel</groupId>

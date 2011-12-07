@@ -685,7 +685,8 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void addMapViewListener(MapViewListener mapViewListener) {
-        mapView.addMapViewListener(mapViewListener);
+        if (isMapViewAvailable())
+            mapView.addMapViewListener(mapViewListener);
     }
 
     public void setTravelMode(TravelMode travelMode) {

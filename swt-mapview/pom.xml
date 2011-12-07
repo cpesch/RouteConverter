@@ -30,14 +30,14 @@
         <dependency>
             <groupId>eclipse.swt</groupId>
             <artifactId>win32.win32.x86</artifactId>
-            <version>3.7</version>
+            <version>3.7.1</version>
             <scope>provided</scope>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>djproject</groupId>
             <artifactId>nativeswing-swt</artifactId>
-            <version>1.0.2-20110706</version>
+            <version>1.0.2-20111120</version>
             <classifier>stripped</classifier>
         </dependency>
     </dependencies>
