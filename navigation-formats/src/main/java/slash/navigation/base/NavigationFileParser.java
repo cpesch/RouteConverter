@@ -54,6 +54,10 @@ public class NavigationFileParser {
     private static final Logger log = Logger.getLogger(NavigationFileParser.class.getName());
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
+    static {
+        System.setProperty("sun.zip.encoding", "default");
+    }
+
     private final List<NavigationFileParserListener> navigationFileParserListeners = new CopyOnWriteArrayList<NavigationFileParserListener>();
     private FormatAndRoutes formatAndRoutes;
 
