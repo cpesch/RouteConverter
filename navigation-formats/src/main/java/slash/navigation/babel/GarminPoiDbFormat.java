@@ -66,6 +66,7 @@ public class GarminPoiDbFormat extends BabelFormat {
         int count = 0;
         for (GpxPosition position : positions) {
             if ((isEmpty(position.getLongitude()) && isEmpty(position.getLatitude())) ||
+                    (isEmpty(position.getLongitude()) && isEmpty(position.getElevation())) ||
                     (isEmpty(position.getLatitude()) && isEmpty(position.getElevation())))
                 count++;
         }
