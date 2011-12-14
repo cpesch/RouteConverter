@@ -44,7 +44,7 @@ import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UnitModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
-import slash.navigation.converter.gui.panels.ElevationPanel;
+import slash.navigation.converter.gui.panels.ProfilePanel;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.*;
@@ -148,7 +148,7 @@ public class RouteConverter extends SingleFrameApplication {
     private JTabbedPane tabbedPane;
     private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
     private MapView mapView;
-    private ElevationPanel elevationView;
+    private ProfilePanel profileView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
@@ -316,8 +316,8 @@ public class RouteConverter extends SingleFrameApplication {
     private void openElevationView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                elevationView = new ElevationPanel();
-                elevationPanel.add(elevationView.getRootComponent(), ELEVATION_PANEL_CONSTRAINTS);
+                profileView = new ProfilePanel();
+                elevationPanel.add(profileView.getRootComponent(), ELEVATION_PANEL_CONSTRAINTS);
                 elevationPanel.setVisible(true);
 
                 int location = preferences.getInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, -1);
@@ -612,8 +612,8 @@ public class RouteConverter extends SingleFrameApplication {
     public void selectPositions(int[] selectedPositions) {
         if (isMapViewAvailable())
             mapView.setSelectedPositions(selectedPositions, true);
-        if (elevationView != null)
-            elevationView.setSelectedPositions(selectedPositions, true);
+        if (profileView != null)
+            profileView.setSelectedPositions(selectedPositions, true);
     }
 
     public void insertAllWaypoints() {
@@ -1002,7 +1002,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private class PrintElevationProfileAction extends FrameAction {
         public void run() {
-            elevationView.print();
+            profileView.print();
         }
     }
 }

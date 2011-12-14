@@ -61,7 +61,7 @@ public class ElevationView {
     private PositionsModel positionsModel;
     private ElevationModel elevationModel;
 
-    public ElevationView(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel) {
+    public void initialize(PositionsModel positionsModel, final PositionsSelectionModel positionsSelectionModel) {
         this.positionsModel = positionsModel;
 
         PatchedXYSeries series = new PatchedXYSeries("Elevation");
