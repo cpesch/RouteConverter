@@ -21,11 +21,15 @@
 package slash.navigation.converter.gui.elevationview;
 
 import org.jfree.data.xy.XYSeries;
-import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.min;
+import static javax.swing.event.TableModelEvent.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Synchronizes changes at a {@link PositionsModel} with a {@link XYSeries}.
@@ -57,13 +61,13 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         positions.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 switch (e.getType()) {
-                    case TableModelEvent.INSERT:
+                    case INSERT:
                         handleAdd(e.getFirstRow(), e.getLastRow());
                         break;
-                    case TableModelEvent.UPDATE:
+                    case UPDATE:
                         handleUpdate(e.getFirstRow(), e.getLastRow(), e.getColumn());
                         break;
-                    case TableModelEvent.DELETE:
+                    case DELETE:
                         handleDelete(e.getFirstRow(), e.getLastRow());
                         break;
                 }
@@ -79,17 +83,17 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
 
     private void handleUpdate(int firstRow, int lastRow, int columnIndex) {
         // special treatment for fireTableDataChanged() notifications
-        if (firstRow == 0 && lastRow == Integer.MAX_VALUE ||
+        if (firstRow == 0 && lastRow == MAX_VALUE ||
                 // since PositionsModel#revert fires fireTableRowsUpdated(-1, -1) for a complete update
                 firstRow == -1 && lastRow == -1) {
             handleFullUpdate();
         } else {
             // ignored updates on columns not displayed
-            if (columnIndex == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                    columnIndex == PositionColumns.LATITUDE_COLUMN_INDEX ||
-                    columnIndex == TableModelEvent.ALL_COLUMNS) {
+            if (columnIndex == LONGITUDE_COLUMN_INDEX ||
+                    columnIndex == LATITUDE_COLUMN_INDEX ||
+                    columnIndex == ALL_COLUMNS) {
                 handleIntervalXUpdate(firstRow, lastRow);
-            } else if (columnIndex == PositionColumns.ELEVATION_COLUMN_INDEX) {
+            } else if (columnIndex == ELEVATION_COLUMN_INDEX) {
                 handleIntervalYUpdate(firstRow, lastRow);
             }
         }
@@ -103,7 +107,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
 
     protected void handleIntervalXUpdate(int firstRow, int lastRow) {
         getSeries().setFireSeriesChanged(false);
-        series.delete(firstRow, Math.min(lastRow, series.getItemCount() - 1));
+        series.delete(firstRow, min(lastRow, series.getItemCount() - 1));
         handleAdd(firstRow, lastRow);
         getSeries().setFireSeriesChanged(true);
         getSeries().fireSeriesChanged();
