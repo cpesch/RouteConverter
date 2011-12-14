@@ -67,7 +67,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.util.Positions.*;
 
 /**
- * Interface for a component that displays the positions of a route.
+ * Base implementation for a component that displays the positions of a position list on a map.
  *
  * @author Christian Pesch
  */

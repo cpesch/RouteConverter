@@ -29,7 +29,7 @@ import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import java.awt.*;
 
 /**
- * Interface for a component that displays the positions of a route.
+ * Interface for a component that displays the positions of a position list on a map.
  *
  * @author Christian Pesch
  */

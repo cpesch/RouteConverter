@@ -40,7 +40,7 @@ import static slash.common.io.Platform.isLinux;
 import static slash.common.io.Transfer.parseDouble;
 
 /**
- * Displays the positions of a route.
+ * Implementation for a component that displays the positions of a position list on a map.
  *
  * @author Christian Pesch
  */
