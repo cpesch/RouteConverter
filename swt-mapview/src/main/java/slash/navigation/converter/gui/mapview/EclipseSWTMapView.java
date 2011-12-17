@@ -99,8 +99,6 @@ public class EclipseSWTMapView extends BaseMapView {
                 public String resolveToken(String tokenName) {
                     if (tokenName.equals("locale"))
                         return country;
-                    if (tokenName.equals("percent"))
-                        return Platform.isWindows() ? "99" : "100";
                     if (tokenName.equals("mapserver"))
                         return preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, "maps.google.com");
                     if (tokenName.equals("maptype"))
@@ -266,8 +264,8 @@ public class EclipseSWTMapView extends BaseMapView {
 
     private void resizeMap() {
         synchronized (notificationMutex) {
-            int width = Math.max(getComponent().getWidth() - 17, 0);
-            int height = Math.max(getComponent().getHeight() - 2, 0);
+            int width = Math.max(getComponent().getWidth(), 0);
+            int height = Math.max(getComponent().getHeight(), 0);
             if (width != lastWidth || height != lastHeight) {
                 executeScript("resize(" + width + "," + height + ");");
             }
