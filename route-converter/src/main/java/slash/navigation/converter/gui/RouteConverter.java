@@ -34,6 +34,8 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
+import slash.navigation.converter.gui.dnd.PanelDropHandler;
+import slash.navigation.converter.gui.elevationview.ElevationView;
 import slash.navigation.converter.gui.helper.*;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
@@ -44,7 +46,6 @@ import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UnitModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
-import slash.navigation.converter.gui.panels.ProfilePanel;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gui.*;
@@ -148,7 +149,7 @@ public class RouteConverter extends SingleFrameApplication {
     private JTabbedPane tabbedPane;
     private JPanel convertPanel, browsePanel, mapPanel, elevationPanel;
     private MapView mapView;
-    private ProfilePanel profileView;
+    private ElevationView elevationView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(2000, 2640), 0, true);
@@ -316,8 +317,11 @@ public class RouteConverter extends SingleFrameApplication {
     private void openElevationView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                profileView = new ProfilePanel();
-                elevationPanel.add(profileView.getRootComponent(), ELEVATION_PANEL_CONSTRAINTS);
+                elevationView = new ElevationView();
+                elevationView.initialize(getPositionsModel(), getPositionsSelectionModel());
+                elevationView.setUnit(getUnitModel().getCurrent());
+                elevationPanel.add(elevationView.getComponent(), ELEVATION_PANEL_CONSTRAINTS);
+                elevationPanel.setTransferHandler(new PanelDropHandler());
                 elevationPanel.setVisible(true);
 
                 int location = preferences.getInt(ELEVATION_DIVIDER_LOCATION_PREFERENCE, -1);
@@ -326,6 +330,12 @@ public class RouteConverter extends SingleFrameApplication {
                 elevationSplitPane.setDividerLocation(location);
                 log.fine("Initialized elevation divider to " + location);
                 elevationSplitPane.addPropertyChangeListener(new ElevationSplitPaneListener(location));
+
+                getUnitModel().addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        elevationView.setUnit(getUnitModel().getCurrent());
+                    }
+                });
             }
         });
     }
@@ -612,8 +622,8 @@ public class RouteConverter extends SingleFrameApplication {
     public void selectPositions(int[] selectedPositions) {
         if (isMapViewAvailable())
             mapView.setSelectedPositions(selectedPositions, true);
-        if (profileView != null)
-            profileView.setSelectedPositions(selectedPositions, true);
+        if (elevationView != null)
+            elevationView.setSelectedPositions(selectedPositions, true);
     }
 
     public void insertAllWaypoints() {
@@ -1002,7 +1012,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     private class PrintElevationProfileAction extends FrameAction {
         public void run() {
-            profileView.print();
+            elevationView.print();
         }
     }
 }
