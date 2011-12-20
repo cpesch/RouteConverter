@@ -104,6 +104,7 @@ public class ReadIT {
     @Test
     public void testMicrosoftAutoRouteFilesAreValid() throws IOException {
         readFiles(".axe");
+        readFiles(".est");
     }
 
     @Test
