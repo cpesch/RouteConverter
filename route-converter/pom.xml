@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>elevationview</artifactId>
+            <artifactId>profileview</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

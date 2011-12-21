@@ -163,7 +163,7 @@
         <module>common</module>
         <module>common-gui</module>
         <module>earthtools</module>
-        <module>elevationview</module>
+        <module>profileview</module>
         <module>feedback</module>
         <module>geonames</module>
         <module>googlemaps</module>

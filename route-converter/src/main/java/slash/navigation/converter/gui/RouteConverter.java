@@ -257,7 +257,7 @@ public class RouteConverter extends SingleFrameApplication {
         } else {
             mapPanel.setVisible(false);
         }
-        openElevationView();
+        openProfileView();
 
         initializeRouteConverterServices();
         initializeActions();
@@ -324,7 +324,7 @@ public class RouteConverter extends SingleFrameApplication {
         });
     }
 
-    private void openElevationView() {
+    private void openProfileView() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 profileView = new ProfileView();
