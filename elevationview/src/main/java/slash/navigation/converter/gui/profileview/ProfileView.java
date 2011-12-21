@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.elevationview;
+package slash.navigation.converter.gui.profileview;
 
 import org.jfree.chart.*;
 import org.jfree.chart.axis.NumberAxis;
@@ -46,7 +46,7 @@ import static java.text.NumberFormat.getIntegerInstance;
 import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.ui.Layer.FOREGROUND;
-import static slash.navigation.converter.gui.elevationview.ProfileMode.Elevation;
+import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
 
 /**
  * Displays the elevations of a {@link PositionsModel}.

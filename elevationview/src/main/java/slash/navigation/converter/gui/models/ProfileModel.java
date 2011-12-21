@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.models;
 import org.jfree.data.xy.XYSeries;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.elevationview.ProfileMode;
+import slash.navigation.converter.gui.profileview.ProfileMode;
 import slash.navigation.util.Unit;
 
 import static java.lang.String.format;

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.converter.gui.elevationview.ProfileMode;
+import slash.navigation.converter.gui.profileview.ProfileMode;
 
 import javax.swing.*;
 

@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.elevationview;
+package slash.navigation.converter.gui.profileview;
 
 /**
  * Enumeration of the display modes for the profile view.
