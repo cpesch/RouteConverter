@@ -36,12 +36,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.converter.gui.helper.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
-import static slash.navigation.util.Conversion.feetToMeters;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -199,22 +197,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     private Double parseElevation(Object objectValue, String stringValue) {
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        switch (unit) {
-            case METRIC:
-            case NAUTIC:
-                return parseDouble(objectValue, stringValue, "m");
-            case STATUTE:
-                Double feet = parseDouble(objectValue, stringValue, "ft");
-                return feet != null ? feetToMeters(feet) : null;
-            default:
-                throw new IllegalArgumentException(format("Unit %s is not supported", unit));
-        }
+        Double value = parseDouble(objectValue, stringValue, unit.getElevationName());
+        return unit.valueToDefault(value);
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
         Double value = parseDouble(objectValue, stringValue, unit.getSpeedName());
-        return unit.speedToDefault(value);
+        return unit.valueToDefault(value);
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {

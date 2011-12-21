@@ -37,6 +37,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.converter.gui.helper.JMenuHelper.createMenu;
+import static slash.navigation.converter.gui.helper.JMenuHelper.findMenu;
+
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link PositionsTableColumnModel}.
  *
@@ -49,12 +52,11 @@ public class TableHeaderMenu {
 
     public TableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsTableColumnModel columnModel) {
         this.columnModel = columnModel;
-        initialize(tableHeader, JMenuHelper.findMenu(menuBar, "view"));
+        initialize(tableHeader, findMenu(menuBar, "view"));
     }
 
     private void initialize(JTableHeader tableHeader, JMenu viewMenu) {
-        viewMenu.addSeparator();
-        JMenu columnMenu = JMenuHelper.createMenu("show-column");
+        JMenu columnMenu = createMenu("show-column");
         viewMenu.add(columnMenu);
 
         VisibleListener visibleListener = new VisibleListener();

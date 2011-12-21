@@ -91,9 +91,10 @@ public class FrameMenu {
 
         JMenu viewMenu = createMenu("view");
         viewMenu.add(createItem("show-map-and-positionlist"));
-        viewMenu.add(createItem("show-elevation-profile"));
+        viewMenu.add(createItem("show-profile"));
         viewMenu.add(createItem("maximize-map"));
         viewMenu.add(createItem("maximize-positionlist"));
+        viewMenu.addSeparator();
 
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("options"));

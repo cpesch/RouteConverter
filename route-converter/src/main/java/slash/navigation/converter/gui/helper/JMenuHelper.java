@@ -20,13 +20,15 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.common.io.Transfer;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
+
+import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.gui.Constants.loadIcon;
 
 /**
  * A helper for simplified {@link JMenu} operations.
@@ -47,7 +49,7 @@ public class JMenuHelper {
     public static JMenu createMenu(String name) {
         JMenu menu = new JMenu(getString(name + "-menu"));
         menu.setName(name);
-        String mnemonic = Transfer.trim(getOptionalString(name + "-menu-mnemonic"));
+        String mnemonic = trim(getOptionalString(name + "-menu-mnemonic"));
         if (mnemonic != null && mnemonic.length() > 0)
             menu.setMnemonic(mnemonic.charAt(0));
         return menu;
@@ -83,7 +85,7 @@ public class JMenuHelper {
     }
 
     public static void setMnemonic(AbstractButton button, String key) {
-        String mnemonic = Transfer.trim(getOptionalString(key));
+        String mnemonic = trim(getOptionalString(key));
         if (mnemonic != null && mnemonic.length() > 0)
             setMnemonic(button, mnemonic.charAt(0));
     }
@@ -91,22 +93,33 @@ public class JMenuHelper {
     public static JMenuItem createItem(String name) {
         Action action = Application.getInstance().getContext().getActionManager().get(name);
         JMenuItem item = new JMenuItem(action);
+        initializeItem(name, item);
+        return item;
+    }
+
+    public static JRadioButtonMenuItem createRadioItem(String name) {
+        Action action = Application.getInstance().getContext().getActionManager().get(name);
+        JRadioButtonMenuItem item = new JRadioButtonMenuItem(action);
+        initializeItem(name, item);
+        return item;
+    }
+
+    private static void initializeItem(String name, JMenuItem item) {
         item.setName(name);
         item.setText(getString(name + "-action"));
-        String tooltip = Transfer.trim(getOptionalString(name + "-action-tooltip"));
+        String tooltip = trim(getOptionalString(name + "-action-tooltip"));
         if (tooltip != null)
             item.setToolTipText(tooltip);
         setMnemonic(item, name + "-action-mnemonic");
-        String keystroke = Transfer.trim(getOptionalString(name + "-action-keystroke"));
+        String keystroke = trim(getOptionalString(name + "-action-keystroke"));
         if (keystroke != null)
-            item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
-        String iconUrl = Transfer.trim(getOptionalString(name + "-action-icon"));
+            item.setAccelerator(getKeyStroke(keystroke));
+        String iconUrl = trim(getOptionalString(name + "-action-icon"));
         if (iconUrl != null)
-            item.setIcon(Constants.loadIcon(iconUrl));
-        String disabledIconUrl = Transfer.trim(getOptionalString(name + "-action-disabled-icon"));
+            item.setIcon(loadIcon(iconUrl));
+        String disabledIconUrl = trim(getOptionalString(name + "-action-disabled-icon"));
         if (disabledIconUrl != null)
-            item.setDisabledIcon(Constants.loadIcon(disabledIconUrl));
-        return item;
+            item.setDisabledIcon(loadIcon(disabledIconUrl));
     }
 
     public static void registerAction(AbstractButton component, String name) {
@@ -121,7 +134,7 @@ public class JMenuHelper {
 
     public static void registerKeyStroke(JComponent component, String name) {
         String keystroke = getString(name + "-action-keystroke");
-        component.getInputMap().put(KeyStroke.getKeyStroke(keystroke), name);
+        component.getInputMap().put(getKeyStroke(keystroke), name);
         component.getActionMap().put(name, Application.getInstance().getContext().getActionManager().get(name));
     }
 

@@ -18,16 +18,20 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.util;
+package slash.navigation.converter.gui.elevationview;
 
 /**
- * Transfer of values between {@link Unit} systems.
- *
- * @author Christian Pesch
+ * Enumeration of the display modes for the profile view.
  */
-public interface UnitTransfer {
-    Double distanceToUnit(Double distance);
-    Double distanceToDefault(Double distance);
-    Double valueToUnit(Double value);
-    Double valueToDefault(Double value);
+
+public enum ProfileMode {
+    Elevation, Speed;
+
+    public static ProfileMode fromString(String string) {
+        for (ProfileMode profileMode : ProfileMode.values()) {
+            if (profileMode.name().equals(string))
+                return profileMode;
+        }
+        return null;
+    }
 }

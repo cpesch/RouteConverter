@@ -33,11 +33,14 @@ public enum Unit {
         public Double distanceToUnit(Double distance) {
             return distance;
         }
-        public Double elevationToUnit(Double elevation) {
-            return elevation;
+        public Double distanceToDefault(Double distance) {
+            return distance;
         }
-        public Double speedToDefault(Double speed) {
-            return speed;
+        public Double valueToUnit(Double value) {
+            return value;
+        }
+        public Double valueToDefault(Double value) {
+            return value;
         }
     }),
 
@@ -45,11 +48,14 @@ public enum Unit {
         public Double distanceToUnit(Double distance) {
             return distance != null ? kilometerToStatuteMiles(distance) : null;
         }
-        public Double elevationToUnit(Double elevation) {
-            return elevation != null ? meterToFeets(elevation) : null;
+        public Double distanceToDefault(Double distance) {
+            return distance != null ? statuteMilesToKilometer(distance) : null;
         }
-        public Double speedToDefault(Double speed) {
-            return speed != null ? statuteMilesToKilometer(speed) : null;
+        public Double valueToUnit(Double value) {
+            return value != null ? meterToFeets(value) : null;
+        }
+        public Double valueToDefault(Double value) {
+            return value != null ? statuteMilesToKilometer(value) : null;
         }
     }),
 
@@ -57,11 +63,14 @@ public enum Unit {
         public Double distanceToUnit(Double distance) {
             return distance != null ? kilometerToNauticMiles(distance) : null;
         }
-        public Double elevationToUnit(Double elevation) {
-            return elevation;
+        public Double distanceToDefault(Double distance) {
+            return distance != null ? nauticMilesToKilometer(distance) : null;
         }
-        public Double speedToDefault(Double speed) {
-            return speed != null ? nauticMilesToKilometer(speed) : null;
+        public Double valueToUnit(Double value) {
+            return value;
+        }
+        public Double valueToDefault(Double value) {
+            return value != null ? nauticMilesToKilometer(value) : null;
         }
     });
 
@@ -91,11 +100,15 @@ public enum Unit {
         return unitTransfer.distanceToUnit(distance);
     }
 
-    public Double elevationToUnit(Double elevation) {
-        return unitTransfer.elevationToUnit(elevation);
+    public Double distanceToDefault(Double distance) {
+        return unitTransfer.distanceToDefault(distance);
     }
 
-    public Double speedToDefault(Double speed) {
-        return unitTransfer.speedToDefault(speed);
+    public Double valueToUnit(Double value) {
+        return unitTransfer.valueToUnit(value);
+    }
+
+    public Double valueToDefault(Double value) {
+        return unitTransfer.valueToDefault(value);
     }
 }

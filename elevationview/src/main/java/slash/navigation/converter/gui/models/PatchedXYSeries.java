@@ -18,16 +18,29 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.util;
+package slash.navigation.converter.gui.models;
+
+import org.jfree.data.xy.XYSeries;
 
 /**
- * Transfer of values between {@link Unit} systems.
+ * Patches {@link XYSeries} that allows to disable sending {@link #fireSeriesChanged()}.
  *
  * @author Christian Pesch
  */
-public interface UnitTransfer {
-    Double distanceToUnit(Double distance);
-    Double distanceToDefault(Double distance);
-    Double valueToUnit(Double value);
-    Double valueToDefault(Double value);
+
+public class PatchedXYSeries extends XYSeries {
+    private boolean fireSeriesChanged = true;
+
+    public PatchedXYSeries(Comparable key) {
+        super(key);
+    }
+
+    public void setFireSeriesChanged(boolean fireSeriesChanged) {
+        this.fireSeriesChanged = fireSeriesChanged;
+    }
+
+    public void fireSeriesChanged() {
+        if(fireSeriesChanged)
+            super.fireSeriesChanged();
+    }
 }

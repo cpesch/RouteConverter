@@ -63,7 +63,7 @@ public class PositionHelper {
         if (isEmpty(distance) || distance <= 0.0)
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double distanceInMeters = unit.elevationToUnit(distance);
+        double distanceInMeters = unit.valueToUnit(distance);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
             return format("%d %s", round(distanceInMeters), unit.getElevationName());
         double distanceInKilometers = unit.distanceToUnit(distance / 1000.0);
@@ -76,7 +76,7 @@ public class PositionHelper {
         if (isEmpty(elevation))
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
-        double distanceInUnit = unit.elevationToUnit(elevation);
+        double distanceInUnit = unit.valueToUnit(elevation);
         return format("%d %s", round(distanceInUnit), unit.getElevationName());
     }
 
