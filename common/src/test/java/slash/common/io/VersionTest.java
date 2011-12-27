@@ -88,8 +88,8 @@ public class VersionTest {
 
     @Test
     public void testGetBits() {
-        assertEquals(64, new Version(null, null, "Windows64").getBits());
-        assertEquals(32, new Version(null, null, "Linux32").getBits());
+        assertEquals("64", new Version(null, null, "Windows64").getBits());
+        assertEquals("32", new Version(null, null, "Linux32").getBits());
     }
 
     @Test

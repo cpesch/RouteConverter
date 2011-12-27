@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import static java.lang.Integer.parseInt;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -161,15 +160,11 @@ public class Version {
         return "?";
     }
 
-    public int getBits() {
+    public String getBits() {
         if (name != null) {
-            try {
-                return parseInt(name.substring(name.length() - 2, name.length()));
-            } catch (NumberFormatException e) {
-                // intentionally left empty
-            }
+            return name.substring(name.length() - 2, name.length());
         }
-        return 0;
+        return "?";
     }
 
     public static Version parseVersionFromManifest() {
