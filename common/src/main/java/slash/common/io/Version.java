@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import static java.lang.Integer.parseInt;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Provides version parsing functionality.
@@ -38,9 +39,9 @@ import static java.lang.Integer.parseInt;
 
 public class Version {
     private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
-    private static final String ROUTECONVERTER_LATEST_KEY = "routeconverter.latest";
+    private static final String JAVA_VERSION_KEY = "java.version";
 
-    public static Map<String, String> parseParameters(String parameters) {
+    static Map<String, String> parseParameters(String parameters) {
         StringTokenizer tokenizer = new StringTokenizer(parameters, ",");
         Map<String, String> map = new HashMap<String, String>();
         while (tokenizer.hasMoreTokens()) {
@@ -57,16 +58,18 @@ public class Version {
         return map;
     }
 
-    public static String parseVersionFromParameters(String parameters) {
+    private static String getValue(String parameters, String key) {
         Map<String, String> map = parseParameters(parameters);
-        return map.get(ROUTECONVERTER_VERSION_KEY);
+        return trim(map.get(key));
     }
 
-    public static boolean isLatestVersionFromParameters(String parameters) {
-        Map<String, String> map = parseParameters(parameters);
-        return Boolean.parseBoolean(map.get(ROUTECONVERTER_LATEST_KEY));
+    public static String getLatestRouteConverterVersion(String parameters) {
+        return getValue(parameters, ROUTECONVERTER_VERSION_KEY);
     }
 
+    public static String getLatestJavaVersion(String parameters) {
+        return getValue(parameters, JAVA_VERSION_KEY);
+    }
 
     private static final SimpleDateFormat BUILD_DATE = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private String version, date, name;

@@ -42,8 +42,8 @@ public class VersionTest {
 
     @Test
     public void testParseVersion() {
-        assertEquals("1.3", Version.parseVersionFromParameters("b=c,routeconverter.version=1.3,a=b"));
-        assertEquals("2", Version.parseVersionFromParameters("x=y,routeconverter.version=2,y=z"));
+        assertEquals("1.3", Version.getLatestRouteConverterVersion("b=c,routeconverter.version=1.3,a=b"));
+        assertEquals("2", Version.getLatestRouteConverterVersion("x=y,routeconverter.version=2,y=z"));
     }
 
     @Test
