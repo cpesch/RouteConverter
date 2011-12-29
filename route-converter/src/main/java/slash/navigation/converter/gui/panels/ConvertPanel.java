@@ -582,6 +582,9 @@ public class ConvertPanel {
         chooser.setSelectedFile(createSelectedTarget());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
+
+        chooser.addPropertyChangeListener(new UpdateFileNameListener(chooser));
+
         int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
         if (save != APPROVE_OPTION)
             return;
@@ -688,6 +691,9 @@ public class ConvertPanel {
         chooser.setSelectedFile(createSelectedTarget());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
+
+        chooser.addPropertyChangeListener(new UpdateFileNameListener(chooser));
+
         int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
         if (save != APPROVE_OPTION)
             return;
