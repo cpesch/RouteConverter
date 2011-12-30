@@ -146,14 +146,14 @@ public class LengthCalculator {
             }
 
             if (i > 0 && i % 100 == 0)
-                fireCalculatedDistance(new Double(distanceMeters).intValue(), totalTimeMilliSeconds > 0 ? (int) (totalTimeMilliSeconds / 1000) : 0);
+                fireCalculatedDistance((int) distanceMeters, totalTimeMilliSeconds > 0 ? (int) (totalTimeMilliSeconds / 1000) : 0);
 
             previous = next;
         }
 
         int summedUp = totalTimeMilliSeconds > 0 ? (int) totalTimeMilliSeconds / 1000 : 0;
         int maxMinusMin = minimumTime != null ? (int) ((maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000) : 0;
-        fireCalculatedDistance(new Double(distanceMeters).intValue(), Math.max(maxMinusMin, summedUp));
+        fireCalculatedDistance((int) distanceMeters, Math.max(maxMinusMin, summedUp));
     }
 
     private void initialize() {

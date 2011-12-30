@@ -96,7 +96,7 @@ public class GoogleMapsService {
                 GeocodeResponse.Result.Geometry.Location l2 = p2.getGeometry().getLocation();
                 double distance1 = Bearing.calculateBearing(longitude, latitude, l1.getLng().doubleValue(), l1.getLat().doubleValue()).getDistance();
                 double distance2 = Bearing.calculateBearing(longitude, latitude, l2.getLng().doubleValue(), l2.getLat().doubleValue()).getDistance();
-                return new Double(distance1 - distance2).intValue();
+                return (int) (distance1 - distance2);
             }
         });
         return resultsArray[0].getFormattedAddress();

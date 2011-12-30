@@ -100,7 +100,7 @@ public class Positions {
         if (isEmpty(distance))
             return null;
 
-        long time = new Double(previous.getTime().getTimeInMillis() + (double) previousTime * (distance / previousDistance)).longValue();
+        long time = (long) (previous.getTime().getTimeInMillis() + (double) previousTime * (distance / previousDistance));
         return CompactCalendar.fromMillis(time);
     }
 

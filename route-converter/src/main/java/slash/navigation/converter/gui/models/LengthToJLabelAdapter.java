@@ -28,8 +28,11 @@ import slash.navigation.converter.gui.helper.LengthCalculatorListener;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -66,16 +69,15 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     private void updateLabel(int meters, int seconds) {
-        labelLength.setText(meters > 0 ? formatDistance(new Integer(meters).doubleValue()) : "-");
+        labelLength.setText(meters > 0 ? formatDistance((double) meters) : "-");
         Long milliseconds = (long) seconds * 1000;
         labelDuration.setText(milliseconds > 0 ? formatDuration(milliseconds) : "-");
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not displayed
-        if (e.getType() == TableModelEvent.UPDATE &&
-                !(e.getColumn() == PositionColumns.LONGITUDE_COLUMN_INDEX ||
-                        e.getColumn() == PositionColumns.LATITUDE_COLUMN_INDEX))
+        if (e.getType() == UPDATE &&
+                !(e.getColumn() == LONGITUDE_COLUMN_INDEX || e.getColumn() == LATITUDE_COLUMN_INDEX))
             return;
 
         BaseRoute route = getDelegate().getRoute();

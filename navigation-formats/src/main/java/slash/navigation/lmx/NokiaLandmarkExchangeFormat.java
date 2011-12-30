@@ -65,7 +65,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
     private GpxPosition process(LandmarkType landmark) {
         CoordinatesType coordinates = landmark.getCoordinates();
         Double altitude = coordinates != null && coordinates.getAltitude() != null ?
-                new Float(coordinates.getAltitude()).doubleValue() : null;
+                (double) coordinates.getAltitude() : null;
         return new GpxPosition(coordinates != null ? coordinates.getLongitude() : null,
                 coordinates != null ? coordinates.getLatitude() : null,
                 altitude,

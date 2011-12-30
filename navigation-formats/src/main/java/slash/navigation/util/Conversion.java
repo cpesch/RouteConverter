@@ -129,9 +129,9 @@ public class Conversion {
         double h = 4.21;
 
         // Umrechnung GK nach B, L
-        int y0 = new Double(right / 1000000).intValue();
+        int y0 = (int) (right / 1000000);
         double L0 = y0 * 3;
-        int yInt = new Double(right - y0 * 1000000 - 500000).intValue();
+        int yInt = (int) (right - y0 * 1000000 - 500000);
         double B0 = height / alphaGk2Wgs84;
         double Bf = (B0 + betaGk2Wgs84 * sin(2 * B0) + gammaGk2Wgs84 * sin(4 * B0) + deltaGk2Wgs84 * sin(6 * B0) + epsilonGk2Wgs84 * sin(8 * B0));
         double Nf = aBessel / sqrt(1 - e2Bessel * pow(sin(Bf), 2));

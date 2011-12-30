@@ -334,7 +334,7 @@ public class Kml20Format extends KmlFormat {
         LineStyle lineStyle = objectFactory.createLineStyle();
         style.setLineStyle(lineStyle);
         lineStyle.setColor(color);
-        lineStyle.setWidth(new Float(width).intValue());
+        lineStyle.setWidth((int) width);
         return style;
     }
 

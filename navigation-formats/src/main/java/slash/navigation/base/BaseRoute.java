@@ -157,7 +157,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             CompactCalendar time = next.getTime();
             if(time == null || time.equals(previous.getTime())) {
                 Double distance = next.calculateDistance(previous);
-                Long millis = distance != null ? new Double(distance / averageSpeed * 1000).longValue() : null;
+                Long millis = distance != null ? (long) (distance / averageSpeed * 1000) : null;
                 if(millis == null || millis < 1000)
                     millis = 1000L;
                 next.setTime(CompactCalendar.fromMillisAndTimeZone(previous.getTime().getTimeInMillis() + millis, previous.getTime().getTimeZoneId()));

@@ -164,6 +164,18 @@ public class UpdateChecker {
             return !isLatestRouteConverterVersion;
         }
 
+        public String getMyJavaVersion() {
+            return myJavaVersion;
+        }
+
+        public String getLatestJavaVersion() {
+            return latestJavaVersion;
+        }
+
+        public boolean existsLaterJavaVersion() {
+            return !isLatestJavaVersion;
+        }
+
         public void setResult(String latestRouteConverterVersion, boolean isLatestRouteConverterVersion, String latestJavaVersion, boolean isLatestJavaVersion) {
             this.latestRouteConverterVersion = latestRouteConverterVersion;
             this.isLatestRouteConverterVersion = isLatestRouteConverterVersion;
