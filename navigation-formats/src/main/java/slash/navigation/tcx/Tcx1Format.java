@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.Math.min;
+
 /**
  * Reads Training Center Database 1 (.tcx) files.
  *
@@ -272,7 +274,8 @@ public class Tcx1Format extends TcxFormat {
         List<TrackpointT> trackpoints = trackT.getTrackpoint();
 
         List<GpxPosition> positions = route.getPositions();
-        GpxPosition first = null;
+        GpxPosition previous = null;
+        double distance = 0.0;
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();
@@ -281,12 +284,12 @@ public class Tcx1Format extends TcxFormat {
             trackpointT.setPosition(createPosition(position));
             trackpointT.setTime(formatTime(position.getTime()));
 
-            if (first != null)
-                trackpointT.setDistanceMeters(first.calculateDistance(position));
-            else {
-                trackpointT.setDistanceMeters(0.0);
-                first = position;
+            if (previous != null) {
+                distance += previous.calculateDistance(position);
             }
+            previous = position;
+            trackpointT.setDistanceMeters(distance);
+
             trackpoints.add(trackpointT);
         }
         return trackT;
@@ -295,7 +298,7 @@ public class Tcx1Format extends TcxFormat {
     private CourseT createCourse(GpxRoute route, String routeName, int startIndex, int endIndex) {
         CourseT courseT = new ObjectFactory().createCourseT();
         // ensure the course name does not exceed 15 characters
-        courseT.setName(routeName.substring(0, Math.min(routeName.length(), 15)));
+        courseT.setName(routeName.substring(0, min(routeName.length(), 15)));
         courseT.getLap().add(createCourseLap(route, startIndex, endIndex));
         courseT.getTrack().add(createTrack(route, startIndex, endIndex));
         return courseT;
