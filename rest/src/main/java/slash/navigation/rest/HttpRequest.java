@@ -34,14 +34,13 @@ import java.util.logging.Logger;
  */
 
 public abstract class HttpRequest {
-    private static Logger log = Logger.getLogger(HttpRequest.class.getName());
-
+    private final Logger log;
     private final HttpClient client;
     final HttpMethod method;
     private Integer statusCode;
 
     HttpRequest(HttpMethod method) {
-        log = Logger.getLogger(getClass().getName());
+        this.log = Logger.getLogger(getClass().getName());
         this.client = new HttpClient();
         client.getParams().setIntParameter("http.connection.timeout", 15 * 1000);
         client.getParams().setIntParameter("http.socket.timeout", 60 * 1000);

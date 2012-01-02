@@ -215,7 +215,7 @@ public class Tcx2Format extends TcxFormat {
         courseLapT.setAverageHeartRateBpm(getHeartBeatRateT(first));
         courseLapT.setDistanceMeters(route.getDistance());
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
-        courseLapT.setTotalTimeSeconds(route.getTime() / 1000);
+        courseLapT.setTotalTimeSeconds(route.getTime() / 1000.0);
 
         if (first != null) {
             courseLapT.setBeginPosition(createPosition(first));

@@ -356,8 +356,10 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView != null)
             mapView.dispose();
         getConvertPanel().dispose();
-        if (positionAugmenter != null)
-            positionAugmenter.close();
+        synchronized (this) {
+            if (positionAugmenter != null)
+                positionAugmenter.close();
+        }
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +

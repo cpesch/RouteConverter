@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Boolean.TRUE;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
@@ -96,13 +97,13 @@ public class Kml21Format extends KmlFormat {
                 features = ((FolderType) containerType).getFeature();
             else if (containerType instanceof DocumentType)
                 features = ((DocumentType) containerType).getFeature();
-            routes = extractTracks(Transfer.trim(containerType.getName()), Transfer.trim(containerType.getDescription()), features, startDate);
+            routes = extractTracks(trim(containerType.getName()), trim(containerType.getDescription()), features, startDate);
         }
 
         if (feature instanceof PlacemarkType) {
             PlacemarkType placemarkType = (PlacemarkType) feature;
-            String placemarkName = asComment(Transfer.trim(placemarkType.getName()),
-                    Transfer.trim(placemarkType.getDescription()));
+            String placemarkName = asComment(trim(placemarkType.getName()),
+                    trim(placemarkType.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkType.getGeometry());
             for (KmlPosition position : positions) {
@@ -147,8 +148,8 @@ public class Kml21Format extends KmlFormat {
         List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
-            String placemarkName = asComment(Transfer.trim(placemarkTypeValue.getName()),
-                    Transfer.trim(placemarkTypeValue.getDescription()));
+            String placemarkName = asComment(trim(placemarkTypeValue.getName()),
+                    trim(placemarkTypeValue.getDescription()));
 
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getGeometry());
             if (positions.size() == 1) {

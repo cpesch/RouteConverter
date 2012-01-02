@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static slash.common.io.InputOutput.copy;
+
 /**
  * The base of all GPSBabel based formats.
  *
@@ -365,7 +367,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         } else {
             File source = File.createTempFile("babelsource", "." + getFormatName());
             source.deleteOnExit();
-            InputOutput.copy(in, new FileOutputStream(source));
+            copy(in, new FileOutputStream(source));
             File target = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
             target.deleteOnExit();
             boolean successful = startBabel(source, getFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
@@ -398,7 +400,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             throw new IOException("Could not convert " + source + " to " + targetFile);
 
         log.fine("Successfully converted " + source + " to " + targetFile);
-        InputOutput.copy(new FileInputStream(targetFile), target);
+        copy(new FileInputStream(targetFile), target);
         if (targetFile.exists()) {
             if (!targetFile.delete())
                 log.warning("Cannot delete target file " + targetFile);
@@ -419,7 +421,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             throw new IOException("Could not convert " + source + " to " + targetFile);
 
         log.fine("Successfully converted " + source + " to " + targetFile);
-        InputOutput.copy(new FileInputStream(targetFile), target);
+        copy(new FileInputStream(targetFile), target);
 
         if (targetFile.exists()) {
             if (!targetFile.delete())

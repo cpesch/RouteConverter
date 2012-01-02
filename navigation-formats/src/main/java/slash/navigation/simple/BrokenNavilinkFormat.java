@@ -160,7 +160,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         deleteLogicalWrongPositions(result);
         
         // it must be 95% of the file valid
-        int minCorrectPositions = (int) ((readBytes / SBP_RECORD_LENGTH) * 0.95);
+        int minCorrectPositions = (int) (readBytes / (double) SBP_RECORD_LENGTH * 0.95);
         if (pointCount < minCorrectPositions)
             return null;
         return result;

@@ -73,8 +73,8 @@ public class Externalization {
 
         log.info("Extracting " + fileName + " to " + target);
         InputOutput.copy(in, new FileOutputStream(target));
-        //noinspection ResultOfMethodCallIgnored
-        target.setLastModified(lastModifiedInClassPath);
+        if (!target.setLastModified(lastModifiedInClassPath))
+            log.warning("Cannot set last modified date for " + target);
         return target;
     }
 

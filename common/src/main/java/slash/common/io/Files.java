@@ -258,8 +258,11 @@ public class Files {
         File tempFile = File.createTempFile("routeconverter", ".xml");
         tempFile.deleteOnExit();
         OutputStream outputStream = new FileOutputStream(tempFile);
-        outputStream.write(bytes);
-        outputStream.close();
+        try {
+            outputStream.write(bytes);
+        } finally {
+            outputStream.close();
+        }
         return tempFile;
     }
 

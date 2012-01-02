@@ -36,12 +36,15 @@ public class InputOutput {
         byte[] buffer = new byte[CHUNK_SIZE];
         int count = 0;
         int read;
-        while ((read = input.read(buffer)) != -1) {
-            output.write(buffer, 0, read);
-            count += read;
+        try {
+            while ((read = input.read(buffer)) != -1) {
+                output.write(buffer, 0, read);
+                count += read;
+            }
+        } finally {
+            input.close();
+            output.close();
         }
-        input.close();
-        output.close();
         return count;
     }
 

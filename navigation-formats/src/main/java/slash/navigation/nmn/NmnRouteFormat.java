@@ -181,9 +181,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             fileContent.position(0);
 
             // 4 Byte: position count - always 0?
-            int positionCount = fileContent.getInt();
+            fileContent.getInt();
             // 4 Byte: length + creation date
-            String creationDate = getText(fileContent);
+            getText(fileContent);
             // 4 Byte: expected position count
             int expectedPositionCount = fileContent.getInt();
             // 4 Byte: unknown - seen: 0, 1
@@ -220,13 +220,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         fileContent.position(fileContent.position() + 8);
 
         // 4 Byte: length + text
-        String text = getText(fileContent);
+        getText(fileContent);
 
         // 4 Byte: unknown
         fileContent.getInt();
 
         // 4 Byte: number of following data points (1, 2, 4) 
-        int numberOfDataPoints = fileContent.getInt();
+        fileContent.getInt();
 
         // 8 Byte: unknown
         if (fileContent.position() < positionEndPosition)

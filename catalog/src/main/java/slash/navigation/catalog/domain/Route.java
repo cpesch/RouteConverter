@@ -74,19 +74,19 @@ public class Route {
         return getGpx().getRte().get(0);
     }
 
-    public String getName() throws IOException {
+    public synchronized String getName() throws IOException {
         if (fromCategory)
             return name;
         return getRte().getName();
     }
 
-    public String getCreator() throws IOException {
+    public synchronized String getCreator() throws IOException {
         if (fromCategory)
             return creator;
         return getRte().getSrc();
     }
 
-    public String getDescription() throws IOException {
+    public synchronized String getDescription() throws IOException {
         if (fromCategory)
             return description;
         return getRte().getDesc();

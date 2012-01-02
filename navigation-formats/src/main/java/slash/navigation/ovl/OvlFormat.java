@@ -192,8 +192,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
                 result.add(route);
         }
 
-        for (Integer group : sectionsByGroup.keySet()) {
-            List<OvlSection> sectionList = sectionsByGroup.get(group);
+        for (List<OvlSection> sectionList : sectionsByGroup.values()) {
             OvlRoute route = extractRoute(sectionList, overlay, mapLage);
             if (route != null)
                 result.add(route);

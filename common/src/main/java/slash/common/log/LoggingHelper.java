@@ -49,18 +49,17 @@ public class LoggingHelper {
         System.out.println("Logging to " + getLogFile().getAbsolutePath());
         logAsDefault();
 
-        FileHandler handler = null;
+        Logger logger = Logger.getLogger("");
         try {
-            handler = new FileHandler("%t/RouteConverter.log", LOG_SIZE, 1, true);
+            FileHandler handler = new FileHandler("%t/RouteConverter.log", LOG_SIZE, 1, true);
             handler.setLevel(ALL);
             handler.setFilter(FILTER);
             handler.setFormatter(new SimpleFormatter());
+            logger.addHandler(handler);
         } catch (IOException e) {
             System.err.println("Cannot configure file logging");
             e.printStackTrace();
         }
-        Logger logger = Logger.getLogger("");
-        logger.addHandler(handler);
         logger.setLevel(ALL);
         redirectStdOutAndErrToLog();
     }

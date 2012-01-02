@@ -34,9 +34,9 @@ import java.util.Map;
 
 public class HgtFiles {
     private Map<Integer, ElevationTile> tileCache = new HashMap<Integer, ElevationTile>();
-    private static HgtFileCache fileCache = new HgtFileCache();
+    private HgtFileCache fileCache = new HgtFileCache();
     private Map<String, RandomAccessFile> randomAccessFileCache = new HashMap<String, RandomAccessFile>();
-    private static HgtFileDownloader downloader;
+    private HgtFileDownloader downloader;
 
     public HgtFiles() {
         downloader = new HgtFileDownloader(fileCache);
