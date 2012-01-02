@@ -23,7 +23,7 @@ package slash.navigation.babel;
 import slash.navigation.gpx.GpxRoute;
 
 /**
- * Reads and writes IGO8 Track (.trk) files.
+ * Reads and writes iGO8 Track (.trk) files.
  *
  * @author Christian Pesch
  */
@@ -34,7 +34,7 @@ public class Igo8TrackFormat extends BabelFormat {
     }
 
     public String getName() {
-        return "IGO8 Track (*" + getExtension() + ")";
+        return "iGO8 Track (*" + getExtension() + ")";
     }
 
     protected String getFormatName() {

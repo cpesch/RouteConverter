@@ -433,6 +433,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract KmlRoute asKml22Format();
 
+    public abstract KmlRoute asIgo8RouteFormat();
+
     public abstract KmlRoute asKmz20Format();
 
     public abstract KmlRoute asKmz21Format();

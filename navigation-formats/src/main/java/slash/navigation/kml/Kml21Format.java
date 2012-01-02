@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.Boolean.TRUE;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
@@ -292,7 +293,7 @@ public class Kml21Format extends KmlFormat {
         kmlType.setFeature(objectFactory.createDocument(documentType));
         documentType.setName(createDocumentName(route));
         documentType.setDescription(asDescription(route.getDescription()));
-        documentType.setOpen(Boolean.TRUE);
+        documentType.setOpen(TRUE);
 
         documentType.getStyleSelector().add(objectFactory.createStyle(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor())));
         documentType.getStyleSelector().add(objectFactory.createStyle(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor())));
@@ -310,7 +311,7 @@ public class Kml21Format extends KmlFormat {
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();
         kmlType.setFeature(objectFactory.createDocument(documentType));
-        documentType.setOpen(Boolean.TRUE);
+        documentType.setOpen(TRUE);
 
         documentType.getStyleSelector().add(objectFactory.createStyle(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor())));
         documentType.getStyleSelector().add(objectFactory.createStyle(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor())));

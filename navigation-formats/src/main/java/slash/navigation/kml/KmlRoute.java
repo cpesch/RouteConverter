@@ -170,6 +170,12 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asIgo8RouteFormat() {
+        if (getFormat() instanceof Igo8RouteFormat)
+            return this;
+        return asKmlFormat(new Igo8RouteFormat());
+    }
+
     public KmlRoute asKmz20Format() {
         if (getFormat() instanceof Kmz20Format)
             return this;

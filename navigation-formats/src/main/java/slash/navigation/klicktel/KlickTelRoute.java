@@ -203,6 +203,10 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asIgo8RouteFormat() {
+        return asKmlFormat(new Igo8RouteFormat());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }

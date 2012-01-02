@@ -87,6 +87,7 @@ public final class NavigationFormats {
         addFormat(Kmz21Format.class);
         addFormat(Kml22BetaFormat.class);
         addFormat(Kmz22BetaFormat.class);
+        addFormat(Igo8RouteFormat.class);
         addFormat(Kml22Format.class);
         addFormat(Kmz22Format.class);
         addFormat(Gpx10Format.class);

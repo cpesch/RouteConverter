@@ -21,7 +21,6 @@
 package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
@@ -41,7 +40,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.hex.HexDecoder.decodeBytes;
+import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.Transfer.*;
+import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
 
 /**
  * The base of all Google Earth formats.
@@ -96,7 +98,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             buffer.append(' ');
         }
         List<KmlPosition> result = new ArrayList<KmlPosition>();
-        for (GoogleMapsPosition position : GoogleMapsPosition.parsePositions(buffer.toString()))
+        for (GoogleMapsPosition position : parsePositions(buffer.toString()))
             result.add(asKmlPosition(position));
         return result;
     }
@@ -138,11 +140,11 @@ public abstract class KmlFormat extends BaseKmlFormat {
             if (slashIndex != -1)
                 nameToParse = nameToParse.substring(slashIndex + 1);
             if (nameToParse.startsWith("Waypoint"))
-                result = RouteCharacteristics.Waypoints;
+                result = Waypoints;
             else if (nameToParse.startsWith("Route"))
-                result = RouteCharacteristics.Route;
+                result = Route;
             else if (nameToParse.startsWith("Track") || nameToParse.startsWith("Path"))
-                result = RouteCharacteristics.Track;
+                result = Track;
         }
         return result;
     }
@@ -173,19 +175,19 @@ public abstract class KmlFormat extends BaseKmlFormat {
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
     private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     static {
-        TAVELLOG_DATE.setTimeZone(CompactCalendar.UTC);
+        TAVELLOG_DATE.setTimeZone(UTC);
     }
 
     private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");
     private static final SimpleDateFormat NAVIGON6310_TIME = new SimpleDateFormat("HH:mm:ss");
     static {
-        NAVIGON6310_TIME.setTimeZone(CompactCalendar.UTC);
+        NAVIGON6310_TIME.setTimeZone(UTC);
     }
 
     private static final Pattern BT747_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*TIME:.*>(\\d{2}-.+-\\d{2} \\d{2}:\\d{2}:\\d{2})<.*>([\\d\\.\\s]+)m<.*");
     private static final SimpleDateFormat BT747_DATE = new SimpleDateFormat("dd-MMMMM-yy HH:mm:ss");
     static {
-        BT747_DATE.setTimeZone(CompactCalendar.UTC);
+        BT747_DATE.setTimeZone(UTC);
     }
 
     private static final Pattern QSTARTZ_DATE_AND_SPEED_PATTERN = Pattern.compile(".*Date:\\s*(\\d{4}/\\d{2}/\\d{2}).*Time:\\s*(\\d{2}:\\d{2}:\\d{2}).*Speed:\\s*([\\d\\.]+)\\s*.*", Pattern.DOTALL);
@@ -248,15 +250,15 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (description != null) {
             Matcher tavelLogMatcher = TAVELLOG_SPEED_PATTERN.matcher(description);
             if (tavelLogMatcher.matches()) {
-                return Transfer.parseDouble(tavelLogMatcher.group(1));
+                return parseDouble(tavelLogMatcher.group(1));
             }
             Matcher wbt201LogMatcher = WBT201LOG_SPEED_PATTERN.matcher(description);
             if (wbt201LogMatcher.matches()) {
-                return Transfer.parseDouble(wbt201LogMatcher.group(1));
+                return parseDouble(wbt201LogMatcher.group(1));
             }
             Matcher qstarzMatcher = QSTARTZ_DATE_AND_SPEED_PATTERN.matcher(description);
             if (qstarzMatcher.matches()) {
-                return Transfer.parseDouble(qstarzMatcher.group(3));
+                return parseDouble(qstarzMatcher.group(3));
             }
         }
         return null;
@@ -268,15 +270,15 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (description != null) {
             Matcher tavelLogMatcher = TAVELLOG_ELEVATION_PATTERN.matcher(description);
             if (tavelLogMatcher.matches()) {
-                return Transfer.parseDouble(tavelLogMatcher.group(1));
+                return parseDouble(tavelLogMatcher.group(1));
             }
             Matcher navigonMatcher = NAVIGON6310_TIME_AND_ELEVATION_PATTERN.matcher(description);
             if (navigonMatcher.matches()) {
-                return Transfer.parseDouble(navigonMatcher.group(2));
+                return parseDouble(navigonMatcher.group(2));
             }
             Matcher bt747Matcher = BT747_TIME_AND_ELEVATION_PATTERN.matcher(description);
             if (bt747Matcher.matches()) {
-                return Transfer.parseDouble(bt747Matcher.group(2));
+                return parseDouble(bt747Matcher.group(2));
             }
         }
         return null;

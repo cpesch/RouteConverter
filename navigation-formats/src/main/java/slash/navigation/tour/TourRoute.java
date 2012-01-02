@@ -194,6 +194,10 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asIgo8RouteFormat() {
+        return asKmlFormat(new Igo8RouteFormat());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }

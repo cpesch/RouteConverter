@@ -226,7 +226,7 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
-    protected List<KmlPosition> asExtendedKmlPositions(List<String> strings) {
+    private List<KmlPosition> asExtendedKmlPositions(List<String> strings) {
         List<KmlPosition> result = new ArrayList<KmlPosition>();
         for (String string : strings) {
             for (GoogleMapsPosition position : parseExtensionPositions(string)) {
@@ -557,7 +557,7 @@ public class Kml22Format extends KmlFormat {
         return styleType;
     }
 
-    private KmlType createKmlType(KmlRoute route) {
+    protected KmlType createKmlType(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();

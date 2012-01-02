@@ -217,6 +217,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asIgo8RouteFormat() {
+        return asKmlFormat(new Igo8RouteFormat());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }

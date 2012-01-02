@@ -175,6 +175,10 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return asKmlFormat(new Kml22Format());
     }
 
+    public KmlRoute asIgo8RouteFormat() {
+        return asKmlFormat(new Igo8RouteFormat());
+    }
+
     public KmlRoute asKmz20Format() {
         return asKmlFormat(new Kmz20Format());
     }
