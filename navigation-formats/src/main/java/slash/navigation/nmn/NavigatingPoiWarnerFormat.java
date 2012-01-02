@@ -21,7 +21,6 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.*;
 
 import java.io.PrintWriter;
@@ -29,9 +28,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.*;
+
 /**
  * Reads and writes Navigating POI-Warner (.asc) files.
- *
+ * <p/>
  * Format: 8.6180900,50.2175100,"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]"
  *
  * @author Christian Pesch
@@ -54,7 +55,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
     public String getName() {
         return "Navigating POI-Warner (*" + getExtension() + ")";
     }
-    
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
@@ -75,15 +76,16 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = lineMatcher.group(3);
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                null, null, null, Transfer.trim(comment));
+        String comment = trim(lineMatcher.group(3));
+        if (comment != null)
+            comment = comment.replaceAll("\u001A", "");
+        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, comment);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
-        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
+        String longitude = formatDoubleAsString(position.getLongitude(), 7);
+        String latitude = formatDoubleAsString(position.getLatitude(), 7);
+        String comment = escape(position.getComment(), SEPARATOR, ';');
         writer.println(longitude + SEPARATOR + latitude + SEPARATOR + "\"" + comment + "\"");
     }
 }
