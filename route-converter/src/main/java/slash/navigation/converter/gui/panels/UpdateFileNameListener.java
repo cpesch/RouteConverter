@@ -10,6 +10,8 @@ import javax.swing.plaf.basic.BasicFileChooserUI;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -101,6 +103,12 @@ final class UpdateFileNameListener implements PropertyChangeListener {
 
             return new BasicFileChooserSelectionAccessor(ui, chooser);
         }
+        else if ("com.apple.laf.AquaFileChooserUI".equals(ui.getClass().getName())) {
+            return new AquaFileChooserSelectionAccessor (ui, chooser); 
+        }
+	    else {
+            System.err.println("FileChooserUI="+ui);
+        }
 
         return null;
     }
@@ -132,6 +140,55 @@ final class UpdateFileNameListener implements PropertyChangeListener {
 //            chooser.setSelectedFile(new File(name));
 
             ((BasicFileChooserUI) ui).setFileName(name);
+        }
+    }
+
+    private static final class AquaFileChooserSelectionAccessor implements FileChooserSelectionAccessor {
+
+        private final FileChooserUI ui;
+        private final JFileChooser chooser;
+
+        public AquaFileChooserSelectionAccessor(final FileChooserUI ui,
+                                                final JFileChooser chooser) {
+
+            this.ui = ui;
+            this.chooser = chooser;
+        }
+
+        @Override
+        public String getSelection() {
+            try {
+                final Method getFileNameMethod = getClass().getDeclaredMethod("getFileName");
+                return (String) getFileNameMethod.invoke(this);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+                // TODO - Fehlerhandling ...
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                // TODO - Fehlerhandling ...
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                // TODO - Fehlerhandling ...
+            }
+            return "";
+        }
+
+        @Override
+        public void setSelection(final String name) {
+
+            try {
+                final Method setFileNameMethod = getClass().getDeclaredMethod("setFileName", String.class);
+                setFileNameMethod.invoke(this, name);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+                // TODO - Fehlerhandling ...
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                // TODO - Fehlerhandling ...
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                // TODO - Fehlerhandling ...
+            }
         }
     }
 }
