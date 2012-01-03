@@ -19,17 +19,24 @@
 */
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
-public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+
+public class NavigatingPoiWarnerFormatTest {
     NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();
 
+    @Test
     public void testIsValidLine() {
-        assertTrue(format.isValidLine("; Overnight stay for motorhomes in Europe with/without service"));        
+        assertTrue(format.isValidLine("; Overnight stay for motorhomes in Europe with/without service"));
         assertTrue(format.isValidLine(";"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("8.6180900,50.2175100,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\""));
         assertTrue(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));
@@ -38,17 +45,30 @@ public class NavigatingPoiWarnerFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("; Overnight stay for motorhomes in Europe with/without service"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("8.6180901,50.2175101,\"[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]\"", null);
-        assertEquals(8.6180901, position.getLongitude());
-        assertEquals(50.2175101, position.getLatitude());
+        assertDoubleEquals(8.6180901, position.getLongitude());
+        assertDoubleEquals(50.2175101, position.getLatitude());
         assertEquals("[61352] AH Kreissl GmbH; Benzstrasse 7 [Bad Homburg]", position.getComment());
     }
 
+    @Test
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("-8.6180901,-50.2175101,\"ABC\"", null);
-        assertEquals(-8.6180901, position.getLongitude());
-        assertEquals(-50.2175101, position.getLatitude());
+        assertDoubleEquals(-8.6180901, position.getLongitude());
+        assertDoubleEquals(-50.2175101, position.getLatitude());
         assertEquals("ABC", position.getComment());
+    }
+
+    @Test
+    public void testParseControlCharacters() {
+        char[] chars = new char[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+        for (char c : chars) {
+            Wgs84Position position = format.parsePosition("1.2,3.4,\"äöüßA" + c + "Z+*$%\"", null);
+            assertDoubleEquals(1.2, position.getLongitude());
+            assertDoubleEquals(3.4, position.getLatitude());
+            assertEquals("äöüßAZ+*$%", position.getComment());
+        }
     }
 }

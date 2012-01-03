@@ -78,7 +78,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
         String latitude = lineMatcher.group(2);
         String comment = trim(lineMatcher.group(3));
         if (comment != null)
-            comment = comment.replaceAll("\u001A", "");
+            comment = comment.replaceAll("\\p{Cntrl}", "");
         return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), null, null, null, comment);
     }
 
