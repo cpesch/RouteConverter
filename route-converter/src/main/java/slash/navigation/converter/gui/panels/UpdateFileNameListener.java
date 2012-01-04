@@ -12,6 +12,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
  * <p/>
  */
 final class UpdateFileNameListener implements PropertyChangeListener {
+
+    private static final Logger log = Logger.getLogger(UpdateFileNameListener.class.getName());
 
     private interface FileChooserSelectionAccessor {
         String getSelection();
@@ -97,17 +101,18 @@ final class UpdateFileNameListener implements PropertyChangeListener {
 
         final FileChooserUI ui = chooser.getUI();
 
-        // works on Windows
-        // maybe need own Variant for Linux/Mac
         if (ui instanceof BasicFileChooserUI) {
 
+            // works on Windows
             return new BasicFileChooserSelectionAccessor(ui, chooser);
         }
         else if ("com.apple.laf.AquaFileChooserUI".equals(ui.getClass().getName())) {
-            return new AquaFileChooserSelectionAccessor (ui, chooser); 
+            // MAC-UI
+            return new AquaFileChooserSelectionAccessor (ui, chooser);
         }
 	    else {
-            System.err.println("FileChooserUI="+ui);
+            log.log(Level.SEVERE, "Unsupported FileChooserUI: "+ui);
+            // maybe need other variants for Linux/Mac
         }
 
         return null;
@@ -158,17 +163,14 @@ final class UpdateFileNameListener implements PropertyChangeListener {
         @Override
         public String getSelection() {
             try {
-                final Method getFileNameMethod = getClass().getDeclaredMethod("getFileName");
-                return (String) getFileNameMethod.invoke(this);
+                final Method getFileNameMethod = ui.getClass().getDeclaredMethod("getFileName");
+                return (String) getFileNameMethod.invoke(ui);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
-                // TODO - Fehlerhandling ...
+                log.log(Level.SEVERE, "Could not call getFileName on ui: "+ui, e);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-                // TODO - Fehlerhandling ...
+                log.log(Level.SEVERE, "Could not call getFileName on ui: "+ui, e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                // TODO - Fehlerhandling ...
+                log.log(Level.SEVERE, "Could not call getFileName on ui: "+ui, e);
             }
             return "";
         }
@@ -177,17 +179,14 @@ final class UpdateFileNameListener implements PropertyChangeListener {
         public void setSelection(final String name) {
 
             try {
-                final Method setFileNameMethod = getClass().getDeclaredMethod("setFileName", String.class);
-                setFileNameMethod.invoke(this, name);
+                final Method setFileNameMethod = ui.getClass().getDeclaredMethod("setFileName", String.class);
+                setFileNameMethod.invoke(ui, name);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
-                // TODO - Fehlerhandling ...
+                log.log(Level.SEVERE, "Could not call setFileName on ui: "+ui, e);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-                // TODO - Fehlerhandling ...
+                log.log(Level.SEVERE, "Could not call setFileName on ui: "+ui, e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                // TODO - Fehlerhandling ...
+                log.log(Level.SEVERE, "Could not call setFileName on ui: "+ui, e);
             }
         }
     }
