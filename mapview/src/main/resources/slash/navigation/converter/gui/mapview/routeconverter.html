@@ -166,6 +166,7 @@
                                waypoints.push(path[l].lng());
                                waypoints.push(l == path.length - 1 ? steps[k].distance.value : 0);
                                waypoints.push(l == path.length - 1 ? steps[k].duration.value : 0);
+                               waypoints.push(l == path.length - 1 ? removeTags(steps[k].instructions) : "-");
                            }
                        }
                    }
@@ -175,6 +176,14 @@
                setError("<p>Sorry, could not insert all waypoints.</p><p>Status: " + status + "</p><p>Result: " + result + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        });
+   }
+
+   function removeTags(string) {
+       string = string.replace(/&(lt|gt);/g, function (strMatch, p1) {
+           return (p1 == "lt") ? "<" : ">";
+       });
+       string = string.replace(/<\/?[^>]+(>|$)/g, " ");
+       return string.replace(/\//, " ");
    }
 
    function insertOnlyTurnpoints(directionsRequest, index) {
@@ -190,6 +199,7 @@
                            turnpoints.push(steps[k].end_location.lng());
                            turnpoints.push(steps[k].distance.value);
                            turnpoints.push(steps[k].duration.value);
+                           turnpoints.push(removeTags(steps[k].instructions));
                        }
                    }
                    callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + turnpoints.join("/") + "\n\n");

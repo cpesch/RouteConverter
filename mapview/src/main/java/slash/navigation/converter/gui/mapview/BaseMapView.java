@@ -39,10 +39,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -1423,14 +1420,14 @@ public abstract class BaseMapView implements MapView {
         Matcher insertWaypointsMatcher = INSERT_WAYPOINTS_PATTERN.matcher(callback);
         if (insertWaypointsMatcher.matches()) {
             Integer key = parseInt(insertWaypointsMatcher.group(2));
-            List<Double> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
+            List<String> coordinates = parseCoordinates(insertWaypointsMatcher.group(3));
 
             List<BaseNavigationPosition> successorPredecessor;
             synchronized (insertWaypointsQueue) {
                 successorPredecessor = insertWaypointsQueue.remove(key);
             }
 
-            if (coordinates.size() < 4 || successorPredecessor == null)
+            if (coordinates.size() < 5 || successorPredecessor == null)
                 return true;
 
             BaseNavigationPosition before = successorPredecessor.get(0);
@@ -1459,21 +1456,36 @@ public abstract class BaseMapView implements MapView {
         return distance != null && distance < 10.0;
     }
 
-    private List<Double> parseCoordinates(String coordinates) {
-        List<Double> result = new ArrayList<Double>();
+    private String trimSpaces(String string) {
+        string = string.replaceAll("  ", " ");
+        if ("-".equals(string))
+            return null;
+        try {
+            return new String(string.getBytes(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
+
+    private List<String> parseCoordinates(String coordinates) {
+        List<String> result = new ArrayList<String>();
         StringTokenizer tokenizer = new StringTokenizer(coordinates, "/");
         while (tokenizer.hasMoreTokens()) {
-            Double latitude = parseDouble(tokenizer.nextToken());
+            String latitude = trim(tokenizer.nextToken());
             if (tokenizer.hasMoreTokens()) {
-                Double longitude = parseDouble(tokenizer.nextToken());
+                String longitude = trim(tokenizer.nextToken());
                 if (tokenizer.hasMoreTokens()) {
-                    Double meters = parseDouble(tokenizer.nextToken());
+                    String meters = trim(tokenizer.nextToken());
                     if (tokenizer.hasMoreTokens()) {
-                        Double seconds = parseDouble(tokenizer.nextToken());
-                        result.add(latitude);
-                        result.add(longitude);
-                        result.add(meters);
-                        result.add(seconds);
+                        String seconds = trim(tokenizer.nextToken());
+                        if (tokenizer.hasMoreTokens()) {
+                            String instructions = trimSpaces(tokenizer.nextToken());
+                            result.add(latitude);
+                            result.add(longitude);
+                            result.add(meters);
+                            result.add(seconds);
+                            result.add(instructions);
+                        }
                     }
                 }
             }
@@ -1482,24 +1494,26 @@ public abstract class BaseMapView implements MapView {
     }
 
     @SuppressWarnings("unchecked")
-    private BaseRoute parseRoute(List<Double> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
+    private BaseRoute parseRoute(List<String> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
         BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<BaseNavigationPosition>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
-        int positionInsertionCount = coordinates.size() / 4;
-        for (int i = coordinates.size() - 1; i > 0; i -= 4) {
-            Double seconds = coordinates.get(i);
+        int positionInsertionCount = coordinates.size() / 5;
+        for (int i = coordinates.size() - 1; i > 0; i -= 5) {
+            String instructions = trim(coordinates.get(i));
+            Double seconds = parseDouble(coordinates.get(i - 1));
             seconds = isEmpty(seconds) ? seconds : null;
-            // Double meters = coordinates.get(i - 1);
-            Double longitude = coordinates.get(i - 2);
-            Double latitude = coordinates.get(i - 3);
+            // Double meters = parseDouble(coordinates.get(i - 2));
+            Double longitude = parseDouble(coordinates.get(i - 3));
+            Double latitude = parseDouble(coordinates.get(i - 4));
             if (seconds != null && time != null) {
                 Calendar calendar = time.getCalendar();
                 calendar.add(Calendar.SECOND, -seconds.intValue());
                 time = fromCalendar(calendar);
             }
             int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;
-            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, positionAugmenter.createComment(positionNumber));
+            String comment = instructions != null ? instructions : positionAugmenter.createComment(positionNumber);
+            BaseNavigationPosition position = route.createPosition(longitude, latitude, null, null, seconds != null ? time : null, comment);
             if (!isDuplicate(before, position) && !isDuplicate(after, position)) {
                 route.add(0, position);
             }
