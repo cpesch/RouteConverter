@@ -440,7 +440,7 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     public SimpleRoute asiBlue747Format() {
-        return asSimpleFormat(new iBlue747Format());
+        return asSimpleFormat(new Eiblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {

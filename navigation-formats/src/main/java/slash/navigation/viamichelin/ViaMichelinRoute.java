@@ -370,7 +370,7 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
     }
 
     public SimpleRoute asiBlue747Format() {
-        return asSimpleFormat(new iBlue747Format());
+        return asSimpleFormat(new Eiblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {

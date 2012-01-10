@@ -391,7 +391,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
     }
 
     public SimpleRoute asiBlue747Format() {
-        return asSimpleFormat(new iBlue747Format());
+        return asSimpleFormat(new Eiblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {

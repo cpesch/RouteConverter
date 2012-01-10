@@ -327,7 +327,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                 sourceFormat instanceof Gpx11Format || sourceFormat instanceof NmeaFormat || 
                 sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof TomTomRouteFormat ||
-                sourceFormat instanceof iBlue747Format) {
+                sourceFormat instanceof Eiblue747Format) {
                 assertNotNull(sourceHeading);
                 assertNotNull(targetHeading);
                 assertEquals("Heading " + index + " does not match", targetHeading.intValue(), sourceHeading.intValue());
@@ -347,10 +347,10 @@ public abstract class NavigationTestCase extends TestCase {
                  targetFormat instanceof Gpx10Format && targetCharacteristics.equals(RouteCharacteristics.Track))) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
         } else if (targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
-                   (sourceFormat instanceof iBlue747Format && targetFormat instanceof iBlue747Format)) {
+                   (sourceFormat instanceof Eiblue747Format && targetFormat instanceof Eiblue747Format)) {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
         } else if (targetFormat instanceof GoPalTrackFormat ||
-                   (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof iBlue747Format)) {
+                   (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof Eiblue747Format)) {
             assertNull(sourceHeading);
             assertNotNull(targetHeading);
         } else
@@ -387,8 +387,8 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
         } else if (targetFormat instanceof GoPalTrackFormat ||
             (sourceFormat instanceof CoPilotFormat && targetFormat instanceof ColumbusV900ProfessionalFormat) ||
-            (sourceFormat instanceof iBlue747Format && targetFormat instanceof QstarzQ1000Format) ||
-            (sourceFormat instanceof iBlue747Format && targetFormat instanceof ColumbusV900ProfessionalFormat) ||
+            (sourceFormat instanceof Eiblue747Format && targetFormat instanceof QstarzQ1000Format) ||
+            (sourceFormat instanceof Eiblue747Format && targetFormat instanceof ColumbusV900ProfessionalFormat) ||
             (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof ColumbusV900Format)) {
             assertNotNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
         } else
@@ -682,7 +682,7 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
                 assertEquals("Speed " + index + " does not match", Transfer.roundFraction(sourcePosition.getSpeed(), 1), Transfer.roundFraction(targetPosition.getSpeed(), 1));
             } else if ((sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) ||
-                       (sourceFormat instanceof iBlue747Format && targetFormat instanceof ColumbusV900Format)) {
+                       (sourceFormat instanceof Eiblue747Format && targetFormat instanceof ColumbusV900Format)) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed(), targetPosition.getSpeed());
@@ -733,7 +733,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof NavilinkFormat && targetFormat instanceof NavigatingPoiWarnerFormat ||
                 sourceFormat instanceof OziExplorerReadFormat ||
                 sourceFormat instanceof ColumbusV900Format && targetFormat instanceof CoPilotFormat ||
-                sourceFormat instanceof iBlue747Format && targetFormat instanceof CoPilotFormat ||
+                sourceFormat instanceof Eiblue747Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof CoPilotFormat) {
             assertNotNull(sourcePosition.getTime());
             assertNull(targetPosition.getTime());

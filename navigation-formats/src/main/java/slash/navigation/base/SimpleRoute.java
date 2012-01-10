@@ -285,9 +285,9 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
     }
 
     public SimpleRoute asiBlue747Format() {
-        if (getFormat() instanceof iBlue747Format)
+        if (getFormat() instanceof Eiblue747Format)
             return this;
-        return asSimpleFormat(new iBlue747Format());
+        return asSimpleFormat(new Eiblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {

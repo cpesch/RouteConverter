@@ -42,7 +42,7 @@ public class NavigationFormatsTest {
         assertEquals(ColumbusV900ProfessionalFormat.class, formats.get(2).getClass());
         assertEquals(ColumbusV900StandardFormat.class, formats.get(3).getClass());
         assertEquals(QstarzQ1000Format.class, formats.get(4).getClass());
-        assertEquals(iBlue747Format.class, formats.get(5).getClass());
+        assertEquals(Eiblue747Format.class, formats.get(5).getClass());
         assertEquals(BrokenHaicomLoggerFormat.class, formats.get(6).getClass());
         assertEquals(NmeaFormat.class, formats.get(7).getClass());
     }

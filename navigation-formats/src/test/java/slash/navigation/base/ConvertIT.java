@@ -94,9 +94,9 @@ public class ConvertIT extends ConvertBase {
     }
 
     public void testConvertiBlue747ToCoPilot() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new CoPilot6Format());
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new CoPilot7Format());
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new CoPilot8Format());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new CoPilot7Format());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new CoPilot8Format());
     }
 
     public void testConvertQstarzQ1000ToCoPilot() throws IOException {
@@ -111,20 +111,20 @@ public class ConvertIT extends ConvertBase {
     }
 
     public void testConvertQstarzQ1000ToiBlue747() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new iBlue747Format());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new Eiblue747Format());
     }
 
     public void testConvertiBlue747ToQstarzQ1000() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new QstarzQ1000Format());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new QstarzQ1000Format());
     }
 
     public void testConvertiBlue747ToColumbusV900() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new ColumbusV900StandardFormat());
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new ColumbusV900ProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new ColumbusV900ProfessionalFormat());
     }
 
     public void testConvertiBlue747ToCompeGPSData() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new iBlue747Format(), new CompeGPSDataFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Eiblue747Format(), new CompeGPSDataFormat());
     }
 
 

@@ -374,7 +374,7 @@ public class GoPal5Route extends BaseRoute<GoPalPosition, GoPal5RouteFormat> {
     }
 
     public SimpleRoute asiBlue747Format() {
-        return asSimpleFormat(new iBlue747Format());
+        return asSimpleFormat(new Eiblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {

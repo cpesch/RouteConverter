@@ -372,7 +372,7 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
     }
 
     public SimpleRoute asiBlue747Format() {
-        return asSimpleFormat(new iBlue747Format());
+        return asSimpleFormat(new Eiblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {
