@@ -55,6 +55,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.util.Calendar.SECOND;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.*;
@@ -1461,7 +1462,7 @@ public abstract class BaseMapView implements MapView {
         if ("-".equals(string))
             return null;
         try {
-            return new String(string.getBytes(), "UTF-8");
+            return trim(new String(string.getBytes(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             return null;
         }
@@ -1493,6 +1494,11 @@ public abstract class BaseMapView implements MapView {
         return result;
     }
 
+    private Double parseSeconds(String string) {
+        Double result = parseDouble(string);
+        return !isEmpty(result) ? result : null;
+    }
+
     @SuppressWarnings("unchecked")
     private BaseRoute parseRoute(List<String> coordinates, BaseNavigationPosition before, BaseNavigationPosition after) {
         BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<BaseNavigationPosition>());
@@ -1501,14 +1507,13 @@ public abstract class BaseMapView implements MapView {
         int positionInsertionCount = coordinates.size() / 5;
         for (int i = coordinates.size() - 1; i > 0; i -= 5) {
             String instructions = trim(coordinates.get(i));
-            Double seconds = parseDouble(coordinates.get(i - 1));
-            seconds = isEmpty(seconds) ? seconds : null;
+            Double seconds = parseSeconds(coordinates.get(i - 1));
             // Double meters = parseDouble(coordinates.get(i - 2));
             Double longitude = parseDouble(coordinates.get(i - 3));
             Double latitude = parseDouble(coordinates.get(i - 4));
             if (seconds != null && time != null) {
                 Calendar calendar = time.getCalendar();
-                calendar.add(Calendar.SECOND, -seconds.intValue());
+                calendar.add(SECOND, -seconds.intValue());
                 time = fromCalendar(calendar);
             }
             int positionNumber = positionsModel.getRowCount() + (positionInsertionCount - route.getPositionCount()) - 1;

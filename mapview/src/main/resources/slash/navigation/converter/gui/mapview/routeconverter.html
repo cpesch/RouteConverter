@@ -183,7 +183,7 @@
            return (p1 == "lt") ? "<" : ">";
        });
        string = string.replace(/<\/?[^>]+(>|$)/g, " ");
-       return string.replace(/\//, " ");
+       return string.replace(/\//g, " ");
    }
 
    function insertOnlyTurnpoints(directionsRequest, index) {
