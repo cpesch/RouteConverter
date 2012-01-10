@@ -1459,6 +1459,8 @@ public abstract class BaseMapView implements MapView {
 
     private String trimSpaces(String string) {
         string = string.replaceAll("  ", " ");
+        string = string.replaceAll(" ( ", " (");
+        string = string.replaceAll(" ) ", ") ");
         if ("-".equals(string))
             return null;
         try {
