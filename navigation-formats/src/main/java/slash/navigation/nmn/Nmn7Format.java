@@ -59,7 +59,7 @@ public class Nmn7Format extends NmnFormat {
     }
 
     public int getMaximumPositionCount() {
-        return preferences.getInt("maximumNmn7PositionCount", 48 /* ApplicationSettings.xml: <RouteTargets>50</RouteTargets> */);
+        return preferences.getInt("maximumNavigon7PositionCount", 48 /* ApplicationSettings.xml: <RouteTargets>50</RouteTargets> */);
     }
 
     protected boolean isPosition(String line) {

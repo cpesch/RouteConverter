@@ -42,6 +42,7 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class Igo8RouteFormat extends Kml22Format {
+    private static final Preferences preferences = Preferences.userNodeForPackage(Igo8RouteFormat.class);
     private static final String IGO_ROUTE = "iGO-Route";
 
     public String getName() {
@@ -57,7 +58,7 @@ public class Igo8RouteFormat extends Kml22Format {
     }
 
     public int getMaximumPositionCount() {
-        return 100;
+        return preferences.getInt("maximumiGo8RoutePositionCount", 100);
     }
 
     protected List<KmlRoute> process(KmlType kmlType, CompactCalendar startDate) {
