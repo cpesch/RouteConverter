@@ -293,7 +293,7 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
-    public Wgs84Position asiBluePosition() {
+    public Wgs84Position asIbluePosition() {
         return asWgs84Position();
     }
 

@@ -371,8 +371,8 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
-    public SimpleRoute asiBlue747Format() {
-        return asSimpleFormat(new Eiblue747Format());
+    public SimpleRoute asIblue747Format() {
+        return asSimpleFormat(new Iblue747Format());
     }
 
     public SimpleRoute asKompassFormat() {

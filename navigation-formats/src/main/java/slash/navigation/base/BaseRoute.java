@@ -421,7 +421,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asHaicomLoggerFormat();
 
-    public abstract SimpleRoute asiBlue747Format();
+    public abstract SimpleRoute asIblue747Format();
 
     public abstract KlickTelRoute asKlickTelRouteFormat();
 

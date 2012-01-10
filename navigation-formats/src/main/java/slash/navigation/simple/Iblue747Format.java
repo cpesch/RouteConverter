@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 
-public class Eiblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
-    protected static final Logger log = Logger.getLogger(Eiblue747Format.class.getName());
+public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
+    protected static final Logger log = Logger.getLogger(Iblue747Format.class.getName());
 
     private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,";
     private static final char SEPARATOR = ',';

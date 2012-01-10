@@ -111,7 +111,7 @@ public final class NavigationFormats {
         addFormat(ColumbusV900ProfessionalFormat.class);
         addFormat(ColumbusV900StandardFormat.class);
         addFormat(QstarzQ1000Format.class);
-        addFormat(Eiblue747Format.class);
+        addFormat(Iblue747Format.class);
         addFormat(SygicAsciiFormat.class);
         addFormat(SygicUnicodeFormat.class);
         addFormat(MagicMapsPthFormat.class);

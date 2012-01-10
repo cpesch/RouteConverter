@@ -27,7 +27,7 @@ import slash.navigation.base.Wgs84Position;
 import java.text.DateFormat;
 
 public class eiblue747FormatTest extends NavigationTestCase {
-    Eiblue747Format format = new Eiblue747Format();
+    Iblue747Format format = new Iblue747Format();
 
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,"));
