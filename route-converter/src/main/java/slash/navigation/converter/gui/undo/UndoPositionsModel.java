@@ -166,6 +166,7 @@ public class UndoPositionsModel implements PositionsModel {
         add(rowIndex, positions, true, true);
     }
 
+    @SuppressWarnings("unchecked")
     void add(int row, List<BaseNavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
         for (int i = positions.size() - 1; i >= 0; i--) {
             BaseNavigationPosition position = positions.get(i);

@@ -193,9 +193,10 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
     @SuppressWarnings("unchecked")
     public void setSelectedItem(Object anItem) {
-        setSelectedRoute((BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) anItem);
+        setSelectedRoute((BaseRoute) anItem);
     }
 
+    @SuppressWarnings("unchecked")
     public void setSelectedRoute(BaseRoute route) {
         if ((getSelectedRoute() != null && !getSelectedRoute().equals(route)) ||
                 getSelectedRoute() == null && route != null) {
