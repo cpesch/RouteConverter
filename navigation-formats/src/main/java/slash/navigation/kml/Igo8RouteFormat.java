@@ -31,6 +31,7 @@ import slash.navigation.kml.binding22.PointType;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
