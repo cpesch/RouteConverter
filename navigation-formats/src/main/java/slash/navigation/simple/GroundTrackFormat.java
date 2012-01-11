@@ -34,10 +34,14 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
+
 /**
  * Reads and writes groundtrack vom SondenMonitor (.txt) files.
  * <p/>
- * Format:    57    52.73846      9.88738     -0.416      0.04850 17:01:17.780
+*  Header:    Trackpunkt Nord     Ost     Hoehe  Aufstiegs-/Abstieg m/sek Zeit
+ * Format:    57         52.73846 9.88738 -0.416 0.04850                  17:01:17.780
  *
  * @author Christian Pesch
  */
@@ -54,7 +58,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "(" + POSITION + ")" +
                     SPACE + "(" + POSITION + ")" +
                     SPACE + "[\\d\\.]+" +
-                    SPACE + "(-?\\d+:-?\\d+:-?\\d+\\.\\d+)" +
+                    SPACE + "(-?\\d+:-?\\d+:-?\\d+)\\.?(\\d*)" +
                     ".*" +
                     END_OF_LINE);
 
@@ -87,15 +91,15 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    private CompactCalendar parseTime(String time) {
-        time = Transfer.trim(time);
+    private CompactCalendar parseTime(String time, String milliseconds) {
         if (time == null)
             return null;
+        String dateString = time + "." + (milliseconds != null ? milliseconds : "000");
         try {
-            Date parsed = TIME_FORMAT.parse(time);
+            Date parsed = TIME_FORMAT.parse(dateString);
             return CompactCalendar.fromDate(parsed);
         } catch (ParseException e) {
-            log.severe("Could not parse time '" + time + "'");
+            log.severe("Could not parse time '" + dateString + "'");
         }
         return null;
     }
@@ -104,11 +108,11 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        String comment = Transfer.trim(lineMatcher.group(1));
-        Double latitude = Transfer.parseDouble(lineMatcher.group(2));
-        Double longitude = Transfer.parseDouble(lineMatcher.group(3));
-        Double elevation = Transfer.parseDouble(lineMatcher.group(4));
-        CompactCalendar time = parseTime(lineMatcher.group(5));
+        String comment = trim(lineMatcher.group(1));
+        Double latitude = parseDouble(lineMatcher.group(2));
+        Double longitude = parseDouble(lineMatcher.group(3));
+        Double elevation = parseDouble(lineMatcher.group(4));
+        CompactCalendar time = parseTime(trim(lineMatcher.group(5)), trim(lineMatcher.group(6)));
 
         Wgs84Position position = new Wgs84Position(longitude, latitude, elevation, null, time, comment);
         position.setStartDate(startDate);

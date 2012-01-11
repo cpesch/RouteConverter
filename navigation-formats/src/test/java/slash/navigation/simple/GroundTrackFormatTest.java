@@ -26,8 +26,13 @@ import slash.navigation.base.Wgs84Position;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.SECOND;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.io.CompactCalendar.UTC;
 
 public class GroundTrackFormatTest {
     GroundTrackFormat format = new GroundTrackFormat();
@@ -37,6 +42,7 @@ public class GroundTrackFormatTest {
         assertTrue(format.isPosition("  943    52.17661      8.06995     -0.416      0.07569 09:19:58.480"));
         assertTrue(format.isPosition("   83    52.73522      9.88576   4508.976      0.04336 17:01:43.800"));
         assertTrue(format.isPosition("  255    52.23754     13.11184     -0.416      0.00377 -9:-47:-35.236"));
+        assertTrue(format.isPosition("  158    52.04482      8.43606  13110.903      0.26909 12:13:40"));
     }
 
     @Test
@@ -47,12 +53,12 @@ public class GroundTrackFormatTest {
         assertDoubleEquals(4508.976, position.getElevation());
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
         String actual = dateFormat.format(position.getTime().getTime());
-        Calendar expectedCal = Calendar.getInstance(CompactCalendar.UTC);
+        Calendar expectedCal = Calendar.getInstance(UTC);
         expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
-        expectedCal.set(Calendar.HOUR_OF_DAY, 17);
-        expectedCal.set(Calendar.MINUTE, 1);
-        expectedCal.set(Calendar.SECOND, 43);
-        expectedCal.set(Calendar.MILLISECOND, 800);
+        expectedCal.set(HOUR_OF_DAY, 17);
+        expectedCal.set(MINUTE, 1);
+        expectedCal.set(SECOND, 43);
+        expectedCal.set(MILLISECOND, 800);
         String expected = dateFormat.format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(CompactCalendar.fromCalendar(expectedCal), position.getTime());
@@ -64,4 +70,25 @@ public class GroundTrackFormatTest {
         Wgs84Position position = format.parsePosition("   83    52.73522      9.88576   4508.976      0.04336 -17:-01:-43.800", null);
         assertNull(position.getTime());
     }
+
+    @Test
+    public void testParsePositionWithoutMilliseconds() {
+        Wgs84Position position = format.parsePosition("  158    52.04482      8.43606  13110.903      0.26909 12:13:40", null);
+        assertDoubleEquals(8.43606, position.getLongitude());
+        assertDoubleEquals(52.04482, position.getLatitude());
+        assertDoubleEquals(13110.903, position.getElevation());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        String actual = dateFormat.format(position.getTime().getTime());
+        Calendar expectedCal = Calendar.getInstance(UTC);
+        expectedCal.setTimeInMillis(position.getTime().getTimeInMillis());
+        expectedCal.set(HOUR_OF_DAY, 12);
+        expectedCal.set(MINUTE, 13);
+        expectedCal.set(SECOND, 40);
+        expectedCal.set(MILLISECOND, 0);
+        String expected = dateFormat.format(expectedCal.getTime());
+        assertEquals(expected, actual);
+        assertEquals(CompactCalendar.fromCalendar(expectedCal), position.getTime());
+        assertEquals("158", position.getComment());
+    }
+
 }
