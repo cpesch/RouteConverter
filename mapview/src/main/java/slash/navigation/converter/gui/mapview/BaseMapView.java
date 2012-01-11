@@ -1083,7 +1083,7 @@ public abstract class BaseMapView implements MapView {
         synchronized (notificationMutex) {
             for (int i = 0; i < startPositions.length; i++) {
                 // skip the very last position without successor
-                if (i == positions.size() - 1 || i == startPositions.length)
+                if (i == positions.size() - 1 || i == startPositions.length - 1)
                     continue;
                 List<BaseNavigationPosition> successorPredecessor = new ArrayList<BaseNavigationPosition>();
                 successorPredecessor.add(positions.get(startPositions[i]));
@@ -1458,9 +1458,6 @@ public abstract class BaseMapView implements MapView {
     }
 
     private String trimSpaces(String string) {
-        string = string.replaceAll("  ", " ");
-        string = string.replaceAll(" ( ", " (");
-        string = string.replaceAll(" ) ", ") ");
         if ("-".equals(string))
             return null;
         try {
