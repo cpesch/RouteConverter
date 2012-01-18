@@ -249,10 +249,9 @@
    *  the size (in pixels) of each of the images within <code>visualSprite</code>.
    *  The default is (20,20).
    * @property {Object} [visualTips] An object literal defining the help tips that appear when
-   *  the mouse moves over the visual control. The <code>off</code> property is the tip to be shown
-   *  when the control is off and the <code>on</code> property is the tip to be shown when the
+   *  the mouse moves over the visual control. The <code>zoomOff/selectOff</code> property is the tip to be shown
+   *  when the control is off and the <code>zoomOn/zoomOff</code> property is the tip to be shown when the
    *  control is on.
-   *  The default values are "Turn on drag zoom mode" and "Turn off drag zoom mode", respectively.
    */
   /**
    * @name DragZoom
@@ -329,16 +328,16 @@
     this.visualEnabled_ = opt_zoomOpts.visualEnabled || false;
     this.visualClass_ = opt_zoomOpts.visualClass || "";
     this.visualPosition_ = opt_zoomOpts.visualPosition || google.maps.ControlPosition.LEFT_TOP;
-    this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(35, 0);
+    this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(8, 0);
     this.visualPositionIndex_ = opt_zoomOpts.visualPositionIndex || null;
     this.visualSprite_ = opt_zoomOpts.visualSprite || "http://www.routeconverter.com/images/zoom_button.png";
     this.visualSpriteSelect_ = opt_zoomOpts.visualSpriteSelect || "http://www.routeconverter.com/images/select_button.png";
     this.visualSize_ = opt_zoomOpts.visualSize || new google.maps.Size(20, 20);
     this.visualTips_ = opt_zoomOpts.visualTips || {};
-    this.visualTips_.zoomOff =  this.visualTips_.zoomOff || "Turn on zoom mode";
-    this.visualTips_.zoomOn =  this.visualTips_.zoomOn || "Turn off zoom mode";
-    this.visualTips_.selectOff =  this.visualTips_.selectOff || "Turn on select mode";
-    this.visualTips_.selectOn =  this.visualTips_.selectOn || "Turn off select mode";
+    this.visualTips_.zoomOff = opt_zoomOpts.zoomOff || "Turn on zoom mode";
+    this.visualTips_.zoomOn = opt_zoomOpts.zoomOn || "Turn off zoom mode";
+    this.visualTips_.selectOff = opt_zoomOpts.selectOff || "Turn on select mode";
+    this.visualTips_.selectOn = opt_zoomOpts.selectOn || "Turn off select mode";
 
     this.boxDiv_ = document.createElement("div");
     // Apply default style values for the zoom box:
