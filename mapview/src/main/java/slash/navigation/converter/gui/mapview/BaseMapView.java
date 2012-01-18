@@ -39,12 +39,25 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,11 +72,22 @@ import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.CompactCalendar.fromCalendar;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
-import static slash.navigation.util.Positions.*;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.util.Positions.asPosition;
+import static slash.navigation.util.Positions.center;
+import static slash.navigation.util.Positions.contains;
+import static slash.navigation.util.Positions.northEast;
+import static slash.navigation.util.Positions.southWest;
 
 /**
  * Base implementation for a component that displays the positions of a position list on a map.
@@ -1569,14 +1593,34 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void movePosition(int row, Double longitude, Double latitude) {
-        positionsModel.edit(longitude, row, LONGITUDE_COLUMN_INDEX, false, true);
-        positionsModel.edit(latitude, row, LATITUDE_COLUMN_INDEX, false, true);
-        if (preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false))
-            positionsModel.edit(null, row, ELEVATION_COLUMN_INDEX, false, false);
-        if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
-            positionsModel.edit(null, row, TIME_COLUMN_INDEX, false, false);
-        if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false))
-            positionAugmenter.complementTime(row, null);
+        BaseNavigationPosition reference = positionsModel.getPosition(row);
+        Double diffLongitude = reference != null ? longitude - reference.getLongitude() : 0.0;
+        Double diffLatitude = reference != null ? latitude - reference.getLatitude() : 0.0;
+
+        int minimum = row;
+        for (int index : selectedPositionIndices) {
+            if (index < minimum)
+                minimum = index;
+
+            BaseNavigationPosition position = positionsModel.getPosition(index);
+            if (position == null)
+                continue;
+
+            if (index != row) {
+                positionsModel.edit(position.getLongitude() + diffLongitude, index, LONGITUDE_COLUMN_INDEX, false, true);
+                positionsModel.edit(position.getLatitude() + diffLatitude, index, LATITUDE_COLUMN_INDEX, false, true);
+            } else {
+                positionsModel.edit(longitude, index, LONGITUDE_COLUMN_INDEX, false, true);
+                positionsModel.edit(latitude, index, LATITUDE_COLUMN_INDEX, false, true);
+            }
+
+            if (preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false))
+                positionsModel.edit(null, index, ELEVATION_COLUMN_INDEX, false, false);
+            if (preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false))
+                positionsModel.edit(null, index, TIME_COLUMN_INDEX, false, false);
+            if (preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, false))
+                positionAugmenter.complementTime(index, null);
+        }
 
         // updating all rows behind the modified is quite expensive, but necessary due to the distance
         // calculation - if that didn't exist the single update of row would be sufficient
@@ -1589,7 +1633,7 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintSelectionImmediately = true;
             selectionUpdateReason = "move position";
         }
-        positionsModel.fireTableRowsUpdated(row, size, ALL_COLUMNS);
+        positionsModel.fireTableRowsUpdated(minimum, size, ALL_COLUMNS);
     }
 
     private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {
