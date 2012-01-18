@@ -55,6 +55,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.CompactCalendar.fromCalendar;
@@ -446,7 +447,7 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     try {
-                        Thread.sleep(250);
+                        sleep(250);
                     } catch (InterruptedException e) {
                         // intentionally left empty
                     }
@@ -516,7 +517,7 @@ public abstract class BaseMapView implements MapView {
                             break;
 
                         try {
-                            Thread.sleep(50);
+                            sleep(50);
                         } catch (InterruptedException e) {
                             // intentionally left empty
                         }
@@ -979,7 +980,7 @@ public abstract class BaseMapView implements MapView {
             buffer.append(lastSegment).append(");\n");
             if (lastSegment)
                 try {
-                    Thread.sleep(500);
+                    sleep(500);
                 } catch (InterruptedException e) {
                     // intentionally left empty
                 }
@@ -1112,7 +1113,7 @@ public abstract class BaseMapView implements MapView {
                     buffer.append("region: '").append(Locale.getDefault().getCountry().toLowerCase()).append("'}, ").append(key).append(");\n");
                     executeScript(buffer.toString());
                     try {
-                        Thread.sleep(500);
+                        sleep(500);
                     } catch (InterruptedException e) {
                         // don't care if this happens
                     }
@@ -1391,11 +1392,6 @@ public abstract class BaseMapView implements MapView {
             if (visibleNorthEast != null && visibleSouthWest != null && visibleNorthWest != null && visibleSouthEast != null) {
                 BaseNavigationPosition mapNorthEast = getNorthEastBounds();
                 BaseNavigationPosition mapSouthWest = getSouthWestBounds();
-
-                log.fine("map contains NE " + contains(mapNorthEast, mapSouthWest, visibleNorthEast));
-                log.fine("map contains NW " + contains(mapNorthEast, mapSouthWest, visibleNorthWest));
-                log.fine("map contains SE " + contains(mapNorthEast, mapSouthWest, visibleSouthEast));
-                log.fine("map contains SW " + contains(mapNorthEast, mapSouthWest, visibleSouthWest));
 
                 if (contains(mapNorthEast, mapSouthWest, visibleNorthEast) ||
                         contains(mapNorthEast, mapSouthWest, visibleNorthWest) ||
