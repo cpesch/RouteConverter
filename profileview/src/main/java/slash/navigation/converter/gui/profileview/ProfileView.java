@@ -54,7 +54,7 @@ import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
  * @author Christian Pesch
  */
 
-public class ProfileView {
+public class ProfileView implements PositionsSelectionModel {
     protected static final Preferences preferences = Preferences.userNodeForPackage(ProfileView.class);
     private static final String X_GRID_PREFERENCE = "xGrid";
     private static final String Y_GRID_PREFERENCE = "yGrid";

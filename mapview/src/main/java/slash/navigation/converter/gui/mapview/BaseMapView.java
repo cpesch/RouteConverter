@@ -321,18 +321,18 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     setCenterOfMap(copiedPositions, recenter);
-                    copiedPositions = reducePositions(copiedPositions, getMaximumPositionCount());
+                    List<BaseNavigationPosition> render = reducePositions(copiedPositions, getMaximumPositionCount());
                     switch (positionsModel.getRoute().getCharacteristics()) {
                         case Route:
-                            addDirectionsToMap(copiedPositions);
+                            addDirectionsToMap(render);
                             break;
                         case Waypoints:
-                            addMarkersToMap(copiedPositions);
+                            addMarkersToMap(render);
                             break;
                         default:
-                            addPolylinesToMap(copiedPositions);
+                            addPolylinesToMap(render);
                     }
-                    log.info("Position list updated for " + copiedPositions.size() + " positions of type " +
+                    log.info("Position list updated for " + render.size() + " positions of type " +
                             positionsModel.getRoute().getCharacteristics() + ", recentering: " + recenter);
                     lastTime = System.currentTimeMillis();
                 }
@@ -344,7 +344,7 @@ public abstract class BaseMapView implements MapView {
             public void run() {
                 long lastTime = 0;
                 while (true) {
-                    int[] copiedSelectedPositions;
+                    int[] copiedSelectedPositionIndices;
                     List<BaseNavigationPosition> copiedPositions;
                     boolean recenter;
                     synchronized (notificationMutex) {
@@ -372,16 +372,16 @@ public abstract class BaseMapView implements MapView {
                             haveToRecenterMap = false;
                             haveToRepaintSelectionImmediately = false;
                             haveToRepaintSelection = false;
-                            copiedSelectedPositions = new int[selectedPositionIndices.length];
-                            System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositions, 0, copiedSelectedPositions.length);
+                            copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
+                            System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
                             copiedPositions = filterPositionsWithoutCoordinates(positions);
                         } else
                             continue;
                     }
 
-                    List<BaseNavigationPosition> selected = reducePositions(copiedPositions, copiedSelectedPositions);
-                    selectPositions(selected, recenter);
-                    log.info("Selected positions updated for " + selected.size() + " positions");
+                    List<BaseNavigationPosition> render = reducePositions(copiedPositions, copiedSelectedPositionIndices);
+                    selectPositions(render, recenter);
+                    log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter);
                     lastTime = System.currentTimeMillis();
                 }
             }
