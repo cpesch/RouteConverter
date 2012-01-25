@@ -138,6 +138,7 @@ public abstract class BaseMapView implements MapView {
     private PositionsSelectionModel positionsSelectionModel;
     private List<BaseNavigationPosition> lastSelectedPositions;
     private int[] selectedPositionIndices = new int[0];
+    private BaseNavigationPosition center;
 
     private ServerSocket callbackListenerServerSocket;
     private Thread positionListUpdater, selectionUpdater, callbackListener, callbackPoller;
@@ -380,8 +381,9 @@ public abstract class BaseMapView implements MapView {
                     }
 
                     List<BaseNavigationPosition> render = reducePositions(copiedPositions, copiedSelectedPositionIndices);
-                    selectPositions(render, recenter);
-                    log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter);
+                    BaseNavigationPosition centerPosition = center != null ? center : render.size() > 0 ? render.get(0) : null;
+                    selectPositions(render, recenter ? centerPosition : null);
+                    log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter + " to: " + centerPosition);
                     lastTime = System.currentTimeMillis();
                 }
             }
@@ -703,6 +705,10 @@ public abstract class BaseMapView implements MapView {
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
         return northEast != null && southWest != null ? center(Arrays.asList(northEast, southWest)) : null;
+    }
+
+    public void setCenter(BaseNavigationPosition center) {
+        this.center = center;
     }
 
     protected abstract BaseNavigationPosition getNorthEastBounds();
@@ -1078,7 +1084,7 @@ public abstract class BaseMapView implements MapView {
         haveToInitializeMapOnFirstStart = false;
     }
 
-    private void selectPositions(List<BaseNavigationPosition> selectedPositions, boolean recenter) {
+    private void selectPositions(List<BaseNavigationPosition> selectedPositions, BaseNavigationPosition center) {
         lastSelectedPositions = new ArrayList<BaseNavigationPosition>(selectedPositions);
 
         StringBuilder buffer = new StringBuilder();
@@ -1090,12 +1096,9 @@ public abstract class BaseMapView implements MapView {
                     append("\", draggable: true, zIndex: 1000}), ").append(i).append(");\n");
         }
 
-        // pan to first position
-        if (selectedPositions.size() > 0 && recenter) {
-            BaseNavigationPosition center = selectedPositions.get(0);
+        if (center != null)
             buffer.append("centerMap(new google.maps.LatLng(").append(center.getLatitude()).append(",").
                     append(center.getLongitude()).append("));\n");
-        }
         buffer.append("removeMarkers();");
         executeScript(buffer.toString());
     }

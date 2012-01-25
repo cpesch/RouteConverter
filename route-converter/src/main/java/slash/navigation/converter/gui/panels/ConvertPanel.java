@@ -810,7 +810,7 @@ public class ConvertPanel {
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
 
-        RouteConverter.getInstance().selectPositions(selectedRows);
+        RouteConverter.getInstance().selectPositions(selectedRows, tablePositions.getSelectionModel().getLeadSelectionIndex());
     }
 
     // helpers

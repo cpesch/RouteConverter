@@ -32,12 +32,26 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.converter.gui.actions.*;
+import slash.navigation.converter.gui.actions.AboutAction;
+import slash.navigation.converter.gui.actions.CheckForUpdateAction;
+import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
+import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
+import slash.navigation.converter.gui.actions.DeletePositionsAction;
+import slash.navigation.converter.gui.actions.FindPlaceAction;
+import slash.navigation.converter.gui.actions.InsertPositionsAction;
+import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
+import slash.navigation.converter.gui.actions.OptionsAction;
+import slash.navigation.converter.gui.actions.RevertPositionListAction;
+import slash.navigation.converter.gui.actions.SendErrorReportAction;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.profileview.ProfileView;
-import slash.navigation.converter.gui.profileview.ProfileMode;
-import slash.navigation.converter.gui.helper.*;
+import slash.navigation.converter.gui.helper.FrameMenu;
+import slash.navigation.converter.gui.helper.MergePositionListMenu;
+import slash.navigation.converter.gui.helper.ReopenMenuSynchronizer;
+import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.helper.ShowProfileMenu;
+import slash.navigation.converter.gui.helper.SinglePositionAugmenter;
+import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
@@ -47,9 +61,16 @@ import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UnitModel;
 import slash.navigation.converter.gui.panels.BrowsePanel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.profileview.ProfileMode;
+import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.gui.*;
+import slash.navigation.gui.ActionManager;
+import slash.navigation.gui.Application;
+import slash.navigation.gui.ExitAction;
+import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.HelpTopicsAction;
+import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.rest.Credentials;
 import slash.navigation.util.NumberPattern;
 
@@ -58,7 +79,10 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -67,8 +91,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -78,14 +109,16 @@ import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
-import static slash.common.io.Platform.*;
+import static slash.common.io.Platform.getJava;
+import static slash.common.io.Platform.getMaximumMemory;
+import static slash.common.io.Platform.getPlatform;
 import static slash.common.io.Version.parseVersionFromManifest;
-import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
-import static slash.navigation.converter.gui.profileview.ProfileMode.Speed;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findItem;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenu;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
+import static slash.navigation.converter.gui.profileview.ProfileMode.Elevation;
+import static slash.navigation.converter.gui.profileview.ProfileMode.Speed;
 import static slash.navigation.gui.Constants.startWaitCursor;
 import static slash.navigation.gui.Constants.stopWaitCursor;
 import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
@@ -637,9 +670,12 @@ public class RouteConverter extends SingleFrameApplication {
         getConvertPanel().getCharacteristicsModel().setSelectedItem(characteristics);
     }
 
-    public void selectPositions(int[] selectedPositions) {
-        if (isMapViewAvailable())
+    public void selectPositions(int[] selectedPositions, int centerPosition) {
+        if (isMapViewAvailable()) {
+            BaseNavigationPosition center = getPositionsModel().getPosition(centerPosition);
+            mapView.setCenter(center);
             mapView.setSelectedPositions(selectedPositions, true);
+        }
         if (profileView != null)
             profileView.setSelectedPositions(selectedPositions, true);
     }
