@@ -21,16 +21,16 @@
 package slash.navigation.converter.gui;
 
 import org.junit.Test;
-import slash.navigation.gui.Constants;
 
 import java.util.*;
 
+import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
+import static slash.navigation.gui.Constants.*;
 
 public class ResourceBundleTest {
-    private List<Locale> LOCALES = Arrays.asList(Constants.ARABIA, Locale.CHINA, Constants.CROATIA, Constants.CZECH,
-            Locale.FRANCE, Locale.GERMANY, Constants.NEDERLANDS, Constants.SERBIA, Constants.SLOVAKIA, Constants.SPAIN,
-            Locale.US);
+    private List<Locale> LOCALES = Arrays.asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
+            SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return Arrays.asList(new Locale(locale.getLanguage()));
@@ -47,7 +47,7 @@ public class ResourceBundleTest {
     }
 
     private void compareEnglishAgainstOtherBundles(boolean throwException) {
-        ResourceBundle root = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", Locale.ROOT);
+        ResourceBundle root = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", ROOT);
         Enumeration<String> keys = root.getKeys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
@@ -58,7 +58,7 @@ public class ResourceBundleTest {
                 continue;
 
             for (Locale locale : LOCALES) {
-                if (locale.equals(Locale.US))
+                if (locale.equals(US))
                     continue;
 
                 ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, NO_FALLBACK_CONTROL);
@@ -81,11 +81,11 @@ public class ResourceBundleTest {
     @Test
     public void mnemonicsAreUnique() {
         for (Locale locale : LOCALES) {
-            if (locale.equals(Locale.US))
+            if (locale.equals(US))
                 continue;
             checkMnemonicsAreUnique(locale);
         }
-        checkMnemonicsAreUnique(Locale.ROOT);
+        checkMnemonicsAreUnique(ROOT);
     }
 
     private void checkMnemonicsAreUnique(Locale locale) {

@@ -48,9 +48,11 @@ import java.util.List;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.util.Arrays.sort;
+import static java.util.Locale.*;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.converter.gui.mapview.TravelMode.*;
+import static slash.navigation.gui.Constants.*;
 import static slash.navigation.util.NumberPattern.*;
 import static slash.navigation.util.Unit.METRIC;
 import static slash.navigation.util.Unit.NAUTIC;
@@ -90,9 +92,7 @@ public class OptionsPanel {
         });
 
         comboBoxLocale.setModel(new DefaultComboBoxModel(new Object[]{
-                Constants.ARABIA, Locale.CHINA, Constants.CZECH, Locale.GERMANY, Locale.US, Constants.SPAIN,
-                Locale.FRANCE, Constants.CROATIA, Constants.NEDERLANDS, Constants.SLOVAKIA, Constants.SERBIA,
-                Locale.ROOT}));
+                ARABIA, CHINA, CZECH, GERMANY, US, SPAIN, FRANCE, CROATIA, ITALY, NEDERLANDS, SLOVAKIA, SERBIA, ROOT}));
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
         comboBoxLocale.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -130,7 +130,7 @@ public class OptionsPanel {
 
         List<Object> travelModes = new ArrayList<Object>();
         // bicycling currently (march 11) only available in the US
-        if (Locale.getDefault().equals(Locale.US))
+        if (Locale.getDefault().equals(US))
             travelModes.add(Bicycling);
         travelModes.add(Driving);
         travelModes.add(Walking);
