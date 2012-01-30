@@ -13,6 +13,7 @@ Denny Baier for OpenSUSE packaging
 Harry van der Wolf for Linux and Mac OS X fixes
 Ilmari Krebs for contributing code for position selection and zooming on the map
 Javier M.R. (jamaro) for the Spanish translation
+Iorio Ciro for the Italian translation
 Malte Neumann for contributing code for KML, Wintec, Navigon, Douglas-Peucker, Map and much more
 Matthias Pötzsch for the RouteCatalog maintenance
 Philippe Vandekerckhove for the Dutch translation
