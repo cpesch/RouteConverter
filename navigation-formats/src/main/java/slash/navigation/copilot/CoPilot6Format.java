@@ -37,7 +37,7 @@ public class CoPilot6Format extends CoPilotFormat {
     }
 
     protected boolean isDataVersion(String line) {
-        return line.startsWith(DATA_VERSION + NAME_VALUE_SEPARATOR);
+        return line.startsWith(DATA_VERSION + NAME_VALUE_SEPARATOR + "6");
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {

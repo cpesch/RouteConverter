@@ -26,6 +26,7 @@ import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
+import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -91,18 +92,21 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-columbusv900-standard.csv", new ColumbusV900StandardFormat(), new CoPilot6Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot8Format());
+        convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusV900ProfessionalFormat(), new CoPilot9Format());
     }
 
     public void testConvertiBlue747ToCoPilot() throws IOException {
         convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CoPilot6Format());
         convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CoPilot8Format());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CoPilot9Format());
     }
 
     public void testConvertQstarzQ1000ToCoPilot() throws IOException {
         convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot7Format());
         convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot8Format());
+        convertRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new QstarzQ1000Format(), new CoPilot9Format());
     }
 
     public void testConvertQstarzQ1000ToColumbusV900() throws IOException {
@@ -145,6 +149,7 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new Gpx11Format());
         convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new Gpx11Format());
     }
 
     public void testConvertCoPilotToColumbusV900() throws IOException {
@@ -154,18 +159,22 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new ColumbusV900ProfessionalFormat());
         convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusV900StandardFormat());
         convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new ColumbusV900ProfessionalFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusV900StandardFormat());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new ColumbusV900ProfessionalFormat());
     }
 
     public void testConvertCoPilotToNmn7() throws IOException {
         convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new Nmn7Format());
         convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new Nmn7Format());
         convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new Nmn7Format());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new Nmn7Format());
     }
 
     public void testConvertCoPilotToCoPilot() throws IOException {
         convertRoundtrip(TEST_PATH + "from-copilot6.trp", new CoPilot6Format(), new CoPilot7Format());
-        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-copilot7.trp", new CoPilot7Format(), new CoPilot9Format());
         convertRoundtrip(TEST_PATH + "from-copilot8.trp", new CoPilot8Format(), new CoPilot6Format());
+        convertRoundtrip(TEST_PATH + "from-copilot9.trp", new CoPilot9Format(), new CoPilot8Format());
     }
 
 

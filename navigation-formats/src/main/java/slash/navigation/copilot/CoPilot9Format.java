@@ -30,15 +30,15 @@ import java.io.PrintWriter;
 import java.util.List;
 
 /**
- * Reads and writes CoPilot 8 (.trp) files.
+ * Reads and writes CoPilot 9 (.trp) files.
  *
  * @author Christian Pesch
  */
 
-public class CoPilot8Format extends CoPilotFormat {
+public class CoPilot9Format extends CoPilotFormat {
 
     public String getName() {
-        return "CoPilot 8 (*" + getExtension() + ")";
+        return "CoPilot 9 (*" + getExtension() + ")";
     }
 
     public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
@@ -46,7 +46,7 @@ public class CoPilot8Format extends CoPilotFormat {
     }
 
     protected boolean isDataVersion(String line) {
-        return line.startsWith(DATA_VERSION + ":1");
+        return line.startsWith(DATA_VERSION + ":2");
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
@@ -58,7 +58,7 @@ public class CoPilot8Format extends CoPilotFormat {
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me
         writer.write(BYTE_ORDER_MARK);
-        writer.println(DATA_VERSION + ":1.13.5.2");
+        writer.println(DATA_VERSION + ":2.14.6.1");
         writeHeader(route, writer);
         writePositions(route, writer, startIndex, endIndex);
     }

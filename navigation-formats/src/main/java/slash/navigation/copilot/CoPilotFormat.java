@@ -42,26 +42,28 @@ import static slash.common.io.Transfer.trim;
 
 public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     protected static final String DATA_VERSION = "Data Version";
-    protected static final String START_TRIP = "Start Trip";
-    protected static final String END_TRIP = "End Trip";
-    protected static final String START_STOP = "Start Stop";
-    protected static final String END_STOP = "End Stop";
-    protected static final String START_STOP_OPT = "Start StopOpt";
-    protected static final String END_STOP_OPT = "End StopOpt";
+    private static final String START_TRIP = "Start Trip";
+    private static final String END_TRIP = "End Trip";
+    private static final String START_STOP = "Start Stop";
+    private static final String END_STOP = "End Stop";
+    private static final String START_STOP_OPT = "Start StopOpt";
+    private static final String END_STOP_OPT = "End StopOpt";
+    private static final String STOP = "Stop";
 
     protected static final char NAME_VALUE_SEPARATOR = '=';
     protected static final Pattern NAME_VALUE_PATTERN = Pattern.compile("(.+?)" + NAME_VALUE_SEPARATOR + "(.+|)");
     protected static final double INTEGER_FACTOR = 1000000.0;
 
-    protected static final String CREATOR = "Creator";
-    protected static final String LONGITUDE = "Longitude";
-    protected static final String LATITUDE = "Latitude";
-    protected static final String STATE = "State";
-    protected static final String ZIP = "Zip";
-    protected static final String CITY = "City";
-    protected static final String COUNTY = "County";
-    protected static final String ADDRESS = "Address"; // houseNumber<space>street
-    protected static final String SHOW = "Show";
+    private static final String CREATOR = "Creator";
+    private static final String LONGITUDE = "Longitude";
+    private static final String LATITUDE = "Latitude";
+    private static final String STATE = "State";
+    private static final String ZIP = "Zip";
+    private static final String CITY = "City";
+    private static final String COUNTY = "County";
+    private static final String ADDRESS = "Address"; // houseNumber<space>street
+    private static final String SHOW = "Show";
+    private static final String SEQUENCE = "Sequence";
 
     public String getExtension() {
         return ".trp";
@@ -164,7 +166,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            writer.println(START_STOP + NAME_VALUE_SEPARATOR + "Stop " + i);
+            writer.println(START_STOP + NAME_VALUE_SEPARATOR + STOP + " " + i);
             String longitude = formatIntAsString(position.getLongitude() != null ? (int) (position.getLongitude() * INTEGER_FACTOR) : null);
             writer.println(LONGITUDE + NAME_VALUE_SEPARATOR + longitude);
             String latitude = formatIntAsString(position.getLatitude() != null ? (int) (position.getLatitude() * INTEGER_FACTOR) : null);
@@ -195,10 +197,11 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
                 writer.println(SHOW + NAME_VALUE_SEPARATOR + "1"); // Target/Stop target
             else
                 writer.println(SHOW + NAME_VALUE_SEPARATOR + "0"); // Waypoint
+            writer.println(SEQUENCE + NAME_VALUE_SEPARATOR + i);
             writer.println(END_STOP);
             writer.println();
 
-            writer.println(START_STOP_OPT + NAME_VALUE_SEPARATOR + "Stop " + i);
+            writer.println(START_STOP_OPT + NAME_VALUE_SEPARATOR + STOP + " " + i);
             writer.println("Loaded=1");
             writer.println(END_STOP_OPT);
             writer.println();

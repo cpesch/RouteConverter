@@ -26,6 +26,7 @@ import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
+import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -342,6 +343,10 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
 
     public SimpleRoute asCoPilot8Format() {
         return asSimpleFormat(new CoPilot8Format());
+    }
+
+    public SimpleRoute asCoPilot9Format() {
+        return asSimpleFormat(new CoPilot9Format());
     }
 
     public SimpleRoute asGlopusFormat() {

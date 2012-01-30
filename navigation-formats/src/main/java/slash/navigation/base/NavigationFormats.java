@@ -27,6 +27,7 @@ import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
+import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -105,6 +106,7 @@ public final class NavigationFormats {
         addFormat(CoPilot6Format.class);
         addFormat(CoPilot7Format.class);
         addFormat(CoPilot8Format.class);
+        addFormat(CoPilot9Format.class);
         addFormat(Route66Format.class);
         addFormat(KompassFormat.class);
         addFormat(GlopusFormat.class);

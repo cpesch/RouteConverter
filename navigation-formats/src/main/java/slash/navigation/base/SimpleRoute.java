@@ -24,6 +24,7 @@ import slash.navigation.bcr.*;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
+import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -230,6 +231,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         if (getFormat() instanceof CoPilot8Format)
             return this;
         return asSimpleFormat(new CoPilot8Format());
+    }
+
+    public SimpleRoute asCoPilot9Format() {
+        if (getFormat() instanceof CoPilot9Format)
+            return this;
+        return asSimpleFormat(new CoPilot9Format());
     }
 
     public SimpleRoute asGlopusFormat() {

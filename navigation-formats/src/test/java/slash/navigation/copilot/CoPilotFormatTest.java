@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class CoPilotFormatTest {
-    CoPilot6Format format = new CoPilot6Format();
+    private CoPilot6Format format = new CoPilot6Format();
 
     @Test
     public void testIsValidLine() {
@@ -85,13 +85,24 @@ public class CoPilotFormatTest {
         CoPilot6Format coPilot6Format = new CoPilot6Format();
         assertTrue(coPilot6Format.isDataVersion("Data Version=6.0.0.27"));
         assertFalse(coPilot6Format.isDataVersion("Data Version:6.0.0.27"));
+        assertFalse(coPilot6Format.isDataVersion("Data Version=7.0.0.27"));
+        assertFalse(coPilot6Format.isDataVersion("Data Version=1.0.0.27"));
+        assertFalse(coPilot6Format.isDataVersion("Data Version=2.0.0.27"));
 
         CoPilot7Format coPilot7Format = new CoPilot7Format();
         assertTrue(coPilot7Format.isDataVersion("Data Version=7.0.0.27"));
         assertFalse(coPilot7Format.isDataVersion("Data Version:7.0.0.27"));
+        assertFalse(coPilot7Format.isDataVersion("Data Version=6.0.0.27"));
+        assertFalse(coPilot7Format.isDataVersion("Data Version=8.0.0.27"));
 
         CoPilot8Format coPilot8Format = new CoPilot8Format();
-        assertTrue(coPilot8Format.isDataVersion("Data Version:8.0.0.27"));
-        assertFalse(coPilot8Format.isDataVersion("Data Version=8.0.0.27"));
+        assertTrue(coPilot8Format.isDataVersion("Data Version:1.13.5.2"));
+        assertFalse(coPilot8Format.isDataVersion("Data Version=1.13.5.2"));
+        assertFalse(coPilot8Format.isDataVersion("Data Version=2.13.5.2"));
+
+        CoPilot9Format coPilot9Format = new CoPilot9Format();
+        assertTrue(coPilot9Format.isDataVersion("Data Version:2.14.6.1"));
+        assertFalse(coPilot9Format.isDataVersion("Data Version=1.14.6.1"));
+        assertFalse(coPilot9Format.isDataVersion("Data Version=2.14.6.1"));
     }
 }
