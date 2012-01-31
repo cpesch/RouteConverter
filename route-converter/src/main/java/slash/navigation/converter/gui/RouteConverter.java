@@ -672,8 +672,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void selectPositions(int[] selectedPositions, int centerPosition) {
         if (isMapViewAvailable()) {
-            BaseNavigationPosition center = getPositionsModel().getPosition(centerPosition);
-            mapView.setCenter(center);
+            if (centerPosition != -1) {
+                BaseNavigationPosition center = getPositionsModel().getPosition(centerPosition);
+                mapView.setCenter(center);
+            }
             mapView.setSelectedPositions(selectedPositions, true);
         }
         if (profileView != null)
