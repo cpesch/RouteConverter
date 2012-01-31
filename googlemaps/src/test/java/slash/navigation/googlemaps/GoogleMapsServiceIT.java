@@ -42,25 +42,25 @@ public class GoogleMapsServiceIT {
     public void getLocationFor() throws IOException {
         assertEquals("Chammstrasse 28, 8638 Goldingen, Switzerland", service.getLocationFor(9.0, 47.3));
         assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Germany", service.getLocationFor(10.2, 50.001));
-        assertEquals("Drehm\u00f6ser 1, 82467 Garmisch-Partenkirchen, Germany", service.getLocationFor(11.06561, 47.42428));
+        assertEquals("Sch\u00f6ng\u00E4nge, 82467 Garmisch-Partenkirchen, Germany", service.getLocationFor(11.06561, 47.42428));
         assertEquals(null, service.getLocationFor(0.0, 0.0));
         assertEquals(null, service.getLocationFor(0.0, 90.0));
         assertEquals("Antarctica", service.getLocationFor(0.0, -90.0));
-        assertEquals("Galapagos Islands, Ecuador", service.getLocationFor(-90.0, 0.0));
+        assertEquals(null, service.getLocationFor(-90.0, 0.0));
         assertEquals("Antarctica", service.getLocationFor(-90.0, -90.0));
         assertEquals(null, service.getLocationFor(90.0, 90.0));
     }
 
     @Test
     public void getPositionFor() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2003632, 50.0004554, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        GoogleMapsPosition expected = new GoogleMapsPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         GoogleMapsPosition actual = service.getPositionFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
     }
 
     @Test
     public void getPositionsFor() throws IOException {
-        GoogleMapsPosition expected = new GoogleMapsPosition(10.2003632, 50.0004554, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        GoogleMapsPosition expected = new GoogleMapsPosition(10.2001359, 50.0004285, 0.0, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         List<GoogleMapsPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(Arrays.asList(expected), actual);
     }
