@@ -40,10 +40,14 @@ How to develop for RouteConverter
    Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e
    Choose "File/Import..." and "General/Maven Projects" and the root directory.
 
+   Install NetBeans IDE Java SE from http://netbeans.org/downloads/
+   Install Git via "My NetBeans > Install Plugins"
+   Choose "Open Project..." and the root directory.
+
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_24
+   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_30
    Put Maven into your PATH and call
    > mvn clean package
 
