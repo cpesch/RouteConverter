@@ -159,7 +159,7 @@ public class Kml22BetaFormat extends KmlFormat {
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, placemarkName);
+                String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -261,7 +261,8 @@ public class Kml22BetaFormat extends KmlFormat {
     private PlacemarkType createRoute(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setNameElement(ROUTE + ": " + createPlacemarkName(route));
+        placemarkType.setNameElement(createPlacemarkName(ROUTE, route));
+        placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
         placemarkType.setAbstractGeometryGroup(objectFactory.createMultiGeometry(multiGeometryType));
@@ -277,7 +278,8 @@ public class Kml22BetaFormat extends KmlFormat {
     private PlacemarkType createTrack(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setNameElement(TRACK + ": " + createPlacemarkName(route));
+        placemarkType.setNameElement(createPlacemarkName(TRACK, route));
+        placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         LineStringType lineStringType = objectFactory.createLineStringType();
         placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));

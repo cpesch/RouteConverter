@@ -22,9 +22,17 @@ package slash.navigation.kml;
 
 import slash.navigation.jaxb.JaxbUtils;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 
 public class KmlUtil {
     private static final JAXBContext CONTEXT_20 = JaxbUtils.newContext(slash.navigation.kml.binding20.ObjectFactory.class);
@@ -57,7 +65,10 @@ public class KmlUtil {
     }
 
     private static Marshaller newMarshaller20() {
-        return JaxbUtils.newMarshaller(CONTEXT_20);
+        return JaxbUtils.newMarshaller(CONTEXT_20,
+                KML_20_NAMESPACE_URI, "",
+                XAL_20_NAMESPACE_URI, "xal"
+        );
     }
 
     private static Marshaller newMarshaller21() {
@@ -175,8 +186,7 @@ public class KmlUtil {
         try {
             try {
                 newMarshaller20().marshal(new JAXBElement<slash.navigation.kml.binding20.Kml>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml), out);
-            }
-            finally {
+            } finally {
                 out.flush();
                 out.close();
             }
@@ -189,8 +199,7 @@ public class KmlUtil {
         try {
             try {
                 newMarshaller21().marshal(new JAXBElement<slash.navigation.kml.binding21.KmlType>(new QName(KML_21_NAMESPACE_URI, "kml"), slash.navigation.kml.binding21.KmlType.class, kmlType), out);
-            }
-            finally {
+            } finally {
                 out.flush();
                 out.close();
             }
@@ -203,8 +212,7 @@ public class KmlUtil {
         try {
             try {
                 newMarshaller22Beta().marshal(new JAXBElement<slash.navigation.kml.binding22beta.KmlType>(new QName(KML_22_BETA_NAMESPACE_URI, "kml"), slash.navigation.kml.binding22beta.KmlType.class, kmlType), out);
-            }
-            finally {
+            } finally {
                 out.flush();
                 out.close();
             }
@@ -217,8 +225,7 @@ public class KmlUtil {
         try {
             try {
                 newMarshaller22().marshal(new JAXBElement<slash.navigation.kml.binding22.KmlType>(new QName(KML_22_NAMESPACE_URI, "kml"), slash.navigation.kml.binding22.KmlType.class, kmlType), out);
-            }
-            finally {
+            } finally {
                 out.flush();
                 out.close();
             }

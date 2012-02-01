@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -213,7 +214,7 @@ public class Kml20Format extends KmlFormat {
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, placemarkName);
+                String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
                 if (routeDescription == null)
                     routeDescription = description;
@@ -297,7 +298,7 @@ public class Kml20Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-        placemarkList.add(objectFactory.createName(ROUTE + ": " + createPlacemarkName(route)));
+        placemarkList.add(objectFactory.createName(createPlacemarkName(ROUTE, route)));
         placemarkList.add(objectFactory.createStyleUrl("#" + ROUTE_LINE_STYLE));
         MultiGeometry multiGeometry = objectFactory.createMultiGeometry();
         placemarkList.add(multiGeometry);
@@ -315,7 +316,7 @@ public class Kml20Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-        placemarkList.add(objectFactory.createName(TRACK + ": " + createPlacemarkName(route)));
+        placemarkList.add(objectFactory.createName(createPlacemarkName(TRACK, route)));
         placemarkList.add(objectFactory.createStyleUrl("#" + TRACK_LINE_STYLE));
         LineString lineString = objectFactory.createLineString();
         placemarkList.add(lineString);
@@ -346,7 +347,7 @@ public class Kml20Format extends KmlFormat {
         List<Object> rootList = root.getDocumentOrFolderOrGroundOverlay();
         rootList.add(objectFactory.createName(createDocumentName(route)));
         rootList.add(objectFactory.createDescription(asDescription(route.getDescription())));
-        rootList.add(objectFactory.createOpen(Boolean.TRUE));
+        rootList.add(objectFactory.createOpen(TRUE));
 
         rootList.add(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor()));
         rootList.add(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor()));
@@ -362,7 +363,7 @@ public class Kml20Format extends KmlFormat {
         Folder root = objectFactory.createFolder();
         kml.setFolder(root);
         List<Object> rootList = root.getDocumentOrFolderOrGroundOverlay();
-        rootList.add(objectFactory.createOpen(Boolean.TRUE));
+        rootList.add(objectFactory.createOpen(TRUE));
 
         rootList.add(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor()));
         rootList.add(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor()));

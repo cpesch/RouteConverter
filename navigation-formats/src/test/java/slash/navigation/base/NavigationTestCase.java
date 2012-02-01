@@ -65,6 +65,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Math.min;
 import static slash.common.io.Transfer.toMixedCase;
+import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public abstract class NavigationTestCase extends TestCase {
@@ -78,7 +79,7 @@ public abstract class NavigationTestCase extends TestCase {
         List<String> wasFiltered = new ArrayList<String>();
         if (was != null)
             for (String w : was) {
-                if (!w.equals(BaseNavigationFormat.GENERATED_BY))
+                if (!w.equals(GENERATED_BY))
                     wasFiltered.add(w);
             }
         if (wasFiltered.size() == 0)

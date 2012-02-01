@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+
 /**
  * Provides JAXB helpers.
  *
@@ -52,7 +54,7 @@ public class JaxbUtils {
     public static Marshaller newMarshaller(JAXBContext context, String ... uriToPrefix) {
         try {
             Marshaller result = context.createMarshaller();
-            result.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
+            result.setProperty(JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
             try {
                 result.setProperty(JAXB_IMPL_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperImpl(map(uriToPrefix)));
             }

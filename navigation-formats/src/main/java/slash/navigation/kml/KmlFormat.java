@@ -33,7 +33,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -41,8 +45,13 @@ import java.util.regex.Pattern;
 
 import static slash.common.hex.HexDecoder.decodeBytes;
 import static slash.common.io.CompactCalendar.UTC;
-import static slash.common.io.Transfer.*;
-import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
 
 /**
@@ -115,7 +124,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return name;
     }
 
-    protected String createPlacemarkName(KmlRoute route) {
+    protected String createPlacemarkName(String prefix, KmlRoute route) {
         // some kind of crude workaround since the route carries the name of the
         // plus and divided by a slash the route of the track
         String name = route.getName();
@@ -123,7 +132,11 @@ public abstract class KmlFormat extends BaseKmlFormat {
             StringTokenizer tokenizer = new StringTokenizer(name, "/");
             while (tokenizer.hasMoreTokens())
                 name = tokenizer.nextToken();
-        }
+
+            if (!name.startsWith(prefix))
+                name = prefix + ": " + name;
+        } else
+            name = prefix;
         return name;
     }
 
@@ -174,18 +187,21 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
     private static final SimpleDateFormat TAVELLOG_DATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
     static {
         TAVELLOG_DATE.setTimeZone(UTC);
     }
 
     private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");
     private static final SimpleDateFormat NAVIGON6310_TIME = new SimpleDateFormat("HH:mm:ss");
+
     static {
         NAVIGON6310_TIME.setTimeZone(UTC);
     }
 
     private static final Pattern BT747_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*TIME:.*>(\\d{2}-.+-\\d{2} \\d{2}:\\d{2}:\\d{2})<.*>([\\d\\.\\s]+)m<.*");
     private static final SimpleDateFormat BT747_DATE = new SimpleDateFormat("dd-MMMMM-yy HH:mm:ss");
+
     static {
         BT747_DATE.setTimeZone(UTC);
     }
@@ -200,8 +216,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 try {
                     Date parsed = TAVELLOG_DATE.parse(timeString);
                     position.setTime(CompactCalendar.fromDate(parsed));
-                }
-                catch (ParseException e) {
+                } catch (ParseException e) {
                     // intentionally left empty;
                 }
             }
@@ -212,8 +227,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                     Date parsed = NAVIGON6310_TIME.parse(timeString);
                     position.setTime(CompactCalendar.fromDate(parsed));
                     position.setStartDate(startDate);
-                }
-                catch (ParseException e) {
+                } catch (ParseException e) {
                     // intentionally left empty;
                 }
             }
@@ -223,8 +237,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 try {
                     Date parsed = BT747_DATE.parse(timeString);
                     position.setTime(CompactCalendar.fromDate(parsed));
-                }
-                catch (ParseException e) {
+                } catch (ParseException e) {
                     // intentionally left empty;
                 }
             }
@@ -235,8 +248,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 try {
                     Date parsed = TAVELLOG_DATE.parse(dateString + " " + timeString);
                     position.setTime(CompactCalendar.fromDate(parsed));
-                }
-                catch (ParseException e) {
+                } catch (ParseException e) {
                     // intentionally left empty;
                 }
             }
@@ -288,7 +300,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         path = trim(path);
         fragment = trim(fragment);
         String result = path != null ? path : "";
-        if(fragment != null)
+        if (fragment != null)
             result = result + "/" + fragment;
         return result;
     }

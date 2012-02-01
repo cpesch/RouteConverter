@@ -22,7 +22,6 @@ package slash.navigation.gpx;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
@@ -37,7 +36,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.formatBigDecimal;
+import static slash.common.io.Transfer.formatDouble;
+import static slash.common.io.Transfer.formatElevation;
+import static slash.common.io.Transfer.formatHeadingAsString;
+import static slash.common.io.Transfer.formatInt;
+import static slash.common.io.Transfer.formatPosition;
+import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.util.Conversion.kmhToMs;
@@ -326,7 +332,7 @@ public class Gpx10Format extends GpxFormat {
         Gpx gpx = recycleGpx(route);
         if (gpx == null || !reuseReadObjectsForWriting)
             gpx = new ObjectFactory().createGpx();
-        gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
+        gpx.setCreator(GENERATED_BY);
         gpx.setVersion(VERSION);
         gpx.setName(route.getName());
         gpx.setDesc(asDescription(route.getDescription()));
@@ -359,7 +365,7 @@ public class Gpx10Format extends GpxFormat {
         }
         if (gpx == null || !reuseReadObjectsForWriting)
             gpx = objectFactory.createGpx();
-        gpx.setCreator(BaseNavigationFormat.GENERATED_BY);
+        gpx.setCreator(GENERATED_BY);
         gpx.setVersion(VERSION);
 
         for (GpxRoute route : routes) {

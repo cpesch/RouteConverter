@@ -22,9 +22,25 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
-import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.kml.binding21.*;
+import slash.navigation.kml.binding21.ContainerType;
+import slash.navigation.kml.binding21.DocumentType;
+import slash.navigation.kml.binding21.FeatureType;
+import slash.navigation.kml.binding21.FolderType;
+import slash.navigation.kml.binding21.GeometryType;
+import slash.navigation.kml.binding21.KmlType;
+import slash.navigation.kml.binding21.LineStringType;
+import slash.navigation.kml.binding21.LineStyleType;
+import slash.navigation.kml.binding21.LinkType;
+import slash.navigation.kml.binding21.MultiGeometryType;
+import slash.navigation.kml.binding21.NetworkLinkType;
+import slash.navigation.kml.binding21.ObjectFactory;
+import slash.navigation.kml.binding21.PlacemarkType;
+import slash.navigation.kml.binding21.PointType;
+import slash.navigation.kml.binding21.StyleType;
+import slash.navigation.kml.binding21.TimePrimitiveType;
+import slash.navigation.kml.binding21.TimeSpanType;
+import slash.navigation.kml.binding21.TimeStampType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -159,7 +175,7 @@ public class Kml21Format extends KmlFormat {
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, placemarkName);
+                String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, RouteCharacteristics.Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -249,7 +265,8 @@ public class Kml21Format extends KmlFormat {
     private PlacemarkType createRoute(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setName(ROUTE + ": " + createPlacemarkName(route));
+        placemarkType.setName(createPlacemarkName(ROUTE, route));
+        placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
         placemarkType.setGeometry(objectFactory.createMultiGeometry(multiGeometryType));
@@ -265,7 +282,8 @@ public class Kml21Format extends KmlFormat {
     private PlacemarkType createTrack(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setName(TRACK + ": " + createPlacemarkName(route));
+        placemarkType.setName(createPlacemarkName(TRACK, route));
+        placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         LineStringType lineStringType = objectFactory.createLineStringType();
         placemarkType.setGeometry(objectFactory.createLineString(lineStringType));

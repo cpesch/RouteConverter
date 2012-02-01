@@ -189,7 +189,7 @@ public class Kml22Format extends KmlFormat {
                 wayPoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, placemarkName);
+                String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -303,6 +303,7 @@ public class Kml22Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         placemarkType.setName(ROUTE);
+        placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
         placemarkType.setAbstractGeometryGroup(objectFactory.createMultiGeometry(multiGeometryType));
@@ -319,6 +320,7 @@ public class Kml22Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         placemarkType.setName(TRACK);
+        placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         // create gx:Track if there are at least two positions with a time stamp
         if (containTime(route)) {
@@ -632,7 +634,7 @@ public class Kml22Format extends KmlFormat {
                     break;
                 case Route:
                     FolderType routeFolder = objectFactory.createFolderType();
-                    routeFolder.setName(createPlacemarkName(route));
+                    routeFolder.setName(createPlacemarkName(ROUTE, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(routeFolder));
 
                     PlacemarkType routePlacemarks = createRoute(route);
@@ -642,7 +644,7 @@ public class Kml22Format extends KmlFormat {
                     break;
                 case Track:
                     FolderType trackFolder = objectFactory.createFolderType();
-                    trackFolder.setName(createPlacemarkName(route));
+                    trackFolder.setName(createPlacemarkName(TRACK, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(trackFolder));
 
                     PlacemarkType track = createTrack(route);
