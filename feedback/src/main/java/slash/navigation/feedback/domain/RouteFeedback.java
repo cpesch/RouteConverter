@@ -163,7 +163,7 @@ public class RouteFeedback {
         Post request = prepareSendErrorReport(log, description, file);
         String result = request.execute();
         if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot send error report " + file.getAbsolutePath(), getErrorReportUrl());
+            throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), getErrorReportUrl());
         if (!request.isSuccessful())
             throw new IOException("POST on " + getErrorReportUrl() + " with log " + log.length() + " characters" +
                     ", description \"" + description + "\", file " + file + " not successful: " + result);
