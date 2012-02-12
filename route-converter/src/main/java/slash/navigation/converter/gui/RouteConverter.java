@@ -751,7 +751,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public void addMapViewListener(MapViewListener mapViewListener) {
-        if (isMapViewAvailable())
+        if (mapView != null)
             mapView.addMapViewListener(mapViewListener);
     }
 
