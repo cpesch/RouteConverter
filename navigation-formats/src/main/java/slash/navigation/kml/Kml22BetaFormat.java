@@ -36,6 +36,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -243,7 +245,7 @@ public class Kml22BetaFormat extends KmlFormat {
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
             placemarkType.setNameElement(asName(position.getComment()));
             placemarkType.setDescription(asDesc(position.getComment()));
-            placemarkType.setVisibility(Boolean.FALSE);
+            placemarkType.setVisibility(FALSE);
             if (position.getTime() != null) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
                 timeStampType.setWhen(ISO8601.format(position.getTime()));
@@ -286,6 +288,17 @@ public class Kml22BetaFormat extends KmlFormat {
         return placemarkType;
     }
 
+    private StyleType createLineStyle(String styleName, float width, byte[] color) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StyleType style = objectFactory.createStyleType();
+        style.setId(styleName);
+        LineStyleType lineStyle = objectFactory.createLineStyleType();
+        style.setLineStyle(lineStyle);
+        lineStyle.setColor(color);
+        lineStyle.setWidth((double) width);
+        return style;
+    }   
+    
     private KmlType createKmlType(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         KmlType kmlType = objectFactory.createKmlType();
@@ -293,7 +306,10 @@ public class Kml22BetaFormat extends KmlFormat {
         kmlType.setAbstractFeatureGroup(objectFactory.createDocument(documentType));
         documentType.setNameElement(createDocumentName(route));
         documentType.setDescription(asDescription(route.getDescription()));
-        documentType.setOpen(Boolean.TRUE);
+        documentType.setOpen(TRUE);
+
+        documentType.getAbstractStyleSelectorGroup().add(objectFactory.createStyle(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor())));
+        documentType.getAbstractStyleSelectorGroup().add(objectFactory.createStyle(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor())));
 
         FolderType folderType = createWayPoints(route);
         documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(folderType));
@@ -308,7 +324,10 @@ public class Kml22BetaFormat extends KmlFormat {
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();
         kmlType.setAbstractFeatureGroup(objectFactory.createDocument(documentType));
-        documentType.setOpen(Boolean.TRUE);
+        documentType.setOpen(TRUE);
+
+        documentType.getAbstractStyleSelectorGroup().add(objectFactory.createStyle(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor())));
+        documentType.getAbstractStyleSelectorGroup().add(objectFactory.createStyle(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor())));
 
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
