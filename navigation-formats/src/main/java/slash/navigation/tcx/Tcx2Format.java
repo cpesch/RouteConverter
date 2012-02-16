@@ -118,11 +118,14 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    private List<GpxRoute> process(CourseT courseT, boolean writtenByRouteConverter) {
+    private List<GpxRoute> process(CourseT courseT) {
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute coursePoints = processCoursePoints(courseT);
         if (coursePoints != null)
             result.add(coursePoints);
+
+        boolean writtenByRouteConverter = courseT.getNotes() != null &&
+                GENERATED_BY.equals(courseT.getNotes());
         if (!writtenByRouteConverter) {
             for (CourseLapT courseLapT : courseT.getLap()) {
                 result.add(processCourseLap(courseT.getName(), courseLapT));
@@ -158,17 +161,13 @@ public class Tcx2Format extends TcxFormat {
             }
         }
 
-        boolean writtenByRouteConverter = trainingCenterDatabaseT.getAuthor() != null &&
-                trainingCenterDatabaseT.getAuthor().getName() != null &&
-                GENERATED_BY.equals(trainingCenterDatabaseT.getAuthor().getName());
-
         // TrainingCenterDatabase -> CourseList -> Course -> CoursePoint -> Position
         // TrainingCenterDatabase -> CourseList -> Course -> CourseLap -> BeginPosition/EndPosition
         // TrainingCenterDatabase -> CourseList -> Course -> Track -> TrackPoint -> Position
         CourseListT courseListT = trainingCenterDatabaseT.getCourses();
         if (courseListT != null) {
             for (CourseT courseT : courseListT.getCourse()) {
-                result.addAll(process(courseT, writtenByRouteConverter));
+                result.addAll(process(courseT));
             }
         }
         return result;
