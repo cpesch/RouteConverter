@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class GoogleMapsServiceIT {
     private GoogleMapsService service = new GoogleMapsService();
@@ -45,9 +46,9 @@ public class GoogleMapsServiceIT {
         assertEquals("Sch\u00f6ng\u00E4nge, 82467 Garmisch-Partenkirchen, Germany", service.getLocationFor(11.06561, 47.42428));
         assertEquals(null, service.getLocationFor(0.0, 0.0));
         assertEquals(null, service.getLocationFor(0.0, 90.0));
-        assertEquals("Antarctica", service.getLocationFor(0.0, -90.0));
+        assertTrue(service.getLocationFor(0.0, -90.0).contains("Antarctica"));
         assertEquals(null, service.getLocationFor(-90.0, 0.0));
-        assertEquals("Antarctica", service.getLocationFor(-90.0, -90.0));
+        assertTrue(service.getLocationFor(-90.0, -90.0).contains("Antarctica"));
         assertEquals(null, service.getLocationFor(90.0, 90.0));
     }
 

@@ -33,7 +33,7 @@ public class GeoNamesServiceIT {
     @Test
     public void testSrtm3ElevationFor() throws IOException {
         assertEquals(209, service.getSrtm3ElevationFor(10.2, 50.001).intValue());
-        assertEquals(null, service.getSrtm3ElevationFor(11.06561, 47.42428));
+        assertEquals(2071, service.getSrtm3ElevationFor(11.06561, 47.42428).intValue());
         assertEquals(null, service.getSrtm3ElevationFor(0.0, 0.0));
 
         assertEquals(40, service.getSrtm3ElevationFor(11.2, 59.0).intValue());
@@ -42,7 +42,7 @@ public class GeoNamesServiceIT {
 
         assertEquals(77, service.getSrtm3ElevationFor(-68.0, -54.0).intValue());
         assertEquals(455, service.getSrtm3ElevationFor(-68.0, -55.0).intValue());
-        assertEquals(0, service.getSrtm3ElevationFor(-68.0, -56.0).intValue());
+        assertEquals(null, service.getSrtm3ElevationFor(-68.0, -56.0));
         assertEquals(null, service.getSrtm3ElevationFor(-68.0, -56.1));
         assertEquals(null, service.getSrtm3ElevationFor(-68.0, -57.0));
     }
@@ -84,7 +84,7 @@ public class GeoNamesServiceIT {
         assertEquals("Hammersbach", service.getNearByFor(11.06561, 47.42428));
         assertEquals("Earth", service.getNearByFor(0.0, 0.0));
         String southPole = service.getNearByFor(0.0, -90.0);
-        assertTrue(southPole.contains("South Pole") || southPole.contains("Antarctic"));
+        assertTrue(southPole.contains("South Pol") || southPole.contains("Antarctic"));
         assertEquals("North Pole", service.getNearByFor(0.0, 90.0));
         assertEquals(null, service.getNearByFor(90.0, 90.0));
         assertEquals(null, service.getNearByFor(-90.0, -90.0));
