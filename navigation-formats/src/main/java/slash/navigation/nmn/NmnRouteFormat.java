@@ -215,50 +215,55 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // 4 Byte length
         int positionLength = fileContent.getInt();
         int positionEndPosition = positionLength + fileContent.position();
-
-        // 8 Byte 0. unknown
-        fileContent.position(fileContent.position() + 8);
-
-        // 4 Byte: length + text
-        getText(fileContent);
-
-        // 4 Byte: unknown
-        fileContent.getInt();
-
-        // 4 Byte: number of following data points (1, 2, 4) 
-        fileContent.getInt();
-
-        // 8 Byte: unknown
-        if (fileContent.position() < positionEndPosition)
+        try{
+            // 8 Byte 0. unknown
+            fileContent.position(fileContent.position() + 8);
+    
+            // 4 Byte: length + text
+            String text = getText(fileContent);
+    
+            // 4 Byte: unknown
             fileContent.getInt();
-        if (fileContent.position() < positionEndPosition)
-            fileContent.getInt();
-
-        Wgs84Position position = null;
-        int countBlock = 0;
-        while (fileContent.position() < positionEndPosition) {
-            int blockType = fileContent.getInt();
-            if (blockType == 1) {
-                position = readBlocktype_01(fileContent, position);
-                countBlock++;
-            } else if (blockType == 2){
-                position = readBlocktype_02(fileContent, position, countBlock++);
-                // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
-                if (countBlock > 2)
-                    fileContent.position(positionEndPosition);
-            } else if (blockType == 4) {
-                position = readBlocktype_04(fileContent, position, countBlock++);
-                // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
-                if (countBlock > 2)
-                    fileContent.position(positionEndPosition);
-            } else if (blockType == 0) {
-                position = readBlocktype_00(fileContent, position, countBlock++);
-                // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
-                if (countBlock > 2)
-                    fileContent.position(positionEndPosition);
+    
+            // 4 Byte: number of following data points (1, 2, 4) 
+            int numberOfDataPoints = fileContent.getInt();
+    
+            // 8 Byte: unknown
+            if (fileContent.position() < positionEndPosition)
+                fileContent.getInt();
+            if (fileContent.position() < positionEndPosition)
+                fileContent.getInt();
+    
+            Wgs84Position position = null;
+            int countBlock = 0;
+            while (fileContent.position() < positionEndPosition) {
+                int blockType = fileContent.getInt();
+                if (blockType == 1) {
+                    position = readBlocktype_01(fileContent, position);
+                    countBlock++;
+                } else if (blockType == 2){
+                    position = readBlocktype_02(fileContent, position, countBlock++);
+                    // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
+                    if (countBlock > 2)
+                        fileContent.position(positionEndPosition);
+                } else if (blockType == 4) {
+                    position = readBlocktype_04(fileContent, position, countBlock++);
+                    // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
+                    if (countBlock > 2)
+                        fileContent.position(positionEndPosition);
+                } else if (blockType == 0) {
+                    position = readBlocktype_00(fileContent, position, countBlock++);
+                    // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
+                    if (countBlock > 2)
+                        fileContent.position(positionEndPosition);
+                }
             }
+            return position;
         }
-        return position;
+        catch (OutOfMemoryError e) {
+            fileContent.position(positionEndPosition);
+            return null;
+        }
     }
 
     protected Wgs84Position readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
@@ -476,6 +481,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // 2x4 byte unknown
         byteBuffer.getInt();
         byteBuffer.getInt();
+        
+        //Es gab eine Datei in der irgendein Fehler drin war. Damit konnte es 
+        //passieren, dass über das Ziel hinaus gelesen wurde.
+        //Daher nie über das Ende hinaus. Oder sollte man gleich immer an das 
+        //Ende gehen?
+        if (byteBuffer.position() > startPosition + blockLength)
+            byteBuffer.position((int) (startPosition + blockLength));
 
         Wgs84Position resultPoint;
         if (positionPoint == null) {
