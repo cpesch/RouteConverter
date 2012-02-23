@@ -22,7 +22,6 @@ package slash.navigation.babel;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Externalization;
-import slash.common.io.InputOutput;
 import slash.common.io.Platform;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
@@ -373,7 +372,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             boolean successful = startBabel(source, getFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
                 log.fine("Successfully converted " + source + " to " + target);
-                result = getGpxFormat().read(new FileInputStream(target), startDate);
+                result = getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(target)), startDate);
             }
             if (source.exists()) {
                 if (!source.delete())
