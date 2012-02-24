@@ -22,12 +22,14 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.binding22gx.TrackType;
 import slash.navigation.kml.bindingatom.Link;
 
+import javax.swing.text.Position;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -318,17 +320,36 @@ public class Kml22Format extends KmlFormat {
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         placemarkType.setName(TRACK);
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
-        slash.navigation.kml.binding22gx.ObjectFactory gxObjectFactory = new slash.navigation.kml.binding22gx.ObjectFactory();
-        TrackType trackType = gxObjectFactory.createTrackType();
-        for (KmlPosition position : route.getPositions()) {
-            String time = position.getTime() != null ? ISO8601.format(position.getTime()) : "";
-            trackType.getWhen().add(time);
+        // create gx:Track if there are at least two positions with a time stamp
+        if (containTime(route)) {
+            slash.navigation.kml.binding22gx.ObjectFactory gxObjectFactory = new slash.navigation.kml.binding22gx.ObjectFactory();
+            TrackType trackType = gxObjectFactory.createTrackType();
+            for (KmlPosition position : route.getPositions()) {
+                String time = position.getTime() != null ? ISO8601.format(position.getTime()) : "";
+                trackType.getWhen().add(time);
+            }
+            for (KmlPosition position : route.getPositions()) {
+                trackType.getCoord().add(createCoordinates(position, true));
+            }
+            placemarkType.setAbstractGeometryGroup(gxObjectFactory.createTrack(trackType));
+        } else {
+            LineStringType lineStringType = objectFactory.createLineStringType();
+            placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
+            List<String> coordinates = lineStringType.getCoordinates();
+            for (KmlPosition position : route.getPositions()) {
+                coordinates.add(createCoordinates(position, false));
+            }
         }
-        for (KmlPosition position : route.getPositions()) {
-            trackType.getCoord().add(createCoordinates(position, true));
-        }
-        placemarkType.setAbstractGeometryGroup(gxObjectFactory.createTrack(trackType));
         return placemarkType;
+    }
+
+    private boolean containTime(KmlRoute route) {
+        int foundTime = 0;
+        for(BaseNavigationPosition position : route.getPositions()) {
+           if(position.getTime() != null)
+               foundTime++;
+        }
+        return foundTime > 1;
     }
 
     private boolean isWriteMarks() {
