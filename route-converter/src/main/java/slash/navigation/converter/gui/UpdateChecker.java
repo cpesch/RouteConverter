@@ -73,9 +73,9 @@ public class UpdateChecker {
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
-                    System.getProperty("os.arch"),
                     System.getProperty("os.name"),
                     System.getProperty("os.version"),
+                    System.getProperty("os.arch"),
                     System.getProperty("javawebstart.version"),
                     getStartTime());
 
