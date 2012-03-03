@@ -40,9 +40,6 @@ public class RoutesListModel extends AbstractTableModel {
         setRoutes(routes);
     }
 
-    public RoutesListModel() {
-    }
-
     void setRoutes(List<Route> routes) {
         this.routes = routes;
         fireTableDataChanged();

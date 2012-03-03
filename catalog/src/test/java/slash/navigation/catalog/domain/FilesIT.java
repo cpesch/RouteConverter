@@ -29,7 +29,7 @@ public class FilesIT extends RouteCatalogServiceBase {
 
         assertTrue(in.delete());
 
-        InputStream out = route.getUrl().openStream();
+        InputStream out = route.getDataUrl().openStream();
         assertEquals(inLength, out.available());
     }
 }

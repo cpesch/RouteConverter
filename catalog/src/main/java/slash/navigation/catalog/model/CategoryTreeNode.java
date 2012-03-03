@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Swing model for a {@link Category}.
+ * Acts as a {@link TreeNode} for a {@link Category}.
  *
  * @author Christian Pesch
  */

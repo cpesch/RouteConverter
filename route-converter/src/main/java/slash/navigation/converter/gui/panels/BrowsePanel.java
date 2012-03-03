@@ -24,14 +24,13 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
-import slash.common.io.Transfer;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.domain.RouteCatalog;
+import slash.navigation.catalog.remote.RouteCatalog;
 import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
@@ -68,10 +67,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.trim;
 
 /**
  * The browse panel of the route converter user interface.
@@ -187,7 +188,7 @@ public class BrowsePanel {
                 Route route = getRoutesListModel().getRoute(selectedRows[0]);
                 URL url;
                 try {
-                    url = route.getUrl();
+                    url = route.getDataUrl();
                     if (url == null)
                         return;
                 } catch (Throwable t) {
@@ -195,7 +196,7 @@ public class BrowsePanel {
                     return;
                 }
 
-                r.openPositionList(Arrays.asList(url));
+                r.openPositionList(asList(url));
             }
         });
 
@@ -291,7 +292,7 @@ public class BrowsePanel {
         final String name = JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
                 RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE);
-        if (Transfer.trim(name) == null)
+        if (trim(name) == null)
             return;
 
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -312,7 +313,7 @@ public class BrowsePanel {
         final String name = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
                 RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
-        if (Transfer.trim(name) == null)
+        if (trim(name) == null)
             return;
 
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -365,7 +366,7 @@ public class BrowsePanel {
             return;
 
         RouteConverter.getInstance().setUploadRoutePreference(selected[0]);
-        addFilesToCatalog(categoryTreeNode, Arrays.asList(selected));
+        addFilesToCatalog(categoryTreeNode, asList(selected));
     }
 
     private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
@@ -463,7 +464,7 @@ public class BrowsePanel {
         } catch (IOException e) {
             getOperator().handleServiceError(e);
         }
-        if (Transfer.trim(description) == null)
+        if (trim(description) == null)
             return;
 
         final String theDescription = description;

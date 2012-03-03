@@ -23,7 +23,7 @@ package slash.navigation.catalog.model;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
- * Swing model for a tree of {@link CategoryTreeNode}s.
+ * Acts as a {@link javax.swing.tree.TreeModel} for {@link CategoryTreeNode}s.
  *
  * @author Christian Pesch
  */

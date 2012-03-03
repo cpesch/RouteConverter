@@ -19,24 +19,11 @@
 */
 package slash.navigation.catalog.domain;
 
-import org.junit.After;
-import org.junit.Before;
-import slash.navigation.catalog.client.RouteCatalogClientBase;
-import slash.navigation.catalog.remote.RouteCatalog;
-import slash.navigation.rest.SimpleCredentials;
+/**
+ * Encapsulates access to a catalog of {@link Route}s structured by {@link Category}s.
+ *
+ * @author Christian Pesch
+ */
 
-public abstract class RouteCatalogServiceBase extends RouteCatalogClientBase {
-    protected RouteCatalog routeCatalog;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        routeCatalog = new RouteCatalog(ROOT, new SimpleCredentials(USERNAME, PASSWORD));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        routeCatalog = null;
-    }
+public interface Catalog {
 }

@@ -40,7 +40,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertEquals(description, route.getDescription());
         // TODO check if file exists
         // TODO compare file
-        // TODO assertEquals(description, route.getFileUrl());
+        // TODO assertEquals(description, route.getDataUrl());
         List<Route> routes = category.getRoutes();
         assertTrue(routes.contains(route));
     }
@@ -57,7 +57,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertEquals(description, route.getDescription());
         // TODO check if file exists
         // TODO compare file
-        // TODO assertEquals(description, route.getFileUrl());
+        // TODO assertEquals(description, route.getDataUrl());
         List<Route> routes = category.getRoutes();
         assertTrue(routes.contains(route));
     }

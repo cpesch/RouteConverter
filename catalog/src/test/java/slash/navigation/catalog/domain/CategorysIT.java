@@ -35,6 +35,14 @@ public class CategorysIT extends RouteCatalogServiceBase {
         assertNull(root.getDescription());
     }
 
+    private Category getSubCategory(Category root, String name) throws IOException {
+        for (Category category : root.getSubCategories()) {
+            if (category.getName().equals(name))
+                return category;
+        }
+        return null;
+    }
+
     private Category addSubCategory(Category root, String name) throws IOException {
         int before = root.getSubCategories().size();
         Category category = root.addSubCategory(name);
@@ -42,7 +50,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
         assertEquals(before + 1, after);
         assertEquals(name, category.getName());
         assertEquals(name, root.getSubCategories().get(after - 1).getName());
-        Category find = root.getSubCategory(name);
+        Category find = getSubCategory(root, name);
         assertNotNull(find);
         assertEquals(name, find.getName());
         return find;
@@ -90,7 +98,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
         String rename = "Renamed " + name;
         category.updateCategory(null, rename);
         assertEquals(rename, category.getName());
-        Category find = root.getSubCategory(rename);
+        Category find = getSubCategory(root, rename);
         assertNotNull(find);
         assertEquals(rename, find.getName());
     }
@@ -103,7 +111,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
         String rename = "Renamed " + name;
         category.updateCategory(null, rename);
         assertEquals(rename, category.getName());
-        Category find = root.getSubCategory(rename);
+        Category find = getSubCategory(root, rename);
         assertNotNull(find);
         assertEquals(rename, find.getName());
     }
@@ -135,9 +143,9 @@ public class CategorysIT extends RouteCatalogServiceBase {
         String rename = "Moved " + name;
         category.updateCategory(second, rename);
         assertEquals(rename, category.getName());
-        Category find = first.getSubCategory(rename);
+        Category find = getSubCategory(first, rename);
         assertNull(find);
-        find = second.getSubCategory(rename);
+        find = getSubCategory(second, rename);
         assertNotNull(find);
         assertEquals(rename, find.getName());
     }
