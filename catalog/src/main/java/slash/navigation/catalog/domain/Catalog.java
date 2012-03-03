@@ -26,4 +26,5 @@ package slash.navigation.catalog.domain;
  */
 
 public interface Catalog {
+    Category getRootCategory();
 }

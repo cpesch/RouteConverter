@@ -20,6 +20,7 @@
 
 package slash.navigation.catalog.remote;
 
+import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.exception.NotFoundException;
 import slash.navigation.catalog.domain.exception.NotOwnerException;
@@ -45,7 +46,7 @@ import static slash.navigation.rest.Helper.decodeUri;
  * @author Christian Pesch
  */
 
-public class RouteCatalog {
+public class RouteCatalog implements Catalog {
     private static final Logger log = Logger.getLogger(RouteCatalog.class.getName());
 
     private static final String ROOT_CATEGORY_URI = "categories/.gpx";
