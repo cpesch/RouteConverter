@@ -89,7 +89,7 @@ public class RemoteCategory implements Category {
     }
 
 
-    public String getName() throws IOException {
+    public synchronized String getName() throws IOException {
         if(name != null)
             return name;
         return getGpx().getMetadata().getName();
