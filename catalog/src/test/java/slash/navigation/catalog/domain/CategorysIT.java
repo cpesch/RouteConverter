@@ -29,7 +29,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
 
     @Test
     public void testGetRoot() throws IOException {
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         assertNotNull(root);
         assertEquals("", root.getName());
         assertNull(root.getDescription());
@@ -58,24 +58,24 @@ public class CategorysIT extends RouteCatalogServiceBase {
 
     @Test
     public void testAddSubCategoryWithSpaces() throws Exception {
-        addSubCategory(routeCatalog.getRootCategory(), "Spaces Category " + System.currentTimeMillis());
+        addSubCategory(catalog.getRootCategory(), "Spaces Category " + System.currentTimeMillis());
     }
 
     @Test
     public void testAddSubCategoryWithUmlauts() throws Exception {
-        addSubCategory(routeCatalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
+        addSubCategory(catalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
     }
 
     @Test
     public void testAddSubCategoryWithUmlautsBelowCategoryWithUmlauts() throws Exception {
-        Category category = addSubCategory(routeCatalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
+        Category category = addSubCategory(catalog.getRootCategory(), "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
         addSubCategory(category, "Umlauts äöüßÄÖÜ Category " + System.currentTimeMillis());
     }
 
     @Test
     public void testAddSubCategoryWithSlashes() throws Exception {
         try {
-            addSubCategory(routeCatalog.getRootCategory(), "/Slashes/Category/" + System.currentTimeMillis() + "/");
+            addSubCategory(catalog.getRootCategory(), "/Slashes/Category/" + System.currentTimeMillis() + "/");
             assertTrue(false);
         } catch (IOException e) {
         }
@@ -84,7 +84,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
     @Test
     public void testAddSubCategoryWithPluses() throws Exception {
         try {
-            addSubCategory(routeCatalog.getRootCategory(), "A + B + C" + System.currentTimeMillis() + "/");
+            addSubCategory(catalog.getRootCategory(), "A + B + C" + System.currentTimeMillis() + "/");
             assertTrue(false);
         } catch (IOException e) {
         }
@@ -93,7 +93,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
     @Test
     public void testRename() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
         String rename = "Renamed " + name;
         category.updateCategory(null, rename);
@@ -106,7 +106,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
     @Test
     public void testRenameWithNullParentParameter() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
         String rename = "Renamed " + name;
         category.updateCategory(null, rename);
@@ -119,7 +119,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
     @Test
     public void testRenameCategoryWithSlashes() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
         String rename = "Slashes / Category / " + name;
         try {
@@ -131,7 +131,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
 
     @Test
     public void testMove() throws Exception {
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         String firstName = "First Category " + System.currentTimeMillis();
         Category first = root.addSubCategory(firstName);
         String secondName = "Second Category " + System.currentTimeMillis();
@@ -152,7 +152,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
 
     @Test
     public void testMoveToSelfAsParent() throws Exception {
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         String parentName = "Parent " + System.currentTimeMillis();
         Category parent = root.addSubCategory(parentName);
         String moveName = "Move " + System.currentTimeMillis();
@@ -167,7 +167,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
 
     @Test
     public void testMoveToOwnChild() throws Exception {
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         String parentName = "Parent " + System.currentTimeMillis();
         Category parent = root.addSubCategory(parentName);
         String moveName = "Move " + System.currentTimeMillis();

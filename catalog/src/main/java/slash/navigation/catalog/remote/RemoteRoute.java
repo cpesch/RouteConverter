@@ -28,26 +28,26 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Represents a route on the server which is transferred via {@link RouteCatalog}
+ * Represents a route on the server which is transferred via {@link RemoteCatalog}
  * and represented with GPX documents.
  *
  * @author Christian Pesch
  */
 
 public class RemoteRoute implements Route {
-    private final RouteCatalog routeCatalog;
+    private final RemoteCatalog catalog;
     private final String url;
     private String name, creator, description;
     private boolean fromCategory = false;
     private GpxType gpx;
 
-    public RemoteRoute(RouteCatalog routeCatalog, String url) {
-        this.routeCatalog = routeCatalog;
+    public RemoteRoute(RemoteCatalog catalog, String url) {
+        this.catalog = catalog;
         this.url = url;
     }
 
-    public RemoteRoute(RouteCatalog routeCatalog, String url, String name, String creator, String description) {
-        this.routeCatalog = routeCatalog;
+    public RemoteRoute(RemoteCatalog catalog, String url, String name, String creator, String description) {
+        this.catalog = catalog;
         this.url = url;
         this.name = name;
         this.creator = creator;
@@ -61,7 +61,7 @@ public class RemoteRoute implements Route {
 
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
-            gpx = routeCatalog.fetchGpx(getUrl());
+            gpx = catalog.fetchGpx(getUrl());
         }
         return gpx;
     }
@@ -105,13 +105,13 @@ public class RemoteRoute implements Route {
     }
 
     public void update(String categoryUrl, String description) throws IOException {
-        routeCatalog.updateRoute(categoryUrl, getUrl(), description, getRteLinkHref());
+        catalog.updateRoute(categoryUrl, getUrl(), description, getRteLinkHref());
         invalidate();
     }
 
     public void delete() throws IOException {
-        routeCatalog.deleteRoute(getUrl());
-        routeCatalog.deleteFile(getRteLinkHref());
+        catalog.deleteRoute(getUrl());
+        catalog.deleteFile(getRteLinkHref());
     }
 
 
@@ -121,12 +121,12 @@ public class RemoteRoute implements Route {
 
         RemoteRoute route = (RemoteRoute) o;
 
-        return routeCatalog.equals(route.routeCatalog) && getUrl().equals(route.getUrl());
+        return catalog.equals(route.catalog) && getUrl().equals(route.getUrl());
     }
 
     public int hashCode() {
         int result;
-        result = routeCatalog.hashCode();
+        result = catalog.hashCode();
         result = 31 * result + getUrl().hashCode();
         return result;
     }

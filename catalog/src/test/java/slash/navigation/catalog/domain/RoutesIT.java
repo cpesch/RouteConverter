@@ -31,7 +31,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     @Test
     public void testAddRoute() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         String description = "Route " + System.currentTimeMillis();
@@ -48,7 +48,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     @Test
     public void testAddRouteWithUmlauts() throws Exception {
         String name = "Category äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         String description = "Route äöüßÄÖÜ " + System.currentTimeMillis();
@@ -65,7 +65,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     @Test
     public void testUpdateRouteViaCategory() throws Exception {
         String sourceName = "Source Category " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category source = root.addSubCategory(sourceName);
 
         String sourceDescription = "Route " + System.currentTimeMillis();
@@ -101,7 +101,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     @Test
     public void testDeleteRouteViaCategory() throws Exception {
          String name = "Category " + System.currentTimeMillis();
-         Category root = routeCatalog.getRootCategory();
+         Category root = catalog.getRootCategory();
          Category category = root.addSubCategory(name);
 
          String description = "Route " + System.currentTimeMillis();
@@ -122,7 +122,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     @Test
      public void testDeleteRouteDirectly() throws Exception {
         String name = "Category " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         String description = "Route " + System.currentTimeMillis();

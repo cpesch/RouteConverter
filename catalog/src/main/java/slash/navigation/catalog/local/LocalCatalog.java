@@ -17,26 +17,28 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.catalog.domain;
 
-import org.junit.After;
-import org.junit.Before;
-import slash.navigation.catalog.client.RouteCatalogClientBase;
-import slash.navigation.catalog.remote.RemoteCatalog;
-import slash.navigation.rest.SimpleCredentials;
+package slash.navigation.catalog.local;
 
-public abstract class RouteCatalogServiceBase extends RouteCatalogClientBase {
-    protected RemoteCatalog catalog;
+import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.domain.Category;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        catalog = new RemoteCatalog(ROOT, new SimpleCredentials(USERNAME, PASSWORD));
+import java.io.File;
+
+/**
+ * Encapsulates access to the local file system.
+ *
+ * @author Christian Pesch
+ */
+
+public class LocalCatalog implements Catalog {
+    private final String rootFolder;
+
+    public LocalCatalog(String rootFolder) {
+        this.rootFolder = rootFolder;
     }
 
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        catalog = null;
+    public Category getRootCategory() {
+        return new LocalCategory(this, new File(rootFolder));
     }
 }

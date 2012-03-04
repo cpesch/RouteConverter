@@ -15,7 +15,7 @@ public class FilesIT extends RouteCatalogServiceBase {
     @Test
     public void testAddFileWithUmlauts() throws Exception {
         String name = "Category for files with umlauts " + System.currentTimeMillis();
-        Category root = routeCatalog.getRootCategory();
+        Category root = catalog.getRootCategory();
         Category category = root.addSubCategory(name);
 
         File in = File.createTempFile("äöüß", ".file");

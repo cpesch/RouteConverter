@@ -31,7 +31,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.remote.RouteCatalog;
+import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
@@ -83,7 +83,7 @@ import static slash.common.io.Transfer.trim;
 
 public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private final Catalog routeCatalog = new RouteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
+    private final Catalog routeCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
 
     private JPanel browsePanel;
     private JTree treeCategories;

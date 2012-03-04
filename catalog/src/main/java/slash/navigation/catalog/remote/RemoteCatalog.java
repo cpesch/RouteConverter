@@ -41,13 +41,13 @@ import static slash.navigation.rest.Helper.asUtf8;
 import static slash.navigation.rest.Helper.decodeUri;
 
 /**
- * Encapsulates REST access to the RouteCatalog service of RouteConverter.
+ * Encapsulates REST access to the RemoteCatalog service of RouteConverter.
  *
  * @author Christian Pesch
  */
 
-public class RouteCatalog implements Catalog {
-    private static final Logger log = Logger.getLogger(RouteCatalog.class.getName());
+public class RemoteCatalog implements Catalog {
+    private static final Logger log = Logger.getLogger(RemoteCatalog.class.getName());
 
     private static final String ROOT_CATEGORY_URI = "categories/.gpx";
     private static final String ROUTES_URI = "routes/";
@@ -56,7 +56,7 @@ public class RouteCatalog implements Catalog {
     private final String rootUrl;
     private final Credentials credentials;
 
-    public RouteCatalog(String rootUrl, Credentials credentials) {
+    public RemoteCatalog(String rootUrl, Credentials credentials) {
         this.rootUrl = rootUrl;
         this.credentials = credentials;
     }

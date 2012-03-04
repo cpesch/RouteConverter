@@ -33,20 +33,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a category on the server which is transferred via {@link RouteCatalog}
+ * Represents a category on the server which is transferred via {@link RemoteCatalog}
  * and represented with GPX documents.
  *
  * @author Christian Pesch
  */
 
 public class RemoteCategory implements Category {
-    private final RouteCatalog routeCatalog;
+    private final RemoteCatalog catalog;
     private String url;
     private String name;
     private GpxType gpx;
 
-    public RemoteCategory(RouteCatalog routeCatalog, String url, String name) {
-        this.routeCatalog = routeCatalog;
+    public RemoteCategory(RemoteCatalog catalog, String url, String name) {
+        this.catalog = catalog;
         this.url = url;
         this.name = name;
     }
@@ -57,7 +57,7 @@ public class RemoteCategory implements Category {
 
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
-            gpx = routeCatalog.fetchGpx(getUrl());
+            gpx = catalog.fetchGpx(getUrl());
 
             // avoid subsequent NullPointerExceptions on server errors
             if (gpx == null) {
@@ -83,7 +83,7 @@ public class RemoteCategory implements Category {
         List<RemoteCategory> categories = new ArrayList<RemoteCategory>();
         if (gpx != null)
             for (LinkType linkType : gpx.getMetadata().getLink()) {
-                categories.add(new RemoteCategory(routeCatalog, linkType.getHref(), linkType.getText()));
+                categories.add(new RemoteCategory(catalog, linkType.getHref(), linkType.getText()));
             }
         return categories;
     }
@@ -102,7 +102,7 @@ public class RemoteCategory implements Category {
     public List<Category> getSubCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (LinkType linkType : getGpx().getMetadata().getLink()) {
-            categories.add(new RemoteCategory(routeCatalog, linkType.getHref(), linkType.getText()));
+            categories.add(new RemoteCategory(catalog, linkType.getHref(), linkType.getText()));
         }
         return categories;
     }
@@ -110,37 +110,37 @@ public class RemoteCategory implements Category {
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
         for (RteType rteType : getGpx().getRte()) {
-            routes.add(new RemoteRoute(routeCatalog, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
+            routes.add(new RemoteRoute(catalog, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
         }
         return routes;
     }
 
     public Category addSubCategory(String name) throws IOException {
-        String resultUrl = routeCatalog.addCategory(getUrl(), name);
+        String resultUrl = catalog.addCategory(getUrl(), name);
         invalidate();
-        return new RemoteCategory(routeCatalog, resultUrl, name);
+        return new RemoteCategory(catalog, resultUrl, name);
     }
 
     public void updateCategory(Category parent, String name) throws IOException {
-        url = routeCatalog.updateCategory(getUrl(), parent != null ? parent.getUrl() : null, name);
+        url = catalog.updateCategory(getUrl(), parent != null ? parent.getUrl() : null, name);
         this.name = name;
         recursiveInvalidate();
     }
 
     public void delete() throws IOException {
-        routeCatalog.deleteCategory(getUrl());
+        catalog.deleteCategory(getUrl());
     }
 
     public Route addRoute(String description, File file) throws IOException {
-        String resultUrl = routeCatalog.addRouteAndFile(getUrl(), description, file);
+        String resultUrl = catalog.addRouteAndFile(getUrl(), description, file);
         invalidate();
-        return new RemoteRoute(routeCatalog, resultUrl);
+        return new RemoteRoute(catalog, resultUrl);
     }
 
     public Route addRoute(String description, String fileUrl) throws IOException {
-        String resultUrl = routeCatalog.addRoute(getUrl(), description, fileUrl);
+        String resultUrl = catalog.addRoute(getUrl(), description, fileUrl);
         invalidate();
-        return new RemoteRoute(routeCatalog, resultUrl);
+        return new RemoteRoute(catalog, resultUrl);
     }
 
     public void updateRoute(Route route, Category category, String description) throws IOException {
@@ -161,12 +161,12 @@ public class RemoteCategory implements Category {
 
         RemoteCategory category = (RemoteCategory) o;
 
-        return routeCatalog.equals(category.routeCatalog) && getUrl().equals(category.getUrl());
+        return catalog.equals(category.catalog) && getUrl().equals(category.getUrl());
     }
 
     public int hashCode() {
         int result;
-        result = routeCatalog.hashCode();
+        result = catalog.hashCode();
         result = 31 * result + getUrl().hashCode();
         return result;
     }

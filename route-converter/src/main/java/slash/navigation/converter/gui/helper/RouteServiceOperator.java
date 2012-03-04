@@ -32,7 +32,7 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 /**
- * Helps to interact with the RouteCatalog and RouteFeedback service.
+ * Helps to interact with the RemoteCatalog and RouteFeedback service.
  *
  * @author Christian Pesch
  */
