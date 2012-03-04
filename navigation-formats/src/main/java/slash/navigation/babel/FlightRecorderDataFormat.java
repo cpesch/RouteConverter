@@ -20,7 +20,12 @@
 
 package slash.navigation.babel;
 
-import java.util.prefs.Preferences;
+import slash.navigation.base.RouteCharacteristics;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads FAI/IGC Flight Recorder Data (.igc) files.
@@ -29,22 +34,20 @@ import java.util.prefs.Preferences;
  */
 
 public class FlightRecorderDataFormat extends BabelFormat {
-    private static final Preferences preferences = Preferences.userNodeForPackage(FlightRecorderDataFormat.class);
+    public String getName() {
+        return "FAI/IGC Flight Recorder Data (*" + getExtension() + ")";
+    }
 
     public String getExtension() {
         return ".igc";
-    }
-
-    public String getName() {
-        return "FAI/IGC Flight Recorder Data (*" + getExtension() + ")";
     }
 
     protected String getFormatName() {
         return "igc";
     }
 
-    public int getMaximumPositionCount() {
-        return preferences.getInt("maximumFlightRecorderDataPositionCount", 99);
+    protected List<RouteCharacteristics> getBabelCharacteristics() {
+        return asList(Track);
     }
 
     public boolean isSupportsMultipleRoutes() {
@@ -53,10 +56,5 @@ public class FlightRecorderDataFormat extends BabelFormat {
 
     protected boolean isStreamingCapable() {
         return true;
-    }
-
-    public boolean isSupportsWriting() {
-        // since gpsbabel 1.4.2 cannot read its own igc files and prints: IGC bad input record: '20'
-        return false;
     }
 }

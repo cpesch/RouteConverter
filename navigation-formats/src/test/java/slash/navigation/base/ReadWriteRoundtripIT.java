@@ -56,6 +56,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     @Test
+    public void testFlightRecorderDataReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.igc");
+    }
+
+    @Test
     public void testGeocachingDotComReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.loc");
     }

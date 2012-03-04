@@ -37,7 +37,11 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.InputOutput.copy;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * The base of all GPSBabel based formats.
@@ -97,7 +101,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     protected List<RouteCharacteristics> getBabelCharacteristics() {
-        return Arrays.asList(RouteCharacteristics.Route, RouteCharacteristics.Track, RouteCharacteristics.Waypoints);
+        return asList(Route, Track, Waypoints);
     }
 
     public int getMaximumPositionCount() {
