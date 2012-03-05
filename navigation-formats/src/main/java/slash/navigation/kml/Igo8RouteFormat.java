@@ -64,7 +64,7 @@ public class Igo8RouteFormat extends Kml22Format {
 
     protected List<KmlRoute> process(KmlType kmlType, CompactCalendar startDate) {
         List<KmlRoute> routes = super.process(kmlType, startDate);
-        if (routes.size() == 1) {
+        if (routes != null && routes.size() == 1) {
             KmlRoute route = routes.get(0);
             if (route.getName().equals(IGO_ROUTE + "/" + WAYPOINTS)) {
                 route.setName(IGO_ROUTE);
