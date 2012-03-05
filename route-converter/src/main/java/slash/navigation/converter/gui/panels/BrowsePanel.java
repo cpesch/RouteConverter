@@ -31,10 +31,9 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Route;
+import slash.navigation.catalog.local.LocalCatalog;
+import slash.navigation.catalog.model.*;
 import slash.navigation.catalog.remote.RemoteCatalog;
-import slash.navigation.catalog.model.CategoryTreeModel;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
@@ -83,7 +82,8 @@ import static slash.common.io.Transfer.trim;
 
 public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private final Catalog routeCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
+    private final Catalog remoteCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
+    private final Catalog localCatalog = new LocalCatalog(System.getProperty("home", System.getProperty("user.home")));
 
     private JPanel browsePanel;
     private JTree treeCategories;
@@ -203,17 +203,22 @@ public class BrowsePanel {
 
         new Thread(new Runnable() {
             public void run() {
-                final CategoryTreeNode root = new CategoryTreeNode(routeCatalog.getRootCategory());
+                final CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
+                final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
+                final RootTreeNode root = new RootTreeNode(remoteRoot, localRoot);
                 final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
-                categoryTreeModel.getChildCount(root);
+                categoryTreeModel.getChildCount(remoteRoot);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
                         try {
                             treeCategories.setModel(categoryTreeModel);
+                            // start with showing the folders below the roots
+                            treeCategories.expandRow(0);
+                            treeCategories.expandRow(1);
                             String selected = RouteConverter.getInstance().getCategoryPreference();
                             selectTreePath(TreePathStringConversion.fromString(root, selected));
                         } finally {
@@ -256,6 +261,7 @@ public class BrowsePanel {
         if (!(selectedObject instanceof CategoryTreeNode))
             return;
         treeCategories.expandPath(treePath);
+        treeCategories.scrollPathToVisible(treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         selectTreeNode(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
@@ -581,6 +587,7 @@ public class BrowsePanel {
         final JScrollPane scrollPane2 = new JScrollPane();
         browsePanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         treeCategories = new JTree();
+        treeCategories.setRootVisible(false);
         scrollPane2.setViewportView(treeCategories);
     }
 

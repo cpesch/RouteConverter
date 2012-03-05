@@ -136,7 +136,9 @@
         <children>
           <component id="48469" class="javax.swing.JTree" binding="treeCategories">
             <constraints/>
-            <properties/>
+            <properties>
+              <rootVisible value="false"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

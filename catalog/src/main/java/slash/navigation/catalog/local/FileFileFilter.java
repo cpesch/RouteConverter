@@ -20,30 +20,16 @@
 
 package slash.navigation.catalog.local;
 
-import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.domain.Category;
-
 import java.io.File;
+import java.io.FileFilter;
 
 /**
- * Encapsulates access to the local file system.
+ * A file filter that accepts only files.
  *
  * @author Christian Pesch
  */
-
-public class LocalCatalog implements Catalog {
-    private static final String USER_NAME = System.getProperty("user.name");
-    private final String rootFolder;
-
-    public LocalCatalog(String rootFolder) {
-        this.rootFolder = rootFolder;
-    }
-
-    public Category getRootCategory() {
-        return new LocalCategory(this, new File(rootFolder));
-    }
-
-    public String getUserName() {
-        return USER_NAME;
+public class FileFileFilter implements FileFilter {
+    public boolean accept(File file) {
+        return file.isFile();
     }
 }

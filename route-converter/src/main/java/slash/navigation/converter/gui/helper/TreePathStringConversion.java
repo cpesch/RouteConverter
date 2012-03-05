@@ -34,15 +34,33 @@ import java.util.StringTokenizer;
  */
 
 public class TreePathStringConversion {
+    private static final String LOCAL = "LOCAL:";
+    private static final String REMOTE = "REMOTE:";
+
     public static String toString(TreePath treePath) {
         StringBuilder buffer = new StringBuilder();
         for (Object pathElement : treePath.getPath()) {
             CategoryTreeNode treeNode = (CategoryTreeNode) pathElement;
             String nodeName = treeNode.getName();
-            if (nodeName.length() > 0)
+            if (treeNode.isLocalRoot())
+                buffer.append(LOCAL);
+            else if (treeNode.isRemoteRoot())
+                buffer.append(REMOTE);
+            else if (nodeName != null)
                 buffer.append("/").append(nodeName);
         }
         return buffer.toString();
+    }
+
+    private static CategoryTreeNode getSubCategory(CategoryTreeNode node, String name) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            CategoryTreeNode child = (CategoryTreeNode) node.getChildAt(i);
+            if (child.getName().equals(name) ||
+                    child.isLocalRoot() && LOCAL.equals(name) ||
+                    child.isRemoteRoot() && REMOTE.equals(name))
+                return child;
+        }
+        return null;
     }
 
     public static TreePath fromString(CategoryTreeNode root, String path) {
@@ -52,7 +70,7 @@ public class TreePathStringConversion {
         result.add(root);
         while (tokenizer.hasMoreTokens()) {
             String pathElement = tokenizer.nextToken();
-            CategoryTreeNode next = current.getSubCategory(pathElement);
+            CategoryTreeNode next = getSubCategory(current, pathElement);
             if (next != null) {
                 result.add(next);
                 current = next;
