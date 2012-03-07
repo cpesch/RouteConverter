@@ -23,13 +23,13 @@ package slash.navigation.catalog.local;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static slash.common.io.InputOutput.copy;
 
 /**
  * Represents a category in the file system.
@@ -79,10 +79,10 @@ public class LocalCategory implements Category {
 
     public void updateCategory(Category parent, String name) throws IOException {
         File newName = new File(directory.getParentFile(), name);
-        if(!directory.renameTo(newName))
+        if (!directory.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", directory, newName));
         directory = newName;
-   }
+    }
 
     public void delete() throws IOException {
         if (!directory.delete())
@@ -98,11 +98,21 @@ public class LocalCategory implements Category {
     }
 
     public Route addRoute(String description, File file) throws IOException {
-        throw new UnsupportedOperationException();
+        File destination = new File(directory, description);
+        copy(new FileInputStream(file), new FileOutputStream(destination));
+        return new LocalRoute(catalog, destination);
     }
 
     public Route addRoute(String description, String fileUrl) throws IOException {
-        throw new UnsupportedOperationException();
+        File destination = new File(directory, description);
+        PrintWriter writer = new PrintWriter(destination);
+        try {
+            writer.println("[InternetShortcut]");
+            writer.println("URL=" + fileUrl);
+        } finally {
+            writer.close();
+        }
+        return new LocalRoute(catalog, destination);
     }
 
     public void updateRoute(Route route, Category category, String description) throws IOException {

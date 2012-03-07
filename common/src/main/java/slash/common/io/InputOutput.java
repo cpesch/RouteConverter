@@ -61,10 +61,6 @@ public class InputOutput {
         return count;
     }
 
-    public static byte[] readBytes(URL url) throws IOException {
-        return readBytes(url.openStream());
-    }
-
     public static byte[] readBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         copy(in, out);
