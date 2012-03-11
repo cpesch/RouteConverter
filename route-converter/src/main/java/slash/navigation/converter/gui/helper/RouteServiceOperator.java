@@ -58,7 +58,6 @@ public class RouteServiceOperator {
     public void handleServiceError(final Throwable t) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                t.printStackTrace();
                 log.severe("Error while operating on RouteConverter service: " + t.getMessage());
                 JOptionPane.showMessageDialog(frame,
                         MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), t.getMessage()),

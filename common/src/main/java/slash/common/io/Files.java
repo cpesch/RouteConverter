@@ -131,17 +131,6 @@ public class Files {
         return shortenPath(path, 60);
     }
 
-    public static File toFile(String url) {
-        try {
-            return toFile(new URL(url));
-        } catch (MalformedURLException e) {
-            File file = new File(url);
-            if(file.exists())
-                return file;
-        }
-        return null;
-    }
-
     public static File toFile(URL url) {
         if ("file".equals(url.getProtocol())) {
             try {

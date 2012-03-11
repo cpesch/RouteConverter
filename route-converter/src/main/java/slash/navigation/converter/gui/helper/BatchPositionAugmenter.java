@@ -123,7 +123,6 @@ public class BatchPositionAugmenter {
                                     operation.run(index, position);
                                 } catch (Exception e) {
                                     log.warning(format("Error while running operation %s on position %d: %s", operation, index, e));
-                                    e.printStackTrace();
                                     lastException[0] = e;
                                 }
                             }

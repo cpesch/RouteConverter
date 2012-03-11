@@ -32,7 +32,11 @@ import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.local.LocalCatalog;
-import slash.navigation.catalog.model.*;
+import slash.navigation.catalog.model.CategoryTreeModel;
+import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.CategoryTreeNodeImpl;
+import slash.navigation.catalog.model.RootTreeNode;
+import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
@@ -50,7 +54,12 @@ import slash.navigation.gui.FrameAction;
 import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -70,6 +79,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.trim;
@@ -82,8 +92,9 @@ import static slash.common.io.Transfer.trim;
 
 public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private final Catalog remoteCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
-    private final Catalog localCatalog = new LocalCatalog(System.getProperty("home", System.getProperty("user.home")));
+    private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
+
+    private static final String LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE = "localCatalogRootFolder";
 
     private JPanel browsePanel;
     private JTree treeCategories;
@@ -96,6 +107,9 @@ public class BrowsePanel {
     private JButton buttonRenameRoute;
     private JButton buttonDeleteRoute;
     private JButton buttonLogin;
+
+    private final Catalog remoteCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
+    private final Catalog localCatalog = new LocalCatalog(System.getProperty("root", createRootFolder()));
 
     public BrowsePanel() {
         initialize();
@@ -205,7 +219,7 @@ public class BrowsePanel {
             public void run() {
                 final CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
                 final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
-                final RootTreeNode root = new RootTreeNode(remoteRoot, localRoot);
+                final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
                 final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
@@ -213,21 +227,34 @@ public class BrowsePanel {
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        Constants.startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                        Constants.startWaitCursor(r.getFrame().getRootPane());
                         try {
                             treeCategories.setModel(categoryTreeModel);
                             // start with showing the folders below the roots
                             treeCategories.expandRow(0);
                             treeCategories.expandRow(1);
-                            String selected = RouteConverter.getInstance().getCategoryPreference();
+                            String selected = r.getCategoryPreference();
                             selectTreePath(TreePathStringConversion.fromString(root, selected));
                         } finally {
-                            Constants.stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+                            Constants.stopWaitCursor(r.getFrame().getRootPane());
                         }
                     }
                 });
             }
         }, "CategoryTreeInitializer").start();
+    }
+
+    private String createRootFolder() {
+        String rootFolderPreference = preferences.get(LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE,
+                new File(System.getProperty("user.home"), RouteConverter.getBundle().getString("local-catalog-my-routes")).getAbsolutePath());
+        File rootFolder = new File(rootFolderPreference);
+        if (!rootFolder.exists()) {
+            if (!rootFolder.mkdirs()) {
+                log.severe("Cannot create local catalog root folder " + rootFolder);
+                getOperator().handleServiceError(new FileNotFoundException(rootFolder.getAbsolutePath()));
+            }
+        }
+        return rootFolder.getAbsolutePath();
     }
 
     public Component getRootComponent() {
