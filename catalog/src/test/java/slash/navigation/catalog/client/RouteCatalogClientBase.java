@@ -32,20 +32,23 @@ import slash.navigation.rest.SimpleCredentials;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 
+import static java.lang.Integer.parseInt;
 import static org.junit.Assert.assertTrue;
 
 public abstract class RouteCatalogClientBase {
     protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
     // protected static final String HOST = "www.routeconverter.com";
     protected static final String HOST = "localhost:8000";
-    protected static final String ROOT = "http://" + HOST + "/catalog/";
+    protected static final String CATALOG = "http://" + HOST + "/catalog/";
+    protected static final String FEEDBACK = "http://" + HOST + "/feedback/";
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
 
-    protected static final String CATEGORIES_URL = ROOT + "categories/";
-    protected static final String ROUTES_URL = ROOT + "routes/";
-    protected static final String FILES_URL = ROOT + "files/";
-    protected static final String USERS_URL = ROOT + "users/";
+    protected static final String CATEGORIES_URL = CATALOG + "categories/";
+    protected static final String ROUTES_URL = CATALOG + "routes/";
+    protected static final String FILES_URL = CATALOG + "files/";
+    protected static final String USERS_URL = CATALOG + "users/";
+    protected static final String POST_USERS_URL = FEEDBACK + "users/";
     protected static final String GPX_URL_POSTFIX = ".gpx";
     protected static final String FILE_URL_POSTFIX = "/";
 
@@ -91,13 +94,13 @@ public abstract class RouteCatalogClientBase {
     }
 
     protected int parseRouteKey(String result) {
-        return Integer.parseInt(result.substring(result.lastIndexOf('/') + 1, result.length() - GPX_URL_POSTFIX.length()));
+        return parseInt(result.substring(result.lastIndexOf('/') + 1, result.length() - GPX_URL_POSTFIX.length()));
     }
 
     protected int parseFileKey(String result) {
         if (result.endsWith(FILE_URL_POSTFIX))
             result = result.substring(0, result.length() - FILE_URL_POSTFIX.length());
-        return Integer.parseInt(result.substring(result.lastIndexOf('/') + 1));
+        return parseInt(result.substring(result.lastIndexOf('/') + 1));
     }
 
     protected String parseUserKey(String result) {
@@ -201,7 +204,7 @@ public abstract class RouteCatalogClientBase {
 
     protected Post createUser(String fileName,
                               String authenticationUserName, String authenticationPassword) throws IOException {
-        Post request = new Post(USERS_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Post request = new Post(POST_USERS_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", new File(TEST_PATH + fileName));
         return request;
     }
@@ -215,7 +218,7 @@ public abstract class RouteCatalogClientBase {
                               String authenticationUserName, String authenticationPassword) throws IOException, JAXBException {
         String xml = createUserXml(userName, password, firstName, lastName, email);
 
-        Post request = new Post(USERS_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
+        Post request = new Post(POST_USERS_URL, new SimpleCredentials(authenticationUserName, authenticationPassword));
         request.addFile("file", writeToTempFile(xml));
         return request;
     }

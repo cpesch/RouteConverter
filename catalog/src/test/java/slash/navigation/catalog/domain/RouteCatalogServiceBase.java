@@ -31,7 +31,7 @@ public abstract class RouteCatalogServiceBase extends RouteCatalogClientBase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        catalog = new RemoteCatalog(ROOT, new SimpleCredentials(USERNAME, PASSWORD));
+        catalog = new RemoteCatalog(CATALOG, new SimpleCredentials(USERNAME, PASSWORD));
     }
 
     @After

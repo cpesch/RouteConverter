@@ -87,13 +87,14 @@ public class FileIT extends RouteCatalogClientBase {
     public void testRead() throws Exception {
         Post request1 = createFile("filestest.gpx");
         request1.execute();
-        String result1 = request1.getLocation();
-        int key = parseFileKey(result1);
+        String location1 = request1.getLocation();
+        assertNotNull(location1);
+        int key = parseFileKey(location1);
         HttpRequest request2 = readFile(key);
-        String result2 = request2.execute();
+        String location2 = request2.execute();
         assertEquals(200, request2.getResult());
         assertTrue(request2.isSuccessful());
-        assertEquals(readFileToString("filestest.gpx"), result2);
+        assertEquals(readFileToString("filestest.gpx"), location2);
     }
 
     @Test

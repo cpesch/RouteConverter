@@ -124,8 +124,8 @@ public class CategoryIT extends RouteCatalogClientBase {
         GpxType gpxType = GpxUtil.unmarshal11(result1);
         assertNotNull(gpxType);
         assertEquals("", gpxType.getMetadata().getName());
-        assertEquals("unknown", gpxType.getMetadata().getAuthor().getName());
-        assertEquals(USERS_URL + "unknown" + GPX_URL_POSTFIX, gpxType.getMetadata().getAuthor().getLink().getHref());
+        assertEquals(USERNAME, gpxType.getMetadata().getAuthor().getName());
+        assertEquals(USERS_URL + USERNAME + GPX_URL_POSTFIX, gpxType.getMetadata().getAuthor().getLink().getHref());
         assertNull(gpxType.getMetadata().getDesc());
         assertTrue(gpxType.getMetadata().getLink().size() > 0);
     }
