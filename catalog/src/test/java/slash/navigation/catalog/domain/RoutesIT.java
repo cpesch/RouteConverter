@@ -35,7 +35,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         Category category = root.create(name);
 
         String description = "Route " + System.currentTimeMillis();
-        Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
+        Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());
         // TODO check if file exists
@@ -52,7 +52,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         Category category = root.create(name);
 
         String description = "Route äöüßÄÖÜ " + System.currentTimeMillis();
-        Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
+        Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());
         // TODO check if file exists
@@ -69,14 +69,14 @@ public class RoutesIT extends RouteCatalogServiceBase {
         Category source = root.create(sourceName);
 
         String sourceDescription = "Route " + System.currentTimeMillis();
-        Route route = source.addRoute(sourceDescription, new File(TEST_PATH + "filestest.gpx"));
+        Route route = source.createRoute(sourceDescription, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(sourceDescription, route.getDescription());
         List<Route> routesBefore = source.getRoutes();
         assertTrue(routesBefore.contains(route));
 
         String targetDescription = "NEW Description";
-        source.updateRoute(route, source, targetDescription);
+        route.update(source.getUrl(), targetDescription);
 
         List<Route> afterDescriptionChange = source.getRoutes();
         assertTrue(afterDescriptionChange.contains(route));
@@ -86,7 +86,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
 
         String targetName = "Target Category " + System.currentTimeMillis();
         Category target = root.create(targetName);
-        source.updateRoute(route, target, targetDescription);
+        route.update(target.getUrl(), targetDescription);
 
         List<Route> sourceAfterCategoryChange = source.getRoutes();
         assertFalse(sourceAfterCategoryChange.contains(route));
@@ -105,13 +105,13 @@ public class RoutesIT extends RouteCatalogServiceBase {
          Category category = root.create(name);
 
          String description = "Route " + System.currentTimeMillis();
-         Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
+         Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
          assertNotNull(route);
          assertEquals(description, route.getDescription());
          List<Route> routesBefore = category.getRoutes();
          assertTrue(routesBefore.contains(route));
 
-         category.deleteRoute(route);
+        route.delete();
 
          List<Route> routesAfter = category.getRoutes();
          assertFalse(routesAfter.contains(route));
@@ -126,7 +126,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         Category category = root.create(name);
 
         String description = "Route " + System.currentTimeMillis();
-        Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
+        Route route = category.createRoute(description, new File(TEST_PATH + "filestest.gpx"));
         assertNotNull(route);
         assertEquals(description, route.getDescription());
 

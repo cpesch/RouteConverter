@@ -97,13 +97,13 @@ public class LocalCategory implements Category {
         return routes;
     }
 
-    public Route addRoute(String description, File file) throws IOException {
+    public Route createRoute(String description, File file) throws IOException {
         File destination = new File(directory, description);
         copy(new FileInputStream(file), new FileOutputStream(destination));
         return new LocalRoute(catalog, destination);
     }
 
-    public Route addRoute(String description, String fileUrl) throws IOException {
+    public Route createRoute(String description, String fileUrl) throws IOException {
         File destination = new File(directory, description);
         PrintWriter writer = new PrintWriter(destination);
         try {
@@ -113,14 +113,6 @@ public class LocalCategory implements Category {
             writer.close();
         }
         return new LocalRoute(catalog, destination);
-    }
-
-    public void updateRoute(Route route, Category category, String description) throws IOException {
-        route.update(category.getUrl(), description);
-    }
-
-    public void deleteRoute(Route route) throws IOException {
-        route.delete();
     }
 
 

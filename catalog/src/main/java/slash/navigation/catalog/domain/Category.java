@@ -40,8 +40,6 @@ public interface Category {
     void delete() throws IOException;
 
     List<Route> getRoutes() throws IOException;
-    Route addRoute(String description, File file) throws IOException;
-    Route addRoute(String description, String fileUrl) throws IOException;
-    void updateRoute(Route route, Category category, String description) throws IOException;
-    void deleteRoute(Route route) throws IOException;
+    Route createRoute(String description, File file) throws IOException;
+    Route createRoute(String description, String fileUrl) throws IOException;
 }

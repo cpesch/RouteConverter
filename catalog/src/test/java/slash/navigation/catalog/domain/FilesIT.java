@@ -24,7 +24,7 @@ public class FilesIT extends RouteCatalogServiceBase {
         InputOutput.copy(fis, fos);
         long inLength = in.length();
 
-        Route route = category.addRoute("File with umlauts", in);
+        Route route = category.createRoute("File with umlauts", in);
         assertNotNull(route);
 
         assertTrue(in.delete());

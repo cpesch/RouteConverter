@@ -172,30 +172,30 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
     }
 
     public Route addRoute(String description, File file) throws IOException {
-        Route route = getCategory().addRoute(description, file);
+        Route route = getCategory().createRoute(description, file);
         getRoutesListModel().addRoute(route);
         return route;
     }
 
     public Route addRoute(String description, String fileUrl) throws IOException {
-        Route route = getCategory().addRoute(description, fileUrl);
+        Route route = getCategory().createRoute(description, fileUrl);
         getRoutesListModel().addRoute(route);
         return route;
     }
 
     public void renameRoute(Route route, String description) throws IOException {
-        getCategory().updateRoute(route, getCategory(), description);
+        route.update(getCategory().getUrl(), description);
         getRoutesListModel().updateRoute(route);
     }
 
     public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
-        getCategory().updateRoute(route, target.getCategory(), route.getDescription());
+        route.update(target.getCategory().getUrl(), route.getDescription());
         target.getRoutesListModel().addRoute(route);
         getRoutesListModel().deleteRoute(route);
     }
 
     public void deleteRoute(Route route) throws IOException {
-        getCategory().deleteRoute(route);
+        route.delete();
         getRoutesListModel().deleteRoute(route);
     }
 }

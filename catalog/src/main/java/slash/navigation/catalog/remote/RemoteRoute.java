@@ -40,19 +40,22 @@ public class RemoteRoute implements Route {
     private String name, creator, description;
     private boolean fromCategory = false;
     private GpxType gpx;
+    private RemoteCategory category;
 
-    public RemoteRoute(RemoteCatalog catalog, String url) {
+    public RemoteRoute(RemoteCatalog catalog, String url, RemoteCategory category) {
         this.catalog = catalog;
         this.url = url;
+        this.category = category;
     }
 
-    public RemoteRoute(RemoteCatalog catalog, String url, String name, String creator, String description) {
+    public RemoteRoute(RemoteCatalog catalog, String url, String name, String creator, String description, RemoteCategory category) {
         this.catalog = catalog;
         this.url = url;
         this.name = name;
         this.creator = creator;
         this.description = description;
         fromCategory = true;
+        this.category = category;
     }
 
     public String getUrl() {
@@ -67,6 +70,8 @@ public class RemoteRoute implements Route {
     }
 
     private synchronized void invalidate() {
+        category.invalidate();
+        category = null;
         gpx = null;
         name = null;
         creator = null;
@@ -112,6 +117,7 @@ public class RemoteRoute implements Route {
     public void delete() throws IOException {
         catalog.deleteRoute(getUrl());
         catalog.deleteFile(getRteLinkHref());
+        invalidate();
     }
 
 

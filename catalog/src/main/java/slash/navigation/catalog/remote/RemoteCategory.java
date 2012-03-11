@@ -68,7 +68,7 @@ public class RemoteCategory implements Category {
         return gpx;
     }
 
-    private synchronized void invalidate() {
+    synchronized void invalidate() {
         gpx = null;
         name = null;
     }
@@ -110,7 +110,7 @@ public class RemoteCategory implements Category {
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
         for (RteType rteType : getGpx().getRte()) {
-            routes.add(new RemoteRoute(catalog, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
+            routes.add(new RemoteRoute(catalog, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc(), this));
         }
         return routes;
     }
@@ -131,27 +131,16 @@ public class RemoteCategory implements Category {
         catalog.deleteCategory(getUrl());
     }
 
-    public Route addRoute(String description, File file) throws IOException {
+    public Route createRoute(String description, File file) throws IOException {
         String resultUrl = catalog.addRouteAndFile(getUrl(), description, file);
         invalidate();
-        return new RemoteRoute(catalog, resultUrl);
+        return new RemoteRoute(catalog, resultUrl, this);
     }
 
-    public Route addRoute(String description, String fileUrl) throws IOException {
+    public Route createRoute(String description, String fileUrl) throws IOException {
         String resultUrl = catalog.addRoute(getUrl(), description, fileUrl);
         invalidate();
-        return new RemoteRoute(catalog, resultUrl);
-    }
-
-    public void updateRoute(Route route, Category category, String description) throws IOException {
-        route.update(category.getUrl(), description);
-        invalidate();
-        ((RemoteCategory)category).invalidate();
-    }
-
-    public void deleteRoute(Route route) throws IOException {
-        route.delete();
-        invalidate();
+        return new RemoteRoute(catalog, resultUrl, this);
     }
 
 
