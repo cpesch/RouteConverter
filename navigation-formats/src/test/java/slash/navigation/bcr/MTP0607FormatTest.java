@@ -20,16 +20,22 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class MTP0607FormatTest extends NavigationTestCase {
-    MTP0607Format format = new MTP0607Format();
-    BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
+import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_NAME;
 
+public class MTP0607FormatTest {
+    private MTP0607Format format = new MTP0607Format();
+    private BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
+
+    @Test
     public void testIsSectionTitle() {
         assertTrue(format.isSectionTitle("[CLIENT]"));
         assertTrue(format.isSectionTitle("[COORDINATES]"));
@@ -41,7 +47,6 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertFalse(format.isSectionTitle(" [ROUTE] "));
         assertFalse(format.isSectionTitle("[[ROUTE]"));
         assertFalse(format.isSectionTitle("ROUTE]"));
-        assertFalse(format.isSectionTitle("[NEW]"));
 
         assertFalse(format.isSectionTitle("[Egal]"));
         assertFalse(format.isSectionTitle("[Symbol 1]"));
@@ -52,11 +57,12 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertFalse(format.isSectionTitle("[MapLage]"));
     }
 
+    @Test
     public void testParsePositionWithStreet() {
         BcrPosition position = format.parsePosition("TOWN,210945415755", "1115508,7081108", "D 22081,Hamburg/Uhlenhorst,Finkenau,0,");
         assertEquals(210945415755L, position.getAltitude());
-        assertEquals(1115508, position.getX());
-        assertEquals(7081108, position.getY());
+        assertEquals(1115508, (long) position.getX());
+        assertEquals(7081108, (long) position.getY());
         assertEquals("D 22081", position.getZipCode());
         assertEquals("Hamburg/Uhlenhorst", position.getCity());
         assertEquals("Finkenau", position.getStreet());
@@ -64,11 +70,12 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertFalse(position.isUnstructured());
     }
 
+    @Test
     public void testParsePositionFromMTP20082009() {
         BcrPosition position = format.parsePosition("TOWN,210945415755,1", "1115508,7081108", "D 22081,Hamburg/Uhlenhorst,Finkenau,0,");
         assertEquals(210945415755L, position.getAltitude());
-        assertEquals(1115508, position.getX());
-        assertEquals(7081108, position.getY());
+        assertEquals(1115508, (long) position.getX());
+        assertEquals(7081108, (long) position.getY());
         assertEquals("D 22081", position.getZipCode());
         assertEquals("Hamburg/Uhlenhorst", position.getCity());
         assertEquals("Finkenau", position.getStreet());
@@ -76,11 +83,12 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertFalse(position.isUnstructured());
     }
 
+    @Test
     public void testParsePosition() {
         BcrPosition position = format.parsePosition("Standort,999999999", "1139093,7081574", "bei D 22885,Barsbüttel/Stemwarde,,0,");
         assertEquals(999999999, position.getAltitude());
-        assertEquals(1139093, position.getX());
-        assertEquals(7081574, position.getY());
+        assertEquals(1139093, (long) position.getX());
+        assertEquals(7081574, (long) position.getY());
         assertEquals("bei D 22885", position.getZipCode());
         assertEquals("Barsbüttel/Stemwarde", position.getCity());
         assertNull(position.getStreet());
@@ -88,20 +96,22 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertFalse(position.isUnstructured());
     }
 
+    @Test
     public void testParsePositionFromMotorradTourenplaner() {
         BcrPosition position = format.parsePosition("Standort,999999999", "1115508,7081108", "Großensee/Schwarzeka,,@,0,");
         assertNull(position.getZipCode());
         assertEquals("Großensee/Schwarzeka", position.getCity());
-        assertEquals(BcrPosition.STREET_DEFINES_CENTER_NAME, position.getStreet());
+        assertEquals(STREET_DEFINES_CENTER_NAME, position.getStreet());
         assertEquals("0", position.getType());
         assertFalse(position.isUnstructured());
     }
 
+    @Test
     public void testParsePositionFromITNConv() {
         BcrPosition position = format.parsePosition("Standort,999999999", "1115508,7081108", "Hamburg/Uhlenhorst");
         assertEquals(999999999, position.getAltitude());
-        assertEquals(1115508, position.getX());
-        assertEquals(7081108, position.getY());
+        assertEquals(1115508, (long) position.getX());
+        assertEquals(7081108, (long) position.getY());
         assertNull(position.getZipCode());
         assertEquals("Hamburg/Uhlenhorst", position.getCity());
         assertNull(position.getStreet());
@@ -109,23 +119,25 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertTrue(position.isUnstructured());
     }
 
+    @Test
     public void testParseNegativePosition() {
         BcrPosition position = format.parsePosition("Standort,999999999", "-449242,6182322", "bei F 29400,Lampaul Guimiliau,@,0,");
         assertEquals("bei F 29400", position.getZipCode());
         assertEquals("Lampaul Guimiliau", position.getCity());
-        assertEquals(BcrPosition.STREET_DEFINES_CENTER_NAME, position.getStreet());
+        assertEquals(STREET_DEFINES_CENTER_NAME, position.getStreet());
         assertEquals("0", position.getType());
         assertFalse(position.isUnstructured());
-        assertEquals(BcrPosition.NO_ALTITUDE_DEFINED, position.getAltitude());
-        assertEquals(-449242, position.getX());
-        assertEquals(6182322, position.getY());
+        assertEquals(NO_ALTITUDE_DEFINED, position.getAltitude());
+        assertEquals(-449242, (long) position.getX());
+        assertEquals(6182322, (long) position.getY());
     }
 
+    @Test
     public void testSetComment() {
         BcrPosition position = format.parsePosition("TOWN,210845415855", "2115508,9081108", null);
         assertEquals(210845415855L, position.getAltitude());
-        assertEquals(2115508, position.getX());
-        assertEquals(9081108, position.getY());
+        assertEquals(2115508, (long) position.getX());
+        assertEquals(9081108, (long) position.getY());
         assertNull(position.getZipCode());
         assertNull(position.getCity());
         assertNull(position.getStreet());
@@ -136,19 +148,20 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertNull(position.getComment());
     }
 
+    @Test
     public void testSetLongitudeAndLatitudeAndElevation() {
         BcrPosition position = format.parsePosition("TOWN,210945416161", "2115508,9081108", null);
-        assertEquals(2115508, position.getX());
-        assertEquals(9081108, position.getY());
-        assertEquals(55.52, position.getElevation());
+        assertEquals(2115508, (long) position.getX());
+        assertEquals(9081108, (long) position.getY());
+        assertDoubleEquals(55.52, position.getElevation());
         position.setLongitude(19.02522);
         position.setLatitude(62.963395);
         position.setElevation(14.42);
-        assertEquals(2115508, position.getX());
-        assertEquals(9081108, position.getY());
-        assertEquals(19.02522, position.getLongitude());
-        assertEquals(62.96339, position.getLatitude());
-        assertEquals(14.42, position.getElevation());
+        assertEquals(2115508, (long) position.getX());
+        assertEquals(9081108, (long) position.getY());
+        assertDoubleEquals(19.02522, position.getLongitude());
+        assertDoubleEquals(62.96339, position.getLatitude());
+        assertDoubleEquals(14.42, position.getElevation());
         position.setLongitude(null);
         position.setLatitude(null);
         position.setElevation(null);
@@ -159,6 +172,7 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertNull(position.getElevation());
     }
 
+    @Test
     public void testSetCommentForMTPFirstAndLastPosition() {
         BcrPosition position = new BcrPosition(1, 2, 3, ",Hamburg/Uhlenhorst,,0,");
         assertNull(position.getZipCode());
@@ -168,6 +182,7 @@ public class MTP0607FormatTest extends NavigationTestCase {
         assertFalse(position.isUnstructured());
     }
 
+    @Test
     public void testReadComment() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
@@ -181,7 +196,8 @@ public class MTP0607FormatTest extends NavigationTestCase {
         BcrPosition position2 = positions.get(1);
         assertEquals("End", position2.getComment());
     }
-    
+
+    @Test
     public void testWriteComment() {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);

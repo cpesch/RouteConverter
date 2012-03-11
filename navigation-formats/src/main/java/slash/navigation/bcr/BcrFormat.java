@@ -37,6 +37,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.parseLong;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
+
 /**
  * The base of all Map&Guide Tourenplaner Route formats.
  *
@@ -53,12 +57,11 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     static final String ROUTE_TITLE = "ROUTE";
 
     private static final Pattern SECTION_TITLE_PATTERN = Pattern.
-            compile("\\" + SECTION_PREFIX + "(" + CLIENT_TITLE + "|" + COORDINATES_TITLE + "|" +
-                    DESCRIPTION_TITLE + "|" + ROUTE_TITLE + ")\\" + SECTION_POSTFIX);
+            compile("\\" + SECTION_PREFIX + "([\\p{Upper}|\\s]+)" + SECTION_POSTFIX);
 
     static final char VALUE_SEPARATOR = ',';
     private static final Pattern COORDINATES_VALUE_PATTERN = Pattern.compile("(-?\\d+)" + VALUE_SEPARATOR + "(-?\\d+)");
-    private static final Pattern CLIENT_VALUE_PATTERN = Pattern.compile("(Town|TOWN|Standort|STANDORT|)" + VALUE_SEPARATOR + "([^,]+),?.*");
+    private static final Pattern ALTITUDE_VALUE_PATTERN = Pattern.compile("([\\w|\\s]+)" + VALUE_SEPARATOR + "([^,]+),?.*");
 
     static final String ROUTE_NAME = "ROUTENAME";
     static final String EXPECTED_DISTANCE = "EXP_DISTANCE";
@@ -177,29 +180,26 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         client.removeStations();
         coordinates.removeStations();
         description.removeStations();
-
-        if (!existsSection(sections, ROUTE_TITLE))
-            sections.add(new BcrSection(ROUTE_TITLE));
     }
 
     BcrPosition parsePosition(String client, String coordinate, String description) {
         Matcher coordinateMatcher = COORDINATES_VALUE_PATTERN.matcher(coordinate);
         if (!coordinateMatcher.matches())
-            throw new IllegalArgumentException("'" + coordinate + "' does not match");
+            throw new IllegalArgumentException("'" + coordinate + "' does not match coordinates pattern");
         String x = coordinateMatcher.group(1);
         String y = coordinateMatcher.group(2);
 
-        long altitude = BcrPosition.NO_ALTITUDE_DEFINED;
-        Matcher clientMatcher = CLIENT_VALUE_PATTERN.matcher(client);
+        long altitude = NO_ALTITUDE_DEFINED;
+        Matcher clientMatcher = ALTITUDE_VALUE_PATTERN.matcher(client);
         if (!clientMatcher.matches())
             log.info("'" + client + "' does not match client station pattern; ignoring it");
         else {
-            String altitudeString = Transfer.trim(clientMatcher.group(2));
+            String altitudeString = trim(clientMatcher.group(2));
             if (altitudeString != null)
-                altitude = Transfer.parseLong(altitudeString);
+                altitude = parseLong(altitudeString);
         }
 
-        return new BcrPosition(Transfer.parseInt(x), Transfer.parseInt(y), altitude, Transfer.trim(description));
+        return new BcrPosition(Transfer.parseInt(x), Transfer.parseInt(y), altitude, trim(description));
     }
 
 

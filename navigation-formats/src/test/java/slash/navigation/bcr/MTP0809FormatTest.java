@@ -20,16 +20,20 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class MTP0809FormatTest extends NavigationTestCase {
-    MTP0809Format format = new MTP0809Format();
-    BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "WP,End,@,,0,")));
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+public class MTP0809FormatTest {
+    private MTP0809Format format = new MTP0809Format();
+    private BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "WP,End,@,,0,")));
+
+    @Test
     public void testReadComment() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
@@ -44,6 +48,7 @@ public class MTP0809FormatTest extends NavigationTestCase {
         assertEquals("End,@", position2.getComment());
     }
 
+    @Test
     public void testWriteComment() {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);

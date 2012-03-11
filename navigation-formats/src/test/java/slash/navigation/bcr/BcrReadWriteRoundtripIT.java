@@ -25,6 +25,8 @@ import slash.navigation.base.ReadWriteBase;
 
 import java.io.IOException;
 
+import static slash.navigation.bcr.BcrFormat.*;
+
 public class BcrReadWriteRoundtripIT extends ReadWriteBase {
     private void checkUnprocessedValue(BcrRoute route, String section, String name, String value) {
         BcrSection bs = route.findSection(section);
@@ -32,19 +34,32 @@ public class BcrReadWriteRoundtripIT extends ReadWriteBase {
         assertEquals(value, bs.get(name));
     }
 
-    public void testRoundtrip() throws IOException {
+    public void testMotorradTourenplanerRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new NavigationFileParserCallback() {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
-                checkUnprocessedValue(sourceRoute, BcrFormat.CLIENT_TITLE, "EXTRA", "1");
-                checkUnprocessedValue(sourceRoute, BcrFormat.COORDINATES_TITLE, "PLUS", "2");
-                checkUnprocessedValue(sourceRoute, BcrFormat.DESCRIPTION_TITLE, "ENCORE", "3");
-                checkUnprocessedValue(sourceRoute, BcrFormat.ROUTE_TITLE, "CORRUSED", "0");
+                checkUnprocessedValue(sourceRoute, CLIENT_TITLE, "EXTRA", "1");
+                checkUnprocessedValue(sourceRoute, COORDINATES_TITLE, "PLUS", "2");
+                checkUnprocessedValue(sourceRoute, DESCRIPTION_TITLE, "ENCORE", "3");
+                checkUnprocessedValue(sourceRoute, ROUTE_TITLE, "CORRUSED", "0");
                 BcrRoute targetRoute = (BcrRoute) target.getAllRoutes().get(0);
-                checkUnprocessedValue(targetRoute, BcrFormat.CLIENT_TITLE, "EXTRA", "1");
-                checkUnprocessedValue(targetRoute, BcrFormat.COORDINATES_TITLE, "PLUS", "2");
-                checkUnprocessedValue(targetRoute, BcrFormat.DESCRIPTION_TITLE, "ENCORE", "3");
-                checkUnprocessedValue(targetRoute, BcrFormat.ROUTE_TITLE, "CORRUSED", "0");
+                checkUnprocessedValue(targetRoute, CLIENT_TITLE, "EXTRA", "1");
+                checkUnprocessedValue(targetRoute, COORDINATES_TITLE, "PLUS", "2");
+                checkUnprocessedValue(targetRoute, DESCRIPTION_TITLE, "ENCORE", "3");
+                checkUnprocessedValue(targetRoute, ROUTE_TITLE, "CORRUSED", "0");
+            }
+        });
+    }
+
+    public void testMapAndGuideIntranetRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-mgintra09.bcr", new NavigationFileParserCallback() {
+            public void test(NavigationFileParser source, NavigationFileParser target) {
+                BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
+                checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION1", "0");
+                checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION2", "1");
+                BcrRoute targetRoute = (BcrRoute) target.getAllRoutes().get(0);
+                checkUnprocessedValue(targetRoute, "STAYTIME", "STATION1", "0");
+                checkUnprocessedValue(targetRoute, "STAYTIME", "STATION2", "1");
             }
         });
     }

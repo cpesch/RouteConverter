@@ -20,11 +20,13 @@
 
 package slash.navigation.bcr;
 
-import slash.common.io.Transfer;
-
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.bcr.BcrPosition.*;
+import static slash.navigation.bcr.BcrSection.STATION_PREFIX;
 
 /**
  * Reads and writes Map&Guide Tourenplaner 2008/2009 (.bcr) files.
@@ -55,13 +57,13 @@ public class MTP0809Format extends BcrFormat {
     }
 
     protected void writePosition(BcrPosition position, PrintWriter writer, int index) {
-        String zipCode = Transfer.trim(position.getZipCode()) != null ? position.getZipCode() : BcrPosition.ZIPCODE_DEFINES_NOTHING;
+        String zipCode = trim(position.getZipCode()) != null ? position.getZipCode() : ZIPCODE_DEFINES_NOTHING;
         String city = position.getCity() != null ? position.getCity() : "";
-        String street = Transfer.trim(position.getStreet()) != null ? position.getStreet() : "";
-        if (BcrPosition.STREET_DEFINES_CENTER_NAME.equals(street))
-            street = BcrPosition.STREET_DEFINES_CENTER_SYMBOL;
-        String type = Transfer.trim(position.getType()) != null ? position.getType() : "0";
+        String street = trim(position.getStreet()) != null ? position.getStreet() : "";
+        if (STREET_DEFINES_CENTER_NAME.equals(street))
+            street = STREET_DEFINES_CENTER_SYMBOL;
+        String type = trim(position.getType()) != null ? position.getType() : "0";
         String comment = zipCode + VALUE_SEPARATOR + city + VALUE_SEPARATOR + street + VALUE_SEPARATOR + type + VALUE_SEPARATOR;
-        writer.println(BcrSection.STATION_PREFIX + index + NAME_VALUE_SEPARATOR + comment);
+        writer.println(STATION_PREFIX + index + NAME_VALUE_SEPARATOR + comment);
     }
 }

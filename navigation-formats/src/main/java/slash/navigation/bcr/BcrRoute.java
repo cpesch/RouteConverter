@@ -21,7 +21,13 @@
 package slash.navigation.bcr;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.GkPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -30,18 +36,65 @@ import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalTrackFormat;
-import slash.navigation.gpx.*;
-import slash.navigation.itn.*;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxFormat;
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTomPosition;
+import slash.navigation.itn.TomTomRoute;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
-import slash.navigation.kml.*;
+import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.Igo8RouteFormat;
+import slash.navigation.kml.Kml20Format;
+import slash.navigation.kml.Kml21Format;
+import slash.navigation.kml.Kml22BetaFormat;
+import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.KmlPosition;
+import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.Kmz20Format;
+import slash.navigation.kml.Kmz21Format;
+import slash.navigation.kml.Kmz22BetaFormat;
+import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.nmea.*;
-import slash.navigation.nmn.*;
+import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.NmeaPosition;
+import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
+import slash.navigation.nmn.NmnRoute;
+import slash.navigation.nmn.NmnRouteFormat;
+import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.simple.*;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoogleMapsUrlFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.GroundTrackFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.OpelNaviFormat;
+import slash.navigation.simple.QstarzQ1000Format;
+import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.SygicUnicodeFormat;
+import slash.navigation.simple.WebPageFormat;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
@@ -56,6 +109,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.bcr.BcrFormat.CLIENT_TITLE;
+import static slash.navigation.bcr.BcrFormat.COORDINATES_TITLE;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION_LINE_COUNT;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION_TITLE;
+import static slash.navigation.bcr.BcrFormat.ROUTE_NAME;
+import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
+
 /**
  * A Map&Guide Tourenplaner Route (.bcr) route.
  *
@@ -68,20 +130,20 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
 
 
     public BcrRoute(BcrFormat format, List<BcrSection> sections, List<BcrPosition> positions) {
-        super(format, RouteCharacteristics.Route);
+        super(format, Route);
         this.sections = sections;
         this.positions = positions;
     }
 
     public BcrRoute(BcrFormat format, String name, List<String> description, List<BcrPosition> positions) {
         this(format, new ArrayList<BcrSection>(), positions);
-        sections.add(new BcrSection(BcrFormat.CLIENT_TITLE));
-        sections.add(new BcrSection(BcrFormat.COORDINATES_TITLE));
-        sections.add(new BcrSection(BcrFormat.DESCRIPTION_TITLE));
-        sections.add(new BcrSection(BcrFormat.ROUTE_TITLE));
+        sections.add(new BcrSection(CLIENT_TITLE));
+        sections.add(new BcrSection(COORDINATES_TITLE));
+        sections.add(new BcrSection(DESCRIPTION_TITLE));
+        sections.add(new BcrSection(ROUTE_TITLE));
         setName(name);
         setDescription(description);
-        findSection(BcrFormat.CLIENT_TITLE).put("REQUEST", "TRUE");
+        findSection(CLIENT_TITLE).put("REQUEST", "TRUE");
     }
 
 
@@ -98,18 +160,18 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
     }
 
     public String getName() {
-        BcrSection section = findSection(BcrFormat.CLIENT_TITLE);
-        return section.get(BcrFormat.ROUTE_NAME);
+        BcrSection section = findSection(CLIENT_TITLE);
+        return section.get(ROUTE_NAME);
     }
 
     public void setName(String name) {
-        BcrSection section = findSection(BcrFormat.CLIENT_TITLE);
-        section.put(BcrFormat.ROUTE_NAME, name);
+        BcrSection section = findSection(CLIENT_TITLE);
+        section.put(ROUTE_NAME, name);
     }
 
     private int getDescriptionCount() {
-        BcrSection client = findSection(BcrFormat.CLIENT_TITLE);
-        String countStr = client.get(BcrFormat.DESCRIPTION_LINE_COUNT);
+        BcrSection client = findSection(CLIENT_TITLE);
+        String countStr = client.get(DESCRIPTION_LINE_COUNT);
         if (countStr == null)
             return 0;
         return Integer.parseInt(countStr);
@@ -117,21 +179,21 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
 
     public List<String> getDescription() {
         List<String> descriptions = new ArrayList<String>();
-        BcrSection client = findSection(BcrFormat.CLIENT_TITLE);
+        BcrSection client = findSection(CLIENT_TITLE);
         int count = getDescriptionCount();
         for (int i = 0; i < count; i++) {
-            descriptions.add(client.get(BcrFormat.DESCRIPTION + (i + 1)));
+            descriptions.add(client.get(DESCRIPTION + (i + 1)));
         }
         return descriptions;
     }
 
     private void setDescription(List<String> description) {
-        BcrSection client = findSection(BcrFormat.CLIENT_TITLE);
-        client.remove(BcrFormat.DESCRIPTION_LINE_COUNT);
+        BcrSection client = findSection(CLIENT_TITLE);
+        client.remove(DESCRIPTION_LINE_COUNT);
 
         Set<String> removeNames = new HashSet<String>();
         for (String name : client.keySet()) {
-            if (name.startsWith(BcrFormat.DESCRIPTION))
+            if (name.startsWith(DESCRIPTION))
                 removeNames.add(name);
         }
         for (String name : removeNames) {
@@ -139,9 +201,9 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         }
 
         if (description != null) {
-            client.put(BcrFormat.DESCRIPTION_LINE_COUNT, Integer.toString(description.size()));
+            client.put(DESCRIPTION_LINE_COUNT, Integer.toString(description.size()));
             for (int i = 0; i < description.size(); i++) {
-                client.put(BcrFormat.DESCRIPTION + (i + 1), description.get(i));
+                client.put(DESCRIPTION + (i + 1), description.get(i));
             }
         }
     }

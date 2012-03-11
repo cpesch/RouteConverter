@@ -82,6 +82,8 @@ public abstract class NavigationTestCase extends TestCase {
                 if (!w.equals(GENERATED_BY))
                     wasFiltered.add(w);
             }
+        if (expected.size() == 0)
+            expected = null;
         if (wasFiltered.size() == 0)
             wasFiltered = null;
         assertEquals(expected, wasFiltered);
