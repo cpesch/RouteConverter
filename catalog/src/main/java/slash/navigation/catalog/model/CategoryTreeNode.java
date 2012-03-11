@@ -46,9 +46,9 @@ public interface CategoryTreeNode extends MutableTreeNode {
     void setTreeModel(DefaultTreeModel treeModel);
     RoutesListModel getRoutesListModel();
 
-    CategoryTreeNode addSubCategory(String name) throws IOException;
-    void moveCategory(CategoryTreeNode parent) throws IOException;
-    void renameCategory(String name) throws IOException;
+    CategoryTreeNode addChild(String name) throws IOException;
+    void move(CategoryTreeNode parent) throws IOException;
+    void rename(String name) throws IOException;
     void delete() throws IOException;
     Route addRoute(String description, File file) throws IOException;
     Route addRoute(String description, String fileUrl) throws IOException;

@@ -42,7 +42,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog to add file to RouteService
+ * Dialog to addChild file to RouteService
  *
  * @author Christian Pesch
  */

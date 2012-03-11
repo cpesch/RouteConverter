@@ -82,6 +82,12 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -325,13 +331,13 @@ public class BrowsePanel {
         final CategoryTreeNode selected = getSelectedTreeNode();
         final String name = JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
-                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE);
+                RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
 
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
-                final CategoryTreeNode subCategory = selected.addSubCategory(name);
+                final CategoryTreeNode subCategory = selected.addChild(name);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         treeCategories.expandPath(new TreePath(selected.getPath()));
@@ -346,13 +352,13 @@ public class BrowsePanel {
         final CategoryTreeNode selected = getSelectedTreeNode();
         final String name = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
-                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getName());
+                RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getName());
         if (trim(name) == null)
             return;
 
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
-                selected.renameCategory(name);
+                selected.rename(name);
             }
         });
     }
@@ -369,8 +375,8 @@ public class BrowsePanel {
 
         int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("confirm-delete-category"), categoryNames),
-                RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION)
+                RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
+        if (confirm != YES_OPTION)
             return;
 
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -389,10 +395,10 @@ public class BrowsePanel {
         JFileChooser chooser = Constants.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
         chooser.setSelectedFile(RouteConverter.getInstance().getUploadRoutePreference());
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
         int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != JFileChooser.APPROVE_OPTION)
+        if (open != APPROVE_OPTION)
             return;
 
         final File[] selected = chooser.getSelectedFiles();
@@ -440,7 +446,7 @@ public class BrowsePanel {
             RouteConverter r = RouteConverter.getInstance();
             JOptionPane.showMessageDialog(r.getFrame(),
                     r.getContext().getBundle().getString("add-file-category-missing"),
-                    r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+                    r.getFrame().getTitle(), ERROR_MESSAGE);
             return;
         }
 
@@ -458,7 +464,7 @@ public class BrowsePanel {
             RouteConverter r = RouteConverter.getInstance();
             JOptionPane.showMessageDialog(r.getFrame(),
                     r.getContext().getBundle().getString("add-url-category-missing"),
-                    r.getFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+                    r.getFrame().getTitle(), ERROR_MESSAGE);
             return;
         }
 
@@ -494,7 +500,7 @@ public class BrowsePanel {
         try {
             description = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
-                    RouteConverter.getInstance().getFrame().getTitle(), JOptionPane.QUESTION_MESSAGE, null, null, selected.getDescription());
+                    RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getDescription());
         } catch (IOException e) {
             getOperator().handleServiceError(e);
         }
@@ -504,7 +510,7 @@ public class BrowsePanel {
         final String theDescription = description;
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
-                // strange way to handle cache invalidations
+                // TODO strange way to handle cache invalidations
                 categoryTreeNode.renameRoute(selected, theDescription);
             }
         });
@@ -523,7 +529,7 @@ public class BrowsePanel {
             public void run() throws IOException {
                 for (int selectedRow : selectedRows) {
                     Route route = getRoutesListModel().getRoute(selectedRow);
-                    // strange way to handle cache invalidations
+                    // TODO strange way to handle cache invalidations
                     category.deleteRoute(route);
                 }
             }
@@ -535,7 +541,7 @@ public class BrowsePanel {
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 for (CategoryTreeNode category : categories) {
-                    category.moveCategory(parent);
+                    category.move(parent);
                 }
             }
         });

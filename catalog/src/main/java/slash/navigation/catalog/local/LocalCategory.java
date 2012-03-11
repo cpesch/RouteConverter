@@ -62,7 +62,7 @@ public class LocalCategory implements Category {
         return getName();
     }
 
-    public List<Category> getSubCategories() throws IOException {
+    public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (File subDirectory : directory.listFiles(new DirectoryFileFilter())) {
             categories.add(new LocalCategory(catalog, subDirectory));
@@ -70,14 +70,14 @@ public class LocalCategory implements Category {
         return categories;
     }
 
-    public Category addSubCategory(String name) throws IOException {
+    public Category create(String name) throws IOException {
         File subDirectory = new File(directory, name);
         if (!subDirectory.mkdir())
             throw new IOException(format("cannot create %s", subDirectory));
         return new LocalCategory(catalog, subDirectory);
     }
 
-    public void updateCategory(Category parent, String name) throws IOException {
+    public void update(Category parent, String name) throws IOException {
         File newName = new File(directory.getParentFile(), name);
         if (!directory.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", directory, newName));

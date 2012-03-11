@@ -112,7 +112,7 @@ public class FrameMenu {
         menuBar.add(positionlistMenu);
         menuBar.add(viewMenu);
         menuBar.add(extrasMenu);
-        // menuBar.add(Box.createHorizontalGlue());
+        // menuBar.addChild(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
         return menuBar;
     }

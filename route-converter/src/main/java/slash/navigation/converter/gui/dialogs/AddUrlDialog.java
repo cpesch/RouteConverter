@@ -40,7 +40,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog to add url to RouteService
+ * Dialog to addChild url to RouteService
  *
  * @author Christian Pesch
  */

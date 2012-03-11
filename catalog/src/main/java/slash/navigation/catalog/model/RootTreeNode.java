@@ -71,15 +71,15 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
         return null;
     }
 
-    public CategoryTreeNode addSubCategory(String name) throws IOException {
+    public CategoryTreeNode addChild(String name) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    public void moveCategory(CategoryTreeNode parent) throws IOException {
+    public void move(CategoryTreeNode parent) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    public void renameCategory(String name) throws IOException {
+    public void rename(String name) throws IOException {
         throw new UnsupportedOperationException();
     }
 

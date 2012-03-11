@@ -34,9 +34,9 @@ public interface Category {
     String getName() throws IOException;
     String getDescription() throws IOException;
 
-    List<Category> getSubCategories() throws IOException;
-    Category addSubCategory(String name) throws IOException;
-    void updateCategory(Category parent, String name) throws IOException;
+    List<Category> getCategories() throws IOException;
+    Category create(String name) throws IOException;
+    void update(Category parent, String name) throws IOException;
     void delete() throws IOException;
 
     List<Route> getRoutes() throws IOException;

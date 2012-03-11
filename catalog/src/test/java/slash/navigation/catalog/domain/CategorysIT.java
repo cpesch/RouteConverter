@@ -36,7 +36,7 @@ public class CategorysIT extends RouteCatalogServiceBase {
     }
 
     private Category getSubCategory(Category root, String name) throws IOException {
-        for (Category category : root.getSubCategories()) {
+        for (Category category : root.getCategories()) {
             if (category.getName().equals(name))
                 return category;
         }
@@ -44,12 +44,12 @@ public class CategorysIT extends RouteCatalogServiceBase {
     }
 
     private Category addSubCategory(Category root, String name) throws IOException {
-        int before = root.getSubCategories().size();
-        Category category = root.addSubCategory(name);
-        int after = root.getSubCategories().size();
+        int before = root.getCategories().size();
+        Category category = root.create(name);
+        int after = root.getCategories().size();
         assertEquals(before + 1, after);
         assertEquals(name, category.getName());
-        assertEquals(name, root.getSubCategories().get(after - 1).getName());
+        assertEquals(name, root.getCategories().get(after - 1).getName());
         Category find = getSubCategory(root, name);
         assertNotNull(find);
         assertEquals(name, find.getName());
@@ -94,9 +94,9 @@ public class CategorysIT extends RouteCatalogServiceBase {
     public void testRename() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category category = root.addSubCategory(name);
+        Category category = root.create(name);
         String rename = "Renamed " + name;
-        category.updateCategory(null, rename);
+        category.update(null, rename);
         assertEquals(rename, category.getName());
         Category find = getSubCategory(root, rename);
         assertNotNull(find);
@@ -107,9 +107,9 @@ public class CategorysIT extends RouteCatalogServiceBase {
     public void testRenameWithNullParentParameter() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category category = root.addSubCategory(name);
+        Category category = root.create(name);
         String rename = "Renamed " + name;
-        category.updateCategory(null, rename);
+        category.update(null, rename);
         assertEquals(rename, category.getName());
         Category find = getSubCategory(root, rename);
         assertNotNull(find);
@@ -120,10 +120,10 @@ public class CategorysIT extends RouteCatalogServiceBase {
     public void testRenameCategoryWithSlashes() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category category = root.addSubCategory(name);
+        Category category = root.create(name);
         String rename = "Slashes / Category / " + name;
         try {
-            category.updateCategory(root, rename);
+            category.update(root, rename);
             assertTrue(false);
         } catch (IOException e) {
         }
@@ -133,15 +133,15 @@ public class CategorysIT extends RouteCatalogServiceBase {
     public void testMove() throws Exception {
         Category root = catalog.getRootCategory();
         String firstName = "First Category " + System.currentTimeMillis();
-        Category first = root.addSubCategory(firstName);
+        Category first = root.create(firstName);
         String secondName = "Second Category " + System.currentTimeMillis();
-        Category second = root.addSubCategory(secondName);
+        Category second = root.create(secondName);
 
         String name = "Category " + System.currentTimeMillis();
-        Category category = first.addSubCategory(name);
+        Category category = first.create(name);
 
         String rename = "Moved " + name;
-        category.updateCategory(second, rename);
+        category.update(second, rename);
         assertEquals(rename, category.getName());
         Category find = getSubCategory(first, rename);
         assertNull(find);
@@ -154,12 +154,12 @@ public class CategorysIT extends RouteCatalogServiceBase {
     public void testMoveToSelfAsParent() throws Exception {
         Category root = catalog.getRootCategory();
         String parentName = "Parent " + System.currentTimeMillis();
-        Category parent = root.addSubCategory(parentName);
+        Category parent = root.create(parentName);
         String moveName = "Move " + System.currentTimeMillis();
-        Category move = parent.addSubCategory(moveName);
+        Category move = parent.create(moveName);
 
         try {
-            move.updateCategory(move, move.getName());
+            move.update(move, move.getName());
             assertTrue(false);
         } catch (IOException e) {
         }
@@ -169,14 +169,14 @@ public class CategorysIT extends RouteCatalogServiceBase {
     public void testMoveToOwnChild() throws Exception {
         Category root = catalog.getRootCategory();
         String parentName = "Parent " + System.currentTimeMillis();
-        Category parent = root.addSubCategory(parentName);
+        Category parent = root.create(parentName);
         String moveName = "Move " + System.currentTimeMillis();
-        Category move = parent.addSubCategory(moveName);
+        Category move = parent.create(moveName);
         String childName = "Child " + System.currentTimeMillis();
-        Category child = move.addSubCategory(childName);
+        Category child = move.create(childName);
 
         try {
-            move.updateCategory(child, move.getName());
+            move.update(child, move.getName());
             assertTrue(false);
         } catch (IOException e) {
         }

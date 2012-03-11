@@ -99,7 +99,7 @@ public class RemoteCategory implements Category {
         return getGpx().getMetadata().getDesc();
     }
 
-    public List<Category> getSubCategories() throws IOException {
+    public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (LinkType linkType : getGpx().getMetadata().getLink()) {
             categories.add(new RemoteCategory(catalog, linkType.getHref(), linkType.getText()));
@@ -115,13 +115,13 @@ public class RemoteCategory implements Category {
         return routes;
     }
 
-    public Category addSubCategory(String name) throws IOException {
+    public Category create(String name) throws IOException {
         String resultUrl = catalog.addCategory(getUrl(), name);
         invalidate();
         return new RemoteCategory(catalog, resultUrl, name);
     }
 
-    public void updateCategory(Category parent, String name) throws IOException {
+    public void update(Category parent, String name) throws IOException {
         url = catalog.updateCategory(getUrl(), parent != null ? parent.getUrl() : null, name);
         this.name = name;
         recursiveInvalidate();

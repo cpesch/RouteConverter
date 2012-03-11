@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Reacts on drop operations on a panel to open a file or add it to the catalog.
+ * Reacts on drop operations on a panel to open a file or addChild it to the catalog.
  *
  * @author Christian Pesch
  */

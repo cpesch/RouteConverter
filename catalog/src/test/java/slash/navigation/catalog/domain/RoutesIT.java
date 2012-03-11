@@ -32,7 +32,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     public void testAddRoute() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category category = root.addSubCategory(name);
+        Category category = root.create(name);
 
         String description = "Route " + System.currentTimeMillis();
         Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
@@ -49,7 +49,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     public void testAddRouteWithUmlauts() throws Exception {
         String name = "Category äöüßÄÖÜ Umlauts " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category category = root.addSubCategory(name);
+        Category category = root.create(name);
 
         String description = "Route äöüßÄÖÜ " + System.currentTimeMillis();
         Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
@@ -66,7 +66,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     public void testUpdateRouteViaCategory() throws Exception {
         String sourceName = "Source Category " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category source = root.addSubCategory(sourceName);
+        Category source = root.create(sourceName);
 
         String sourceDescription = "Route " + System.currentTimeMillis();
         Route route = source.addRoute(sourceDescription, new File(TEST_PATH + "filestest.gpx"));
@@ -85,7 +85,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
         assertEquals(targetDescription, route.getDescription());
 
         String targetName = "Target Category " + System.currentTimeMillis();
-        Category target = root.addSubCategory(targetName);
+        Category target = root.create(targetName);
         source.updateRoute(route, target, targetDescription);
 
         List<Route> sourceAfterCategoryChange = source.getRoutes();
@@ -102,7 +102,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
     public void testDeleteRouteViaCategory() throws Exception {
          String name = "Category " + System.currentTimeMillis();
          Category root = catalog.getRootCategory();
-         Category category = root.addSubCategory(name);
+         Category category = root.create(name);
 
          String description = "Route " + System.currentTimeMillis();
          Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));
@@ -123,7 +123,7 @@ public class RoutesIT extends RouteCatalogServiceBase {
      public void testDeleteRouteDirectly() throws Exception {
         String name = "Category " + System.currentTimeMillis();
         Category root = catalog.getRootCategory();
-        Category category = root.addSubCategory(name);
+        Category category = root.create(name);
 
         String description = "Route " + System.currentTimeMillis();
         Route route = category.addRoute(description, new File(TEST_PATH + "filestest.gpx"));

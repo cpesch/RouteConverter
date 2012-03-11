@@ -84,7 +84,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
     private void ensureInited() {
         if (children == null) {
             try {
-                List<Category> categories = getCategory().getSubCategories();
+                List<Category> categories = getCategory().getCategories();
                 Category[] categoriesArray = categories.toArray(new Category[categories.size()]);
                 Arrays.sort(categoriesArray, categoryComparator);
                 for (Category child : categoriesArray) {
@@ -145,23 +145,23 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         return routesListModel;
     }
 
-    public CategoryTreeNode addSubCategory(String name) throws IOException {
-        Category subCategory = getCategory().addSubCategory(name);
+    public CategoryTreeNode addChild(String name) throws IOException {
+        Category subCategory = getCategory().create(name);
         ensureInited();
         CategoryTreeNode treeNode = new CategoryTreeNodeImpl(subCategory);
         getTreeModel().insertNodeInto(treeNode, this, Math.max(children == null ? 0 : getChildCount() - 1, 0));
         return treeNode;
     }
 
-    public void renameCategory(String name) throws IOException {
-        getCategory().updateCategory(null, name);
+    public void rename(String name) throws IOException {
+        getCategory().update(null, name);
         children = null;
         getTreeModel().nodeChanged(this);
         getTreeModel().nodeStructureChanged(this);
     }
 
-    public void moveCategory(CategoryTreeNode parent) throws IOException {
-        getCategory().updateCategory(parent.getCategory(), getCategory().getName());
+    public void move(CategoryTreeNode parent) throws IOException {
+        getCategory().update(parent.getCategory(), getCategory().getName());
         getTreeModel().removeNodeFromParent(this);
         getTreeModel().insertNodeInto(this, parent, Math.max(children == null ? 0 : getChildCount() - 1, 0));
     }
