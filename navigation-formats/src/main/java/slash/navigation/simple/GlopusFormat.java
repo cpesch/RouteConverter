@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
  * Reads and writes Glopus (.tk) files.
  *
  * Format: 51.0450383,7.0508300,Comment
+ *         51.04503,7.05083
  *
  * @author Christian Pesch
  */
