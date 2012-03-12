@@ -27,6 +27,8 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
+import static slash.navigation.gui.Constants.loadIcon;
+
 /**
  * Renders the {@link CategoryTreeNode} names.
  *
@@ -34,6 +36,12 @@ import java.awt.*;
  */
 
 public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
+
+    public CategoryTreeCellRenderer() {
+        setOpenIcon(loadIcon("slash/navigation/converter/gui/folder-open.png"));
+        setClosedIcon(loadIcon("slash/navigation/converter/gui/folder.png"));
+        setLeafIcon(getClosedIcon());
+    }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
