@@ -47,7 +47,15 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
         return false;
     }
 
+    public boolean isLocal() {
+        return false;
+    }
+
     public boolean isRemoteRoot() {
+        return false;
+    }
+
+    public boolean isRemote() {
         return false;
     }
 

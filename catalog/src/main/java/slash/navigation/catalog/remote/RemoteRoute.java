@@ -35,27 +35,28 @@ import java.net.URL;
  */
 
 public class RemoteRoute implements Route {
-    private final RemoteCatalog catalog;
+    private final RemoteCategory category;
     private final String url;
     private String name, creator, description;
     private boolean fromCategory = false;
     private GpxType gpx;
-    private RemoteCategory category;
 
-    public RemoteRoute(RemoteCatalog catalog, String url, RemoteCategory category) {
-        this.catalog = catalog;
-        this.url = url;
+    public RemoteRoute(RemoteCategory category, String url) {
         this.category = category;
+        this.url = url;
     }
 
-    public RemoteRoute(RemoteCatalog catalog, String url, String name, String creator, String description, RemoteCategory category) {
-        this.catalog = catalog;
+    public RemoteRoute(RemoteCategory category, String url, String name, String creator, String description) {
+        this.category = category;
         this.url = url;
         this.name = name;
         this.creator = creator;
         this.description = description;
         fromCategory = true;
-        this.category = category;
+    }
+
+    private RemoteCatalog getCatalog() {
+        return category.getCatalog();
     }
 
     public String getUrl() {
@@ -64,14 +65,13 @@ public class RemoteRoute implements Route {
 
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
-            gpx = catalog.fetchGpx(getUrl());
+            gpx = getCatalog().fetchGpx(getUrl());
         }
         return gpx;
     }
 
     private synchronized void invalidate() {
         category.invalidate();
-        category = null;
         gpx = null;
         name = null;
         creator = null;
@@ -110,13 +110,13 @@ public class RemoteRoute implements Route {
     }
 
     public void update(String categoryUrl, String description) throws IOException {
-        catalog.updateRoute(categoryUrl, getUrl(), description, getRteLinkHref());
+        getCatalog().updateRoute(categoryUrl, getUrl(), description, getRteLinkHref());
         invalidate();
     }
 
     public void delete() throws IOException {
-        catalog.deleteRoute(getUrl());
-        catalog.deleteFile(getRteLinkHref());
+        getCatalog().deleteRoute(getUrl());
+        getCatalog().deleteFile(getRteLinkHref());
         invalidate();
     }
 
@@ -127,17 +127,18 @@ public class RemoteRoute implements Route {
 
         RemoteRoute route = (RemoteRoute) o;
 
-        return catalog.equals(route.catalog) && getUrl().equals(route.getUrl());
+        return category.equals(route.category) && getUrl().equals(route.getUrl());
     }
 
     public int hashCode() {
         int result;
-        result = catalog.hashCode();
+        result = category.hashCode();
         result = 31 * result + getUrl().hashCode();
         return result;
     }
 
     public String toString() {
-        return super.toString() + "[url=" + getUrl() + ", name=" + name + ", creator=" + creator + ", description=" + description + ", fromCategory=" + fromCategory + "]";
+        return super.toString() + "[url=" + getUrl() + ", name=" + name + ", creator=" + creator +
+                ", description=" + description + ", fromCategory=" + fromCategory + ", category=" + category + "]";
     }
 }

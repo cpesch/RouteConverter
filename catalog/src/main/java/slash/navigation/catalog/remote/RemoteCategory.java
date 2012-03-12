@@ -51,13 +51,17 @@ public class RemoteCategory implements Category {
         this.name = name;
     }
 
+    RemoteCatalog getCatalog() {
+        return catalog;
+    }
+
     public String getUrl() {
         return url;
     }
 
     private synchronized GpxType getGpx() throws IOException {
         if (gpx == null) {
-            gpx = catalog.fetchGpx(getUrl());
+            gpx = getCatalog().fetchGpx(getUrl());
 
             // avoid subsequent NullPointerExceptions on server errors
             if (gpx == null) {
@@ -83,7 +87,7 @@ public class RemoteCategory implements Category {
         List<RemoteCategory> categories = new ArrayList<RemoteCategory>();
         if (gpx != null)
             for (LinkType linkType : gpx.getMetadata().getLink()) {
-                categories.add(new RemoteCategory(catalog, linkType.getHref(), linkType.getText()));
+                categories.add(new RemoteCategory(getCatalog(), linkType.getHref(), linkType.getText()));
             }
         return categories;
     }
@@ -102,7 +106,7 @@ public class RemoteCategory implements Category {
     public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (LinkType linkType : getGpx().getMetadata().getLink()) {
-            categories.add(new RemoteCategory(catalog, linkType.getHref(), linkType.getText()));
+            categories.add(new RemoteCategory(getCatalog(), linkType.getHref(), linkType.getText()));
         }
         return categories;
     }
@@ -110,37 +114,37 @@ public class RemoteCategory implements Category {
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
         for (RteType rteType : getGpx().getRte()) {
-            routes.add(new RemoteRoute(catalog, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc(), this));
+            routes.add(new RemoteRoute(this, rteType.getLink().get(0).getHref(), rteType.getName(), rteType.getSrc(), rteType.getDesc()));
         }
         return routes;
     }
 
     public Category create(String name) throws IOException {
-        String resultUrl = catalog.addCategory(getUrl(), name);
+        String resultUrl = getCatalog().addCategory(getUrl(), name);
         invalidate();
-        return new RemoteCategory(catalog, resultUrl, name);
+        return new RemoteCategory(getCatalog(), resultUrl, name);
     }
 
     public void update(Category parent, String name) throws IOException {
-        url = catalog.updateCategory(getUrl(), parent != null ? parent.getUrl() : null, name);
+        url = getCatalog().updateCategory(getUrl(), parent != null ? parent.getUrl() : null, name);
         this.name = name;
         recursiveInvalidate();
     }
 
     public void delete() throws IOException {
-        catalog.deleteCategory(getUrl());
+        getCatalog().deleteCategory(getUrl());
     }
 
     public Route createRoute(String description, File file) throws IOException {
-        String resultUrl = catalog.addRouteAndFile(getUrl(), description, file);
+        String resultUrl = getCatalog().addRouteAndFile(getUrl(), description, file);
         invalidate();
-        return new RemoteRoute(catalog, resultUrl, this);
+        return new RemoteRoute(this, resultUrl);
     }
 
     public Route createRoute(String description, String fileUrl) throws IOException {
-        String resultUrl = catalog.addRoute(getUrl(), description, fileUrl);
+        String resultUrl = getCatalog().addRoute(getUrl(), description, fileUrl);
         invalidate();
-        return new RemoteRoute(catalog, resultUrl, this);
+        return new RemoteRoute(this, resultUrl);
     }
 
 
@@ -150,12 +154,12 @@ public class RemoteCategory implements Category {
 
         RemoteCategory category = (RemoteCategory) o;
 
-        return catalog.equals(category.catalog) && getUrl().equals(category.getUrl());
+        return getCatalog().equals(category.getCatalog()) && getUrl().equals(category.getUrl());
     }
 
     public int hashCode() {
         int result;
-        result = catalog.hashCode();
+        result = getCatalog().hashCode();
         result = 31 * result + getUrl().hashCode();
         return result;
     }

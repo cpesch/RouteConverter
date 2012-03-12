@@ -34,6 +34,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.util.Arrays.sort;
+
 /**
  * Acts as a {@link TreeNode} for a {@link Category}.
  *
@@ -86,7 +88,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
             try {
                 List<Category> categories = getCategory().getCategories();
                 Category[] categoriesArray = categories.toArray(new Category[categories.size()]);
-                Arrays.sort(categoriesArray, categoryComparator);
+                sort(categoriesArray, categoryComparator);
                 for (Category child : categoriesArray) {
                     insert(new CategoryTreeNodeImpl(child), children == null ? 0 : getChildCount());
                 }
@@ -100,8 +102,20 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         return localRoot;
     }
 
+    public boolean isLocal() {
+        if (getParent() == null)
+            return isLocalRoot();
+        return ((CategoryTreeNode) getParent()).isLocal();
+    }
+
     public boolean isRemoteRoot() {
         return remoteRoot;
+    }
+
+    public boolean isRemote() {
+        if (getParent() == null)
+            return isRemoteRoot();
+        return ((CategoryTreeNode)getParent()).isRemote();
     }
 
     private DefaultTreeModel treeModel;
@@ -135,7 +149,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
             try {
                 List<Route> routes = getCategory().getRoutes();
                 Route[] routesArray = routes.toArray(new Route[routes.size()]);
-                Arrays.sort(routesArray, routeComparator);
+                sort(routesArray, routeComparator);
                 routes = new ArrayList<Route>(Arrays.asList(routesArray));
                 routesListModel = new RoutesListModel(routes);
             } catch (Exception e) {

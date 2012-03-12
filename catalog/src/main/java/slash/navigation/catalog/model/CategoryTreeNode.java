@@ -37,7 +37,9 @@ import java.io.IOException;
 
 public interface CategoryTreeNode extends MutableTreeNode {
     boolean isLocalRoot();
+    boolean isLocal();
     boolean isRemoteRoot();
+    boolean isRemote();
     Category getCategory();
     String getName();
     TreeNode[] getPath();

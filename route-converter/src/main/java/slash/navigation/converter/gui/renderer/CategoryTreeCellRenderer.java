@@ -42,8 +42,6 @@ public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
             String name = categoryTreeNode.getName();
             if (name == null)
                 name = RouteConverter.getBundle().getString("no-name");
-            if(categoryTreeNode.isLocalRoot())
-                name = RouteConverter.getBundle().getString("local-catalog");
             else if(categoryTreeNode.isRemoteRoot())
                 name = RouteConverter.getBundle().getString("remote-catalog");
 

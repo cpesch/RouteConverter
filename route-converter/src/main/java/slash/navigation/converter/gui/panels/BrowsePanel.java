@@ -252,7 +252,7 @@ public class BrowsePanel {
 
     private String createRootFolder() {
         String rootFolderPreference = preferences.get(LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE,
-                new File(System.getProperty("user.home"), RouteConverter.getBundle().getString("local-catalog-my-routes")).getAbsolutePath());
+                new File(System.getProperty("user.home"), RouteConverter.getBundle().getString("local-catalog")).getAbsolutePath());
         File rootFolder = new File(rootFolderPreference);
         if (!rootFolder.exists()) {
             if (!rootFolder.mkdirs()) {
@@ -273,8 +273,10 @@ public class BrowsePanel {
 
     protected CategoryTreeNode getSelectedTreeNode() {
         TreePath treePath = treeCategories.getSelectionPath();
+        // if there is no selected root take the local root
         Object treeNode = treePath != null ?
-                treePath.getLastPathComponent() : treeCategories.getModel().getRoot();
+                treePath.getLastPathComponent() :
+                treeCategories.getModel().getChild(treeCategories.getModel().getRoot(), 0);
         if (!(treeNode instanceof CategoryTreeNode))
             return null;
         return (CategoryTreeNode) treeNode;
@@ -510,7 +512,6 @@ public class BrowsePanel {
         final String theDescription = description;
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
-                // TODO strange way to handle cache invalidations
                 categoryTreeNode.renameRoute(selected, theDescription);
             }
         });
@@ -529,7 +530,6 @@ public class BrowsePanel {
             public void run() throws IOException {
                 for (int selectedRow : selectedRows) {
                     Route route = getRoutesListModel().getRoute(selectedRow);
-                    // TODO strange way to handle cache invalidations
                     category.deleteRoute(route);
                 }
             }
