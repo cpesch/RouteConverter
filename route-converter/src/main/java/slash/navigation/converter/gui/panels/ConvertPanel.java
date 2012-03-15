@@ -351,7 +351,7 @@ public class ConvertPanel {
         List<URL> copy = new ArrayList<URL>(urls);
         for (Iterator<URL> it = copy.iterator(); it.hasNext(); ) {
             URL url = it.next();
-            File file = Files.toFile(url);
+            File file = toFile(url);
             if (file != null && (!file.exists() || !file.isFile())) {
                 log.warning(file + " does not exist or is not a file");
                 it.remove();
@@ -402,14 +402,14 @@ public class ConvertPanel {
         List<URL> urls = toUrls(selected);
         List<NavigationFormat> formats = selectedFormat != null ?
                 getReadFormatsWithPreferredFormat(selectedFormat) :
-                getReadFormatsPreferredByExtension(Files.getExtension(urls));
+                getReadFormatsPreferredByExtension(getExtension(urls));
         openPositionList(urls, formats);
     }
 
     public void openPositionList(final List<URL> urls) {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
-        openPositionList(urls, getReadFormatsPreferredByExtension(Files.getExtension(urls)));
+        openPositionList(urls, getReadFormatsPreferredByExtension(getExtension(urls)));
     }
 
     @SuppressWarnings("unchecked")
@@ -609,7 +609,7 @@ public class ConvertPanel {
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
-                            Files.shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
+                            shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     r.getFrame().getTitle(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
@@ -817,9 +817,9 @@ public class ConvertPanel {
 
     private File createSelectedSource() {
         File source = new File(urlModel.getString());
-        source = Files.findExistingPath(source);
+        source = findExistingPath(source);
         File path = new File(RouteConverter.getInstance().getOpenPathPreference());
-        path = Files.findExistingPath(path);
+        path = findExistingPath(path);
         if (path == null)
             return source;
         else if (source != null)
@@ -836,8 +836,8 @@ public class ConvertPanel {
             path = file.getParentFile();
         String fileName = file.getName();
         if (format instanceof GoPal3RouteFormat)
-            fileName = Files.createGoPalFileName(fileName);
-        return new File(Files.calculateConvertFileName(new File(path, fileName), "", format.getMaximumFileNameLength()));
+            fileName = createGoPalFileName(fileName);
+        return new File(calculateConvertFileName(new File(path, fileName), "", format.getMaximumFileNameLength()));
     }
 
     private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat> formats, String selectedFormat) {

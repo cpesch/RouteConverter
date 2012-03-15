@@ -32,7 +32,13 @@ import slash.navigation.simple.GoogleMapsUrlFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.util.RouteComments;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,6 +49,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static slash.common.io.Files.getExtension;
+import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 
 /**
  * Parses files with navigation information via NavigationFormat classes.
@@ -189,14 +198,14 @@ public class NavigationFileParser {
         }
     }
 
-    private FormatAndRoutes zipRead(InputStream source, int readBufferSize, Calendar startDate,
-                                    List<NavigationFormat> formats) {
+    private FormatAndRoutes zipRead(InputStream source, int readBufferSize, Calendar startDate) {
         ZipInputStream zip = new ZipInputStream(source);
         try {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip, (int) entry.getSize() + 1));
                 buffer.mark(readBufferSize + 1);
+                List<NavigationFormat> formats = getReadFormatsPreferredByExtension(getExtension(entry.getName()));
                 FormatAndRoutes formatAndRoutes = internalRead(buffer, (int)entry.getSize() + 1, startDate, formats);
                 if (formatAndRoutes != null)
                     return formatAndRoutes;
@@ -225,7 +234,7 @@ public class NavigationFileParser {
         try {
             formatAndRoutes = internalRead(buffer, readBufferSize, startDate, formats);
             if(formatAndRoutes == null) {
-                formatAndRoutes = zipRead(buffer, readBufferSize, startDate, formats);
+                formatAndRoutes = zipRead(buffer, readBufferSize, startDate);
             }
             return formatAndRoutes != null;
         }
