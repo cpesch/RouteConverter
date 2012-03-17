@@ -73,7 +73,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -82,6 +81,7 @@ import java.util.prefs.Preferences;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
@@ -89,6 +89,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
@@ -334,8 +335,8 @@ public class BrowsePanel {
 
     private void addCategory() {
         final CategoryTreeNode selected = getSelectedTreeNode();
-        final String name = JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
+        final String name = showInputDialog(RouteConverter.getInstance().getFrame(),
+                format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
                 RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
@@ -354,10 +355,11 @@ public class BrowsePanel {
     }
 
     private void renameCategory() {
+        RouteConverter r = RouteConverter.getInstance();
         final CategoryTreeNode selected = getSelectedTreeNode();
-        final String name = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
-                RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getName());
+        final String name = (String) showInputDialog(r.getFrame(),
+                format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
+                r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getName());
         if (trim(name) == null)
             return;
 
@@ -379,7 +381,7 @@ public class BrowsePanel {
         }
 
         int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString("confirm-delete-category"), categoryNames),
+                format(RouteConverter.getBundle().getString("confirm-delete-category"), categoryNames),
                 RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
         if (confirm != YES_OPTION)
             return;
@@ -503,8 +505,8 @@ public class BrowsePanel {
         final Route selected = getRoutesListModel().getRoute(selectedRow);
         String description = null;
         try {
-            description = (String) JOptionPane.showInputDialog(RouteConverter.getInstance().getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
+            description = (String) showInputDialog(RouteConverter.getInstance().getFrame(),
+                    format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
                     RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getDescription());
         } catch (IOException e) {
             getOperator().handleServiceError(e);
@@ -703,8 +705,8 @@ public class BrowsePanel {
         }
 
         protected Transferable createTransferable(JComponent c) {
-            JTable table = (JTable)c;
-            RoutesListModel  model = (RoutesListModel) table.getModel();
+            JTable table = (JTable) c;
+            RoutesListModel model = (RoutesListModel) table.getModel();
             int[] selectedRows = table.getSelectedRows();
             List<Route> selectedRoutes = toModels(selectedRows, model);
             return new RouteSelection(selectedRoutes);
