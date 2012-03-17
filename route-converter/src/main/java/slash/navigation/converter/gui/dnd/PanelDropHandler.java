@@ -24,16 +24,19 @@ import slash.common.io.Files;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
+import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static java.util.Arrays.asList;
+import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 
 /**
  * Reacts on drop operations on a panel to open a file or addChild it to the catalog.
@@ -44,38 +47,40 @@ import java.util.logging.Logger;
 public class PanelDropHandler extends TransferHandler {
     private static final Logger log = Logger.getLogger(PanelDropHandler.class.getName());
 
-    protected void openOrAdd(List<File> files) {
-        if (RouteConverter.getInstance().isConvertPanelSelected())
-            RouteConverter.getInstance().openPositionList(Files.toUrls(files.toArray(new File[files.size()])));
-        else if (RouteConverter.getInstance().isBrowsePanelSelected())
-            RouteConverter.getInstance().addFilesToCatalog(files);
+    private void openOrAdd(List<File> files) {
+        RouteConverter r = RouteConverter.getInstance();
+        if (r.isConvertPanelSelected())
+            r.openPositionList(Files.toUrls(files.toArray(new File[files.size()])));
+        else if (r.isBrowsePanelSelected())
+            r.addFilesToCatalog(files);
     }
 
-    protected void openOrAdd(String string) {
-        if (RouteConverter.getInstance().isConvertPanelSelected()) {
-            String url = DnDHelper.extractUrl(string);
+    private void openOrAdd(String string) {
+        RouteConverter r = RouteConverter.getInstance();
+        if (r.isConvertPanelSelected()) {
+            String url = extractUrl(string);
             try {
-                RouteConverter.getInstance().openPositionList(Arrays.asList(new URL(url)));
+                r.openPositionList(asList(new URL(url)));
             }
             catch (MalformedURLException e) {
                 log.severe("Could not create URL from '" + url + "'");
             }
-        } else if (RouteConverter.getInstance().isBrowsePanelSelected()) {
-            RouteConverter.getInstance().addUrlToCatalog(string);
+        } else if (r.isBrowsePanelSelected()) {
+            r.addUrlToCatalog(string);
         }
     }
 
     public boolean canImport(TransferSupport support) {
-        return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                support.isDataFlavorSupported(DataFlavor.stringFlavor);
+        return support.isDataFlavorSupported(javaFileListFlavor) ||
+                support.isDataFlavorSupported(stringFlavor);
     }
 
     @SuppressWarnings("unchecked")
     public boolean importData(TransferSupport support) {
         Transferable transferable = support.getTransferable();
         try {
-            if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                Object data = transferable.getTransferData(DataFlavor.javaFileListFlavor);
+            if (support.isDataFlavorSupported(javaFileListFlavor)) {
+                Object data = transferable.getTransferData(javaFileListFlavor);
                 if (data != null) {
                     List<File> files = (List<File>) data;
                     openOrAdd(files);
@@ -83,8 +88,8 @@ public class PanelDropHandler extends TransferHandler {
                 }
             }
 
-            if (support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                Object data = transferable.getTransferData(DataFlavor.stringFlavor);
+            if (support.isDataFlavorSupported(stringFlavor)) {
+                Object data = transferable.getTransferData(stringFlavor);
                 if (data != null) {
                     String url = (String) data;
                     openOrAdd(url);

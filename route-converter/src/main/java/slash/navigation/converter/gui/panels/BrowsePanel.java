@@ -67,7 +67,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
@@ -81,6 +80,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
+import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.util.Arrays.asList;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
@@ -89,6 +90,8 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
+import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 
 /**
  * The browse panel of the route converter user interface.
@@ -685,18 +688,25 @@ public class BrowsePanel {
         return browsePanel;
     }
 
-    private class TableDragHandler extends TransferHandler {
+    private static class TableDragHandler extends TransferHandler {
         public int getSourceActions(JComponent comp) {
             return MOVE;
         }
 
-        protected Transferable createTransferable(JComponent c) {
-            int[] selectedRows = tableRoutes.getSelectedRows();
+        private List<Route> toModels(int[] rowIndices, RoutesListModel model) {
             List<Route> selectedRoutes = new ArrayList<Route>();
-            for (int selectedRow : selectedRows) {
-                Route route = getRoutesListModel().getRoute(selectedRow);
+            for (int selectedRow : rowIndices) {
+                Route route = model.getRoute(selectedRow);
                 selectedRoutes.add(route);
             }
+            return selectedRoutes;
+        }
+
+        protected Transferable createTransferable(JComponent c) {
+            JTable table = (JTable)c;
+            RoutesListModel  model = (RoutesListModel) table.getModel();
+            int[] selectedRows = table.getSelectedRows();
+            List<Route> selectedRoutes = toModels(selectedRows, model);
             return new RouteSelection(selectedRoutes);
         }
     }
@@ -711,10 +721,10 @@ public class BrowsePanel {
         }
 
         public boolean canImport(TransferSupport support) {
-            return support.isDataFlavorSupported(CategorySelection.categoryFlavor) ||
-                    support.isDataFlavorSupported(RouteSelection.routeFlavor) ||
-                    support.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                    support.isDataFlavorSupported(DataFlavor.stringFlavor);
+            return support.isDataFlavorSupported(categoryFlavor) ||
+                    support.isDataFlavorSupported(routeFlavor) ||
+                    support.isDataFlavorSupported(javaFileListFlavor) ||
+                    support.isDataFlavorSupported(stringFlavor);
         }
 
         @SuppressWarnings("unchecked")
@@ -724,8 +734,8 @@ public class BrowsePanel {
             CategoryTreeNode target = (CategoryTreeNode) path.getLastPathComponent();
             try {
                 Transferable t = support.getTransferable();
-                if (support.isDataFlavorSupported(CategorySelection.categoryFlavor)) {
-                    Object data = t.getTransferData(CategorySelection.categoryFlavor);
+                if (support.isDataFlavorSupported(categoryFlavor)) {
+                    Object data = t.getTransferData(categoryFlavor);
                     if (data != null) {
                         List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
                         moveCategory(categories, target);
@@ -733,8 +743,8 @@ public class BrowsePanel {
                     }
                 }
 
-                if (support.isDataFlavorSupported(RouteSelection.routeFlavor)) {
-                    Object data = t.getTransferData(RouteSelection.routeFlavor);
+                if (support.isDataFlavorSupported(routeFlavor)) {
+                    Object data = t.getTransferData(routeFlavor);
                     if (data != null) {
                         List<Route> routes = (List<Route>) data;
                         CategoryTreeNode source = getSelectedTreeNode();
@@ -743,8 +753,8 @@ public class BrowsePanel {
                     }
                 }
 
-                if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
+                if (support.isDataFlavorSupported(javaFileListFlavor)) {
+                    Object data = t.getTransferData(javaFileListFlavor);
                     if (data != null) {
                         List<File> files = (List<File>) data;
                         addFilesToCatalog(target, files);
@@ -752,8 +762,8 @@ public class BrowsePanel {
                     }
                 }
 
-                if (support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    Object data = t.getTransferData(DataFlavor.stringFlavor);
+                if (support.isDataFlavorSupported(stringFlavor)) {
+                    Object data = t.getTransferData(stringFlavor);
                     if (data != null) {
                         String url = (String) data;
                         addUrlToCatalog(target, url);
