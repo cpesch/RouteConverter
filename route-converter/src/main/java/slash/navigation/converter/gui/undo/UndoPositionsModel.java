@@ -44,8 +44,8 @@ import java.util.List;
  */
 
 public class UndoPositionsModel implements PositionsModel {
-    private PositionsModelImpl delegate = new PositionsModelImpl();
-    private UndoManager undoManager;
+    private final PositionsModelImpl delegate = new PositionsModelImpl();
+    private final UndoManager undoManager;
 
     public UndoPositionsModel(UndoManager undoManager) {
         this.undoManager = undoManager;
