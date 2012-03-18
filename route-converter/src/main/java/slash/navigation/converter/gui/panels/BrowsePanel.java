@@ -45,8 +45,8 @@ import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.DnDHelper;
+import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.helper.JTreeHelper;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.helper.TreePathStringConversion;
 import slash.navigation.converter.gui.models.CatalogModel;
@@ -89,6 +89,7 @@ import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
+import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -202,7 +203,7 @@ public class BrowsePanel {
         });
         treeCategories.setCellRenderer(new CategoryTreeCellRenderer());
         treeCategories.setDragEnabled(true);
-        treeCategories.setDropMode(DropMode.ON);
+        treeCategories.setDropMode(ON);
         treeCategories.setTransferHandler(new TreeDragAndDropHandler());
 
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
@@ -228,6 +229,8 @@ public class BrowsePanel {
                 r.openPositionList(asList(url));
             }
         });
+
+        browsePanel.setTransferHandler(new PanelDropHandler());
 
         new Thread(new Runnable() {
             public void run() {

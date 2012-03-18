@@ -129,6 +129,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
+import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -324,7 +325,7 @@ public class ConvertPanel {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tablePositions.setDragEnabled(true);
-        tablePositions.setDropMode(DropMode.ON);
+        tablePositions.setDropMode(ON);
         tablePositions.setTransferHandler(new TableDragAndDropHandler());
 
         getPositionsModel().addTableModelListener(new TableModelListener() {
