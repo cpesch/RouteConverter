@@ -30,6 +30,7 @@ import slash.navigation.gui.UndoManager;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.util.List;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
@@ -82,6 +83,16 @@ public class UndoCatalogModel implements CatalogModel {
 
     // Undoable operations
 
+    public void add(List<CategoryTreeNode> parents, List<String> names) {
+        add(parents, names, true);
+    }
+    
+    void add(List<CategoryTreeNode> categories, List<String> names, boolean trackUndo) {
+        delegate.add(categories, names);
+        if (trackUndo)
+            undoManager.addEdit(new AddCategories(this, categories, names));
+    }
+
     public void rename(CategoryTreeNode category, String name) {
         rename(category, name, true);
     }
@@ -91,5 +102,15 @@ public class UndoCatalogModel implements CatalogModel {
         delegate.rename(category, newName);
         if (trackUndo)
             undoManager.addEdit(new RenameCategory(this, category, oldName, newName));
+    }
+
+    public void remove(List<CategoryTreeNode> parents, List<String> names) {
+        remove(parents, names, true);
+    }
+
+    void remove(List<CategoryTreeNode> categories, List<String> names, boolean trackUndo) {
+        delegate.remove(categories, names);
+        if (trackUndo)
+            undoManager.addEdit(new RemoveCategories(this, categories, names));
     }
 }

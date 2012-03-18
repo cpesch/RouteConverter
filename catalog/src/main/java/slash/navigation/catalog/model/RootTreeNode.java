@@ -83,20 +83,7 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
         throw new UnsupportedOperationException();
     }
 
-
-    public CategoryTreeNode addChild(String name) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
     public void move(CategoryTreeNode parent) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void rename(String name) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void delete() throws IOException {
         throw new UnsupportedOperationException();
     }
 

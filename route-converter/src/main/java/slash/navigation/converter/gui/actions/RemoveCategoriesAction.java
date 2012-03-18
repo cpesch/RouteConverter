@@ -26,12 +26,14 @@ import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.text.MessageFormat.format;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.showInputDialog;
-import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 
 /**
  * {@link Action} that renames a {@link CategoryTreeNode} of the {@link CatalogModel}.
@@ -39,23 +41,35 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
  * @author Christian Pesch
  */
 
-public class RenameCategoryAction extends FrameAction {
+public class RemoveCategoriesAction extends FrameAction {
     private final JTree tree;
 
-    public RenameCategoryAction(JTree tree) {
+    public RemoveCategoriesAction(JTree tree) {
         this.tree = tree;
     }
 
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
-        String name = (String) showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("rename-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());
-        if (trim(name) == null)
+        List<CategoryTreeNode> categories = getSelectedCategoryTreeNodes(tree);
+        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(categories.size());
+        List<String> names = new ArrayList<String>(categories.size()); 
+        StringBuilder categoryNames = new StringBuilder();
+        for (int i = 0; i < categories.size(); i++) {
+            CategoryTreeNode categoryTreeNode = categories.get(i);
+            parents.add((CategoryTreeNode) categoryTreeNode.getParent());
+            names.add(categoryTreeNode.getName());
+            categoryNames.append(categoryTreeNode.getName());
+            if (i < categories.size() - 1)
+                categoryNames.append(", ");
+        }
+
+        int confirm = showConfirmDialog(r.getFrame(),
+                format(RouteConverter.getBundle().getString("confirm-remove-category"), categoryNames),
+                r.getFrame().getTitle(), YES_NO_OPTION);
+        if (confirm != YES_OPTION)
             return;
 
-        ((CatalogModel) tree.getModel()).rename(category, name);
-    }
+        ((CatalogModel) tree.getModel()).remove(parents, names);
+   }
 }

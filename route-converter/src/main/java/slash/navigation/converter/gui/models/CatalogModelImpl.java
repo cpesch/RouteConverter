@@ -28,6 +28,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
@@ -49,7 +50,42 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
         return false;
     }
 
+    private CategoryTreeNode getChild(CategoryTreeNode parent, String name) {
+        for(int i=0; i<getChildCount(parent); i++) {
+            CategoryTreeNode category = (CategoryTreeNode) getChild(parent, i);
+            if(category.getName().equals(name))
+                return category;
+        }
+        return null;
+    }
+
     // Undoable operations
+
+    public void add(final List<CategoryTreeNode> parents, final List<String> names) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "AddCategories";
+            }
+
+            public void run() throws IOException {
+                for (int i = 0; i < parents.size(); i++) {
+                    CategoryTreeNode category = parents.get(i);
+                    category.getCategory().create(names.get(i));
+                }
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        for (CategoryTreeNode parent : parents) {
+                            parent.clearChildren();
+                        }
+                        for (CategoryTreeNode parent : parents) {
+                            nodeStructureChanged(parent);
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     public void rename(final CategoryTreeNode category, final String name) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
@@ -64,7 +100,30 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
                     public void run() {
                         category.clearChildren();
                         nodeChanged(category);
-                        // TODO nodeStructureChanged(category);
+                    }
+                });
+            }
+        });
+    }
+    
+    public void remove(final List<CategoryTreeNode> parents, final List<String> names) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "RemoveCategories";
+            }
+
+            public void run() throws IOException {
+                for (int i = 0; i < parents.size(); i++) {
+                    CategoryTreeNode category = getChild(parents.get(i), names.get(i));
+                    category.getCategory().delete();
+                }
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        for (int i = 0; i < parents.size(); i++) {
+                            CategoryTreeNode category = getChild(parents.get(i), names.get(i));
+                            removeNodeFromParent(category);
+                        }
                     }
                 });
             }

@@ -26,36 +26,45 @@ import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 
 import static java.text.MessageFormat.format;
+import static java.util.Arrays.asList;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 
 /**
- * {@link Action} that renames a {@link CategoryTreeNode} of the {@link CatalogModel}.
+ * {@link Action} that adds a category to the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
 
-public class RenameCategoryAction extends FrameAction {
+public class AddCategoryAction extends FrameAction {
     private final JTree tree;
 
-    public RenameCategoryAction(JTree tree) {
+    public AddCategoryAction(JTree tree) {
         this.tree = tree;
     }
 
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
-        String name = (String) showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("rename-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());
+        final CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
+        String name = showInputDialog(r.getFrame(),
+                format(RouteConverter.getBundle().getString("add-category-label"), category.getName()),
+                r.getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
 
-        ((CatalogModel) tree.getModel()).rename(category, name);
+        ((CatalogModel) tree.getModel()).add(asList(category), asList(name));
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                tree.expandPath(new TreePath(category.getPath()));
+                tree.scrollPathToVisible(new TreePath(category.getPath()));
+            }
+        });
     }
 }

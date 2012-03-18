@@ -26,40 +26,40 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
+import java.util.List;
 
 /**
- * Acts as a {@link UndoableEdit} for renaming a {@link CategoryTreeNode} of a {@link UndoCatalogModel}.
+ * Acts as a {@link UndoableEdit} for removing {@link CategoryTreeNode}s of a {@link UndoCatalogModel}.
  *
  * @author Christian Pesch
  */
 
-class RenameCategory extends AbstractUndoableEdit {
-    private UndoCatalogModel catalogModel;
-    private CategoryTreeNode category;
-    private String oldName, newName;
-    
-    public RenameCategory(UndoCatalogModel catalogModel, CategoryTreeNode category, String oldName, String newName) {
+class RemoveCategories extends AbstractUndoableEdit {
+    private final UndoCatalogModel catalogModel;
+    private final List<CategoryTreeNode> categories;
+    private final List<String> names;
+
+    public RemoveCategories(UndoCatalogModel catalogModel, List<CategoryTreeNode> categories, List<String> names) {
         this.catalogModel = catalogModel;
-        this.category = category;
-        this.oldName = oldName;
-        this.newName = newName;
+        this.categories = categories;
+        this.names = names;
     }
 
     public String getUndoPresentationName() {
-        return "rename-category-undo";
+        return "remove-category-undo";
     }
 
     public String getRedoPresentationName() {
-        return "rename-category-redo";
+        return "remove-category-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.rename(category, oldName, false);
+        catalogModel.add(categories, names, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.rename(category, newName, false);
+        catalogModel.remove(categories, names, false);
     }
 }

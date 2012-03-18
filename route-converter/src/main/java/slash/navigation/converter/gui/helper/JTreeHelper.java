@@ -23,9 +23,9 @@ package slash.navigation.converter.gui.helper;
 import slash.navigation.catalog.model.CategoryTreeNode;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper for simplified {@link JTree} operations.
@@ -43,5 +43,17 @@ public class JTreeHelper {
         if (!(treeNode instanceof CategoryTreeNode))
             return null;
         return (CategoryTreeNode) treeNode;
+    }
+
+    public static List<CategoryTreeNode> getSelectedCategoryTreeNodes(JTree tree) {
+        TreePath[] treePaths = tree.getSelectionPaths();
+        List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
+        for (TreePath treePath : treePaths) {
+            Object treeNode = treePath.getLastPathComponent();
+            if (!(treeNode instanceof CategoryTreeNode))
+                continue;
+            treeNodes.add((CategoryTreeNode) treeNode);
+        }
+        return treeNodes;
     }
 }

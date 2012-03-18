@@ -18,22 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.models;
+package slash.navigation.converter.gui.actions;
 
-import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.converter.gui.models.FormatAndRoutesModel;
+import slash.navigation.gui.FrameAction;
 
-import javax.swing.tree.TreeModel;
-import java.util.List;
+import javax.swing.*;
 
 /**
- * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
+ * {@link Action} that removes a position list of the {@link FormatAndRoutesModel}.
  *
  * @author Christian Pesch
  */
 
-public interface CatalogModel extends TreeModel {
-    void add(List<CategoryTreeNode> parents, List<String> names);
-    void rename(CategoryTreeNode category, String name);
-    void remove(List<CategoryTreeNode> parents, List<String> names);
+public class RemovePositionListAction extends FrameAction {
+    private FormatAndRoutesModel formatAndRoutesModel;
+
+    public RemovePositionListAction(FormatAndRoutesModel formatAndRoutesModel) {
+        this.formatAndRoutesModel = formatAndRoutesModel;
+    }
+
+    public void run() {
+        BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
+        if (selectedRoute != null)
+            formatAndRoutesModel.removePositionList(selectedRoute);
+    }
 }

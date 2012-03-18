@@ -38,6 +38,8 @@ import slash.navigation.catalog.model.RootTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.AddCategoryAction;
+import slash.navigation.converter.gui.actions.RemoveCategoriesAction;
 import slash.navigation.converter.gui.actions.RenameCategoryAction;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
@@ -91,13 +93,13 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.YES_NO_OPTION;
-import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
+import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 
 /**
  * The browse panel of the route converter user interface.
@@ -114,7 +116,7 @@ public class BrowsePanel {
     private JPanel browsePanel;
     private JTree treeCategories;
     private JTable tableRoutes;
-    private JButton buttonDeleteCategory;
+    private JButton buttonRemoveCategory;
     private JButton buttonAddCategory;
     private JButton buttonRenameCategory;
     private JButton buttonAddFile;
@@ -135,26 +137,18 @@ public class BrowsePanel {
         final RouteConverter r = RouteConverter.getInstance();
 
         CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
-        CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
+        final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
         final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
         catalogModel = new  UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
         
         final ActionManager actionManager = r.getContext().getActionManager();
-        buttonAddCategory.addActionListener(new FrameAction() {
-            public void run() {
-                addCategory();
-            }
-        });
-
+        registerAction(buttonAddCategory, "add-category");
         registerAction(buttonRenameCategory, "rename-category");
-        
-        actionManager.register("rename-category", new RenameCategoryAction(treeCategories));
+        registerAction(buttonRemoveCategory, "remove-category");
 
-        buttonDeleteCategory.addActionListener(new FrameAction() {
-            public void run() {
-                deleteCategory();
-            }
-        });
+        actionManager.register("add-category", new AddCategoryAction(treeCategories));
+        actionManager.register("rename-category", new RenameCategoryAction(treeCategories));
+        actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories));
 
         buttonAddFile.addActionListener(new FrameAction() {
             public void run() {
@@ -164,7 +158,7 @@ public class BrowsePanel {
 
         buttonAddUrl.addActionListener(new FrameAction() {
             public void run() {
-                addUrlToCatalog(getSelectedTreeNode(), "");
+                addUrlToCatalog(getSelectedCategoryTreeNode(treeCategories), "");
             }
         });
 
@@ -237,15 +231,10 @@ public class BrowsePanel {
 
         new Thread(new Runnable() {
             public void run() {
-                /* TODO remove me later
-                final CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
-                final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
-                final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
-                final CategoryTreeModel categoryTreeModel = new CategoryTreeModel(root);
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
-                categoryTreeModel.getChildCount(remoteRoot);
-                */
+                catalogModel.getChildCount(remoteRoot);
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         Constants.startWaitCursor(r.getFrame().getRootPane());
@@ -286,20 +275,6 @@ public class BrowsePanel {
         return buttonAddFile;
     }
 
-    protected CategoryTreeNode getSelectedTreeNode() {
-        // TODO remove this helper later
-        return JTreeHelper.getSelectedCategoryTreeNode(treeCategories);
-    }
-
-    protected List<CategoryTreeNode> getSelectedTreeNodes() {
-        TreePath[] treePaths = treeCategories.getSelectionPaths();
-        List<CategoryTreeNode> treeNodes = new ArrayList<CategoryTreeNode>();
-        for (TreePath treePath : treePaths) {
-            treeNodes.add((CategoryTreeNode) treePath.getLastPathComponent());
-        }
-        return treeNodes;
-    }
-
     private void selectTreePath(TreePath treePath) {
         Object selectedObject = treePath.getLastPathComponent();
         if (!(selectedObject instanceof CategoryTreeNode))
@@ -338,55 +313,8 @@ public class BrowsePanel {
         return RouteConverter.getInstance().getOperator();
     }
 
-    private void addCategory() {
-        final CategoryTreeNode selected = getSelectedTreeNode();
-        final String name = showInputDialog(RouteConverter.getInstance().getFrame(),
-                format(RouteConverter.getBundle().getString("add-category-label"), selected.getName()),
-                RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE);
-        if (trim(name) == null)
-            return;
-
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                final CategoryTreeNode subCategory = selected.addChild(name);
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        treeCategories.expandPath(new TreePath(selected.getPath()));
-                        treeCategories.scrollPathToVisible(new TreePath(subCategory.getPath()));
-                    }
-                });
-            }
-        });
-    }
-
-    private void deleteCategory() {
-        final List<CategoryTreeNode> categories = getSelectedTreeNodes();
-        StringBuilder categoryNames = new StringBuilder();
-        for (int i = 0; i < categories.size(); i++) {
-            CategoryTreeNode categoryTreeNode = categories.get(i);
-            categoryNames.append(categoryTreeNode.getName());
-            if (i < categories.size() - 1)
-                categoryNames.append(", ");
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
-                format(RouteConverter.getBundle().getString("confirm-delete-category"), categoryNames),
-                RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
-        if (confirm != YES_OPTION)
-            return;
-
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                for (CategoryTreeNode category : categories) {
-                    category.delete();
-                }
-            }
-        });
-    }
-
-
     private void addFileToCatalog() {
-        CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
+        CategoryTreeNode categoryTreeNode = getSelectedCategoryTreeNode(treeCategories);
 
         JFileChooser chooser = Constants.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
@@ -434,7 +362,7 @@ public class BrowsePanel {
     }
 
     public void addFilesToCatalog(List<File> files) {
-        addFilesToCatalog(getSelectedTreeNode(), files);
+        addFilesToCatalog(getSelectedCategoryTreeNode(treeCategories), files);
     }
 
     protected void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
@@ -452,7 +380,7 @@ public class BrowsePanel {
     }
 
     public void addUrlToCatalog(String url) {
-        addUrlToCatalog(getSelectedTreeNode(), url);
+        addUrlToCatalog(getSelectedCategoryTreeNode(treeCategories), url);
     }
 
     protected void addUrlToCatalog(CategoryTreeNode category, String url) {
@@ -487,7 +415,7 @@ public class BrowsePanel {
         if (selectedRow == -1)
             return;
 
-        final CategoryTreeNode categoryTreeNode = getSelectedTreeNode();
+        final CategoryTreeNode categoryTreeNode = getSelectedCategoryTreeNode(treeCategories);
         if (categoryTreeNode == null)
             return;
 
@@ -516,7 +444,7 @@ public class BrowsePanel {
         if (selectedRows.length == 0)
             return;
 
-        final CategoryTreeNode category = getSelectedTreeNode();
+        final CategoryTreeNode category = getSelectedCategoryTreeNode(treeCategories);
         if (category == null)
             return;
 
@@ -574,9 +502,9 @@ public class BrowsePanel {
         buttonAddCategory = new JButton();
         this.$$$loadButtonText$$$(buttonAddCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add"));
         panel1.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonDeleteCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonDeleteCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
-        panel1.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonRemoveCategory = new JButton();
+        this.$$$loadButtonText$$$(buttonRemoveCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete"));
+        panel1.add(buttonRemoveCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRenameCategory = new JButton();
         this.$$$loadButtonText$$$(buttonRenameCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
         panel1.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -708,7 +636,8 @@ public class BrowsePanel {
         }
 
         protected Transferable createTransferable(JComponent c) {
-            return new CategorySelection(getSelectedTreeNodes());
+            JTree tree = (JTree) c;
+            return new CategorySelection(getSelectedCategoryTreeNodes(tree));
         }
 
         public boolean canImport(TransferSupport support) {
@@ -738,7 +667,7 @@ public class BrowsePanel {
                     Object data = t.getTransferData(routeFlavor);
                     if (data != null) {
                         List<Route> routes = (List<Route>) data;
-                        CategoryTreeNode source = getSelectedTreeNode();
+                        CategoryTreeNode source = getSelectedCategoryTreeNode(treeCategories);
                         moveRoute(routes, source, target);
                         return true;
                     }
