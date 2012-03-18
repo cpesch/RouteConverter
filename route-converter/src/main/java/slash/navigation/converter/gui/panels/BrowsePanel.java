@@ -32,23 +32,27 @@ import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.local.LocalCatalog;
-import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.CategoryTreeNodeImpl;
 import slash.navigation.catalog.model.RootTreeNode;
 import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.RenameCategoryAction;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.helper.JTreeHelper;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.helper.TreePathStringConversion;
+import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
+import slash.navigation.converter.gui.undo.UndoCatalogModel;
+import slash.navigation.gui.ActionManager;
 import slash.navigation.gui.Constants;
 import slash.navigation.gui.FrameAction;
 import slash.navigation.util.RouteComments;
@@ -93,6 +97,7 @@ import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
+import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 
 /**
  * The browse panel of the route converter user interface.
@@ -118,6 +123,7 @@ public class BrowsePanel {
     private JButton buttonDeleteRoute;
     private JButton buttonLogin;
 
+    private CatalogModel catalogModel;
     private final Catalog remoteCatalog = new RemoteCatalog(System.getProperty("catalog", "http://www.routeconverter.com/catalog/"), RouteConverter.getInstance().getCredentials());
     private final Catalog localCatalog = new LocalCatalog(System.getProperty("root", createRootFolder()));
 
@@ -128,17 +134,21 @@ public class BrowsePanel {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
+        CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
+        CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
+        final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
+        catalogModel = new  UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
+        
+        final ActionManager actionManager = r.getContext().getActionManager();
         buttonAddCategory.addActionListener(new FrameAction() {
             public void run() {
                 addCategory();
             }
         });
 
-        buttonRenameCategory.addActionListener(new FrameAction() {
-            public void run() {
-                renameCategory();
-            }
-        });
+        registerAction(buttonRenameCategory, "rename-category");
+        
+        actionManager.register("rename-category", new RenameCategoryAction(treeCategories));
 
         buttonDeleteCategory.addActionListener(new FrameAction() {
             public void run() {
@@ -227,6 +237,7 @@ public class BrowsePanel {
 
         new Thread(new Runnable() {
             public void run() {
+                /* TODO remove me later
                 final CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
                 final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
                 final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
@@ -234,12 +245,12 @@ public class BrowsePanel {
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
                 categoryTreeModel.getChildCount(remoteRoot);
-
+                */
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         Constants.startWaitCursor(r.getFrame().getRootPane());
                         try {
-                            treeCategories.setModel(categoryTreeModel);
+                            treeCategories.setModel(catalogModel);
                             // start with showing the folders below the roots
                             treeCategories.expandRow(0);
                             treeCategories.expandRow(1);
@@ -276,14 +287,8 @@ public class BrowsePanel {
     }
 
     protected CategoryTreeNode getSelectedTreeNode() {
-        TreePath treePath = treeCategories.getSelectionPath();
-        // if there is no selected root take the local root
-        Object treeNode = treePath != null ?
-                treePath.getLastPathComponent() :
-                treeCategories.getModel().getChild(treeCategories.getModel().getRoot(), 0);
-        if (!(treeNode instanceof CategoryTreeNode))
-            return null;
-        return (CategoryTreeNode) treeNode;
+        // TODO remove this helper later
+        return JTreeHelper.getSelectedCategoryTreeNode(treeCategories);
     }
 
     protected List<CategoryTreeNode> getSelectedTreeNodes() {
@@ -350,22 +355,6 @@ public class BrowsePanel {
                         treeCategories.scrollPathToVisible(new TreePath(subCategory.getPath()));
                     }
                 });
-            }
-        });
-    }
-
-    private void renameCategory() {
-        RouteConverter r = RouteConverter.getInstance();
-        final CategoryTreeNode selected = getSelectedTreeNode();
-        final String name = (String) showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("rename-category-label"), selected.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getName());
-        if (trim(name) == null)
-            return;
-
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                selected.rename(name);
             }
         });
     }
@@ -506,7 +495,7 @@ public class BrowsePanel {
         String description = null;
         try {
             description = (String) showInputDialog(RouteConverter.getInstance().getFrame(),
-                    format(RouteConverter.getBundle().getString("rename-route-label"), selected.getName()),
+                    format(RouteConverter.getBundle().getString("rename-position-list-label"), selected.getName()),
                     RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getDescription());
         } catch (IOException e) {
             getOperator().handleServiceError(e);

@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.helper;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.feedback.domain.RouteFeedback;
-import slash.navigation.gui.Constants;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.swing.*;
@@ -32,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 import static slash.navigation.gui.Constants.startWaitCursor;
+import static slash.navigation.gui.Constants.stopWaitCursor;
 
 /**
  * Helps to interact with the RemoteCatalog and RouteFeedback service.
@@ -67,6 +67,52 @@ public class RouteServiceOperator {
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
+    }
+
+    public interface NewOperation {
+        String getName();
+        void run() throws IOException;
+    }
+
+    public void executeOperation(final NewOperation operation) {
+        new Thread(new Runnable() {
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        startWaitCursor(frame.getRootPane());
+                    }
+                });
+
+                while (true) {
+                    try {
+                        try {
+                            operation.run();
+                        } catch (UnAuthorizedException uae) {
+                            final boolean[] showedLogin = new boolean[1];
+                            showedLogin[0] = false;
+
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                public void run() {
+                                    showedLogin[0] = showLogin();
+                                }
+                            });
+
+                            if (showedLogin[0])
+                                continue;
+                        }
+                    } catch (Throwable t) {
+                        handleServiceError(t);
+                    } finally {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                stopWaitCursor(frame.getRootPane());
+                            }
+                        });
+                    }
+                    break;
+                }
+            }
+        }, operation.getName()).start();
     }
 
     public interface Operation {
@@ -108,7 +154,7 @@ public class RouteServiceOperator {
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(frame.getRootPane());
+                            stopWaitCursor(frame.getRootPane());
                         }
                     });
                 }

@@ -50,7 +50,7 @@ public interface FormatAndRoutesModel extends ComboBoxModel {
     BaseRoute getRoute(int index);
     int getIndex(BaseRoute route);
 
-    void renameRoute(String name);
-    void addRoute(int index, BaseRoute route);
-    void removeRoute(BaseRoute route);
+    void addPositionList(int index, BaseRoute route);
+    void renamePositionList(String name);
+    void removePositionList(BaseRoute route);
 }

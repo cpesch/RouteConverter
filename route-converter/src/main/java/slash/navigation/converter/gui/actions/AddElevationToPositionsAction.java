@@ -28,18 +28,18 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * {@link ActionListener} that adds numbers to the selected rows of a {@link JTable}
+ * {@link ActionListener} that adds elevations to the selected rows of a {@link JTable}
  * with the help of a {@link BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class AddNumberToPositions extends FrameAction {
+public class AddElevationToPositionsAction extends FrameAction {
     private final JTable table;
     private final PositionsModel positionsModel;
     private final BatchPositionAugmenter augmenter;
 
-    public AddNumberToPositions(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
+    public AddElevationToPositionsAction(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
         this.table = table;
         this.positionsModel = positionsModel;
         this.augmenter = augmenter;
@@ -48,7 +48,7 @@ public class AddNumberToPositions extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            augmenter.addNumbers(table, positionsModel, selectedRows);
+            augmenter.addElevations(table, positionsModel, selectedRows);
         }
     }
 }

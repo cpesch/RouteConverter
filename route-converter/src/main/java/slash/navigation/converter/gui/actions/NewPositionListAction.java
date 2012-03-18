@@ -52,7 +52,7 @@ public class NewPositionListAction extends FrameAction {
         BaseRoute route = format.createRoute((RouteCharacteristics) formatAndRoutesModel.getCharacteristicsModel().getSelectedItem(),
                 MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
                 new ArrayList<BaseNavigationPosition>());
-        formatAndRoutesModel.addRoute(formatAndRoutesModel.getSize(), route);
+        formatAndRoutesModel.addPositionList(formatAndRoutesModel.getSize(), route);
         formatAndRoutesModel.setSelectedItem(route);
     }
 }

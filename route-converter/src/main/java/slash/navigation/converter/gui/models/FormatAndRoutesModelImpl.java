@@ -108,12 +108,19 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         fireContentsChanged(this, -1, -1);
     }
 
-    public void addRoute(int index, BaseRoute route) {
+    public void addPositionList(int index, BaseRoute route) {
         getRoutes().add(index, route);
         fireIntervalAdded(this, index, index);
     }
 
-    public void removeRoute(BaseRoute route) {
+    public void renamePositionList(String name) {
+        BaseRoute route = getSelectedRoute();
+        route.setName(name);
+        int index = getRoutes().indexOf(route);
+        fireContentsChanged(this, index, index);
+    }
+
+    public void removePositionList(BaseRoute route) {
         int index = getIndex(route);
         if (index != -1) {
             if (getElementAt(index) == getSelectedRoute()) {
@@ -126,13 +133,6 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
             getRoutes().remove(index);
             fireIntervalRemoved(this, index, index);
         }
-    }
-
-    public void renameRoute(String name) {
-        BaseRoute route = getSelectedRoute();
-        route.setName(name);
-        int index = getRoutes().indexOf(route);
-        fireContentsChanged(this, index, index);
     }
 
     public int getSize() {

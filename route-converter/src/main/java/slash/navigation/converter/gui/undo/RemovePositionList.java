@@ -33,33 +33,33 @@ import javax.swing.undo.UndoableEdit;
  * @author Christian Pesch
  */
 
-class RemoveRoute extends AbstractUndoableEdit {
-    private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private int index;
-    private BaseRoute route;
+class RemovePositionList extends AbstractUndoableEdit {
+    private final UndoFormatAndRoutesModel formatAndRoutesModel;
+    private final int index;
+    private final BaseRoute route;
 
-    public RemoveRoute(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
+    public RemovePositionList(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
         this.formatAndRoutesModel = formatAndRoutesModel;
         this.index = index;
         this.route = route;
     }
 
     public String getUndoPresentationName() {
-        return "remove-route-undo";
+        return "remove-position-list-undo";
     }
 
     public String getRedoPresentationName() {
-        return "remove-route-redo";
+        return "remove-position-list-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        formatAndRoutesModel.addRoute(index, route, false);
+        formatAndRoutesModel.addPositionList(index, route, false);
         formatAndRoutesModel.setSelectedRoute(route);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        formatAndRoutesModel.removeRoute(route, false);
+        formatAndRoutesModel.removePositionList(route, false);
     }
 }

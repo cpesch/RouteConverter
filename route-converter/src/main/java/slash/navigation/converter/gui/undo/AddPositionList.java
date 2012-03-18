@@ -20,42 +20,45 @@
 
 package slash.navigation.converter.gui.undo;
 
+import slash.navigation.base.BaseRoute;
+
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for renaming the route of a {@link UndoFormatAndRoutesModel}.
+ * Acts as a {@link UndoableEdit} for adding the route of a {@link UndoFormatAndRoutesModel}.
  *
  * @author Christian Pesch
  */
 
-class RenameRoute extends AbstractUndoableEdit {
+class AddPositionList extends AbstractUndoableEdit {
     private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private String previousName, nextName;
+    private int index;
+    private BaseRoute route;
 
-    public RenameRoute(UndoFormatAndRoutesModel formatAndRoutesModel, String previousName, String nextName) {
+    public AddPositionList(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
         this.formatAndRoutesModel = formatAndRoutesModel;
-        this.previousName = previousName;
-        this.nextName = nextName;
+        this.index = index;
+        this.route = route;
     }
 
     public String getUndoPresentationName() {
-        return "rename-route-undo";
+        return "add-position-list-undo";
     }
 
     public String getRedoPresentationName() {
-        return "rename-route-redo";
+        return "add-position-list-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        formatAndRoutesModel.renameRoute(previousName, false);
+        formatAndRoutesModel.removePositionList(route, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        formatAndRoutesModel.renameRoute(nextName, false);
+        formatAndRoutesModel.addPositionList(index, route, false);
     }
 }

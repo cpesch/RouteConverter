@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.BaseRoute;
+import slash.navigation.catalog.model.CategoryTreeNode;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -28,37 +28,38 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for adding the route of a {@link UndoFormatAndRoutesModel}.
+ * Acts as a {@link UndoableEdit} for renaming the category of a {@link UndoCatalogModel}.
  *
  * @author Christian Pesch
  */
 
-class AddRoute extends AbstractUndoableEdit {
-    private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private int index;
-    private BaseRoute route;
-
-    public AddRoute(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
-        this.formatAndRoutesModel = formatAndRoutesModel;
-        this.index = index;
-        this.route = route;
+class RenameCategory extends AbstractUndoableEdit {
+    private UndoCatalogModel catalogModel;
+    private CategoryTreeNode category;
+    private String oldName, newName;
+    
+    public RenameCategory(UndoCatalogModel catalogModel, CategoryTreeNode category, String oldName, String newName) {
+        this.catalogModel = catalogModel;
+        this.category = category;
+        this.oldName = oldName;
+        this.newName = newName;
     }
 
     public String getUndoPresentationName() {
-        return "add-route-undo";
+        return "rename-category-undo";
     }
 
     public String getRedoPresentationName() {
-        return "add-route-redo";
+        return "rename-category-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        formatAndRoutesModel.removeRoute(route, false);
+        catalogModel.rename(category, oldName, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        formatAndRoutesModel.addRoute(index, route, false);
+        catalogModel.rename(category, newName, false);
     }
 }

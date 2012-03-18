@@ -79,6 +79,11 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
         return null;
     }
 
+    public void clearChildren() {
+        throw new UnsupportedOperationException();
+    }
+
+
     public CategoryTreeNode addChild(String name) throws IOException {
         throw new UnsupportedOperationException();
     }

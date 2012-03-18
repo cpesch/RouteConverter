@@ -30,7 +30,6 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
-import slash.navigation.gui.Constants;
 import slash.navigation.util.NumberPattern;
 
 import javax.swing.*;
@@ -39,7 +38,13 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.gui.Constants.startWaitCursor;
+import static slash.navigation.gui.Constants.stopWaitCursor;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 /**
@@ -52,8 +57,8 @@ import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
-    private JFrame frame;
     private static final Object mutex = new Object();
+    private final JFrame frame;
     private boolean running = true;
 
     public BatchPositionAugmenter(JFrame frame) {
@@ -102,7 +107,7 @@ public class BatchPositionAugmenter {
             this.running = true;
         }
 
-        Constants.startWaitCursor(frame.getRootPane());
+        startWaitCursor(frame.getRootPane());
         final ProgressMonitor progress = new ProgressMonitor(frame, "", RouteConverter.getBundle().getString("progress-started"), 0, 100);
         new Thread(new Runnable() {
             public void run() {
@@ -164,7 +169,7 @@ public class BatchPositionAugmenter {
 
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            Constants.stopWaitCursor(frame.getRootPane());
+                            stopWaitCursor(frame.getRootPane());
                             progress.setNote(RouteConverter.getBundle().getString("progress-finished"));
                             progress.setProgress(progress.getMaximum());
                         }

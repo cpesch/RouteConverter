@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.actions.MergePositionList;
+import slash.navigation.converter.gui.actions.MergePositionListAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.util.RouteComments;
@@ -51,7 +51,7 @@ public class MergePositionListMenu {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     BaseRoute route = formatAndRoutesModel.getRoute(i);
-                    JMenuItem menuItem = new JMenuItem(new MergePositionList(table, route, formatAndRoutesModel));
+                    JMenuItem menuItem = new JMenuItem(new MergePositionListAction(table, route, formatAndRoutesModel));
                     menuItem.setText(RouteComments.shortenRouteName(route));
                     menu.add(menuItem, i);
                 }

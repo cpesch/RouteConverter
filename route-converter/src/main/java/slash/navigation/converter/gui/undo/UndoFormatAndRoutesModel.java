@@ -140,35 +140,35 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         return delegate.getIndex(route);
     }
 
-    public void renameRoute(String name) {
+    public void renamePositionList(String name) {
         renameRoute(name, true);
     }
 
     public void renameRoute(String name, boolean trackUndo) {
         String previousName = getSelectedRoute().getName();
-        delegate.renameRoute(name);
+        delegate.renamePositionList(name);
         if (trackUndo)
-            undoManager.addEdit(new RenameRoute(this, previousName, name));
+            undoManager.addEdit(new RenamePositionList(this, previousName, name));
     }
 
-    public void addRoute(int index, BaseRoute route) {
-        addRoute(index, route, true);
+    public void addPositionList(int index, BaseRoute route) {
+        addPositionList(index, route, true);
     }
 
-    public void addRoute(int index, BaseRoute route, boolean trackUndo) {
-        delegate.addRoute(index, route);
+    public void addPositionList(int index, BaseRoute route, boolean trackUndo) {
+        delegate.addPositionList(index, route);
         if (trackUndo)
-            undoManager.addEdit(new AddRoute(this, index, route));
+            undoManager.addEdit(new AddPositionList(this, index, route));
     }
 
-    public void removeRoute(BaseRoute route) {
-        removeRoute(route, true);
+    public void removePositionList(BaseRoute route) {
+        removePositionList(route, true);
     }
 
-    public void removeRoute(BaseRoute route, boolean trackUndo) {
+    public void removePositionList(BaseRoute route, boolean trackUndo) {
         int index = getIndex(route);
-        delegate.removeRoute(route);
+        delegate.removePositionList(route);
         if (trackUndo)
-            undoManager.addEdit(new RemoveRoute(this, index, route));
+            undoManager.addEdit(new RemovePositionList(this, index, route));
     }
 }

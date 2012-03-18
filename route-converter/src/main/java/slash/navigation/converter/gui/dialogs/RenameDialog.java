@@ -64,7 +64,7 @@ public class RenameDialog extends SimpleDialog {
                 boolean routeNameTooLong = textFieldName.getDocument().getLength() > targetFormat.getMaximumRouteNameLength();
                 textFieldName.setBackground(routeNameTooLong ? Color.RED : defaultBackground);
                 if (routeNameTooLong) {
-                    labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("rename-route-name-too-long"),
+                    labelResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("rename-position-list-name-too-long"),
                             targetFormat.getName(), targetFormat.getMaximumRouteNameLength()));
                 } else {
                     labelResult.setText("");

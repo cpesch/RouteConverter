@@ -20,25 +20,35 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
+import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
 /**
- * {@link Action} that exports the current position list to a file.
+ * {@link ActionListener} that adds populated places from geonames.org as comments to
+ * the selected rows of a {@link JTable} with the help of a {@link slash.navigation.converter.gui.helper.BatchPositionAugmenter}.
  *
  * @author Christian Pesch
  */
 
-public class ExportPositionList extends FrameAction {
-    private final ConvertPanel convertPanel;
+public class AddPopulatedPlaceToPositionsAction extends FrameAction {
+    private final JTable table;
+    private final PositionsModel positionsModel;
+    private final BatchPositionAugmenter augmenter;
 
-    public ExportPositionList(ConvertPanel convertPanel) {
-        this.convertPanel = convertPanel;
+    public AddPopulatedPlaceToPositionsAction(JTable table, PositionsModel positionsModel, BatchPositionAugmenter augmenter) {
+        this.table = table;
+        this.positionsModel = positionsModel;
+        this.augmenter = augmenter;
     }
 
     public void run() {
-        convertPanel.exportPositionList();
+        int[] selectedRows = table.getSelectedRows();
+        if (selectedRows.length > 0) {
+            augmenter.addPopulatedPlaces(table, positionsModel, selectedRows);
+        }
     }
 }

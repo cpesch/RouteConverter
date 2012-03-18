@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import static java.util.Arrays.sort;
@@ -79,6 +80,10 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         return super.children();
     }
 
+    public void clearChildren() {
+        children = null;
+    }
+
     public Category getCategory() {
         return (Category) getUserObject();
     }
@@ -89,6 +94,12 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
                 List<Category> categories = getCategory().getCategories();
                 Category[] categoriesArray = categories.toArray(new Category[categories.size()]);
                 sort(categoriesArray, categoryComparator);
+
+                // make sure there are always children even if insert() is never called
+                if (children == null) {
+                    children = new Vector();
+                }
+
                 for (Category child : categoriesArray) {
                     insert(new CategoryTreeNodeImpl(child), children == null ? 0 : getChildCount());
                 }

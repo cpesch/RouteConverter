@@ -37,18 +37,18 @@ import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormats;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.AddCoordinatesToPositions;
-import slash.navigation.converter.gui.actions.AddElevationToPositions;
-import slash.navigation.converter.gui.actions.AddNumberToPositions;
-import slash.navigation.converter.gui.actions.AddPopulatedPlaceToPositions;
-import slash.navigation.converter.gui.actions.AddPostalAddressToPositions;
-import slash.navigation.converter.gui.actions.AddSpeedToPositions;
+import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
+import slash.navigation.converter.gui.actions.AddElevationToPositionsAction;
+import slash.navigation.converter.gui.actions.AddNumberToPositionsAction;
+import slash.navigation.converter.gui.actions.AddPopulatedPlaceToPositionsAction;
+import slash.navigation.converter.gui.actions.AddPostalAddressToPositionsAction;
+import slash.navigation.converter.gui.actions.AddSpeedToPositionsAction;
 import slash.navigation.converter.gui.actions.CopyAction;
 import slash.navigation.converter.gui.actions.CutAction;
 import slash.navigation.converter.gui.actions.DeleteAction;
 import slash.navigation.converter.gui.actions.DeletePositionListAction;
-import slash.navigation.converter.gui.actions.ExportPositionList;
-import slash.navigation.converter.gui.actions.ImportPositionList;
+import slash.navigation.converter.gui.actions.ExportPositionListAction;
+import slash.navigation.converter.gui.actions.ImportPositionListAction;
 import slash.navigation.converter.gui.actions.NewFileAction;
 import slash.navigation.converter.gui.actions.NewPositionAction;
 import slash.navigation.converter.gui.actions.NewPositionListAction;
@@ -58,7 +58,7 @@ import slash.navigation.converter.gui.actions.RenamePositionListAction;
 import slash.navigation.converter.gui.actions.SaveAction;
 import slash.navigation.converter.gui.actions.SaveAsAction;
 import slash.navigation.converter.gui.actions.SelectAllAction;
-import slash.navigation.converter.gui.actions.SplitPositionList;
+import slash.navigation.converter.gui.actions.SplitPositionListAction;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
@@ -154,6 +154,7 @@ import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferre
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
+import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.gui.Constants.createJFileChooser;
 import static slash.navigation.gui.Constants.startWaitCursor;
 import static slash.navigation.gui.Constants.stopWaitCursor;
@@ -240,9 +241,9 @@ public class ConvertPanel {
         new LengthToJLabelAdapter(getPositionsModel(), lengthCalculator, labelLength, labelDuration);
         new ElevationToJLabelAdapter(getPositionsModel(), labelOverallAscend, labelOverallDescend);
 
-        JMenuHelper.registerAction(buttonNewPositionList, "new-positionlist");
-        JMenuHelper.registerAction(buttonRenamePositionList, "rename-positionlist");
-        JMenuHelper.registerAction(buttonDeletePositionList, "delete-positionlist");
+        registerAction(buttonNewPositionList, "new-positionlist");
+        registerAction(buttonRenamePositionList, "rename-positionlist");
+        registerAction(buttonDeletePositionList, "delete-positionlist");
 
         buttonMovePositionToTop.addActionListener(new FrameAction() {
             public void run() {
@@ -355,15 +356,15 @@ public class ConvertPanel {
         actionManager.register("new-positionlist", new NewPositionListAction(getFormatAndRoutesModel()));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
-        actionManager.register("add-coordinates", new AddCoordinatesToPositions(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-elevation", new AddElevationToPositions(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-postal-address", new AddPostalAddressToPositions(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-populated-place", new AddPopulatedPlaceToPositions(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-speed", new AddSpeedToPositions(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("add-number", new AddNumberToPositions(tablePositions, getPositionsModel(), positionAugmenter));
-        actionManager.register("split-positionlist", new SplitPositionList(tablePositions, getPositionsModel(), formatAndRoutesModel));
-        actionManager.register("import-positionlist", new ImportPositionList(this));
-        actionManager.register("export-positionlist", new ExportPositionList(this));
+        actionManager.register("add-coordinates", new AddCoordinatesToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-elevation", new AddElevationToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-postal-address", new AddPostalAddressToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-populated-place", new AddPopulatedPlaceToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-speed", new AddSpeedToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("add-number", new AddNumberToPositionsAction(tablePositions, getPositionsModel(), positionAugmenter));
+        actionManager.register("split-positionlist", new SplitPositionListAction(tablePositions, getPositionsModel(), formatAndRoutesModel));
+        actionManager.register("import-positionlist", new ImportPositionListAction(this));
+        actionManager.register("export-positionlist", new ExportPositionListAction(this));
 
         JMenuHelper.registerKeyStroke(tablePositions, "copy");
         JMenuHelper.registerKeyStroke(tablePositions, "cut");
@@ -1020,7 +1021,7 @@ public class ConvertPanel {
     }
 
     public void renameRoute(String name) {
-        formatAndRoutesModel.renameRoute(name);
+        formatAndRoutesModel.renamePositionList(name);
     }
 
     {
