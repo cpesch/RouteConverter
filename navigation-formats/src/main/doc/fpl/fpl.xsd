@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:tns="http://www8.garmin.com/xmlschemas/FlightPlan/v1" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www8.garmin.com/xmlschemas/FlightPlan/v1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="flight-plan">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="created" type="xs:dateTime" />
+        <xs:element name="waypoint-table">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="waypoint">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="identifier" type="xs:string" />
+                    <xs:element minOccurs="0" name="type" type="xs:string" />
+                    <xs:element minOccurs="0" name="country-code" type="xs:string" />
+                    <xs:element name="lat" type="xs:decimal" />
+                    <xs:element name="lon" type="xs:decimal" />
+                    <xs:element minOccurs="0" name="comment" />
+                    <xs:element minOccurs="0" name="elevation" type="xs:decimal" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="route">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="route-name" type="xs:string" />
+              <xs:element minOccurs="0" name="route-description" type="xs:string" />
+              <xs:element name="flight-plan-index" type="xs:unsignedByte" />
+              <xs:element maxOccurs="unbounded" name="route-point">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="waypoint-identifier" type="xs:string" />
+                    <xs:element name="waypoint-type" type="xs:string" />
+                    <xs:element minOccurs="0" name="waypoint-country-code" type="xs:string" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

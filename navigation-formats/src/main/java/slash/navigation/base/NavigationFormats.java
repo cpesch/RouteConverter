@@ -28,6 +28,7 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
+import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -130,6 +131,7 @@ public final class NavigationFormats {
         addFormat(Tcx2Format.class);
         addFormat(NokiaLandmarkExchangeFormat.class);
         addFormat(KlickTelRouteFormat.class);
+        addFormat(GarminFlightPlanFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
         addFormat(NavilinkFormat.class);

@@ -32,7 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.StringReader;
+
+import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
+import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
 
 public class KmlUtil {
     private static final JAXBContext CONTEXT_20 = JaxbUtils.newContext(slash.navigation.kml.binding20.ObjectFactory.class);
@@ -49,41 +51,41 @@ public class KmlUtil {
     private static final String KML_22_EXT_NAMESPACE_URI = "http://www.google.com/kml/ext/2.2";
 
     public static Unmarshaller newUnmarshaller20() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_20);
+        return newUnmarshaller(CONTEXT_20);
     }
 
     private static Unmarshaller newUnmarshaller21() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_21);
+        return newUnmarshaller(CONTEXT_21);
     }
 
     private static Unmarshaller newUnmarshaller22Beta() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_22_BETA);
+        return newUnmarshaller(CONTEXT_22_BETA);
     }
 
     private static Unmarshaller newUnmarshaller22() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_22);
+        return newUnmarshaller(CONTEXT_22);
     }
 
     private static Marshaller newMarshaller20() {
-        return JaxbUtils.newMarshaller(CONTEXT_20,
+        return newMarshaller(CONTEXT_20,
                 KML_20_NAMESPACE_URI, "",
                 XAL_20_NAMESPACE_URI, "xal"
         );
     }
 
     private static Marshaller newMarshaller21() {
-        return JaxbUtils.newMarshaller(CONTEXT_21);
+        return newMarshaller(CONTEXT_21);
     }
 
     private static Marshaller newMarshaller22Beta() {
-        return JaxbUtils.newMarshaller(CONTEXT_22_BETA,
+        return newMarshaller(CONTEXT_22_BETA,
                 ATOM_2005_NAMESPACE_URI, "atom",
                 XAL_20_NAMESPACE_URI, "xal"
         );
     }
 
     private static Marshaller newMarshaller22() {
-        return JaxbUtils.newMarshaller(CONTEXT_22,
+        return newMarshaller(CONTEXT_22,
                 ATOM_2005_NAMESPACE_URI, "atom",
                 XAL_20_NAMESPACE_URI, "xal",
                 KML_22_EXT_NAMESPACE_URI, "gx"
@@ -99,10 +101,6 @@ public class KmlUtil {
             throw new JAXBException("Parse error with " + result + ": " + e.getMessage());
         }
         return result;
-    }
-
-    public static slash.navigation.kml.binding20.Kml unmarshal20(String string) throws JAXBException {
-        return unmarshal20(new StringReader(string));
     }
 
     public static Object unmarshal20(InputStream in) throws JAXBException {

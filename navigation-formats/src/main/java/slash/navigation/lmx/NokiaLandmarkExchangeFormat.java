@@ -26,16 +26,23 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.lmx.binding.*;
+import slash.navigation.lmx.binding.CoordinatesType;
+import slash.navigation.lmx.binding.LandmarkCollectionType;
+import slash.navigation.lmx.binding.LandmarkType;
+import slash.navigation.lmx.binding.Lmx;
+import slash.navigation.lmx.binding.ObjectFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static java.util.Arrays.asList;
+import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
+import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
 /**
  * Reads and writes Nokia Landmark Exchange (.lmx) files.
@@ -140,9 +147,9 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
 
     public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            Lmx lmx = NokiaLandmarkExchangeUtil.unmarshal(source);
+            Lmx lmx = unmarshal(source);
             GpxRoute result = process(lmx);
-            return result != null ? Arrays.asList(result) : null;
+            return result != null ? asList(result) : null;
         } catch (JAXBException e) {
             log.fine("Error reading " + source + ": " + e.getMessage());
             return null;
@@ -151,7 +158,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            NokiaLandmarkExchangeUtil.marshal(createLmx(route, startIndex, endIndex), target);
+            marshal(createLmx(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
