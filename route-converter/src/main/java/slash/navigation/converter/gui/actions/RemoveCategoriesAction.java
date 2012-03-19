@@ -26,7 +26,6 @@ import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
@@ -52,14 +51,10 @@ public class RemoveCategoriesAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         List<CategoryTreeNode> categories = getSelectedCategoryTreeNodes(tree);
-        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(categories.size());
-        List<String> names = new ArrayList<String>(categories.size()); 
         StringBuilder categoryNames = new StringBuilder();
         for (int i = 0; i < categories.size(); i++) {
-            CategoryTreeNode categoryTreeNode = categories.get(i);
-            parents.add((CategoryTreeNode) categoryTreeNode.getParent());
-            names.add(categoryTreeNode.getName());
-            categoryNames.append(categoryTreeNode.getName());
+            CategoryTreeNode category = categories.get(i);
+            categoryNames.append(category.getName());
             if (i < categories.size() - 1)
                 categoryNames.append(", ");
         }
@@ -70,6 +65,6 @@ public class RemoveCategoriesAction extends FrameAction {
         if (confirm != YES_OPTION)
             return;
 
-        ((CatalogModel) tree.getModel()).remove(parents, names);
+        ((CatalogModel) tree.getModel()).remove(categories);
    }
 }

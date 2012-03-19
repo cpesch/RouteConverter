@@ -50,7 +50,6 @@ public interface CategoryTreeNode extends MutableTreeNode {
 
     void clearChildren();
 
-    void move(CategoryTreeNode parent) throws IOException;
     Route addRoute(String description, File file) throws IOException;
     Route addRoute(String description, String fileUrl) throws IOException;
     void moveRoute(Route route, CategoryTreeNode target) throws IOException;

@@ -114,9 +114,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
     }
 
     public boolean isLocal() {
-        if (getParent() == null)
-            return isLocalRoot();
-        return ((CategoryTreeNode) getParent()).isLocal();
+        return isLocalRoot() || getParent() != null && ((CategoryTreeNode) getParent()).isLocal();
     }
 
     public boolean isRemoteRoot() {
@@ -124,9 +122,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
     }
 
     public boolean isRemote() {
-        if (getParent() == null)
-            return isRemoteRoot();
-        return ((CategoryTreeNode)getParent()).isRemote();
+        return isRemoteRoot() || getParent() != null && ((CategoryTreeNode) getParent()).isRemote();
     }
 
     private DefaultTreeModel treeModel;

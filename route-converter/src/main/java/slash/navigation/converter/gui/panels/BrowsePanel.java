@@ -101,6 +101,8 @@ import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.gui.Constants.startWaitCursor;
+import static slash.navigation.gui.Constants.stopWaitCursor;
 
 /**
  * The browse panel of the route converter user interface.
@@ -140,8 +142,8 @@ public class BrowsePanel {
         CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
         final CategoryTreeNodeImpl remoteRoot = new CategoryTreeNodeImpl(remoteCatalog.getRootCategory(), false, true);
         final RootTreeNode root = new RootTreeNode(localRoot, remoteRoot);
-        catalogModel = new  UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
-        
+        catalogModel = new UndoCatalogModel(r.getContext().getUndoManager(), root, getOperator());
+
         final ActionManager actionManager = r.getContext().getActionManager();
         registerAction(buttonAddCategory, "add-category");
         registerAction(buttonRenameCategory, "rename-category");
@@ -237,19 +239,16 @@ public class BrowsePanel {
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
                 catalogModel.getChildCount(remoteRoot);
-                
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        Constants.startWaitCursor(r.getFrame().getRootPane());
+                        startWaitCursor(r.getFrame().getRootPane());
                         try {
                             treeCategories.setModel(catalogModel);
-                            // start with showing the folders below the roots
-                            treeCategories.expandRow(0);
-                            treeCategories.expandRow(1);
                             String selected = r.getCategoryPreference();
                             selectTreePath(TreePathStringConversion.fromString(root, selected));
                         } finally {
-                            Constants.stopWaitCursor(r.getFrame().getRootPane());
+                            stopWaitCursor(r.getFrame().getRootPane());
                         }
                     }
                 });
@@ -284,6 +283,7 @@ public class BrowsePanel {
             return;
         treeCategories.expandPath(treePath);
         treeCategories.scrollPathToVisible(treePath);
+        treeCategories.getSelectionModel().addSelectionPath(treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         selectTreeNode(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
@@ -461,16 +461,6 @@ public class BrowsePanel {
         });
     }
 
-
-    protected void moveCategory(final List<CategoryTreeNode> categories, final CategoryTreeNode parent) {
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                for (CategoryTreeNode category : categories) {
-                    category.move(parent);
-                }
-            }
-        });
-    }
 
     protected void moveRoute(final List<Route> routes, final CategoryTreeNode source, final CategoryTreeNode target) {
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
@@ -650,6 +640,17 @@ public class BrowsePanel {
                     support.isDataFlavorSupported(stringFlavor);
         }
 
+        private void moveCategories(final List<CategoryTreeNode> categories, final CategoryTreeNode target) {
+            catalogModel.move(categories, target);
+
+            // TODO expand the target category
+            for (CategoryTreeNode categoryTreeNode : categories) {
+                TreePath treePath = new TreePath(target.getPath()).pathByAddingChild(categoryTreeNode);
+                treeCategories.expandPath(treePath);
+                treeCategories.getSelectionModel().addSelectionPath(treePath);
+            }
+        }
+
         @SuppressWarnings("unchecked")
         public boolean importData(TransferSupport support) {
             JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
@@ -661,7 +662,7 @@ public class BrowsePanel {
                     Object data = t.getTransferData(categoryFlavor);
                     if (data != null) {
                         List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
-                        moveCategory(categories, target);
+                        moveCategories(categories, target);
                         return true;
                     }
                 }
@@ -701,5 +702,4 @@ public class BrowsePanel {
             return false;
         }
     }
-
 }

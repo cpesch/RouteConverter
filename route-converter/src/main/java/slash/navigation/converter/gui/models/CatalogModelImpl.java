@@ -30,6 +30,9 @@ import javax.swing.tree.TreeModel;
 import java.io.IOException;
 import java.util.List;
 
+import static slash.navigation.converter.gui.helper.JTreeHelper.asNames;
+import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
+
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
  *
@@ -51,9 +54,9 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
     }
 
     private CategoryTreeNode getChild(CategoryTreeNode parent, String name) {
-        for(int i=0; i<getChildCount(parent); i++) {
+        for (int i = 0; i < getChildCount(parent); i++) {
             CategoryTreeNode category = (CategoryTreeNode) getChild(parent, i);
-            if(category.getName().equals(name))
+            if (category.getName().equals(name))
                 return category;
         }
         return null;
@@ -94,7 +97,7 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
             }
 
             public void run() throws IOException {
-                category.getCategory().update(null, name);
+                category.getCategory().update(((CategoryTreeNode) category.getParent()).getCategory(), name);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -105,7 +108,49 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
             }
         });
     }
-    
+
+    public void move(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
+        move(categories, asParents(parent, categories.size()));
+    }
+
+    public void move(final List<CategoryTreeNode> categories, final List<CategoryTreeNode> parents) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "MoveCategories";
+            }
+
+            public void run() throws IOException {
+                for (int i = 0; i < categories.size(); i++) {
+                    CategoryTreeNode category = categories.get(i);
+                    CategoryTreeNode parent = parents.get(i);
+
+                    if (category.isLocal() && parent.isRemote())
+                        throw new IOException("cannot move local category " + category.getName() + " to remote parent " + parent.getName());
+                    if (category.isRemote() && parent.isLocal())
+                        throw new IOException("cannot move remote category " + category.getName() + " to local parent " + parent.getName());
+
+                    category.getCategory().update(parent.getCategory(), category.getCategory().getName());
+                }
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        for (int i = 0; i < categories.size(); i++) {
+                            CategoryTreeNode category = categories.get(i);
+                            CategoryTreeNode parent = parents.get(i);
+                            removeNodeFromParent(category);
+                            // TODO want to insert it at the correct position
+                            insertNodeInto(category, parent, 0);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void remove(List<CategoryTreeNode> categories) {
+        remove(asParents(categories), asNames(categories));
+    }
+
     public void remove(final List<CategoryTreeNode> parents, final List<String> names) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {

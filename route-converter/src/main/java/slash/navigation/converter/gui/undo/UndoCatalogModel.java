@@ -32,6 +32,9 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.util.List;
 
+import static slash.navigation.converter.gui.helper.JTreeHelper.asNames;
+import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
+
 /**
  * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
  *
@@ -102,6 +105,25 @@ public class UndoCatalogModel implements CatalogModel {
         delegate.rename(category, newName);
         if (trackUndo)
             undoManager.addEdit(new RenameCategory(this, category, oldName, newName));
+    }
+
+    public void move(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
+        move(categories, asParents(parent, categories.size()));
+    }
+
+    public void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents) {
+        move(categories, parents, true);
+    }
+    
+    void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents, boolean trackUndo) {
+        List<CategoryTreeNode> oldParents = asParents(categories);
+        delegate.move(categories, parents);
+        if (trackUndo)
+            undoManager.addEdit(new MoveCategories(this, categories, oldParents, parents));
+    }
+
+    public void remove(List<CategoryTreeNode> categories) {
+        remove(asParents(categories), asNames(categories));
     }
 
     public void remove(List<CategoryTreeNode> parents, List<String> names) {

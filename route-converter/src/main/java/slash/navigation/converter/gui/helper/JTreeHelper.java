@@ -56,4 +56,28 @@ public class JTreeHelper {
         }
         return treeNodes;
     }
+
+    public static List<String> asNames(List<CategoryTreeNode> categories) {
+        List<String> names = new ArrayList<String>(categories.size());
+        for (CategoryTreeNode categoryTreeNode : categories) {
+            names.add(categoryTreeNode.getName());
+        }
+        return names;
+    }
+
+    public static List<CategoryTreeNode> asParents(List<CategoryTreeNode> categories) {
+        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(categories.size());
+        for (CategoryTreeNode categoryTreeNode : categories) {
+            parents.add((CategoryTreeNode) categoryTreeNode.getParent());
+        }
+        return parents;
+    }
+
+    public static List<CategoryTreeNode> asParents(CategoryTreeNode parent, int count) {
+        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(count);
+        for (int i = 0; i < count; i++) {
+            parents.add(parent);
+        }
+        return parents;
+    }
 }

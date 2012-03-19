@@ -35,5 +35,8 @@ import java.util.List;
 public interface CatalogModel extends TreeModel {
     void add(List<CategoryTreeNode> parents, List<String> names);
     void rename(CategoryTreeNode category, String name);
+    void move(List<CategoryTreeNode> categories, CategoryTreeNode parent);
+    void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents);
+    void remove(List<CategoryTreeNode> categories);
     void remove(List<CategoryTreeNode> parents, List<String> names);
 }

@@ -60,10 +60,12 @@ public class AddCategoryAction extends FrameAction {
 
         ((CatalogModel) tree.getModel()).add(asList(category), asList(name));
 
+        // TODO expand the new category
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                tree.expandPath(new TreePath(category.getPath()));
-                tree.scrollPathToVisible(new TreePath(category.getPath()));
+                TreePath treePath = new TreePath(category.getPath()).pathByAddingChild(category.getChildAt(0));
+                tree.expandPath(new TreePath(treePath));
+                tree.scrollPathToVisible(new TreePath(treePath.getPath()));
             }
         });
     }
