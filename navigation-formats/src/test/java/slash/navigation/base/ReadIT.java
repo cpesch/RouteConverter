@@ -97,22 +97,6 @@ public class ReadIT {
     }
 
     @Test
-    public void testAscFilesAreValid() throws IOException {
-        readFiles(".asc");
-    }
-
-    @Test
-    public void testMicrosoftAutoRouteFilesAreValid() throws IOException {
-        readFiles(".axe");
-        readFiles(".est");
-    }
-
-    @Test
-    public void testMicrosoftMapPointFilesAreValid() throws IOException {
-        readFiles(".ptm");
-    }
-
-    @Test
     public void testBcrFilesAreValid() throws IOException {
         readFiles(".bcr");
     }
@@ -128,6 +112,11 @@ public class ReadIT {
     @Test
     public void testFlightRecorderDataFilesAreValid() throws IOException {
         readFiles(".igc");
+    }
+
+    @Test
+    public void testGarminFlightPlanFilesAreValid() throws IOException {
+        readFiles(".fpl");
     }
 
     @Test
@@ -181,18 +170,8 @@ public class ReadIT {
     }
 
     @Test
-    public void testMagellanExploristFilesAreValid() throws IOException {
-        readFiles(".log");
-    }
-
-    @Test
-    public void testMagicMapsIktFilesAreValid() throws IOException {
-        readFiles(".ikt");
-    }
-
-    @Test
-    public void testNokiaLandmarkExchangeFilesAreValid() throws IOException {
-        readFiles(".lmx");
+    public void testNavigationPoiWarnerFilesAreValid() throws IOException {
+        readFiles(".asc");
     }
 
     @Test
@@ -207,8 +186,34 @@ public class ReadIT {
     }
 
     @Test
+    public void testNokiaLandmarkExchangeFilesAreValid() throws IOException {
+        readFiles(".lmx");
+    }
+
+    @Test
+    public void testMagellanExploristFilesAreValid() throws IOException {
+        readFiles(".log");
+    }
+
+    @Test
     public void testMagellanMapSendFilesAreValid() throws Exception {
         readFiles(".mps");
+    }
+
+    @Test
+    public void testMagicMapsIktFilesAreValid() throws IOException {
+        readFiles(".ikt");
+    }
+
+    @Test
+    public void testMicrosoftAutoRouteFilesAreValid() throws IOException {
+        readFiles(".axe");
+        readFiles(".est");
+    }
+
+    @Test
+    public void testMicrosoftMapPointFilesAreValid() throws IOException {
+        readFiles(".ptm");
     }
 
     @Test

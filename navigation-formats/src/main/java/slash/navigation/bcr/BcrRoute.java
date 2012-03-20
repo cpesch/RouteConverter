@@ -23,7 +23,6 @@ package slash.navigation.bcr;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.GkPosition;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -32,6 +31,7 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
+import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -323,6 +323,10 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
             gpxPositions.add(bcrPosition.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
+    public GpxRoute asGarminFlightPlanFormat() {
+        return asGpxFormat(new GarminFlightPlanFormat());
     }
 
     public GpxRoute asGpx10Format() {

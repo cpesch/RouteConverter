@@ -405,6 +405,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asGroundTrackFormat();
 
+    public abstract GpxRoute asGarminFlightPlanFormat();
+
     public abstract GpxRoute asGpx10Format();
     public abstract GpxRoute asGpx11Format();
 

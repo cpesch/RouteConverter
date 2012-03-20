@@ -20,7 +20,6 @@
 
 package slash.navigation.googlemaps;
 
-import slash.common.util.Bearing;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
@@ -28,9 +27,15 @@ import slash.navigation.rest.exception.ServiceUnavailableException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
+import static slash.common.util.Bearing.calculateBearing;
+import static slash.navigation.googlemaps.GoogleMapsUtil.unmarshalGeocode;
 import static slash.navigation.rest.Helper.encodeUri;
 
 /**
@@ -71,7 +76,7 @@ public class GoogleMapsService {
         String result = get.execute();
         if (get.isSuccessful())
             try {
-                GeocodeResponse geocodeResponse = GoogleMapsUtil.unmarshalGeocode(result);
+                GeocodeResponse geocodeResponse = unmarshalGeocode(result);
                 if (geocodeResponse != null) {
                     String status = geocodeResponse.getStatus();
                     if (status.equals(OK))
@@ -94,8 +99,8 @@ public class GoogleMapsService {
             public int compare(GeocodeResponse.Result p1, GeocodeResponse.Result p2) {
                 GeocodeResponse.Result.Geometry.Location l1 = p1.getGeometry().getLocation();
                 GeocodeResponse.Result.Geometry.Location l2 = p2.getGeometry().getLocation();
-                double distance1 = Bearing.calculateBearing(longitude, latitude, l1.getLng().doubleValue(), l1.getLat().doubleValue()).getDistance();
-                double distance2 = Bearing.calculateBearing(longitude, latitude, l2.getLng().doubleValue(), l2.getLat().doubleValue()).getDistance();
+                double distance1 = calculateBearing(longitude, latitude, l1.getLng().doubleValue(), l1.getLat().doubleValue()).getDistance();
+                double distance2 = calculateBearing(longitude, latitude, l2.getLng().doubleValue(), l2.getLat().doubleValue()).getDistance();
                 return (int) (distance1 - distance2);
             }
         });
@@ -113,7 +118,7 @@ public class GoogleMapsService {
         String result = get.execute();
         if (get.isSuccessful())
             try {
-                GeocodeResponse geocodeResponse = GoogleMapsUtil.unmarshalGeocode(result);
+                GeocodeResponse geocodeResponse = unmarshalGeocode(result);
                 if (geocodeResponse != null) {
                     String status = geocodeResponse.getStatus();
                     if (status.equals(OK))
@@ -140,7 +145,7 @@ public class GoogleMapsService {
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
-        String url = getElevationUrl("locations=" + latitude + "," + longitude); // could be up to 512 locations
+        String url = getElevationUrl("locations=" + latitude + "," + longitude); // TODO could be up to 512 locations
         Get get = get(url);
         String result = get.execute();
         if (get.isSuccessful())

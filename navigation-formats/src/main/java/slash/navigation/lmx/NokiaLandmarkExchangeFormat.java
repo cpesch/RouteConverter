@@ -21,7 +21,6 @@
 package slash.navigation.lmx;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
@@ -41,6 +40,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.formatFloat;
+import static slash.common.io.Transfer.formatPositionAsDouble;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
@@ -132,9 +133,9 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
             CoordinatesType coordinatesType = landmarkType.getCoordinates();
             if (coordinatesType == null)
                 coordinatesType = objectFactory.createCoordinatesType();
-            coordinatesType.setAltitude(Transfer.formatFloat(position.getElevation()));
-            coordinatesType.setLatitude(Transfer.formatPositionAsDouble(position.getLatitude()));
-            coordinatesType.setLongitude(Transfer.formatPositionAsDouble(position.getLongitude()));
+            coordinatesType.setAltitude(formatFloat(position.getElevation()));
+            coordinatesType.setLatitude(formatPositionAsDouble(position.getLatitude()));
+            coordinatesType.setLongitude(formatPositionAsDouble(position.getLongitude()));
             coordinatesType.setTimeStamp(formatTime(position.getTime()));
             landmarkType.setCoordinates(coordinatesType);
 

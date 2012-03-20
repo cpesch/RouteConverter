@@ -45,7 +45,7 @@ class GarminFlightPlanUtil {
 
     private static Marshaller newMarshaller() {
         return JaxbUtils.newMarshaller(CONTEXT,
-                FPL_NAMESPACE_URI, "fpl"
+                FPL_NAMESPACE_URI, ""
         );
     }
 

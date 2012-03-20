@@ -15,7 +15,7 @@
                     <xs:element minOccurs="0" name="country-code" type="xs:string" />
                     <xs:element name="lat" type="xs:decimal" />
                     <xs:element name="lon" type="xs:decimal" />
-                    <xs:element minOccurs="0" name="comment" />
+                    <xs:element minOccurs="0" name="comment" type="xs:string" />
                     <xs:element minOccurs="0" name="elevation" type="xs:decimal" />
                   </xs:sequence>
                 </xs:complexType>

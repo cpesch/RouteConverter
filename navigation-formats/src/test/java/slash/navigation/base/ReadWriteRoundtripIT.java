@@ -61,6 +61,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     @Test
+    public void testGarminFlightPlanReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.fpl");
+    }
+
+    @Test
     public void testGeocachingDotComReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.loc");
     }

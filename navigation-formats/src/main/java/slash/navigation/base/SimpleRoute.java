@@ -25,6 +25,7 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
+import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -357,6 +358,10 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+    }
+
+    public GpxRoute asGarminFlightPlanFormat() {
+        return asGpxFormat(new GarminFlightPlanFormat());
     }
 
     public GpxRoute asGpx10Format() {
