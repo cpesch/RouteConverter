@@ -40,12 +40,9 @@ public class RoutesTableCellHeaderRenderer extends DefaultTableCellRenderer {
         label.setOpaque(false);
         switch (columnIndex) {
             case 0:
-                label.setText(RouteConverter.getBundle().getString("number"));
-                break;
-            case 1:
                 label.setText(RouteConverter.getBundle().getString("description"));
                 break;
-            case 2:
+            case 1:
                 label.setText(RouteConverter.getBundle().getString("creator"));
                 break;
             default:

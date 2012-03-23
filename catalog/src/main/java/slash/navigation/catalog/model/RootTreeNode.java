@@ -24,7 +24,6 @@ import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import java.io.File;
 import java.io.IOException;
 
@@ -35,8 +34,6 @@ import java.io.IOException;
  */
 
 public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTreeNode {
-    private DefaultTreeModel treeModel;
-
     public RootTreeNode(CategoryTreeNode... children) {
         for (CategoryTreeNode child : children) {
             insert(child, getChildCount());
@@ -63,14 +60,6 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
         return null;
     }
 
-    public DefaultTreeModel getTreeModel() {
-        return treeModel;
-    }
-
-    public void setTreeModel(DefaultTreeModel treeModel) {
-        this.treeModel = treeModel;
-    }
-
     public Category getCategory() {
         throw new UnsupportedOperationException();
     }
@@ -93,10 +82,6 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
     }
 
     public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void renameRoute(Route route, String description) throws IOException {
         throw new UnsupportedOperationException();
     }
 

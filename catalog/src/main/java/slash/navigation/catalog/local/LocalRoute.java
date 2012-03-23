@@ -56,7 +56,7 @@ public class LocalRoute implements Route {
     }
 
     public String getDescription() throws IOException {
-        return getName();
+        return null;
     }
 
     public String getCreator() throws IOException {

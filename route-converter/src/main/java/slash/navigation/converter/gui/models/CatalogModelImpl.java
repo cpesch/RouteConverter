@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 
 import javax.swing.*;
@@ -44,7 +45,6 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
 
     public CatalogModelImpl(CategoryTreeNode root, RouteServiceOperator operator) {
         super(root);
-        root.setTreeModel(this);
         this.operator = operator;
     }
 
@@ -169,6 +169,24 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
                             CategoryTreeNode category = getChild(parents.get(i), names.get(i));
                             removeNodeFromParent(category);
                         }
+                    }
+                });
+            }
+        });
+    }
+
+    public void rename(final RouteModel route, final String name) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "RenameRoute";
+            }
+
+            public void run() throws IOException {
+                route.getRoute().update(route.getCategory().getCategory().getUrl(), name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        route.getCategory().getRoutesListModel().updateRoute(route);
                     }
                 });
             }

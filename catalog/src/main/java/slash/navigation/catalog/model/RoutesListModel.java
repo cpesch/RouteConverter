@@ -20,27 +20,25 @@
 
 package slash.navigation.catalog.model;
 
-import slash.navigation.catalog.domain.Route;
-
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Acts as a {@link TableModel} for the routes of a {@link CategoryTreeNode}.
+ * Acts as a {@link TableModel} for the {@link RouteModel}s of a {@link CategoryTreeNode}.
  *
  * @author Christian Pesch
  */
 
 public class RoutesListModel extends AbstractTableModel {
-    private List<Route> routes = new ArrayList<Route>();
+    private List<RouteModel> routes = new ArrayList<RouteModel>();
 
-    public RoutesListModel(List<Route> routes) {
+    public RoutesListModel(List<RouteModel> routes) {
         setRoutes(routes);
     }
 
-    void setRoutes(List<Route> routes) {
+    void setRoutes(List<RouteModel> routes) {
         this.routes = routes;
         fireTableDataChanged();
     }
@@ -50,29 +48,29 @@ public class RoutesListModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 3;
+        return 2;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         return getRoute(rowIndex);
     }
 
-    public Route getRoute(int rowIndex) {
+    public RouteModel getRoute(int rowIndex) {
         return routes.get(rowIndex);
     }
 
-    public void addRoute(Route route) {
+    public void addRoute(RouteModel route) {
         routes.add(route);
         int index = routes.indexOf(route);
         fireTableRowsInserted(index, index);
     }
 
-    public void updateRoute(Route route) {
+    public void updateRoute(RouteModel route) {
         int index = routes.indexOf(route);
         fireTableRowsUpdated(index, index);
     }
 
-    public void deleteRoute(Route route) {
+    public void deleteRoute(RouteModel route) {
         int index = routes.indexOf(route);
         routes.remove(route);
         fireTableRowsDeleted(index, index);

@@ -51,6 +51,9 @@ public class RemoveCategoriesAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         List<CategoryTreeNode> categories = getSelectedCategoryTreeNodes(tree);
+        if(categories.size() == 0)
+            return;
+
         StringBuilder categoryNames = new StringBuilder();
         for (int i = 0; i < categories.size(); i++) {
             CategoryTreeNode category = categories.get(i);

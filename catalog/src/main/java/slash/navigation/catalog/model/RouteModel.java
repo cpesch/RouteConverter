@@ -18,30 +18,42 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.models;
+package slash.navigation.catalog.model;
 
-import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Route;
-import slash.navigation.catalog.model.CategoryTreeNode;
-import slash.navigation.catalog.model.RouteModel;
 
-import javax.swing.tree.TreeModel;
-import java.io.IOException;
-import java.util.List;
+import java.util.logging.Logger;
 
 /**
- * Acts as a {@link TreeModel} for the categories and routes of a {@link Catalog}.
+ * A model that encapsulates a {@link Route}.
  *
  * @author Christian Pesch
  */
 
-public interface CatalogModel extends TreeModel {
-    void add(List<CategoryTreeNode> parents, List<String> names);
-    void rename(CategoryTreeNode category, String name);
-    void move(List<CategoryTreeNode> categories, CategoryTreeNode parent);
-    void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents);
-    void remove(List<CategoryTreeNode> categories);
-    void remove(List<CategoryTreeNode> parents, List<String> names);
+public class RouteModel {
+    private static final Logger log = Logger.getLogger(RouteModel.class.getName());
+    private final CategoryTreeNode category;
+    private final Route route;
 
-    void rename(RouteModel route, String name);
+    public RouteModel(CategoryTreeNode category, Route route) {
+        this.category = category;
+        this.route = route;
+    }
+
+    public CategoryTreeNode getCategory() {
+        return category;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public String getName() {
+        try {
+            return getRoute().getName();
+        } catch (Exception e) {
+            log.severe("Cannot get name: " + e.getMessage());
+            return "?";
+        }
+    }
 }

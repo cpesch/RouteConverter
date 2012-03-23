@@ -50,6 +50,9 @@ public class RenameCategoryAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
+        if(category == null)
+            return;
+
         String name = (String) showInputDialog(r.getFrame(),
                 format(RouteConverter.getBundle().getString("rename-category-label"), category.getName()),
                 r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, category.getName());

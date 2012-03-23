@@ -30,17 +30,18 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.local.LocalCatalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.CategoryTreeNodeImpl;
 import slash.navigation.catalog.model.RootTreeNode;
+import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesListModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCategoryAction;
 import slash.navigation.converter.gui.actions.RemoveCategoriesAction;
 import slash.navigation.converter.gui.actions.RenameCategoryAction;
+import slash.navigation.converter.gui.actions.RenameRouteAction;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
@@ -87,15 +88,11 @@ import java.util.prefs.Preferences;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
-import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.showInputDialog;
-import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
@@ -148,10 +145,12 @@ public class BrowsePanel {
         registerAction(buttonAddCategory, "add-category");
         registerAction(buttonRenameCategory, "rename-category");
         registerAction(buttonRemoveCategory, "remove-category");
+        registerAction(buttonRenameRoute, "rename-route");
 
         actionManager.register("add-category", new AddCategoryAction(treeCategories));
         actionManager.register("rename-category", new RenameCategoryAction(treeCategories));
         actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories));
+        actionManager.register("rename-route", new RenameRouteAction(tableRoutes));
 
         buttonAddFile.addActionListener(new FrameAction() {
             public void run() {
@@ -162,12 +161,6 @@ public class BrowsePanel {
         buttonAddUrl.addActionListener(new FrameAction() {
             public void run() {
                 addUrlToCatalog(getSelectedCategoryTreeNode(treeCategories), "");
-            }
-        });
-
-        buttonRenameRoute.addActionListener(new FrameAction() {
-            public void run() {
-                renameRoute();
             }
         });
 
@@ -217,10 +210,10 @@ public class BrowsePanel {
                 if (e.getValueIsAdjusting() || selectedRows.length == 0)
                     return;
 
-                Route route = getRoutesListModel().getRoute(selectedRows[0]);
+                RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
                 URL url;
                 try {
-                    url = route.getDataUrl();
+                    url = route.getRoute().getDataUrl();
                     if (url == null)
                         return;
                 } catch (Throwable t) {
@@ -299,9 +292,7 @@ public class BrowsePanel {
         for (int i = 0; i < routeColumns.getColumnCount(); i++) {
             TableColumn column = routeColumns.getColumn(i);
             column.setHeaderRenderer(routesHeaderRenderer);
-            if (i == 0)
-                column.setMaxWidth(50);
-            if (i == 2) {
+            if (i == 1) {
                 column.setPreferredWidth(100);
                 column.setMaxWidth(100);
             }
@@ -412,36 +403,6 @@ public class BrowsePanel {
         addFileDialog.setVisible(true);
     }
 
-
-    private void renameRoute() {
-        int selectedRow = tableRoutes.getSelectedRow();
-        if (selectedRow == -1)
-            return;
-
-        final CategoryTreeNode categoryTreeNode = getSelectedCategoryTreeNode(treeCategories);
-        if (categoryTreeNode == null)
-            return;
-
-        final Route selected = getRoutesListModel().getRoute(selectedRow);
-        String description = null;
-        try {
-            description = (String) showInputDialog(RouteConverter.getInstance().getFrame(),
-                    format(RouteConverter.getBundle().getString("rename-position-list-label"), selected.getName()),
-                    RouteConverter.getInstance().getFrame().getTitle(), QUESTION_MESSAGE, null, null, selected.getDescription());
-        } catch (IOException e) {
-            getOperator().handleServiceError(e);
-        }
-        if (trim(description) == null)
-            return;
-
-        final String theDescription = description;
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                categoryTreeNode.renameRoute(selected, theDescription);
-            }
-        });
-    }
-
     private void deleteRoute() {
         final int[] selectedRows = tableRoutes.getSelectedRows();
         if (selectedRows.length == 0)
@@ -454,19 +415,19 @@ public class BrowsePanel {
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
                 for (int selectedRow : selectedRows) {
-                    Route route = getRoutesListModel().getRoute(selectedRow);
-                    category.deleteRoute(route);
+                    RouteModel route = getRoutesListModel().getRoute(selectedRow);
+                    category.deleteRoute(route.getRoute());
                 }
             }
         });
     }
 
 
-    protected void moveRoute(final List<Route> routes, final CategoryTreeNode source, final CategoryTreeNode target) {
+    protected void moveRoute(final List<RouteModel> routes, final CategoryTreeNode source, final CategoryTreeNode target) {
         getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
             public void run() throws IOException {
-                for (Route route : routes) {
-                    source.moveRoute(route, target);
+                for (RouteModel route : routes) {
+                    source.moveRoute(route.getRoute(), target);
                 }
             }
         });
@@ -605,10 +566,10 @@ public class BrowsePanel {
             return MOVE;
         }
 
-        private List<Route> toModels(int[] rowIndices, RoutesListModel model) {
-            List<Route> selectedRoutes = new ArrayList<Route>();
+        private List<RouteModel> toModels(int[] rowIndices, RoutesListModel model) {
+            List<RouteModel> selectedRoutes = new ArrayList<RouteModel>();
             for (int selectedRow : rowIndices) {
-                Route route = model.getRoute(selectedRow);
+                RouteModel route = model.getRoute(selectedRow);
                 selectedRoutes.add(route);
             }
             return selectedRoutes;
@@ -618,7 +579,7 @@ public class BrowsePanel {
             JTable table = (JTable) c;
             RoutesListModel model = (RoutesListModel) table.getModel();
             int[] selectedRows = table.getSelectedRows();
-            List<Route> selectedRoutes = toModels(selectedRows, model);
+            List<RouteModel> selectedRoutes = toModels(selectedRows, model);
             return new RouteSelection(selectedRoutes);
         }
     }
@@ -670,7 +631,7 @@ public class BrowsePanel {
                 if (support.isDataFlavorSupported(routeFlavor)) {
                     Object data = t.getTransferData(routeFlavor);
                     if (data != null) {
-                        List<Route> routes = (List<Route>) data;
+                        List<RouteModel> routes = (List<RouteModel>) data;
                         CategoryTreeNode source = getSelectedCategoryTreeNode(treeCategories);
                         moveRoute(routes, source, target);
                         return true;

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.catalog.domain.Route;
+import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -37,31 +37,24 @@ public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        Route route = (Route) value;
+        RouteModel route = (RouteModel) value;
         switch (columnIndex) {
             case 0:
+                String name = route.getName();
+                if (name == null)
+                    name = RouteConverter.getBundle().getString("no-name");
                 try {
-                    String name = route.getName();
-                    if (name == null)
-                        name = RouteConverter.getBundle().getString("no-name");
-                    label.setText(name);
+                    String description = route.getRoute().getDescription();
+                    if(description != null)
+                        name += " " + description;
                 } catch (IOException e) {
-                    label.setText(RouteConverter.getBundle().getString("loading"));
+                    // intentionally left empty
                 }
+                label.setText(name);
                 break;
             case 1:
                 try {
-                    String description = route.getDescription();
-                    if (description == null)
-                        description = RouteConverter.getBundle().getString("no-description");
-                    label.setText(description);
-                } catch (IOException e) {
-                    label.setText(RouteConverter.getBundle().getString("loading"));
-                }
-                break;
-            case 2:
-                try {
-                    String creator = route.getCreator();
+                    String creator = route.getRoute().getCreator();
                     if (creator == null)
                         creator = RouteConverter.getBundle().getString("no-creator");
                     label.setText(creator);

@@ -23,14 +23,13 @@ package slash.navigation.catalog.model;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.io.File;
 import java.io.IOException;
 
 /**
- * A {@link MutableTreeNode} that has a name and knows its {@link DefaultTreeModel}.
+ * A {@link MutableTreeNode} that encapsulates a {@link Category}.
  *
  * @author Christian Pesch
  */
@@ -44,15 +43,11 @@ public interface CategoryTreeNode extends MutableTreeNode {
     String getName();
     TreeNode[] getPath();
 
-    DefaultTreeModel getTreeModel();
-    void setTreeModel(DefaultTreeModel treeModel);
     RoutesListModel getRoutesListModel();
-
     void clearChildren();
 
     Route addRoute(String description, File file) throws IOException;
     Route addRoute(String description, String fileUrl) throws IOException;
     void moveRoute(Route route, CategoryTreeNode target) throws IOException;
-    void renameRoute(Route route, String description) throws IOException;
     void deleteRoute(Route route) throws IOException;
 }

@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.helper;
 
+import slash.navigation.catalog.model.RouteModel;
+
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.awt.*;
@@ -31,6 +33,14 @@ import java.awt.*;
  */
 
 public class JTableHelper {
+    public static RouteModel getSelectedRouteModel(JTable table) {
+        int row = table.getSelectedRow();
+        if (row == -1)
+            return null;
+        Object value = table.getModel().getValueAt(row, 1);
+        return value instanceof RouteModel ? (RouteModel)value : null;
+    }
+
     public static void scrollToPosition(JTable table, int insertRow) {
         Rectangle rectangle = table.getCellRect(insertRow, 1, true);
         table.scrollRectToVisible(rectangle);

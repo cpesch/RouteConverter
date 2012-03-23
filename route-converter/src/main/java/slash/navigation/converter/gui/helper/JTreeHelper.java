@@ -37,12 +37,12 @@ public class JTreeHelper {
     public static CategoryTreeNode getSelectedCategoryTreeNode(JTree tree) {
         TreePath treePath = tree.getSelectionPath();
         // if there is no selected root take the local root
-        Object treeNode = treePath != null ?
+        Object value = treePath != null ?
                 treePath.getLastPathComponent() :
                 tree.getModel().getChild(tree.getModel().getRoot(), 0);
-        if (!(treeNode instanceof CategoryTreeNode))
+        if (!(value instanceof CategoryTreeNode))
             return null;
-        return (CategoryTreeNode) treeNode;
+        return (CategoryTreeNode) value;
     }
 
     public static List<CategoryTreeNode> getSelectedCategoryTreeNodes(JTree tree) {

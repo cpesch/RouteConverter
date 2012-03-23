@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.catalog.domain.Route;
+import slash.navigation.catalog.model.RouteModel;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -37,9 +38,9 @@ import java.util.List;
 public class RouteSelection implements Transferable {
     public static final DataFlavor routeFlavor = new DataFlavor(RouteSelection.class, "List of Routes");
 
-    private final List<Route> routes;
+    private final List<RouteModel> routes;
 
-    public RouteSelection(List<Route> routes) {
+    public RouteSelection(List<RouteModel> routes) {
         this.routes = routes;
     }
 

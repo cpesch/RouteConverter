@@ -89,16 +89,16 @@ public class RemoteRoute implements Route {
         return getRte().getName();
     }
 
-    public synchronized String getCreator() throws IOException {
-        if (fromCategory)
-            return creator;
-        return getRte().getSrc();
-    }
-
     public synchronized String getDescription() throws IOException {
         if (fromCategory)
             return description;
         return getRte().getDesc();
+    }
+
+    public synchronized String getCreator() throws IOException {
+        if (fromCategory)
+            return creator;
+        return getRte().getSrc();
     }
 
     private String getRteLinkHref() throws IOException {

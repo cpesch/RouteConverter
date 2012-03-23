@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.undo;
 
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
@@ -134,5 +135,17 @@ public class UndoCatalogModel implements CatalogModel {
         delegate.remove(categories, names);
         if (trackUndo)
             undoManager.addEdit(new RemoveCategories(this, categories, names));
+    }
+
+    public void rename(RouteModel route, String name) {
+        rename(route, name, true);
+    }
+
+    void rename(RouteModel route, String newName, boolean trackUndo) {
+        String oldName = route.getName();
+        delegate.rename(route, newName);
+        if (trackUndo)
+            undoManager.addEdit(new RenameRoute(this, route, oldName, newName));
+
     }
 }

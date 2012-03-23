@@ -21,55 +21,46 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 
 import static java.text.MessageFormat.format;
-import static java.util.Arrays.asList;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helper.JTableHelper.getSelectedRouteModel;
 
 /**
- * {@link Action} that adds a category to the {@link CatalogModel}.
+ * {@link Action} that renames a {@link CategoryTreeNode} of the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
 
-public class AddCategoryAction extends FrameAction {
-    private final JTree tree;
+public class RenameRouteAction extends FrameAction {
+    private final JTable table;
 
-    public AddCategoryAction(JTree tree) {
-        this.tree = tree;
+    public RenameRouteAction(JTable table) {
+        this.table = table;
     }
 
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        final CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
-        if(category == null)
+        RouteModel route = getSelectedRouteModel(table);
+        if(route == null)
             return;
 
-        String name = showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("add-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE);
+        // TODO route name vs. description - local and remote
+        String name = (String) showInputDialog(r.getFrame(),
+                    format(RouteConverter.getBundle().getString("rename-route-label"), route.getName()),
+                    r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, route.getName());
         if (trim(name) == null)
             return;
 
-        ((CatalogModel) tree.getModel()).add(asList(category), asList(name));
-
-        // TODO expand the new category
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                TreePath treePath = new TreePath(category.getPath()).pathByAddingChild(category.getChildAt(0));
-                tree.expandPath(new TreePath(treePath));
-                tree.scrollPathToVisible(new TreePath(treePath.getPath()));
-            }
-        });
+        ((CatalogModel) table.getModel()).rename(route, name);
     }
 }

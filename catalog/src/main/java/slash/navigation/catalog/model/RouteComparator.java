@@ -33,15 +33,15 @@ import java.util.Comparator;
  */
 
 class RouteComparator implements Comparator<Route> {
-    private String getDescription(Route route) {
+    private String getName(Route route) {
         try {
-            return route.getDescription();
+            return route.getName() + "/" + route.getDescription();
         } catch (IOException e) {
             return "?";
         }
     }
 
     public int compare(Route c1, Route c2) {
-        return Collator.getInstance().compare(getDescription(c1), getDescription(c2));
+        return Collator.getInstance().compare(getName(c1), getName(c2));
     }
 }
