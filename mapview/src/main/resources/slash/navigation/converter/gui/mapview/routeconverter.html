@@ -367,15 +367,6 @@
                alt: "Mapnik rendering of OpenStreetMap data",
                name: "Mapnik"
            });
-           var tahMapType = new google.maps.ImageMapType({
-               getTileUrl: function(coord, zoom) {
-                   return "http://tah.openstreetmap.org/Tiles/tile/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-               },
-               tileSize: new google.maps.Size(256, 256),
-               maxZoom: 17,
-               alt: "Tiles@Home (Osmarender) rendering of OpenStreetMap data",
-               name: "T@H"
-           });
            var cycleMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://tile.opencyclemap.org/cycle/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
@@ -436,8 +427,6 @@
 
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
            map.mapTypes.set('Mapnik', mapnikMapType);
-           map.mapTypes.set('T@H', tahMapType);
-           map.mapTypes.set('Cycle', cycleMapType);
            map.mapTypes.set('Hike', hikeMapType);
            map.mapTypes.set('Outdoor', outdoorMapType);
            map.setMapTypeId('${maptype}');
