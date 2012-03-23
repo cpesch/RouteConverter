@@ -32,9 +32,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import static java.util.Arrays.asList;
+import static slash.navigation.gopal.GoPalUtil.marshal5;
+import static slash.navigation.gopal.GoPalUtil.unmarshal5;
 
 /**
  * Reads and writes GoPal 5 Route (.xml) files.
@@ -43,6 +47,7 @@ import java.util.prefs.Preferences;
  */
 
 public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
+    private static final Logger log = Logger.getLogger(GoPal5RouteFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal5RouteFormat.class);
     private static final String ROUTE_OPTIONS_SPEED_UNIT = "km_h";
     private static final String VERSION_PREFIX = "v5";
@@ -94,9 +99,10 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
 
     public List<GoPal5Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            Tour tour = GoPalUtil.unmarshal5(source);
-            return Arrays.asList(process(tour));
+            Tour tour = unmarshal5(source);
+            return asList(process(tour));
         } catch (JAXBException e) {
+            log.fine("Error reading GoPal 5 from " + source + ": " + e.getMessage());
             return null;
         }
     }
@@ -291,7 +297,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
 
     public void write(GoPal5Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            GoPalUtil.marshal5(createGoPal(route, startIndex, endIndex), target);
+            marshal5(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

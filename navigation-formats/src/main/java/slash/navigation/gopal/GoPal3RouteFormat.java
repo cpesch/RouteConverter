@@ -31,9 +31,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import static java.util.Arrays.asList;
+import static slash.navigation.gopal.GoPalUtil.marshal3;
+import static slash.navigation.gopal.GoPalUtil.unmarshal3;
 
 /**
  * Reads and writes GoPal 3 Route (.xml) files.
@@ -42,6 +46,7 @@ import java.util.prefs.Preferences;
  */
 
 public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
+    private static final Logger log = Logger.getLogger(GoPal3RouteFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal3RouteFormat.class);
     private static final String VERSION_PREFIX = "v3";
 
@@ -69,9 +74,10 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
 
     public List<GoPal3Route> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            Tour tour = GoPalUtil.unmarshal3(source);
-            return Arrays.asList(process(tour));
+            Tour tour = unmarshal3(source);
+            return asList(process(tour));
         } catch (JAXBException e) {
+            log.fine("Error reading GoPal 3 from " + source + ": " + e.getMessage());
             return null;
         }
     }
@@ -123,7 +129,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
 
     public void write(GoPal3Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            GoPalUtil.marshal3(createGoPal(route, startIndex, endIndex), target);
+            marshal3(createGoPal(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
