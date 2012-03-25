@@ -70,8 +70,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -150,7 +148,7 @@ public class BrowsePanel {
         actionManager.register("add-category", new AddCategoryAction(treeCategories));
         actionManager.register("rename-category", new RenameCategoryAction(treeCategories));
         actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories));
-        actionManager.register("rename-route", new RenameRouteAction(tableRoutes));
+        actionManager.register("rename-route", new RenameRouteAction(tableRoutes, catalogModel));
 
         buttonAddFile.addActionListener(new FrameAction() {
             public void run() {
@@ -176,7 +174,7 @@ public class BrowsePanel {
             }
         });
 
-        treeCategories.setModel(new DefaultTreeModel(new DefaultMutableTreeNode()));
+        treeCategories.setModel(catalogModel);
         treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
                 selectTreePath(e.getPath());
@@ -240,6 +238,8 @@ public class BrowsePanel {
                             treeCategories.setModel(catalogModel);
                             String selected = r.getCategoryPreference();
                             selectTreePath(TreePathStringConversion.fromString(root, selected));
+                            // make sure the subcategories of the remote catalog are visible, too
+                            treeCategories.expandRow(treeCategories.getRowCount() - 1);
                         } finally {
                             stopWaitCursor(r.getFrame().getRootPane());
                         }

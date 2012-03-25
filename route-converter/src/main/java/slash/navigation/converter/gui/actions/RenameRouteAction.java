@@ -42,9 +42,11 @@ import static slash.navigation.converter.gui.helper.JTableHelper.getSelectedRout
 
 public class RenameRouteAction extends FrameAction {
     private final JTable table;
+    private final CatalogModel catalogModel;
 
-    public RenameRouteAction(JTable table) {
+    public RenameRouteAction(JTable table, CatalogModel catalogModel) {
         this.table = table;
+        this.catalogModel = catalogModel;
     }
 
     public void run() {
@@ -61,6 +63,6 @@ public class RenameRouteAction extends FrameAction {
         if (trim(name) == null)
             return;
 
-        ((CatalogModel) table.getModel()).rename(route, name);
+        catalogModel.rename(route, name);
     }
 }
