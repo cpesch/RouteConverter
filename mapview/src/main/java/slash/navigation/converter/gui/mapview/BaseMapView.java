@@ -1291,7 +1291,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
     private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoomchanged$");
-    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^centerchanged$");
+    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^centerchanged/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 

@@ -93,7 +93,7 @@
    function callJava(uri) {
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
-           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri);
+           xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri, true);
            xmlhttp.send();
        } else {
            callbackQueue.push(uri);
@@ -484,7 +484,8 @@
                callJava("zoomchanged");
            });
            google.maps.event.addListener(map, "center_changed", function() {
-               callJava("centerchanged");
+               center = map.getCenter();
+               callJava("centerchanged/" + center.lat() + "/" + center.lng());
            });
 
            var shiftKey = false, altKey = false, ctrlKey = false;
