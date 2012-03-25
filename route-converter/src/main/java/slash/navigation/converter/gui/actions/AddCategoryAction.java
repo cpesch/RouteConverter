@@ -34,6 +34,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
+import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 
 /**
  * {@link Action} that adds a category to the {@link CatalogModel}.
@@ -43,33 +44,33 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
 
 public class AddCategoryAction extends FrameAction {
     private final JTree tree;
+    private final CatalogModel catalogModel;
 
-    public AddCategoryAction(JTree tree) {
+    public AddCategoryAction(JTree tree, CatalogModel catalogModel) {
         this.tree = tree;
+        this.catalogModel = catalogModel;
     }
 
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
         final CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
-        if(category == null)
+        if (category == null)
             return;
 
-        String name = showInputDialog(r.getFrame(),
+        final String name = showInputDialog(r.getFrame(),
                 format(RouteConverter.getBundle().getString("add-category-label"), category.getName()),
                 r.getFrame().getTitle(), QUESTION_MESSAGE);
         if (trim(name) == null)
             return;
 
-        ((CatalogModel) tree.getModel()).add(asList(category), asList(name));
+        catalogModel.add(asList(category), asList(name),
+                new Runnable() {
+                    public void run() {
+                        TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(catalogModel.getCategoryTreeModel().getChild(category, name)));
+                        selectCategoryTreePath(tree, treePath);
+                    }
+                });
 
-        // TODO expand the new category
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                TreePath treePath = new TreePath(category.getPath()).pathByAddingChild(category.getChildAt(0));
-                tree.expandPath(new TreePath(treePath));
-                tree.scrollPathToVisible(new TreePath(treePath.getPath()));
-            }
-        });
     }
 }

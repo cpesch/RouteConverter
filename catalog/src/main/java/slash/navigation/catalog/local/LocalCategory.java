@@ -98,6 +98,7 @@ public class LocalCategory implements Category {
 
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<Route>();
+        assert directory != null;
         for (File file : directory.listFiles(new FileFileFilter())) {
             routes.add(new LocalRoute(catalog, file));
         }

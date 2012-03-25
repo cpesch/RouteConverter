@@ -27,7 +27,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -43,7 +42,6 @@ import static java.util.Arrays.sort;
 
 public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements CategoryTreeNode {
     private static final Logger log = Logger.getLogger(CategoryTreeNodeImpl.class.getName());
-    private static final RouteComparator routeComparator = new RouteComparator();
     private static final CategoryComparator categoryComparator = new CategoryComparator();
 
     private boolean localRoot, remoteRoot;
@@ -132,45 +130,35 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         }
     }
 
-    private RoutesListModel routesListModel;
-
-    public RoutesListModel getRoutesListModel() {
-        if (routesListModel == null) {
-            try {
-                List<Route> routes = getCategory().getRoutes();
-                Route[] routesArray = routes.toArray(new Route[routes.size()]);
-                sort(routesArray, routeComparator);
-                List<RouteModel> routeModels = new ArrayList<RouteModel>();
-                for (Route route : routes)
-                    routeModels.add(new RouteModel(this, route));
-                routesListModel = new RoutesListModel(routeModels);
-            } catch (Exception e) {
-                log.severe("Cannot get routes: " + e.getMessage());
-            }
+    public List<Route> getRoutes() {
+        try {
+            return getCategory().getRoutes();
+        } catch (Exception e) {
+            log.severe("Cannot get routes: " + e.getMessage());
+            return null;
         }
-        return routesListModel;
     }
 
     public Route addRoute(String description, File file) throws IOException {
         Route route = getCategory().createRoute(description, file);
-        getRoutesListModel().addRoute(new RouteModel(this, route));
+        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
         return route;
     }
 
     public Route addRoute(String description, String fileUrl) throws IOException {
         Route route = getCategory().createRoute(description, fileUrl);
-        getRoutesListModel().addRoute(new RouteModel(this, route));
+        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
         return route;
     }
 
     public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
-        route.update(target.getCategory().getUrl(), route.getDescription());
-        target.getRoutesListModel().addRoute(new RouteModel(this, route));
-        getRoutesListModel().deleteRoute(new RouteModel(this, route));
+        route.update(target.getCategory().getUrl(), route.getName());
+        // TODO move me target.getRoutes().addRoute(new RouteModel(this, route));
+        // TODO move me getRoutes().deleteRoute(new RouteModel(this, route));
     }
 
     public void deleteRoute(Route route) throws IOException {
         route.delete();
-        getRoutesListModel().deleteRoute(new RouteModel(this, route));
+        // TODO move me  getRoutes().deleteRoute(new RouteModel(this, route));
     }
 }

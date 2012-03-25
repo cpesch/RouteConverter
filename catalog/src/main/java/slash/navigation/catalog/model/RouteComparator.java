@@ -32,10 +32,10 @@ import java.util.Comparator;
  * @author Christian Pesch
  */
 
-class RouteComparator implements Comparator<Route> {
+public class RouteComparator implements Comparator<Route> {
     private String getName(Route route) {
         try {
-            return route.getName() + "/" + route.getDescription();
+            return route.getDescription() + "/" + route.getName();
         } catch (IOException e) {
             return "?";
         }

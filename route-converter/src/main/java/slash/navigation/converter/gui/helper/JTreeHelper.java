@@ -57,6 +57,12 @@ public class JTreeHelper {
         return treeNodes;
     }
 
+    public static void selectCategoryTreePath(JTree tree, TreePath treePath) {
+        tree.expandPath(treePath);
+        tree.scrollPathToVisible(treePath);
+        tree.getSelectionModel().setSelectionPath(treePath);
+    }
+
     public static List<String> asNames(List<CategoryTreeNode> categories) {
         List<String> names = new ArrayList<String>(categories.size());
         for (CategoryTreeNode categoryTreeNode : categories) {

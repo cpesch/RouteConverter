@@ -21,8 +21,10 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.catalog.model.RoutesTableModel;
 
 import javax.swing.tree.TreeModel;
 import java.util.List;
@@ -33,8 +35,11 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public interface CatalogModel extends TreeModel /*, ListModel*/ {
-    void add(List<CategoryTreeNode> parents, List<String> names);
+public interface CatalogModel {
+    CategoryTreeModel getCategoryTreeModel();
+    RoutesTableModel getRoutesTableModel();
+    
+    void add(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
     void rename(CategoryTreeNode category, String name);
     void move(List<CategoryTreeNode> categories, CategoryTreeNode parent);
     void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents);

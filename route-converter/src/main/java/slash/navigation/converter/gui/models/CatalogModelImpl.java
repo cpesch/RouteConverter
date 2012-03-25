@@ -21,12 +21,13 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import java.io.IOException;
 import java.util.List;
@@ -40,31 +41,25 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
  * @author Christian Pesch
  */
 
-public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
+public class CatalogModelImpl implements CatalogModel {
+    private final CategoryTreeModel categoryTreeModel;
+    private final RoutesTableModel routesTableModel = new RoutesTableModel();
     private final RouteServiceOperator operator;
 
     public CatalogModelImpl(CategoryTreeNode root, RouteServiceOperator operator) {
-        super(root);
+        categoryTreeModel = new CategoryTreeModel(root);
         this.operator = operator;
     }
 
-    public boolean isLeaf(Object node) {
-        // this would go through the whole tree ((CategoryTreeNode) node).getChildCount() == 0;
-        return false;
+    public CategoryTreeModel getCategoryTreeModel() {
+        return categoryTreeModel;
     }
 
-    private CategoryTreeNode getChild(CategoryTreeNode parent, String name) {
-        for (int i = 0; i < getChildCount(parent); i++) {
-            CategoryTreeNode category = (CategoryTreeNode) getChild(parent, i);
-            if (category.getName().equals(name))
-                return category;
-        }
-        return null;
+    public RoutesTableModel getRoutesTableModel() {
+        return routesTableModel;
     }
 
-    // Undoable operations
-
-    public void add(final List<CategoryTreeNode> parents, final List<String> names) {
+    public void add(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "AddCategories";
@@ -82,8 +77,10 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
                             parent.clearChildren();
                         }
                         for (CategoryTreeNode parent : parents) {
-                            nodeStructureChanged(parent);
+                            categoryTreeModel.nodeStructureChanged(parent);
                         }
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
                     }
                 });
             }
@@ -102,7 +99,7 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         category.clearChildren();
-                        nodeChanged(category);
+                        categoryTreeModel.nodeChanged(category);
                     }
                 });
             }
@@ -137,9 +134,8 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
                         for (int i = 0; i < categories.size(); i++) {
                             CategoryTreeNode category = categories.get(i);
                             CategoryTreeNode parent = parents.get(i);
-                            removeNodeFromParent(category);
-                            // TODO want to insert it at the correct position
-                            insertNodeInto(category, parent, 0);
+                            categoryTreeModel.removeNodeFromParent(category);
+                            categoryTreeModel.insertNodeInto(category, parent, 0);
                         }
                     }
                 });
@@ -159,15 +155,15 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
 
             public void run() throws IOException {
                 for (int i = 0; i < parents.size(); i++) {
-                    CategoryTreeNode category = getChild(parents.get(i), names.get(i));
+                    CategoryTreeNode category = categoryTreeModel.getChild(parents.get(i), names.get(i));
                     category.getCategory().delete();
                 }
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         for (int i = 0; i < parents.size(); i++) {
-                            CategoryTreeNode category = getChild(parents.get(i), names.get(i));
-                            removeNodeFromParent(category);
+                            CategoryTreeNode category = categoryTreeModel.getChild(parents.get(i), names.get(i));
+                            categoryTreeModel.removeNodeFromParent(category);
                         }
                     }
                 });
@@ -186,7 +182,7 @@ public class CatalogModelImpl extends DefaultTreeModel implements CatalogModel {
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        route.getCategory().getRoutesListModel().updateRoute(route);
+                        routesTableModel.updateRoute(route);
                     }
                 });
             }

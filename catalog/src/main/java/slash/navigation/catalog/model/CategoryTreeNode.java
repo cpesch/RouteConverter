@@ -27,6 +27,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A {@link MutableTreeNode} that encapsulates a {@link Category}.
@@ -41,9 +42,9 @@ public interface CategoryTreeNode extends MutableTreeNode {
     boolean isRemote();
     Category getCategory();
     String getName();
-    TreeNode[] getPath();
+    List<Route> getRoutes();
 
-    RoutesListModel getRoutesListModel();
+    TreeNode[] getPath();
     void clearChildren();
 
     Route addRoute(String description, File file) throws IOException;

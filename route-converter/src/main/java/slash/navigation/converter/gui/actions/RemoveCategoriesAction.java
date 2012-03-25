@@ -42,9 +42,11 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
 
 public class RemoveCategoriesAction extends FrameAction {
     private final JTree tree;
+    private final CatalogModel catalogModel;
 
-    public RemoveCategoriesAction(JTree tree) {
+    public RemoveCategoriesAction(JTree tree, CatalogModel catalogModel) {
         this.tree = tree;
+        this.catalogModel = catalogModel;
     }
 
     public void run() {
@@ -68,6 +70,6 @@ public class RemoveCategoriesAction extends FrameAction {
         if (confirm != YES_OPTION)
             return;
 
-        ((CatalogModel) tree.getModel()).remove(categories);
+        catalogModel.remove(categories);
    }
 }

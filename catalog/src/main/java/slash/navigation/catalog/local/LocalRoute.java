@@ -71,9 +71,9 @@ public class LocalRoute implements Route {
         return file.toURI().toURL();
     }
 
-    public void update(String categoryUrl, String description) throws IOException {
+    public void update(String categoryUrl, String name) throws IOException {
         File category = Files.toFile(new URL(categoryUrl));
-        File newName = new File(category, description);
+        File newName = new File(category, name);
         if(!file.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", file, newName));
         file = newName;

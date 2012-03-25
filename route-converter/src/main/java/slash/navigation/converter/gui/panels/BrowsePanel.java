@@ -30,12 +30,14 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.local.LocalCatalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.CategoryTreeNodeImpl;
 import slash.navigation.catalog.model.RootTreeNode;
+import slash.navigation.catalog.model.RouteComparator;
 import slash.navigation.catalog.model.RouteModel;
-import slash.navigation.catalog.model.RoutesListModel;
+import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCategoryAction;
@@ -87,6 +89,7 @@ import java.util.prefs.Preferences;
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
@@ -96,6 +99,7 @@ import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 import static slash.navigation.gui.Constants.startWaitCursor;
 import static slash.navigation.gui.Constants.stopWaitCursor;
 
@@ -108,6 +112,7 @@ import static slash.navigation.gui.Constants.stopWaitCursor;
 public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
+    private static final RouteComparator routeComparator = new RouteComparator();
 
     private static final String LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE = "localCatalogRootFolder";
 
@@ -145,9 +150,9 @@ public class BrowsePanel {
         registerAction(buttonRemoveCategory, "remove-category");
         registerAction(buttonRenameRoute, "rename-route");
 
-        actionManager.register("add-category", new AddCategoryAction(treeCategories));
-        actionManager.register("rename-category", new RenameCategoryAction(treeCategories));
-        actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories));
+        actionManager.register("add-category", new AddCategoryAction(treeCategories, catalogModel));
+        actionManager.register("rename-category", new RenameCategoryAction(treeCategories, catalogModel));
+        actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories, catalogModel));
         actionManager.register("rename-route", new RenameRouteAction(tableRoutes, catalogModel));
 
         buttonAddFile.addActionListener(new FrameAction() {
@@ -174,7 +179,7 @@ public class BrowsePanel {
             }
         });
 
-        treeCategories.setModel(catalogModel);
+        treeCategories.setModel(catalogModel.getCategoryTreeModel());
         treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
                 selectTreePath(e.getPath());
@@ -199,6 +204,7 @@ public class BrowsePanel {
         treeCategories.setDropMode(ON);
         treeCategories.setTransferHandler(new TreeDragAndDropHandler());
 
+        tableRoutes.setModel(catalogModel.getRoutesTableModel());
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
         tableRoutes.setDragEnabled(true);
         tableRoutes.setTransferHandler(new TableDragHandler());
@@ -222,6 +228,16 @@ public class BrowsePanel {
                 r.openPositionList(asList(url));
             }
         });
+        TableCellRenderer routesHeaderRenderer = new RoutesTableCellHeaderRenderer();
+        TableColumnModel routeColumns = tableRoutes.getColumnModel();
+        for (int i = 0; i < routeColumns.getColumnCount(); i++) {
+            TableColumn column = routeColumns.getColumn(i);
+            column.setHeaderRenderer(routesHeaderRenderer);
+            if (i == 1) {
+                column.setPreferredWidth(80);
+                column.setMaxWidth(100);
+            }
+        }
 
         browsePanel.setTransferHandler(new PanelDropHandler());
 
@@ -229,17 +245,16 @@ public class BrowsePanel {
             public void run() {
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
-                catalogModel.getChildCount(remoteRoot);
+                catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         startWaitCursor(r.getFrame().getRootPane());
                         try {
-                            treeCategories.setModel(catalogModel);
                             String selected = r.getCategoryPreference();
                             selectTreePath(TreePathStringConversion.fromString(root, selected));
                             // make sure the subcategories of the remote catalog are visible, too
-                            treeCategories.expandRow(treeCategories.getRowCount() - 1);
+                            treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
                         } finally {
                             stopWaitCursor(r.getFrame().getRootPane());
                         }
@@ -274,33 +289,26 @@ public class BrowsePanel {
         Object selectedObject = treePath.getLastPathComponent();
         if (!(selectedObject instanceof CategoryTreeNode))
             return;
-        treeCategories.expandPath(treePath);
-        treeCategories.scrollPathToVisible(treePath);
-        treeCategories.getSelectionModel().addSelectionPath(treePath);
+        selectCategoryTreePath(treeCategories, treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         selectTreeNode(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
     }
 
     private void selectTreeNode(CategoryTreeNode selected) {
-        RoutesListModel routesListModel = selected.getRoutesListModel();
-        if (routesListModel == null)
-            return;
-        tableRoutes.setModel(routesListModel);
-        TableCellRenderer routesHeaderRenderer = new RoutesTableCellHeaderRenderer();
-        TableColumnModel routeColumns = tableRoutes.getColumnModel();
-        for (int i = 0; i < routeColumns.getColumnCount(); i++) {
-            TableColumn column = routeColumns.getColumn(i);
-            column.setHeaderRenderer(routesHeaderRenderer);
-            if (i == 1) {
-                column.setPreferredWidth(100);
-                column.setMaxWidth(100);
-            }
+        List<Route> routes = selected.getRoutes();
+        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        if (routes != null) {
+            Route[] routesArray = routes.toArray(new Route[routes.size()]);
+            sort(routesArray, routeComparator);
+            for (Route route : routesArray)
+                routeModels.add(new RouteModel(selected, route));
         }
+        catalogModel.getRoutesTableModel().setRoutes(routeModels);
     }
 
-    private RoutesListModel getRoutesListModel() {
-        return (RoutesListModel) tableRoutes.getModel();
+    private RoutesTableModel getRoutesListModel() {
+        return (RoutesTableModel) tableRoutes.getModel();
     }
 
     private RouteServiceOperator getOperator() {
@@ -566,7 +574,7 @@ public class BrowsePanel {
             return MOVE;
         }
 
-        private List<RouteModel> toModels(int[] rowIndices, RoutesListModel model) {
+        private List<RouteModel> toModels(int[] rowIndices, RoutesTableModel model) {
             List<RouteModel> selectedRoutes = new ArrayList<RouteModel>();
             for (int selectedRow : rowIndices) {
                 RouteModel route = model.getRoute(selectedRow);
@@ -577,7 +585,7 @@ public class BrowsePanel {
 
         protected Transferable createTransferable(JComponent c) {
             JTable table = (JTable) c;
-            RoutesListModel model = (RoutesListModel) table.getModel();
+            RoutesTableModel model = (RoutesTableModel) table.getModel();
             int[] selectedRows = table.getSelectedRows();
             List<RouteModel> selectedRoutes = toModels(selectedRows, model);
             return new RouteSelection(selectedRoutes);

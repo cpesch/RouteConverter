@@ -46,7 +46,7 @@ public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
                 try {
                     String description = route.getRoute().getDescription();
                     if(description != null)
-                        name += " " + description;
+                        name = description + " (" + name + ")";
                 } catch (IOException e) {
                     // intentionally left empty
                 }

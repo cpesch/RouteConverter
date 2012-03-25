@@ -21,16 +21,16 @@
 package slash.navigation.converter.gui.undo;
 
 import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RouteModel;
+import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
 import slash.navigation.gui.UndoManager;
 
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import java.util.List;
 
 import static slash.navigation.converter.gui.helper.JTreeHelper.asNames;
@@ -51,48 +51,20 @@ public class UndoCatalogModel implements CatalogModel {
         this.undoManager = undoManager;
     }
 
-    // TreeModel
-
-    public Object getRoot() {
-        return delegate.getRoot();
+    public CategoryTreeModel getCategoryTreeModel() {
+        return delegate.getCategoryTreeModel();
     }
 
-    public Object getChild(Object parent, int index) {
-        return delegate.getChild(parent, index);
+    public RoutesTableModel getRoutesTableModel() {
+        return delegate.getRoutesTableModel();
     }
 
-    public int getChildCount(Object parent) {
-        return delegate.getChildCount(parent);
-    }
-
-    public boolean isLeaf(Object node) {
-        return delegate.isLeaf(node);
-    }
-
-    public void valueForPathChanged(TreePath path, Object newValue) {
-        delegate.valueForPathChanged(path, newValue);
-    }
-
-    public int getIndexOfChild(Object parent, Object child) {
-        return delegate.getIndexOfChild(parent, child);
-    }
-
-    public void addTreeModelListener(TreeModelListener l) {
-        delegate.addTreeModelListener(l);
-    }
-
-    public void removeTreeModelListener(TreeModelListener l) {
-        delegate.removeTreeModelListener(l);
-    }
-
-    // Undoable operations
-
-    public void add(List<CategoryTreeNode> parents, List<String> names) {
-        add(parents, names, true);
+    public void add(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
+        add(parents, names, invokeLaterRunnable, true);
     }
     
-    void add(List<CategoryTreeNode> categories, List<String> names, boolean trackUndo) {
-        delegate.add(categories, names);
+    void add(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
+        delegate.add(categories, names, invokeLaterRunnable);
         if (trackUndo)
             undoManager.addEdit(new AddCategories(this, categories, names));
     }

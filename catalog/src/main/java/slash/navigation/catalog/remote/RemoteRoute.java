@@ -109,8 +109,8 @@ public class RemoteRoute implements Route {
         return new URL(getRteLinkHref());
     }
 
-    public void update(String categoryUrl, String description) throws IOException {
-        getCatalog().updateRoute(categoryUrl, getUrl(), description, getRteLinkHref());
+    public void update(String categoryUrl, String name) throws IOException {
+        getCatalog().updateRoute(categoryUrl, getUrl(), name, getRteLinkHref());
         invalidate();
     }
 

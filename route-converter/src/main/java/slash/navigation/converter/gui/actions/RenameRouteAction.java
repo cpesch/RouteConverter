@@ -56,7 +56,6 @@ public class RenameRouteAction extends FrameAction {
         if(route == null)
             return;
 
-        // TODO route name vs. description - local and remote
         String name = (String) showInputDialog(r.getFrame(),
                     format(RouteConverter.getBundle().getString("rename-route-label"), route.getName()),
                     r.getFrame().getTitle(), QUESTION_MESSAGE, null, null, route.getName());

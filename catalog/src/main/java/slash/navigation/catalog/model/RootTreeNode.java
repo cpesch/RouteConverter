@@ -26,6 +26,7 @@ import slash.navigation.catalog.domain.Route;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A {@link CategoryTreeNode} that has a given set of {@link CategoryTreeNode} as its children.
@@ -64,7 +65,7 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
         throw new UnsupportedOperationException();
     }
 
-    public RoutesListModel getRoutesListModel() {
+    public List<Route> getRoutes() {
         return null;
     }
 

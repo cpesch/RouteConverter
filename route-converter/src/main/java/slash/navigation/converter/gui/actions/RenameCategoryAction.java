@@ -41,9 +41,11 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
 
 public class RenameCategoryAction extends FrameAction {
     private final JTree tree;
+    private final CatalogModel catalogModel;
 
-    public RenameCategoryAction(JTree tree) {
+    public RenameCategoryAction(JTree tree, CatalogModel catalogModel) {
         this.tree = tree;
+        this.catalogModel = catalogModel;
     }
 
     public void run() {
@@ -59,6 +61,6 @@ public class RenameCategoryAction extends FrameAction {
         if (trim(name) == null)
             return;
 
-        ((CatalogModel) tree.getModel()).rename(category, name);
+        catalogModel.rename(category, name);
     }
 }

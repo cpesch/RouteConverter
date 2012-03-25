@@ -55,7 +55,7 @@ class RemoveCategories extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.add(categories, names, false);
+        catalogModel.add(categories, names, null, false);
     }
 
     public void redo() throws CannotRedoException {

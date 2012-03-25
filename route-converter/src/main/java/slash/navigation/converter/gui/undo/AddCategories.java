@@ -60,6 +60,6 @@ class AddCategories extends AbstractUndoableEdit {
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.add(categories, names, false);
+        catalogModel.add(categories, names, null, false);
     }
 }
