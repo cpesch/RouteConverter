@@ -25,6 +25,8 @@ import slash.navigation.catalog.model.RouteModel;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper for simplified {@link JTable} operations.
@@ -38,7 +40,18 @@ public class JTableHelper {
         if (row == -1)
             return null;
         Object value = table.getModel().getValueAt(row, 1);
-        return value instanceof RouteModel ? (RouteModel)value : null;
+        return value instanceof RouteModel ? (RouteModel) value : null;
+    }
+
+    public static List<RouteModel> getSelectedRouteModels(JTable table) {
+        int[] rows = table.getSelectedRows();
+        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        for (int row : rows) {
+            Object value = table.getModel().getValueAt(row, 1);
+            if (value instanceof RouteModel)
+                routeModels.add((RouteModel) value);
+        }
+        return routeModels;
     }
 
     public static void scrollToPosition(JTable table, int insertRow) {

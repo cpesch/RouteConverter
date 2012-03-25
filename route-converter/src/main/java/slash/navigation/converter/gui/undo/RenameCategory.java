@@ -55,11 +55,11 @@ class RenameCategory extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.rename(category, oldName, false);
+        catalogModel.renameCategory(category, oldName, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.rename(category, newName, false);
+        catalogModel.renameCategory(category, newName, false);
     }
 }

@@ -39,7 +39,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Dialog to rename position list
+ * Dialog to renameRoute position list
  *
  * @author Christian Pesch
  */

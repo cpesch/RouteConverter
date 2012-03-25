@@ -64,7 +64,7 @@ public class AddCategoryAction extends FrameAction {
         if (trim(name) == null)
             return;
 
-        catalogModel.add(asList(category), asList(name),
+        catalogModel.addCategories(asList(category), asList(name),
                 new Runnable() {
                     public void run() {
                         TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(catalogModel.getCategoryTreeModel().getChild(category, name)));

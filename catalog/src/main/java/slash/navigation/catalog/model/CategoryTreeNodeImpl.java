@@ -154,11 +154,6 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
     public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
         route.update(target.getCategory().getUrl(), route.getName());
         // TODO move me target.getRoutes().addRoute(new RouteModel(this, route));
-        // TODO move me getRoutes().deleteRoute(new RouteModel(this, route));
-    }
-
-    public void deleteRoute(Route route) throws IOException {
-        route.delete();
-        // TODO move me  getRoutes().deleteRoute(new RouteModel(this, route));
+        // TODO move me getRoutes().removeRoute(new RouteModel(this, route));
     }
 }

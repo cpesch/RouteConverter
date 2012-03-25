@@ -68,7 +68,7 @@ public class RoutesTableModel extends AbstractTableModel {
         fireTableRowsUpdated(index, index);
     }
 
-    public void deleteRoute(RouteModel route) {
+    public void removeRoute(RouteModel route) {
         int index = routes.indexOf(route);
         assert index != -1;
         routes.remove(route);

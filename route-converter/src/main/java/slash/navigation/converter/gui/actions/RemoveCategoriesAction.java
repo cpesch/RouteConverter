@@ -35,7 +35,7 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 
 /**
- * {@link Action} that renames a {@link CategoryTreeNode} of the {@link CatalogModel}.
+ * {@link Action} that renames {@link CategoryTreeNode}s of the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
@@ -70,6 +70,6 @@ public class RemoveCategoriesAction extends FrameAction {
         if (confirm != YES_OPTION)
             return;
 
-        catalogModel.remove(categories);
+        catalogModel.removeCategories(categories);
    }
 }

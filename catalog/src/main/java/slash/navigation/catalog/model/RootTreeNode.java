@@ -85,8 +85,4 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
     public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
         throw new UnsupportedOperationException();
     }
-
-    public void deleteRoute(Route route) throws IOException {
-        throw new UnsupportedOperationException();
-    }
 }

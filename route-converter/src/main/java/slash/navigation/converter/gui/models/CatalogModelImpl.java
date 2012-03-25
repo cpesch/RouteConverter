@@ -59,7 +59,7 @@ public class CatalogModelImpl implements CatalogModel {
         return routesTableModel;
     }
 
-    public void add(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
+    public void addCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "AddCategories";
@@ -87,7 +87,7 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void rename(final CategoryTreeNode category, final String name) {
+    public void renameCategory(final CategoryTreeNode category, final String name) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "RenameCategory";
@@ -106,11 +106,11 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void move(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
-        move(categories, asParents(parent, categories.size()));
+    public void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
+        moveCategories(categories, asParents(parent, categories.size()));
     }
 
-    public void move(final List<CategoryTreeNode> categories, final List<CategoryTreeNode> parents) {
+    public void moveCategories(final List<CategoryTreeNode> categories, final List<CategoryTreeNode> parents) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "MoveCategories";
@@ -143,11 +143,11 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void remove(List<CategoryTreeNode> categories) {
-        remove(asParents(categories), asNames(categories));
+    public void removeCategories(List<CategoryTreeNode> categories) {
+        removeCategories(asParents(categories), asNames(categories));
     }
 
-    public void remove(final List<CategoryTreeNode> parents, final List<String> names) {
+    public void removeCategories(final List<CategoryTreeNode> parents, final List<String> names) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "RemoveCategories";
@@ -171,7 +171,7 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void rename(final RouteModel route, final String name) {
+    public void renameRoute(final RouteModel route, final String name) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "RenameRoute";
@@ -183,6 +183,28 @@ public class CatalogModelImpl implements CatalogModel {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         routesTableModel.updateRoute(route);
+                    }
+                });
+            }
+        });
+    }
+
+    public void removeRoutes(final List<RouteModel> routes) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "RemoveRoutes";
+            }
+
+            public void run() throws IOException {
+                for (RouteModel route : routes) {
+                    route.getRoute().delete();
+                }
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        for (RouteModel route : routes) {
+                            routesTableModel.removeRoute(route);
+                        }
                     }
                 });
             }

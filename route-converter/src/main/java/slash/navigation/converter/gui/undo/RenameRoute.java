@@ -55,11 +55,11 @@ class RenameRoute extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.rename(route, oldName, false);
+        catalogModel.renameRoute(route, oldName, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.rename(route, newName, false);
+        catalogModel.renameRoute(route, newName, false);
     }
 }

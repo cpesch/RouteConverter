@@ -61,6 +61,6 @@ public class RenameCategoryAction extends FrameAction {
         if (trim(name) == null)
             return;
 
-        catalogModel.rename(category, name);
+        catalogModel.renameCategory(category, name);
     }
 }

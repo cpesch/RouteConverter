@@ -57,11 +57,11 @@ class MoveCategories extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.move(categories, oldParents, false);
+        catalogModel.moveCategories(categories, oldParents, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.move(categories, newParents, false);
+        catalogModel.moveCategories(categories, newParents, false);
     }
 }

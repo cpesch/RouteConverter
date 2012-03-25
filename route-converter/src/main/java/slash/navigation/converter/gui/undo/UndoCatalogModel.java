@@ -59,65 +59,70 @@ public class UndoCatalogModel implements CatalogModel {
         return delegate.getRoutesTableModel();
     }
 
-    public void add(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
-        add(parents, names, invokeLaterRunnable, true);
+    public void addCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
+        addCategories(parents, names, invokeLaterRunnable, true);
     }
     
-    void add(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
-        delegate.add(categories, names, invokeLaterRunnable);
+    void addCategories(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
+        delegate.addCategories(categories, names, invokeLaterRunnable);
         if (trackUndo)
             undoManager.addEdit(new AddCategories(this, categories, names));
     }
 
-    public void rename(CategoryTreeNode category, String name) {
-        rename(category, name, true);
+    public void renameCategory(CategoryTreeNode category, String name) {
+        renameCategory(category, name, true);
     }
 
-    void rename(CategoryTreeNode category, String newName, boolean trackUndo) {
+    void renameCategory(CategoryTreeNode category, String newName, boolean trackUndo) {
         String oldName = category.getName();
-        delegate.rename(category, newName);
+        delegate.renameCategory(category, newName);
         if (trackUndo)
             undoManager.addEdit(new RenameCategory(this, category, oldName, newName));
     }
 
-    public void move(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
-        move(categories, asParents(parent, categories.size()));
+    public void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
+        moveCategories(categories, asParents(parent, categories.size()));
     }
 
-    public void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents) {
-        move(categories, parents, true);
+    public void moveCategories(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents) {
+        moveCategories(categories, parents, true);
     }
     
-    void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents, boolean trackUndo) {
+    void moveCategories(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents, boolean trackUndo) {
         List<CategoryTreeNode> oldParents = asParents(categories);
-        delegate.move(categories, parents);
+        delegate.moveCategories(categories, parents);
         if (trackUndo)
             undoManager.addEdit(new MoveCategories(this, categories, oldParents, parents));
     }
 
-    public void remove(List<CategoryTreeNode> categories) {
-        remove(asParents(categories), asNames(categories));
+    public void removeCategories(List<CategoryTreeNode> categories) {
+        removeCategories(asParents(categories), asNames(categories));
     }
 
-    public void remove(List<CategoryTreeNode> parents, List<String> names) {
-        remove(parents, names, true);
+    public void removeCategories(List<CategoryTreeNode> parents, List<String> names) {
+        removeCategories(parents, names, true);
     }
 
-    void remove(List<CategoryTreeNode> categories, List<String> names, boolean trackUndo) {
-        delegate.remove(categories, names);
+    void removeCategories(List<CategoryTreeNode> categories, List<String> names, boolean trackUndo) {
+        delegate.removeCategories(categories, names);
         if (trackUndo)
             undoManager.addEdit(new RemoveCategories(this, categories, names));
     }
 
-    public void rename(RouteModel route, String name) {
-        rename(route, name, true);
+    public void renameRoute(RouteModel route, String name) {
+        renameRoute(route, name, true);
     }
 
-    void rename(RouteModel route, String newName, boolean trackUndo) {
+    void renameRoute(RouteModel route, String newName, boolean trackUndo) {
         String oldName = route.getName();
-        delegate.rename(route, newName);
+        delegate.renameRoute(route, newName);
         if (trackUndo)
             undoManager.addEdit(new RenameRoute(this, route, oldName, newName));
 
+    }
+
+    public void removeRoutes(List<RouteModel> routes) {
+        // TODO implement undo for removing routes
+        delegate.removeRoutes(routes);
     }
 }

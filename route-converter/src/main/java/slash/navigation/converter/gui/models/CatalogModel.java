@@ -39,12 +39,13 @@ public interface CatalogModel {
     CategoryTreeModel getCategoryTreeModel();
     RoutesTableModel getRoutesTableModel();
     
-    void add(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
-    void rename(CategoryTreeNode category, String name);
-    void move(List<CategoryTreeNode> categories, CategoryTreeNode parent);
-    void move(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents);
-    void remove(List<CategoryTreeNode> categories);
-    void remove(List<CategoryTreeNode> parents, List<String> names);
+    void addCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
+    void renameCategory(CategoryTreeNode category, String name);
+    void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent);
+    void moveCategories(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents);
+    void removeCategories(List<CategoryTreeNode> categories);
+    void removeCategories(List<CategoryTreeNode> parents, List<String> names);
 
-    void rename(RouteModel route, String name);
+    void renameRoute(RouteModel route, String name);
+    void removeRoutes(List<RouteModel> routes);
 }
