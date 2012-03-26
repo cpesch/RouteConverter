@@ -230,6 +230,15 @@
        }
    }
 
+   var meters = 0;
+   var seconds = 0;
+
+   function resetDirections() {
+       meters = 0;
+       seconds = 0;
+       callJava("load/" + meters + "/" + seconds);
+   }
+
    function renderDirections(directionsRequest, startIndex, lastSegment) {
        directionsService.route(directionsRequest, function(result, status) {
            if (status == google.maps.DirectionsStatus.OK) {
@@ -241,8 +250,6 @@
                });
                addDirections(renderer, panel);
 
-               var meters = 0;
-               var seconds = 0;
                for (var i = 0; i < result.routes.length; i++) {
                    var legs = result.routes[i].legs;
                    for (var j = 0; j < legs.length; j++) {
@@ -255,7 +262,7 @@
                if (lastSegment)
                    removeDirections();
            } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
-               callJava("load/0/0");
+               resetDirections();
 
                if (lastSegment)
                    removeDirections();

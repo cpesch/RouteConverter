@@ -153,7 +153,7 @@ public abstract class BaseMapView implements MapView {
     private TravelMode travelMode;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
-    private int meters = 0, seconds = 0, lastZoomLevel = -1;
+    private int lastZoomLevel = -1;
     private PositionAugmenter positionAugmenter;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -966,8 +966,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private void addDirectionsToMap(List<BaseNavigationPosition> positions) {
-        meters = 0;
-        seconds = 0;
+        executeScript("resetDirections();");
 
         // avoid throwing javascript exceptions if there is nothing to direct
         if (positions.size() < 2) {
@@ -1298,8 +1297,8 @@ public abstract class BaseMapView implements MapView {
     boolean processCallback(String callback) {
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
         if (directionsLoadMatcher.matches()) {
-            meters += parseInt(directionsLoadMatcher.group(1));
-            seconds += parseInt(directionsLoadMatcher.group(2));
+            int meters = parseInt(directionsLoadMatcher.group(1));
+            int seconds = parseInt(directionsLoadMatcher.group(2));
             fireCalculatedDistance(meters, seconds);
             return true;
         }
