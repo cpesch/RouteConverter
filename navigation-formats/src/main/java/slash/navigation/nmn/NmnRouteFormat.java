@@ -58,7 +58,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     public int getMaximumPositionCount() {
         return preferences.getInt("maximumNavigonRoutePositionCount", 99);
     }
-    
+
     @SuppressWarnings({"unchecked"})
     public <P extends BaseNavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
@@ -215,25 +215,21 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // 4 Byte length
         int positionLength = fileContent.getInt();
         int positionEndPosition = positionLength + fileContent.position();
-        try{
+        try {
             // 8 Byte 0. unknown
             fileContent.position(fileContent.position() + 8);
-    
             // 4 Byte: length + text
             String text = getText(fileContent);
-    
             // 4 Byte: unknown
             fileContent.getInt();
-    
-            // 4 Byte: number of following data points (1, 2, 4) 
+            // 4 Byte: number of following data points (1, 2, 4)
             int numberOfDataPoints = fileContent.getInt();
-    
             // 8 Byte: unknown
             if (fileContent.position() < positionEndPosition)
                 fileContent.getInt();
             if (fileContent.position() < positionEndPosition)
                 fileContent.getInt();
-    
+
             Wgs84Position position = null;
             int countBlock = 0;
             while (fileContent.position() < positionEndPosition) {
@@ -241,7 +237,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 if (blockType == 1) {
                     position = readBlocktype_01(fileContent, position);
                     countBlock++;
-                } else if (blockType == 2){
+                } else if (blockType == 2) {
                     position = readBlocktype_02(fileContent, position, countBlock++);
                     // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
                     if (countBlock > 2)
@@ -259,8 +255,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 }
             }
             return position;
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             fileContent.position(positionEndPosition);
             return null;
         }
@@ -308,7 +303,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
     protected Wgs84Position readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position positionPoint) {
         /*
-         4 byte int 01 00 00 00 
+         4 byte int 01 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
          4 byte Textlänge
          n byte Text. Wegpunktbeschreibung. PLZ,Ort,
@@ -334,10 +329,10 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             return new Wgs84Position(longitude, latitude, null, null, null, waypointDescription);
         return positionPoint;
     }
-    
-    protected Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount){
+
+    protected Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
         /*
-        4 byte int 01 00 00 00 
+        4 byte int 01 00 00 00
         8 byte int Länge. diese 8 bytes nicht mitzählen
         4 byte Textlänge
         n byte Text. Wegpunktbeschreibung. PLZ,Ort,
@@ -348,11 +343,11 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         4 byte count following items??:
           4 byte identifier
              0x08: city ?
-             0x32: zip code ?            
+             0x32: zip code ?
           4 byte textlength
           n byte Textlength
-        8 byte ?  
-        */ 
+        8 byte ?
+        */
         long blockLength = byteBuffer.getLong();
         int startPosition = byteBuffer.position();
         String waypointDescription = getText(byteBuffer);
@@ -375,49 +370,47 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             resultPoint.setComment(waypointDescription + ' ' + resultPoint.getComment());
         } else
             resultPoint = positionPoint;
-        
         return resultPoint;
-        
     }
 
     protected Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
         /*
         4 byte int 04 00 00 00
         8 byte int als Länge diese nicht mitzählen
-        4 byte int Länge des Textes. Wenn 0, dann folgende trotzdem 4 Bytes. 
+        4 byte int Länge des Textes. Wenn 0, dann folgende trotzdem 4 Bytes.
         n byte Text
         manchmal hier schon zu Ende.
         4 byte (int) bisher gefunden: 0, 1. manchmal auch nur 3 byte??
         8 byte breite double
         8 byte länge double
-               
-        4 byte int bisher gefunden 2, 3, 
-        
+
+        4 byte int bisher gefunden 2, 3,
+
         4 byte int abhängig folgt bis zur Gesamtlänge - 8
             0x0: 4 byte int dann:
-                 00 7B A4 3F: 
+                 00 7B A4 3F:
                     4 byte textlänge
                     n byte Text
-                 05 00 00 00: 
+                 05 00 00 00:
                   5 byte text
             0x2: 8 byte ?
-            0x7:    
+            0x7:
             0x9: 4 byte Textlänge
-               n byte Text  
+               n byte Text
             0x8: 4 byte Textlänge
-               n byte Text            
-            0x32: es folgt 
-               4 byte Textlänge 
+               n byte Text
+            0x32: es folgt
+               4 byte Textlänge
                n byte PLZ
             0x3C: es folgt
                4 byte Textlänge
                n byte Text
-               4 byte 
+               4 byte
                4 byte Textlänge
                n byte Text
                4 byte Textlänge
-               n byte Text              
-               
+               n byte Text
+
         8 byte ?
         */
         long blockLength = byteBuffer.getLong();
@@ -481,10 +474,10 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // 2x4 byte unknown
         byteBuffer.getInt();
         byteBuffer.getInt();
-        
-        //Es gab eine Datei in der irgendein Fehler drin war. Damit konnte es 
+
+        //Es gab eine Datei in der irgendein Fehler drin war. Damit konnte es
         //passieren, dass über das Ziel hinaus gelesen wurde.
-        //Daher nie über das Ende hinaus. Oder sollte man gleich immer an das 
+        //Daher nie über das Ende hinaus. Oder sollte man gleich immer an das
         //Ende gehen?
         if (byteBuffer.position() > startPosition + blockLength)
             byteBuffer.position((int) (startPosition + blockLength));
@@ -512,7 +505,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         // geschrieben.
         // Nach nochmaliger Analyse (08.10.2011) mit einem von itconv geschriebenen .route
         // scheint es notwendig zu sein, dass Land mit anzugeben.
-        
+
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
         byteBuffer.order(LITTLE_ENDIAN);
         byteBuffer.position(0);
@@ -521,11 +514,11 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putLong(0); // 8 Byte 0
         byteBuffer.putInt(0); // 4 Byte textlength
         byteBuffer.putInt(1); // 4 Byte always 1
-        byteBuffer.putInt(2); // count following "02 00 00 00" Block. 
-         
-        int timeStamp = (int) (System.currentTimeMillis() / 1000L); 
+        byteBuffer.putInt(2); // count following "02 00 00 00" Block.
+
+        int timeStamp = (int) (System.currentTimeMillis() / 1000L);
         byte unknownBytes[] = { //copied from itconv export
-            (byte)0x28, (byte)0x00, (byte)0x00, (byte)0x00
+                (byte) 0x28, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
         //unix timestamp
         byteBuffer.putInt(timeStamp);
@@ -539,39 +532,39 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putDouble(position.getLongitude());
         byteBuffer.putDouble(position.getLatitude());
         byteBuffer.putInt(0); //4 byte ??
-        
+
         //0x32 ist plz wenn Daten von navigon kommen. Liegt nicht vor -> mit 0 füllen
         //macht itconv ebenso
         byteBuffer.putInt(0x32);
-        byteBuffer.putLong(0); //8 byte 
+        byteBuffer.putLong(0); //8 byte
 
         //unknown copyied from itconv export.  wechselt in itconf an den ersten Stellen. Timestamp
         //passt nicht. Datum ist von 1990
         //Sind eigentlich 2x 4 Bytes. Die ersten 4 werden im Land nochmal verwendet
         byte rawData[] = {
-            (byte)0x90, (byte)0xF9, (byte)0x46, (byte)0x27, 
-            (byte)0x0A, (byte)0x00, (byte)0x00, (byte)0x00
+                (byte) 0x90, (byte) 0xF9, (byte) 0x46, (byte) 0x27,
+                (byte) 0x0A, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
         rawData[0] += positionNo; //erhöht sich mit jedem Punkt
-        byteBuffer.put(rawData);  
+        byteBuffer.put(rawData);
 
-        //Countrycode 
+        //Countrycode
         //type 1
         byteBuffer.putInt(1);
         int positionStarttagCountry = byteBuffer.position(); // save position to fill the bytelength at the end
-        //bytelength 
+        //bytelength
         byteBuffer.putLong(0); //filled at the end
         byteBuffer.putInt(mapName.length()); //textlänge
         byteBuffer.put(mapName.getBytes()); //3 bytes text
-     
-        byteBuffer.putInt(timeStamp); 
-        byteBuffer.put(rawData, 0, 4); 
-     
+
+        byteBuffer.putInt(timeStamp);
+        byteBuffer.put(rawData, 0, 4);
+
         //20 Byte 0
-        byteBuffer.putLong(0); 
+        byteBuffer.putLong(0);
         byteBuffer.putLong(0);
         byteBuffer.putInt(0);
-     
+
         int pointByteLength = byteBuffer.position();
         // fill the bytelength fields
         byteBuffer.putInt(0, pointByteLength - 4);
@@ -587,13 +580,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
     private String calculateMapName(List<Wgs84Position> positions, int startIndex, int endIndex) {
         String mapName = preferences.get("navigonRouteMapName", null);
-        if(mapName != null)
+        if (mapName != null)
             return mapName;
 
         int westCount = 0;
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            if(position.getLongitude() < -27.0)
+            if (position.getLongitude() < -27.0)
                 westCount++;
         }
         int eastCount = endIndex - startIndex - westCount;
