@@ -41,8 +41,8 @@ public interface CatalogModel {
     
     void addCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
     void renameCategory(CategoryTreeNode category, String name);
-    void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent);
-    void moveCategories(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents);
+    void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent, Runnable invokeLaterRunnable);
+    void moveCategories(List<CategoryTreeNode> categories, List<CategoryTreeNode> parents, Runnable invokeLaterRunnable);
     void removeCategories(List<CategoryTreeNode> categories);
     void removeCategories(List<CategoryTreeNode> parents, List<String> names);
 

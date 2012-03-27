@@ -587,14 +587,14 @@ public class BrowsePanel {
         }
 
         private void moveCategories(final List<CategoryTreeNode> categories, final CategoryTreeNode target) {
-            catalogModel.moveCategories(categories, target);
-
-            // TODO expand the target category
-            for (CategoryTreeNode categoryTreeNode : categories) {
-                TreePath treePath = new TreePath(target.getPath()).pathByAddingChild(categoryTreeNode);
-                treeCategories.expandPath(treePath);
-                treeCategories.getSelectionModel().addSelectionPath(treePath);
-            }
+            catalogModel.moveCategories(categories, target, new Runnable() {
+                public void run() {
+                    for (CategoryTreeNode category : categories) {
+                        TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(category));
+                        selectCategoryTreePath(treeCategories, treePath);
+                    }
+                }
+            });
         }
 
         @SuppressWarnings("unchecked")

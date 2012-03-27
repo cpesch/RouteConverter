@@ -106,11 +106,11 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent) {
-        moveCategories(categories, asParents(parent, categories.size()));
+    public void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent, Runnable invokeLaterRunnable) {
+        moveCategories(categories, asParents(parent, categories.size()), invokeLaterRunnable);
     }
 
-    public void moveCategories(final List<CategoryTreeNode> categories, final List<CategoryTreeNode> parents) {
+    public void moveCategories(final List<CategoryTreeNode> categories, final List<CategoryTreeNode> parents, final Runnable invokeLaterRunnable) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
                 return "MoveCategories";
@@ -137,6 +137,8 @@ public class CatalogModelImpl implements CatalogModel {
                             categoryTreeModel.removeNodeFromParent(category);
                             categoryTreeModel.insertNodeInto(category, parent, 0);
                         }
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
                     }
                 });
             }
