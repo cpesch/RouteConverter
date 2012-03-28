@@ -35,6 +35,6 @@ public interface Route {
     String getCreator() throws IOException;
     URL getDataUrl() throws IOException;
 
-    void update(String categoryUrl, String name) throws IOException;
+    void update(String categoryUrl, String description) throws IOException;
     void delete() throws IOException;
 }

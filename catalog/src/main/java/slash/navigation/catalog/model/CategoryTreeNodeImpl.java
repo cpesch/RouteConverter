@@ -25,8 +25,6 @@ import slash.navigation.catalog.domain.Route;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
-import java.io.File;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -137,23 +135,5 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
             log.severe("Cannot get routes: " + e.getMessage());
             return null;
         }
-    }
-
-    public Route addRoute(String description, File file) throws IOException {
-        Route route = getCategory().createRoute(description, file);
-        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
-        return route;
-    }
-
-    public Route addRoute(String description, String fileUrl) throws IOException {
-        Route route = getCategory().createRoute(description, fileUrl);
-        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
-        return route;
-    }
-
-    public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
-        route.update(target.getCategory().getUrl(), route.getName());
-        // TODO move me target.getRoutes().addRoute(new RouteModel(this, route));
-        // TODO move me getRoutes().removeRoute(new RouteModel(this, route));
     }
 }
