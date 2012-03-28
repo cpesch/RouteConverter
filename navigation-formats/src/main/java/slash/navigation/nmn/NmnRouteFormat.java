@@ -149,12 +149,17 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return false;
     }
 
-    private String getText(ByteBuffer byteBuffer) {
+    private String getText(ByteBuffer byteBuffer) throws EOFException {
         int textLen = byteBuffer.getInt();
+        if (textLen > byteBuffer.capacity() - byteBuffer.position())
+            throw new EOFException();
         return getText(byteBuffer, textLen);
     }
 
-    private String getText(ByteBuffer byteBuffer, int count) {
+    private String getText(ByteBuffer byteBuffer, int count) throws EOFException {
+        if (byteBuffer.position() + count > byteBuffer.capacity())
+            throw new EOFException();
+        
         if (count > 0) {
             byte[] text = new byte[count];
             for (int i = 0; i < text.length; i++)
@@ -183,7 +188,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             // 4 Byte: position count - always 0?
             fileContent.getInt();
             // 4 Byte: length + creation date
-            getText(fileContent);
+            try {
+                getText(fileContent);
+            }
+            catch (EOFException e) {
+                // can't read the first text --> wrong format
+                return null;
+            }
             // 4 Byte: expected position count
             int expectedPositionCount = fileContent.getInt();
             // 4 Byte: unknown - seen: 0, 1
@@ -211,7 +222,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    protected Wgs84Position readPosition(ByteBuffer fileContent) {
+    protected Wgs84Position readPosition(ByteBuffer fileContent) throws EOFException {
         // 4 Byte length
         int positionLength = fileContent.getInt();
         int positionEndPosition = positionLength + fileContent.position();
@@ -255,13 +266,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 }
             }
             return position;
-        } catch (OutOfMemoryError e) {
+        } catch (EOFException e) {
             fileContent.position(positionEndPosition);
             return null;
         }
     }
 
-    protected Wgs84Position readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
+    protected Wgs84Position readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
         /*
          4 byte in 00 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -301,7 +312,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return resultPoint;
     }
 
-    protected Wgs84Position readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position positionPoint) {
+    protected Wgs84Position readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position positionPoint) throws EOFException {
         /*
          4 byte int 01 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -330,7 +341,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return positionPoint;
     }
 
-    protected Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
+    protected Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
         /*
         4 byte int 01 00 00 00
         8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -373,7 +384,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return resultPoint;
     }
 
-    protected Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) {
+    protected Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
         /*
         4 byte int 04 00 00 00
         8 byte int als Länge diese nicht mitzählen
