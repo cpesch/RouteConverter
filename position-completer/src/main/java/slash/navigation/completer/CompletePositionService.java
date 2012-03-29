@@ -28,6 +28,8 @@ import slash.navigation.hgt.HgtFiles;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
+import static slash.common.io.Transfer.formatElevation;
+
 /**
  * Helps to complement positions with elevation, postal address and populated place information.
  *
@@ -60,7 +62,7 @@ public class CompletePositionService {
             elevation = geoNamesService.getElevationFor(longitude, latitude);
         if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS, true))
             elevation = earthToolsService.getElevationFor(longitude, latitude);
-        return elevation;
+        return elevation != null ? formatElevation(elevation).doubleValue() : null;
     }
 
     public String getCommentFor(double longitude, double latitude) throws IOException {
