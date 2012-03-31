@@ -21,13 +21,20 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
 
 /**
  * Reads and writes Kompass (.tk) files.
@@ -75,14 +82,13 @@ public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String latitude = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String elevation = lineMatcher.group(3);
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                Transfer.parseDouble(elevation), null, null, null);
+        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), null, null, null);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
-        String elevation = position.getElevation() != null ? Transfer.formatDoubleAsString(position.getElevation(), 1) : "0.0";
+        String longitude = formatDoubleAsString(position.getLongitude(), 7);
+        String latitude = formatDoubleAsString(position.getLatitude(), 7);
+        String elevation = position.getElevation() != null ? formatDoubleAsString(position.getElevation(), 1) : "0.0";
         writer.println(latitude + SEPARATOR + longitude + SEPARATOR + elevation);
     }
 }

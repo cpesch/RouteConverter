@@ -34,6 +34,8 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatIntAsString;
+
 /**
  * Reads and writes Magellan Route (.rte) files.
  * <p/>
@@ -180,7 +182,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
         String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
-        String altitude = Transfer.formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
+        String altitude = formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
 
         String wpl = "PMGNWPL" + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +

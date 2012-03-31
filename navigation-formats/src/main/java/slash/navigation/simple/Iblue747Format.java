@@ -34,6 +34,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatHeadingAsString;
+import static slash.common.io.Transfer.formatSpeedAsString;
+
 /**
  * Reads and writes i-Blue 747 (.csv) files.
  *
@@ -170,17 +175,17 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = formatDate(position.getTime());
         String time = formatTime(position.getTime());
-        String latitude = Transfer.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
+        String latitude = formatDoubleAsString(Math.abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = Transfer.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
+        String longitude = formatDoubleAsString(Math.abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = position.getElevation() != null ? Transfer.formatElevationAsString(position.getElevation()) : "0.0";
-        String speed = position.getSpeed() != null ? Transfer.formatSpeedAsString(position.getSpeed()) : "0.0";
-        String heading = position.getHeading() != null ? Transfer.formatHeadingAsString(position.getHeading()) : "0.0";
+        String height = position.getElevation() != null ? formatElevationAsString(position.getElevation()) : "0.0";
+        String speed = position.getSpeed() != null ? formatSpeedAsString(position.getSpeed()) : "0.0";
+        String heading = position.getHeading() != null ? formatHeadingAsString(position.getHeading()) : "0.0";
 
         if (firstPosition)
             previousPosition = null;
-        String distance = previousPosition != null ? Transfer.formatElevationAsString(position.calculateDistance(previousPosition)) : "0.0";
+        String distance = previousPosition != null ? formatElevationAsString(position.calculateDistance(previousPosition)) : "0.0";
         previousPosition = position;
 
         writer.println(Integer.toString(index + 1) + SEPARATOR + "T" + SEPARATOR +

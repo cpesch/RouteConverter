@@ -29,6 +29,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.formatSpeedAsString;
+
 /**
  * Reads and writes GPS Tuner (.trk) files.
  * <p/>
@@ -117,12 +122,12 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatPositionAsString(position.getLongitude());
-        String latitude = Transfer.formatPositionAsString(position.getLatitude());
-        String altitude = Transfer.formatElevationAsString(position.getElevation());
-        String speed = Transfer.formatSpeedAsString(position.getSpeed());
+        String longitude = formatPositionAsString(position.getLongitude());
+        String latitude = formatPositionAsString(position.getLatitude());
+        String altitude = formatElevationAsString(position.getElevation());
+        String speed = formatSpeedAsString(position.getSpeed());
         String time = formatTime(position.getTime());
-        String heading = position.getHeading() != null ? Transfer.formatIntAsString(position.getHeading().intValue()) : "0";
+        String heading = position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0";
         writer.println(latitude + SEPARATOR + longitude + SEPARATOR + altitude + SEPARATOR +
                 speed + SEPARATOR + time + SEPARATOR + (firstPosition ? "1" : "0") + SEPARATOR + heading);
     }

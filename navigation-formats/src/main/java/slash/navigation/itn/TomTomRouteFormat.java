@@ -37,6 +37,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.navigation.util.RouteComments.TRIPMASTER_TIME;
+
 /**
  * Reads and writes Tom Tom Route (.itn) files.
  *
@@ -187,7 +191,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         StringBuilder buffer = new StringBuilder();
         buffer.append(position.getComment());
         if (position.getTime() != null) {
-            buffer.append(" : ").append(RouteComments.TRIPMASTER_TIME.format(position.getTime().getTime()));
+            buffer.append(" : ").append(TRIPMASTER_TIME.format(position.getTime().getTime()));
             buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
             buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
             buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
@@ -199,7 +203,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
     }
     
     private String formatComment(String comment) {
-        comment = Transfer.escape(comment, SEPARATOR, ';');
+        comment = escape(comment, SEPARATOR, ';');
         if (comment != null)
             comment = comment.replaceAll("\u20ac", "\u0080");
         return comment;
@@ -209,8 +213,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         List<TomTomPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             TomTomPosition position = positions.get(i);
-            String longitude = Transfer.formatIntAsString(position.getLongitudeAsInt());
-            String latitude = Transfer.formatIntAsString(position.getLatitudeAsInt());
+            String longitude = formatIntAsString(position.getLongitudeAsInt());
+            String latitude = formatIntAsString(position.getLatitudeAsInt());
             boolean first = i == startIndex;
             boolean last = i == endIndex - 1;
 

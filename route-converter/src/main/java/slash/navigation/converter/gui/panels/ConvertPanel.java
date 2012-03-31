@@ -41,19 +41,19 @@ import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
 import slash.navigation.converter.gui.actions.AddElevationToPositionsAction;
 import slash.navigation.converter.gui.actions.AddNumberToPositionsAction;
 import slash.navigation.converter.gui.actions.AddPopulatedPlaceToPositionsAction;
+import slash.navigation.converter.gui.actions.AddPositionAction;
+import slash.navigation.converter.gui.actions.AddPositionListAction;
 import slash.navigation.converter.gui.actions.AddPostalAddressToPositionsAction;
 import slash.navigation.converter.gui.actions.AddSpeedToPositionsAction;
 import slash.navigation.converter.gui.actions.CopyAction;
 import slash.navigation.converter.gui.actions.CutAction;
 import slash.navigation.converter.gui.actions.DeleteAction;
-import slash.navigation.converter.gui.actions.RemovePositionListAction;
 import slash.navigation.converter.gui.actions.ExportPositionListAction;
 import slash.navigation.converter.gui.actions.ImportPositionListAction;
 import slash.navigation.converter.gui.actions.NewFileAction;
-import slash.navigation.converter.gui.actions.AddPositionAction;
-import slash.navigation.converter.gui.actions.AddPositionListAction;
 import slash.navigation.converter.gui.actions.OpenAction;
 import slash.navigation.converter.gui.actions.PasteAction;
+import slash.navigation.converter.gui.actions.RemovePositionListAction;
 import slash.navigation.converter.gui.actions.RenamePositionListAction;
 import slash.navigation.converter.gui.actions.SaveAction;
 import slash.navigation.converter.gui.actions.SaveAsAction;
@@ -119,7 +119,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -129,6 +128,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.text.MessageFormat.format;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
@@ -137,6 +137,7 @@ import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Files.calculateConvertFileName;
 import static slash.common.io.Files.createGoPalFileName;
@@ -624,7 +625,7 @@ public class ConvertPanel {
         try {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
+            gpxRoute.setName(format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             urlModel.clear();
             UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
@@ -690,7 +691,7 @@ public class ConvertPanel {
         int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
             int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
+                    format(RouteConverter.getBundle().getString("save-confirm-split"),
                             shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     r.getFrame().getTitle(), YES_NO_CANCEL_OPTION);
@@ -749,10 +750,11 @@ public class ConvertPanel {
                 }
             }
         } catch (Throwable t) {
+            t.printStackTrace();
             log.severe("Save error " + file + "," + format + ": " + t.getMessage());
 
-            JOptionPane.showMessageDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
+            showMessageDialog(r.getFrame(),
+                    format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
                     r.getFrame().getTitle(), ERROR_MESSAGE);
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
@@ -814,7 +816,7 @@ public class ConvertPanel {
 
     private boolean confirmOverwrite(String file) {
         int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
+                format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
                 RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
         return confirm != YES_OPTION;
     }

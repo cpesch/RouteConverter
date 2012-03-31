@@ -21,8 +21,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -34,6 +38,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Integer.parseInt;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 
@@ -134,15 +141,15 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
-        String elevation = position.getElevation() != null ? Transfer.formatElevationAsString(position.getElevation()) : "0.0";
+        String latitude = formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = formatDoubleAsString(position.getLongitude(), 6);
+        String elevation = position.getElevation() != null ? formatElevationAsString(position.getElevation()) : "0.0";
         String time = formatTime(position.getTime());
 
         // try to parse number from comment to make read/write round trip easier
         int number;
         try {
-            number = Integer.parseInt(position.getComment());
+            number = parseInt(position.getComment());
         }
         catch (NumberFormatException e) {
             number = index + 1;

@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
+import static java.lang.Double.NaN;
 import static java.lang.Math.*;
 
 /**
@@ -107,18 +108,22 @@ public class Transfer {
         return trimmed;
     }
 
+    private static boolean isReduceDecimalPlaceToReasonablePrecision() {
+        return preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", true);
+    }
+
     public static BigDecimal formatBigDecimal(Double aDouble, int maximumFractionCount) {
         if (aDouble == null)
             return null;
-        if (preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+        if (isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return BigDecimal.valueOf(aDouble);
     }
 
     public static double formatDouble(Double aDouble, int maximumFractionCount) {
         if (aDouble == null)
-            return Double.NaN;
-        if (preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+            return NaN;
+        if (isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return aDouble;
     }
@@ -132,7 +137,7 @@ public class Transfer {
     }
 
     public static BigDecimal formatElevation(Double elevation) {
-        return formatBigDecimal(elevation, 2);
+        return formatBigDecimal(elevation, 1);
     }
 
     public static BigDecimal formatHeading(Double heading) {
@@ -140,7 +145,7 @@ public class Transfer {
     }
 
     public static BigDecimal formatSpeed(Double speed) {
-        return formatBigDecimal(speed, 2);
+        return formatBigDecimal(speed, 1);
     }
 
     public static Double formatDouble(BigDecimal aBigDecimal) {
@@ -152,11 +157,10 @@ public class Transfer {
     }
 
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
-
     static {
-        Transfer.DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
-        Transfer.DECIMAL_NUMBER_FORMAT.setMinimumFractionDigits(1);
-        Transfer.DECIMAL_NUMBER_FORMAT.setMaximumFractionDigits(20);
+        DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
+        DECIMAL_NUMBER_FORMAT.setMinimumFractionDigits(1);
+        DECIMAL_NUMBER_FORMAT.setMaximumFractionDigits(20);
     }
 
     public static String formatDoubleAsString(Double aDouble) {
@@ -179,7 +183,7 @@ public class Transfer {
     }
 
     public static String formatDoubleAsStringWithMaximumFractionCount(Double aDouble, int maximumFractionCount) {
-        if (preferences.getBoolean("reduceDecimalPlacesToReasonablePrecision", false))
+        if (aDouble != null && isReduceDecimalPlaceToReasonablePrecision())
             aDouble = roundFraction(aDouble, maximumFractionCount);
         return formatDoubleAsString(aDouble);
     }

@@ -34,6 +34,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatDoubleAsString;
+
 /**
  * Reads and writes MagicMaps2Go (.txt) files.
  * <p/>
@@ -109,9 +111,9 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 7);
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 7);
-        String elevation = Transfer.formatDoubleAsString(position.getElevation(), 7);
+        String latitude = formatDoubleAsString(position.getLatitude(), 7);
+        String longitude = formatDoubleAsString(position.getLongitude(), 7);
+        String elevation = formatDoubleAsString(position.getElevation(), 7);
         String dateAndTime = position.getTime() != null ? DATE_AND_TIME_FORMAT.format(position.getTime().getTime()) : "00.00.00 00:00:=00";
         writer.println(latitude + SEPARATOR + longitude + SEPARATOR + elevation + SEPARATOR + dateAndTime);
     }

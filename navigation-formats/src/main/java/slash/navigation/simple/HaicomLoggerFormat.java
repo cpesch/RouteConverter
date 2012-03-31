@@ -33,6 +33,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatSpeedAsString;
+
 /**
  * Reads and writes Haicom Logger (.csv) files.
  * <p/>
@@ -185,8 +188,8 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String northOrSouth = position.getLatitude() >= 0.0 ? "N" : "S";
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
-        String altitude = Transfer.formatElevationAsString(position.getElevation());
-        String speed = Transfer.formatSpeedAsString(position.getSpeed());
+        String altitude = formatElevationAsString(position.getElevation());
+        String speed = formatSpeedAsString(position.getSpeed());
         writer.println((index + 1) + SEPARATOR + "T" + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +

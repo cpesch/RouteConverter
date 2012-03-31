@@ -28,6 +28,8 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatIntAsString;
+
 /**
  * Reads and writes Columbus V900 Professional (.csv) files.
  *
@@ -122,9 +124,9 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
         String longitude = Transfer.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = fillWithZeros(position.getElevation() != null ? Transfer.formatIntAsString(position.getElevation().intValue()) : "0", 5);
-        String speed = fillWithZeros(position.getSpeed() != null ? Transfer.formatIntAsString(position.getSpeed().intValue()) : "0", 4);
-        String heading = fillWithZeros(position.getHeading() != null ? Transfer.formatIntAsString(position.getHeading().intValue()) : "0", 3);
+        String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
+        String speed = fillWithZeros(position.getSpeed() != null ? formatIntAsString(position.getSpeed().intValue()) : "0", 4);
+        String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
         String pdop = fillWithZeros(position.getPdop() != null ? Transfer.formatAccuracyAsString(position.getPdop()) : "0.0", 5);
         String hdop = fillWithZeros(position.getHdop() != null ? Transfer.formatAccuracyAsString(position.getHdop()) : "0.0", 5);
         String vdop = fillWithZeros(position.getVdop() != null ? Transfer.formatAccuracyAsString(position.getVdop()) : "0.0", 5);
