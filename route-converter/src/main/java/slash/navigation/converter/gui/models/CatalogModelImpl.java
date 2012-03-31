@@ -65,7 +65,7 @@ public class CatalogModelImpl implements CatalogModel {
         return routesTableModel;
     }
 
-    public void selectCategory(CategoryTreeNode category) {
+    public void setCurrentCategory(CategoryTreeNode category) {
         List<Route> routes = category.getRoutes();
         List<RouteModel> routeModels = new ArrayList<RouteModel>();
         if (routes != null) {
@@ -191,7 +191,7 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void addRouteFromFile(CategoryTreeNode parent, String description, File file) {
+    public void addRouteFromFile(CategoryTreeNode category, String description, File file) {
         //To change body of implemented methods use File | Settings | File Templates.
         // TODO move me Route route = getCategory().createRoute(description, file);
         // TODO move me getRoutes().addRoute(new RouteModel(this, route));
@@ -250,7 +250,7 @@ public class CatalogModelImpl implements CatalogModel {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         for (CategoryTreeNode parent : parents) {
-                            selectCategory(parent);
+                            setCurrentCategory(parent);
                         }
                         if (invokeLaterRunnable != null)
                             invokeLaterRunnable.run();

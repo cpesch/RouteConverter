@@ -61,7 +61,7 @@ class MoveRoutes extends AbstractUndoableEdit {
         catalogModel.moveRoutes(routes, oldParents, new Runnable() {
             public void run() {
                 for (CategoryTreeNode newParent : newParents) {
-                    catalogModel.selectCategory(newParent);
+                    catalogModel.setCurrentCategory(newParent);
                 }
             }
         }, false);

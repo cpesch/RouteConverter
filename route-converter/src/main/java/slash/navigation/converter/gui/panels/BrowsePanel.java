@@ -277,7 +277,7 @@ public class BrowsePanel {
             return;
         selectCategoryTreePath(treeCategories, treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
-        catalogModel.selectCategory(selectedCategoryTreeNode);
+        catalogModel.setCurrentCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
     }
 

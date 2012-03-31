@@ -61,8 +61,8 @@ public class UndoCatalogModel implements CatalogModel {
         return delegate.getRoutesTableModel();
     }
 
-    public void selectCategory(CategoryTreeNode category) {
-        delegate.selectCategory(category);
+    public void setCurrentCategory(CategoryTreeNode category) {
+        delegate.setCurrentCategory(category);
     }
 
     public void addCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
@@ -115,7 +115,7 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new RemoveCategories(this, categories, names));
     }
 
-    public void addRouteFromFile(CategoryTreeNode parent, String description, File file) {
+    public void addRouteFromFile(CategoryTreeNode category, String description, File file) {
         // TODO To change body of implemented methods use File | Settings | File Templates.
     }
 

@@ -40,7 +40,7 @@ public interface CatalogModel {
     CategoryTreeModel getCategoryTreeModel();
     RoutesTableModel getRoutesTableModel();
 
-    void selectCategory(CategoryTreeNode category);
+    void setCurrentCategory(CategoryTreeNode category);
 
     void addCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
     void renameCategory(CategoryTreeNode category, String name);
@@ -49,7 +49,7 @@ public interface CatalogModel {
     void removeCategories(List<CategoryTreeNode> categories);
     void removeCategories(List<CategoryTreeNode> parents, List<String> names);
 
-    void addRouteFromFile(CategoryTreeNode parent, String description, File file);
+    void addRouteFromFile(CategoryTreeNode category, String description, File file);
     void addRouteFromUrl(CategoryTreeNode category, String description, String url);
     void renameRoute(RouteModel route, String name);
     void moveRoutes(List<RouteModel> routes, CategoryTreeNode parent, Runnable invokeLaterRunnable);
