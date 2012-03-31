@@ -94,6 +94,7 @@
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
            xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri, true);
+           xmlhttp.setRequestHeader('If-Modified-Since', 'Wed, 15 Nov 1995 00:00:00 GMT');
            xmlhttp.send();
        } else {
            callbackQueue.push(uri);
@@ -104,6 +105,7 @@
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
            xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/generic-post-url/", true);
+           xmlhttp.setRequestHeader('If-Modified-Since', 'Wed, 15 Nov 1995 00:00:00 GMT');
            xmlhttp.send(body);
        } else {
            callbackQueue.push(body);
@@ -513,19 +515,20 @@
            addDebug("4. added listeners");
 
            try {
-               xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-               addDebug("5. created Microsoft XMLHttpRequest");
-               initialized = true;
+               if (window.XMLHttpRequest) {
+                   xmlhttp = new XMLHttpRequest();
+                   addDebug("5. created XMLHttpRequest");
+                   initialized = true;
+               } else if (window.ActiveXObject) {
+                   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                   addDebug("6. created Microsoft XMLHttpRequest");
+                   initialized = true;
+               } else {
+                   setError("<p>Sorry, could not find XMLHttpRequest or Microsoft.XMLHTTP.</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+               }
            }
            catch (e) {
-               try {
-                   xmlhttp = new XMLHttpRequest();
-                   addDebug("6. created XMLHttpRequest");
-                   initialized = true;
-               }
-               catch (e) {
-                   setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
-               }
+               setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        } catch (e) {
            setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
