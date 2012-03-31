@@ -21,17 +21,27 @@
 package slash.navigation.copilot;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -139,8 +149,8 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     Wgs84Position parsePosition(Map<String, String> map) {
-        Integer latitude = Transfer.parseInt(map.get(LATITUDE));
-        Integer longitude = Transfer.parseInt(map.get(LONGITUDE));
+        Integer latitude = parseInt(map.get(LATITUDE));
+        Integer longitude = parseInt(map.get(LONGITUDE));
         String state = trim(map.get(STATE));
         String zip = trim(map.get(ZIP));
         String city = trim(map.get(CITY));

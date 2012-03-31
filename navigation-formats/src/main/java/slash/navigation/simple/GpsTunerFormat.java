@@ -21,18 +21,25 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.CompactCalendar.fromMillis;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseLong;
 
 /**
  * Reads and writes GPS Tuner (.trk) files.
@@ -87,10 +94,10 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseTime(String time) {
-        Long milliseconds = Transfer.parseLong(time);
+        Long milliseconds = parseLong(time);
         if (milliseconds == null || milliseconds == 0)
             return null;
-        return CompactCalendar.fromMillis(milliseconds * 1000);
+        return fromMillis(milliseconds * 1000);
     }
 
     protected Wgs84Position parsePosition(String line, CompactCalendar startDate) {
@@ -103,9 +110,9 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = lineMatcher.group(4);
         String time = lineMatcher.group(5);
         String heading = lineMatcher.group(6);
-        Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                Transfer.parseDouble(altitude), Transfer.parseDouble(speed), parseTime(time), null);
-        position.setHeading(Transfer.parseDouble(heading));
+        Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
+                parseDouble(altitude), parseDouble(speed), parseTime(time), null);
+        position.setHeading(parseDouble(heading));
         return position;
     }
 

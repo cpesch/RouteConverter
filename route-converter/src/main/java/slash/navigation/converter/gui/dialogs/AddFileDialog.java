@@ -41,6 +41,11 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static java.text.MessageFormat.format;
+import static slash.common.io.Files.createReadablePath;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.trim;
+
 /**
  * Dialog to addChild file to RouteService
  *
@@ -71,9 +76,9 @@ public class AddFileDialog extends SimpleDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonAdd);
 
-        labelLabel.setText(MessageFormat.format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
-        textFieldFile.setText(Files.createReadablePath(file));
-        textFieldLength.setText(Transfer.formatDoubleAsString(length / 1000.0, 1));
+        labelLabel.setText(format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
+        textFieldFile.setText(createReadablePath(file));
+        textFieldLength.setText(formatDoubleAsString(length / 1000.0, 1));
         textFieldDescription.setText(description);
 
         buttonAdd.addActionListener(new DialogAction(this) {
@@ -112,7 +117,7 @@ public class AddFileDialog extends SimpleDialog {
 
     private void addFile() {
         String description = textFieldDescription.getText();
-        if (Transfer.trim(description) == null) {
+        if (trim(description) == null) {
             labelResult.setText("No description given!"); // TODO make nicer
             pack();
             return;

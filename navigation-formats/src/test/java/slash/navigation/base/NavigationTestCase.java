@@ -25,7 +25,21 @@ import slash.common.TestCase;
 import slash.common.io.CompactCalendar;
 import slash.common.io.Files;
 import slash.common.io.Transfer;
-import slash.navigation.babel.*;
+import slash.navigation.babel.AlanTrackLogFormat;
+import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.babel.CompeGPSDataFormat;
+import slash.navigation.babel.FlightRecorderDataFormat;
+import slash.navigation.babel.GarminMapSource5Format;
+import slash.navigation.babel.GarminMapSource6Format;
+import slash.navigation.babel.GarminPcx5Format;
+import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.babel.GarminPoiFormat;
+import slash.navigation.babel.GeoCachingFormat;
+import slash.navigation.babel.MagellanMapSendFormat;
+import slash.navigation.babel.MicrosoftAutoRouteFormat;
+import slash.navigation.babel.OziExplorerReadFormat;
+import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.copilot.CoPilotFormat;
@@ -44,10 +58,33 @@ import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
-import slash.navigation.nmea.*;
-import slash.navigation.nmn.*;
+import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.NmeaPosition;
+import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
 import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.*;
+import slash.navigation.simple.ColumbusV900Format;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoogleMapsUrlFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.GroundTrackFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.NavilinkFormat;
+import slash.navigation.simple.OpelNaviFormat;
+import slash.navigation.simple.QstarzQ1000Format;
+import slash.navigation.simple.Route66Format;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tcx.TcxFormat;
@@ -64,6 +101,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Math.min;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.roundFraction;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -293,7 +332,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals(0.0, targetPosition.getElevation());
         else if (sourcePosition.getElevation() == null &&
                 targetFormat instanceof MagellanMapSendFormat)
-            assertTrue(Transfer.isEmpty(targetPosition.getElevation()));
+            assertTrue(isEmpty(targetPosition.getElevation()));
     }
 
     private static void compareHeading(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
@@ -342,7 +381,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat)) {
-            assertEquals("Heading " + index + " does not match", Transfer.roundFraction(sourceHeading, 0), Transfer.roundFraction(targetHeading, 0));
+            assertEquals("Heading " + index + " does not match", roundFraction(sourceHeading, 0), roundFraction(targetHeading, 0));
         } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
                 sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                 sourceFormat instanceof NmeaFormat || sourceFormat instanceof TomTomRouteFormat) &&
@@ -683,7 +722,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
-                assertEquals("Speed " + index + " does not match", Transfer.roundFraction(sourcePosition.getSpeed(), 1), Transfer.roundFraction(targetPosition.getSpeed(), 1));
+                assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
             } else if ((sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) ||
                        (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format)) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());

@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.Transfer;
 import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
@@ -35,10 +34,16 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import static slash.common.io.Transfer.trim;
 
 /**
  * Dialog to login a user to the RouteService.
@@ -155,13 +160,13 @@ public class LoginDialog extends SimpleDialog {
 
     private void login() {
         String userName = textFieldLogin.getText();
-        if (Transfer.trim(userName) == null) {
+        if (trim(userName) == null) {
             labelLoginResult.setText("Error: No user name given!"); // TODO make nicer
             pack();
             return;
         }
         String password = new String(passwordLogin.getPassword());
-        if (Transfer.trim(password) == null) {
+        if (trim(password) == null) {
             labelLoginResult.setText("Error: No password given!"); // TODO make nicer
             pack();
             return;
@@ -174,7 +179,7 @@ public class LoginDialog extends SimpleDialog {
 
     private void register() {
         String userName = textFieldName.getText();
-        if (Transfer.trim(userName) == null) {
+        if (trim(userName) == null) {
             labelRegisterResult.setText("Error: No user name given!"); // TODO make nicer
             pack();
             return;
@@ -186,7 +191,7 @@ public class LoginDialog extends SimpleDialog {
         }
 
         String email = textFieldEMail.getText();
-        if (Transfer.trim(email) == null) {
+        if (trim(email) == null) {
             labelRegisterResult.setText("Error: No email given!"); // TODO make nicer
             pack();
             return;
@@ -198,7 +203,7 @@ public class LoginDialog extends SimpleDialog {
         }
 
         String password = new String(passwordRegister.getPassword());
-        if (Transfer.trim(password) == null) {
+        if (trim(password) == null) {
             labelRegisterResult.setText("Error: No password given!"); // TODO make nicer
             pack();
             return;

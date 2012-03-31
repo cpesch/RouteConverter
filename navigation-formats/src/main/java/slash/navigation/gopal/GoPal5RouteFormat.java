@@ -21,7 +21,6 @@
 package slash.navigation.gopal;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gopal.binding5.ObjectFactory;
@@ -37,6 +36,8 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.formatPosition;
+import static slash.common.io.Transfer.formatSpeed;
 import static slash.navigation.gopal.GoPalUtil.marshal5;
 import static slash.navigation.gopal.GoPalUtil.unmarshal5;
 
@@ -162,22 +163,22 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
 
             Tour.RouteOptions.TravelSpeeds travelSpeeds = objectFactory.createTourRouteOptionsTravelSpeeds();
             Tour.RouteOptions.TravelSpeeds.Bicycle bicycle = objectFactory.createTourRouteOptionsTravelSpeedsBicycle();
-            bicycle.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "bicycleSpeed", 14.4))); // Km/h
+            bicycle.setSpeed(formatSpeed(preferences.getDouble(VERSION_PREFIX + "bicycleSpeed", 14.4))); // Km/h
             bicycle.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
             travelSpeeds.setBicycle(bicycle);
             Tour.RouteOptions.TravelSpeeds.Pedestrian pedestrian = objectFactory.createTourRouteOptionsTravelSpeedsPedestrian();
-            pedestrian.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "pedestrianSpeed", 3.6))); // Km/h
+            pedestrian.setSpeed(formatSpeed(preferences.getDouble(VERSION_PREFIX + "pedestrianSpeed", 3.6))); // Km/h
             pedestrian.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
             travelSpeeds.setPedestrian(pedestrian);
             Tour.RouteOptions.TravelSpeeds.Vehicle vehicle = objectFactory.createTourRouteOptionsTravelSpeedsVehicle();
-            vehicle.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeed", 80.0))); // Km/h
+            vehicle.setSpeed(formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeed", 80.0))); // Km/h
             vehicle.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
             Tour.RouteOptions.TravelSpeeds.Vehicle.MotorWay motorWay = objectFactory.createTourRouteOptionsTravelSpeedsVehicleMotorWay();
-            motorWay.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeedMotorWay", 120.0))); // Km/h
+            motorWay.setSpeed(formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeedMotorWay", 120.0))); // Km/h
             motorWay.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
             vehicle.setMotorWay(motorWay);
             Tour.RouteOptions.TravelSpeeds.Vehicle.PedestrianArea pedestrianArea = objectFactory.createTourRouteOptionsTravelSpeedsVehiclePedestrianArea();
-            pedestrianArea.setSpeed(Transfer.formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeedPedestrianArea", 7.2))); // Km/h
+            pedestrianArea.setSpeed(formatSpeed(preferences.getDouble(VERSION_PREFIX + "vehicleSpeedPedestrianArea", 7.2))); // Km/h
             pedestrianArea.setUnit(ROUTE_OPTIONS_SPEED_UNIT);
             vehicle.setPedestrianArea(pedestrianArea);
             travelSpeeds.setVehicle(vehicle);
@@ -195,9 +196,9 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         if (position.getY() != null)
             coordinates.setMercatory(position.getY());
         if (position.getLongitude() != null)
-            coordinates.setLongitude(Transfer.formatPosition(position.getLongitude()));
+            coordinates.setLongitude(formatPosition(position.getLongitude()));
         if (position.getLatitude() != null)
-            coordinates.setLatitude(Transfer.formatPosition(position.getLatitude()));
+            coordinates.setLatitude(formatPosition(position.getLatitude()));
         start.setCoordinates(coordinates);
 
         Tour.Start.City city = objectFactory.createTourStartCity();
@@ -241,9 +242,9 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         if (position.getY() != null)
             coordinates.setMercatory(position.getY());
         if (position.getLongitude() != null)
-            coordinates.setLongitude(Transfer.formatPosition(position.getLongitude()));
+            coordinates.setLongitude(formatPosition(position.getLongitude()));
         if (position.getLatitude() != null)
-            coordinates.setLatitude(Transfer.formatPosition(position.getLatitude()));
+            coordinates.setLatitude(formatPosition(position.getLatitude()));
         destination.setCoordinates(coordinates);
 
         Tour.Destination.City city = objectFactory.createTourDestinationCity();

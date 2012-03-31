@@ -21,8 +21,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -33,6 +37,17 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.Math.abs;
+import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.io.Transfer.formatAccuracyAsString;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatElevationAsString;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Qstarz BT-Q1000 (.csv) files.
@@ -112,14 +127,14 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
      }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
-        date = Transfer.trim(date);
-        time = Transfer.trim(time);
+        date = trim(date);
+        time = trim(time);
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -132,11 +147,11 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String date = lineMatcher.group(3);
         String time = lineMatcher.group(4);
-        Double latitude = Transfer.parseDouble(lineMatcher.group(6));
+        Double latitude = parseDouble(lineMatcher.group(6));
         String northOrSouth = lineMatcher.group(7);
         if ("S".equals(northOrSouth) && latitude != null)
             latitude = -latitude;
-        Double longitude = Transfer.parseDouble(lineMatcher.group(8));
+        Double longitude = parseDouble(lineMatcher.group(8));
         String westOrEasth = lineMatcher.group(9);
         if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
@@ -145,10 +160,10 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         String hdop = lineMatcher.group(12);
         String satellites = lineMatcher.group(13);
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, Transfer.parseDouble(height), Transfer.parseDouble(speed),
+        Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), null);
-        position.setHdop(Transfer.parseDouble(hdop));
-        position.setSatellites(Transfer.parseInt(satellites));
+        position.setHdop(parseDouble(hdop));
+        position.setSatellites(parseInt(satellites));
         return position;
     }
 
@@ -173,18 +188,18 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = formatDate(position.getTime());
         String time = formatTime(position.getTime());
-        String latitude = Transfer.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
+        String latitude = formatDoubleAsString(abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = Transfer.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
+        String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = position.getElevation() != null ? Transfer.formatElevationAsString(position.getElevation()) : "0.0";
-        String speed = position.getSpeed() != null ? Transfer.formatSpeedAsString(position.getSpeed()) : "0.0";
-        String hdop = position.getHdop() != null ? Transfer.formatAccuracyAsString(position.getHdop()) : "0.0";
-        String satellites = position.getSatellites() != null ? Transfer.formatIntAsString(position.getSatellites()) : "0";
+        String height = position.getElevation() != null ? formatElevationAsString(position.getElevation()) : "0.0";
+        String speed = position.getSpeed() != null ? formatSpeedAsString(position.getSpeed()) : "0.0";
+        String hdop = position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "0.0";
+        String satellites = position.getSatellites() != null ? formatIntAsString(position.getSatellites()) : "0";
 
         if (firstPosition)
             previousPosition = null;
-        String distance = previousPosition != null ? Transfer.formatElevationAsString(position.calculateDistance(previousPosition)) : "0.0";
+        String distance = previousPosition != null ? formatElevationAsString(position.calculateDistance(previousPosition)) : "0.0";
         previousPosition = position;
 
         writer.println(Integer.toString(index + 1) + SEPARATOR + "T" + SEPARATOR +

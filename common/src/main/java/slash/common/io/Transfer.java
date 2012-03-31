@@ -29,7 +29,13 @@ import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
 import static java.lang.Double.NaN;
-import static java.lang.Math.*;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.max;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
 
 /**
  * Provides value transfer functionality.
@@ -238,10 +244,10 @@ public class Transfer {
         if (trimmed != null) {
             trimmed = trimmed.replaceAll(",", ".");
             try {
-                return Double.parseDouble(trimmed);
+                return parseDouble(trimmed);
             } catch (NumberFormatException e) {
                 if (trimmed.equals("\u221e"))
-                    return Double.POSITIVE_INFINITY;
+                    return POSITIVE_INFINITY;
                 throw e;
             }
         } else
@@ -264,7 +270,7 @@ public class Transfer {
         if (trimmed != null) {
             if (trimmed.startsWith("+"))
                 trimmed = trimmed.substring(1);
-            return Integer.parseInt(trimmed);
+            return parseInt(trimmed);
         } else
             return null;
     }

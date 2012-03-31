@@ -21,7 +21,6 @@
 package slash.navigation.gpx;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
@@ -39,6 +38,7 @@ import java.util.logging.Logger;
 import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatElevation;
+import static slash.common.io.Transfer.formatHeading;
 import static slash.common.io.Transfer.formatHeadingAsString;
 import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.formatPosition;
@@ -186,7 +186,7 @@ public class Gpx10Format extends GpxFormat {
                 "Speed: " + formatSpeedAsString(speed) + " Km/h";
     }
 
-    private String formatHeading(String comment, Double heading) {
+    private String addHeading(String comment, Double heading) {
         if (isEmpty(heading))
             return comment;
         return (comment != null ? comment + " " : "") +
@@ -210,12 +210,12 @@ public class Gpx10Format extends GpxFormat {
             wpt.setLon(longitude);
             wpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             wpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
-            wpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
+            wpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             wpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
-                wpt.setCmt(formatHeading(wpt.getCmt(), position.getHeading()));
+                wpt.setCmt(addHeading(wpt.getCmt(), position.getHeading()));
             wpt.setName(isWriteName() ? asName(position.getComment()) : null);
             wpt.setDesc(isWriteName() ? asDesc(position.getComment(), wpt.getDesc()) : null);
             wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
@@ -256,12 +256,12 @@ public class Gpx10Format extends GpxFormat {
             rtept.setLon(longitude);
             rtept.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             rtept.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
-            rtept.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
+            rtept.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             rtept.setSpeed(isWriteSpeed() && position.getSpeed() != null ? formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
             if (isWriteSpeed() && reuseReadObjectsForWriting)
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
-                rtept.setCmt(formatHeading(rtept.getCmt(), position.getHeading()));
+                rtept.setCmt(addHeading(rtept.getCmt(), position.getHeading()));
             rtept.setName(isWriteName() ? asName(position.getComment()) : null);
             rtept.setDesc(isWriteName() ? asDesc(position.getComment(), rtept.getDesc()) : null);
             rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
@@ -303,7 +303,7 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setLon(longitude);
             trkpt.setTime(isWriteTime() ? formatTime(position.getTime()) : null);
             trkpt.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
-            trkpt.setCourse(isWriteHeading() ? Transfer.formatHeading(position.getHeading()) : null);
+            trkpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
                     formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
             trkpt.setName(isWriteName() ? asName(position.getComment()) : null);

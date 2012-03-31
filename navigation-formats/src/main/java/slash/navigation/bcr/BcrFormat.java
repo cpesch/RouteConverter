@@ -37,6 +37,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.parseLong;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
@@ -199,7 +200,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
                 altitude = parseLong(altitudeString);
         }
 
-        return new BcrPosition(Transfer.parseInt(x), Transfer.parseInt(y), altitude, trim(description));
+        return new BcrPosition(parseInt(x), parseInt(y), altitude, trim(description));
     }
 
 

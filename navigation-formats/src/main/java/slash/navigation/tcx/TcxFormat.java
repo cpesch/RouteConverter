@@ -22,10 +22,11 @@ package slash.navigation.tcx;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import slash.common.io.Transfer;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.binding11.WptType;
+
+import static slash.common.io.Transfer.parseDouble;
 
 /**
  * The base of all Training Center Database formats.
@@ -61,7 +62,7 @@ public abstract class TcxFormat extends GpxFormat {
                         for (int i = 0; i < extension.getChildNodes().getLength(); i++) {
                             Node hr = extension.getChildNodes().item(i);
                             if ("hr".equals(hr.getLocalName()))
-                                heartBeatRate = Transfer.parseDouble(hr.getTextContent());
+                                heartBeatRate = parseDouble(hr.getTextContent());
                         }
                     }
                 }

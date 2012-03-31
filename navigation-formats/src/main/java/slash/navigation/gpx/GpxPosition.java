@@ -21,14 +21,14 @@
 package slash.navigation.gpx;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.util.RouteComments;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.regex.Matcher;
 
+import static slash.common.io.Transfer.formatDouble;
+import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 import static slash.navigation.util.RouteComments.parseComment;
@@ -56,15 +56,15 @@ public class GpxPosition extends Wgs84Position {
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed,
                        Double heading, CompactCalendar time, String comment, BigDecimal hdop, BigDecimal pdop,
                        BigDecimal vdop, BigInteger satellites, Object origin) {
-        this(Transfer.formatDouble(longitude), Transfer.formatDouble(latitude),
-                Transfer.formatDouble(elevation), speed, time, comment, origin);
+        this(formatDouble(longitude), formatDouble(latitude),
+                formatDouble(elevation), speed, time, comment, origin);
         // avoid overwriting values determined by setComment() with a null value
         if (heading != null)
             setHeading(heading);
-        setHdop(Transfer.formatDouble(hdop));
-        setPdop(Transfer.formatDouble(pdop));
-        setVdop(Transfer.formatDouble(vdop));
-        setSatellites(Transfer.formatInt(satellites));
+        setHdop(formatDouble(hdop));
+        setPdop(formatDouble(pdop));
+        setVdop(formatDouble(vdop));
+        setSatellites(formatInt(satellites));
     }
 
     public void setComment(String comment) {

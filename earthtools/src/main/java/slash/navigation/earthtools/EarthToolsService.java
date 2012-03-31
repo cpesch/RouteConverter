@@ -20,12 +20,14 @@
 
 package slash.navigation.earthtools;
 
-import slash.common.io.Transfer;
 import slash.navigation.earthtools.binding.Height;
 import slash.navigation.rest.Get;
 
 import java.io.IOException;
 import java.util.prefs.Preferences;
+
+import static slash.common.io.Transfer.parseInt;
+import static slash.navigation.earthtools.EarthToolsUtil.unmarshal;
 
 /**
  * Encapsulates REST access to the earthtools.org service.
@@ -46,8 +48,8 @@ public class EarthToolsService {
         String result = get.execute();
         if (get.isSuccessful())
             try {
-                Height height = EarthToolsUtil.unmarshal(result);
-                Integer elevation = Transfer.parseInt(height.getMeters());
+                Height height = unmarshal(result);
+                Integer elevation = parseInt(height.getMeters());
                 if (elevation != null && !elevation.equals(-9999))
                     return elevation.doubleValue();
             } catch (Exception e) {

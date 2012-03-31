@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.navigation.util.Positions.center;
 
 /**
@@ -283,8 +284,8 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
         BaseNavigationPosition center = center(route.getPositions());
-        writeMissingAttribute(route.getMapLage(), writer, "CenterLat", Transfer.formatPositionAsString(center.getLatitude()));
-        writeMissingAttribute(route.getMapLage(), writer, "CenterLong", Transfer.formatPositionAsString(center.getLongitude()));
+        writeMissingAttribute(route.getMapLage(), writer, "CenterLat", formatPositionAsString(center.getLatitude()));
+        writeMissingAttribute(route.getMapLage(), writer, "CenterLong", formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
     }
 

@@ -20,7 +20,6 @@
 
 package slash.navigation.nmea;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -34,7 +33,12 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Magellan Route (.rte) files.
@@ -115,9 +119,9 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             String longitude = matcher.group(3);
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
-            String comment = Transfer.toMixedCase(matcher.group(6));
-            return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
-                    Double.parseDouble(altitude), null, null, null, Transfer.trim(comment));
+            String comment = toMixedCase(matcher.group(6));
+            return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
+                    parseDouble(altitude), null, null, null, trim(comment));
         }
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
@@ -162,7 +166,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         }
 
         String routeName = formatRouteName(route.getName());
-        int count = Transfer.ceiling(endIndex - startIndex, 2, true);
+        int count = ceiling(endIndex - startIndex, 2, true);
         for (int i = startIndex; i < endIndex; i += 2) {
             NmeaPosition start = positions.get(i);
             NmeaPosition end = positions.size() > i + 1 ? positions.get(i + 1) : null;
@@ -181,7 +185,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
         String westOrEast = position.getEastOrWest();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
-        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
+        String comment = escape(position.getComment(), SEPARATOR, ';');
         String altitude = formatIntAsString(position.getElevation() != null ? position.getElevation().intValue() : null);
 
         String wpl = "PMGNWPL" + SEPARATOR +
@@ -191,12 +195,12 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
     }
 
     private void writeRte(NmeaPosition start, NmeaPosition end, PrintWriter writer, int count, int index, String routeName) {
-        String startName = Transfer.escape(start.getComment(), SEPARATOR, ';');
+        String startName = escape(start.getComment(), SEPARATOR, ';');
 
         String rte = "PMGNRTE" + SEPARATOR + count + SEPARATOR + (index + 1) + SEPARATOR +
                 "c" + SEPARATOR + "01" + SEPARATOR + routeName + SEPARATOR + startName + SEPARATOR + "a";
         if (end != null) {
-            String endName = Transfer.escape(end.getComment(), SEPARATOR, ';');
+            String endName = escape(end.getComment(), SEPARATOR, ';');
             rte += SEPARATOR + endName + SEPARATOR + "a";
         }
         writeSentence(writer, rte);

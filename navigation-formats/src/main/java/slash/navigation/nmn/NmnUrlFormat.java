@@ -33,7 +33,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Navigon Mobile Navigator for iPhone/iPad URL from/to files.

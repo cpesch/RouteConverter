@@ -20,12 +20,19 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * The base of all Sygic formats.
@@ -69,11 +76,11 @@ public abstract class SygicFormat extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = Transfer.trim(lineMatcher.group(3));
-        String phone = Transfer.trim(lineMatcher.group(4));
+        String comment = trim(lineMatcher.group(3));
+        String phone = trim(lineMatcher.group(4));
         if (phone != null)
             comment = comment + " " + phone;
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, null, null, comment);
     }
 }

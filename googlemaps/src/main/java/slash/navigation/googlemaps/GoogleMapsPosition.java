@@ -20,14 +20,13 @@
 
 package slash.navigation.googlemaps;
 
-import slash.common.io.Transfer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * A position that is the result of an access to the Google Maps API Geocoding Service.
@@ -80,7 +79,7 @@ public class GoogleMapsPosition {
         String elevation = matcher.group(3);
         if(elevation != null && elevation.startsWith(","))
             elevation = elevation.substring(1);
-        return new GoogleMapsPosition(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), Transfer.trim(comment));
+        return new GoogleMapsPosition(parseDouble(longitude), parseDouble(latitude), parseDouble(elevation), trim(comment));
     }
 
     public static List<GoogleMapsPosition> parsePositions(String listOfCoordinates) {

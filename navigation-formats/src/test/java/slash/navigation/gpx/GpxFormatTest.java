@@ -20,7 +20,6 @@
 
 package slash.navigation.gpx;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
@@ -29,6 +28,8 @@ import slash.navigation.gpx.routecatalog10.UserextensionType;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.StringWriter;
+
+import static slash.common.io.Transfer.formatBigDecimal;
 
 public class GpxFormatTest extends NavigationTestCase {
 
@@ -56,7 +57,7 @@ public class GpxFormatTest extends NavigationTestCase {
         slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
         slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
         ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(tbFactory.createSpeed(Transfer.formatBigDecimal(123.45, 2)));
+        extensionsType.getAny().add(tbFactory.createSpeed(formatBigDecimal(123.45, 2)));
         GpxType gpx = gpxFactory.createGpxType();
         assertNotNull(gpx);
         gpx.setExtensions(extensionsType);

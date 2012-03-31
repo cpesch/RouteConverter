@@ -22,7 +22,14 @@ package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
 import slash.common.io.CompactCalendar;
-import slash.navigation.gpx.binding11.*;
+import slash.navigation.gpx.binding11.ExtensionsType;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.MetadataType;
+import slash.navigation.gpx.binding11.ObjectFactory;
+import slash.navigation.gpx.binding11.RteType;
+import slash.navigation.gpx.binding11.TrkType;
+import slash.navigation.gpx.binding11.TrksegType;
+import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
 
@@ -37,8 +44,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static slash.common.io.Transfer.*;
-import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.common.io.Transfer.formatBigDecimal;
+import static slash.common.io.Transfer.formatElevation;
+import static slash.common.io.Transfer.formatHeading;
+import static slash.common.io.Transfer.formatHeadingAsString;
+import static slash.common.io.Transfer.formatInt;
+import static slash.common.io.Transfer.formatPosition;
+import static slash.common.io.Transfer.formatSpeed;
+import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Reads and writes GPS Exchange Format 1.1 (.gpx) files.
@@ -60,8 +77,8 @@ public class Gpx11Format extends GpxFormat {
 
         boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour = gpxType.getCreator() != null &&
                 ("GPSTracker".equals(gpxType.getCreator()) ||
-                "nl.sogeti.android.gpstracker".equals(gpxType.getCreator()) ||
-                gpxType.getCreator().contains("TrekBuddy"));
+                        "nl.sogeti.android.gpstracker".equals(gpxType.getCreator()) ||
+                        gpxType.getCreator().contains("TrekBuddy"));
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour);
         if (wayPointsAsRoute != null)
@@ -188,7 +205,7 @@ public class Gpx11Format extends GpxFormat {
                     if ("speed".equals(element.getLocalName())) {
                         result = parseDouble(element.getTextContent());
                         // the exceptional case is converted from m/s to Km/h 
-                        if(hasSpeedInMeterPerSecondInsteadOfKilometerPerHour)
+                        if (hasSpeedInMeterPerSecondInsteadOfKilometerPerHour)
                             result = asKmh(result);
                     }
                 }
@@ -216,7 +233,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("speed".equals(element.getLocalName())) {
-                    if(foundSpeed || speed == null)
+                    if (foundSpeed || speed == null)
                         iterator.remove();
                     else {
                         element.setTextContent(formatSpeedAsString(speed));
@@ -229,7 +246,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof JAXBElement) {
                 JAXBElement<String> element = (JAXBElement<String>) any;
                 if ("speed".equals(element.getName().getLocalPart())) {
-                    if(foundSpeed || speed == null)
+                    if (foundSpeed || speed == null)
                         iterator.remove();
                     else {
                         element.setValue(formatSpeedAsString(speed));
@@ -243,7 +260,7 @@ public class Gpx11Format extends GpxFormat {
             anys.add(tbFactory.createSpeed(formatSpeed(speed)));
         }
 
-        if(anys.size() == 0)
+        if (anys.size() == 0)
             wptType.setExtensions(null);
     }
 
@@ -279,7 +296,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("course".equals(element.getLocalName())) {
-                    if(foundHeading || heading == null)
+                    if (foundHeading || heading == null)
                         iterator.remove();
                     else {
                         element.setTextContent(formatHeadingAsString(heading));
@@ -292,7 +309,7 @@ public class Gpx11Format extends GpxFormat {
             if (any instanceof JAXBElement) {
                 JAXBElement<String> element = (JAXBElement<String>) any;
                 if ("course".equals(element.getName().getLocalPart())) {
-                    if(foundHeading || heading == null)
+                    if (foundHeading || heading == null)
                         iterator.remove();
                     else {
                         element.setValue(formatHeadingAsString(heading));
@@ -306,14 +323,14 @@ public class Gpx11Format extends GpxFormat {
             anys.add(tbFactory.createCourse(formatHeading(heading)));
         }
 
-        if(anys.size() == 0)
+        if (anys.size() == 0)
             wptType.setExtensions(null);
     }
 
     private WptType createWptType(GpxPosition position) {
         BigDecimal latitude = formatPosition(position.getLatitude());
         BigDecimal longitude = formatPosition(position.getLongitude());
-        if(latitude == null || longitude == null)
+        if (latitude == null || longitude == null)
             return null;
         WptType wptType = position.getOrigin(WptType.class);
         if (wptType == null)
@@ -407,7 +424,7 @@ public class Gpx11Format extends GpxFormat {
         gpxType.setVersion(VERSION);
 
         MetadataType metadataType = gpxType.getMetadata();
-        if(metadataType == null) {
+        if (metadataType == null) {
             metadataType = objectFactory.createMetadataType();
             gpxType.setMetadata(metadataType);
         }
@@ -425,9 +442,9 @@ public class Gpx11Format extends GpxFormat {
     private GpxType createGpxType(List<GpxRoute> routes) {
         ObjectFactory objectFactory = new ObjectFactory();
         GpxType gpxType = null;
-        for(GpxRoute route : routes) {
+        for (GpxRoute route : routes) {
             gpxType = recycleGpxType(route);
-            if(gpxType != null)
+            if (gpxType != null)
                 break;
         }
         if (gpxType == null)

@@ -21,11 +21,19 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,8 +41,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Haicom Logger (.csv) files.
@@ -118,14 +129,14 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     CompactCalendar parseDateAndTime(String date, String time) {
-        date = Transfer.trim(date);
-        time = Transfer.trim(time);
+        date = trim(date);
+        time = trim(time);
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -137,17 +148,17 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         if (matcher.matches()) {
             String date = matcher.group(1);
             String time = matcher.group(2);
-            Double latitude = Transfer.parseDouble(matcher.group(3));
-            String northOrSouth = Transfer.trim(matcher.group(4));
+            Double latitude = parseDouble(matcher.group(3));
+            String northOrSouth = trim(matcher.group(4));
             if("S".equals(northOrSouth))
                 latitude = -latitude;
-            Double longitude = Transfer.parseDouble(matcher.group(5));
-            String westOrEast = Transfer.trim(matcher.group(6));
+            Double longitude = parseDouble(matcher.group(5));
+            String westOrEast = trim(matcher.group(6));
             if("W".equals(westOrEast))
                 longitude = -longitude;
             String altitude = matcher.group(7);
             String speed = matcher.group(9);
-            return new Wgs84Position(longitude, latitude, Transfer.parseDouble(altitude), Transfer.parseDouble(speed), parseDateAndTime(date, time), null);
+            return new Wgs84Position(longitude, latitude, parseDouble(altitude), parseDouble(speed), parseDateAndTime(date, time), null);
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

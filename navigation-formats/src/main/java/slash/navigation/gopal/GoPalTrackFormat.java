@@ -21,8 +21,12 @@
 package slash.navigation.gopal;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -34,6 +38,16 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.io.Transfer.formatAccuracyAsString;
+import static slash.common.io.Transfer.formatHeadingAsString;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes GoPal Track (.trk) files.
@@ -100,14 +114,14 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher matcher = LINE_PATTERN.matcher(line);
         if (!matcher.matches())
             return false;
-        Integer satellites = Transfer.parseInt(matcher.group(7));
+        Integer satellites = parseInt(matcher.group(7));
         return satellites != null && satellites > 0;
     }
 
     private CompactCalendar parseTime(String time) {
         try {
             Date parsed = TIME_FORMAT.parse(time);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse time '" + time + "'");
         }
@@ -115,14 +129,14 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
-        time = Transfer.trim(time);
-        date = Transfer.trim(date);
+        time = trim(time);
+        date = trim(date);
         if (date == null)
             return parseTime(time);
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -140,15 +154,15 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = lineMatcher.group(5);
         String hdop = lineMatcher.group(6);
         String satellites = lineMatcher.group(7);
-        String date = Transfer.trim(lineMatcher.group(8));
+        String date = trim(lineMatcher.group(8));
 
-        Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                null, Transfer.parseDouble(speed), parseDateAndTime(date, time), null);
+        Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
+                null, parseDouble(speed), parseDateAndTime(date, time), null);
         if (date == null)
             position.setStartDate(startDate);
-        position.setHeading(Transfer.parseDouble(heading));
-        position.setHdop(Transfer.parseDouble(hdop));
-        position.setSatellites(Transfer.parseInt(satellites));
+        position.setHeading(parseDouble(heading));
+        position.setHdop(parseDouble(hdop));
+        position.setSatellites(parseInt(satellites));
         return position;
     }
 
@@ -172,17 +186,17 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatPositionAsString(position.getLongitude());
-        String latitude = Transfer.formatPositionAsString(position.getLatitude());
+        String longitude = formatPositionAsString(position.getLongitude());
+        String latitude = formatPositionAsString(position.getLatitude());
         String time = formatTime(position.getTime());
-        String heading = Transfer.formatHeadingAsString(position.getHeading());
-        String speed = Transfer.formatSpeedAsString(position.getSpeed());
-        String hdop = Transfer.formatAccuracyAsString(position.getHdop());
+        String heading = formatHeadingAsString(position.getHeading());
+        String speed = formatSpeedAsString(position.getSpeed());
+        String hdop = formatAccuracyAsString(position.getHdop());
         Integer satellites = position.getSatellites();
         // since positions with zero satellites are ignored during reading
         if (satellites == null || satellites == 0)
             satellites = 1;
-        String satellitesStr = Transfer.formatIntAsString(satellites);
+        String satellitesStr = formatIntAsString(satellites);
         writer.println("0" + SEPARATOR + " " +
                        time + SEPARATOR + " " +
                        longitude + SEPARATOR + " " +

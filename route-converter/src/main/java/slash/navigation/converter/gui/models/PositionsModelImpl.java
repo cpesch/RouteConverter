@@ -20,7 +20,11 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.*;
+import slash.common.io.CompactCalendar;
+import slash.common.io.ContinousRange;
+import slash.common.io.Range;
+import slash.common.io.RangeOperation;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -38,8 +42,20 @@ import java.util.List;
 
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.NavigationFormats.asFormat;
-import static slash.navigation.converter.gui.helper.PositionHelper.*;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
+import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
+import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
+import static slash.navigation.converter.gui.helper.PositionHelper.extractTime;
+import static slash.navigation.converter.gui.helper.PositionHelper.formatLongitudeOrLatitude;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -211,15 +227,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         if (objectValue == null || objectValue instanceof Double) {
             return (Double) objectValue;
         } else {
-            try {
-                if (replaceAll != null && stringValue != null)
-                    stringValue = stringValue.replaceAll(replaceAll, "");
-                return Transfer.parseDouble(stringValue);
-            } catch (NumberFormatException e) {
-                // intentionally left empty
-            }
+            if (replaceAll != null && stringValue != null)
+                stringValue = stringValue.replaceAll(replaceAll, "");
+            return Transfer.parseDouble(stringValue);
         }
-        return null;
     }
 
     private CompactCalendar parseTime(Object objectValue, String stringValue) {

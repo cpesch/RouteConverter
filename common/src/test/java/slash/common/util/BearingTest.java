@@ -21,9 +21,9 @@
 package slash.common.util;
 
 import org.junit.Test;
-import slash.common.io.Transfer;
 
 import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.io.Transfer.roundMeterToMillimeterPrecision;
 
 public class BearingTest {
 
@@ -71,7 +71,7 @@ public class BearingTest {
         double deltaSigma = B * sinSigma * (cos2SigmaM + B / 4.0 * (cosSigma * (-1.0 + 2.0 * cos2SigmaM * cos2SigmaM) -
                 B / 6.0 * cos2SigmaM * (-3.0 + 4.0 * sinSigma * sinSigma) * (-3.0 + 4.0 * cos2SigmaM * cos2SigmaM)));
         double s = b * A * (sigma - deltaSigma);
-        s = Transfer.roundMeterToMillimeterPrecision(s); // round to 1mm precision
+        s = roundMeterToMillimeterPrecision(s); // round to 1mm precision
         return s;
     }
 

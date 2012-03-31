@@ -22,7 +22,6 @@ package slash.navigation.base;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
-import slash.common.io.Transfer;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gpx.GpxFormat;
@@ -51,6 +50,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static slash.common.io.Files.getExtension;
+import static slash.common.io.Transfer.ceiling;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 
 /**
@@ -262,7 +262,7 @@ public class NavigationFileParser {
 
 
     public static int getNumberOfFilesToWriteFor(BaseRoute route, NavigationFormat format, boolean duplicateFirstPosition) {
-        return Transfer.ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
+        return ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
     }
 
     @SuppressWarnings("unchecked")

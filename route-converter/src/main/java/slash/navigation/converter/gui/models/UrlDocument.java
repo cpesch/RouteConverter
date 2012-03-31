@@ -20,12 +20,13 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.Files;
-import slash.common.io.Transfer;
 import slash.navigation.base.FormatAndRoutes;
 
 import javax.swing.text.Document;
 import java.net.URL;
+
+import static slash.common.io.Files.lastPathFragment;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Acts as a {@link Document} for the {@link URL} of a {@link FormatAndRoutes}.
@@ -35,7 +36,7 @@ import java.net.URL;
 
 public class UrlDocument extends StringDocument {
     public String getShortUrl() {
-        String string = Transfer.trim(getString());
-        return string != null ? Files.lastPathFragment(string) : null;
+        String string = trim(getString());
+        return string != null ? lastPathFragment(string) : null;
     }
 }

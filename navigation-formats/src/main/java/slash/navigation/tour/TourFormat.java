@@ -21,15 +21,25 @@
 package slash.navigation.tour;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.RouteCharacteristics;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.parseLong;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Falk Navigator (.tour) files.
@@ -120,8 +130,8 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                 }
                 sectionTitle = parseSectionTitle(line);
             } else if (isNameValue(line)) {
-                String name = Transfer.trim(parseName(line));
-                String value = Transfer.trim(parseValue(line));
+                String name = trim(parseName(line));
+                String value = trim(parseValue(line));
                 map.put(name, value);
             } else {
                 return null;
@@ -154,14 +164,14 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
     TourPosition parsePosition(Map<String, String> map, String sectionTitle) {
-        String zipCode = Transfer.trim(map.get(ZIPCODE));
-        String city = Transfer.trim(map.get(CITY));
-        String street = Transfer.trim(map.get(STREET));
-        String houseNo = Transfer.trim(map.get(HOUSENO));
-        String name = Transfer.trim(map.get(NAME));
+        String zipCode = trim(map.get(ZIPCODE));
+        String city = trim(map.get(CITY));
+        String street = trim(map.get(STREET));
+        String houseNo = trim(map.get(HOUSENO));
+        String name = trim(map.get(NAME));
 
-        Long x = Transfer.parseLong(Transfer.trim(map.get(LONGITUDE)));
-        Long y = Transfer.parseLong(Transfer.trim(map.get(LATITUDE)));
+        Long x = parseLong(trim(map.get(LONGITUDE)));
+        Long y = parseLong(trim(map.get(LATITUDE)));
         if (x == null || y == null)
             return null;
 

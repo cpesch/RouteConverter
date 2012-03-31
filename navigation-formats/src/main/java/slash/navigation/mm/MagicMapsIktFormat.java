@@ -21,13 +21,26 @@
 package slash.navigation.mm;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.XmlNavigationFormat;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-import javax.xml.stream.*;
-import javax.xml.stream.events.*;
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,6 +48,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes MagicMaps Project (.ikt) files.
@@ -93,11 +111,11 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         Attribute attribute = startElement.getAttributeByName(new QName(attributeName));
         if (attribute == null)
             return null;
-        return Transfer.parseDouble(attribute.getValue());
+        return parseDouble(attribute.getValue());
     }
 
     private String extractValue(Characters chars, String value) {
-        String append = Transfer.trim(chars.getData());
+        String append = trim(chars.getData());
         if (append == null)
             return value;
         if (value == null)
@@ -215,8 +233,8 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         writer.add(eventFactory.createStartElement(new QName(POINT_ELEMENT + "_" + index), null, null));
 
         List<Attribute> attributes = new ArrayList<Attribute>();
-        attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, Transfer.formatPositionAsString(position.getLongitude())));
-        attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, Transfer.formatPositionAsString(position.getLatitude())));
+        attributes.add(eventFactory.createAttribute(X_ATTRIBUTE, formatPositionAsString(position.getLongitude())));
+        attributes.add(eventFactory.createAttribute(Y_ATTRIBUTE, formatPositionAsString(position.getLatitude())));
         writer.add(eventFactory.createStartElement(new QName(GEO_POSITION_ELEMENT), attributes.iterator(), null));
         writer.add(eventFactory.createEndElement(new QName(GEO_POSITION_ELEMENT), null));
 
@@ -242,7 +260,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
 
         List<Wgs84Position> positions = route.getPositions();
         writer.add(eventFactory.createStartElement(new QName(COUNT_ELEMENT), null, null));
-        writer.add(eventFactory.createCharacters(Transfer.formatIntAsString(positions.size())));
+        writer.add(eventFactory.createCharacters(formatIntAsString(positions.size())));
         writer.add(eventFactory.createEndElement(new QName(COUNT_ELEMENT), null));
 
         for (int i = 0; i < positions.size(); i++) {
@@ -304,7 +322,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                 writeHeader(getProjectName(routes), getDescription(routes), writer, eventFactory);
 
                 writer.add(eventFactory.createStartElement(new QName(COUNT_ELEMENT), null, null));
-                writer.add(eventFactory.createCharacters(Transfer.formatIntAsString(routes.size())));
+                writer.add(eventFactory.createCharacters(formatIntAsString(routes.size())));
                 writer.add(eventFactory.createEndElement(new QName(COUNT_ELEMENT), null));
 
                 for (int i = 0; i < routes.size(); i++) {

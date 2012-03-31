@@ -21,7 +21,6 @@
 package slash.navigation.itn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.TextNavigationFormat;
@@ -39,6 +38,8 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.util.RouteComments.TRIPMASTER_TIME;
 
 /**
@@ -158,7 +159,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
         String comment = lineMatcher.group(3);
-        return new TomTomPosition(Transfer.parseInt(longitude), Transfer.parseInt(latitude), Transfer.trim(comment));
+        return new TomTomPosition(parseInt(longitude), parseInt(latitude), trim(comment));
     }
 
     String parseName(String line) {
@@ -166,7 +167,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
         String description = lineMatcher.group(1);
-        return Transfer.trim(description);
+        return trim(description);
     }
 
     String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {

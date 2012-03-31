@@ -40,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -354,9 +355,8 @@ public abstract class RouteComments {
 
     public static Double parseTripmasterHeading(String string) {
         Matcher matcher = TRIPMASTER_HEADING_PATTERN.matcher(string);
-        if (matcher.matches()) {
-            return Transfer.parseDouble(matcher.group(2));
-        }
+        if (matcher.matches())
+            return parseDouble(matcher.group(2));
         return null;
     }
 
@@ -372,7 +372,7 @@ public abstract class RouteComments {
 
     private static Double parseDouble(String string) {
         Double aDouble = Transfer.parseDouble(string);
-        return !Transfer.isEmpty(aDouble) ? aDouble : null;
+        return !isEmpty(aDouble) ? aDouble : null;
     }
 
     public static void parseComment(BaseNavigationPosition position, String comment) {

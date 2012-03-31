@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.helper;
 
 import slash.common.io.ContinousRange;
 import slash.common.io.RangeOperation;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
@@ -38,6 +37,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
@@ -414,7 +414,7 @@ public class BatchPositionAugmenter {
     }
 
     public void addNumbers(JTable positionsTable, PositionsModel positionsModel, int[] selectedRows) {
-        int digitCount = Transfer.widthInDigits(positionsModel.getRowCount() + 1);
+        int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
         NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
 
         processNumbers(positionsTable, positionsModel, selectedRows,

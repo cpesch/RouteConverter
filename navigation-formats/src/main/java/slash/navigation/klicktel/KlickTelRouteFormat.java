@@ -21,7 +21,6 @@
 package slash.navigation.klicktel;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -34,8 +33,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.klicktel.KlickTelUtil.unmarshal;
 
 /**
  * Reads and writes klickTel Routenplaner 2009 (.krt) files.
@@ -79,23 +83,23 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
                     (station.getCity() != null ? station.getCity() : "") +
                     (station.getStreet() != null ? ", " + station.getStreet() : "") +
                     (station.getHouseNumber() != null ? " " + station.getHouseNumber() : "");
-            positions.add(new Wgs84Position(Transfer.parseDouble(point.getLongitude()), Transfer.parseDouble(point.getLatitude()),
-                    null, null, null, Transfer.trim(comment)));
+            positions.add(new Wgs84Position(parseDouble(point.getLongitude()), parseDouble(point.getLatitude()),
+                    null, null, null, trim(comment)));
         }
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
 
     public List<KlickTelRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
         try {
-            KDRoute KDRoute = KlickTelUtil.unmarshal(source);
-            return Arrays.asList(process(KDRoute));
+            KDRoute KDRoute = unmarshal(source);
+            return asList(process(KDRoute));
         } catch (JAXBException e) {
             return null;
         }
     }
 
     private String formatPosition(Double aDouble) {
-        return Transfer.formatDoubleAsString(aDouble, 8).replace('.', ',');
+        return formatDoubleAsString(aDouble, 8).replace('.', ',');
     }
 
     private KDRoute createKlicktel(KlickTelRoute route) {

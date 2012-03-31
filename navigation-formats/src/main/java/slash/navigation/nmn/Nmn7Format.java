@@ -21,7 +21,6 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
 
 /**
@@ -100,8 +100,8 @@ public class Nmn7Format extends NmnFormat {
         for (int i = startIndex; i < endIndex; i++) {
             NmnPosition position = route.getPosition(i);
             Route.Point point = objectFactory.createRoutePoint();
-            point.setX(Transfer.formatBigDecimal(position.getLongitude(), 7));
-            point.setY(Transfer.formatBigDecimal(position.getLatitude(), 7));
+            point.setX(formatBigDecimal(position.getLongitude(), 7));
+            point.setY(formatBigDecimal(position.getLatitude(), 7));
             point.setName(position.getComment());
             result.getPoint().add(point);
         }

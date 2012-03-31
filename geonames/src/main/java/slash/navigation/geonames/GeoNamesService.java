@@ -20,7 +20,6 @@
 
 package slash.navigation.geonames;
 
-import slash.common.io.Transfer;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
@@ -30,6 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
+
+import static slash.common.io.Transfer.parseInt;
 
 /**
  * Encapsulates REST access to the geonames.org service.
@@ -65,7 +66,7 @@ public class GeoNamesService {
         String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude);
         if (result != null) {
             try {
-                Integer elevation = Transfer.parseInt(result);
+                Integer elevation = parseInt(result);
                 if (elevation != null && !elevation.equals(nullValue))
                     return elevation;
             } catch (NumberFormatException e) {

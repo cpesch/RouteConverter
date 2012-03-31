@@ -20,9 +20,9 @@
 
 package slash.navigation.base;
 
-import slash.common.io.Transfer;
-
 import java.io.IOException;
+
+import static slash.common.io.Transfer.ceiling;
 
 public class SplitIT extends ReadWriteBase {
 
@@ -83,7 +83,7 @@ public class SplitIT extends ReadWriteBase {
     }
 
     public void testCeiling() {
-        assertEquals(3, Transfer.ceiling(184, 90, true));
-        assertEquals(1, Transfer.ceiling(0, 1, true));
+        assertEquals(3, ceiling(184, 90, true));
+        assertEquals(1, ceiling(0, 1, true));
     }
 }

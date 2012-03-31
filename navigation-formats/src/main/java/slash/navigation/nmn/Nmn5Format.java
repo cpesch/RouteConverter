@@ -21,14 +21,17 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Navigon Mobile Navigator 5 (.rte) files.
@@ -62,7 +65,7 @@ public class Nmn5Format extends NmnFormat {
     }
 
     private static String parseForNmn5(String string) {
-        String result = Transfer.trim(string);
+        String result = trim(string);
         if (result != null && "-".equals(result))
             result = null;
         if (result != null && result.length() > 2)
@@ -84,7 +87,7 @@ public class Nmn5Format extends NmnFormat {
     }
 
     private static String formatComment(String string) {
-        return string != null ? Transfer.escape(string, SEPARATOR, ';') : "-";
+        return string != null ? escape(string, SEPARATOR, ';') : "-";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

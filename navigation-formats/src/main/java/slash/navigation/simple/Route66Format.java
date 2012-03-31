@@ -21,14 +21,23 @@ package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Route 66 POI (.csv) files.
@@ -73,13 +82,13 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String comment = toMixedCase(Transfer.trim(lineMatcher.group(3)));
+        String comment = toMixedCase(trim(lineMatcher.group(3)));
         return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, null, null, comment);
     }
 
     private static String formatComment(String string) {
-        string = Transfer.escape(string, SEPARATOR, ';');
+        string = escape(string, SEPARATOR, ';');
         return string != null ? string.toUpperCase() : "";
     }
 

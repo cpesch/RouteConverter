@@ -21,7 +21,6 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
@@ -30,6 +29,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Navigon Mobile Navigator 6 (.rte) files.
@@ -75,7 +75,7 @@ public class Nmn6Format extends NmnFormat {
         String comment = lineMatcher.group(1);
         String longitude = lineMatcher.group(2);
         String latitude = lineMatcher.group(3);
-        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), (Double)null, null, null, Transfer.trim(comment));
+        return new NmnPosition(parseDouble(longitude), parseDouble(latitude), (Double)null, null, null, trim(comment));
     }
 
     private static String formatComment(String string) {

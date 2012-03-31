@@ -21,7 +21,6 @@
 package slash.navigation.mm;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.GkPosition;
 import slash.navigation.base.RouteCharacteristics;
@@ -35,6 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes MagicMaps Tour (.pth) files.
@@ -70,7 +73,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (Transfer.trim(line) == null)
+            if (trim(line) == null)
                 continue;
 
             if (line.startsWith("#")) {
@@ -103,9 +106,9 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        Double right = Transfer.parseDouble(lineMatcher.group(1));
-        Double height = Transfer.parseDouble(lineMatcher.group(2));
-        String comment = Transfer.trim(lineMatcher.group(3));
+        Double right = parseDouble(lineMatcher.group(1));
+        Double height = parseDouble(lineMatcher.group(2));
+        String comment = trim(lineMatcher.group(3));
         return new GkPosition(right, height, comment);
     }
 
@@ -117,8 +120,8 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
 
         for (int i = startIndex; i < endIndex; i++) {
             GkPosition position = positions.get(i);
-            String right = Transfer.formatDoubleAsString(position.getRight(), 2);
-            String height = Transfer.formatDoubleAsString(position.getHeight(), 2);
+            String right = formatDoubleAsString(position.getRight(), 2);
+            String height = formatDoubleAsString(position.getHeight(), 2);
             writer.println(right + " \t " + height);
         }
     }

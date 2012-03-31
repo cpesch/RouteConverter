@@ -20,13 +20,15 @@
 
 package slash.navigation.ovl;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.IniFileSection;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Represents a section in a Top50 OVL ASCII (.ovl) file,
@@ -72,19 +74,19 @@ class OvlSection extends IniFileSection {
     Wgs84Position getPosition(int index) {
         Double x, y;
         String indexKey = getPositionCount() > 1 ? Integer.toString(index) : "";
-        String xValue = Transfer.trim(get(X_POSITION + indexKey));
-        String yValue = Transfer.trim(get(Y_POSITION + indexKey));
-        String comment = getPositionCount() == 1 ? Transfer.trim(getText()) : null;
+        String xValue = trim(get(X_POSITION + indexKey));
+        String yValue = trim(get(Y_POSITION + indexKey));
+        String comment = getPositionCount() == 1 ? trim(getText()) : null;
         // for the strange format of EasyGPS
         if (yValue == null && xValue != null) {
             Matcher matcher = EASY_GPS_PATTERN.matcher(xValue);
             if (matcher.matches()) {
-                xValue = Transfer.trim(matcher.group(1));
-                yValue = Transfer.trim(matcher.group(2));
+                xValue = trim(matcher.group(1));
+                yValue = trim(matcher.group(2));
             }
         }
-        x = Transfer.parseDouble(xValue);
-        y = Transfer.parseDouble(yValue);
+        x = parseDouble(xValue);
+        y = parseDouble(yValue);
         return new Wgs84Position(x, y, null, null, null, comment);
     }
 

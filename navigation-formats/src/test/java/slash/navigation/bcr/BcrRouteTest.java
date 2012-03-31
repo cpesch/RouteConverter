@@ -22,7 +22,6 @@ package slash.navigation.bcr;
 
 import org.junit.Test;
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.util.RouteComments;
 
 import java.util.ArrayList;
@@ -30,8 +29,16 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.*;
-import static slash.navigation.util.NumberPattern.*;
+import static slash.common.TestCase.assertDoubleArrayEquals;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.assertIntArrayEquals;
+import static slash.common.TestCase.assertNotNull;
+import static slash.common.TestCase.assertNull;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.navigation.util.NumberPattern.DESCRIPTION_ONLY;
+import static slash.navigation.util.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
+import static slash.navigation.util.NumberPattern.NUMBER_ONLY;
+import static slash.navigation.util.NumberPattern.NUMBER_SPACE_THEN_DESCRIPTION;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 public class BcrRouteTest {
@@ -525,7 +532,7 @@ public class BcrRouteTest {
         }
 
         for (int i = 0; i < positions.size(); i++) {
-            assertEquals(Transfer.formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
+            assertEquals(formatIntAsString(i + 1, 2) + "Comment", positions.get(i).getComment());
         }
     }
 

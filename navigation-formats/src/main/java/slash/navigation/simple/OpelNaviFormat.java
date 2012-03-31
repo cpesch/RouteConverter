@@ -21,8 +21,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +36,11 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Opel Navi 600/900 (.poi) files.
@@ -86,11 +95,11 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        Double longitude = Transfer.parseDouble(lineMatcher.group(1));
-        Double latitude = Transfer.parseDouble(lineMatcher.group(2));
-        String name = Transfer.trim(lineMatcher.group(3));
-        String extra = Transfer.trim(lineMatcher.group(4));
-        String phone = Transfer.trim(lineMatcher.group(5));
+        Double longitude = parseDouble(lineMatcher.group(1));
+        Double latitude = parseDouble(lineMatcher.group(2));
+        String name = trim(lineMatcher.group(3));
+        String extra = trim(lineMatcher.group(4));
+        String phone = trim(lineMatcher.group(5));
 
         String comment = name;
         if (extra != null)
@@ -104,13 +113,13 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private String formatComment(String string, int maximumLength) {
-        string = Transfer.escape(string, '"', '\'');
+        string = escape(string, '"', '\'');
         return string != null ? string.substring(0, Math.min(string.length(), maximumLength)) : null;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = formatDoubleAsString(position.getLongitude(), 6);
+        String latitude = formatDoubleAsString(position.getLatitude(), 6);
 
         String[] strings = position.getComment().split(";");
         String comment = strings.length > 0 ? formatComment(strings[0], 60) : "";

@@ -21,14 +21,18 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatAccuracyAsString;
+import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Columbus V900 Professional (.csv) files.
@@ -81,11 +85,11 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String date = lineMatcher.group(3);
         String time = lineMatcher.group(4);
-        Double latitude = Transfer.parseDouble(lineMatcher.group(5));
+        Double latitude = parseDouble(lineMatcher.group(5));
         String northOrSouth = lineMatcher.group(6);
         if ("S".equals(northOrSouth) && latitude != null)
             latitude = -latitude;
-        Double longitude = Transfer.parseDouble(lineMatcher.group(7));
+        Double longitude = parseDouble(lineMatcher.group(7));
         String westOrEasth = lineMatcher.group(8);
         if ("W".equals(westOrEasth) && longitude != null)
             longitude = -longitude;
@@ -100,37 +104,37 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
         int commentSeparatorIndex = comment.lastIndexOf(SEPARATOR);
         if (commentSeparatorIndex != -1)
             comment = comment.substring(commentSeparatorIndex + 1);
-        comment = Transfer.trim(comment);
+        comment = trim(comment);
 
-        String lineType = Transfer.trim(lineMatcher.group(2));
+        String lineType = trim(lineMatcher.group(2));
         if (comment == null && POI_POSITION.equals(lineType)) {
             String lineNumber = lineMatcher.group(1);
-            comment = "POI " + Transfer.trim(removeZeros(lineNumber));
+            comment = "POI " + trim(removeZeros(lineNumber));
         }
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, Transfer.parseDouble(height), Transfer.parseDouble(speed),
+        Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), comment);
-        position.setHeading(Transfer.parseDouble(heading));
-        position.setPdop(Transfer.parseDouble(pdop));
-        position.setHdop(Transfer.parseDouble(hdop));
-        position.setVdop(Transfer.parseDouble(vdop));
+        position.setHeading(parseDouble(heading));
+        position.setPdop(parseDouble(pdop));
+        position.setHdop(parseDouble(hdop));
+        position.setVdop(parseDouble(vdop));
         return position;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         String date = fillWithZeros(formatDate(position.getTime()), 6);
         String time = fillWithZeros(formatTime(position.getTime()), 6);
-        String latitude = Transfer.formatDoubleAsString(Math.abs(position.getLatitude()), 6);
+        String latitude = formatDoubleAsString(Math.abs(position.getLatitude()), 6);
         String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = Transfer.formatDoubleAsString(Math.abs(position.getLongitude()), 6);
+        String longitude = formatDoubleAsString(Math.abs(position.getLongitude()), 6);
         String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
         String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? formatIntAsString(position.getSpeed().intValue()) : "0", 4);
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
-        String pdop = fillWithZeros(position.getPdop() != null ? Transfer.formatAccuracyAsString(position.getPdop()) : "0.0", 5);
-        String hdop = fillWithZeros(position.getHdop() != null ? Transfer.formatAccuracyAsString(position.getHdop()) : "0.0", 5);
-        String vdop = fillWithZeros(position.getVdop() != null ? Transfer.formatAccuracyAsString(position.getVdop()) : "0.0", 5);
-        String comment = fillWithZeros(Transfer.escape(position.getComment(), SEPARATOR, ';'), 8);
+        String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "0.0", 5);
+        String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "0.0", 5);
+        String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "0.0", 5);
+        String comment = fillWithZeros(escape(position.getComment(), SEPARATOR, ';'), 8);
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
                 formatLineType(position.getComment()) + SEPARATOR +

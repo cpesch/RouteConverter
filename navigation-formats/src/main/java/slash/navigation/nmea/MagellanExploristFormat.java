@@ -1,6 +1,5 @@
 package slash.navigation.nmea;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 
@@ -12,6 +11,11 @@ import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Magellan Explorist (.log) files.
@@ -78,10 +82,10 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
             String westOrEast = matcher.group(4);
             String altitude = matcher.group(5);
             String time = matcher.group(6);
-            String comment = Transfer.toMixedCase(matcher.group(7));
+            String comment = toMixedCase(matcher.group(7));
             String date = matcher.group(8);
-            return new NmeaPosition(Transfer.parseDouble(longitude), westOrEast, Transfer.parseDouble(latitude), northOrSouth,
-                    Double.parseDouble(altitude), null, null, parseDateAndTime(date, time), Transfer.trim(comment));
+            return new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
+                    parseDouble(altitude), null, null, parseDateAndTime(date, time), trim(comment));
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");
@@ -102,7 +106,7 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
         String westOrEast = position.getEastOrWest();
         String latitude = formatLatititude(position.getLatitudeAsDdmm());
         String northOrSouth = position.getNorthOrSouth();
-        String comment = Transfer.escape(position.getComment(), SEPARATOR, ';');
+        String comment = escape(position.getComment(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());

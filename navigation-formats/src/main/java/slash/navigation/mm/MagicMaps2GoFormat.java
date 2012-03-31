@@ -34,7 +34,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes MagicMaps2Go (.txt) files.
@@ -85,12 +88,12 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
-        time = Transfer.trim(time);
-        date = Transfer.trim(date);
+        time = trim(time);
+        date = trim(date);
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -106,8 +109,8 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String elevation = lineMatcher.group(3);
         String date = lineMatcher.group(4);
         String time = lineMatcher.group(5);
-        return new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
-                Transfer.parseDouble(elevation), null, parseDateAndTime(date, time), null);
+        return new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
+                parseDouble(elevation), null, parseDateAndTime(date, time), null);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

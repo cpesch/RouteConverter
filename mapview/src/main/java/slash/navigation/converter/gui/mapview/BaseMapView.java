@@ -21,7 +21,6 @@
 package slash.navigation.converter.gui.mapview;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
@@ -464,7 +463,7 @@ public abstract class BaseMapView implements MapView {
                         }
                     }
 
-                    String callbacks = Transfer.trim(executeScriptWithResult("return getCallbacks();"));
+                    String callbacks = trim(executeScriptWithResult("return getCallbacks();"));
                     if (callbacks != null) {
                         String[] lines = callbacks.split("--");
                         for (String line : lines) {
@@ -1193,7 +1192,7 @@ public abstract class BaseMapView implements MapView {
         boolean processingPost = false, processingBody = false;
         while (true) {
             try {
-                String line = Transfer.trim(reader.readLine());
+                String line = trim(reader.readLine());
                 if (line == null) {
                     if (processingPost && !processingBody) {
                         processingBody = true;
@@ -1229,7 +1228,7 @@ public abstract class BaseMapView implements MapView {
 
     private boolean isAuthenticated(List<String> lines) {
         Map<String, String> map = asMap(lines);
-        String host = Transfer.trim(map.get("Host"));
+        String host = trim(map.get("Host"));
         return host != null && host.equals("127.0.0.1:" + getCallbackPort());
     }
 

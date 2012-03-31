@@ -21,8 +21,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -31,6 +35,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads Kienzle GPS (.txt) files.
@@ -112,11 +119,11 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String longitude = lineMatcher.group(1);
         String latitude = lineMatcher.group(2);
-        String organization = Transfer.trim(lineMatcher.group(3));
-        String postalCode = Transfer.trim(lineMatcher.group(5));
-        String city = Transfer.trim(lineMatcher.group(6));
-        String street = Transfer.trim(lineMatcher.group(7));
-        String houseNo = Transfer.trim(lineMatcher.group(8));
+        String organization = trim(lineMatcher.group(3));
+        String postalCode = trim(lineMatcher.group(5));
+        String city = trim(lineMatcher.group(6));
+        String street = trim(lineMatcher.group(7));
+        String houseNo = trim(lineMatcher.group(8));
         String time = lineMatcher.group(9);
         String comment = (organization != null ? organization + ": " : "") +
                 (postalCode != null ? postalCode + " " : "") +
@@ -125,7 +132,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                 (houseNo != null ? houseNo : "");
 
         CompactCalendar calendar = parseTime(time);
-        Wgs84Position position = new Wgs84Position(Transfer.parseDouble(longitude), Transfer.parseDouble(latitude),
+        Wgs84Position position = new Wgs84Position(parseDouble(longitude), parseDouble(latitude),
                 null, null, calendar, comment);
         position.setStartDate(startDate);
         return position;

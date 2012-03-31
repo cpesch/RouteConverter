@@ -21,10 +21,12 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.regex.Matcher;
+
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Represents a position in a Navigon Mobile Navigator (.rte) file.
@@ -67,12 +69,12 @@ public class NmnPosition extends Wgs84Position {
         if (comment == null)
             return;
 
-        Matcher matcher = NmnFormat.COMMENT_PATTERN.matcher(Transfer.escape(comment, NmnFormat.SEPARATOR, ';'));
+        Matcher matcher = NmnFormat.COMMENT_PATTERN.matcher(escape(comment, NmnFormat.SEPARATOR, ';'));
         if (matcher.matches()) {
-            this.comment = Transfer.trim(matcher.group(2));
-            zip = Transfer.trim(matcher.group(1));
-            street = Transfer.trim(matcher.group(3));
-            number = Transfer.trim(matcher.group(4));
+            this.comment = trim(matcher.group(2));
+            zip = trim(matcher.group(1));
+            street = trim(matcher.group(3));
+            number = trim(matcher.group(4));
         }
     }
 

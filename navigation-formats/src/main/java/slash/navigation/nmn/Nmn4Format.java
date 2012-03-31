@@ -21,14 +21,17 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Navigon Mobile Navigator 4 (.rte) files.
@@ -71,7 +74,7 @@ public class Nmn4Format extends NmnFormat {
     }
 
     private static String parseForNmn4(String string) {
-        String result = Transfer.trim(string);
+        String result = trim(string);
         if (result != null && "-".equals(result))
             result = null;
         // this was currently only in NMN5, try it out for NMN4, too

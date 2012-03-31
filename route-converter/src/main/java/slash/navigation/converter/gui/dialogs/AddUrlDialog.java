@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static slash.common.io.Transfer.trim;
+
 /**
  * Dialog to addChild url to RouteService
  *
@@ -106,14 +108,14 @@ public class AddUrlDialog extends SimpleDialog {
 
     private void addUrl() {
         String url = textFieldUrl.getText();
-        if (Transfer.trim(url) == null) {
+        if (trim(url) == null) {
             labelResult.setText("No url given!"); // TODO make nicer
             pack();
             return;
         }
 
         String description = textFieldDescription.getText();
-        if (Transfer.trim(description) == null) {
+        if (trim(description) == null) {
             labelResult.setText("No description given!"); // TODO make nicer
             pack();
             return;

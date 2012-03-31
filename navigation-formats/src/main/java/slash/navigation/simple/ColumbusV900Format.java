@@ -21,8 +21,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -33,6 +37,10 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * The base of all Columbus V900 formats.
@@ -68,7 +76,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     protected abstract String getHeader();
@@ -85,14 +93,14 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
     }
 
     protected CompactCalendar parseDateAndTime(String date, String time) {
-        date = Transfer.trim(date);
-        time = Transfer.trim(time);
+        date = trim(date);
+        time = trim(time);
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }

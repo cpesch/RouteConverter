@@ -21,7 +21,6 @@
 package slash.navigation.bcr;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.MercatorPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.tour.TourPosition;
@@ -31,6 +30,8 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.regex.Matcher;
+
+import static slash.common.io.Transfer.trim;
 
 /**
  * Represents a position in a Map&Guide Tourenplaner Route (.bcr) file.
@@ -103,19 +104,19 @@ public class BcrPosition extends MercatorPosition {
 
         Matcher matcher = MTP0809Format.DESCRIPTION_PATTERN.matcher(comment);
         if (matcher.matches()) {
-            zipCode = Transfer.trim(matcher.group(1));
+            zipCode = trim(matcher.group(1));
             if (ZIPCODE_DEFINES_NOTHING.equals(zipCode)) {
                 zipCode = null;
             }
-            this.comment = Transfer.trim(matcher.group(2));
+            this.comment = trim(matcher.group(2));
             if (zipCode != null && this.comment == null) {
                 this.comment = zipCode;
                 zipCode = null;
             }
-            street = Transfer.trim(matcher.group(3));
+            street = trim(matcher.group(3));
             if (street != null && STREET_DEFINES_CENTER_SYMBOL.equals(street))
                 street = STREET_DEFINES_CENTER_NAME;
-            this.type = Transfer.trim(matcher.group(4));
+            this.type = trim(matcher.group(4));
         }
     }
 

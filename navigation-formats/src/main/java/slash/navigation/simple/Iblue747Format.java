@@ -21,8 +21,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -34,10 +38,13 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatHeadingAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes i-Blue 747 (.csv) files.
@@ -116,14 +123,14 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
      }
 
     private CompactCalendar parseDateAndTime(String date, String time) {
-        date = Transfer.trim(date);
-        time = Transfer.trim(time);
+        date = trim(date);
+        time = trim(time);
         if(date == null || time == null)
             return null;
         String dateAndTime = date + " " + time;
         try {
             Date parsed = DATE_AND_TIME_FORMAT.parse(dateAndTime);
-            return CompactCalendar.fromDate(parsed);
+            return fromDate(parsed);
         } catch (ParseException e) {
             log.severe("Could not parse date and time '" + dateAndTime + "'");
         }
@@ -136,11 +143,11 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
             throw new IllegalArgumentException("'" + line + "' does not match");
         String date = lineMatcher.group(3);
         String time = lineMatcher.group(4);
-        Double latitude = Transfer.parseDouble(lineMatcher.group(6));
+        Double latitude = parseDouble(lineMatcher.group(6));
         String northOrSouth = lineMatcher.group(7);
         if ("S".equals(northOrSouth) && latitude != null)
             latitude = -latitude;
-        Double longitude = Transfer.parseDouble(lineMatcher.group(8));
+        Double longitude = parseDouble(lineMatcher.group(8));
         String eastOrWest = lineMatcher.group(9);
         if ("W".equals(eastOrWest) && longitude != null)
             longitude = -longitude;
@@ -148,9 +155,9 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         String speed = lineMatcher.group(11);
         String heading = lineMatcher.group(12);
 
-        Wgs84Position position = new Wgs84Position(longitude, latitude, Transfer.parseDouble(height), Transfer.parseDouble(speed),
+        Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
                 parseDateAndTime(date, time), null);
-        position.setHeading(Transfer.parseDouble(heading));
+        position.setHeading(parseDouble(heading));
         return position;
     }
 

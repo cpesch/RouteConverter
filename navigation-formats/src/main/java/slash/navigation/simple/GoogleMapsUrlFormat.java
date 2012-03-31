@@ -20,7 +20,6 @@
 
 package slash.navigation.simple;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.UrlFormat;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
@@ -35,6 +34,10 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Google Maps URLs from/to files.
@@ -78,7 +81,7 @@ public class GoogleMapsUrlFormat extends UrlFormat {
         Matcher urlMatcher = URL_PATTERN.matcher(text);
         if (!urlMatcher.matches())
             return null;
-        return Transfer.trim(urlMatcher.group(1));
+        return trim(urlMatcher.group(1));
     }
 
     protected String findURL(String text) {
@@ -89,8 +92,8 @@ public class GoogleMapsUrlFormat extends UrlFormat {
         Matcher matcher = PLAIN_POSITION_PATTERN.matcher(coordinates);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + coordinates + "' does not match");
-        Double latitude = Transfer.parseDouble(matcher.group(1));
-        Double longitude = Transfer.parseDouble(matcher.group(2));
+        Double latitude = parseDouble(matcher.group(1));
+        Double longitude = parseDouble(matcher.group(2));
         return new Wgs84Position(longitude, latitude, null, null, null, null);
     }
 
@@ -98,9 +101,9 @@ public class GoogleMapsUrlFormat extends UrlFormat {
         Matcher matcher = COMMENT_POSITION_PATTERN.matcher(position);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + position + "' does not match");
-        String comment = Transfer.trim(matcher.group(1));
-        Double latitude = Transfer.parseDouble(matcher.group(3));
-        Double longitude = Transfer.parseDouble(matcher.group(4));
+        String comment = trim(matcher.group(1));
+        Double latitude = parseDouble(matcher.group(3));
+        Double longitude = parseDouble(matcher.group(4));
         return new Wgs84Position(longitude, latitude, null, null, null, comment);
     }
 
@@ -122,7 +125,7 @@ public class GoogleMapsUrlFormat extends UrlFormat {
         List<Wgs84Position> result = new ArrayList<Wgs84Position>(positions);
         for (int i = result.size() - 1; i >= 0; i--) {
             Wgs84Position position = result.get(i);
-            if (Transfer.trim(position.getComment()) == null)
+            if (trim(position.getComment()) == null)
                 result.remove(i);
         }
         return result;
@@ -157,9 +160,9 @@ public class GoogleMapsUrlFormat extends UrlFormat {
                     tokenizer.nextToken();
                     if (tokenizer.hasMoreTokens()) {
                         try {
-                            Double latitude = Transfer.parseDouble(tokenizer.nextToken());
+                            Double latitude = parseDouble(tokenizer.nextToken());
                             if (tokenizer.hasMoreTokens()) {
-                                Double longitude = Transfer.parseDouble(tokenizer.nextToken());
+                                Double longitude = parseDouble(tokenizer.nextToken());
                                 Wgs84Position position = geocodePositions.get(positionIndex++);
                                 position.setLongitude(longitude);
                                 position.setLatitude(latitude);
@@ -179,9 +182,9 @@ public class GoogleMapsUrlFormat extends UrlFormat {
         StringBuilder buffer = new StringBuilder("http://maps.google.com/maps?ie=UTF8&");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            String longitude = position.getLongitude() != null ? Transfer.formatDoubleAsString(position.getLongitude(), 6) : null;
-            String latitude = position.getLatitude() != null ? Transfer.formatDoubleAsString(position.getLatitude(), 6) : null;
-            String comment = encodeComment(Transfer.trim(position.getComment()));
+            String longitude = position.getLongitude() != null ? formatDoubleAsString(position.getLongitude(), 6) : null;
+            String latitude = position.getLatitude() != null ? formatDoubleAsString(position.getLatitude(), 6) : null;
+            String comment = encodeComment(trim(position.getComment()));
             if (i == startIndex) {
                 buffer.append("saddr=").append(comment);
                 if(longitude != null && latitude != null)

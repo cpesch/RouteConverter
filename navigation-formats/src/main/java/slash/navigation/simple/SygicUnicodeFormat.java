@@ -20,7 +20,6 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 
@@ -29,6 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
+
+import static slash.common.io.Transfer.formatDoubleAsString;
 
 /**
  * Reads and writes Sygic POI Unicode (.txt) files.
@@ -72,8 +73,8 @@ public class SygicUnicodeFormat extends SygicFormat {
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String longitude = Transfer.formatDoubleAsString(position.getLongitude(), 6);
-        String latitude = Transfer.formatDoubleAsString(position.getLatitude(), 6);
+        String longitude = formatDoubleAsString(position.getLongitude(), 6);
+        String latitude = formatDoubleAsString(position.getLatitude(), 6);
         String comment = formatComment(position.getComment());
         String phone = null;
         int plus = comment.lastIndexOf('+');
