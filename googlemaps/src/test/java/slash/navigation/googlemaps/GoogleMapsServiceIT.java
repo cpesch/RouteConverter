@@ -74,8 +74,8 @@ public class GoogleMapsServiceIT {
 
         assertEquals(77.2, service.getElevationFor(-68.0, -54.0), 0.5);
         assertEquals(457.6, service.getElevationFor(-68.0, -55.0), 0.5);
-        assertEquals(-112.5, service.getElevationFor(-68.0, -56.0), 0.5);
+        assertEquals(-110.4970398, service.getElevationFor(-68.0, -56.0), 0.5);
         assertEquals(-105.0, service.getElevationFor(-68.0, -56.1), 0.5);
-        assertEquals(-2861.2, service.getElevationFor(-68.0, -57.0), 0.5);
+        assertEquals(-2893.809082, service.getElevationFor(-68.0, -57.0), 0.5);
     }
 }
