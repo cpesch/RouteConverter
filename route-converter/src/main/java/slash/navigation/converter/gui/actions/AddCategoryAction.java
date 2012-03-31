@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
@@ -37,7 +38,7 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 
 /**
- * {@link Action} that adds a category to the {@link CatalogModel}.
+ * {@link Action} that adds a {@link Category} to the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
@@ -71,6 +72,5 @@ public class AddCategoryAction extends FrameAction {
                         selectCategoryTreePath(tree, treePath);
                     }
                 });
-
     }
 }

@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.dnd;
 
-import slash.common.io.Files;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -28,14 +27,11 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
-import static java.util.Arrays.asList;
+import static slash.common.io.Files.toUrls;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 
 /**
@@ -45,12 +41,10 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
  */
 
 public class PanelDropHandler extends TransferHandler {
-    private static final Logger log = Logger.getLogger(PanelDropHandler.class.getName());
-
     private void openOrAdd(List<File> files) {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected())
-            r.openPositionList(Files.toUrls(files.toArray(new File[files.size()])));
+            r.openPositionList(toUrls(files.toArray(new File[files.size()])));
         else if (r.isBrowsePanelSelected())
             r.addFilesToCatalog(files);
     }
@@ -59,12 +53,7 @@ public class PanelDropHandler extends TransferHandler {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
             String url = extractUrl(string);
-            try {
-                r.openPositionList(asList(new URL(url)));
-            }
-            catch (MalformedURLException e) {
-                log.severe("Could not create URL from '" + url + "'");
-            }
+            r.openPositionList(toUrls(url));
         } else if (r.isBrowsePanelSelected()) {
             r.addUrlToCatalog(string);
         }

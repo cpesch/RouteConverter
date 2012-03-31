@@ -30,17 +30,17 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFileParser;
 import slash.navigation.catalog.domain.Catalog;
-import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.local.LocalCatalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.CategoryTreeNodeImpl;
 import slash.navigation.catalog.model.RootTreeNode;
-import slash.navigation.catalog.model.RouteComparator;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.catalog.remote.RemoteCatalog;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCategoryAction;
+import slash.navigation.converter.gui.actions.AddFileAction;
+import slash.navigation.converter.gui.actions.AddUrlAction;
 import slash.navigation.converter.gui.actions.RemoveCategoriesAction;
 import slash.navigation.converter.gui.actions.RemoveRoutesAction;
 import slash.navigation.converter.gui.actions.RenameCategoryAction;
@@ -48,7 +48,6 @@ import slash.navigation.converter.gui.actions.RenameRouteAction;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
-import slash.navigation.converter.gui.dnd.DnDHelper;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
@@ -59,9 +58,7 @@ import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.ActionManager;
-import slash.navigation.gui.Constants;
 import slash.navigation.gui.FrameAction;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -90,12 +87,12 @@ import java.util.prefs.Preferences;
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.sort;
 import static javax.swing.DropMode.ON;
-import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
+import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
+import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
@@ -103,6 +100,7 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCateg
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 import static slash.navigation.gui.Constants.startWaitCursor;
 import static slash.navigation.gui.Constants.stopWaitCursor;
+import static slash.navigation.util.RouteComments.createRouteDescription;
 
 /**
  * The browse panel of the route converter user interface.
@@ -113,7 +111,6 @@ import static slash.navigation.gui.Constants.stopWaitCursor;
 public class BrowsePanel {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
-    private static final RouteComparator routeComparator = new RouteComparator();
 
     private static final String LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE = "localCatalogRootFolder";
 
@@ -123,8 +120,8 @@ public class BrowsePanel {
     private JButton buttonAddCategory;
     private JButton buttonRenameCategory;
     private JButton buttonRemoveCategory;
-    private JButton buttonAddFile;
-    private JButton buttonAddUrl;
+    private JButton buttonAddRouteFromFile;
+    private JButton buttonAddRouteFromUrl;
     private JButton buttonRenameRoute;
     private JButton buttonRemoveRoute;
     private JButton buttonLogin;
@@ -149,26 +146,18 @@ public class BrowsePanel {
         registerAction(buttonAddCategory, "add-category");
         registerAction(buttonRenameCategory, "rename-category");
         registerAction(buttonRemoveCategory, "remove-category");
+        registerAction(buttonAddRouteFromFile, "add-route-from-file");
+        registerAction(buttonAddRouteFromUrl, "add-route-from-url");
         registerAction(buttonRenameRoute, "rename-route");
         registerAction(buttonRemoveRoute, "remove-route");
 
         actionManager.register("add-category", new AddCategoryAction(treeCategories, catalogModel));
+        actionManager.register("add-route-from-file", new AddFileAction());
+        actionManager.register("add-route-from-url", new AddUrlAction());
         actionManager.register("rename-category", new RenameCategoryAction(treeCategories, catalogModel));
         actionManager.register("remove-category", new RemoveCategoriesAction(treeCategories, catalogModel));
         actionManager.register("rename-route", new RenameRouteAction(tableRoutes, catalogModel));
         actionManager.register("remove-route", new RemoveRoutesAction(tableRoutes, catalogModel));
-
-        buttonAddFile.addActionListener(new FrameAction() {
-            public void run() {
-                addFileToCatalog();
-            }
-        });
-
-        buttonAddUrl.addActionListener(new FrameAction() {
-            public void run() {
-                addUrlToCatalog(getSelectedCategoryTreeNode(treeCategories), "");
-            }
-        });
 
         buttonLogin.addActionListener(new FrameAction() {
             public void run() {
@@ -279,7 +268,7 @@ public class BrowsePanel {
     }
 
     public JButton getDefaultButton() {
-        return buttonAddFile;
+        return buttonAddRouteFromFile;
     }
 
     private void selectTreePath(TreePath treePath) {
@@ -288,20 +277,8 @@ public class BrowsePanel {
             return;
         selectCategoryTreePath(treeCategories, treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
-        selectTreeNode(selectedCategoryTreeNode);
+        catalogModel.selectCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
-    }
-
-    private void selectTreeNode(CategoryTreeNode selected) {
-        List<Route> routes = selected.getRoutes();
-        List<RouteModel> routeModels = new ArrayList<RouteModel>();
-        if (routes != null) {
-            Route[] routesArray = routes.toArray(new Route[routes.size()]);
-            sort(routesArray, routeComparator);
-            for (Route route : routesArray)
-                routeModels.add(new RouteModel(selected, route));
-        }
-        catalogModel.getRoutesTableModel().setRoutes(routeModels);
     }
 
     private RoutesTableModel getRoutesListModel() {
@@ -312,24 +289,12 @@ public class BrowsePanel {
         return RouteConverter.getInstance().getOperator();
     }
 
-    private void addFileToCatalog() {
-        CategoryTreeNode categoryTreeNode = getSelectedCategoryTreeNode(treeCategories);
 
-        JFileChooser chooser = Constants.createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
-        chooser.setSelectedFile(RouteConverter.getInstance().getUploadRoutePreference());
-        chooser.setFileSelectionMode(FILES_ONLY);
-        chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != APPROVE_OPTION)
-            return;
-
-        final File[] selected = chooser.getSelectedFiles();
-        if (selected == null || selected.length == 0)
-            return;
-
-        RouteConverter.getInstance().setUploadRoutePreference(selected[0]);
-        addFilesToCatalog(categoryTreeNode, asList(selected));
+    private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
+        AddFileDialog addFileDialog = new AddFileDialog(catalogModel, categoryTreeNode, description, length, file);
+        addFileDialog.pack();
+        addFileDialog.restoreLocation();
+        addFileDialog.setVisible(true);
     }
 
     private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
@@ -342,7 +307,7 @@ public class BrowsePanel {
             if (parser.read(file)) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
                 if (route != null) {
-                    description = RouteComments.createRouteDescription(route);
+                    description = createRouteDescription(route);
                     length = route.getDistance();
                 }
                 showAddFileToCatalog(categoryTreeNode, description, length, file);
@@ -360,14 +325,10 @@ public class BrowsePanel {
         }
     }
 
-    public void addFilesToCatalog(List<File> files) {
-        addFilesToCatalog(getSelectedCategoryTreeNode(treeCategories), files);
-    }
-
-    protected void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
+    private void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
         if (category == null || category.getParent() == null) {
             RouteConverter r = RouteConverter.getInstance();
-            JOptionPane.showMessageDialog(r.getFrame(),
+            showMessageDialog(r.getFrame(),
                     r.getContext().getBundle().getString("add-file-category-missing"),
                     r.getFrame().getTitle(), ERROR_MESSAGE);
             return;
@@ -378,44 +339,32 @@ public class BrowsePanel {
         }
     }
 
-    public void addUrlToCatalog(String url) {
-        addUrlToCatalog(getSelectedCategoryTreeNode(treeCategories), url);
+    public void addFilesToCatalog(List<File> files) {
+        addFilesToCatalog(getSelectedCategoryTreeNode(treeCategories), files);
     }
 
-    protected void addUrlToCatalog(CategoryTreeNode category, String url) {
-        if (category.getParent() == null) {
-            RouteConverter r = RouteConverter.getInstance();
-            JOptionPane.showMessageDialog(r.getFrame(),
-                    r.getContext().getBundle().getString("add-url-category-missing"),
-                    r.getFrame().getTitle(), ERROR_MESSAGE);
-            return;
-        }
-
-        showAddUrlToCatalog(category, DnDHelper.extractDescription(url), DnDHelper.extractUrl(url));
-    }
 
     private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
-        AddUrlDialog addUrlDialog = new AddUrlDialog(getOperator(), categoryTreeNode, description, url);
+        AddUrlDialog addUrlDialog = new AddUrlDialog(catalogModel, categoryTreeNode, description, url);
         addUrlDialog.pack();
         addUrlDialog.restoreLocation();
         addUrlDialog.setVisible(true);
     }
 
-    private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
-        AddFileDialog addFileDialog = new AddFileDialog(getOperator(), categoryTreeNode, description, length, file);
-        addFileDialog.pack();
-        addFileDialog.restoreLocation();
-        addFileDialog.setVisible(true);
+    private void addUrlToCatalog(CategoryTreeNode category, String url) {
+        if (category == null || category.getParent() == null) {
+            RouteConverter r = RouteConverter.getInstance();
+            showMessageDialog(r.getFrame(),
+                    r.getContext().getBundle().getString("add-url-category-missing"),
+                    r.getFrame().getTitle(), ERROR_MESSAGE);
+            return;
+        }
+
+        showAddUrlToCatalog(category, extractDescription(url), extractUrl(url));
     }
 
-    protected void moveRoute(final List<RouteModel> routes, final CategoryTreeNode source, final CategoryTreeNode target) {
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                for (RouteModel route : routes) {
-                    source.moveRoute(route.getRoute(), target);
-                }
-            }
-        });
+    public void addUrlToCatalog(String url) {
+        addUrlToCatalog(getSelectedCategoryTreeNode(treeCategories), url);
     }
 
     {
@@ -448,7 +397,7 @@ public class BrowsePanel {
         this.$$$loadButtonText$$$(buttonRenameCategory, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
         panel1.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("categories"));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));
         browsePanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routes"));
@@ -456,9 +405,9 @@ public class BrowsePanel {
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
         browsePanel.add(panel2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonAddFile = new JButton();
-        this.$$$loadButtonText$$$(buttonAddFile, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-file"));
-        panel2.add(buttonAddFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonAddRouteFromFile = new JButton();
+        this.$$$loadButtonText$$$(buttonAddRouteFromFile, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-file"));
+        panel2.add(buttonAddRouteFromFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonRemoveRoute = new JButton();
@@ -467,9 +416,9 @@ public class BrowsePanel {
         buttonRenameRoute = new JButton();
         this.$$$loadButtonText$$$(buttonRenameRoute, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("rename"));
         panel2.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonAddUrl = new JButton();
-        this.$$$loadButtonText$$$(buttonAddUrl, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-url"));
-        panel2.add(buttonAddUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonAddRouteFromUrl = new JButton();
+        this.$$$loadButtonText$$$(buttonAddRouteFromUrl, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-route-by-url"));
+        panel2.add(buttonAddRouteFromUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonLogin = new JButton();
         this.$$$loadButtonText$$$(buttonLogin, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("login"));
         buttonLogin.setVisible(false);
@@ -546,6 +495,7 @@ public class BrowsePanel {
         return browsePanel;
     }
 
+
     private static class TableDragHandler extends TransferHandler {
         public int getSourceActions(JComponent comp) {
             return MOVE;
@@ -597,6 +547,17 @@ public class BrowsePanel {
             });
         }
 
+
+        private void moveRoutes(final List<RouteModel> routes, final CategoryTreeNode target) {
+            catalogModel.moveRoutes(routes, target, new Runnable() {
+                public void run() {
+                    TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(target));
+                    selectCategoryTreePath(treeCategories, treePath);
+                    // TODO might want to select the moved routes
+                }
+            });
+        }
+
         @SuppressWarnings("unchecked")
         public boolean importData(TransferSupport support) {
             JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
@@ -617,8 +578,7 @@ public class BrowsePanel {
                     Object data = t.getTransferData(routeFlavor);
                     if (data != null) {
                         List<RouteModel> routes = (List<RouteModel>) data;
-                        CategoryTreeNode source = getSelectedCategoryTreeNode(treeCategories);
-                        moveRoute(routes, source, target);
+                        moveRoutes(routes, target);
                         return true;
                     }
                 }

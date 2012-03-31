@@ -27,6 +27,7 @@ import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
 
 import javax.swing.tree.TreeModel;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -38,7 +39,9 @@ import java.util.List;
 public interface CatalogModel {
     CategoryTreeModel getCategoryTreeModel();
     RoutesTableModel getRoutesTableModel();
-    
+
+    void selectCategory(CategoryTreeNode category);
+
     void addCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable);
     void renameCategory(CategoryTreeNode category, String name);
     void moveCategories(List<CategoryTreeNode> categories, CategoryTreeNode parent, Runnable invokeLaterRunnable);
@@ -46,6 +49,10 @@ public interface CatalogModel {
     void removeCategories(List<CategoryTreeNode> categories);
     void removeCategories(List<CategoryTreeNode> parents, List<String> names);
 
+    void addRouteFromFile(CategoryTreeNode parent, String description, File file);
+    void addRouteFromUrl(CategoryTreeNode category, String description, String url);
     void renameRoute(RouteModel route, String name);
+    void moveRoutes(List<RouteModel> routes, CategoryTreeNode parent, Runnable invokeLaterRunnable);
+    void moveRoutes(List<RouteModel> routes, List<CategoryTreeNode> parents, Runnable invokeLaterRunnable);
     void removeRoutes(List<RouteModel> routes);
 }

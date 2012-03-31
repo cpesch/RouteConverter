@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.undo;
 
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.RouteModel;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -29,39 +30,45 @@ import javax.swing.undo.UndoableEdit;
 import java.util.List;
 
 /**
- * Acts as a {@link UndoableEdit} for moving {@link CategoryTreeNode}s of a {@link UndoCatalogModel}.
+ * Acts as a {@link UndoableEdit} for moving {@link RouteModel}s of a {@link UndoCatalogModel}.
  *
  * @author Christian Pesch
  */
 
 class MoveRoutes extends AbstractUndoableEdit {
     private final UndoCatalogModel catalogModel;
-    private final List<CategoryTreeNode> categories;
+    private final List<RouteModel> routes;
     private final List<CategoryTreeNode> oldParents;
     private final List<CategoryTreeNode> newParents;
 
-    MoveRoutes(UndoCatalogModel catalogModel, List<CategoryTreeNode> categories, List<CategoryTreeNode> oldParents, List<CategoryTreeNode> newParents) {
+    MoveRoutes(UndoCatalogModel catalogModel, List<RouteModel> routes, List<CategoryTreeNode> oldParents, List<CategoryTreeNode> newParents) {
         this.catalogModel = catalogModel;
-        this.categories = categories;
+        this.routes = routes;
         this.oldParents = oldParents;
         this.newParents = newParents;
     }
 
     public String getUndoPresentationName() {
-        return "move-category-undo";
+        return "move-route-undo";
     }
 
     public String getRedoPresentationName() {
-        return "move-category-redo";
+        return "move-route-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        catalogModel.moveCategories(categories, oldParents, null, false);
+        catalogModel.moveRoutes(routes, oldParents, new Runnable() {
+            public void run() {
+                for (CategoryTreeNode newParent : newParents) {
+                    catalogModel.selectCategory(newParent);
+                }
+            }
+        }, false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.moveCategories(categories, newParents, null, false);
+        catalogModel.moveRoutes(routes, newParents, null, false);
     }
 }

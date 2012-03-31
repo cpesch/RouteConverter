@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.RouteModel;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -75,6 +76,14 @@ public class JTreeHelper {
         List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(categories.size());
         for (CategoryTreeNode categoryTreeNode : categories) {
             parents.add((CategoryTreeNode) categoryTreeNode.getParent());
+        }
+        return parents;
+    }
+
+    public static List<CategoryTreeNode> asParentsFromRoutes(List<RouteModel> routes) {
+        List<CategoryTreeNode> parents = new ArrayList<CategoryTreeNode>(routes.size());
+        for (RouteModel routeModel : routes) {
+            parents.add(routeModel.getCategory());
         }
         return parents;
     }

@@ -23,33 +23,34 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.Transfer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.text.MessageFormat;
+import java.net.URL;
 import java.util.ResourceBundle;
 
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.text.MessageFormat.format;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
 
 /**
- * Dialog to addChild url to RouteService
+ * Dialog to add an {@link URL} to a catalog
  *
  * @author Christian Pesch
  */
 
 public class AddUrlDialog extends SimpleDialog {
-    private final RouteServiceOperator operator;
-    private final CategoryTreeNode categoryTreeNode;
+    private final CatalogModel catalogModel;
+    private final CategoryTreeNode category;
     private JPanel contentPane;
     private JLabel labelLabel;
     private JTextField textFieldDescription;
@@ -58,17 +59,17 @@ public class AddUrlDialog extends SimpleDialog {
     private JButton buttonCancel;
     private JLabel labelResult;
 
-    public AddUrlDialog(RouteServiceOperator operator,
-                        CategoryTreeNode categoryTreeNode, String description, String url) {
+    public AddUrlDialog(CatalogModel catalogModel, CategoryTreeNode category,
+                        String description, String url) {
         super(RouteConverter.getInstance().getFrame(), "add-url");
-        this.operator = operator;
-        this.categoryTreeNode = categoryTreeNode;
+        this.catalogModel = catalogModel;
+        this.category = category;
         setTitle(RouteConverter.getBundle().getString("add-url-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonAdd);
 
-        labelLabel.setText(MessageFormat.format(RouteConverter.getBundle().getString("add-url-label"), categoryTreeNode.getName()));
+        labelLabel.setText(format(RouteConverter.getBundle().getString("add-url-label"), category.getName()));
         textFieldDescription.setText(description);
         textFieldUrl.setText(url);
 
@@ -95,15 +96,7 @@ public class AddUrlDialog extends SimpleDialog {
             public void run() {
                 cancel();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-    }
-
-    void addRoute(final CategoryTreeNode category, final String description, final String url) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                category.addRoute(description, url);
-            }
-        });
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void addUrl() {
@@ -121,7 +114,8 @@ public class AddUrlDialog extends SimpleDialog {
             return;
         }
 
-        addRoute(categoryTreeNode, description, url);
+        catalogModel.addRouteFromUrl(category, description, url);
+
         labelResult.setText("Successfully added url!"); // TODO make nicer
         pack();
         dispose();

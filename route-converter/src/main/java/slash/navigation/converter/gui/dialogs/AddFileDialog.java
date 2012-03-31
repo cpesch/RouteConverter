@@ -23,38 +23,36 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.Files;
-import slash.common.io.Transfer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
-import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Files.createReadablePath;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.trim;
 
 /**
- * Dialog to addChild file to RouteService
+ * Dialog to add a {@link File} to a catalog
  *
  * @author Christian Pesch
  */
 
 public class AddFileDialog extends SimpleDialog {
-    private final RouteServiceOperator operator;
-    private final CategoryTreeNode categoryTreeNode;
+    private final CatalogModel catalogModel;
+    private final CategoryTreeNode category;
     private final File file;
     private JPanel contentPane;
     private JLabel labelLabel;
@@ -65,11 +63,11 @@ public class AddFileDialog extends SimpleDialog {
     private JButton buttonCancel;
     private JLabel labelResult;
 
-    public AddFileDialog(RouteServiceOperator operator,
-                         CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
+    public AddFileDialog(CatalogModel catalogModel, CategoryTreeNode categoryTreeNode,
+                         String description, Double length, File file) {
         super(RouteConverter.getInstance().getFrame(), "add-file");
-        this.operator = operator;
-        this.categoryTreeNode = categoryTreeNode;
+        this.catalogModel = catalogModel;
+        this.category = categoryTreeNode;
         this.file = file;
         setTitle(RouteConverter.getBundle().getString("add-file-title"));
         setContentPane(contentPane);
@@ -104,15 +102,7 @@ public class AddFileDialog extends SimpleDialog {
             public void run() {
                 cancel();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-    }
-
-    void addRoute(final CategoryTreeNode category, final String description, final File file) {
-        operator.executeOnRouteService(new RouteServiceOperator.Operation() {
-            public void run() throws IOException {
-                category.addRoute(description, file);
-            }
-        });
+        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void addFile() {
@@ -123,7 +113,8 @@ public class AddFileDialog extends SimpleDialog {
             return;
         }
 
-        addRoute(categoryTreeNode, description, file);
+        catalogModel.addRouteFromFile(category, description, file);
+
         labelResult.setText("Successfully added file!"); // TODO make nicer
         pack();
         dispose();

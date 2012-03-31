@@ -20,57 +20,43 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.domain.Category;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
+import java.io.File;
 
-import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.showInputDialog;
-import static slash.common.io.Transfer.trim;
-import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
-import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.FILES_ONLY;
+import static slash.navigation.gui.Constants.createJFileChooser;
 
 /**
- * {@link Action} that adds a category to the {@link CatalogModel}.
+ * {@link Action} that adds a {@link File} to a {@link Category} to the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
 
 public class AddFileAction extends FrameAction {
-    private final JTree tree;
-    private final CatalogModel catalogModel;
-
-    public AddFileAction(JTree tree, CatalogModel catalogModel) {
-        this.tree = tree;
-        this.catalogModel = catalogModel;
-    }
-
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
 
-        final CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
-        if (category == null)
+        JFileChooser chooser = createJFileChooser();
+        chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
+        chooser.setSelectedFile(r.getUploadRoutePreference());
+        chooser.setFileSelectionMode(FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
+        int open = chooser.showOpenDialog(r.getFrame());
+        if (open != APPROVE_OPTION)
             return;
 
-        final String name = showInputDialog(r.getFrame(),
-                format(RouteConverter.getBundle().getString("add-category-label"), category.getName()),
-                r.getFrame().getTitle(), QUESTION_MESSAGE);
-        if (trim(name) == null)
+        File[] selected = chooser.getSelectedFiles();
+        if (selected == null || selected.length == 0)
             return;
 
-        catalogModel.addCategories(asList(category), asList(name),
-                new Runnable() {
-                    public void run() {
-                        TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(catalogModel.getCategoryTreeModel().getChild(category, name)));
-                        selectCategoryTreePath(tree, treePath);
-                    }
-                });
-
+        r.setUploadRoutePreference(selected[0]);
+        r.addFilesToCatalog(asList(selected));
     }
 }

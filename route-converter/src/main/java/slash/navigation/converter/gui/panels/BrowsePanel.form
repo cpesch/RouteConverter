@@ -47,7 +47,7 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="categories"/>
+          <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="routes"/>
         </properties>
       </component>
       <component id="6f9d7" class="javax.swing.JLabel">
@@ -66,7 +66,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2f742" class="javax.swing.JButton" binding="buttonAddFile">
+          <component id="2f742" class="javax.swing.JButton" binding="buttonAddRouteFromFile">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -95,7 +95,7 @@
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="rename"/>
             </properties>
           </component>
-          <component id="4b241" class="javax.swing.JButton" binding="buttonAddUrl">
+          <component id="4b241" class="javax.swing.JButton" binding="buttonAddRouteFromUrl">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>

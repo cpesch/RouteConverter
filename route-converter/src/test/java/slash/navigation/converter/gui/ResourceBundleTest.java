@@ -24,16 +24,17 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.gui.Constants.*;
 
 public class ResourceBundleTest {
-    private List<Locale> LOCALES = Arrays.asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
+    private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,
             SERBIA, SLOVAKIA, SPAIN, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-            return Arrays.asList(new Locale(locale.getLanguage()));
+            return asList(new Locale(locale.getLanguage()));
         }
 
         public Locale getFallbackLocale(String baseName, Locale locale) {

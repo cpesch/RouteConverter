@@ -26,15 +26,10 @@ import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
-import java.io.File;
-
-import static java.util.Arrays.asList;
-import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JFileChooser.FILES_ONLY;
-import static slash.navigation.gui.Constants.createJFileChooser;
+import java.net.URL;
 
 /**
- * {@link Action} that adds a {@link File} to a {@link Category} to the {@link CatalogModel}.
+ * {@link Action} that adds an {@link URL} to a {@link Category} to the {@link CatalogModel}.
  *
  * @author Christian Pesch
  */
@@ -42,21 +37,6 @@ import static slash.navigation.gui.Constants.createJFileChooser;
 public class AddUrlAction extends FrameAction {
     public void run() {
         RouteConverter r = RouteConverter.getInstance();
-
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("add-file"));
-        chooser.setSelectedFile(r.getUploadRoutePreference());
-        chooser.setFileSelectionMode(FILES_ONLY);
-        chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION)
-            return;
-
-        File[] selected = chooser.getSelectedFiles();
-        if (selected == null || selected.length == 0)
-            return;
-
-        r.setUploadRoutePreference(selected[0]);
-        r.addFilesToCatalog(asList(selected));
+        r.addUrlToCatalog("");
     }
 }

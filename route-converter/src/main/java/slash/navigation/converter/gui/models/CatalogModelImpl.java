@@ -21,17 +21,22 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.RouteComparator;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
 
 import javax.swing.*;
 import javax.swing.tree.TreeModel;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.sort;
 import static slash.navigation.converter.gui.helper.JTreeHelper.asNames;
 import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
 
@@ -42,6 +47,7 @@ import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
  */
 
 public class CatalogModelImpl implements CatalogModel {
+    private static final RouteComparator routeComparator = new RouteComparator();
     private final CategoryTreeModel categoryTreeModel;
     private final RoutesTableModel routesTableModel = new RoutesTableModel();
     private final RouteServiceOperator operator;
@@ -57,6 +63,18 @@ public class CatalogModelImpl implements CatalogModel {
 
     public RoutesTableModel getRoutesTableModel() {
         return routesTableModel;
+    }
+
+    public void selectCategory(CategoryTreeNode category) {
+        List<Route> routes = category.getRoutes();
+        List<RouteModel> routeModels = new ArrayList<RouteModel>();
+        if (routes != null) {
+            Route[] routesArray = routes.toArray(new Route[routes.size()]);
+            sort(routesArray, routeComparator);
+            for (Route route : routesArray)
+                routeModels.add(new RouteModel(category, route));
+        }
+        getRoutesTableModel().setRoutes(routeModels);
     }
 
     public void addCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
@@ -173,6 +191,20 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
+    public void addRouteFromFile(CategoryTreeNode parent, String description, File file) {
+        //To change body of implemented methods use File | Settings | File Templates.
+        // TODO move me Route route = getCategory().createRoute(description, file);
+        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
+        // TODO move me return route;
+    }
+
+    public void addRouteFromUrl(CategoryTreeNode category, String description, String url) {
+        //To change body of implemented methods use File | Settings | File Templates.
+        // TODO move me Route route = getCategory().createRoute(description, fileUrl);
+        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
+        // TODO move me return route;
+   }
+
     public void renameRoute(final RouteModel route, final String name) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
             public String getName() {
@@ -185,6 +217,43 @@ public class CatalogModelImpl implements CatalogModel {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         routesTableModel.updateRoute(route);
+                    }
+                });
+            }
+        });
+    }
+
+    public void moveRoutes(List<RouteModel> routes, CategoryTreeNode parent, Runnable invokeLaterRunnable) {
+        moveRoutes(routes, asParents(parent, routes.size()), invokeLaterRunnable);
+    }
+
+    public void moveRoutes(final List<RouteModel> routes, final List<CategoryTreeNode> parents, final Runnable invokeLaterRunnable) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "MoveRoutes";
+            }
+
+            public void run() throws IOException {
+                for (int i = 0; i < routes.size(); i++) {
+                    RouteModel route = routes.get(i);
+                    CategoryTreeNode parent = parents.get(i);
+                    CategoryTreeNode category = route.getCategory();
+
+                    if (category.isLocal() && parent.isRemote())
+                        throw new IOException("cannot move local route " + route.getName() + " to remote parent " + parent.getName());
+                    if (category.isRemote() && parent.isLocal())
+                        throw new IOException("cannot move remote route " + route.getName() + " to local parent " + parent.getName());
+
+                    route.getRoute().update(parent.getCategory().getUrl(), route.getDescription() != null ? route.getDescription() : route.getName());
+                }
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        for (CategoryTreeNode parent : parents) {
+                            selectCategory(parent);
+                        }
+                        if (invokeLaterRunnable != null)
+                            invokeLaterRunnable.run();
                     }
                 });
             }
