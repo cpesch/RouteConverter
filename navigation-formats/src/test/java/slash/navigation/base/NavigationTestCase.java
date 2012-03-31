@@ -558,6 +558,7 @@ public abstract class NavigationTestCase extends TestCase {
         String comment = position.getComment();
         if (comment == null)
             return null;
+        comment = comment.replaceAll("  ", " ");
         return trim(comment, 45);
     }
 
