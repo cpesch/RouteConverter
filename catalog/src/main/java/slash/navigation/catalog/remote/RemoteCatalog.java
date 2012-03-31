@@ -93,9 +93,8 @@ public class RemoteCatalog implements Catalog {
     private static String createCategoryXml(String parentUrl, String name) {
         MetadataType metadataType = gpxFactory.createMetadataType();
         metadataType.setName(asUtf8(name));
-        if (parentUrl != null) {
+        if (parentUrl != null)
             metadataType.setKeywords(asUtf8(decodeUri(parentUrl)));
-        }
 
         GpxType gpxType = createGpxType();
         gpxType.setMetadata(metadataType);
@@ -104,8 +103,10 @@ public class RemoteCatalog implements Catalog {
 
     private static String createRouteXml(String category, String description, String fileUrl) {
         MetadataType metadataType = gpxFactory.createMetadataType();
-        metadataType.setDesc(asUtf8(description));
-        metadataType.setKeywords(asUtf8(decodeUri(category)));
+        if (description != null)
+            metadataType.setDesc(asUtf8(description));
+        if (category != null)
+            metadataType.setKeywords(asUtf8(decodeUri(category)));
 
         GpxType gpxType = createGpxType();
         gpxType.setMetadata(metadataType);

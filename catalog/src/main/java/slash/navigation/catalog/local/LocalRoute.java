@@ -72,8 +72,8 @@ public class LocalRoute implements Route {
     }
 
     public void update(String categoryUrl, String description) throws IOException {
-        File category = categoryUrl != null ? Files.toFile(new URL(categoryUrl)) : file.getParentFile();
-        File newName = new File(category, description != null ? description : file.getName());
+        File category = Files.toFile(new URL(categoryUrl));
+        File newName = new File(category, description);
         if(!file.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", file, newName));
         file = newName;
@@ -84,20 +84,17 @@ public class LocalRoute implements Route {
             throw new IOException(format("cannot delete %s", file));
     }
 
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         LocalRoute that = (LocalRoute) o;
 
-        return catalog.equals(that.catalog) && file.equals(that.file);
+        return file.equals(that.file);
     }
 
     public int hashCode() {
-        int result = catalog.hashCode();
-        result = 31 * result + file.hashCode();
-        return result;
+        return file.hashCode();
     }
 
     public String toString() {

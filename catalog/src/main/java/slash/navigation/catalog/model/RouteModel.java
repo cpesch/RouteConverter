@@ -56,4 +56,13 @@ public class RouteModel {
             return "?";
         }
     }
+
+    public String getDescription() {
+        try {
+            return getRoute().getDescription();
+        } catch (Exception e) {
+            log.severe("Cannot get description: " + e.getMessage());
+            return "?";
+        }
+    }
 }

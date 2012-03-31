@@ -120,7 +120,6 @@ public class RemoteRoute implements Route {
         invalidate();
     }
 
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -138,7 +137,7 @@ public class RemoteRoute implements Route {
     }
 
     public String toString() {
-        return super.toString() + "[url=" + getUrl() + ", name=" + name + ", creator=" + creator +
-                ", description=" + description + ", fromCategory=" + fromCategory + ", category=" + category + "]";
+        return super.toString() + "[category=" + category + ", url=" + url +
+                ", name=" + name + ", creator=" + creator + ", description=" + description + ", fromCategory=" + fromCategory + "]";
     }
 }
