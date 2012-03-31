@@ -127,6 +127,7 @@ public class BatchPositionAugmenter {
                                     // range operations outweights the possible optimization
                                     operation.run(index, position);
                                 } catch (Exception e) {
+                                    e.printStackTrace();
                                     log.warning(format("Error while running operation %s on position %d: %s", operation, index, e));
                                     lastException[0] = e;
                                 }
