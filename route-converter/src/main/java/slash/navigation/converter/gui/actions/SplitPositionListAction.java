@@ -55,7 +55,7 @@ public class SplitPositionListAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
-            int routeInsertIndex = formatAndRoutesModel.getSize();
+            int routeInsertIndex = formatAndRoutesModel.getIndex(selectedRoute) + 1;
 
             for (int i = selectedRows.length - 1; i >= 0; i--) {
                 int fromIndex = selectedRows[i];
