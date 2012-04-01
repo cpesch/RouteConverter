@@ -49,8 +49,7 @@ public interface CatalogModel {
     void removeCategories(List<CategoryTreeNode> categories);
     void removeCategories(List<CategoryTreeNode> parents, List<String> names);
 
-    void addRouteFromFile(CategoryTreeNode category, String description, File file);
-    void addRouteFromUrl(CategoryTreeNode category, String description, String url);
+    void addRoute(CategoryTreeNode category, String description, File file, String url, AddRouteCallback callback);
     void renameRoute(RouteModel route, String name);
     void moveRoutes(List<RouteModel> routes, CategoryTreeNode parent, Runnable invokeLaterRunnable);
     void moveRoutes(List<RouteModel> routes, List<CategoryTreeNode> parents, Runnable invokeLaterRunnable);

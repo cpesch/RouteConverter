@@ -26,6 +26,7 @@ import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
 import slash.navigation.converter.gui.helper.RouteServiceOperator;
+import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
 import slash.navigation.gui.UndoManager;
@@ -115,12 +116,14 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new RemoveCategories(this, categories, names));
     }
 
-    public void addRouteFromFile(CategoryTreeNode category, String description, File file) {
-        // TODO To change body of implemented methods use File | Settings | File Templates.
+    public void addRoute(CategoryTreeNode category, String description, File file, String url, AddRouteCallback callback) {
+        addRoute(category, description, file, url, callback, true);
     }
 
-    public void addRouteFromUrl(CategoryTreeNode category, String description, String url) {
-        // TODO To change body of implemented methods use File | Settings | File Templates.
+    void addRoute(CategoryTreeNode category, String description, File file, String url, AddRouteCallback callback, boolean trackUndo) {
+        delegate.addRoute(category, description, file, url, callback);
+        if (trackUndo)
+            undoManager.addEdit(new AddRoute(this, category, description, file, url, callback));
     }
 
     public void renameRoute(RouteModel route, String name) {
@@ -151,7 +154,12 @@ public class UndoCatalogModel implements CatalogModel {
     }
 
     public void removeRoutes(List<RouteModel> routes) {
-        // TODO implement undo for removing routes
+        removeRoutes(routes, true);
+    }
+
+    void removeRoutes(List<RouteModel> routes, boolean trackUndo) {
         delegate.removeRoutes(routes);
+        if (trackUndo)
+            undoManager.addEdit(new RemoveRoutes(this, routes));
     }
 }

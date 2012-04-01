@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.catalog.model.CategoryTreeNode;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
 
@@ -114,7 +115,7 @@ public class AddUrlDialog extends SimpleDialog {
             return;
         }
 
-        catalogModel.addRouteFromUrl(category, description, url);
+        catalogModel.addRoute(category, description, null, url, new AddRouteCallback());
 
         labelResult.setText("Successfully added url!"); // TODO make nicer
         pack();

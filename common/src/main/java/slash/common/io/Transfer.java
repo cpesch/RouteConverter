@@ -244,7 +244,7 @@ public class Transfer {
         if (trimmed != null) {
             trimmed = trimmed.replaceAll(",", ".");
             try {
-                return parseDouble(trimmed);
+                return Double.parseDouble(trimmed);
             } catch (NumberFormatException e) {
                 if (trimmed.equals("\u221e"))
                     return POSITIVE_INFINITY;
@@ -270,7 +270,7 @@ public class Transfer {
         if (trimmed != null) {
             if (trimmed.startsWith("+"))
                 trimmed = trimmed.substring(1);
-            return parseInt(trimmed);
+            return Integer.parseInt(trimmed);
         } else
             return null;
     }

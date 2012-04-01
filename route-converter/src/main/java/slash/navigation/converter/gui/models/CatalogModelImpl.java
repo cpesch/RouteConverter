@@ -191,19 +191,25 @@ public class CatalogModelImpl implements CatalogModel {
         });
     }
 
-    public void addRouteFromFile(CategoryTreeNode category, String description, File file) {
-        //To change body of implemented methods use File | Settings | File Templates.
-        // TODO move me Route route = getCategory().createRoute(description, file);
-        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
-        // TODO move me return route;
-    }
+    public void addRoute(final CategoryTreeNode category, final String description, final File file, final String url, final AddRouteCallback callback) {
+        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+            public String getName() {
+                return "AddRoute";
+            }
 
-    public void addRouteFromUrl(CategoryTreeNode category, String description, String url) {
-        //To change body of implemented methods use File | Settings | File Templates.
-        // TODO move me Route route = getCategory().createRoute(description, fileUrl);
-        // TODO move me getRoutes().addRoute(new RouteModel(this, route));
-        // TODO move me return route;
-   }
+            public void run() throws IOException {
+                Route route = file != null ? category.getCategory().createRoute(description, file) : category.getCategory().createRoute(description, url);
+                final RouteModel routeModel = new RouteModel(category, route);
+                callback.setRoute(routeModel);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        routesTableModel.addRoute(routeModel);
+                    }
+                });
+            }
+        });
+    }
 
     public void renameRoute(final RouteModel route, final String name) {
         operator.executeOperation(new RouteServiceOperator.NewOperation() {
