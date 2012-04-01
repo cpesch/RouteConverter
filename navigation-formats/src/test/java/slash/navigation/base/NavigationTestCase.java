@@ -284,8 +284,8 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareLongitudeAndLatitude(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition) {
         if (isBidirectional(sourceFormat, targetFormat, sourcePosition, targetPosition)) {
-            assertEquals("Longitude " + index + " does not match", sourcePosition.getLongitude(), targetPosition.getLongitude());
-            assertEquals("Latitude " + index + " does not match", sourcePosition.getLatitude(), targetPosition.getLatitude());
+            assertEquals("Longitude " + index + " does not match", roundFraction(sourcePosition.getLongitude(), 7), roundFraction(targetPosition.getLongitude(), 7));
+            assertEquals("Latitude " + index + " does not match", roundFraction(sourcePosition.getLatitude(), 7), roundFraction(targetPosition.getLatitude(), 7));
         } else if (isReallyUnprecise(sourceFormat) || isReallyUnprecise(targetFormat)) {
             // skip silly from.ov2 in tt poi coordinate
             if (targetPosition.getLongitude() != 10.032 && targetPosition.getLongitude() != 11.0206) {
@@ -316,7 +316,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof ColumbusV900Format) {
                 assertEquals(sourcePosition.getElevation().intValue(), targetPosition.getElevation().intValue());
             } else
-                assertEquals(sourcePosition.getElevation(), targetPosition.getElevation());
+                assertEquals(roundFraction(sourcePosition.getElevation(), 1), roundFraction(targetPosition.getElevation(), 1));
 
         } else if (sourceFormat instanceof OziExplorerReadFormat) {
             assertNull(targetPosition.getElevation());
@@ -390,7 +390,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
         } else if (targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
                    (sourceFormat instanceof Iblue747Format && targetFormat instanceof Iblue747Format)) {
-            assertEquals("Heading " + index + " does not match", targetHeading, sourceHeading);
+            assertEquals("Heading " + index + " does not match", roundFraction(targetHeading, 1), roundFraction(sourceHeading, 1));
         } else if (targetFormat instanceof GoPalTrackFormat ||
                    (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof Iblue747Format)) {
             assertNull(sourceHeading);
@@ -723,7 +723,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(RouteCharacteristics.Track) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
-                assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
+                assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 0), roundFraction(targetPosition.getSpeed(), 0));
             } else if ((sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) ||
                        (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format)) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
