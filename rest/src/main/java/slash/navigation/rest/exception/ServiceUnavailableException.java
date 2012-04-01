@@ -42,4 +42,8 @@ public class ServiceUnavailableException extends IOException {
     public String getServiceUrl() {
         return serviceUrl;
     }
+
+    public String toString() {
+        return super.toString() + "[serviceName=" + getServiceName() + ", serviceUrl=" + getServiceUrl() + "]";
+    }
 }

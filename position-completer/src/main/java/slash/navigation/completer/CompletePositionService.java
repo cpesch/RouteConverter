@@ -54,15 +54,42 @@ public class CompletePositionService {
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {
         Double elevation = null;
-        if (preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_HGT_FILES, true))
-            elevation = hgtFiles.getElevationFor(longitude, latitude);
-        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS, true))
-            elevation = googleMapsService.getElevationFor(longitude, latitude);
-        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GEONAMES, true))
-            elevation = geoNamesService.getElevationFor(longitude, latitude);
-        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS, true))
-            elevation = earthToolsService.getElevationFor(longitude, latitude);
-        return elevation != null ? formatElevation(elevation).doubleValue() : null;
+        Exception exception = null;
+
+        if (preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_HGT_FILES, true)) {
+            try {
+                elevation = hgtFiles.getElevationFor(longitude, latitude);
+            } catch (Exception e) {
+                exception = e;
+            }
+        }
+        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS, true)) {
+            try {
+                elevation = googleMapsService.getElevationFor(longitude, latitude);
+            } catch (Exception e) {
+                exception = e;
+            }
+        }
+        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GEONAMES, true)) {
+            try {
+                elevation = geoNamesService.getElevationFor(longitude, latitude);
+            } catch (Exception e) {
+                exception = e;
+            }
+        }
+        if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS, true)) {
+            try {
+                elevation = earthToolsService.getElevationFor(longitude, latitude);
+            } catch (Exception e) {
+                exception = e;
+            }
+        }
+
+        if(elevation != null)
+            return formatElevation(elevation).doubleValue();
+        if(exception != null)
+            throw new IOException(exception);
+        return null;
     }
 
     public String getCommentFor(double longitude, double latitude) throws IOException {
