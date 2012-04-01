@@ -113,11 +113,11 @@ public class TransferTest {
         assertEquals(new BigDecimal("1.05"), formatBigDecimal(1.05, 5));
         assertEquals(new BigDecimal("1.005"), formatBigDecimal(1.005, 5));
         assertEquals(new BigDecimal("1.00004"), formatBigDecimal(1.00004, 5));
-        assertEquals(new BigDecimal("1.000044"), formatBigDecimal(1.000044, 5));
-        assertEquals(new BigDecimal("1.000045"), formatBigDecimal(1.000045, 5));
+        assertEquals(new BigDecimal("1.00044"), formatBigDecimal(1.00044, 5));
+        assertEquals(new BigDecimal("1.00045"), formatBigDecimal(1.00045, 5));
         assertEquals(new BigDecimal("1.00005"), formatBigDecimal(1.00005, 5));
-        assertEquals(new BigDecimal("1.000004"), formatBigDecimal(1.000004, 5));
-        assertEquals(new BigDecimal("1.000005"), formatBigDecimal(1.000005, 5));
+        assertEquals(new BigDecimal("1.000004"), formatBigDecimal(1.000004, 6));
+        assertEquals(new BigDecimal("1.000005"), formatBigDecimal(1.000005, 6));
     }
 
     @Test
