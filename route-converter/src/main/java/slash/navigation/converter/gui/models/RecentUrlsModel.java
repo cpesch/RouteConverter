@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.Math.min;
+
 /**
  * Collects the last opened URLs.
  *
@@ -42,7 +44,7 @@ public class RecentUrlsModel {
     private static final Logger log = Logger.getLogger(RecentUrlsModel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RecentUrlsModel.class);
     private static final String RECENT_URLS_PREFERENCE = "recentUrls";
-    private static final String RECENT_PREFERENCE = "recent";
+    private static final String RECENT_URL_PREFERENCE = "recentUrl";
     private static final String MAXIMUM_RECENT_URL_COUNT_PREFERENCE = "maximumRecentUrlCount";
     private static final char FIRST_CHAR = 'a';
 
@@ -68,7 +70,7 @@ public class RecentUrlsModel {
 
     private Character findCharForUrl(String recentUrls, String url) {
         for(char c : recentUrls.toCharArray()) {
-            String found = preferences.get(RECENT_PREFERENCE + c, null);
+            String found = preferences.get(RECENT_URL_PREFERENCE + c, null);
             if (found != null && found.equals(url)) {
                 return c;
             }
@@ -83,7 +85,7 @@ public class RecentUrlsModel {
             recentUrls = recentUrls.replaceAll(character.toString(), "");
         } else {
             character = getNextCharacter(recentUrls);
-            preferences.put(RECENT_PREFERENCE + character, url.toExternalForm());
+            preferences.put(RECENT_URL_PREFERENCE + character, url.toExternalForm());
         }
         recentUrls = recentUrls + character;
         if (recentUrls.length() > getMaximumCount())
@@ -96,7 +98,7 @@ public class RecentUrlsModel {
         List<URL> result = new ArrayList<URL>();
         String recentUrls = preferences.get(RECENT_URLS_PREFERENCE, "");
         for(char c : recentUrls.toCharArray()) {
-            String urlString = preferences.get(RECENT_PREFERENCE + c, null);
+            String urlString = preferences.get(RECENT_URL_PREFERENCE + c, null);
             if (urlString != null) {
                 try {
                     URL url = new URL(urlString);
@@ -108,12 +110,12 @@ public class RecentUrlsModel {
                 }
             }
         }
-        return result.subList(0, Math.min(result.size(), getMaximumCount()));
+        return result.subList(0, min(result.size(), getMaximumCount()));
     }
 
     public void removeAllUrls() {
         for (char c = FIRST_CHAR; c < FIRST_CHAR + getMaximumCount(); c++)
-            preferences.remove(RECENT_PREFERENCE + c);
+            preferences.remove(RECENT_URL_PREFERENCE + c);
         preferences.remove(RECENT_URLS_PREFERENCE);
     }
 

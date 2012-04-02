@@ -310,6 +310,14 @@ public final class NavigationFormats {
         return formats;
     }
 
+    public static List<NavigationFormat> getWriteFormatsWithPreferredFormats(List<NavigationFormat> preferredFormats) {
+        List<NavigationFormat> formats = new ArrayList<NavigationFormat>(getWriteFormatsSortedByName());
+        formats.removeAll(preferredFormats);
+        formats.addAll(0, preferredFormats);
+        return formats;
+    }
+
+
     private static String removeDigits(String string) {
         StringBuilder buffer = new StringBuilder(string);
         for (int i = 0; i < buffer.length(); i++) {

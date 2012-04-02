@@ -82,6 +82,7 @@ import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
+import slash.navigation.converter.gui.models.RecentFormatsModel;
 import slash.navigation.converter.gui.models.RecentUrlsModel;
 import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
@@ -152,7 +153,9 @@ import static slash.common.io.Files.toFile;
 import static slash.common.io.Files.toUrls;
 import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
+import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
 import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferredFormat;
+import static slash.navigation.base.NavigationFormats.getWriteFormatsWithPreferredFormats;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
@@ -175,6 +178,7 @@ public class ConvertPanel {
 
     private UrlDocument urlModel = new UrlDocument();
     private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
+    private RecentFormatsModel recentFormatsModel = new RecentFormatsModel();
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
     private LengthCalculator lengthCalculator;
@@ -441,7 +445,7 @@ public class ConvertPanel {
             }
         }
 
-        // start with a non-existant file
+        // start with a non-existent file
         if (copy.size() == 0) {
             newFile();
             return;
@@ -735,6 +739,7 @@ public class ConvertPanel {
                 new NavigationFileParser().write(route, format, duplicateFirstPosition, true, targets);
             }
             formatAndRoutesModel.setModified(false);
+            recentFormatsModel.addFormat(format);
             log.info("Saved: " + targetsAsString);
 
             if (!exportSelectedRoute) {
@@ -937,7 +942,7 @@ public class ConvertPanel {
     }
 
     private void setReadFormatFileFilters(JFileChooser chooser) {
-        setFormatFileFilters(chooser, NavigationFormats.getReadFormatsSortedByName(),
+        setFormatFileFilters(chooser, getReadFormatsSortedByName(),
                 RouteConverter.getInstance().getOpenFormatPreference());
     }
 
@@ -947,7 +952,7 @@ public class ConvertPanel {
     }
 
     private void setWriteFormatFileFilters(JFileChooser chooser) {
-        setFormatFileFilters(chooser, NavigationFormats.getWriteFormatsSortedByName(),
+        setFormatFileFilters(chooser, getWriteFormatsWithPreferredFormats(recentFormatsModel.getFormats()),
                 RouteConverter.getInstance().getSaveFormatPreference());
     }
 
