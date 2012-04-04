@@ -40,6 +40,4 @@ public interface CategoryTreeNode extends MutableTreeNode {
     Category getCategory();
     String getName();
     List<Route> getRoutes();
-
-    void clearChildren();
 }

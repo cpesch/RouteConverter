@@ -21,9 +21,11 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.catalog.domain.Catalog;
+import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 import slash.navigation.catalog.model.CategoryTreeModel;
 import slash.navigation.catalog.model.CategoryTreeNode;
+import slash.navigation.catalog.model.CategoryTreeNodeImpl;
 import slash.navigation.catalog.model.RouteComparator;
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.catalog.model.RoutesTableModel;
@@ -84,18 +86,19 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
+                final List<CategoryTreeNode> categories = new ArrayList<CategoryTreeNode>();
                 for (int i = 0; i < parents.size(); i++) {
-                    CategoryTreeNode category = parents.get(i);
-                    category.getCategory().create(names.get(i));
+                    CategoryTreeNode parent = parents.get(i);
+                    Category category = parent.getCategory().create(names.get(i));
+                    categories.add(new CategoryTreeNodeImpl(category));
                 }
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        for (CategoryTreeNode parent : parents) {
-                            parent.clearChildren();
-                        }
-                        for (CategoryTreeNode parent : parents) {
-                            categoryTreeModel.nodeStructureChanged(parent);
+                        for (int i = 0; i < parents.size(); i++) {
+                            CategoryTreeNode parent = parents.get(i);
+                            CategoryTreeNode category = categories.get(i);
+                            categoryTreeModel.insertNodeInto(category, parent, 0);
                         }
                         if (invokeLaterRunnable != null)
                             invokeLaterRunnable.run();
@@ -112,11 +115,10 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
-                category.getCategory().update(((CategoryTreeNode) category.getParent()).getCategory(), name);
+                category.getCategory().update(null, name);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        category.clearChildren();
                         categoryTreeModel.nodeChanged(category);
                     }
                 });

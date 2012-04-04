@@ -24,8 +24,6 @@ import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -67,22 +65,5 @@ public class RootTreeNode extends DefaultMutableTreeNode implements CategoryTree
 
     public List<Route> getRoutes() {
         return null;
-    }
-
-    public void clearChildren() {
-        throw new UnsupportedOperationException();
-    }
-
-
-    public Route addRoute(String description, File file) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Route addRoute(String description, String fileUrl) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void moveRoute(Route route, CategoryTreeNode target) throws IOException {
-        throw new UnsupportedOperationException();
     }
 }

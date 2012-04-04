@@ -74,10 +74,6 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         return super.children();
     }
 
-    public void clearChildren() {
-        children = null;
-    }
-
     public Category getCategory() {
         return (Category) getUserObject();
     }

@@ -82,7 +82,7 @@ public class LocalCategory implements Category {
     public void update(Category parent, String name) throws IOException {
         File newName = null;
         try {
-            newName = new File(new File(new URL(parent.getUrl()).toURI()), name);
+            newName = new File(parent != null ? new File(new URL(parent.getUrl()).toURI()) : directory.getParentFile(), name);
         } catch (URISyntaxException e) {
             throw new IOException(format("cannot rename %s to %s", directory, newName));
         }
