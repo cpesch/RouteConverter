@@ -39,8 +39,8 @@ public class QstarzQ1000ReadWriteRoundtripIT extends ReadWriteBase {
                 for(int i=0; i < sourceRoute.getPositionCount(); i++) {
                     Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
                     Wgs84Position targetPosition= (Wgs84Position) targetRoute.getPosition(i);
-                    assertEquals(roundFraction(targetPosition.getElevation(), 1), roundFraction(sourcePosition.getElevation(), 1));
-                    assertEquals(targetPosition.getSpeed(), sourcePosition.getSpeed());
+                    assertEquals(roundFraction(targetPosition.getElevation(), 0), roundFraction(sourcePosition.getElevation(), 0));
+                    assertEquals(roundFraction(targetPosition.getSpeed(), 1), roundFraction(sourcePosition.getSpeed(), 1));
                     assertEquals(targetPosition.getHdop(), sourcePosition.getHdop());
                     assertEquals(targetPosition.getSatellites(), sourcePosition.getSatellites());
                 }

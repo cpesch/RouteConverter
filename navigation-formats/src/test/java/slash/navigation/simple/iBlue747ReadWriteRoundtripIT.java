@@ -27,6 +27,8 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
+import static slash.common.io.Transfer.roundFraction;
+
 public class iBlue747ReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
@@ -34,12 +36,12 @@ public class iBlue747ReadWriteRoundtripIT extends ReadWriteBase {
             public void test(NavigationFileParser source, NavigationFileParser target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
-                for(int i=0; i < sourceRoute.getPositionCount(); i++) {
+                for (int i = 0; i < sourceRoute.getPositionCount(); i++) {
                     Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
-                    Wgs84Position targetPosition= (Wgs84Position) targetRoute.getPosition(i);
-                    assertEquals(targetPosition.getElevation(), sourcePosition.getElevation());
-                    assertEquals(targetPosition.getSpeed(), sourcePosition.getSpeed());
-                    assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
+                    Wgs84Position targetPosition = (Wgs84Position) targetRoute.getPosition(i);
+                    assertNearBy(roundFraction(targetPosition.getElevation(), 1), roundFraction(sourcePosition.getElevation(), 1), 1.0);
+                    assertNearBy(roundFraction(targetPosition.getSpeed(), 1), roundFraction(sourcePosition.getSpeed(), 1), 1.0);
+                    assertNearBy(roundFraction(targetPosition.getHeading(), 1), roundFraction(sourcePosition.getHeading(), 1));
                 }
             }
         });
