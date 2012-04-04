@@ -1284,7 +1284,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");
     private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
-    private static final Pattern DELETE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)/(.*)$");
+    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
@@ -1341,14 +1341,14 @@ public abstract class BaseMapView implements MapView {
             return true;
         }
 
-        Matcher deletePositionMatcher = DELETE_POSITION_PATTERN.matcher(callback);
-        if (deletePositionMatcher.matches()) {
-            final Double latitude = parseDouble(deletePositionMatcher.group(1));
-            final Double longitude = parseDouble(deletePositionMatcher.group(2));
-            final Double threshold = parseDouble(deletePositionMatcher.group(3));
+        Matcher removePositionMatcher = REMOVE_POSITION_PATTERN.matcher(callback);
+        if (removePositionMatcher.matches()) {
+            final Double latitude = parseDouble(removePositionMatcher.group(1));
+            final Double longitude = parseDouble(removePositionMatcher.group(2));
+            final Double threshold = parseDouble(removePositionMatcher.group(3));
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    deletePosition(longitude, latitude, threshold);
+                    removePosition(longitude, latitude, threshold);
                 }
             });
             return true;
@@ -1650,7 +1650,7 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private void deletePosition(Double longitude, Double latitude, Double threshold) {
+    private void removePosition(Double longitude, Double latitude, Double threshold) {
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1) {
             positionsModel.remove(new int[]{row});
@@ -1659,7 +1659,7 @@ public abstract class BaseMapView implements MapView {
                 public void run() {
                     synchronized (notificationMutex) {
                         haveToRepaintRouteImmediately = true;
-                        routeUpdateReason = "delete position";
+                        routeUpdateReason = "remove position";
                         notificationMutex.notifyAll();
                     }
                 }

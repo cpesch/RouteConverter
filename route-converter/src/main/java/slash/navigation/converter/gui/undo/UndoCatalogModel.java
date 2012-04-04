@@ -102,16 +102,16 @@ public class UndoCatalogModel implements CatalogModel {
             undoManager.addEdit(new MoveCategories(this, categories, oldParents, parents));
     }
 
-    public void removeCategories(List<CategoryTreeNode> categories) {
-        removeCategories(asParents(categories), asNames(categories));
+    public void removeCategories(List<CategoryTreeNode> categories, Runnable invokeLaterRunnable) {
+        removeCategories(asParents(categories), asNames(categories), invokeLaterRunnable);
     }
 
-    public void removeCategories(List<CategoryTreeNode> parents, List<String> names) {
-        removeCategories(parents, names, true);
+    public void removeCategories(List<CategoryTreeNode> parents, List<String> names, Runnable invokeLaterRunnable) {
+        removeCategories(parents, names, invokeLaterRunnable, true);
     }
 
-    void removeCategories(List<CategoryTreeNode> categories, List<String> names, boolean trackUndo) {
-        delegate.removeCategories(categories, names);
+    void removeCategories(List<CategoryTreeNode> categories, List<String> names, Runnable invokeLaterRunnable, boolean trackUndo) {
+        delegate.removeCategories(categories, names, invokeLaterRunnable);
         if (trackUndo)
             undoManager.addEdit(new RemoveCategories(this, categories, names));
     }

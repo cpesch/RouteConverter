@@ -60,6 +60,6 @@ class RemoveCategories extends AbstractUndoableEdit {
 
     public void redo() throws CannotRedoException {
         super.redo();
-        catalogModel.removeCategories(categories, names, false);
+        catalogModel.removeCategories(categories, names, null, false);
     }
 }

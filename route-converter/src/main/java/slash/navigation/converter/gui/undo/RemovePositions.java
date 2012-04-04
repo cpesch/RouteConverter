@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Acts as a {@link UndoableEdit} for adding positions to {@link PositionsModel}.
+ * Acts as a {@link UndoableEdit} for removing positions from {@link PositionsModel}.
  *
  * @author Christian Pesch
  */

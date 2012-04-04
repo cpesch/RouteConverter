@@ -26,13 +26,16 @@ import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
 
 /**
  * {@link Action} that renames {@link CategoryTreeNode}s of the {@link CatalogModel}.
@@ -53,7 +56,7 @@ public class RemoveCategoriesAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
 
         List<CategoryTreeNode> categories = getSelectedCategoryTreeNodes(tree);
-        if(categories.size() == 0)
+        if (categories.size() == 0)
             return;
 
         StringBuilder categoryNames = new StringBuilder();
@@ -64,12 +67,21 @@ public class RemoveCategoriesAction extends FrameAction {
                 categoryNames.append(", ");
         }
 
+        final List<CategoryTreeNode> parents = asParents(categories);
+
         int confirm = showConfirmDialog(r.getFrame(),
                 format(RouteConverter.getBundle().getString("confirm-remove-category"), categoryNames),
                 r.getFrame().getTitle(), YES_NO_OPTION);
         if (confirm != YES_OPTION)
             return;
 
-        catalogModel.removeCategories(categories);
-   }
+        catalogModel.removeCategories(categories, new Runnable() {
+            public void run() {
+                for (CategoryTreeNode parent : parents) {
+                    TreePath treePath = new TreePath(catalogModel.getCategoryTreeModel().getPathToRoot(parent));
+                    selectCategoryTreePath(tree, treePath);
+                }
+            }
+        });
+    }
 }
