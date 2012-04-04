@@ -736,9 +736,10 @@ public abstract class NavigationTestCase extends TestCase {
                     (sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
-            } else if (sourceFormat instanceof Iblue747Format ||
-                    sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) {
+            } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
+            } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format) {
+                assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
                 assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
             }
