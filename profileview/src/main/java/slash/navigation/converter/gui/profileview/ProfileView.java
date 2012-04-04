@@ -143,7 +143,7 @@ public class ProfileView implements PositionsSelectionModel {
         plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
         plot.getRenderer().setBaseToolTipGenerator(new StandardXYToolTipGenerator(
-                format("{2} %s @ {1} %s", yAxisUnit, unit.getDistanceName()),
+                "{2} " + yAxisUnit + " @ {1} " + unit.getDistanceName(),
                 getIntegerInstance(), getIntegerInstance()));
     }
 
