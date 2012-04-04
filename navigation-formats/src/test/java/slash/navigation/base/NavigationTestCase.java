@@ -318,7 +318,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof ColumbusV900Format) {
                 assertEquals(sourcePosition.getElevation().intValue(), targetPosition.getElevation().intValue());
             } else
-                assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
+                assertNearBy(roundFraction(sourcePosition.getElevation(), 1), roundFraction(targetPosition.getElevation(), 1), 0.1);
 
         } else if (sourceFormat instanceof OziExplorerReadFormat) {
             assertNull(targetPosition.getElevation());
@@ -738,7 +738,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
-            } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format) {
+            } else if (sourceFormat instanceof Iblue747Format) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
                 assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
