@@ -239,6 +239,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertEquals(sourceName, targetName);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
+                !targetRoute.getName().startsWith("/Route") &&
                 !targetRoute.getName().endsWith("/Route") &&
                 !targetRoute.getName().equals("MapLage") && !targetRoute.getName().contains("Track: ") &&
                 !targetRoute.getName().endsWith("/Track"))
@@ -383,7 +384,8 @@ public abstract class NavigationTestCase extends TestCase {
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat)) {
             assertEquals("Heading " + index + " does not match", roundFraction(sourceHeading, 0), roundFraction(targetHeading, 0));
-        } else if ((sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
+        } else if ((sourceHeading != null && targetHeading != null) &&
+                (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof ColumbusV900Format || sourceFormat instanceof GpsTunerFormat ||
                 sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track) ||
                 sourceFormat instanceof NmeaFormat || sourceFormat instanceof TomTomRouteFormat) &&
                 (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat || targetFormat instanceof TomTomRouteFormat ||
@@ -730,13 +732,13 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
                     (sourceFormat instanceof Gpx10Format && targetFormat instanceof AlanTrackLogFormat) ||
                     sourceFormat instanceof GoPalTrackFormat ||
+                    sourceFormat instanceof QstarzQ1000Format ||
                     (sourceFormat instanceof Gpx10Format && sourceCharacteristics.equals(Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof Gpx10Format) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
-            } else if ((sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) ||
-                    (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format)) {
+            } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else {
                 assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));

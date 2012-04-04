@@ -27,6 +27,8 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
+import static slash.common.io.Transfer.roundFraction;
+
 public class QstarzQ1000ReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
@@ -37,7 +39,7 @@ public class QstarzQ1000ReadWriteRoundtripIT extends ReadWriteBase {
                 for(int i=0; i < sourceRoute.getPositionCount(); i++) {
                     Wgs84Position sourcePosition = (Wgs84Position) sourceRoute.getPosition(i);
                     Wgs84Position targetPosition= (Wgs84Position) targetRoute.getPosition(i);
-                    assertEquals(targetPosition.getElevation(), sourcePosition.getElevation());
+                    assertEquals(roundFraction(targetPosition.getElevation(), 1), roundFraction(sourcePosition.getElevation(), 1));
                     assertEquals(targetPosition.getSpeed(), sourcePosition.getSpeed());
                     assertEquals(targetPosition.getHdop(), sourcePosition.getHdop());
                     assertEquals(targetPosition.getSatellites(), sourcePosition.getSatellites());
