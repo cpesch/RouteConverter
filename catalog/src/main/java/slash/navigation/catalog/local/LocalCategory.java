@@ -92,8 +92,18 @@ public class LocalCategory implements Category {
     }
 
     public void delete() throws IOException {
-        if (!directory.delete())
-            throw new IOException(format("cannot delete %s", directory));
+        recursiveDelete(directory);
+    }
+
+    private void recursiveDelete(File file) throws IOException {
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                recursiveDelete(f);
+            }
+        }
+        if (!file.delete())
+            throw new IOException(format("cannot delete %s", file));
     }
 
     public List<Route> getRoutes() throws IOException {
