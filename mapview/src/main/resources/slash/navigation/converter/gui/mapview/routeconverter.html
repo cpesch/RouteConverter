@@ -94,7 +94,6 @@
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
            xmlhttp.open("GET", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/" + uri, true);
-           xmlhttp.setRequestHeader('If-Modified-Since', 'Wed, 15 Nov 1995 00:00:00 GMT');
            xmlhttp.send();
        } else {
            callbackQueue.push(uri);
@@ -105,7 +104,6 @@
        if (xmlhttp && callbackListenerPort > 0) {
            callbackCount++;
            xmlhttp.open("POST", "http://127.0.0.1:" + callbackListenerPort + "/" + callbackCount + "/generic-post-url/", true);
-           xmlhttp.setRequestHeader('If-Modified-Since', 'Wed, 15 Nov 1995 00:00:00 GMT');
            xmlhttp.send(body);
        } else {
            callbackQueue.push(body);
