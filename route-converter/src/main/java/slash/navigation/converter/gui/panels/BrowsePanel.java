@@ -90,6 +90,7 @@ import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
@@ -189,6 +190,7 @@ public class BrowsePanel {
         treeCategories.setDragEnabled(true);
         treeCategories.setDropMode(ON);
         treeCategories.setTransferHandler(new TreeDragAndDropHandler());
+        treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
 
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         tableRoutes.setDefaultRenderer(Object.class, new RoutesTableCellRenderer());
@@ -430,6 +432,7 @@ public class BrowsePanel {
         final JScrollPane scrollPane2 = new JScrollPane();
         browsePanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         treeCategories = new JTree();
+        treeCategories.setLargeModel(true);
         treeCategories.setRootVisible(false);
         scrollPane2.setViewportView(treeCategories);
     }

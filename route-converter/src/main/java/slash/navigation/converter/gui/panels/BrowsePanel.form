@@ -137,6 +137,7 @@
           <component id="48469" class="javax.swing.JTree" binding="treeCategories">
             <constraints/>
             <properties>
+              <largeModel value="true"/>
               <rootVisible value="false"/>
             </properties>
           </component>
