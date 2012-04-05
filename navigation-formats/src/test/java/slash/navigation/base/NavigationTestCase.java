@@ -101,6 +101,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Math.min;
+import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.io.Transfer.toMixedCase;
@@ -753,19 +754,19 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNotNull(targetPosition.getTime());
             } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof GoPalTrackFormat) {
                 DateFormat format = DateFormat.getTimeInstance();
-                format.setTimeZone(CompactCalendar.UTC);
+                format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
             } else if (sourceFormat instanceof GroundTrackFormat || targetFormat instanceof GroundTrackFormat) {
                 DateFormat format = DateFormat.getTimeInstance();
-                format.setTimeZone(CompactCalendar.UTC);
+                format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
             } else {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
-                format.setTimeZone(CompactCalendar.UTC);
+                format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);

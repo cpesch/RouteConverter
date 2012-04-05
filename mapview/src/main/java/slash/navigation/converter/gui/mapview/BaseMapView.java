@@ -791,7 +791,7 @@ public abstract class BaseMapView implements MapView {
             visibleSouthWest = southWest(positions);
             visibleNorthWest = asPosition(visibleSouthWest.getLongitude(), visibleNorthEast.getLatitude());
             visibleSouthEast = asPosition(visibleNorthEast.getLongitude(), visibleSouthWest.getLatitude());
-         } else {
+        } else {
             visibleNorthEast = null;
             visibleSouthWest = null;
             visibleNorthWest = null;
@@ -997,11 +997,11 @@ public abstract class BaseMapView implements MapView {
                     append(",").append(origin.getLongitude()).append("), ");
             buffer.append("destination: new google.maps.LatLng(").append(destination.getLatitude()).
                     append(",").append(destination.getLongitude()).append("), ");
-            buffer.append("waypoints: latlngs").append(j).
-                    append(", travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
+            buffer.append("waypoints: latlngs").append(j).append(", ").
+                    append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
             buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
             buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
-            buffer.append("region: '").append(Locale.getDefault().getCountry().toLowerCase()).append("'}, ");
+            buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ");
             int startIndex = positionsModel.getIndex(origin);
             buffer.append(startIndex).append(", ");
             boolean lastSegment = (j == directionsCount - 1);
@@ -1054,9 +1054,9 @@ public abstract class BaseMapView implements MapView {
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
                 buffer.append("addOverlay(new google.maps.Marker({position: new google.maps.LatLng(").
-                        append(position.getLatitude()).append(",").append(position.getLongitude()).
-                        append("), title: \"").append(escape(position.getComment())).
-                        append("\", clickable: false, icon: markerIcon }));\n");
+                        append(position.getLatitude()).append(",").append(position.getLongitude()).append("), ").
+                        append("title: \"").append(escape(position.getComment())).append("\", ").
+                        append("clickable: false, icon: markerIcon}));\n");
             }
             executeScript(buffer.toString());
         }
@@ -1089,9 +1089,9 @@ public abstract class BaseMapView implements MapView {
         for (int i = 0; i < selectedPositions.size(); i++) {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
             buffer.append("addMarker(new google.maps.Marker({position: new google.maps.LatLng(").
-                    append(selectedPosition.getLatitude()).append(",").append(selectedPosition.getLongitude()).
-                    append("), title: \"").append(escape(selectedPosition.getComment())).
-                    append("\", draggable: true, zIndex: 1000}), ").append(i).append(");\n");
+                    append(selectedPosition.getLatitude()).append(",").append(selectedPosition.getLongitude()).append("), ").
+                    append("title: \"").append(escape(selectedPosition.getComment())).append("\", ").
+                    append("draggable: true, zIndex: 1000}), ").append(i).append(");\n");
         }
 
         if (center != null)
@@ -1135,7 +1135,7 @@ public abstract class BaseMapView implements MapView {
                     buffer.append("travelMode: google.maps.DirectionsTravelMode.").append(travelMode.toString().toUpperCase()).append(", ");
                     buffer.append("avoidHighways: ").append(avoidHighways).append(", ");
                     buffer.append("avoidTolls: ").append(avoidTolls).append(", ");
-                    buffer.append("region: '").append(Locale.getDefault().getCountry().toLowerCase()).append("'}, ").append(key).append(");\n");
+                    buffer.append("region: \"").append(Locale.getDefault().getCountry().toLowerCase()).append("\"}, ").append(key).append(");\n");
                     executeScript(buffer.toString());
                     try {
                         sleep(500);
