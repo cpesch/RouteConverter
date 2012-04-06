@@ -169,12 +169,12 @@ public class BrowsePanel {
         treeCategories.setModel(catalogModel.getCategoryTreeModel());
         treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                selectTreePath(e.getPath());
+                selectTreePath(e.getPath(), false);
             }
         });
         treeCategories.getModel().addTreeModelListener(new TreeModelListener() {
             public void treeNodesChanged(TreeModelEvent e) {
-                selectTreePath(treeCategories.getSelectionModel().getSelectionPath());
+                selectTreePath(treeCategories.getSelectionModel().getSelectionPath(), true);
             }
 
             public void treeNodesInserted(TreeModelEvent e) {
@@ -240,7 +240,7 @@ public class BrowsePanel {
                         startWaitCursor(r.getFrame().getRootPane());
                         try {
                             String selected = r.getCategoryPreference();
-                            selectTreePath(TreePathStringConversion.fromString(root, selected));
+                            selectTreePath(TreePathStringConversion.fromString(root, selected), true);
                             // make sure the subcategories of the remote catalog are visible, too
                             treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
                         } finally {
@@ -273,11 +273,12 @@ public class BrowsePanel {
         return buttonAddRouteFromFile;
     }
 
-    private void selectTreePath(TreePath treePath) {
+    private void selectTreePath(TreePath treePath, boolean selectCategoryTreePath) {
         Object selectedObject = treePath.getLastPathComponent();
         if (!(selectedObject instanceof CategoryTreeNode))
             return;
-        selectCategoryTreePath(treeCategories, treePath);
+        if (selectCategoryTreePath)
+            selectCategoryTreePath(treeCategories, treePath);
         CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
         catalogModel.setCurrentCategory(selectedCategoryTreeNode);
         RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
