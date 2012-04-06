@@ -1062,7 +1062,8 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         public void run() {
-            mapView.print(withRoute);
+            String title = getConvertPanel().getUrlModel().getShortUrl() + " / " + getConvertPanel().getFormatAndRoutesModel().getSelectedRoute().getName();
+            mapView.print(title, withRoute);
         }
     }
 
