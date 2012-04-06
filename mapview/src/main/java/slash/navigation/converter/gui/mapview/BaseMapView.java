@@ -1157,8 +1157,8 @@ public abstract class BaseMapView implements MapView {
         insertWaypoints("insertOnlyTurnpoints", startPositions);
     }
 
-    public void print(boolean withRoute) {
-        executeScript("printMap(" + withRoute + ");");
+    public void print(boolean withDirections) {
+        executeScript("printMap(" + withDirections + ");");
     }
 
     // script execution

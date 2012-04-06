@@ -55,7 +55,7 @@ public interface MapView extends PositionsSelectionModel {
     void setAvoidTolls(boolean avoidTolls);
     BaseNavigationPosition getCenter();
     void setCenter(BaseNavigationPosition center);
-    void print(boolean withRoute);
+    void print(boolean withDirections);
 
     void addMapViewListener(MapViewListener listener);
     void removeMapViewListener(MapViewListener listener);
