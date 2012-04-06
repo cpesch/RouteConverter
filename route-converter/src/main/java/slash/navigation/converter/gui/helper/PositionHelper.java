@@ -37,7 +37,7 @@ import static java.lang.String.format;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
 import static slash.common.io.CompactCalendar.fromDate;
-import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.roundFraction;
 
 /**
@@ -60,7 +60,7 @@ public class PositionHelper {
     }
 
     public static String formatDistance(Double distance) {
-        if (isEmpty(distance) || distance <= 0.0)
+        if (distance == null || distance <= 0.0)
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
         double distanceInMeters = unit.valueToUnit(distance);
@@ -73,7 +73,7 @@ public class PositionHelper {
     }
 
     public static String formatElevation(Double elevation) {
-        if (isEmpty(elevation))
+        if (elevation == null)
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
         double distanceInUnit = unit.valueToUnit(elevation);
@@ -85,9 +85,9 @@ public class PositionHelper {
     }
 
     public static String formatLongitudeOrLatitude(Double longitudeOrLatitude) {
-        if (isEmpty(longitudeOrLatitude))
+        if (longitudeOrLatitude == null)
             return "";
-        String result = Double.toString(longitudeOrLatitude) + " ";
+        String result = formatPositionAsString(longitudeOrLatitude) + " ";
         if (abs(longitudeOrLatitude) < 10.0)
             result = " " + result;
         if (abs(longitudeOrLatitude) < 100.0)
@@ -98,7 +98,7 @@ public class PositionHelper {
     }
 
     private static String formatSpeed(Double speed) {
-        if (isEmpty(speed))
+        if (speed == null)
             return "";
         Unit unit = RouteConverter.getInstance().getUnitModel().getCurrent();
         Double speedInUnit = unit.distanceToUnit(speed);
