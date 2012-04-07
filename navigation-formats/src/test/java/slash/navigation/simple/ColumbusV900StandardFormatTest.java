@@ -20,15 +20,23 @@
 
 package slash.navigation.simple;
 
+import org.junit.Test;
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-public class ColumbusV900StandardFormatTest extends NavigationTestCase {
-    ColumbusV900StandardFormat format = new ColumbusV900StandardFormat();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
 
+public class ColumbusV900StandardFormatTest {
+    private ColumbusV900StandardFormat format = new ColumbusV900StandardFormat();
+
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
         assertTrue(format.isValidLine("4     ,T,090421,061054,47.797283N,013.049748E,519  ,5   ,206,         "));
@@ -38,6 +46,7 @@ public class ColumbusV900StandardFormatTest extends NavigationTestCase {
         assertFalse(format.isValidLine("4     ,T,090421,061054,47.797283N,-013.049748E,519  ,5   ,206,         "));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("5     ,T,090421,061057,47.797281N,013.049743E,504  ,0   ,206,         "));
 
@@ -45,13 +54,14 @@ public class ColumbusV900StandardFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,VOX"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("6     ,T,090421,061058,47.797278N,013.049739E,502  ,0 8 ,206,VOX00006 ", null);
-        assertEquals(13.049739, position.getLongitude());
-        assertEquals(47.797278, position.getLatitude());
-        assertEquals(502.0, position.getElevation());
-        assertEquals(8.0, position.getSpeed());
-        assertEquals(206.0, position.getHeading());
+        assertDoubleEquals(13.049739, position.getLongitude());
+        assertDoubleEquals(47.797278, position.getLatitude());
+        assertDoubleEquals(502.0, position.getElevation());
+        assertDoubleEquals(8.0, position.getSpeed());
+        assertDoubleEquals(206.0, position.getHeading());
         assertNull(position.getHdop());
         assertNull(position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
@@ -62,14 +72,16 @@ public class ColumbusV900StandardFormatTest extends NavigationTestCase {
         assertEquals("VOX00006", position.getComment());
     }
 
+    @Test
     public void testParseSouthWestPosition() {
         Wgs84Position position = format.parsePosition("6     ,V,090421,061058,47.797278S,013.049739W,-102  ,8   ,206,", null);
-        assertEquals(-13.049739, position.getLongitude());
-        assertEquals(-47.797278, position.getLatitude());
-        assertEquals(-102.0, position.getElevation());
+        assertDoubleEquals(-13.049739, position.getLongitude());
+        assertDoubleEquals(-47.797278, position.getLatitude());
+        assertDoubleEquals(-102.0, position.getElevation());
         assertNull(position.getComment());
     }
 
+    @Test
     public void testParsePOIPosition() {
         Wgs84Position position = format.parsePosition("6     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", null);
         assertEquals("POI 6", position.getComment());

@@ -20,17 +20,28 @@
 
 package slash.navigation.nmea;
 
+import org.junit.Test;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.NavigationTestCase;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.List;
 
-public class MagellanExploristFormatTest extends NavigationTestCase {
-    MagellanExploristFormat format = new MagellanExploristFormat();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
 
+public class MagellanExploristFormatTest {
+    private MagellanExploristFormat format = new MagellanExploristFormat();
+
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("$PMGNFMT,%TRK,LAT,HEMI,LON,HEMI,ALT,UNIT,TIME,VALID,NAME,%META,ASCII"));
         assertTrue(format.isValidLine("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
@@ -40,6 +51,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertFalse(format.isValidLine("# Comment"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("$PMGNTRK,4914.967,N,00651.208,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*48"));
         assertTrue(format.isPosition("$PMGNTRK,5159.928,N,00528.243,E,00008,M,093405.33,A,,250408*79"));
@@ -71,15 +83,16 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("$GPWPL,5334.169,N,01001.920,E,STATN1*22"));
     }
 
+    @Test
     public void testParsePMGNTRK() {
         NmeaPosition position = format.parsePosition("$PMGNTRK,4914.9670,N,00651.2080,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*56");
-        assertEquals(4914.967, position.getLatitudeAsDdmm());
-        assertEquals(651.208, position.getLongitudeAsDdmm());
+        assertDoubleEquals(4914.967, position.getLatitudeAsDdmm());
+        assertDoubleEquals(651.208, position.getLongitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
         assertEquals("E", position.getEastOrWest());
-        assertEquals(6.8534666, position.getLongitude());
-        assertEquals(49.2494499, position.getLatitude());
-        assertEquals(199.0, position.getElevation());
+        assertDoubleEquals(6.8534666, position.getLongitude());
+        assertDoubleEquals(49.2494499, position.getLatitude());
+        assertDoubleEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -88,6 +101,7 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         assertEquals("Kllertal-Radweg", position.getComment());
     }
 
+    @Test
     public void testWritePMGNTRK() throws IOException {
         StringReader reader = new StringReader(
                 "$PMGNTRK,4914.9672,N,00651.2081,E,00199,M,152224,A,KLLERTAL-RADWEG,210307*7B"
@@ -97,13 +111,13 @@ public class MagellanExploristFormatTest extends NavigationTestCase {
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         NmeaPosition position = route.getPositions().get(0);
-        assertEquals(4914.9672, position.getLatitudeAsDdmm());
-        assertEquals(651.2081, position.getLongitudeAsDdmm());
+        assertDoubleEquals(4914.9672, position.getLatitudeAsDdmm());
+        assertDoubleEquals(651.2081, position.getLongitudeAsDdmm());
         assertEquals("N", position.getNorthOrSouth());
         assertEquals("E", position.getEastOrWest());
-        assertEquals(6.8534683, position.getLongitude());
-        assertEquals(49.2494533, position.getLatitude());
-        assertEquals(199.0, position.getElevation());
+        assertDoubleEquals(6.8534683, position.getLongitude());
+        assertDoubleEquals(49.2494533, position.getLatitude());
+        assertDoubleEquals(199.0, position.getElevation());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 3, 21, 15, 22, 24);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());

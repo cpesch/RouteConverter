@@ -20,22 +20,27 @@
 
 package slash.common.io;
 
-import slash.common.TestCase;
+import org.junit.Test;
 
-public class PlatformTest extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.common.io.Platform.isCurrentAtLeastMinimumVersion;
+
+public class PlatformTest {
+    @Test
     public void testIsCurrentAtLeastMinimumVersion() {
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6", "1.6"));
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6.0", "1.6.0"));
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6.0_14"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6", "1.6"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6.0", "1.6.0"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6.0_14"));
 
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6.0", "1.6"));
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6"));
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6.0"));
-        assertTrue(Platform.isCurrentAtLeastMinimumVersion("1.6.0_15", "1.6.0_14"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6.0", "1.6"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_14", "1.6.0"));
+        assertTrue(isCurrentAtLeastMinimumVersion("1.6.0_15", "1.6.0_14"));
 
-        assertFalse(Platform.isCurrentAtLeastMinimumVersion("1.6", "1.6.0"));
-        assertFalse(Platform.isCurrentAtLeastMinimumVersion("1.6", "1.6.0_14"));
-        assertFalse(Platform.isCurrentAtLeastMinimumVersion("1.6.0", "1.6.0_14"));
-        assertFalse(Platform.isCurrentAtLeastMinimumVersion("1.6.0_13", "1.6.0_14"));
+        assertFalse(isCurrentAtLeastMinimumVersion("1.6", "1.6.0"));
+        assertFalse(isCurrentAtLeastMinimumVersion("1.6", "1.6.0_14"));
+        assertFalse(isCurrentAtLeastMinimumVersion("1.6.0", "1.6.0_14"));
+        assertFalse(isCurrentAtLeastMinimumVersion("1.6.0_13", "1.6.0_14"));
     }
 }

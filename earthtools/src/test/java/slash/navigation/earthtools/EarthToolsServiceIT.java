@@ -19,13 +19,17 @@
 */
 package slash.navigation.earthtools;
 
-import slash.common.TestCase;
+import org.junit.Test;
 
 import java.io.IOException;
 
-public class EarthToolsServiceIT extends TestCase {
-    private final EarthToolsService service = new EarthToolsService();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+public class EarthToolsServiceIT {
+    private EarthToolsService service = new EarthToolsService();
+
+    @Test
     public void testElevationFor() throws IOException {
         assertEquals(38, service.getElevationFor(11.2, 59.0).intValue());
         assertNull(service.getElevationFor(11.2, 60.0));

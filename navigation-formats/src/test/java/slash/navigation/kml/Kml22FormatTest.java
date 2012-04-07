@@ -20,104 +20,113 @@
 
 package slash.navigation.kml;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-public class Kml22FormatTest extends TestCase {
-    Kml22Format format = new Kml22Format();
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static slash.common.TestCase.assertDoubleEquals;
 
+public class Kml22FormatTest {
+    private Kml22Format format = new Kml22Format();
+
+    @Test
     public void testAsPositions() throws IOException {
-        List<String> strings = Arrays.asList("151.2393322528181,-33.59862693992532,0",
-                                             "151.2274390264927,-33.59631160091919,1.5");
+        List<String> strings = asList("151.2393322528181,-33.59862693992532,0",
+                "151.2274390264927,-33.59631160091919,1.5");
         List<KmlPosition> positions = format.asKmlPositions(strings);
         assertEquals(2, positions.size());
-        KmlPosition position1= positions.get(0);
-        assertEquals(151.2393322528181, position1.getLongitude());
-        assertEquals(-33.59862693992532, position1.getLatitude());
-        assertEquals(0.0, position1.getElevation());
+        KmlPosition position1 = positions.get(0);
+        assertDoubleEquals(151.2393322528181, position1.getLongitude());
+        assertDoubleEquals(-33.59862693992532, position1.getLatitude());
+        assertDoubleEquals(0.0, position1.getElevation());
         KmlPosition position2 = positions.get(1);
-        assertEquals(151.2274390264927, position2.getLongitude());
-        assertEquals(-33.59631160091919, position2.getLatitude());
-        assertEquals(1.5, position2.getElevation());
+        assertDoubleEquals(151.2274390264927, position2.getLongitude());
+        assertDoubleEquals(-33.59631160091919, position2.getLatitude());
+        assertDoubleEquals(1.5, position2.getElevation());
     }
 
+    @Test
     public void testPointCoordinates() throws IOException {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
-                        "<Document><Placemark><Point>\n" +
-                        "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
-                        "</coordinates>\n" +
-                        "</Point></Placemark></Document></kml>";
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document><Placemark><Point>\n" +
+                "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
+                "</coordinates>\n" +
+                "</Point></Placemark></Document></kml>";
         List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()));
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         KmlPosition position = route.getPositions().get(0);
-        assertEquals(151.2393322528181, position.getLongitude());
-        assertEquals(-33.59862693992532, position.getLatitude());
+        assertDoubleEquals(151.2393322528181, position.getLongitude());
+        assertDoubleEquals(-33.59862693992532, position.getLatitude());
         assertNull(position.getSpeed());
-        assertEquals(0.0, position.getElevation());
+        assertDoubleEquals(0.0, position.getElevation());
     }
 
+    @Test
     public void testPointCoordinatesWithoutSpaces() throws IOException {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
-                        "<Document><Placemark><Point>\n" +
-                        "<coordinates>151.2393322528181,-33.59862693992532,0\n" +
-                        "</coordinates>\n" +
-                        "</Point></Placemark></Document></kml>";
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document><Placemark><Point>\n" +
+                "<coordinates>151.2393322528181,-33.59862693992532,0\n" +
+                "</coordinates>\n" +
+                "</Point></Placemark></Document></kml>";
         List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()));
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         KmlPosition position = route.getPositions().get(0);
-        assertEquals(151.2393322528181, position.getLongitude());
-        assertEquals(-33.59862693992532, position.getLatitude());
+        assertDoubleEquals(151.2393322528181, position.getLongitude());
+        assertDoubleEquals(-33.59862693992532, position.getLatitude());
         assertNull(position.getSpeed());
-        assertEquals(0.0, position.getElevation());
+        assertDoubleEquals(0.0, position.getElevation());
     }
 
+    @Test
     public void testLineStringCoordinates() throws IOException {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
-                        "<Document><Placemark><LineString>\n" +
-                        "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
-                        "151.2274390264927, -33.59631160091919, 0 \n\n" +
-                        "151.2179531903903, -33.59844652615273, 0 \n\n" +
-                        "</coordinates>\n" +
-                        "</LineString></Placemark></Document></kml>";
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document><Placemark><LineString>\n" +
+                "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
+                "151.2274390264927, -33.59631160091919, 0 \n\n" +
+                "151.2179531903903, -33.59844652615273, 0 \n\n" +
+                "</coordinates>\n" +
+                "</LineString></Placemark></Document></kml>";
         List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()));
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(3, route.getPositionCount());
         KmlPosition position = route.getPositions().get(1);
-        assertEquals(151.2274390264927, position.getLongitude());
-        assertEquals(-33.59631160091919, position.getLatitude());
+        assertDoubleEquals(151.2274390264927, position.getLongitude());
+        assertDoubleEquals(-33.59631160091919, position.getLatitude());
         assertNull(position.getSpeed());
-        assertEquals(0.0, position.getElevation());
+        assertDoubleEquals(0.0, position.getElevation());
     }
 
+    @Test
     public void testLineStringCoordinatesWithoutSpaces() throws IOException {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
-                        "<Document><Placemark><LineString>\n" +
-                        "<coordinates>151.2393322528181,-33.59862693992532,0\n" +
-                        "151.2274390264927,-33.59631160091919,0\n" +
-                        "151.2179531903903,-33.59844652615273,0\n" +
-                        "</coordinates>\n" +
-                        "</LineString></Placemark></Document></kml>";
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document><Placemark><LineString>\n" +
+                "<coordinates>151.2393322528181,-33.59862693992532,0\n" +
+                "151.2274390264927,-33.59631160091919,0\n" +
+                "151.2179531903903,-33.59844652615273,0\n" +
+                "</coordinates>\n" +
+                "</LineString></Placemark></Document></kml>";
         List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()));
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(3, route.getPositionCount());
         KmlPosition position = route.getPositions().get(1);
-        assertEquals(151.2274390264927, position.getLongitude());
-        assertEquals(-33.59631160091919, position.getLatitude());
+        assertDoubleEquals(151.2274390264927, position.getLongitude());
+        assertDoubleEquals(-33.59631160091919, position.getLatitude());
         assertNull(position.getSpeed());
-        assertEquals(0.0, position.getElevation());
+        assertDoubleEquals(0.0, position.getElevation());
     }
 }
