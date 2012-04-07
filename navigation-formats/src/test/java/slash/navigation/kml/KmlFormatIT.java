@@ -151,6 +151,17 @@ public class KmlFormatIT {
     }
 
     @Test
+    public void testNetworkLink22() throws IOException {
+        List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(SAMPLE_PATH + "www.gps-tour.info22.kml")));
+        assertEquals(6, routes.size());
+        for (KmlRoute route : routes) {
+            assertTrue(route.getPositionCount() > 0);
+        }
+        assertEquals(18724, routes.get(1).getPositionCount());
+        assertEquals(2658, routes.get(4).getPositionCount());
+    }
+
+    @Test
     public void testOnlyPlacemark() throws IOException {
         List<KmlRoute> routes = new Kml22BetaFormat().read(new FileInputStream(new File(SAMPLE_PATH + "Home to Corfe Castle.kml")));
         assertNotNull(routes);
