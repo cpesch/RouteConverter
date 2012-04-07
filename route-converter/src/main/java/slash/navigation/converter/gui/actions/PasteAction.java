@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helper.JTableHelper;
@@ -99,7 +99,7 @@ public class PasteAction extends FrameAction {
     }
 
     protected void paste(String string) {
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         try {
             if (parser.read(new ByteArrayInputStream(string.getBytes()))) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();

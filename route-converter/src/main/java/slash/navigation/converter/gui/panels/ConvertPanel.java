@@ -31,10 +31,9 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationFileParser;
-import slash.navigation.base.NavigationFileParserListener;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationFormatParserListener;
 import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormats;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
@@ -151,7 +150,7 @@ import static slash.common.io.Files.reverse;
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toFile;
 import static slash.common.io.Files.toUrls;
-import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
+import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
 import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferredFormat;
@@ -519,8 +518,8 @@ public class ConvertPanel {
                         }
                     });
 
-                    final NavigationFileParser parser = new NavigationFileParser();
-                    parser.addNavigationFileParserListener(new NavigationFileParserListener() {
+                    final NavigationFormatParser parser = new NavigationFormatParser();
+                    parser.addNavigationFileParserListener(new NavigationFormatParserListener() {
                         public void reading(final NavigationFormat<BaseRoute> format) {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -586,7 +585,7 @@ public class ConvertPanel {
                     for (URL url : urls) {
                         String path = createReadablePath(url);
 
-                        final NavigationFileParser parser = new NavigationFileParser();
+                        final NavigationFormatParser parser = new NavigationFormatParser();
                         if (parser.read(url)) {
                             log.info("Appended: " + path);
 
@@ -733,10 +732,10 @@ public class ConvertPanel {
         try {
             if (format.isSupportsMultipleRoutes()) {
                 List<BaseRoute> routes = exportSelectedRoute ? Arrays.asList(route) : formatAndRoutesModel.getRoutes();
-                new NavigationFileParser().write(routes, (MultipleRoutesFormat) format, targets[0]);
+                new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, targets[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
-                new NavigationFileParser().write(route, format, duplicateFirstPosition, true, targets);
+                new NavigationFormatParser().write(route, format, duplicateFirstPosition, true, targets);
             }
             formatAndRoutesModel.setModified(false);
             recentFormatsModel.addFormat(format);

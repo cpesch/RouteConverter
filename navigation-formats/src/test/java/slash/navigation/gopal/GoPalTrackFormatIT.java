@@ -20,7 +20,7 @@
 
 package slash.navigation.gopal;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationTestCase;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class GoPalTrackFormatIT extends NavigationTestCase {
  
     public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {
         File source = new File(SAMPLE_PATH + "dieter2-GoPal3Track.trk");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(GoPalTrackFormat.class, parser.getFormat().getClass());
     }

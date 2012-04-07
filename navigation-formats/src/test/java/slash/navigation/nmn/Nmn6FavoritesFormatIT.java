@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationTestCase;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class Nmn6FavoritesFormatIT extends NavigationTestCase {
 
     public void testIsNmn6FavoritesWithValidPositions() throws IOException {
         File source = new File(SAMPLE_PATH + "Favorites.storage-1.rte");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(Nmn6FavoritesFormat.class, parser.getFormat().getClass());
     }

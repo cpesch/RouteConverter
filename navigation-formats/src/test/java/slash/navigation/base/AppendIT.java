@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppendIT extends NavigationTestCase {
-    NavigationFileParser parser = new NavigationFileParser();
+    NavigationFormatParser parser = new NavigationFormatParser();
 
     static boolean isStoringRouteName(NavigationFormat format) {
         return !(format instanceof GoPalRouteFormat) && !(format instanceof GoPalTrackFormat) &&
@@ -70,7 +70,7 @@ public class AppendIT extends NavigationTestCase {
         List<BaseNavigationPosition> testPositions = new ArrayList<BaseNavigationPosition>(parser.getTheRoute().getPositions());
         assertTrue(testPositionCount > 0);
 
-        NavigationFileParser appendParser = new NavigationFileParser();
+        NavigationFormatParser appendParser = new NavigationFormatParser();
         appendParser.read(appendFile);
 
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = NavigationFormats.asFormat(appendParser.getTheRoute(), parser.getFormat());

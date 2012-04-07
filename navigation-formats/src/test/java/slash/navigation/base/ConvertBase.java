@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class ConvertBase extends NavigationTestCase {
-    NavigationFileParser parser = new NavigationFileParser();
+    NavigationFormatParser parser = new NavigationFormatParser();
 
     void convertRoundtrip(String testFileName,
                           BaseNavigationFormat sourceFormat,
@@ -73,9 +73,9 @@ public abstract class ConvertBase extends NavigationTestCase {
             parser.write(sourceRoute, targetFormat, false, false, target);
             assertTrue(target.exists());
 
-            NavigationFileParser sourceParser = new NavigationFileParser();
+            NavigationFormatParser sourceParser = new NavigationFormatParser();
             assertTrue(sourceParser.read(source));
-            NavigationFileParser targetParser = new NavigationFileParser();
+            NavigationFormatParser targetParser = new NavigationFormatParser();
             assertTrue(targetParser.read(target));
 
             targetFormat = handleWriteOnlyFormats(targetFormat);
@@ -110,9 +110,9 @@ public abstract class ConvertBase extends NavigationTestCase {
             parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
             assertTrue(target.exists());
 
-            NavigationFileParser sourceParser = new NavigationFileParser();
+            NavigationFormatParser sourceParser = new NavigationFormatParser();
             assertTrue(sourceParser.read(source));
-            NavigationFileParser targetParser = new NavigationFileParser();
+            NavigationFormatParser targetParser = new NavigationFormatParser();
             assertTrue(targetParser.read(target));
 
             targetFormat = handleWriteOnlyFormats(targetFormat);
@@ -152,7 +152,7 @@ public abstract class ConvertBase extends NavigationTestCase {
         int maximumPositionCount = targetFormat.getMaximumPositionCount();
         int positionCount = parser.getTheRoute().getPositionCount();
         int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-        assertEquals(fileCount, NavigationFileParser.getNumberOfFilesToWriteFor(sourceRoute, targetFormat, false));
+        assertEquals(fileCount, NavigationFormatParser.getNumberOfFilesToWriteFor(sourceRoute, targetFormat, false));
 
         File[] targets = new File[fileCount];
         for (int i = 0; i < targets.length; i++)
@@ -160,11 +160,11 @@ public abstract class ConvertBase extends NavigationTestCase {
         try {
             parser.write(sourceRoute, targetFormat, false, false, targets);
 
-            NavigationFileParser sourceParser = new NavigationFileParser();
+            NavigationFormatParser sourceParser = new NavigationFormatParser();
             sourceParser.read(source);
 
             for (int i = 0; i < targets.length; i++) {
-                NavigationFileParser targetParser = new NavigationFileParser();
+                NavigationFormatParser targetParser = new NavigationFormatParser();
                 targetParser.read(targets[i]);
                 assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
                 assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());

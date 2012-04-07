@@ -21,7 +21,7 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ReadWriteBase;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
@@ -131,8 +131,8 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testGpx10Roundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from10.gpx", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from10.gpx", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertEquals(RouteCharacteristics.Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
@@ -178,8 +178,8 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testGpx10TrkRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from10trk.gpx", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from10trk.gpx", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());
@@ -276,8 +276,8 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testGpx11Roundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from11.gpx", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from11.gpx", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertEquals(RouteCharacteristics.Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
@@ -323,8 +323,8 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testGpx11TrkRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from11trk.gpx", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from11trk.gpx", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());

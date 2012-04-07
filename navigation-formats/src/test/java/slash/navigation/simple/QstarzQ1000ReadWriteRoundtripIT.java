@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ReadWriteBase;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -32,8 +32,8 @@ import static slash.common.io.Transfer.roundFraction;
 public class QstarzQ1000ReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from-qstarz-q1000.csv", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
                 for(int i=0; i < sourceRoute.getPositionCount(); i++) {

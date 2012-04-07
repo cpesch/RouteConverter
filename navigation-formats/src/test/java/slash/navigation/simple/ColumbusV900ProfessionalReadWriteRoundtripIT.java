@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ReadWriteBase;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -30,8 +30,8 @@ import java.io.IOException;
 public class ColumbusV900ProfessionalReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
                 for(int i=0; i < sourceRoute.getPositionCount(); i++) {

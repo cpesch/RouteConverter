@@ -37,7 +37,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testIsPlainRouteRouteCharacteristics() throws IOException {
         File source = new File(SAMPLE_PATH + "bcr_with_itnconv.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
     }
@@ -45,7 +45,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testIsTripmasterTrackRouteCharacteristics() throws IOException {
         File source = new File(SAMPLE_PATH + "tripmaster2.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(RouteCharacteristics.Track, parser.getTheRoute().getCharacteristics());
     }
@@ -53,7 +53,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testSinglePositionFile() throws IOException {
         File source = new File(SAMPLE_PATH + "dilsberg kommandantenhaus.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
         assertEquals(1, parser.getTheRoute().getPositionCount());
@@ -62,7 +62,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testIsNamedByTyre() throws IOException {
         File source = new File(SAMPLE_PATH + "itn_with_tyre.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals("Eis essen in Ratzeburg", parser.getTheRoute().getName());
     }
@@ -73,7 +73,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testTomTomRoute5() throws IOException {
         File source = new File(TEST_PATH + "from5.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
@@ -83,7 +83,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testTomTomRoute8() throws IOException {
         File source = new File(TEST_PATH + "from8.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
@@ -93,7 +93,7 @@ public class TomTomRouteFormatIT {
     @Test
     public void testTomTomRoute8FromDevice() throws IOException {
         File source = new File(TEST_PATH + "from85.itn");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
         BaseNavigationPosition first = route.getPositions().get(0);
@@ -102,7 +102,7 @@ public class TomTomRouteFormatIT {
 
     @Test
     public void testManfredsTourFiles() throws IOException {
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         List<File> files = Files.collectFiles(new File(SAMPLE_PATH), ".itn");
         for (File file : files) {
             if (file.getName().startsWith("Tour")) {

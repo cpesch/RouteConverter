@@ -29,11 +29,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static slash.navigation.base.BaseNavigationFormat.UNLIMITED_MAXIMUM_POSITION_COUNT;
+import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
+
 public abstract class ReadWriteBase extends NavigationTestCase {
-    NavigationFileParser parser = new NavigationFileParser();
+    NavigationFormatParser parser = new NavigationFormatParser();
 
     @SuppressWarnings("unchecked")
-    protected void readWriteRoundtrip(String testFileName, NavigationFileParserCallback navigationFileParserCallback) throws IOException {
+    protected void readWriteRoundtrip(String testFileName, TestCallback parserCallback) throws IOException {
         File source = new File(testFileName);
         assertTrue("Could not read " + testFileName, parser.read(source));
         assertNotNull(parser.getFormat());
@@ -50,9 +53,9 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         // NOT possible to determine if I add description lines while writing
         // assertEquals(source.length(), target.length());
 
-        NavigationFileParser sourceParser = new NavigationFileParser();
+        NavigationFormatParser sourceParser = new NavigationFormatParser();
         sourceParser.read(source);
-        NavigationFileParser targetParser = new NavigationFileParser();
+        NavigationFormatParser targetParser = new NavigationFormatParser();
         targetParser.read(target);
 
         NavigationFormat sourceFormat = sourceParser.getFormat();
@@ -77,8 +80,8 @@ public abstract class ReadWriteBase extends NavigationTestCase {
             comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetRoutes.size() > 0);
         }
 
-        if (navigationFileParserCallback != null)
-            navigationFileParserCallback.test(sourceParser, targetParser);
+        if (parserCallback != null)
+            parserCallback.test(sourceParser, targetParser);
 
         assertTrue(target.exists());
         assertTrue(target.delete());
@@ -102,25 +105,25 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         assertTrue(parser.getAllRoutes().size() > 0);
 
         int maximumPositionCount = parser.getFormat().getMaximumPositionCount();
-        if (maximumPositionCount == BaseNavigationFormat.UNLIMITED_MAXIMUM_POSITION_COUNT) {
+        if (maximumPositionCount == UNLIMITED_MAXIMUM_POSITION_COUNT) {
             readWriteRoundtrip(testFileName);
         } else {
             int sourcePositionCount = parser.getTheRoute().getPositionCount();
             int positionCount = parser.getTheRoute().getPositionCount() + (duplicateFirstPosition ? 1 : 0);
             int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-            assertEquals(fileCount, NavigationFileParser.getNumberOfFilesToWriteFor(sourceRoute, parser.getFormat(), duplicateFirstPosition));
+            assertEquals(fileCount, getNumberOfFilesToWriteFor(sourceRoute, parser.getFormat(), duplicateFirstPosition));
 
             File[] targets = new File[fileCount];
             for (int i = 0; i < targets.length; i++)
                 targets[i] = File.createTempFile("target", ".test");
             parser.write(sourceRoute, parser.getFormat(), duplicateFirstPosition, false, targets);
 
-            NavigationFileParser sourceParser = new NavigationFileParser();
+            NavigationFormatParser sourceParser = new NavigationFormatParser();
             sourceParser.read(source);
 
             int targetPositionCount = 0;
             for (int i = 0; i < targets.length; i++) {
-                NavigationFileParser targetParser = new NavigationFileParser();
+                NavigationFormatParser targetParser = new NavigationFormatParser();
                 targetParser.read(targets[i]);
 
                 NavigationFormat sourceFormat = sourceParser.getFormat();
@@ -143,7 +146,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         }
     }
 
-    protected interface NavigationFileParserCallback {
-        void test(NavigationFileParser source, NavigationFileParser target);
+    protected interface TestCallback {
+        void test(NavigationFormatParser source, NavigationFormatParser target);
     }
 }

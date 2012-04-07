@@ -20,7 +20,7 @@
 
 package slash.navigation.ovl;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ReadWriteBase;
 
 import java.io.IOException;
@@ -32,8 +32,8 @@ public class OvlReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.ovl", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from.ovl", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 OvlRoute sourceRoute = (OvlRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute.getSymbol(), "Extra", "1");
                 checkUnprocessedValue(sourceRoute.getOverlay(), "Plus", "2");

@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import static slash.common.io.Files.*;
 import static slash.common.io.Platform.*;
 import static slash.common.io.Version.parseVersionFromManifest;
-import static slash.navigation.base.NavigationFileParser.getNumberOfFilesToWriteFor;
+import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
 import static slash.navigation.base.NavigationFormats.getWriteFormatsSortedByName;
 
@@ -109,7 +109,7 @@ public class RouteConverterCmdLine {
     }
 
     private void convert(File source, NavigationFormat format, File target) throws IOException {
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         if (!parser.read(source)) {
             log.severe("Could not read source '" + source.getAbsolutePath() + "'");
             logFormatNames(getReadFormatsSortedByName());

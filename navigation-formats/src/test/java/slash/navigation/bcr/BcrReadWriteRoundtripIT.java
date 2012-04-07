@@ -20,7 +20,7 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ReadWriteBase;
 
 import java.io.IOException;
@@ -35,8 +35,8 @@ public class BcrReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testMotorradTourenplanerRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute, CLIENT_TITLE, "EXTRA", "1");
                 checkUnprocessedValue(sourceRoute, COORDINATES_TITLE, "PLUS", "2");
@@ -52,8 +52,8 @@ public class BcrReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testMapAndGuideIntranetRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-mgintra09.bcr", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from-mgintra09.bcr", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION1", "0");
                 checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION2", "1");

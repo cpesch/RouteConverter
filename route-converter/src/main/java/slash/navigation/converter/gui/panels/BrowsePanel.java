@@ -28,7 +28,7 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.local.LocalCatalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
@@ -306,7 +306,7 @@ public class BrowsePanel {
         String description = null;
         Double length = null;
         try {
-            NavigationFileParser parser = new NavigationFileParser();
+            NavigationFormatParser parser = new NavigationFormatParser();
             if (parser.read(file)) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
                 if (route != null) {

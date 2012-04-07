@@ -30,7 +30,7 @@ public class OziExplorerFormatIT extends NavigationTestCase {
 
     public void testEliminateNonsenseRoutes() throws IOException {
         File source = new File(SAMPLE_PATH + "Feissneck.rte");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         List<BaseRoute> routes = parser.getAllRoutes();
         assertEquals(1, routes.size());

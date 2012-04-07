@@ -936,7 +936,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     @SuppressWarnings("unchecked")
     protected void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         parser.read(source);
         assertNotNull(parser.getFormat());
         assertNotNull(parser.getAllRoutes());

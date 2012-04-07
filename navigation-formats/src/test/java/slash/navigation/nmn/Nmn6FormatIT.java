@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationTestCase;
 
 import java.io.File;
@@ -30,14 +30,14 @@ public class Nmn6FormatIT extends NavigationTestCase {
 
     public void testIsNmn6FavoritesWithValidPositionsOnly() throws IOException {
         File source = new File(SAMPLE_PATH + "Mue Goe A38-stripped.rte");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(Nmn6Format.class, parser.getFormat().getClass());
     }
 
     public void testIsNmn6WithFirstValidLineButNotPosition() throws IOException {
         File source = new File(SAMPLE_PATH + "Mue Goe A38.rte");
-        NavigationFileParser parser = new NavigationFileParser();
+        NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
         assertEquals(Nmn6Format.class, parser.getFormat().getClass());
     }

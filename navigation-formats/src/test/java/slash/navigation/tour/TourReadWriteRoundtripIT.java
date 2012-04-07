@@ -20,7 +20,7 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ReadWriteBase;
 
 import java.io.IOException;
@@ -32,8 +32,8 @@ public class TourReadWriteRoundtripIT extends ReadWriteBase {
     }
 
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.tour", new NavigationFileParserCallback() {
-            public void test(NavigationFileParser source, NavigationFileParser target) {
+        readWriteRoundtrip(TEST_PATH + "from.tour", new TestCallback() {
+            public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 TourRoute sourceRoute = (TourRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.ASSEMBLY, "FalkNavigator");
                 checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.CLASS, "FMI.FalkNavigator.DestinationFCGPOI");

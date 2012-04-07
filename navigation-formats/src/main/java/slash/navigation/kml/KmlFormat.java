@@ -23,7 +23,7 @@ package slash.navigation.kml;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFileParser;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 
@@ -312,7 +312,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) {
         List<T> result = new ArrayList<T>();
         try {
-            NavigationFileParser parser = new NavigationFileParser();
+            NavigationFormatParser parser = new NavigationFormatParser();
             boolean success = parser.read(new URL(url));
             if (success) {
                 List<BaseRoute> routes = parser.getAllRoutes();

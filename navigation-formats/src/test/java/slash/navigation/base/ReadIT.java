@@ -36,7 +36,7 @@ import java.util.Set;
 import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
-    private NavigationFileParser parser = new NavigationFileParser();
+    private NavigationFormatParser parser = new NavigationFormatParser();
     private static Set<String> comments = new HashSet<String>();
 
     protected interface TestFileCallback {
