@@ -98,10 +98,10 @@ public class PasteAction extends FrameAction {
         });
     }
 
-    protected void paste(String string) {
+    private void paste(String string) {
         NavigationFormatParser parser = new NavigationFormatParser();
         try {
-            if (parser.read(new ByteArrayInputStream(string.getBytes()))) {
+            if (parser.read(string)) {
                 BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
                 paste(route.getPositions());
             }

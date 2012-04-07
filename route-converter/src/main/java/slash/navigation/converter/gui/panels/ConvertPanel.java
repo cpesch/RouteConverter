@@ -151,6 +151,7 @@ import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toFile;
 import static slash.common.io.Files.toUrls;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
+import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
 import static slash.navigation.base.NavigationFormats.getReadFormatsWithPreferredFormat;
@@ -586,7 +587,7 @@ public class ConvertPanel {
                         String path = createReadablePath(url);
 
                         final NavigationFormatParser parser = new NavigationFormatParser();
-                        if (parser.read(url)) {
+                        if (parser.read(url, getReadFormats())) {
                             log.info("Appended: " + path);
 
                             final String finalPath = path;

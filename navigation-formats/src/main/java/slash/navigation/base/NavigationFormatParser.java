@@ -27,11 +27,11 @@ import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
-import slash.navigation.simple.GoogleMapsUrlFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.util.RouteComments;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,9 +49,14 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Transfer.ceiling;
+import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
+import static slash.navigation.simple.GoogleMapsUrlFormat.isGoogleMapsUrl;
+import static slash.navigation.util.RouteComments.commentPositions;
+import static slash.navigation.util.RouteComments.commentRouteName;
 
 /**
  * Parses byte streams with navigation information via NavigationFormat classes.
@@ -125,7 +130,7 @@ public class NavigationFormatParser {
 
                 List<BaseRoute> routes = format.read(buffer, compactStartDate);
                 if (routes != null && routes.size() > 0) {
-                    log.info("Detected '" + format.getName() + "' file with " + routes.size() + " route(s) and " +
+                    log.info("Detected '" + format.getName() + "' with " + routes.size() + " route(s) and " +
                             getPositionCounts(routes) + " positions");
                     commentRoutes(routes);
                     return new FormatAndRoutes(format, routes);
@@ -139,8 +144,7 @@ public class NavigationFormatParser {
                     break;
                 }
             }
-        }
-        finally {
+        } finally {
             buffer.close();
         }
         return null;
@@ -149,29 +153,28 @@ public class NavigationFormatParser {
     @SuppressWarnings("unchecked")
     private void commentRoutes(List<BaseRoute> routes) {
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            RouteComments.commentPositions(route.getPositions());
-            RouteComments.commentRouteName(route);
+            commentPositions(route.getPositions());
+            commentRouteName(route);
         }
     }
 
-    public boolean read(File source, List<NavigationFormat> formats) throws IOException {
+    boolean read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        Calendar startDate = Calendar.getInstance(CompactCalendar.UTC);
+        Calendar startDate = Calendar.getInstance(UTC);
         startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int)source.length() + 1));
-        buffer.mark((int)source.length() + 1);
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int) source.length() + 1));
+        buffer.mark((int) source.length() + 1);
         try {
             this.formatAndRoutes = internalRead(buffer, (int) source.length(), startDate, formats);
             return formatAndRoutes != null;
-        }
-        finally {
+        } finally {
             buffer.closeUnderlyingInputStream();
         }
     }
 
     public boolean read(File source) throws IOException {
-        return read(source, NavigationFormats.getReadFormats());
+        return read(source, getReadFormats());
     }
 
     private int getSize(URL url) throws IOException {
@@ -206,17 +209,15 @@ public class NavigationFormatParser {
                 NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip, (int) entry.getSize() + 1));
                 buffer.mark(readBufferSize + 1);
                 List<NavigationFormat> formats = getReadFormatsPreferredByExtension(getExtension(entry.getName()));
-                FormatAndRoutes formatAndRoutes = internalRead(buffer, (int)entry.getSize() + 1, startDate, formats);
+                FormatAndRoutes formatAndRoutes = internalRead(buffer, (int) entry.getSize() + 1, startDate, formats);
                 if (formatAndRoutes != null)
                     return formatAndRoutes;
                 zip.closeEntry();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.fine("Error reading invalid zip entry names from " + source + ": " + e.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             try {
                 zip.close();
             } catch (IOException e) {
@@ -226,38 +227,37 @@ public class NavigationFormatParser {
         return null;
     }
 
-    public boolean read(InputStream source, int readBufferSize, Calendar startDate,
-                        List<NavigationFormat> formats) throws IOException {
+    private boolean read(InputStream source, int readBufferSize, Calendar startDate,
+                         List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         buffer.mark(readBufferSize + 1);
         try {
             formatAndRoutes = internalRead(buffer, readBufferSize, startDate, formats);
-            if(formatAndRoutes == null) {
+            if (formatAndRoutes == null) {
                 formatAndRoutes = zipRead(buffer, readBufferSize, startDate);
             }
             return formatAndRoutes != null;
-        }
-        finally {
+        } finally {
             buffer.closeUnderlyingInputStream();
         }
     }
 
+    public boolean read(String source) throws IOException {
+        return read(new ByteArrayInputStream(source.getBytes()));
+    }
+
     public boolean read(InputStream source) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null, NavigationFormats.getReadFormats());
+        return read(source, READ_BUFFER_SIZE, null, getReadFormats());
     }
 
     public boolean read(URL url, List<NavigationFormat> formats) throws IOException {
-        if (GoogleMapsUrlFormat.isGoogleMapsUrl(url)) {
+        if (isGoogleMapsUrl(url)) {
             url = new URL(url.toExternalForm() + "&output=kml");
         }
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
         return read(url.openStream(), readBufferSize, getStartDate(url), formats);
-    }
-
-    public boolean read(URL url) throws IOException {
-        return read(url, NavigationFormats.getReadFormats());
     }
 
 
@@ -266,10 +266,10 @@ public class NavigationFormatParser {
     }
 
     @SuppressWarnings("unchecked")
-    public void write(BaseRoute route, NavigationFormat format,
-                      boolean duplicateFirstPosition,
-                      boolean ignoreMaximumPositionCount,
-                      OutputStream... targets) throws IOException {
+    private void write(BaseRoute route, NavigationFormat format,
+                       boolean duplicateFirstPosition,
+                       boolean ignoreMaximumPositionCount,
+                       OutputStream... targets) throws IOException {
         log.info("Writing '" + format.getName() + "' position lists with 1 route and " + route.getPositionCount() + " positions");
 
         BaseRoute routeToWrite = NavigationFormats.asFormat(route, format);
@@ -347,7 +347,7 @@ public class NavigationFormatParser {
 
     @SuppressWarnings("unchecked")
     public void write(List<BaseRoute> routes, MultipleRoutesFormat format, File target) throws IOException {
-        log.info("Writing '" + format.getName() + "' file with with " + routes.size() + " routes and " +
+        log.info("Writing '" + format.getName() + "' with with " + routes.size() + " routes and " +
                 getPositionCounts(routes) + " positions");
 
         List<BaseRoute> routesToWrite = new ArrayList<BaseRoute>(routes.size());

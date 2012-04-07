@@ -49,6 +49,7 @@ import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -313,7 +314,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         List<T> result = new ArrayList<T>();
         try {
             NavigationFormatParser parser = new NavigationFormatParser();
-            boolean success = parser.read(new URL(url));
+            boolean success = parser.read(new URL(url), getReadFormats());
             if (success) {
                 List<BaseRoute> routes = parser.getAllRoutes();
                 for (BaseRoute route : routes) {
