@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.UrlFormat;
+import slash.navigation.base.BaseUrlFormat;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
@@ -45,7 +45,7 @@ import static slash.common.io.Transfer.trim;
  * @author Christian Pesch
  */
 
-public class GoogleMapsUrlFormat extends UrlFormat {
+public class GoogleMapsUrlFormat extends BaseUrlFormat {
     private static final Logger log = Logger.getLogger(GoogleMapsUrlFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsUrlFormat.class);
     private static final Pattern URL_PATTERN = Pattern.compile(".*http://.+\\.google\\..+/maps[\\?/]([^\\s]+).*");
