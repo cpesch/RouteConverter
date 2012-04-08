@@ -25,6 +25,8 @@ import slash.navigation.base.RouteCharacteristics;
 
 import java.io.IOException;
 
+import static slash.navigation.base.RouteCharacteristics.Track;
+
 public class TTTracklogIT extends NavigationTestCase {
 
     private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
@@ -32,6 +34,6 @@ public class TTTracklogIT extends NavigationTestCase {
     }
 
     public void testAllTTTracklogTracks() throws IOException {
-        readFiles(".itn", 1, false, true, RouteCharacteristics.Track);
+        readFiles(".itn", 1, false, true, Track);
     }
 }

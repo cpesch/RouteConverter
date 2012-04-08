@@ -28,6 +28,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import static java.lang.Math.abs;
+import static java.util.Calendar.YEAR;
+
 /**
  * Reads and writes Wintec WBT-202 (.tes) files.
  * <p/>
@@ -69,13 +72,15 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
 
             boolean valid = position.getLatitude() < 90.0 && position.getLatitude() > -90.0 &&
                     position.getLongitude() < 180.0 && position.getLongitude() > -180.0 &&
-                    position.getElevation() < 20000.0 &&
-                    Math.abs(position.getLatitude()) > 0.00001 &&
-                    Math.abs(position.getLongitude()) > 0.00001;
+                    position.getElevation() < 15000.0 &&
+                    abs(position.getLatitude()) > 0.00001 &&
+                    abs(position.getLongitude()) > 0.00001 &&
+                    position.getTime().getCalendar().get(YEAR) > 1990;
 
             if (valid && previousPosition != null) {
                 Double speed = position.calculateSpeed(previousPosition);
-                valid = speed != null && speed < 1500.0;
+                valid = speed != null && speed < 1500.0 &&
+                        previousPosition.getTime().getTimeInMillis() < position.getTime().getTimeInMillis();
             }
 
             if (!valid)

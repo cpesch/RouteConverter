@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * Represents simple line based text route formats.
  *
@@ -79,7 +81,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Waypoints;
+        return Waypoints;
     }
 
     protected boolean isValidLine(String line) {

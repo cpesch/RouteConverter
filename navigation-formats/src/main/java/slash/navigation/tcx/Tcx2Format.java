@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Math.min;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Reads Training Center Database 2 (.tcx) files.
@@ -81,7 +84,7 @@ public class Tcx2Format extends TcxFormat {
                     parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
-        return positions.size() > 0 ? new GpxRoute(this, RouteCharacteristics.Route, courseT.getName(), null, positions) : null;
+        return positions.size() > 0 ? new GpxRoute(this, Route, courseT.getName(), null, positions) : null;
     }
 
     private GpxRoute processCourseLap(String name, CourseLapT courseLapT) {
@@ -98,7 +101,7 @@ public class Tcx2Format extends TcxFormat {
                 null,
                 null,
                 courseLapT.getTotalTimeSeconds() + " seconds"));
-        return new GpxRoute(this, RouteCharacteristics.Waypoints, name, null, positions);
+        return new GpxRoute(this, Waypoints, name, null, positions);
     }
 
 
@@ -107,7 +110,7 @@ public class Tcx2Format extends TcxFormat {
         for (TrackT trackT : activityLapT.getTrack()) {
             positions.addAll(processTrack(trackT));
         }
-        return new GpxRoute(this, RouteCharacteristics.Track, activityLapT.getNotes(), null, positions);
+        return new GpxRoute(this, Track, activityLapT.getNotes(), null, positions);
     }
 
     private List<GpxRoute> process(ActivityT activityT) {
@@ -135,7 +138,7 @@ public class Tcx2Format extends TcxFormat {
         for (TrackT trackT : courseT.getTrack()) {
             positions.addAll(processTrack(trackT));
         }
-        result.add(new GpxRoute(this, RouteCharacteristics.Track, courseT.getName(), null, positions));
+        result.add(new GpxRoute(this, Track, courseT.getName(), null, positions));
         return result;
     }
 

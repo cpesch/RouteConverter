@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes MagicMaps Tour (.pth) files.
@@ -87,7 +88,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new MagicMapsPthRoute(this, RouteCharacteristics.Track, positions));
+            return Arrays.asList(new MagicMapsPthRoute(this, Track, positions));
         else
             return null;
     }

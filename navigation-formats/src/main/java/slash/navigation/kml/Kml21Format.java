@@ -55,6 +55,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
@@ -177,7 +178,7 @@ public class Kml21Format extends KmlFormat {
                 // each placemark with more than one position is one track
                 String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
-                RouteCharacteristics characteristics = parseCharacteristics(routeName, RouteCharacteristics.Track);
+                RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
                 result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }

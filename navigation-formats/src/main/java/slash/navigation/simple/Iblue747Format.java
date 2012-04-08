@@ -45,6 +45,7 @@ import static slash.common.io.Transfer.formatHeadingAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes i-Blue 747 (.csv) files.
@@ -104,7 +105,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     protected boolean isValidLine(String line) {

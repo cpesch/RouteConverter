@@ -43,6 +43,7 @@ import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes groundtrack vom SondenMonitor (.txt) files.
@@ -90,7 +91,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     protected boolean isPosition(String line) {

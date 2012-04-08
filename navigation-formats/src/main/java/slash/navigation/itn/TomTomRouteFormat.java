@@ -36,10 +36,13 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.util.RouteComments.TRIPMASTER_TIME;
 
 /**
@@ -129,7 +132,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new TomTomRoute(this, isTrack(positions) ? RouteCharacteristics.Track : RouteCharacteristics.Route, name, positions));
+            return asList(new TomTomRoute(this, isTrack(positions) ? Track : Route, name, positions));
         else
             return null;
     }
@@ -226,7 +229,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                 type = TomTomRouteFormat.END_TYPE;
 
             String comment = position.getComment();
-            if (route.getCharacteristics().equals(RouteCharacteristics.Track)) {
+            if (route.getCharacteristics().equals(Track)) {
                 Double distance = route.getDistance(startIndex, i);
                 if (first)
                     comment = formatFirstOrLastName(position, "Start", distance);

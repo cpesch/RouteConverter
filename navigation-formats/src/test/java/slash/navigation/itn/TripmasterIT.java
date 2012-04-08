@@ -32,6 +32,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 public class TripmasterIT extends NavigationTestCase {
 
     private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
@@ -39,19 +43,19 @@ public class TripmasterIT extends NavigationTestCase {
     }
 
     public void testAllTripmasterGpxTracks() throws IOException {
-        readFiles(".gpx", 1, true, true, RouteCharacteristics.Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.gpx"), 3, true, true, RouteCharacteristics.Waypoints, RouteCharacteristics.Route, RouteCharacteristics.Track);
+        readFiles(".gpx", 1, true, true, Track);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.gpx"), 3, true, true, Waypoints, Route, Track);
     }
 
     public void testAllTripmasterTracks() throws IOException {
-        readFiles(".itn", 1, true, true, RouteCharacteristics.Track);
+        readFiles(".itn", 1, true, true, Track);
     }
 
     public void testAllTripmasterKmlTracks() throws IOException {
-        readFiles(".kml", 1, true, true, RouteCharacteristics.Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.kml"), 1, true, false, RouteCharacteristics.Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-2.kml"), 2, true, false, RouteCharacteristics.Waypoints, RouteCharacteristics.Waypoints);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-3.kml"), 3, true, false, RouteCharacteristics.Track, RouteCharacteristics.Waypoints, RouteCharacteristics.Waypoints);
+        readFiles(".kml", 1, true, true, Track);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.kml"), 1, true, false, Track);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-2.kml"), 2, true, false, Waypoints, Waypoints);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-3.kml"), 3, true, false, Track, Waypoints, Waypoints);
     }
 
     public void testTripmaster1dot4GpxTrack() throws IOException {
@@ -59,7 +63,7 @@ public class TripmasterIT extends NavigationTestCase {
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
-        assertEquals(RouteCharacteristics.Track, route.getCharacteristics());
+        assertEquals(Track, route.getCharacteristics());
         assertEquals(881, route.getPositionCount());
         GpxPosition position1 = route.getPositions().get(441);
         assertEquals(53.9783, position1.getLatitude());
@@ -99,7 +103,7 @@ public class TripmasterIT extends NavigationTestCase {
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
-        assertEquals(RouteCharacteristics.Track, route.getCharacteristics());
+        assertEquals(Track, route.getCharacteristics());
         assertEquals(735, route.getPositionCount());
         GpxPosition position1 = route.getPositions().get(441);
         assertEquals(53.79967, position1.getLatitude());
@@ -141,7 +145,7 @@ public class TripmasterIT extends NavigationTestCase {
         assertNotNull(routes);
         assertEquals(1, routes.size());
         TomTomRoute route = routes.get(0);
-        assertEquals(RouteCharacteristics.Track, route.getCharacteristics());
+        assertEquals(Track, route.getCharacteristics());
         assertEquals(369, route.getPositionCount());
         TomTomPosition position1 = route.getPositions().get(85);
         assertEquals(53.65066, position1.getLatitude());
@@ -180,7 +184,7 @@ public class TripmasterIT extends NavigationTestCase {
         assertNotNull(routes);
         assertEquals(1, routes.size());
         TomTomRoute route = routes.get(0);
-        assertEquals(RouteCharacteristics.Track, route.getCharacteristics());
+        assertEquals(Track, route.getCharacteristics());
         assertEquals(6, route.getPositionCount());
         TomTomPosition position1 = route.getPositions().get(0);
         assertEquals(53.56963, position1.getLatitude());

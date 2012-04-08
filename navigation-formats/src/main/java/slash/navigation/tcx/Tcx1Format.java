@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Math.min;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Reads Training Center Database 1 (.tcx) files.
@@ -82,7 +85,7 @@ public class Tcx1Format extends TcxFormat {
                     parseTime(coursePointT.getTime()),
                     coursePointT.getName()));
         }
-        return positions.size() > 0 ? new GpxRoute(this, RouteCharacteristics.Route, name, null, positions) : null;
+        return positions.size() > 0 ? new GpxRoute(this, Route, name, null, positions) : null;
     }
 
     private GpxRoute processCourseLap(String name, CourseLapT courseLapT) {
@@ -101,7 +104,7 @@ public class Tcx1Format extends TcxFormat {
                 null,
                 courseLapT.getTotalTimeSeconds() + " seconds",
                 courseLapT));
-        return new GpxRoute(this, RouteCharacteristics.Waypoints, name, null, positions);
+        return new GpxRoute(this, Waypoints, name, null, positions);
     }
 
 
@@ -110,7 +113,7 @@ public class Tcx1Format extends TcxFormat {
         for (TrackT trackT : trackListT) {
             positions.addAll(processTrack(trackT));
         }
-        return new GpxRoute(this, RouteCharacteristics.Track, name, null, positions);
+        return new GpxRoute(this, Track, name, null, positions);
     }
 
     private List<GpxRoute> processRun(String name, RunT runT) {

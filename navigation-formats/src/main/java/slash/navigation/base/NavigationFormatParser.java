@@ -49,6 +49,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Transfer.ceiling;
@@ -57,6 +58,7 @@ import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByE
 import static slash.navigation.simple.GoogleMapsUrlFormat.isGoogleMapsUrl;
 import static slash.navigation.util.RouteComments.commentPositions;
 import static slash.navigation.util.RouteComments.commentRouteName;
+import static slash.navigation.util.RouteComments.createRouteName;
 
 /**
  * Parses byte streams with navigation information via NavigationFormat classes.
@@ -299,7 +301,7 @@ public class NavigationFormatParser {
 
         postProcessRoute(routeToWrite, format, duplicateFirstPosition);
 
-        this.formatAndRoutes = new FormatAndRoutes(format, Arrays.asList(routeToWrite));
+        this.formatAndRoutes = new FormatAndRoutes(format, asList(routeToWrite));
     }
 
     public void write(BaseRoute route, NavigationFormat format,
@@ -332,7 +334,7 @@ public class NavigationFormatParser {
         // gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
-            String name = RouteComments.createRouteName(routeToWrite.getPositions().subList(startIndex, endIndex));
+            String name = createRouteName(routeToWrite.getPositions().subList(startIndex, endIndex));
             if (targets.length > 1)
                 name = "Track" + (trackIndex + 1) + ": " + name;
             routeToWrite.setName(name);

@@ -30,6 +30,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+
 /**
  * The base of all URL based navigation formats.
  *
@@ -69,7 +71,7 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
 
         List<Wgs84Position> positions = parsePositions(parameters);
         if (positions.size() > 0)
-            return Arrays.asList(new Wgs84Route(this, RouteCharacteristics.Route, positions));
+            return Arrays.asList(new Wgs84Route(this, Route, positions));
         else
             return null;
     }

@@ -22,7 +22,6 @@ package slash.navigation.base;
 
 import org.junit.AfterClass;
 import org.junit.Test;
-import slash.common.io.Files;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +32,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static slash.navigation.base.NavigationTestCase.*;
+import static java.util.Arrays.asList;
+import static slash.common.io.Files.collectFiles;
+import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.assertFalse;
+import static slash.navigation.base.NavigationTestCase.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.assertTrue;
 
 public class ReadIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
@@ -44,15 +50,15 @@ public class ReadIT {
     }
 
     private void readFiles(String extension, TestFileCallback callback) throws IOException {
-        List<File> files = Files.collectFiles(new File(TEST_PATH), extension);
+        List<File> files = collectFiles(new File(TEST_PATH), extension);
         for (File file : files)
             callback.test(file);
-        files = Files.collectFiles(new File(SAMPLE_PATH), extension);
+        files = collectFiles(new File(SAMPLE_PATH), extension);
         for (File file : files)
             callback.test(file);
     }
 
-    private static final List NO_NAME_DEFINED = Arrays.asList("alanwpr.gpx", "bcr_with_gpsbabel.gpx",
+    private static final List NO_NAME_DEFINED = asList("alanwpr.gpx", "bcr_with_gpsbabel.gpx",
             "bcr_with_nhtoptrans.gpx", "expertgps.gpx", "Erzgebirge.gpx", "fells_loop.gpx",
             "garmin_symbols.gpx", "holux.gpx", "large10.gpx", "tm20070607.gpx");
 
@@ -362,7 +368,7 @@ public class ReadIT {
 
 
     private void dontReadFiles(String path, TestFileCallback callback) throws IOException {
-        List<File> files = Files.collectFiles(new File(path), null);
+        List<File> files = collectFiles(new File(path), null);
         for (File file : files)
             if (!file.getPath().contains(".svn"))
                 callback.test(file);

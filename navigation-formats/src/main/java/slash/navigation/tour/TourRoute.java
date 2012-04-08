@@ -55,6 +55,9 @@ import slash.navigation.wbt.WintecWbt202TesFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.util.RouteComments.createRouteName;
+
 /**
  * A Falk Navigator (.tour) route.
  *
@@ -70,13 +73,13 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
     }
 
     public TourRoute(TourFormat format, String name, List<TourPosition> positions) {
-        super(format, RouteCharacteristics.Waypoints);
+        super(format, Waypoints);
         this.positions = positions;
         setName(name);
     }
 
     public String getName() {
-        return name != null ? name : RouteComments.createRouteName(positions);
+        return name != null ? name : createRouteName(positions);
     }
 
     public void setName(String name) {

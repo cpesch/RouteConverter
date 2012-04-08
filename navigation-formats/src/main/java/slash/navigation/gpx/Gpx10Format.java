@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatElevation;
@@ -46,6 +47,7 @@ import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.Conversion.kmhToMs;
 
 /**
@@ -115,7 +117,7 @@ public class Gpx10Format extends GpxFormat {
         String name = gpx.getName();
         List<String> descriptions = asDescription(gpx.getDesc());
         List<GpxPosition> positions = extractWayPoints(gpx.getWpt(), hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
-        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? Track : RouteCharacteristics.Waypoints, name, descriptions, positions, gpx);
+        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? Track : Waypoints, name, descriptions, positions, gpx);
     }
 
     boolean isTripmasterTrack(List<GpxPosition> positions) {
@@ -387,7 +389,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
-        write(route, target, startIndex, endIndex, Arrays.asList(Route, Track, RouteCharacteristics.Waypoints));
+        write(route, target, startIndex, endIndex, asList(Route, Track, Waypoints));
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex, List<RouteCharacteristics> characteristics) {

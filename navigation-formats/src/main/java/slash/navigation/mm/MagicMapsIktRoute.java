@@ -53,6 +53,8 @@ import slash.navigation.wbt.WintecWbt202TesFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+
 /**
  * A MagicMaps (.ikt) route.
  *
@@ -66,7 +68,7 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
     public MagicMapsIktRoute(MagicMapsIktFormat format, String name, List<String> description,
                              List<Wgs84Position> positions) {
-        super(format, RouteCharacteristics.Route);
+        super(format, Route);
         this.name = name;
         this.description = description;
         this.positions = positions;

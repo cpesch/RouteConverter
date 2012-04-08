@@ -32,6 +32,8 @@ import slash.navigation.lmx.binding.MediaLinkType;
 import java.io.IOException;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
 
     private void checkUnprocessed(Lmx lmx) {
@@ -57,7 +59,7 @@ public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from.lmx", new TestCallback() {
             public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
-                assertEquals(RouteCharacteristics.Waypoints, sourceWaypoints.getCharacteristics());
+                assertEquals(Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());
                 checkUnprocessed(sourceWaypoints.getOrigin(Lmx.class));
@@ -66,7 +68,7 @@ public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(sourceWaypoint.getOrigin(LandmarkType.class));
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
-                assertEquals(RouteCharacteristics.Waypoints, targetWaypoints.getCharacteristics());
+                assertEquals(Waypoints, targetWaypoints.getCharacteristics());
                 assertNotNull(targetWaypoints.getOrigins());
                 assertEquals(1, targetWaypoints.getOrigins().size());
                 checkUnprocessed(targetWaypoints.getOrigin(Lmx.class));

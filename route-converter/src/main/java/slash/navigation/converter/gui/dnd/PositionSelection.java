@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.navigation.base.NavigationFormats.asFormat;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Acts as a container for drag and drop operations with {@link BaseNavigationPosition}s.
@@ -67,7 +68,7 @@ public class PositionSelection implements Transferable {
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e.getMessage());
         }
-        SimpleRoute targetRoute = targetFormat.createRoute(RouteCharacteristics.Waypoints, null, targetPositions);
+        SimpleRoute targetRoute = targetFormat.createRoute(Waypoints, null, targetPositions);
 
         StringWriter writer = new StringWriter();
         targetFormat.write(targetRoute, new PrintWriter(writer), 0, targetPositions.size());

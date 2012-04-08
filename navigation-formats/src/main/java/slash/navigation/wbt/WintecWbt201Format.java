@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * The base of all Wintec WBT-201 formats.
  *
@@ -166,7 +169,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             if ((trackFlag & 1) == 1) {
                 // new track
                 trackPoints = new ArrayList<BaseNavigationPosition>();
-                Wgs84Route track = createRoute(RouteCharacteristics.Track, null, trackPoints);
+                Wgs84Route track = createRoute(Track, null, trackPoints);
                 result.add(track);
                 trackPointNo = 1;
 
@@ -179,7 +182,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 // track pushpoint
                 if (pushPoints == null) {
                     pushPoints = new ArrayList<BaseNavigationPosition>();
-                    Wgs84Route points = createRoute(RouteCharacteristics.Waypoints, "Pushpoints", pushPoints);
+                    Wgs84Route points = createRoute(Waypoints, "Pushpoints", pushPoints);
                     result.add(points);
                 }
 

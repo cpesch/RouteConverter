@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.formatPositionAsString;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.util.Positions.center;
 
 /**
@@ -202,7 +204,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     private RouteCharacteristics estimateCharacteristics(int positionCount) {
-        return positionCount > 100 ? RouteCharacteristics.Track : RouteCharacteristics.Route;
+        return positionCount > 100 ? Track : Route;
     }
 
     private OvlRoute extractRoute(OvlSection symbol, OvlSection overlay, OvlSection mapLage) {

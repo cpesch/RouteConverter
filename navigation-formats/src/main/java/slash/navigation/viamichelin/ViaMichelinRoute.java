@@ -56,6 +56,9 @@ import slash.navigation.wbt.WintecWbt202TesFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.util.RouteComments.createRouteName;
+
 /**
  * A ViaMichelin (.xvm) route.
  *
@@ -68,13 +71,13 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
 
     public ViaMichelinRoute(String name, List<Wgs84Position> positions) {
-        super(new ViaMichelinFormat(), RouteCharacteristics.Route);
+        super(new ViaMichelinFormat(), Route);
         this.positions = positions;
         setName(name);
     }
 
     public String getName() {
-        return name != null ? name : RouteComments.createRouteName(positions);
+        return name != null ? name : createRouteName(positions);
     }
 
     public void setName(String name) {

@@ -35,6 +35,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 public class GpxReadWriteRoundtripIT extends ReadWriteBase {
 
     private void checkUnprocessed(Gpx gpx) {
@@ -134,7 +137,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from10.gpx", new TestCallback() {
             public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
-                assertEquals(RouteCharacteristics.Waypoints, sourceWaypoints.getCharacteristics());
+                assertEquals(Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());
                 checkUnprocessed(sourceWaypoints.getOrigin(Gpx.class));
@@ -143,7 +146,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(sourceWaypoint.getOrigin(Gpx.Wpt.class));
 
                 GpxRoute sourceRoute = (GpxRoute) source.getAllRoutes().get(1);
-                assertEquals(RouteCharacteristics.Route, sourceRoute.getCharacteristics());
+                assertEquals(Route, sourceRoute.getCharacteristics());
                 assertNotNull(sourceRoute.getOrigins());
                 assertEquals(2, sourceRoute.getOrigins().size());
                 checkUnprocessed(sourceRoute.getOrigin(Gpx.class));
@@ -153,7 +156,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(sourceRoutePoint.getOrigin(Gpx.Rte.Rtept.class));
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
-                assertEquals(RouteCharacteristics.Waypoints, targetWaypoints.getCharacteristics());
+                assertEquals(Waypoints, targetWaypoints.getCharacteristics());
                 assertNotNull(targetWaypoints.getOrigins());
                 assertEquals(1, targetWaypoints.getOrigins().size());
                 checkUnprocessed(targetWaypoints.getOrigin(Gpx.class));
@@ -162,7 +165,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(targetWaypoint.getOrigin(Gpx.Wpt.class));
 
                 GpxRoute targetRoute = (GpxRoute) target.getAllRoutes().get(1);
-                assertEquals(RouteCharacteristics.Route, targetRoute.getCharacteristics());
+                assertEquals(Route, targetRoute.getCharacteristics());
                 assertNotNull(targetRoute.getOrigins());
                 assertEquals(2, targetRoute.getOrigins().size());
                 checkUnprocessed(targetRoute.getOrigin(Gpx.class));
@@ -279,7 +282,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
         readWriteRoundtrip(TEST_PATH + "from11.gpx", new TestCallback() {
             public void test(NavigationFormatParser source, NavigationFormatParser target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
-                assertEquals(RouteCharacteristics.Waypoints, sourceWaypoints.getCharacteristics());
+                assertEquals(Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
                 assertEquals(1, sourceWaypoints.getOrigins().size());
                 checkUnprocessed(sourceWaypoints.getOrigin(GpxType.class));
@@ -288,7 +291,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(sourceWaypoint.getOrigin(WptType.class));
 
                 GpxRoute sourceRoute = (GpxRoute) source.getAllRoutes().get(1);
-                assertEquals(RouteCharacteristics.Route, sourceRoute.getCharacteristics());
+                assertEquals(Route, sourceRoute.getCharacteristics());
                 assertNotNull(sourceRoute.getOrigins());
                 assertEquals(2, sourceRoute.getOrigins().size());
                 checkUnprocessed(sourceRoute.getOrigin(GpxType.class));
@@ -298,7 +301,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(sourceRoutePoint.getOrigin(WptType.class));
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
-                assertEquals(RouteCharacteristics.Waypoints, targetWaypoints.getCharacteristics());
+                assertEquals(Waypoints, targetWaypoints.getCharacteristics());
                 assertNotNull(targetWaypoints.getOrigins());
                 assertEquals(1, targetWaypoints.getOrigins().size());
                 checkUnprocessed(targetWaypoints.getOrigin(GpxType.class));
@@ -307,7 +310,7 @@ public class GpxReadWriteRoundtripIT extends ReadWriteBase {
                 checkUnprocessed(targetWaypoint.getOrigin(WptType.class));
 
                 GpxRoute targetRoute = (GpxRoute) target.getAllRoutes().get(1);
-                assertEquals(RouteCharacteristics.Route, targetRoute.getCharacteristics());
+                assertEquals(Route, targetRoute.getCharacteristics());
                 assertNotNull(targetRoute.getOrigins());
                 assertEquals(2, targetRoute.getOrigins().size());
                 checkUnprocessed(targetRoute.getOrigin(GpxType.class));

@@ -38,6 +38,7 @@ import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes MagicMaps2Go (.txt) files.
@@ -74,7 +75,7 @@ public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     @SuppressWarnings({"unchecked"})

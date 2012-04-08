@@ -22,6 +22,8 @@ package slash.navigation.babel;
 
 import slash.navigation.base.RouteCharacteristics;
 
+import static slash.navigation.base.RouteCharacteristics.Track;
+
 /**
  * Writes OziExplorer Track (.plt) files.
  *
@@ -46,6 +48,6 @@ public class OziExplorerTrackFormat extends OziExplorerWriteFormat {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 }

@@ -40,6 +40,7 @@ import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseLong;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes GPS Tuner (.trk) files.
@@ -81,7 +82,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     protected boolean isValidLine(String line) {

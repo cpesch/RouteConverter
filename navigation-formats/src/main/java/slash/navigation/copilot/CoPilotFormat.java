@@ -40,9 +40,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * The base of all CoPilot formats.
@@ -122,7 +124,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new Wgs84Route(this, RouteCharacteristics.Route, positions));
+            return asList(new Wgs84Route(this, Route, positions));
         else
             return null;
     }

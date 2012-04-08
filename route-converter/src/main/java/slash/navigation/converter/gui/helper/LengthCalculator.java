@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * Helps to calculate the length of position list of type route and track.
  *
@@ -104,12 +107,12 @@ public class LengthCalculator {
     }
 
     private void calculateDistance() {
-        if (getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
+        if (getCharacteristics().equals(Waypoints)) {
             fireCalculatedDistance(0, 0);
             return;
         }
 
-        if (getCharacteristics().equals(RouteCharacteristics.Route) && RouteConverter.getInstance().isMapViewAvailable())
+        if (getCharacteristics().equals(Route) && RouteConverter.getInstance().isMapViewAvailable())
             return;
 
         synchronized (notificationMutex) {

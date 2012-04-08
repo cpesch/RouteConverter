@@ -48,6 +48,7 @@ import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes Qstarz BT-Q1000 (.csv) files.
@@ -108,7 +109,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     protected boolean isValidLine(String line) {

@@ -30,6 +30,7 @@ import javax.swing.event.TableModelEvent;
 
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helper.PositionHelper.formatDistance;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
@@ -81,7 +82,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
             return;
 
         BaseRoute route = getDelegate().getRoute();
-        if (route != null && route.getCharacteristics() == RouteCharacteristics.Waypoints) {
+        if (route != null && route.getCharacteristics() == Waypoints) {
             updateLabel(0, 0);
         }
     }

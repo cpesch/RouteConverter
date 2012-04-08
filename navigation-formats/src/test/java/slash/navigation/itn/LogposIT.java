@@ -25,6 +25,8 @@ import slash.navigation.base.RouteCharacteristics;
 
 import java.io.IOException;
 
+import static slash.navigation.base.RouteCharacteristics.Track;
+
 public class LogposIT extends NavigationTestCase {
 
     private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
@@ -32,7 +34,7 @@ public class LogposIT extends NavigationTestCase {
     }
 
     public void testAllLogpos1Tracks() throws IOException {
-        readFiles(".itn", 1, true, true, RouteCharacteristics.Track);
+        readFiles(".itn", 1, true, true, Track);
     }
 
     private void read2Files(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
@@ -40,6 +42,6 @@ public class LogposIT extends NavigationTestCase {
     }
 
     public void testAllLogpos2Tracks() throws IOException {
-        read2Files(".itn", 1, false, true, RouteCharacteristics.Track);
+        read2Files(".itn", 1, false, true, Track);
     }
 }

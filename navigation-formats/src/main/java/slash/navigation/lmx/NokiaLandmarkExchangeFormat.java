@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatFloat;
 import static slash.common.io.Transfer.formatPositionAsDouble;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
 
@@ -100,7 +101,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
             for (LandmarkType landmark : landmarkCollection.getLandmark())
                 positions.add(process(landmark));
         }
-        return positions.size() > 0 ? new GpxRoute(this, RouteCharacteristics.Waypoints, name, asDescription(description), positions, lmx) : null;
+        return positions.size() > 0 ? new GpxRoute(this, Waypoints, name, asDescription(description), positions, lmx) : null;
     }
 
     private Lmx createLmx(GpxRoute route, int startIndex, int endIndex) {

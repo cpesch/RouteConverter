@@ -56,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * A GPS Exchange Format (.gpx) route.
  *
@@ -84,7 +86,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     }
 
     public GpxRoute(GpxFormat format) {
-        this(format, RouteCharacteristics.Waypoints, "?", null, new ArrayList<GpxPosition>());
+        this(format, Waypoints, "?", null, new ArrayList<GpxPosition>());
     }
 
 

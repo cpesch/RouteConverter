@@ -36,6 +36,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class NavigationFormatParserIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
@@ -67,15 +70,15 @@ public class NavigationFormatParserIT {
     }
 
     void readWaypoints(String testFileName, int positionCount) throws IOException {
-        readRouteCharacteristics(testFileName, RouteCharacteristics.Waypoints, 1, new int[]{positionCount});
+        readRouteCharacteristics(testFileName, Waypoints, 1, new int[]{positionCount});
     }
 
     void readRoute(String testFileName, int routeCount, int... positionCount) throws IOException {
-        readRouteCharacteristics(testFileName, RouteCharacteristics.Route, routeCount, positionCount);
+        readRouteCharacteristics(testFileName, Route, routeCount, positionCount);
     }
 
     void readTrack(String testFileName, int trackCount, int... positionCount) throws IOException {
-        readRouteCharacteristics(testFileName, RouteCharacteristics.Track, trackCount, positionCount);
+        readRouteCharacteristics(testFileName, Track, trackCount, positionCount);
     }
 
     @Test

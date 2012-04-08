@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.util.Positions.*;
 
 /**
@@ -73,7 +76,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();
-        if(route.getCharacteristics() == RouteCharacteristics.Route) {
+        if(route.getCharacteristics() == Route) {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
                 routeBuffer.append("new GLatLng(").append(position.getLatitude()).append(",").
@@ -82,7 +85,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         }
 
         StringBuilder trackBuffer = new StringBuilder();
-        if(route.getCharacteristics() == RouteCharacteristics.Track) {
+        if(route.getCharacteristics() == Track) {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
                 trackBuffer.append("new GLatLng(").append(position.getLatitude()).append(",").
@@ -91,7 +94,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         }
 
         StringBuilder waypointsBuffer = new StringBuilder();
-        if(route.getCharacteristics() == RouteCharacteristics.Waypoints) {
+        if(route.getCharacteristics() == Waypoints) {
             // TODO segment and limit position count
             for (Wgs84Position position : positions) {
                 waypointsBuffer.append("new GMarker(new GLatLng(").append(position.getLatitude()).append(",").

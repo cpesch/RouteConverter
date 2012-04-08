@@ -31,6 +31,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 public class TomTomRouteFormatIT {
 
@@ -39,7 +41,7 @@ public class TomTomRouteFormatIT {
         File source = new File(SAMPLE_PATH + "bcr_with_itnconv.itn");
         NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
-        assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
+        assertEquals(Route, parser.getTheRoute().getCharacteristics());
     }
 
     @Test
@@ -47,7 +49,7 @@ public class TomTomRouteFormatIT {
         File source = new File(SAMPLE_PATH + "tripmaster2.itn");
         NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
-        assertEquals(RouteCharacteristics.Track, parser.getTheRoute().getCharacteristics());
+        assertEquals(Track, parser.getTheRoute().getCharacteristics());
     }
 
     @Test
@@ -55,7 +57,7 @@ public class TomTomRouteFormatIT {
         File source = new File(SAMPLE_PATH + "dilsberg kommandantenhaus.itn");
         NavigationFormatParser parser = new NavigationFormatParser();
         assertTrue(parser.read(source));
-        assertEquals(RouteCharacteristics.Route, parser.getTheRoute().getCharacteristics());
+        assertEquals(Route, parser.getTheRoute().getCharacteristics());
         assertEquals(1, parser.getTheRoute().getPositionCount());
     }
 

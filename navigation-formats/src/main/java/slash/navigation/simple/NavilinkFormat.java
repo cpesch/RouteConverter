@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Track;
+
 /**
  * Reads Navilink (.sbp) files.
  * <p/>
@@ -222,7 +224,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
                 Wgs84Position position = decodePosition(sbpRecordByteBuffer);
 
                 if ((activeRoute == null) || (isTrackStart(sbpRecordByteBuffer))) {
-                    activeRoute = createRoute(RouteCharacteristics.Track,
+                    activeRoute = createRoute(Track,
                             TRACK_NAME_DATE_FORMAT.format(position.getTime().getTime()),
                             new ArrayList<BaseNavigationPosition>());
                     resultRouteList.add(activeRoute);

@@ -27,6 +27,10 @@ import slash.navigation.converter.gui.RouteConverter;
 import javax.swing.*;
 import java.text.MessageFormat;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * A bidirectional adapter that extracts the number of position lists
  * per route characteristics of a {@link FormatAndRoutesModel} for display.
@@ -60,9 +64,9 @@ public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocu
         BaseRoute route = getDelegate().getSelectedRoute();
         if (route != null) {
             label.setText(MessageFormat.format(RouteConverter.getBundle().getString("position-lists"),
-                    count(RouteCharacteristics.Route),
-                    count(RouteCharacteristics.Track),
-                    count(RouteCharacteristics.Waypoints)
+                    count(Route),
+                    count(Track),
+                    count(Waypoints)
             ));
         } else {
             label.setText("-");

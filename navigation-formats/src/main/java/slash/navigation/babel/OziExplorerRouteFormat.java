@@ -22,6 +22,8 @@ package slash.navigation.babel;
 
 import slash.navigation.base.RouteCharacteristics;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+
 /**
  * Writes OziExplorer Route (.rte) files.
  *
@@ -46,6 +48,6 @@ public class OziExplorerRouteFormat extends OziExplorerWriteFormat {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Route;
+        return Route;
     }
 }

@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * Reads Kienzle GPS (.txt) files.
@@ -90,7 +91,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Route;
+        return Route;
     }
 
     protected boolean isValidLine(String line) {

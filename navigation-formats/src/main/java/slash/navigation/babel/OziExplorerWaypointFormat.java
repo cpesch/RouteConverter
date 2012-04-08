@@ -22,6 +22,8 @@ package slash.navigation.babel;
 
 import slash.navigation.base.RouteCharacteristics;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * Writes OziExplorer Waypoint (.wpt) files.
  *
@@ -46,6 +48,6 @@ public class OziExplorerWaypointFormat extends OziExplorerWriteFormat {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Waypoints;
+        return Waypoints;
     }
 }

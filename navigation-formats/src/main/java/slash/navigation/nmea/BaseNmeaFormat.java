@@ -39,6 +39,7 @@ import static slash.common.hex.HexEncoder.encodeByte;
 import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * The base of all NMEA-like formats.
@@ -93,7 +94,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     }
 
     protected RouteCharacteristics getCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     public List<NmeaRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {

@@ -21,7 +21,6 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
@@ -39,6 +38,7 @@ import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * Reads and writes Navigon Mobile Navigator 7 (.freshroute) files.
@@ -73,9 +73,9 @@ public class Nmn7Format extends NmnFormat {
     private NmnRoute process(Route route) {
         List<NmnPosition> positions = new ArrayList<NmnPosition>();
         for (Route.Point point : route.getPoint()) {
-            positions.add(new NmnPosition(formatDouble(point.getX()), formatDouble(point.getY()), (Double)null, null, null, point.getName()));
+            positions.add(new NmnPosition(formatDouble(point.getX()), formatDouble(point.getY()), (Double) null, null, null, point.getName()));
         }
-        return new NmnRoute(this, RouteCharacteristics.Route, route.getName(), positions);
+        return new NmnRoute(this, Route, route.getName(), positions);
     }
 
     public List<NmnRoute> read(InputStream source, CompactCalendar startDate) throws IOException {

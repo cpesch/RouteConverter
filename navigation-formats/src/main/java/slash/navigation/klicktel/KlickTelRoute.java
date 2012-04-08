@@ -57,6 +57,9 @@ import slash.navigation.wbt.WintecWbt202TesFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.util.RouteComments.createRouteName;
+
 /**
  * A klickTel Routenplaner 2009 (.krt) route.
  *
@@ -78,14 +81,14 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
     }
 
     public KlickTelRoute(String name, KDRoute.RouteOptions options, List<Wgs84Position> positions) {
-        super(new KlickTelRouteFormat(), RouteCharacteristics.Route);
+        super(new KlickTelRouteFormat(), Route);
         this.options = options;
         this.positions = positions;
         setName(name);
     }
 
     public String getName() {
-        return name != null ? name : RouteComments.createRouteName(positions);
+        return name != null ? name : createRouteName(positions);
     }
 
     public void setName(String name) {

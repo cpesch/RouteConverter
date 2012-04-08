@@ -46,6 +46,7 @@ import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
  * Reads and writes Haicom Logger (.csv) files.
@@ -116,7 +117,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return RouteCharacteristics.Track;
+        return Track;
     }
 
     protected boolean isValidLine(String line) {
