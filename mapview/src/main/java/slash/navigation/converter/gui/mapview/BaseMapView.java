@@ -102,6 +102,9 @@ public abstract class BaseMapView implements MapView {
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
+    private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
+    private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
+    private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
 
     private static final int MAXIMUM_POLYLINE_SEGMENT_LENGTH = preferences.getInt("maximumTrackSegmentLength3", 35);
     private static final int MAXIMUM_POLYLINE_POSITION_COUNT = preferences.getInt("maximumTrackPositionCount3", 50 * 35);
@@ -1066,8 +1069,8 @@ public abstract class BaseMapView implements MapView {
 
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
         StringBuilder buffer = new StringBuilder();
-        // if there are positions center on first start or if we have to recenter
-        if (positions.size() > 0 && (haveToInitializeMapOnFirstStart || recenter)) {
+
+        if (positions.size() > 0 && recenter) {
             BaseNavigationPosition northEast = northEast(positions);
             BaseNavigationPosition southWest = southWest(positions);
             buffer.append("map.fitBounds(new google.maps.LatLngBounds(").
@@ -1078,7 +1081,17 @@ public abstract class BaseMapView implements MapView {
                     append(center.getLongitude()).append("));\n");
             ignoreNextZoomCallback = true;
         }
+
+        if(haveToInitializeMapOnFirstStart) {
+            double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
+            double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
+            buffer.append("map.setCenter(new google.maps.LatLng(").append(latitude).append(",").
+                    append(longitude).append("));\n");
+            int zoom = preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
+            buffer.append("map.setZoom(").append(zoom).append(");\n");
+        }
         executeScript(buffer.toString());
+
         haveToInitializeMapOnFirstStart = false;
     }
 
@@ -1289,7 +1302,7 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
     private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoomchanged$");
-    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^centerchanged/(.*)/(.*)$");
+    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^centerchanged/(.*)/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
@@ -1414,6 +1427,9 @@ public abstract class BaseMapView implements MapView {
 
         Matcher centerChangedMatcher = CENTER_CHANGED_PATTERN.matcher(callback);
         if (centerChangedMatcher.matches()) {
+            preferences.putDouble(CENTER_LATITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(1)));
+            preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(2)));
+            preferences.putInt(CENTER_ZOOM_PREFERENCE, parseInt(centerChangedMatcher.group(3)));
             if (visibleNorthEast != null && visibleSouthWest != null && visibleNorthWest != null && visibleSouthEast != null) {
                 BaseNavigationPosition mapNorthEast = getNorthEastBounds();
                 BaseNavigationPosition mapSouthWest = getSouthWestBounds();
