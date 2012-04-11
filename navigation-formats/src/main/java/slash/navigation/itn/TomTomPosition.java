@@ -25,7 +25,8 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.nmea.NmeaPosition;
-import slash.navigation.util.RouteComments;
+
+import static slash.navigation.util.RouteComments.parseComment;
 
 /**
  * Represents a position in a Tom Tom Route (.itn) file.
@@ -95,7 +96,7 @@ public class TomTomPosition extends BaseNavigationPosition {
         if (comment == null)
             return;
 
-        RouteComments.parseComment(this, comment);
+        parseComment(this, comment);
     }
 
 
