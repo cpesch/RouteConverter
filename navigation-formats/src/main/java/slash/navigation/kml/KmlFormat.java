@@ -46,6 +46,8 @@ import java.util.regex.Pattern;
 
 import static slash.common.hex.HexDecoder.decodeBytes;
 import static slash.common.io.CompactCalendar.UTC;
+import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
@@ -166,7 +168,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
 
     protected void enrichPosition(KmlPosition position, Calendar time, String name, String description, CompactCalendar startDate) {
         if (position.getTime() == null && time != null)
-            position.setTime(CompactCalendar.fromCalendar(time));
+            position.setTime(fromCalendar(time));
         if (position.getTime() == null)
             parseTime(position, description, startDate);
         if (position.getTime() == null)
@@ -217,7 +219,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 String timeString = tavelLogMatcher.group(1);
                 try {
                     Date parsed = TAVELLOG_DATE.parse(timeString);
-                    position.setTime(CompactCalendar.fromDate(parsed));
+                    position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;
                 }
@@ -227,7 +229,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 String timeString = navigonMatcher.group(1);
                 try {
                     Date parsed = NAVIGON6310_TIME.parse(timeString);
-                    position.setTime(CompactCalendar.fromDate(parsed));
+                    position.setTime(fromDate(parsed));
                     position.setStartDate(startDate);
                 } catch (ParseException e) {
                     // intentionally left empty;
@@ -238,7 +240,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 String timeString = bt747Matcher.group(1);
                 try {
                     Date parsed = BT747_DATE.parse(timeString);
-                    position.setTime(CompactCalendar.fromDate(parsed));
+                    position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;
                 }
@@ -249,7 +251,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 String timeString = qstarzMatcher.group(2);
                 try {
                     Date parsed = TAVELLOG_DATE.parse(dateString + " " + timeString);
-                    position.setTime(CompactCalendar.fromDate(parsed));
+                    position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;
                 }
