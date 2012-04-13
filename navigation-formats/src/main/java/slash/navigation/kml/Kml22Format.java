@@ -29,14 +29,12 @@ import slash.navigation.kml.binding22.AbstractContainerType;
 import slash.navigation.kml.binding22.AbstractFeatureType;
 import slash.navigation.kml.binding22.AbstractGeometryType;
 import slash.navigation.kml.binding22.AbstractTimePrimitiveType;
-import slash.navigation.kml.binding22.AbstractViewType;
 import slash.navigation.kml.binding22.DocumentType;
 import slash.navigation.kml.binding22.FolderType;
 import slash.navigation.kml.binding22.KmlType;
 import slash.navigation.kml.binding22.LineStringType;
 import slash.navigation.kml.binding22.LineStyleType;
 import slash.navigation.kml.binding22.LinkType;
-import slash.navigation.kml.binding22.LookAtType;
 import slash.navigation.kml.binding22.MultiGeometryType;
 import slash.navigation.kml.binding22.NetworkLinkType;
 import slash.navigation.kml.binding22.ObjectFactory;
@@ -48,9 +46,6 @@ import slash.navigation.kml.binding22.TimeSpanType;
 import slash.navigation.kml.binding22.TimeStampType;
 import slash.navigation.kml.binding22.UnitsEnumType;
 import slash.navigation.kml.binding22.Vec2Type;
-import slash.navigation.kml.binding22gx.AbstractTourPrimitiveType;
-import slash.navigation.kml.binding22gx.FlyToType;
-import slash.navigation.kml.binding22gx.TourType;
 import slash.navigation.kml.binding22gx.TrackType;
 import slash.navigation.kml.bindingatom.Link;
 
@@ -60,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -73,10 +69,8 @@ import static java.lang.Math.sin;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 import static java.lang.String.valueOf;
-import static java.util.Arrays.asList;
 import static slash.common.hex.HexDecoder.decodeBytes;
 import static slash.common.io.Transfer.formatPositionAsString;
-import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -146,22 +140,11 @@ public class Kml22Format extends KmlFormat {
             PlacemarkType placemarkType = (PlacemarkType) feature;
             String placemarkName = asComment(trim(placemarkType.getName()), trim(placemarkType.getDescription()));
 
-            List<KmlPosition> positions = extractPositionsFromGeometry(placemarkType.getAbstractGeometryGroup());
+            List<KmlPosition> positions = extractPositions(placemarkType.getAbstractGeometryGroup());
             for (KmlPosition position : positions) {
                 enrichPosition(position, extractTime(placemarkType.getAbstractTimePrimitiveGroup()), placemarkName, placemarkType.getDescription(), startDate);
             }
-            routes = asList(new KmlRoute(this, Waypoints, placemarkName, null, positions));
-        }
-
-        if (feature instanceof TourType) {
-            TourType tourType = (TourType) feature;
-            String tourName = asComment(trim(tourType.getName()), trim(tourType.getDescription()));
-
-            List<KmlPosition> positions = extractPositionsFromTour(tourType.getPlaylist().getAbstractTourPrimitiveGroup());
-            for (KmlPosition position : positions) {
-                enrichPosition(position, extractTime(tourType.getAbstractTimePrimitiveGroup()), tourName, tourType.getDescription(), startDate);
-            }
-            routes = asList(new KmlRoute(this, Track, tourName, null, positions));
+            routes = Arrays.asList(new KmlRoute(this, Waypoints, placemarkName, null, positions));
         }
 
         if (routes != null)
@@ -222,7 +205,7 @@ public class Kml22Format extends KmlFormat {
             if (abstractGeometryGroup == null)
                 continue;
 
-            List<KmlPosition> positions = extractPositionsFromGeometry(abstractGeometryGroup);
+            List<KmlPosition> positions = extractPositions(abstractGeometryGroup);
             if (positions.size() == 1) {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
@@ -292,7 +275,7 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
-    private List<KmlPosition> extractPositionsFromGeometry(JAXBElement<? extends AbstractGeometryType> geometryType) {
+    private List<KmlPosition> extractPositions(JAXBElement<? extends AbstractGeometryType> geometryType) {
         List<KmlPosition> positions = new ArrayList<KmlPosition>();
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
         if (geometryTypeValue instanceof PointType) {
@@ -307,7 +290,7 @@ public class Kml22Format extends KmlFormat {
             MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
             List<JAXBElement<? extends AbstractGeometryType>> geometryTypes = multiGeometryType.getAbstractGeometryGroup();
             for (JAXBElement<? extends AbstractGeometryType> geometryType2 : geometryTypes) {
-                positions.addAll(extractPositionsFromGeometry(geometryType2));
+                positions.addAll(extractPositions(geometryType2));
             }
         }
         if (geometryTypeValue instanceof TrackType) {
@@ -315,26 +298,6 @@ public class Kml22Format extends KmlFormat {
             List<String> coord = trackType.getCoord();
             List<String> when = trackType.getWhen();
             positions.addAll(extractPositions(coord, when));
-        }
-        return positions;
-    }
-
-    private List<KmlPosition> extractPositionsFromTour(List<JAXBElement<? extends AbstractTourPrimitiveType>> tourPrimitives) {
-        List<KmlPosition> positions = new ArrayList<KmlPosition>();
-        for (JAXBElement<? extends AbstractTourPrimitiveType> tourPrimitive : tourPrimitives) {
-            AbstractTourPrimitiveType tourPrimitiveValue = tourPrimitive.getValue();
-            if (tourPrimitiveValue instanceof FlyToType) {
-                FlyToType flyToType = (FlyToType) tourPrimitiveValue;
-                AbstractViewType abstractViewGroupValue = flyToType.getAbstractViewGroup().getValue();
-                if (abstractViewGroupValue instanceof LookAtType) {
-                    LookAtType lookAtType = (LookAtType) abstractViewGroupValue;
-                    Double elevation = isEmpty(lookAtType.getAltitude()) ? null : lookAtType.getAltitude();
-                    KmlPosition position = new KmlPosition(lookAtType.getLongitude(), lookAtType.getLatitude(),
-                            elevation, null, null, null);
-                    position.setHeading(lookAtType.getHeading());
-                    positions.add(position);
-                }
-            }
         }
         return positions;
     }
