@@ -172,12 +172,19 @@ public class TripmasterTest extends NavigationTestCase {
     }
 
     public void testTripmaster31StartPosition() {
-        TomTomPosition position = new TomTomPosition(0, 0, "10:05:16 - Start : 24/03/2012 10:05:16 - 19.3 m - 0.1 km");
-        assertEquals("Start : 24/03/2012 10:05:16", position.getReason());
-        assertNull(position.getCity());
-        assertEquals(19.3, position.getElevation());
-        assertNull(position.getSpeed());
-        assertEquals(calendar(2012, 3, 24, 10, 5, 16), position.getTime());
+        TomTomPosition position1 = new TomTomPosition(0, 0, "10:05:16 - Start : 24/03/2012 10:05:16 - 19.3 m - 0.1 km");
+        assertEquals("Start : 24/03/2012 10:05:16", position1.getReason());
+        assertNull(position1.getCity());
+        assertEquals(19.3, position1.getElevation());
+        assertNull(position1.getSpeed());
+        assertEquals(calendar(2012, 3, 24, 10, 5, 16), position1.getTime());
+
+        TomTomPosition position2 = new TomTomPosition(0, 0, "08:41:40 - Start : 25/03/2012 08:41:40 - 16.7 m - 0.1 km - 0 Km");
+        assertEquals("Start : 25/03/2012 08:41:40", position2.getReason());
+        assertNull(position2.getCity());
+        assertEquals(16.7, position2.getElevation());
+        assertNull(position2.getSpeed());
+        assertEquals(calendar(2012, 3, 25, 8, 41, 40), position2.getTime());
     }
 
     public void testTripmaster31EndPosition() {

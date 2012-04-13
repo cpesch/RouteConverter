@@ -294,7 +294,7 @@ public abstract class RouteComments {
     private static final Pattern TRIPMASTER_25_SHORT_WAYPOINT_PATTERN = Pattern.compile(
             "(" + TIME + ") - (.+) - (" + DOUBLE + ") m");
     private static final Pattern TRIPMASTER_31_SHORT_STARTEND_PATTERN = Pattern.compile(
-            "(" + TIME + ") - ((Start|Ende|Finish) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
+            "(" + TIME + ") - ((Start|Ende|Finish) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m.*");
     private static final Pattern TRIPMASTER_MIDDLE_PATTERN = Pattern.compile(
             "(" + TIME + ") - (" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
     private static final Pattern TRIPMASTER_LONG_NO_REASON_PATTERN = Pattern.compile(
