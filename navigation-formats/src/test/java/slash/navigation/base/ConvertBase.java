@@ -20,18 +20,20 @@
 
 package slash.navigation.base;
 
+import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.OziExplorerReadFormat;
 import slash.navigation.babel.OziExplorerWriteFormat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 public abstract class ConvertBase extends NavigationTestCase {
-    NavigationFormatParser parser = new NavigationFormatParser();
+    private NavigationFormatParser parser = new NavigationFormatParser();
 
     void convertRoundtrip(String testFileName,
                           BaseNavigationFormat sourceFormat,
@@ -40,22 +42,24 @@ public abstract class ConvertBase extends NavigationTestCase {
         assertTrue(targetFormat.isSupportsWriting());
 
         File source = new File(testFileName);
-        assertTrue("Cannot read route from " + source, parser.read(source));
-        assertNotNull(parser.getFormat());
-        assertNotNull(parser.getTheRoute());
-        assertNotNull(parser.getAllRoutes());
-        assertTrue(parser.getAllRoutes().size() > 0);
+        ParserResult result = parser.read(source);
+        assertNotNull("Cannot read route from " + source, result);
+        assertTrue(result.isSuccessful());
+        assertNotNull(result.getFormat());
+        assertNotNull(result.getTheRoute());
+        assertNotNull(result.getAllRoutes());
+        assertTrue(result.getAllRoutes().size() > 0);
 
         // check append
-        BaseNavigationPosition sourcePosition = parser.getTheRoute().getPositions().get(0);
+        BaseNavigationPosition sourcePosition = result.getTheRoute().getPositions().get(0);
         BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetFormat);
         assertNotNull(targetPosition);
 
-        convertSingleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getTheRoute());
+        convertSingleRouteRoundtrip(sourceFormat, targetFormat, source, result.getTheRoute());
 
         if (targetFormat.isSupportsMultipleRoutes()) {
-            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, new ArrayList<BaseRoute>(Arrays.<BaseRoute>asList(parser.getTheRoute())));
-            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, parser.getAllRoutes());
+            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, Collections.<BaseRoute>singletonList(result.getTheRoute()));
+            convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, result.getAllRoutes());
         }
     }
 
@@ -73,25 +77,24 @@ public abstract class ConvertBase extends NavigationTestCase {
             parser.write(sourceRoute, targetFormat, false, false, target);
             assertTrue(target.exists());
 
-            NavigationFormatParser sourceParser = new NavigationFormatParser();
-            assertTrue(sourceParser.read(source));
-            NavigationFormatParser targetParser = new NavigationFormatParser();
-            assertTrue(targetParser.read(target));
+            ParserResult sourceResult = parser.read(source);
+            assertNotNull(sourceResult);
+            ParserResult targetResult = parser.read(target);
+            assertNotNull(targetResult);
 
             targetFormat = handleWriteOnlyFormats(targetFormat);
 
-            assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
-            assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
-            assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
-            assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
+            assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
+            assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
+            assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
+            assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
 
-            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetParser.getTheRoute();
-            compareRouteMetaData(sourceRoute, targetRoute);
-            comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetParser.getAllRoutes().size() > 0);
+            compareRouteMetaData(sourceRoute, targetResult.getTheRoute());
+            comparePositions(sourceRoute, sourceFormat, targetResult.getTheRoute(), targetFormat, targetResult.getAllRoutes().size() > 0);
 
-            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : targetParser.getAllRoutes()) {
-                compareRouteMetaData(sourceRoute, route);
-                comparePositions(sourceRoute, sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 0);
+            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute : targetResult.getAllRoutes()) {
+                compareRouteMetaData(sourceRoute, targetRoute);
+                comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetResult.getAllRoutes().size() > 0);
             }
 
             assertTrue(target.exists());
@@ -110,26 +113,30 @@ public abstract class ConvertBase extends NavigationTestCase {
             parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
             assertTrue(target.exists());
 
-            NavigationFormatParser sourceParser = new NavigationFormatParser();
-            assertTrue(sourceParser.read(source));
-            NavigationFormatParser targetParser = new NavigationFormatParser();
-            assertTrue(targetParser.read(target));
+            ParserResult sourceResult = parser.read(source);
+            assertNotNull(sourceResult);
+            assertTrue(sourceResult.isSuccessful());
+            ParserResult targetResult = parser.read(target);
+            assertNotNull(targetResult);
+            assertTrue(targetResult.isSuccessful());
 
             targetFormat = handleWriteOnlyFormats(targetFormat);
 
-            assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
-            assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
-            assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
-            assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
+            assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
+            assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
+            assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
+            assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
 
-            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetParser.getTheRoute();
-            compareRouteMetaData(sourceParser.getTheRoute(), targetRoute);
+            compareRouteMetaData(sourceResult.getTheRoute(), targetResult.getTheRoute());
 
-            for (int i = 0; i < targetParser.getAllRoutes().size(); i++) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = targetParser.getAllRoutes().get(i);
-                compareRouteMetaData(sourceParser.getTheRoute(), route);
-                BaseRoute sourceRoute = sourceFormat instanceof MicrosoftAutoRouteFormat ? sourceRoutes.get(0) : sourceRoutes.get(i);
-                comparePositions(sourceRoute, sourceFormat, route, targetFormat, targetParser.getAllRoutes().size() > 1);
+            for (int i = 0; i < targetResult.getAllRoutes().size(); i++) {
+                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetResult.getAllRoutes().get(i);
+                BaseRoute sourceRoute = sourceResult.getAllRoutes().get(sourceFormat instanceof MicrosoftAutoRouteFormat ? 0 : i);
+                // skip since first route is a list of all waypoints of all routes
+                if (targetFormat instanceof GarminMapSource6Format && targetRoute.getCharacteristics().equals(Waypoints))
+                    continue;
+                compareRouteMetaData(sourceRoute, targetRoute);
+                comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetResult.getAllRoutes().size() > 1);
             }
 
             assertTrue(target.exists());
@@ -142,15 +149,16 @@ public abstract class ConvertBase extends NavigationTestCase {
 
     void convertSplitRoundtrip(String testFileName, BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat) throws IOException {
         File source = new File(testFileName);
-        assertTrue(parser.read(source));
-        assertNotNull(parser.getFormat());
-        assertNotNull(parser.getTheRoute());
-        assertNotNull(parser.getAllRoutes());
-        assertTrue(parser.getAllRoutes().size() > 0);
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertNotNull(result.getFormat());
+        assertNotNull(result.getTheRoute());
+        assertNotNull(result.getAllRoutes());
+        assertTrue(result.getAllRoutes().size() > 0);
 
-        BaseRoute sourceRoute = parser.getTheRoute();
+        BaseRoute sourceRoute = result.getTheRoute();
         int maximumPositionCount = targetFormat.getMaximumPositionCount();
-        int positionCount = parser.getTheRoute().getPositionCount();
+        int positionCount = result.getTheRoute().getPositionCount();
         int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
         assertEquals(fileCount, NavigationFormatParser.getNumberOfFilesToWriteFor(sourceRoute, targetFormat, false));
 
@@ -160,22 +168,19 @@ public abstract class ConvertBase extends NavigationTestCase {
         try {
             parser.write(sourceRoute, targetFormat, false, false, targets);
 
-            NavigationFormatParser sourceParser = new NavigationFormatParser();
-            sourceParser.read(source);
-
+            ParserResult sourceResult = parser.read(source);
             for (int i = 0; i < targets.length; i++) {
-                NavigationFormatParser targetParser = new NavigationFormatParser();
-                targetParser.read(targets[i]);
-                assertEquals(sourceFormat.getClass(), sourceParser.getFormat().getClass());
-                assertEquals(targetFormat.getClass(), targetParser.getFormat().getClass());
-                assertEquals(sourceFormat.getName(), sourceParser.getFormat().getName());
-                assertEquals(targetFormat.getName(), targetParser.getFormat().getName());
+                ParserResult targetResult = parser.read(targets[i]);
+                assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
+                assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
+                assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
+                assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
                 assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
-                        targetParser.getTheRoute().getPositionCount());
+                        targetResult.getTheRoute().getPositionCount());
 
-                compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
-                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false,
-                        sourceParser.getTheRoute().getCharacteristics(), targetParser.getTheRoute().getCharacteristics());
+                compareSplitPositions(sourceResult.getTheRoute().getPositions(), sourceFormat,
+                        targetResult.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false,
+                        sourceResult.getTheRoute().getCharacteristics(), targetResult.getTheRoute().getCharacteristics());
             }
 
             for (File target : targets) {

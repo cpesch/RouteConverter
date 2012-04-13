@@ -29,6 +29,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.local.LocalCatalog;
 import slash.navigation.catalog.model.CategoryTreeNode;
@@ -307,8 +308,9 @@ public class BrowsePanel {
         Double length = null;
         try {
             NavigationFormatParser parser = new NavigationFormatParser();
-            if (parser.read(file)) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+            ParserResult result = parser.read(file);
+            if (result.isSuccessful()) {
+                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
                 if (route != null) {
                     description = createRouteDescription(route);
                     length = route.getDistance();

@@ -22,23 +22,25 @@ package slash.navigation.nmn;
 
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Nmn6FormatIT extends NavigationTestCase {
+    private NavigationFormatParser parser = new NavigationFormatParser();
 
     public void testIsNmn6FavoritesWithValidPositionsOnly() throws IOException {
         File source = new File(SAMPLE_PATH + "Mue Goe A38-stripped.rte");
-        NavigationFormatParser parser = new NavigationFormatParser();
-        assertTrue(parser.read(source));
-        assertEquals(Nmn6Format.class, parser.getFormat().getClass());
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(Nmn6Format.class, result.getFormat().getClass());
     }
 
     public void testIsNmn6WithFirstValidLineButNotPosition() throws IOException {
         File source = new File(SAMPLE_PATH + "Mue Goe A38.rte");
-        NavigationFormatParser parser = new NavigationFormatParser();
-        assertTrue(parser.read(source));
-        assertEquals(Nmn6Format.class, parser.getFormat().getClass());
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(Nmn6Format.class, result.getFormat().getClass());
     }
 }

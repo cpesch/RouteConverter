@@ -48,35 +48,37 @@ public class AppendIT extends NavigationTestCase {
 
     void append(String testFileName, String appendFileName) throws IOException {
         File appendFile = new File(appendFileName);
-        assertTrue(parser.read(appendFile));
-        assertNotNull(parser.getTheRoute());
-        assertNotNull(parser.getFormat());
-        assertNotNull(parser.getAllRoutes());
-        assertTrue(parser.getAllRoutes().size() > 0);
+        ParserResult appendResult = parser.read(appendFile);
+        assertNotNull(appendResult);
+        assertNotNull(appendResult.getTheRoute());
+        assertNotNull(appendResult.getFormat());
+        assertNotNull(appendResult.getAllRoutes());
+        assertTrue(appendResult.getAllRoutes().size() > 0);
 
-        int appendPositionCount = parser.getTheRoute().getPositionCount();
-        List<BaseNavigationPosition> appendPositions = parser.getTheRoute().getPositions();
+        int appendPositionCount = appendResult.getTheRoute().getPositionCount();
+        List<BaseNavigationPosition> appendPositions = appendResult.getTheRoute().getPositions();
         assertTrue(appendPositionCount > 0);
 
         File testFile = new File(testFileName);
-        assertTrue(parser.read(testFile));
-        BaseRoute<?, ?> testRoute = parser.getTheRoute();
+        ParserResult testResult = parser.read(testFile);
+        assertNotNull(testResult);
+        BaseRoute<?, ?> testRoute = testResult.getTheRoute();
         assertNotNull(testRoute);
-        NavigationFormat<?> testFormat = parser.getFormat();
+        NavigationFormat<?> testFormat = testResult.getFormat();
         assertNotNull(testFormat);
-        String testName = parser.getTheRoute().getName();
-        List<String> testDescription = parser.getTheRoute().getDescription();
-        int testPositionCount = parser.getTheRoute().getPositionCount();
-        List<BaseNavigationPosition> testPositions = new ArrayList<BaseNavigationPosition>(parser.getTheRoute().getPositions());
+        String testName = testResult.getTheRoute().getName();
+        List<String> testDescription = testResult.getTheRoute().getDescription();
+        int testPositionCount = testResult.getTheRoute().getPositionCount();
+        List<BaseNavigationPosition> testPositions = new ArrayList<BaseNavigationPosition>(testResult.getTheRoute().getPositions());
         assertTrue(testPositionCount > 0);
 
         NavigationFormatParser appendParser = new NavigationFormatParser();
         appendParser.read(appendFile);
 
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = NavigationFormats.asFormat(appendParser.getTheRoute(), parser.getFormat());
-        parser.getTheRoute().getPositions().addAll(appendRoute.getPositions());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = NavigationFormats.asFormat(appendResult.getTheRoute(), testResult.getFormat());
+        testResult.getTheRoute().getPositions().addAll(appendRoute.getPositions());
 
-        BaseRoute<BaseNavigationPosition, ?> route = parser.getTheRoute();
+        BaseRoute<BaseNavigationPosition, ?> route = testResult.getTheRoute();
         assertEquals(testRoute, route);
         // since a lot of formats determine route names from the first
         // and the (here changing) last way point name

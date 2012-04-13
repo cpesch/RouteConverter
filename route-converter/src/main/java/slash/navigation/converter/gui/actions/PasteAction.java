@@ -24,6 +24,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.helper.JTableHelper;
@@ -33,7 +34,6 @@ import slash.navigation.gui.FrameAction;
 import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -101,8 +101,9 @@ public class PasteAction extends FrameAction {
     private void paste(String string) {
         NavigationFormatParser parser = new NavigationFormatParser();
         try {
-            if (parser.read(string)) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
+            ParserResult result = parser.read(string);
+            if (result.isSuccessful()) {
+                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
                 paste(route.getPositions());
             }
         } catch (IOException e) {

@@ -110,16 +110,17 @@ public class RouteConverterCmdLine {
 
     private void convert(File source, NavigationFormat format, File target) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser();
-        if (!parser.read(source)) {
+        ParserResult result = parser.read(source);
+        if (!result.isSuccessful()) {
             log.severe("Could not read source '" + source.getAbsolutePath() + "'");
             logFormatNames(getReadFormatsSortedByName());
             System.exit(20);
         }
 
         if (format.isSupportsMultipleRoutes()) {
-            parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) format, target);
+            parser.write(result.getAllRoutes(), (MultipleRoutesFormat) format, target);
         } else {
-            int fileCount = getNumberOfFilesToWriteFor(parser.getTheRoute(), format, false);
+            int fileCount = getNumberOfFilesToWriteFor(result.getTheRoute(), format, false);
             File[] targets = createTargetFiles(target, fileCount, format.getExtension(), format.getMaximumFileNameLength());
             for (File t : targets) {
                 if (t.exists()) {
@@ -127,7 +128,7 @@ public class RouteConverterCmdLine {
                     System.exit(13);
                 }
             }
-            parser.write(parser.getTheRoute(), format, false, false, targets);
+            parser.write(result.getTheRoute(), format, false, false, targets);
         }
     }
 

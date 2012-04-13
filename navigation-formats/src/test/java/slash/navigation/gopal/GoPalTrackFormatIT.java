@@ -22,16 +22,18 @@ package slash.navigation.gopal;
 
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
 public class GoPalTrackFormatIT extends NavigationTestCase {
- 
+    private NavigationFormatParser parser = new NavigationFormatParser();
+
     public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {
         File source = new File(SAMPLE_PATH + "dieter2-GoPal3Track.trk");
-        NavigationFormatParser parser = new NavigationFormatParser();
-        assertTrue(parser.read(source));
-        assertEquals(GoPalTrackFormat.class, parser.getFormat().getClass());
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(GoPalTrackFormat.class, result.getFormat().getClass());
     }
 }

@@ -24,6 +24,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 
@@ -311,22 +312,21 @@ public abstract class KmlFormat extends BaseKmlFormat {
     }
 
     protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) {
-        List<T> result = new ArrayList<T>();
+        List<T> routes = new ArrayList<T>();
         try {
             NavigationFormatParser parser = new NavigationFormatParser();
-            boolean success = parser.read(new URL(url), getReadFormats());
-            if (success) {
-                List<BaseRoute> routes = parser.getAllRoutes();
-                for (BaseRoute route : routes) {
+            ParserResult result = parser.read(new URL(url), getReadFormats());
+            if (result != null) {
+                for (BaseRoute route : result.getAllRoutes()) {
                     if (resultClass.isInstance(route))
-                        result.add(resultClass.cast(route));
+                        routes.add(resultClass.cast(route));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             log.fine("Error reading url " + url + ": " + e.getMessage());
         }
-        return result;
+        return routes;
     }
 
     protected float getLineWidth() {

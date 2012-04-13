@@ -54,7 +54,6 @@ import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
-import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
@@ -215,12 +214,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     @SuppressWarnings("unchecked")
     public static void compareRouteMetaData(BaseRoute sourceRoute, BaseRoute targetRoute) {
-        if (targetRoute instanceof KmlRoute && targetRoute.getCharacteristics().equals(Waypoints)) {
-            String sourceName = getKmlRouteName(sourceRoute);
-            String targetName = getKmlRouteName(targetRoute);
-            // multiple routes per file: no waypoint name
-            assertTrue("Waypoints".equals(targetName) || sourceName.equals(targetName));
-        } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
+        if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 sourceRoute.getName().contains(" to ") && sourceRoute.getName().endsWith("/") &&
                 targetRoute.getName().endsWith("/")) {
             String sourcePrefix = getKmlRouteName(sourceRoute);
@@ -243,7 +237,8 @@ public abstract class NavigationTestCase extends TestCase {
                 !targetRoute.getName().startsWith("/Route") &&
                 !targetRoute.getName().endsWith("/Route") &&
                 !targetRoute.getName().equals("MapLage") && !targetRoute.getName().contains("Track: ") &&
-                !targetRoute.getName().endsWith("/Track"))
+                !targetRoute.getName().endsWith("/Track") &&
+                !targetRoute.getName().endsWith("/Waypoints"))
             // Test only if this is not the multiple routes per file case & the route has not been named by us
             assertEquals(sourceRoute.getName(), targetRoute.getName());
 
@@ -739,6 +734,8 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.025);
             } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusV900Format) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
+            } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusV900Format) {
+                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof Iblue747Format) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
@@ -771,9 +768,8 @@ public abstract class NavigationTestCase extends TestCase {
                 String targetTime = format.format(targetPosition.getTime().getTime());
                 assertEquals("Time " + index + " does not match", sourceTime, targetTime);
             }
-        } else if ((sourceFormat instanceof Gpx11Format || sourceFormat instanceof Tcx1Format) && targetFormat instanceof Tcx1Format) {
+        } else if ((sourceFormat instanceof Gpx11Format || sourceFormat instanceof TcxFormat) && targetFormat instanceof TcxFormat) {
             assertNull(sourcePosition.getTime());
-            assertNotNull(targetPosition.getTime());
         } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof BcrFormat ||
                 targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminPcx5Format ||
                 targetFormat instanceof GlopusFormat || targetFormat instanceof MagellanRouteFormat ||
@@ -937,12 +933,13 @@ public abstract class NavigationTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     protected void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser();
-        parser.read(source);
-        assertNotNull(parser.getFormat());
-        assertNotNull(parser.getAllRoutes());
-        assertEquals(routeCount, parser.getAllRoutes().size());
-        for (int i = 0; i < parser.getAllRoutes().size(); i++) {
-            BaseRoute route = parser.getAllRoutes().get(i);
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertNotNull(result.getFormat());
+        assertNotNull(result.getAllRoutes());
+        assertEquals(routeCount, result.getAllRoutes().size());
+        for (int i = 0; i < result.getAllRoutes().size(); i++) {
+            BaseRoute route = result.getAllRoutes().get(i);
             assertNotNull(route);
             assertEquals("Route " + i + " from " + source + " is not " + characteristics[i],
                     characteristics[i], route.getCharacteristics());

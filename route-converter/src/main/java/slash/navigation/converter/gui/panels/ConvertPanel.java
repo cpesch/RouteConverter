@@ -34,6 +34,7 @@ import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatParserListener;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
@@ -519,7 +520,7 @@ public class ConvertPanel {
                         }
                     });
 
-                    final NavigationFormatParser parser = new NavigationFormatParser();
+                    NavigationFormatParser parser = new NavigationFormatParser();
                     parser.addNavigationFileParserListener(new NavigationFormatParserListener() {
                         public void reading(final NavigationFormat<BaseRoute> format) {
                             SwingUtilities.invokeLater(new Runnable() {
@@ -530,12 +531,13 @@ public class ConvertPanel {
                         }
                     });
 
-                    if (parser.read(url, formats)) {
+                    final ParserResult result = parser.read(url, formats);
+                    if (result.isSuccessful()) {
                         log.info("Opened: " + path);
 
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(parser.getFormat(), parser.getAllRoutes()));
+                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(result.getFormat(), result.getAllRoutes()));
                                 comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                 urlModel.setString(path);
                                 recentUrlsModel.addUrl(url);
@@ -586,8 +588,9 @@ public class ConvertPanel {
                     for (URL url : urls) {
                         String path = createReadablePath(url);
 
-                        final NavigationFormatParser parser = new NavigationFormatParser();
-                        if (parser.read(url, getReadFormats())) {
+                        NavigationFormatParser parser = new NavigationFormatParser();
+                        final ParserResult result = parser.read(url, getReadFormats());
+                        if (result.isSuccessful()) {
                             log.info("Appended: " + path);
 
                             final String finalPath = path;
@@ -595,7 +598,7 @@ public class ConvertPanel {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     try {
-                                        getPositionsModel().add(finalRow, parser.getTheRoute());
+                                        getPositionsModel().add(finalRow, result.getTheRoute());
                                     } catch (FileNotFoundException e) {
                                         r.handleFileNotFound(finalPath);
                                     } catch (IOException e) {

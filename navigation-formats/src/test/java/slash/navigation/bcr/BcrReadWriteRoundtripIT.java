@@ -20,12 +20,15 @@
 
 package slash.navigation.bcr;
 
-import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteBase;
 
 import java.io.IOException;
 
-import static slash.navigation.bcr.BcrFormat.*;
+import static slash.navigation.bcr.BcrFormat.CLIENT_TITLE;
+import static slash.navigation.bcr.BcrFormat.COORDINATES_TITLE;
+import static slash.navigation.bcr.BcrFormat.DESCRIPTION_TITLE;
+import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
 
 public class BcrReadWriteRoundtripIT extends ReadWriteBase {
     private void checkUnprocessedValue(BcrRoute route, String section, String name, String value) {
@@ -36,7 +39,7 @@ public class BcrReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testMotorradTourenplanerRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new TestCallback() {
-            public void test(NavigationFormatParser source, NavigationFormatParser target) {
+            public void test(ParserResult source, ParserResult target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute, CLIENT_TITLE, "EXTRA", "1");
                 checkUnprocessedValue(sourceRoute, COORDINATES_TITLE, "PLUS", "2");
@@ -53,7 +56,7 @@ public class BcrReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testMapAndGuideIntranetRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-mgintra09.bcr", new TestCallback() {
-            public void test(NavigationFormatParser source, NavigationFormatParser target) {
+            public void test(ParserResult source, ParserResult target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION1", "0");
                 checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION2", "1");

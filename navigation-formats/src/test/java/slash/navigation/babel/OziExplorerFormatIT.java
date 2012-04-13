@@ -27,14 +27,15 @@ import java.io.IOException;
 import java.util.List;
 
 public class OziExplorerFormatIT extends NavigationTestCase {
+    private NavigationFormatParser parser = new NavigationFormatParser();
 
     public void testEliminateNonsenseRoutes() throws IOException {
         File source = new File(SAMPLE_PATH + "Feissneck.rte");
-        NavigationFormatParser parser = new NavigationFormatParser();
-        assertTrue(parser.read(source));
-        List<BaseRoute> routes = parser.getAllRoutes();
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        List<BaseRoute> routes = result.getAllRoutes();
         assertEquals(1, routes.size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = parser.getTheRoute();
-        assertEquals(50, route.getPositionCount());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        assertEquals(49, route.getPositionCount());
     }
 }

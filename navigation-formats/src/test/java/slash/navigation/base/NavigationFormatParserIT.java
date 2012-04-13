@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.common.TestCase;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRouteFormat;
@@ -43,20 +44,30 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 public class NavigationFormatParserIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
 
-    void read(String testFileName) throws IOException {
+    ParserResult read(String testFileName) throws IOException {
         File source = new File(testFileName);
-        assertTrue(parser.read(source));
-        assertNotNull(parser.getFormat());
-        assertNotNull(parser.getAllRoutes());
-        assertTrue(parser.getAllRoutes().size() > 0);
-        assertNotNull("Cannot read route from " + source, parser.getTheRoute());
-        assertTrue(parser.getTheRoute().getPositionCount() > 0);
+        ParserResult result = parser.read(source);
+        assertNotNull(result.getFormat());
+        assertNotNull(result.getAllRoutes());
+        assertTrue(result.getAllRoutes().size() > 0);
+        assertNotNull("Cannot read route from " + source, result.getTheRoute());
+        assertTrue(result.getTheRoute().getPositionCount() > 0);
+        return result;
+    }
+
+    private List<BaseRoute> getRouteCharacteristics(List<BaseRoute> routes, RouteCharacteristics characteristics) {
+        List<BaseRoute> result = new ArrayList<BaseRoute>();
+        for (BaseRoute route : routes) {
+            if (route.getCharacteristics().equals(characteristics))
+                result.add(route);
+        }
+        return result.size() > 0 ? result : null;
     }
 
     void readRouteCharacteristics(String testFileName, RouteCharacteristics characteristics,
                                   int characteristicsCount, int[] positionCount) throws IOException {
-        read(testFileName);
-        List<BaseRoute> routes = parser.getRouteCharacteristics(characteristics);
+        ParserResult result = read(testFileName);
+        List<BaseRoute> routes = getRouteCharacteristics(result.getAllRoutes(), characteristics);
         if (characteristicsCount == 0) {
             assertNull(routes);
         } else {
@@ -105,13 +116,16 @@ public class NavigationFormatParserIT {
 
     @Test
     public void testReadWithFormatList() throws IOException {
-        NavigationFormatParser parser = new NavigationFormatParser();
         List<NavigationFormat> formats = new ArrayList<NavigationFormat>();
-        assertFalse(parser.read(new File(TEST_PATH + "from.itn"), formats));
+        ParserResult result1 = parser.read(new File(TEST_PATH + "from.itn"), formats);
+        assertFalse(result1.isSuccessful());
         formats.add(new TomTom8RouteFormat());
-        assertFalse(parser.read(new File(TEST_PATH + "from.itn"), formats));
+        ParserResult result2 = parser.read(new File(TEST_PATH + "from.itn"), formats);
+        assertFalse(result2.isSuccessful());
         formats.add(new TomTom5RouteFormat());
-        assertTrue(parser.read(new File(TEST_PATH + "from.itn"), formats));
+        ParserResult result3 = parser.read(new File(TEST_PATH + "from.itn"), formats);
+        assertTrue(result3.isSuccessful());
+        assertEquals(result3.getFormat().getClass(), TomTom5RouteFormat.class);
     }
 
     @Test

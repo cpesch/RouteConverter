@@ -33,42 +33,42 @@ import static slash.navigation.base.BaseNavigationFormat.UNLIMITED_MAXIMUM_POSIT
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 
 public abstract class ReadWriteBase extends NavigationTestCase {
-    NavigationFormatParser parser = new NavigationFormatParser();
+    private NavigationFormatParser parser = new NavigationFormatParser();
 
     @SuppressWarnings("unchecked")
     protected void readWriteRoundtrip(String testFileName, TestCallback parserCallback) throws IOException {
         File source = new File(testFileName);
-        assertTrue("Could not read " + testFileName, parser.read(source));
-        assertNotNull(parser.getFormat());
-        assertNotNull(parser.getAllRoutes());
-        assertTrue(parser.getAllRoutes().size() > 0);
+        ParserResult result = parser.read(source);
+        assertNotNull("Could not read " + testFileName, result);
+        assertNotNull(result);
+        assertNotNull(result.getFormat());
+        assertNotNull(result.getAllRoutes());
+        assertTrue(result.getAllRoutes().size() > 0);
 
         File target = File.createTempFile("target", Files.getExtension(source));
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
-        if (parser.getFormat().isSupportsMultipleRoutes() || parser.getFormat() instanceof AlanWaypointsAndRoutesFormat)
-            parser.write(parser.getAllRoutes(), (MultipleRoutesFormat) parser.getFormat(), target);
+        if (result.getFormat().isSupportsMultipleRoutes() || result.getFormat() instanceof AlanWaypointsAndRoutesFormat)
+            parser.write(result.getAllRoutes(), (MultipleRoutesFormat) result.getFormat(), target);
         else
-            parser.write(parser.getTheRoute(), parser.getFormat(), false, true, target);
+            parser.write(result.getTheRoute(), result.getFormat(), false, true, target);
 
         // NOT possible to determine if I add description lines while writing
         // assertEquals(source.length(), target.length());
 
-        NavigationFormatParser sourceParser = new NavigationFormatParser();
-        sourceParser.read(source);
-        NavigationFormatParser targetParser = new NavigationFormatParser();
-        targetParser.read(target);
+        ParserResult sourceResult = parser.read(source);
+        ParserResult targetResult = parser.read(target);
 
-        NavigationFormat sourceFormat = sourceParser.getFormat();
-        NavigationFormat targetFormat = targetParser.getFormat();
+        NavigationFormat sourceFormat = sourceResult.getFormat();
+        NavigationFormat targetFormat = targetResult.getFormat();
         assertEquals(sourceFormat.getName(), targetFormat.getName());
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
         if (sourceFormat.isSupportsMultipleRoutes() || sourceFormat instanceof AlanWaypointsAndRoutesFormat)
-            assertEquals(sourceParser.getAllRoutes().size(), targetParser.getAllRoutes().size());
+            assertEquals(sourceResult.getAllRoutes().size(), targetResult.getAllRoutes().size());
         else
-            assertEquals(1, targetParser.getAllRoutes().size());
+            assertEquals(1, targetResult.getAllRoutes().size());
 
-        List<BaseRoute> sourceRoutes = sourceParser.getAllRoutes();
-        List<BaseRoute> targetRoutes = targetParser.getAllRoutes();
+        List<BaseRoute> sourceRoutes = sourceResult.getAllRoutes();
+        List<BaseRoute> targetRoutes = targetResult.getAllRoutes();
         // GPSBabel creates a route and a track out of a simple GarminPcx5 track if called with -r and -t
         // and out of a simple AlanTrk track if called with -t
         int count = targetFormat instanceof GarminPcx5Format || targetFormat instanceof AlanTrackLogFormat ?
@@ -81,7 +81,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         }
 
         if (parserCallback != null)
-            parserCallback.test(sourceParser, targetParser);
+            parserCallback.test(sourceResult, targetResult);
 
         assertTrue(target.exists());
         assertTrue(target.delete());
@@ -97,46 +97,44 @@ public abstract class ReadWriteBase extends NavigationTestCase {
 
     void splitReadWriteRoundtrip(String testFileName, boolean duplicateFirstPosition) throws IOException {
         File source = new File(testFileName);
-        assertTrue(parser.read(source));
-        assertNotNull(parser.getFormat());
-        BaseRoute sourceRoute = parser.getTheRoute();
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertNotNull(result.getFormat());
+        BaseRoute sourceRoute = result.getTheRoute();
         assertNotNull(sourceRoute);
-        assertNotNull(parser.getAllRoutes());
-        assertTrue(parser.getAllRoutes().size() > 0);
+        assertNotNull(result.getAllRoutes());
+        assertTrue(result.getAllRoutes().size() > 0);
 
-        int maximumPositionCount = parser.getFormat().getMaximumPositionCount();
+        int maximumPositionCount = result.getFormat().getMaximumPositionCount();
         if (maximumPositionCount == UNLIMITED_MAXIMUM_POSITION_COUNT) {
             readWriteRoundtrip(testFileName);
         } else {
-            int sourcePositionCount = parser.getTheRoute().getPositionCount();
-            int positionCount = parser.getTheRoute().getPositionCount() + (duplicateFirstPosition ? 1 : 0);
+            int sourcePositionCount = result.getTheRoute().getPositionCount();
+            int positionCount = result.getTheRoute().getPositionCount() + (duplicateFirstPosition ? 1 : 0);
             int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-            assertEquals(fileCount, getNumberOfFilesToWriteFor(sourceRoute, parser.getFormat(), duplicateFirstPosition));
+            assertEquals(fileCount, getNumberOfFilesToWriteFor(sourceRoute, result.getFormat(), duplicateFirstPosition));
 
             File[] targets = new File[fileCount];
             for (int i = 0; i < targets.length; i++)
                 targets[i] = File.createTempFile("target", ".test");
-            parser.write(sourceRoute, parser.getFormat(), duplicateFirstPosition, false, targets);
+            parser.write(sourceRoute, result.getFormat(), duplicateFirstPosition, false, targets);
 
-            NavigationFormatParser sourceParser = new NavigationFormatParser();
-            sourceParser.read(source);
-
+            ParserResult sourceResult = parser.read(source);
             int targetPositionCount = 0;
             for (int i = 0; i < targets.length; i++) {
-                NavigationFormatParser targetParser = new NavigationFormatParser();
-                targetParser.read(targets[i]);
+                ParserResult targetResult = parser.read(targets[i]);
 
-                NavigationFormat sourceFormat = sourceParser.getFormat();
-                NavigationFormat targetFormat = targetParser.getFormat();
+                NavigationFormat sourceFormat = sourceResult.getFormat();
+                NavigationFormat targetFormat = targetResult.getFormat();
                 assertEquals(sourceFormat, targetFormat);
                 assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
-                        targetParser.getTheRoute().getPositionCount());
-                targetPositionCount += targetParser.getTheRoute().getPositionCount();
+                        targetResult.getTheRoute().getPositionCount());
+                targetPositionCount += targetResult.getTheRoute().getPositionCount();
 
-                compareSplitPositions(sourceParser.getTheRoute().getPositions(), sourceFormat,
-                        targetParser.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount,
-                        duplicateFirstPosition, false, sourceParser.getTheRoute().getCharacteristics(),
-                        targetParser.getTheRoute().getCharacteristics());
+                compareSplitPositions(sourceResult.getTheRoute().getPositions(), sourceFormat,
+                        targetResult.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount,
+                        duplicateFirstPosition, false, sourceResult.getTheRoute().getCharacteristics(),
+                        targetResult.getTheRoute().getCharacteristics());
             }
             assertEquals(sourcePositionCount + (duplicateFirstPosition ? 1 : 0), targetPositionCount);
             assertEquals(positionCount, targetPositionCount);
@@ -147,6 +145,6 @@ public abstract class ReadWriteBase extends NavigationTestCase {
     }
 
     protected interface TestCallback {
-        void test(NavigationFormatParser source, NavigationFormatParser target);
+        void test(ParserResult source, ParserResult target);
     }
 }

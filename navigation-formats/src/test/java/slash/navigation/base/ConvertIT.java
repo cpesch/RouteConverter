@@ -845,7 +845,7 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new TourFormat());
     }
 
-    public void testConvertTrainingCenterDatabaseToTrainingCenterRoute() throws IOException {
+    public void testConvertTrainingCenterRouteToTrainingCenterRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from1.crs", new Tcx1Format(), new Tcx2Format());
         convertRoundtrip(TEST_PATH + "from2.tcx", new Tcx2Format(), new Tcx1Format());
     }

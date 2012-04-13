@@ -60,7 +60,19 @@ public class OziExplorerReadFormat extends BabelFormat implements MultipleRoutes
     }
 
     protected boolean isStreamingCapable() {
-        return true;
+        return false;
+    }
+
+    protected GpxRoute sanitizeRoute(GpxRoute route) {
+        // all routes except for the first start with an 0.0/0.0/RPTxxx waypoint
+        if(route != null &&
+                route.getPositionCount() > 0 &&
+                route.getPosition(0).getLongitude() == 0.0 &&
+                route.getPosition(0).getLatitude() == 0.0 &&
+                route.getPosition(0).getComment() != null &&
+                route.getPosition(0).getComment().startsWith("RPT"))
+            route.getPositions().remove(0);
+        return route;
     }
 
     protected boolean isValidRoute(GpxRoute route) {

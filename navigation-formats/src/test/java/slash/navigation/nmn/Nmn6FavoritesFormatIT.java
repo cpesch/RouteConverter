@@ -22,16 +22,18 @@ package slash.navigation.nmn;
 
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Nmn6FavoritesFormatIT extends NavigationTestCase {
+    private NavigationFormatParser parser = new NavigationFormatParser();
 
     public void testIsNmn6FavoritesWithValidPositions() throws IOException {
         File source = new File(SAMPLE_PATH + "Favorites.storage-1.rte");
-        NavigationFormatParser parser = new NavigationFormatParser();
-        assertTrue(parser.read(source));
-        assertEquals(Nmn6FavoritesFormat.class, parser.getFormat().getClass());
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(Nmn6FavoritesFormat.class, result.getFormat().getClass());
     }
 }

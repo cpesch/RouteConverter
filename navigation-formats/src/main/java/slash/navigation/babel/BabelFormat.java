@@ -30,9 +30,16 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -352,14 +359,19 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         List<GpxRoute> result = new ArrayList<GpxRoute>();
         for (GpxRoute route : routes) {
-            if (isValidRoute(route))
-                result.add(route);
+            GpxRoute sanitized = sanitizeRoute(route);
+            if (isValidRoute(sanitized))
+                result.add(sanitized);
         }
         return result.size() > 0 ? result : null;
     }
 
     protected boolean isValidRoute(GpxRoute route) {
         return true;
+    }
+
+    protected GpxRoute sanitizeRoute(GpxRoute route) {
+        return route;
     }
 
     public List<GpxRoute> read(InputStream in, CompactCalendar startDate) throws IOException {

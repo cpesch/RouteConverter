@@ -33,11 +33,11 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertFalse;
 import static slash.common.io.Files.collectFiles;
 import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.assertFalse;
 import static slash.navigation.base.NavigationTestCase.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.assertTrue;
 
@@ -66,12 +66,14 @@ public class ReadIT {
         readFiles(extension, new TestFileCallback() {
             @SuppressWarnings({"unchecked"})
             public void test(File file) throws IOException {
-                assertTrue("Cannot read route from " + file, parser.read(file));
-                assertNotNull(parser.getFormat());
-                assertNotNull("Cannot get route from " + file, parser.getTheRoute());
-                assertNotNull(parser.getAllRoutes());
-                assertTrue(parser.getAllRoutes().size() > 0);
-                for (BaseRoute route : parser.getAllRoutes()) {
+                ParserResult result = parser.read(file);
+                assertNotNull(result);
+                assertTrue("Cannot read route from " + file, result.isSuccessful());
+                assertNotNull(result.getFormat());
+                assertNotNull("Cannot get route from " + file, result.getTheRoute());
+                assertNotNull(result.getAllRoutes());
+                assertTrue(result.getAllRoutes().size() > 0);
+                for (BaseRoute route : result.getAllRoutes()) {
                     List<BaseNavigationPosition> positions = route.getPositions();
                     for (BaseNavigationPosition position : positions) {
                         comments.add(position.getComment());
@@ -81,11 +83,11 @@ public class ReadIT {
                         !file.getName().endsWith(".gdb") && !file.getName().endsWith(".nmea") &&
                         !file.getName().endsWith(".mps") && !file.getName().endsWith(".rte") &&
                         !file.getName().endsWith(".tef") && !file.getName().endsWith(".wpt"))
-                    assertNotNull("Route has no name", parser.getTheRoute().getName());
+                    assertNotNull("Route has no name", result.getTheRoute().getName());
                 // a GoPal 3 track without positions which is not rejected because the following Nmn4Format would try to readSampleGpxFile if forever
                 // a OziExplorer Route has a first route without a single position
                 if (!file.getName().equals("dieter3-GoPal3Track.trk") && !file.getName().equals("ozi-condecourt.rte"))
-                    assertTrue("Route " + file + " has no positions", parser.getTheRoute().getPositionCount() > 0);
+                    assertTrue("Route " + file + " has no positions", result.getTheRoute().getPositionCount() > 0);
             }
         });
     }
@@ -381,9 +383,13 @@ public class ReadIT {
     public void testDontReadUnrecognizedFiles() throws IOException {
         dontReadFiles(UNRECOGNIZED_PATH, new TestFileCallback() {
             public void test(File file) throws IOException {
-                boolean success = parser.read(file);
-                NavigationFormat format = success ? parser.getFormat() : null;
-                assertFalse("Can read route from " + file + " as " + format, success);
+                try {
+                    ParserResult result = parser.read(file);
+                    assertNotNull(result);
+                    assertFalse("Can read route from " + file, result.isSuccessful());
+                } catch (NumberFormatException e) {
+                    // intentionally left empty
+                }
             }
         });
     }
@@ -392,9 +398,9 @@ public class ReadIT {
     public void testReadFalseDetectsFiles() throws IOException {
         dontReadFiles(FALSE_DETECTS_PATH, new TestFileCallback() {
             public void test(File file) throws IOException {
-                boolean success = parser.read(file);
-                NavigationFormat format = success ? parser.getFormat() : null;
-                assertTrue("Cannot read route from " + file + " as " + format, success);
+                ParserResult result = parser.read(file);
+                assertNotNull(result);
+                assertTrue("Cannot read route from " + file + " as " + result.getFormat(), result.isSuccessful());
             }
         });
     }

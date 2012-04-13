@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteBase;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
@@ -33,7 +33,7 @@ public class iBlue747ReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-iblue747.csv", new TestCallback() {
-            public void test(NavigationFormatParser source, NavigationFormatParser target) {
+            public void test(ParserResult source, ParserResult target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);
                 for (int i = 0; i < sourceRoute.getPositionCount(); i++) {

@@ -20,9 +20,8 @@
 
 package slash.navigation.lmx;
 
-import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteBase;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.lmx.binding.LandmarkType;
@@ -57,7 +56,7 @@ public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
 
     public void testNokiaLandmarkExchangeRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.lmx", new TestCallback() {
-            public void test(NavigationFormatParser source, NavigationFormatParser target) {
+            public void test(ParserResult source, ParserResult target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertEquals(Waypoints, sourceWaypoints.getCharacteristics());
                 assertNotNull(sourceWaypoints.getOrigins());
