@@ -20,16 +20,21 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class TourFormatIT extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
+public class TourFormatIT {
+    private TourFormat format = new TourFormat();
+
+    @Test
     public void testPositionInListOrder() throws IOException {
-        List<TourRoute> routeList = new TourFormat().read(new FileInputStream(TEST_PATH + "from.tour"));
+        List<TourRoute> routeList = format.read(new FileInputStream(TEST_PATH + "from.tour"), null);
         assertEquals(1, routeList.size());
         TourRoute route = routeList.get(0);
         assertEquals("10787 Berlin, Hardenbergstra\u00dfe 8, Zoologischer Garten", route.getPosition(0).getComment());

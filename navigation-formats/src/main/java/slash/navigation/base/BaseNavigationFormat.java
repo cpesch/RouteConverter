@@ -20,8 +20,6 @@
 
 package slash.navigation.base;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -117,10 +115,6 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
     }
 
     public abstract <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
-
-    public List<R> read(InputStream source) throws IOException {
-        return read(source, null);
-    }
 
     public int hashCode() {
         return getClass().getName().hashCode();

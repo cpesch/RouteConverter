@@ -20,14 +20,21 @@
 
 package slash.navigation.tour;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TourFormatTest extends NavigationTestCase {
-    TourFormat format = new TourFormat();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
 
+public class TourFormatTest {
+    private TourFormat format = new TourFormat();
+
+    @Test
     public void testIsSectionTitle() {
         assertTrue(format.isSectionTitle("[0]"));
         assertTrue(format.isSectionTitle("[1]"));
@@ -44,6 +51,7 @@ public class TourFormatTest extends NavigationTestCase {
         assertFalse(format.isSectionTitle("[ROUTE]"));
     }
 
+    @Test
     public void testTourPosition() {
         Map<String, String> nameValues = new HashMap<String, String>();
         nameValues.put("Visited", "0");
@@ -51,8 +59,8 @@ public class TourFormatTest extends NavigationTestCase {
         position.put("Assembly", "FalkNavigator");
         assertEquals((Long) 1489415L, position.getX());
         assertEquals((Long) 6886471L, position.getY());
-        assertEquals(13.39463, position.getLongitude());
-        assertEquals(52.51718, position.getLatitude());
+        assertDoubleEquals(13.39463, position.getLongitude());
+        assertDoubleEquals(52.51718, position.getLatitude());
         assertEquals("10117 Berlin, Unter den Linden 7, Staatsoper unter den Linden", position.getComment());
         assertNull(position.getElevation());
         assertNull(position.getTime());
@@ -61,6 +69,7 @@ public class TourFormatTest extends NavigationTestCase {
         assertTrue(position.isHome());
     }
 
+    @Test
     public void testSetComment() {
         TourPosition position = new TourPosition(null, null, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", false, new HashMap<String, String>());
         position.setComment("ABC");

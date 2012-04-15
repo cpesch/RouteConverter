@@ -46,7 +46,6 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     <P extends BaseNavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
-    List<R> read(InputStream source) throws IOException;
     List<R> read(InputStream source, CompactCalendar startDate) throws IOException;
     void write(R route, OutputStream target, int startIndex, int endIndex) throws IOException;
 }

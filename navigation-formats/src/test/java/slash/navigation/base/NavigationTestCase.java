@@ -973,7 +973,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     protected List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws IOException {
         File source = new File(SAMPLE_PATH + fileName);
-        return format.read(new FileInputStream(source));
+        return format.read(new FileInputStream(source), null);
     }
 
     protected List<TomTomRoute> readSampleTomTomRouteFile(String fileName, boolean setStartDateFromFile) throws IOException {
