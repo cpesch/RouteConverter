@@ -24,12 +24,21 @@ import org.junit.Test;
 import slash.navigation.kml.binding20.Kml;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 public class KmlFormatIT {
 
@@ -180,11 +189,22 @@ public class KmlFormatIT {
     }
 
     @Test
-    public void testGxTrackExtension22() throws IOException {
-        List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(TEST_PATH + "from22gx.kml")));
+    public void testTrackExtension22() throws IOException {
+        List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(TEST_PATH + "from22track.kml")));
         assertNotNull(routes);
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
+        assertEquals(Track, route.getCharacteristics());
         assertEquals(133, route.getPositionCount());
+    }
+
+    @Test
+    public void testFlytoExtension22() throws IOException {
+        List<KmlRoute> routes = new Kml22Format().read(new FileInputStream(new File(TEST_PATH + "from22flyto.kml")));
+        assertNotNull(routes);
+        assertEquals(1, routes.size());
+        KmlRoute route = routes.get(0);
+        assertEquals(Track, route.getCharacteristics());
+        assertEquals(54, route.getPositionCount());
     }
 }
