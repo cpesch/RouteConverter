@@ -33,7 +33,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,7 +166,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
     }
 
     protected void writeHeader(Wgs84Route route, PrintWriter writer) {
-        writer.println(START_TRIP + NAME_VALUE_SEPARATOR + route.getName());
+        writer.println(START_TRIP + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
         writer.println("TollClosed=0");
         writer.println(END_TRIP);

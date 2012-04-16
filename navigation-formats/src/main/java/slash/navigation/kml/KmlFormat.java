@@ -119,7 +119,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected String createDocumentName(KmlRoute route) {
         // some kind of crude workaround since the route carries the name of the
         // plus and divided by a slash the route of the track
-        String name = route.getName();
+        String name = asRouteName(route.getName());
         if (name != null) {
             StringTokenizer tokenizer = new StringTokenizer(name, "/");
             if (tokenizer.hasMoreTokens())

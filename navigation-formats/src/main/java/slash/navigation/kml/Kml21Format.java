@@ -57,6 +57,7 @@ import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.kml.KmlUtil.marshal21;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
@@ -361,7 +362,7 @@ public class Kml21Format extends KmlFormat {
 
     public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) {
         try {
-            KmlUtil.marshal21(createKmlType(route), target);
+            marshal21(createKmlType(route), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
@@ -369,7 +370,7 @@ public class Kml21Format extends KmlFormat {
 
     public void write(List<KmlRoute> routes, OutputStream target) throws IOException {
         try {
-            KmlUtil.marshal21(createKmlType(routes), target);
+            marshal21(createKmlType(routes), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

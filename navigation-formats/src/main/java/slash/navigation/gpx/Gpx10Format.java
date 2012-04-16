@@ -240,7 +240,7 @@ public class Gpx10Format extends GpxFormat {
             rte = objectFactory.createGpxRte();
 
         if (isWriteName()) {
-            rte.setName(route.getName());
+            rte.setName(asRouteName(route.getName()));
             rte.setDesc(asDescription(route.getDescription()));
         }
         rtes.add(rte);
@@ -286,7 +286,7 @@ public class Gpx10Format extends GpxFormat {
             trk = objectFactory.createGpxTrk();
 
         if (isWriteName()) {
-            trk.setName(route.getName());
+            trk.setName(asRouteName(route.getName()));
             trk.setDesc(asDescription(route.getDescription()));
         }
         trks.add(trk);
@@ -336,7 +336,7 @@ public class Gpx10Format extends GpxFormat {
             gpx = new ObjectFactory().createGpx();
         gpx.setCreator(GENERATED_BY);
         gpx.setVersion(VERSION);
-        gpx.setName(route.getName());
+        gpx.setName(asRouteName(route.getName()));
         gpx.setDesc(asDescription(route.getDescription()));
 
         for (RouteCharacteristics characteristic : characteristics) {

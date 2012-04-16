@@ -195,7 +195,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
 
     public void write(TourRoute route, PrintWriter writer, int startIndex, int endIndex) {
         writer.println(SECTION_PREFIX + TOUR_TITLE + SECTION_POSTFIX);
-        writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + route.getName());
+        writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
         writer.println(CREATOR + TOUR_FORMAT_NAME_VALUE_SEPARATOR + GENERATED_BY);
         writer.println();
 

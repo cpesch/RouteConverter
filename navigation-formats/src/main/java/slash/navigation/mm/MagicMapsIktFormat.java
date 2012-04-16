@@ -249,7 +249,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         writer.add(eventFactory.createEndElement(new QName(GEO_OBJECT_TYPE_ELEMENT), null));
 
         writer.add(eventFactory.createStartElement(new QName(NAME_ELEMENT), null, null));
-        writer.add(eventFactory.createCharacters(route.getName()));
+        writer.add(eventFactory.createCharacters(asRouteName(route.getName())));
         writer.add(eventFactory.createEndElement(new QName(NAME_ELEMENT), null));
 
         writer.add(eventFactory.createStartElement(new QName(PATH_DRAW_TYPE_ELEMENT), null, null));

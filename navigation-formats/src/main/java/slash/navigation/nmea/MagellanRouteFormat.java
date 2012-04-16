@@ -166,7 +166,7 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
             writePosition(position, writer, i);
         }
 
-        String routeName = formatRouteName(route.getName());
+        String routeName = formatRouteName(asRouteName(route.getName()));
         int count = ceiling(endIndex - startIndex, 2, true);
         for (int i = startIndex; i < endIndex; i += 2) {
             NmeaPosition start = positions.get(i);

@@ -116,7 +116,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
         LandmarkCollectionType landmarkCollectionType = lmx.getLandmarkCollection();
         if (landmarkCollectionType == null)
             landmarkCollectionType = objectFactory.createLandmarkCollectionType();
-        landmarkCollectionType.setName(route.getName());
+        landmarkCollectionType.setName(asRouteName(route.getName()));
         landmarkCollectionType.setDescription(asDescription(route.getDescription()));
 
         List<LandmarkType> landmarkTypeList = landmarkCollectionType.getLandmark();

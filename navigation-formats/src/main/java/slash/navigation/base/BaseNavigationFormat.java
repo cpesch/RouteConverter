@@ -98,6 +98,10 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return result;
     }
 
+    protected String asRouteName(String name) {
+        return trim(name, getMaximumRouteNameLength());
+    }
+
     public boolean isSupportsReading() {
         return true;
     }

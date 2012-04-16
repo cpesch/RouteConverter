@@ -24,8 +24,9 @@ import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.List;
+
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 /**
  * Reads and writes Wintec WBT-201 (.tk2) files.
@@ -82,7 +83,7 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
            char pResever1[548];                  //1024
          */
 
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.order(LITTLE_ENDIAN);
         buffer.position(140);
         // .tk2 has no TrackInfo Structure, set position to end of file
         // readPositions processes this correctly

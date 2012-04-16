@@ -34,6 +34,7 @@ import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
 import static java.lang.Math.log;
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
 
@@ -88,6 +89,12 @@ public class Transfer {
             return string;
     }
 
+    public static String trim(String string, int length) {
+        if (string == null)
+            return null;
+        return string.substring(0, min(string.length(), length));
+    }
+
     public static String toMixedCase(String string) {
         if (string != null && string.toUpperCase().equals(string)) {
             StringBuilder buffer = new StringBuilder();
@@ -107,7 +114,7 @@ public class Transfer {
 
     public static String escape(String string, char escape, char replacement) {
         String trimmed = trim(string);
-        if(trimmed != null)
+        if (trimmed != null)
             trimmed = trimmed.replaceAll("\\" + escape, String.valueOf(replacement));
         else
             trimmed = "";
@@ -163,6 +170,7 @@ public class Transfer {
     }
 
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
+
     static {
         DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
         DECIMAL_NUMBER_FORMAT.setMinimumFractionDigits(1);

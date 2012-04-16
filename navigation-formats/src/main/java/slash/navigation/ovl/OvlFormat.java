@@ -21,11 +21,23 @@
 package slash.navigation.ovl;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -267,7 +279,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             writer.println(OvlSection.Y_POSITION + index + NAME_VALUE_SEPARATOR + position.getLatitude());
             index++;
         }
-        writer.println(OvlSection.TEXT + NAME_VALUE_SEPARATOR + route.getName());
+        writer.println(OvlSection.TEXT + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
     }
 
     private void writeOverlay(OvlRoute route, PrintWriter writer, int symbolCount) {

@@ -129,6 +129,10 @@ public abstract class NavigationTestCase extends TestCase {
         assertEquals(expected, wasFiltered);
     }
 
+    public static void assertRouteNameEquals(String expected, String was) {
+        assertEquals(trim(expected, 64), trim(was, 64));
+    }
+
     protected void assertException(Class exceptionClass, ThrowsException runner) {
         try {
             runner.run();
@@ -219,19 +223,19 @@ public abstract class NavigationTestCase extends TestCase {
                 targetRoute.getName().endsWith("/")) {
             String sourcePrefix = getKmlRouteName(sourceRoute);
             String targetPrefix = getKmlRouteName(targetRoute);
-            assertEquals(sourcePrefix, targetPrefix);
+            assertRouteNameEquals(sourcePrefix, targetPrefix);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 sourceRoute.getName().contains(" to ") && sourceRoute.getName().contains("/;") &&
                 targetRoute.getName().endsWith("/")) {
             // if AlanWaypointsAndRoutesFormat is converted to AlanWaypointsAndRoutesFormat "EARTH_RADIUS/; Orte to B/; Orte" becomes "EARTH_RADIUS/"
             String sourcePrefix = getAlanWaypointsAndRoutesName(sourceRoute);
             String targetPrefix = getAlanWaypointsAndRoutesName(targetRoute);
-            assertEquals(sourcePrefix, targetPrefix);
+            assertRouteNameEquals(sourcePrefix, targetPrefix);
         } else if (targetRoute.getFormat() instanceof TcxFormat) {
             // TcxFormat makes route names unique by prefixing "Name" with "1: "
             String sourceName = getTrainingCenterRouteName(sourceRoute);
             String targetName = getTrainingCenterRouteName(targetRoute);
-            assertEquals(sourceName, targetName);
+            assertRouteNameEquals(sourceName, targetName);
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
                 !targetRoute.getName().startsWith("/Route") &&
@@ -240,7 +244,7 @@ public abstract class NavigationTestCase extends TestCase {
                 !targetRoute.getName().endsWith("/Track") &&
                 !targetRoute.getName().endsWith("/Waypoints"))
             // Test only if this is not the multiple routes per file case & the route has not been named by us
-            assertEquals(sourceRoute.getName(), targetRoute.getName());
+            assertRouteNameEquals(sourceRoute.getName(), targetRoute.getName());
 
         // Test only if this is not the multiple routes per file case
         if (sourceRoute.getDescription() != null && targetRoute.getDescription() != null &&

@@ -30,7 +30,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -222,11 +221,11 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             boolean first = i == startIndex;
             boolean last = i == endIndex - 1;
 
-            int type = TomTomRouteFormat.WAYPOINT;
+            int type = WAYPOINT;
             if (first)
-                type = TomTomRouteFormat.START_TYPE;
+                type = START_TYPE;
             else if (last)
-                type = TomTomRouteFormat.END_TYPE;
+                type = END_TYPE;
 
             String comment = position.getComment();
             if (route.getCharacteristics().equals(Track)) {

@@ -83,7 +83,7 @@ public class AppendIT extends NavigationTestCase {
         // since a lot of formats determine route names from the first
         // and the (here changing) last way point name
         if (isStoringRouteName(testFormat))
-            assertEquals(testName, route.getName());
+            assertRouteNameEquals(testName, route.getName());
         assertEquals(testDescription, route.getDescription());
         assertEquals(testPositionCount + appendPositionCount, route.getPositionCount());
 

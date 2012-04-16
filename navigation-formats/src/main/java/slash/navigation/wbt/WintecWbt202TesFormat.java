@@ -29,6 +29,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 import static java.lang.Math.abs;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Calendar.YEAR;
 
 /**
@@ -56,7 +57,7 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
     }
 
     protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.order(LITTLE_ENDIAN);
         buffer.position(0);
 
         // read first positions and validate the data

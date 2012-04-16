@@ -21,10 +21,26 @@
 package slash.navigation.tcx;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.tcx.binding1.*;
+import slash.navigation.tcx.binding1.ActivityLapT;
+import slash.navigation.tcx.binding1.CourseFolderT;
+import slash.navigation.tcx.binding1.CourseLapT;
+import slash.navigation.tcx.binding1.CoursePointT;
+import slash.navigation.tcx.binding1.CourseT;
+import slash.navigation.tcx.binding1.CoursesT;
+import slash.navigation.tcx.binding1.HistoryFolderT;
+import slash.navigation.tcx.binding1.HistoryT;
+import slash.navigation.tcx.binding1.IntensityT;
+import slash.navigation.tcx.binding1.MultiSportFolderT;
+import slash.navigation.tcx.binding1.MultiSportSessionT;
+import slash.navigation.tcx.binding1.NextSportT;
+import slash.navigation.tcx.binding1.ObjectFactory;
+import slash.navigation.tcx.binding1.PositionT;
+import slash.navigation.tcx.binding1.RunT;
+import slash.navigation.tcx.binding1.TrackT;
+import slash.navigation.tcx.binding1.TrackpointT;
+import slash.navigation.tcx.binding1.TrainingCenterDatabaseT;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -322,7 +338,7 @@ public class Tcx1Format extends TcxFormat {
         trainingCenterDatabaseT.setCourses(coursesT);
         CourseFolderT courseFolderT = createCourseFolder(coursesT);
         List<CourseT> courses = courseFolderT.getCourse();
-        courses.add(createCourse(route, route.getName(), startIndex, endIndex));
+        courses.add(createCourse(route, asRouteName(route.getName()), startIndex, endIndex));
         return trainingCenterDatabaseT;
     }
 
@@ -336,7 +352,7 @@ public class Tcx1Format extends TcxFormat {
         for (int i = 0; i < routes.size(); i++) {
             GpxRoute route = routes.get(i);
             // ensure that route names are unique
-            courses.add(createCourse(route, (i+1) + ": " + route.getName(), 0, route.getPositionCount()));
+            courses.add(createCourse(route, (i+1) + ": " + asRouteName(route.getName()), 0, route.getPositionCount()));
         }
         return trainingCenterDatabaseT;
     }

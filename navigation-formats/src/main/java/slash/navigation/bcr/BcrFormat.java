@@ -21,7 +21,6 @@
 package slash.navigation.bcr;
 
 import slash.common.io.CompactCalendar;
-import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.RouteCharacteristics;
@@ -222,7 +221,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
 
             if (CLIENT_TITLE.equals(section.getTitle())) {
                 writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);
-                writer.println(ROUTE_NAME + NAME_VALUE_SEPARATOR + route.getName());
+                writer.println(ROUTE_NAME + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
                 double length = route.getDistance();
                 if(length > 0)
                     length = length / 1000.0;

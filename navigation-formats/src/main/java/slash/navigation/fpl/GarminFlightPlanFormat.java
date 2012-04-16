@@ -130,7 +130,7 @@ public class GarminFlightPlanFormat extends GpxFormat {
 
         FlightPlan flightPlan = objectFactory.createFlightPlan();
         FlightPlan.Route flightPlanRoute = objectFactory.createFlightPlanRoute();
-        flightPlanRoute.setRouteName(route.getName());
+        flightPlanRoute.setRouteName(asRouteName(route.getName()));
         flightPlanRoute.setRouteDescription(asDescription(route.getDescription()));
         flightPlanRoute.setFlightPlanIndex((short)1);
         FlightPlan.WaypointTable waypointTable = objectFactory.createFlightPlanWaypointTable();

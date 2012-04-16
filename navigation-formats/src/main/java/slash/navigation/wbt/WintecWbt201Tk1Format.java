@@ -27,6 +27,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+
 /**
  * Reads and writes Wintec WBT-201 (.tk1) files.
  * <p/>
@@ -78,7 +80,7 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
            char pResever1[876];                   //1024
          */
 
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.order(LITTLE_ENDIAN);
         buffer.position(140);
         int trackInfoAddress = buffer.getInt();
         return readPositions(buffer, 1024, trackInfoAddress);
