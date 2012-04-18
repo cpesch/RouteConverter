@@ -438,6 +438,7 @@
 
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
            map.mapTypes.set('Mapnik', mapnikMapType);
+           map.mapTypes.set('Cycle', cycleMapType);
            map.mapTypes.set('Hike', hikeMapType);
            map.mapTypes.set('Outdoor', outdoorMapType);
            map.setMapTypeId('${maptype}');
