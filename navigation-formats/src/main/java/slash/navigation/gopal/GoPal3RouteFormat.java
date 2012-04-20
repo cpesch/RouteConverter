@@ -22,6 +22,7 @@ package slash.navigation.gopal;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gopal.binding3.ObjectFactory;
 import slash.navigation.gopal.binding3.Tour;
@@ -32,10 +33,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.util.Arrays.asList;
 import static slash.navigation.gopal.GoPalUtil.marshal3;
 import static slash.navigation.gopal.GoPalUtil.unmarshal3;
 
@@ -46,7 +45,6 @@ import static slash.navigation.gopal.GoPalUtil.unmarshal3;
  */
 
 public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
-    private static final Logger log = Logger.getLogger(GoPal3RouteFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal3RouteFormat.class);
     private static final String VERSION_PREFIX = "v3";
 
@@ -72,14 +70,9 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
         return new GoPal3Route(null, tour.getOptions(), positions);
     }
 
-    public List<GoPal3Route> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            Tour tour = unmarshal3(source);
-            return asList(process(tour));
-        } catch (JAXBException e) {
-            log.fine("Error reading GoPal 3 from " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPal3Route> context) throws Exception {
+        Tour tour = unmarshal3(source);
+        context.addRoute(process(tour));
     }
 
     private Tour.Options createOptions(GoPal3Route route) {
@@ -121,7 +114,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
             dest.setStreet(position.getStreet());
             dest.setZip(position.getZipCode());
             if (i == startIndex)
-                dest.setStartPos((short)1);
+                dest.setStartPos((short) 1);
             tour.getDest().add(dest);
         }
         return tour;

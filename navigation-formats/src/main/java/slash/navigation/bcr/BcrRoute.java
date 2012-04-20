@@ -89,10 +89,13 @@ import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
 import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.KienzleGpsFormat;
 import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.NavilinkFormat;
 import slash.navigation.simple.OpelNaviFormat;
 import slash.navigation.simple.QstarzQ1000Format;
 import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.SygicAsciiFormat;
 import slash.navigation.simple.SygicUnicodeFormat;
 import slash.navigation.simple.WebPageFormat;
 import slash.navigation.tcx.Tcx1Format;
@@ -262,6 +265,10 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
 
     public TomTomRoute asTomTom8RouteFormat() {
         return asTomTomRouteFormat(new TomTom8RouteFormat());
+    }
+
+    public SimpleRoute asKienzleGpsFormat() {
+        return asSimpleFormat(new KienzleGpsFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
@@ -526,8 +533,16 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asSimpleFormat(new NavigatingPoiWarnerFormat());
     }
 
+    public SimpleRoute asNavilinkFormat() {
+        return asSimpleFormat(new NavilinkFormat());
+    }
+
     public SimpleRoute asRoute66Format() {
         return asSimpleFormat(new Route66Format());
+    }
+
+    public SimpleRoute asSygicAsciiFormat() {
+        return asSimpleFormat(new SygicAsciiFormat());
     }
 
     public SimpleRoute asSygicUnicodeFormat() {

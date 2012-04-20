@@ -21,6 +21,8 @@
 package slash.navigation.kml;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,14 +53,16 @@ public class Kml22FormatTest {
     }
 
     @Test
-    public void testPointCoordinates() throws IOException {
+    public void testPointCoordinates() throws Exception {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
                 "<Document><Placemark><Point>\n" +
                 "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
                 "</coordinates>\n" +
                 "</Point></Placemark></Document></kml>";
-        List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()), null);
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -70,14 +74,16 @@ public class Kml22FormatTest {
     }
 
     @Test
-    public void testPointCoordinatesWithoutSpaces() throws IOException {
+    public void testPointCoordinatesWithoutSpaces() throws Exception {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
                 "<Document><Placemark><Point>\n" +
                 "<coordinates>151.2393322528181,-33.59862693992532,0\n" +
                 "</coordinates>\n" +
                 "</Point></Placemark></Document></kml>";
-        List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()), null);
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -89,7 +95,7 @@ public class Kml22FormatTest {
     }
 
     @Test
-    public void testLineStringCoordinates() throws IOException {
+    public void testLineStringCoordinates() throws Exception {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
                 "<Document><Placemark><LineString>\n" +
@@ -98,7 +104,9 @@ public class Kml22FormatTest {
                 "151.2179531903903, -33.59844652615273, 0 \n\n" +
                 "</coordinates>\n" +
                 "</LineString></Placemark></Document></kml>";
-        List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()), null);
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(3, route.getPositionCount());
@@ -110,7 +118,7 @@ public class Kml22FormatTest {
     }
 
     @Test
-    public void testLineStringCoordinatesWithoutSpaces() throws IOException {
+    public void testLineStringCoordinatesWithoutSpaces() throws Exception {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
                 "<Document><Placemark><LineString>\n" +
@@ -119,7 +127,9 @@ public class Kml22FormatTest {
                 "151.2179531903903,-33.59844652615273,0\n" +
                 "</coordinates>\n" +
                 "</LineString></Placemark></Document></kml>";
-        List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()), null);
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(3, route.getPositionCount());

@@ -21,7 +21,7 @@
 package slash.navigation.lmx;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -37,9 +37,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatFloat;
 import static slash.common.io.Transfer.formatPositionAsDouble;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -53,7 +51,6 @@ import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
  */
 
 public class NokiaLandmarkExchangeFormat extends GpxFormat {
-    private static final Logger log = Logger.getLogger(NokiaLandmarkExchangeFormat.class.getName());
 
     public String getExtension() {
         return ".lmx";
@@ -101,7 +98,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
             for (LandmarkType landmark : landmarkCollection.getLandmark())
                 positions.add(process(landmark));
         }
-        return positions.size() > 0 ? new GpxRoute(this, Waypoints, name, asDescription(description), positions, lmx) : null;
+        return new GpxRoute(this, Waypoints, name, asDescription(description), positions, lmx);
     }
 
     private Lmx createLmx(GpxRoute route, int startIndex, int endIndex) {
@@ -147,15 +144,9 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
         return lmx;
     }
 
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            Lmx lmx = unmarshal(source);
-            GpxRoute result = process(lmx);
-            return result != null ? asList(result) : null;
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        Lmx lmx = unmarshal(source);
+        context.addRoute(process(lmx));
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

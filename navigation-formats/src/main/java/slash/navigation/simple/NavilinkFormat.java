@@ -91,7 +91,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return newRoute;
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -204,36 +204,29 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return position;
     }
 
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
-        List<Wgs84Route> resultRouteList = null;
-
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[HEADER_SIZE];
         if ((source.read(header) == HEADER_SIZE) && checkHeader(header)) {
-
             ByteBuffer sbpRecordByteBuffer = ByteBuffer.allocate(SBP_RECORD_LENGTH);
             sbpRecordByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-            resultRouteList = new ArrayList<Wgs84Route>();
             Wgs84Route activeRoute = null;
-
             byte[] record = new byte[SBP_RECORD_LENGTH];
             while (source.read(record) == SBP_RECORD_LENGTH) {
                 sbpRecordByteBuffer.position(0);
                 sbpRecordByteBuffer.put(record);
 
                 Wgs84Position position = decodePosition(sbpRecordByteBuffer);
-
                 if ((activeRoute == null) || (isTrackStart(sbpRecordByteBuffer))) {
                     activeRoute = createRoute(Track,
                             TRACK_NAME_DATE_FORMAT.format(position.getTime().getTime()),
                             new ArrayList<BaseNavigationPosition>());
-                    resultRouteList.add(activeRoute);
+                    context.addRoute(activeRoute);
                 }
 
                 activeRoute.getPositions().add(position);
             }
         }
-        return resultRouteList;
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {

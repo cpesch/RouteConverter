@@ -22,6 +22,7 @@ package slash.navigation.itn;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.TextNavigationFormat;
 import slash.navigation.util.RouteComments;
@@ -35,7 +36,6 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
@@ -93,10 +93,10 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
     protected abstract boolean isIso885915ButReadWithUtf8(String string);
 
-    public List<TomTomRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<TomTomRoute> context) throws IOException {
         List<TomTomPosition> positions = new ArrayList<TomTomPosition>();
+        String routeName = null;
 
-        String name = null;
         while (true) {
             String line = reader.readLine();
             if (line == null)
@@ -120,20 +120,18 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                     position.setStartDate(startDate);
 
                 if (isIso885915ButReadWithUtf8(position.getComment()))
-                    return null;
+                    return;
 
                 positions.add(position);
             } else if (isName(line)) {
-                name = parseName(line);
+                routeName = parseName(line);
             } else {
-                return null;
+                return;
             }
         }
 
         if (positions.size() > 0)
-            return asList(new TomTomRoute(this, isTrack(positions) ? Track : Route, name, positions));
-        else
-            return null;
+            context.addRoute(new TomTomRoute(this, isTrack(positions) ? Track : Route, routeName, positions));
     }
 
     boolean isPosition(String line) {

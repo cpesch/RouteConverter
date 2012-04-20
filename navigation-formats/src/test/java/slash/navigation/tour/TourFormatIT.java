@@ -21,9 +21,10 @@
 package slash.navigation.tour;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -33,8 +34,10 @@ public class TourFormatIT {
     private TourFormat format = new TourFormat();
 
     @Test
-    public void testPositionInListOrder() throws IOException {
-        List<TourRoute> routeList = format.read(new FileInputStream(TEST_PATH + "from.tour"), null);
+    public void testPositionInListOrder() throws Exception {
+        ParserContext<TourRoute> context = new ParserContextImpl<TourRoute>();
+        format.read(new FileInputStream(TEST_PATH + "from.tour"), null, context);
+        List<TourRoute> routeList = context.getRoutes();
         assertEquals(1, routeList.size());
         TourRoute route = routeList.get(0);
         assertEquals("10787 Berlin, Hardenbergstra\u00dfe 8, Zoologischer Garten", route.getPosition(0).getComment());

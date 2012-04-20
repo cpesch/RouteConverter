@@ -20,16 +20,30 @@
 
 package slash.navigation.gpx;
 
-import slash.navigation.base.NavigationTestCase;
+import org.junit.Test;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.List;
 
-public class GpxFormatIT extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.readSampleGpxFile;
 
+public class GpxFormatIT {
+
+    @Test
     public void testReader() throws FileNotFoundException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from10.gpx");
         Gpx gpx = (Gpx) GpxUtil.newUnmarshaller10().unmarshal(reader);
@@ -42,6 +56,7 @@ public class GpxFormatIT extends NavigationTestCase {
         assertEquals(3, gpx.getRte().size());
     }
 
+    @Test
     public void testInputStream() throws FileNotFoundException, JAXBException {
         InputStream in = new FileInputStream(TEST_PATH + "from10.gpx");
         Gpx gpx = (Gpx) GpxUtil.newUnmarshaller10().unmarshal(in);
@@ -54,6 +69,7 @@ public class GpxFormatIT extends NavigationTestCase {
         assertEquals(3, gpx.getRte().size());
     }
 
+    @Test
     public void testUnmarshal10() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from10.gpx");
         Gpx gpx = GpxUtil.unmarshal10(reader);
@@ -66,6 +82,7 @@ public class GpxFormatIT extends NavigationTestCase {
         assertEquals(3, gpx.getRte().size());
     }
 
+    @Test
     public void testUnmarshal10TypeError() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from10.gpx");
         try {
@@ -75,6 +92,7 @@ public class GpxFormatIT extends NavigationTestCase {
         }
     }
 
+    @Test
     public void testUnmarshal11() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from11.gpx");
         GpxType gpx = GpxUtil.unmarshal11(reader);
@@ -83,6 +101,7 @@ public class GpxFormatIT extends NavigationTestCase {
         assertEquals(3, gpx.getWpt().size());
     }
 
+    @Test
     public void testUnmarshal11TypeError() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from11.gpx");
         try {
@@ -92,7 +111,8 @@ public class GpxFormatIT extends NavigationTestCase {
         }
     }
 
-    public void testAkGpxReadWriteRoundtrip() throws IOException {
+    @Test
+    public void testAkGpxReadWriteRoundtrip() throws Exception {
         List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "ak.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
@@ -100,7 +120,8 @@ public class GpxFormatIT extends NavigationTestCase {
         assertEquals(7, route.getPositionCount());
     }
 
-    public void testGarminExtensions() throws IOException, JAXBException {
+    @Test
+    public void testGarminExtensions() throws Exception {
         List<GpxRoute> routes = readSampleGpxFile(new Gpx11Format(), "MS.gpx");
         assertNotNull(routes);
         assertEquals(2, routes.size());
@@ -110,6 +131,7 @@ public class GpxFormatIT extends NavigationTestCase {
         assertEquals(1073, track.getPositionCount());
     }
 
+    @Test
     public void testWritingNamespaces() throws IOException, JAXBException {
         Reader reader = new FileReader(TEST_PATH + "from11.gpx");
         GpxType gpx = GpxUtil.unmarshal11(reader);

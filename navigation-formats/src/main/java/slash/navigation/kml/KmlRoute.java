@@ -135,6 +135,10 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
+    public SimpleRoute asKienzleGpsFormat() {
+        return asSimpleFormat(new KienzleGpsFormat());
+    }
+
     public KlickTelRoute asKlickTelRouteFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (KmlPosition position : positions) {
@@ -410,8 +414,16 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
         return asSimpleFormat(new NavigatingPoiWarnerFormat());
     }
 
+    public SimpleRoute asNavilinkFormat() {
+        return asSimpleFormat(new NavilinkFormat());
+    }
+
     public SimpleRoute asRoute66Format() {
         return asSimpleFormat(new Route66Format());
+    }
+
+    public SimpleRoute asSygicAsciiFormat() {
+        return asSimpleFormat(new SygicAsciiFormat());
     }
 
     public SimpleRoute asSygicUnicodeFormat() {

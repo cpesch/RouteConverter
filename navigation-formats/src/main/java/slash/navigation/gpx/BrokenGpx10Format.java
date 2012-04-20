@@ -21,14 +21,13 @@
 package slash.navigation.gpx;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding10.Gpx;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.logging.Logger;
+
+import static slash.navigation.gpx.GpxUtil.unmarshal10;
 
 /**
  * Reads broken GPS Exchange Format 1.0 (.gpx) files.
@@ -37,8 +36,6 @@ import java.util.logging.Logger;
  */
 
 public class BrokenGpx10Format extends Gpx10Format {
-    private static final Logger log = Logger.getLogger(BrokenGpx10Format.class.getName());
-
     public String getName() {
         return "GPS Exchange Format " + VERSION + " Garble (*" + getExtension() + ")";
     }
@@ -47,17 +44,14 @@ public class BrokenGpx10Format extends Gpx10Format {
         return false;
     }
 
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         InputStreamReader reader = new InputStreamReader(source);
         try {
-            Gpx gpx = GpxUtil.unmarshal10(reader);
-            return process(gpx);
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            Gpx gpx = unmarshal10(reader);
+            process(gpx, context);
         }
         finally {
             reader.close();
         }
-        return null;
     }
 }

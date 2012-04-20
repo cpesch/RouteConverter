@@ -23,13 +23,13 @@ package slash.navigation.bcr;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -91,7 +91,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return new BcrRoute(this, name, null, (List<BcrPosition>) positions);
     }
 
-    public List<BcrRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<BcrRoute> context) throws IOException {
         List<BcrSection> sections = new ArrayList<BcrSection>();
         List<BcrPosition> positions = new ArrayList<BcrPosition>();
         BcrSection current = null;
@@ -112,7 +112,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             if (isNameValue(line)) {
                 if (current == null) {
                     // name value without section means this isn't the file format we expect
-                    return null;
+                    return;
                 } else
                     current.put(parseName(line), parseValue(line));
             }
@@ -121,10 +121,8 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         if (hasValidSections(sections)) {
             extractPositions(sections, positions);
             if (positions.size() >= 2)
-                return Arrays.asList(new BcrRoute(this, sections, positions));
+                context.addRoute(new BcrRoute(this, sections, positions));
         }
-
-        return null;
     }
 
     boolean isSectionTitle(String line) {

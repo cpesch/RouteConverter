@@ -24,6 +24,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.Wgs84Position;
@@ -39,7 +40,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
@@ -95,9 +95,10 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Position(first.getLongitude(), first.getLatitude(), null, null, null, "Start:" + first.getComment());
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
         Map<String, String> map = new HashMap<String, String>();
+        String routeName = null;
 
         while (true) {
             String line = reader.readLine();
@@ -107,7 +108,10 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
                 continue;
 
             if (isDataVersion(line) || line.startsWith(END_TRIP) || line.startsWith(END_STOP_OPT)) {
-            } else if (line.startsWith(START_TRIP) || line.startsWith(START_STOP) || line.startsWith(START_STOP_OPT)) {
+            } else if (line.startsWith(START_TRIP)) {
+                routeName = trim(parseValue(line));
+                map.clear();
+            } else if (line.startsWith(START_STOP) || line.startsWith(START_STOP_OPT)) {
                 map.clear();
             } else if (line.startsWith(END_STOP)) {
                 Wgs84Position position = parsePosition(map);
@@ -118,14 +122,12 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
                 String value = parseValue(line);
                 map.put(name, value);
             } else {
-                return null;
+                return;
             }
         }
 
         if (positions.size() > 0)
-            return asList(new Wgs84Route(this, Route, positions));
-        else
-            return null;
+            context.addRoute(createRoute(Route, routeName, positions));
     }
 
     protected abstract boolean isDataVersion(String line);

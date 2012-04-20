@@ -24,6 +24,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 
@@ -90,7 +91,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         return new OvlRoute(characteristics, name, (List<Wgs84Position>) positions);
     }
 
-    public List<OvlRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<OvlRoute> context) throws IOException {
         List<OvlSection> sections = new ArrayList<OvlSection>();
         OvlSection current = null;
 
@@ -110,19 +111,14 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             if (isNameValue(line)) {
                 if (current == null) {
                     // name value without section means this isn't the file format we expect
-                    return null;
+                    return;
                 } else
                     current.put(parseName(line), parseValue(line));
             }
         }
 
-        if (hasValidSections(sections)) {
-            List<OvlRoute> routes = extractRoutes(sections);
-            if (routes.size() > 0)
-                return routes;
-        }
-
-        return null;
+        if (hasValidSections(sections))
+            context.addRoutes(extractRoutes(sections));
     }
 
     boolean isSectionTitle(String line) {

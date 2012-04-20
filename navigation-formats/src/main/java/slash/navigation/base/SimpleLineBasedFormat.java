@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -47,8 +46,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return (R)new Wgs84Route(this, characteristics, positions);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
         List<Wgs84Position> positions = new ArrayList<Wgs84Position>();
 
         int lineCount = 0;
@@ -66,14 +64,12 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
                 }
             } else {
                 if (lineCount++ > getGarbleCount())
-                    return null;
+                    return;
             }
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(createRoute(getRouteCharacteristics(), positions));
-        else
-            return null;
+            context.addRoute(createRoute(getRouteCharacteristics(), positions));
     }
 
     protected int getGarbleCount() {

@@ -191,6 +191,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
+    public SimpleRoute asKienzleGpsFormat() {
+        return asSimpleFormat(new KienzleGpsFormat());
+    }
+
     public KlickTelRoute asKlickTelRouteFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (Wgs84Position position : positions) {
@@ -416,8 +420,16 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         return asSimpleFormat(new NavigatingPoiWarnerFormat());
     }
 
+    public SimpleRoute asNavilinkFormat() {
+        return asSimpleFormat(new NavilinkFormat());
+    }
+
     public SimpleRoute asRoute66Format() {
         return asSimpleFormat(new Route66Format());
+    }
+
+    public SimpleRoute asSygicAsciiFormat() {
+        return asSimpleFormat(new SygicAsciiFormat());
     }
 
     public SimpleRoute asSygicUnicodeFormat() {

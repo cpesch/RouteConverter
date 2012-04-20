@@ -41,7 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.NavigationFormats.asFormat;
+import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractComment;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractElevation;
 import static slash.navigation.converter.gui.helper.PositionHelper.extractSpeed;
@@ -253,7 +253,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
-        return asFormat(route.getPositions(), targetFormat);
+        return asFormatForPositions(route.getPositions(), targetFormat);
     }
 
     public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {

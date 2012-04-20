@@ -22,6 +22,7 @@ package slash.navigation.klicktel;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
@@ -35,7 +36,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
@@ -89,13 +89,9 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
 
-    public List<KlickTelRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            KDRoute KDRoute = unmarshal(source);
-            return asList(process(KDRoute));
-        } catch (JAXBException e) {
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KlickTelRoute> context) throws Exception {
+        KDRoute KDRoute = unmarshal(source);
+        context.addRoute(process(KDRoute));
     }
 
     private String formatPosition(Double aDouble) {

@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
@@ -36,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static slash.navigation.base.NavigationFormats.asFormat;
+import static slash.navigation.base.NavigationFormats.asFormatForPositions;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -64,7 +63,7 @@ public class PositionSelection implements Transferable {
         NavigatingPoiWarnerFormat targetFormat = new NavigatingPoiWarnerFormat();
         List<BaseNavigationPosition> targetPositions = new ArrayList<BaseNavigationPosition>();
         try {
-            targetPositions = asFormat(sourcePositions, targetFormat);
+            targetPositions = asFormatForPositions(sourcePositions, targetFormat);
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e.getMessage());
         }

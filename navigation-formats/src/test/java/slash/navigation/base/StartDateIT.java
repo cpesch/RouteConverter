@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
 import slash.common.io.CompactCalendar;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
@@ -29,12 +30,25 @@ import slash.navigation.nmea.NmeaRoute;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-public class StartDateIT extends NavigationTestCase {
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.JANUARY;
+import static java.util.Calendar.JULY;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.common.TestCase.calendar;
+import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.readSampleGopalTrackFile;
+import static slash.navigation.base.NavigationTestCase.readSampleNmeaFile;
+import static slash.navigation.base.NavigationTestCase.readSampleTomTomRouteFile;
+
+public class StartDateIT {
 
     private void checkPosition(BaseNavigationPosition position, CompactCalendar expectedDate) {
         CompactCalendar actual = position.getTime();
@@ -49,15 +63,15 @@ public class StartDateIT extends NavigationTestCase {
 
     private void checkPositions(List<? extends BaseRoute> routes) {
         Calendar expectedDate = Calendar.getInstance();
-        expectedDate.set(2007, 6, 21);
+        expectedDate.set(2007, JULY, 21);
         checkPositionsWithDate(routes, expectedDate);
     }
 
     @SuppressWarnings({"unchecked"})
     private void checkPositionsWithDate(List<? extends BaseRoute> routes, Calendar expectedDate) {
-        int year = expectedDate.get(Calendar.YEAR);
-        int month = expectedDate.get(Calendar.MONTH) + 1;
-        int day = expectedDate.get(Calendar.DAY_OF_MONTH);
+        int year = expectedDate.get(YEAR);
+        int month = expectedDate.get(MONTH) + 1;
+        int day = expectedDate.get(DAY_OF_MONTH);
 
         assertNotNull(routes);
         assertEquals(1, routes.size());
@@ -71,108 +85,133 @@ public class StartDateIT extends NavigationTestCase {
         checkPosition(position3, calendar(year, month, day, 18, 51, 59));
     }
 
-
-    public void testFileStartDateForTomTomRouteWithDate() throws IOException {
+    @Test
+    public void testFileStartDateForTomTomRouteWithDate() throws Exception {
         List<TomTomRoute> routes = readSampleTomTomRouteFile("startdate-with-date.itn", true);
         checkPositions(routes);
     }
 
-    public void testCurrentStartDateForTomTomRouteWithDate() throws IOException {
+    @Test
+    public void testCurrentStartDateForTomTomRouteWithDate() throws Exception {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.itn"));
         Calendar startDate = Calendar.getInstance();
-        List<TomTomRoute> routes = new TomTom5RouteFormat().read(source, CompactCalendar.fromCalendar(startDate));
-        checkPositions(routes);
+        ParserContext<TomTomRoute> context = new ParserContextImpl<TomTomRoute>();
+        new TomTom5RouteFormat().read(source, fromCalendar(startDate), context);
+        checkPositions(context.getRoutes());
     }
 
-    public void testNullStartDateForTomTomRouteWithDate() throws IOException {
+    @Test
+    public void testNullStartDateForTomTomRouteWithDate() throws Exception {
         List<TomTomRoute> routes = readSampleTomTomRouteFile("startdate-with-date.itn", false);
         checkPositions(routes);
     }
 
-
-    public void testFileStartDateForTomTomRouteWithoutDate() throws IOException {
+    @Test
+    public void testFileStartDateForTomTomRouteWithoutDate() throws Exception {
         File source = new File(SAMPLE_PATH + "startdate-without-date.itn");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<TomTomRoute> routes = new TomTom5RouteFormat().read(new FileInputStream(source), CompactCalendar.fromCalendar(startDate));
+        ParserContext<TomTomRoute> context = new ParserContextImpl<TomTomRoute>();
+        new TomTom5RouteFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
+        List<TomTomRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testCurrentStartDateForTomTomRouteWithoutDate() throws IOException {
+    @Test
+    public void testCurrentStartDateForTomTomRouteWithoutDate() throws Exception {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.itn"));
         Calendar startDate = Calendar.getInstance();
-        List<TomTomRoute> routes = new TomTom5RouteFormat().read(source, CompactCalendar.fromCalendar(startDate));
+        ParserContext<TomTomRoute> context = new ParserContextImpl<TomTomRoute>();
+        new TomTom5RouteFormat().read(source, fromCalendar(startDate), context);
+        List<TomTomRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testNullStartDateForTomTomRouteWithoutDate() throws IOException {
+    @Test
+    public void testNullStartDateForTomTomRouteWithoutDate() throws Exception {
         List<TomTomRoute> routes = readSampleTomTomRouteFile("startdate-without-date.itn", false);
         Calendar startDate = Calendar.getInstance();
-        startDate.set(1970, 0, 1);
+        startDate.set(1970, JANUARY, 1);
         checkPositionsWithDate(routes, startDate);
     }
 
-
-    public void testFileStartDateForNmeaWithDate() throws IOException {
+    @Test
+    public void testFileStartDateForNmeaWithDate() throws Exception {
         List<NmeaRoute> routes = readSampleNmeaFile("startdate-with-date.nmea", true);
         checkPositions(routes);
     }
 
-    public void testCurrentStartDateForNmeaWithDate() throws IOException {
+    @Test
+    public void testCurrentStartDateForNmeaWithDate() throws Exception {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-with-date.nmea"));
         Calendar startDate = Calendar.getInstance();
-        List<NmeaRoute> routes = new NmeaFormat().read(source, CompactCalendar.fromCalendar(startDate));
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        new NmeaFormat().read(source, fromCalendar(startDate), context);
+        List<NmeaRoute> routes = context.getRoutes();
         checkPositions(routes);
     }
 
-    public void testNullStartDateForNmeaWithDate() throws IOException {
+    @Test
+    public void testNullStartDateForNmeaWithDate() throws Exception {
         List<NmeaRoute> routes = readSampleNmeaFile("startdate-with-date.nmea", false);
         checkPositions(routes);
     }
 
-
-    public void testFileStartDateForNmeaWithoutDate() throws IOException {
+    @Test
+    public void testFileStartDateForNmeaWithoutDate() throws Exception {
         File source = new File(SAMPLE_PATH + "startdate-without-date.nmea");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<NmeaRoute> routes = new NmeaFormat().read(new FileInputStream(source), CompactCalendar.fromCalendar(startDate));
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        new NmeaFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
+        List<NmeaRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testCurrentStartDateForNmeaWithoutDate() throws IOException {
+    @Test
+    public void testCurrentStartDateForNmeaWithoutDate() throws Exception {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.nmea"));
         Calendar startDate = Calendar.getInstance();
-        List<NmeaRoute> routes = new NmeaFormat().read(source, CompactCalendar.fromCalendar(startDate));
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        new NmeaFormat().read(source, fromCalendar(startDate), context);
+        List<NmeaRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testNullStartDateForNmeaWithoutDate() throws IOException {
+    @Test
+    public void testNullStartDateForNmeaWithoutDate() throws Exception {
         List<NmeaRoute> routes = readSampleNmeaFile("startdate-without-date.nmea", false);
         Calendar startDate = Calendar.getInstance();
-        startDate.set(1970, 0, 1);
+        startDate.set(1970, JANUARY, 1);
         checkPositionsWithDate(routes, startDate);
     }
 
-
-    public void testFileStartDateForGopalTrackWithoutDate() throws IOException {
+    @Test
+    public void testFileStartDateForGopalTrackWithoutDate() throws Exception {
         File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        List<SimpleRoute> routes = new GoPalTrackFormat().read(new FileInputStream(source), CompactCalendar.fromCalendar(startDate));
+        ParserContext<SimpleRoute> context = new ParserContextImpl<SimpleRoute>();
+        new GoPalTrackFormat().read(new FileInputStream(source), fromCalendar(startDate), context);
+        List<SimpleRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testCurrentStartDateForGopalTrackWithoutDate() throws IOException {
+    @Test
+    public void testCurrentStartDateForGopalTrackWithoutDate() throws Exception {
         FileInputStream source = new FileInputStream(new File(SAMPLE_PATH + "startdate-without-date.trk"));
         Calendar startDate = Calendar.getInstance();
-        List<SimpleRoute> routes = new GoPalTrackFormat().read(source, CompactCalendar.fromCalendar(startDate));
+        ParserContext<SimpleRoute> context = new ParserContextImpl<SimpleRoute>();
+        new GoPalTrackFormat().read(source, fromCalendar(startDate), context);
+        List<SimpleRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
-    public void testNullStartDateForGopalTrackWithoutDate() throws IOException {
+    @Test
+    public void testNullStartDateForGopalTrackWithoutDate() throws Exception {
         List<SimpleRoute> routes = readSampleGopalTrackFile("startdate-without-date.trk", false);
         Calendar startDate = Calendar.getInstance();
-        startDate.set(1970, 0, 1);
+        startDate.set(1970, JANUARY, 1);
         checkPositionsWithDate(routes, startDate);
     }
 }

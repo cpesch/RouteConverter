@@ -21,6 +21,7 @@
 package slash.navigation.nmea;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 
@@ -97,7 +98,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         return Track;
     }
 
-    public List<NmeaRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<NmeaRoute> context) throws IOException {
         List<NmeaPosition> positions = new ArrayList<NmeaPosition>();
 
         CompactCalendar originalStartDate = startDate;
@@ -128,14 +129,12 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             } else {
                 // exception for Mobile Navigator 6: accept that the first line may be garbled
                 if (lineCount++ > getGarbleCount())
-                    return null;
+                    return;
             }
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new NmeaRoute(this, getCharacteristics(), positions));
-        else
-            return null;
+            context.addRoute(createRoute(getCharacteristics(), null, positions));
     }
 
     boolean haveDifferentLongitudeAndLatitude(NmeaPosition predecessor, NmeaPosition successor) {

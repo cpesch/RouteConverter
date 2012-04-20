@@ -21,6 +21,7 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
@@ -31,14 +32,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.nmn.Nmn7Util.unmarshal;
 
 /**
  * Reads and writes Navigon Mobile Navigator 7 (.freshroute) files.
@@ -47,7 +47,6 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  */
 
 public class Nmn7Format extends NmnFormat {
-    private static final Logger log = Logger.getLogger(Nmn7Format.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(Nmn7Format.class);
 
     public String getExtension() {
@@ -78,14 +77,9 @@ public class Nmn7Format extends NmnFormat {
         return new NmnRoute(this, Route, route.getName(), positions);
     }
 
-    public List<NmnRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            Route route = Nmn7Util.unmarshal(source);
-            return Arrays.asList(process(route));
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<NmnRoute> context) throws Exception {
+        Route route = unmarshal(source);
+        context.addRoute(process(route));
     }
 
 

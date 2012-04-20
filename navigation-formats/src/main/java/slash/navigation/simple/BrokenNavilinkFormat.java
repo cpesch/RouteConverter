@@ -23,6 +23,7 @@ package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
@@ -107,17 +108,15 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         }
     }
 
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
         byte[] record = new byte[SBP_RECORD_LENGTH];
         ByteBuffer sbpRecordByteBuffer = ByteBuffer.wrap(record);
         sbpRecordByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
         List<Wgs84Route> result = new ArrayList<Wgs84Route>();
         Wgs84Route activeRoute = null;
-
         Wgs84Position position;
         Wgs84Position previousPosition = null;
-
         int readBytes = 0, pointCount = 0;
         while (source.read(record) == SBP_RECORD_LENGTH) {
             readBytes += SBP_RECORD_LENGTH;
@@ -138,9 +137,8 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
             } while (position == null);
 
             // at least three positions in the first 100 bytes
-            if (readBytes > 100 && pointCount < 3) {
-                return null;
-            }
+            if (readBytes > 100 && pointCount < 3)
+                return;
 
             if ((activeRoute == null || isTrackStart(sbpRecordByteBuffer)) && position != null) {
                 activeRoute = createRoute(Track,
@@ -151,8 +149,10 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
 
             if (position != null && activeRoute != null)
                 activeRoute.getPositions().add(position);
-            else
-                return result;
+            else {
+                context.addRoutes(result);
+                return;
+            }
 
             pointCount++;
             previousPosition = position;
@@ -162,7 +162,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         // it must be 95% of the file valid
         int minCorrectPositions = (int) (readBytes / (double) SBP_RECORD_LENGTH * 0.95);
         if (pointCount < minCorrectPositions)
-            return null;
-        return result;
+            return;
+        context.addRoutes(result);
     }
 }

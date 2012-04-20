@@ -20,20 +20,16 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.base.NavigationTestCase;
-import slash.navigation.base.RouteCharacteristics;
+import org.junit.Test;
 
 import java.io.IOException;
 
+import static slash.navigation.base.NavigationTestCase.readFiles;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
-public class TTTracklogIT extends NavigationTestCase {
-
-    private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        readFiles("tttracklog", extension, routeCount, expectElevation, expectTime, characteristics);
-    }
-
+public class TTTracklogIT {
+    @Test
     public void testAllTTTracklogTracks() throws IOException {
-        readFiles(".itn", 1, false, true, Track);
+        readFiles("tttracklog", ".itn", 1, false, true, Track);
     }
 }

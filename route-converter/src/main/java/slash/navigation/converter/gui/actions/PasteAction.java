@@ -27,7 +27,6 @@ import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
-import slash.navigation.converter.gui.helper.JTableHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.FrameAction;
 
@@ -37,7 +36,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
 
-import static slash.navigation.base.NavigationFormats.asFormat;
+import static slash.navigation.base.NavigationFormats.asFormatForPositions;
+import static slash.navigation.converter.gui.helper.JTableHelper.scrollToPosition;
+import static slash.navigation.converter.gui.helper.JTableHelper.selectPositions;
 
 /**
  * {@link Action} that copies the selected rows of a {@link JTable}.
@@ -86,14 +87,14 @@ public class PasteAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         final int insertRow = selectedRows.length > 0 ? selectedRows[0] + 1 : table.getRowCount();
 
-        List<BaseNavigationPosition> targetPositions = asFormat(sourcePositions, positionsModel.getRoute().getFormat());
+        List<BaseNavigationPosition> targetPositions = asFormatForPositions(sourcePositions, positionsModel.getRoute().getFormat());
         positionsModel.add(insertRow, targetPositions);
 
         final int lastRow = insertRow - 1 + targetPositions.size();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JTableHelper.scrollToPosition(table, lastRow);
-                JTableHelper.selectPositions(table, insertRow, lastRow);
+                scrollToPosition(table, lastRow);
+                selectPositions(table, insertRow, lastRow);
             }
         });
     }

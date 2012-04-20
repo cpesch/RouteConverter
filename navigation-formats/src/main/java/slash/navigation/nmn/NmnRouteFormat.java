@@ -21,12 +21,23 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -64,7 +75,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -174,7 +185,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
         if (checkHeader(source)) {
             // copy whole file to a bytebuffer
             byte[] bodyBytes = new byte[source.available()];
@@ -193,7 +204,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             }
             catch (EOFException e) {
                 // can't read the first text --> wrong format
-                return null;
+                return;
             }
             // 4 Byte: expected position count
             int expectedPositionCount = fileContent.getInt();
@@ -216,9 +227,8 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             }
 
             if (readedPositions == expectedPositionCount)
-                return Arrays.asList(createRoute(Route, null, positions));
+                context.addRoute(createRoute(Route, null, positions));
         }
-        return null;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})

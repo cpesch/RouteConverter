@@ -23,6 +23,7 @@ package slash.navigation.tour;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
 import java.io.BufferedReader;
@@ -38,8 +39,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.parseLong;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Reads and writes Falk Navigator (.tour) files.
@@ -91,11 +94,11 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return new TourRoute(name, (List<TourPosition>) positions);
     }
 
-    public List<TourRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        return read(source, startDate, UTF8_ENCODING);
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<TourRoute> context) throws Exception {
+        read(source, startDate, UTF8_ENCODING, context);
     }
 
-    public List<TourRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<TourRoute> context) throws IOException {
         List<TourPosition> positions = new ArrayList<TourPosition>();
         Map<String, String> map = new HashMap<String, String>();
         String sectionTitle = null, routeName = null;
@@ -134,20 +137,17 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                 String value = trim(parseValue(line));
                 map.put(name, value);
             } else {
-                return null;
+                return;
             }
         }
 
-        if (positions.size() > 0) {
-            return Arrays.asList(new TourRoute(this, routeName, sortPositions(positions)));
-        }
-
-        return null;
+        if (positions.size() > 0)
+            context.addRoute(createRoute(Waypoints, routeName, sortPositions(positions)));
     }
 
     private List<TourPosition> sortPositions(List<TourPosition> positions) {
         TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
-        Arrays.sort(positionArray, new PositionInListComparator());
+        sort(positionArray, new PositionInListComparator());
         return new ArrayList<TourPosition>(Arrays.asList(positionArray));
     }
 

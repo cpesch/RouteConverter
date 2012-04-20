@@ -22,7 +22,8 @@ package slash.navigation.nmea;
 
 import org.junit.Test;
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
 
 public class MagellanExploristFormatTest {
     private MagellanExploristFormat format = new MagellanExploristFormat();
@@ -106,7 +108,9 @@ public class MagellanExploristFormatTest {
         StringReader reader = new StringReader(
                 "$PMGNTRK,4914.9672,N,00651.2081,E,00199,M,152224,A,KLLERTAL-RADWEG,210307*7B"
         );
-        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        format.read(new BufferedReader(reader), null, DEFAULT_ENCODING, context);
+        List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());

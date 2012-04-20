@@ -21,13 +21,13 @@
 package slash.navigation.copilot;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.List;
 
 /**
  * Reads and writes CoPilot 7 (.trp) files.
@@ -41,8 +41,8 @@ public class CoPilot7Format extends CoPilotFormat {
         return "CoPilot 7 (*" + getExtension() + ")";
     }
 
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
-        return read(source, startDate, UTF16_ENCODING);
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
+        read(source, startDate, UTF16_ENCODING, context);
     }
 
     protected boolean isDataVersion(String line) {

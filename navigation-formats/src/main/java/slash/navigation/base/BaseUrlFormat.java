@@ -46,12 +46,12 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
         // used to be a UTF-8 then ISO-8859-1 fallback style
-        return read(source, startDate, UTF8_ENCODING);
+        read(source, startDate, UTF8_ENCODING, context);
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         StringBuilder buffer = new StringBuilder();
 
         while (buffer.length() < READ_BUFFER_SIZE) {
@@ -63,17 +63,15 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
 
         String url = findURL(buffer.toString());
         if (url == null)
-            return null;
+            return;
 
         Map<String, List<String>> parameters = parseURLParameters(url, encoding);
         if (parameters == null)
-            return null;
+            return;
 
         List<Wgs84Position> positions = parsePositions(parameters);
         if (positions.size() > 0)
-            return Arrays.asList(new Wgs84Route(this, Route, positions));
-        else
-            return null;
+            context.addRoute(createRoute(Route, null, positions));
     }
 
     protected abstract String findURL(String text);

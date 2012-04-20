@@ -25,6 +25,8 @@ import slash.common.io.Externalization;
 import slash.common.io.Platform;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
@@ -358,10 +360,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             return null;
 
         List<GpxRoute> result = new ArrayList<GpxRoute>();
-        for (GpxRoute route : routes) {
-            GpxRoute sanitized = sanitizeRoute(route);
-            if (isValidRoute(sanitized))
-                result.add(sanitized);
+        for (GpxRoute aRoute : routes) {
+            GpxRoute route = sanitizeRoute(aRoute);
+            if (isValidRoute(route))
+                result.add(route);
         }
         return result.size() > 0 ? result : null;
     }
@@ -374,35 +376,36 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return route;
     }
 
-    public List<GpxRoute> read(InputStream in, CompactCalendar startDate) throws IOException {
-        List<GpxRoute> result = null;
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        ParserContext<GpxRoute> gpxContext = new ParserContextImpl<GpxRoute>();
         if (isStreamingCapable()) {
-            InputStream target = startBabel(in, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
-            result = getGpxFormat().read(target, startDate);
+            InputStream target = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
+            getGpxFormat().read(target, startDate, gpxContext);
         } else {
-            File source = File.createTempFile("babelsource", "." + getFormatName());
-            source.deleteOnExit();
-            copy(in, new FileOutputStream(source));
-            File target = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
-            target.deleteOnExit();
-            boolean successful = startBabel(source, getFormatName(), target, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
+            File sourceFile = File.createTempFile("babelsource", "." + getFormatName());
+            sourceFile.deleteOnExit();
+            copy(source, new FileOutputStream(sourceFile));
+            File targetFile = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
+            targetFile.deleteOnExit();
+            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
-                log.fine("Successfully converted " + source + " to " + target);
-                result = getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(target)), startDate);
+                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, gpxContext);
             }
-            if (source.exists()) {
-                if (!source.delete())
-                    log.warning("Cannot delete source file " + source);
+            if (sourceFile.exists()) {
+                if (!sourceFile.delete())
+                    log.warning("Cannot delete source file " + sourceFile);
             }
-            if (target.exists()) {
-                if (!target.delete())
-                    log.warning("Cannot delete target file " + target);
+            if (targetFile.exists()) {
+                if (!targetFile.delete())
+                    log.warning("Cannot delete target file " + targetFile);
             }
         }
-        result = filterValidRoutes(result);
-        if (result != null && result.size() > 0)
+        List<GpxRoute> result = filterValidRoutes(gpxContext.getRoutes());
+        if (result != null && result.size() > 0) {
+            context.addRoutes(result);
             log.fine("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME);
-        return result;
+        }
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

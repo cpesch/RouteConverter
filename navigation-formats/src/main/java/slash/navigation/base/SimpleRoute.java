@@ -20,7 +20,12 @@
 
 package slash.navigation.base;
 
-import slash.navigation.bcr.*;
+import slash.common.io.CompactCalendar;
+import slash.navigation.bcr.BcrFormat;
+import slash.navigation.bcr.BcrPosition;
+import slash.navigation.bcr.BcrRoute;
+import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -30,18 +35,68 @@ import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalTrackFormat;
-import slash.navigation.gpx.*;
-import slash.navigation.itn.*;
+import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxFormat;
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
+import slash.navigation.itn.TomTomPosition;
+import slash.navigation.itn.TomTomRoute;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.klicktel.KlickTelRoute;
-import slash.navigation.kml.*;
+import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.Igo8RouteFormat;
+import slash.navigation.kml.Kml20Format;
+import slash.navigation.kml.Kml21Format;
+import slash.navigation.kml.Kml22BetaFormat;
+import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.KmlPosition;
+import slash.navigation.kml.KmlRoute;
+import slash.navigation.kml.Kmz20Format;
+import slash.navigation.kml.Kmz21Format;
+import slash.navigation.kml.Kmz22BetaFormat;
+import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktRoute;
 import slash.navigation.mm.MagicMapsPthRoute;
-import slash.navigation.nmea.*;
-import slash.navigation.nmn.*;
+import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.MagellanExploristFormat;
+import slash.navigation.nmea.MagellanRouteFormat;
+import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmea.NmeaPosition;
+import slash.navigation.nmea.NmeaRoute;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
+import slash.navigation.nmn.NmnRoute;
+import slash.navigation.nmn.NmnRouteFormat;
+import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlRoute;
-import slash.navigation.simple.*;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoogleMapsUrlFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.GroundTrackFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.KienzleGpsFormat;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.NavilinkFormat;
+import slash.navigation.simple.OpelNaviFormat;
+import slash.navigation.simple.QstarzQ1000Format;
+import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.SygicAsciiFormat;
+import slash.navigation.simple.SygicUnicodeFormat;
+import slash.navigation.simple.WebPageFormat;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourPosition;
@@ -130,6 +185,12 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
 
     public TomTomRoute asTomTom8RouteFormat() {
         return asTomTomRouteFormat(new TomTom8RouteFormat());
+    }
+
+    public SimpleRoute asKienzleGpsFormat() {
+        if (getFormat() instanceof KienzleGpsFormat)
+            return this;
+        return asSimpleFormat(new KienzleGpsFormat());
     }
 
     public KlickTelRoute asKlickTelRouteFormat() {
@@ -316,10 +377,22 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Si
         return asSimpleFormat(new NavigatingPoiWarnerFormat());
     }
 
+    public SimpleRoute asNavilinkFormat() {
+        if (getFormat() instanceof NavilinkFormat)
+            return this;
+        return asSimpleFormat(new NavilinkFormat());
+    }
+
     public SimpleRoute asRoute66Format() {
         if (getFormat() instanceof Route66Format)
             return this;
         return asSimpleFormat(new Route66Format());
+    }
+
+    public SimpleRoute asSygicAsciiFormat() {
+        if (getFormat() instanceof SygicAsciiFormat)
+            return this;
+        return asSimpleFormat(new SygicAsciiFormat());
     }
 
     public SimpleRoute asSygicUnicodeFormat() {

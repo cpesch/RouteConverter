@@ -21,19 +21,17 @@
 package slash.navigation.gpx;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatBigDecimal;
@@ -48,6 +46,7 @@ import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpx.GpxUtil.unmarshal10;
 import static slash.navigation.util.Conversion.kmhToMs;
 
 /**
@@ -57,7 +56,6 @@ import static slash.navigation.util.Conversion.kmhToMs;
  */
 
 public class Gpx10Format extends GpxFormat {
-    private static final Logger log = Logger.getLogger(Gpx10Format.class.getName());
     static final String VERSION = "1.0";
     private final boolean reuseReadObjectsForWriting;
 
@@ -73,30 +71,23 @@ public class Gpx10Format extends GpxFormat {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    List<GpxRoute> process(Gpx gpx) {
+    void process(Gpx gpx, ParserContext context) {
         if (gpx == null || !VERSION.equals(gpx.getVersion()))
-            return null;
+            return;
 
         boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond = gpx.getCreator() != null &&
                 ("Mobile Action http://www.mobileaction.com/".equals(gpx.getCreator()) ||
                  "Holux Utility".equals(gpx.getCreator()));
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute wayPointsAsRoute = extractWayPoints(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
         if (wayPointsAsRoute != null)
-            result.add(wayPointsAsRoute);
-        result.addAll(extractRoutes(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
-        result.addAll(extractTracks(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
-        return result;
+            context.addRoute(wayPointsAsRoute);
+        context.addRoutes(extractRoutes(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
+        context.addRoutes(extractTracks(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
     }
 
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            Gpx gpx = GpxUtil.unmarshal10(source);
-            return process(gpx);
-        } catch (Throwable t) {
-            log.fine("Error reading " + source + ": " + t.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        Gpx gpx = unmarshal10(source);
+        process(gpx, context);
     }
 
     private List<GpxRoute> extractRoutes(Gpx gpx, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {

@@ -21,6 +21,7 @@
 package slash.navigation.fpl;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.fpl.binding.FlightPlan;
 import slash.navigation.fpl.binding.ObjectFactory;
 import slash.navigation.gpx.GpxFormat;
@@ -33,9 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatElevation;
 import static slash.common.io.Transfer.formatPosition;
 import static slash.common.io.Transfer.trim;
@@ -50,7 +49,6 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
  */
 
 public class GarminFlightPlanFormat extends GpxFormat {
-    private static final Logger log = Logger.getLogger(GarminFlightPlanFormat.class.getName());
 
     public String getExtension() {
         return ".fpl";
@@ -111,18 +109,12 @@ public class GarminFlightPlanFormat extends GpxFormat {
             positions.add(process(routePoint, waypoint));
         }
 
-        return positions.size() > 0 ? new GpxRoute(this, Track, flightPlan.getRoute().getRouteName(), asDescription(flightPlan.getRoute().getRouteDescription()), positions, flightPlan) : null;
+        return new GpxRoute(this, Track, flightPlan.getRoute().getRouteName(), asDescription(flightPlan.getRoute().getRouteDescription()), positions, flightPlan);
     }
 
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            FlightPlan flightPlan = unmarshal(source);
-            GpxRoute result = process(flightPlan);
-            return result != null ? asList(result) : null;
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        FlightPlan flightPlan = unmarshal(source);
+        context.addRoute(process(flightPlan));
     }
 
     private FlightPlan createFpl(GpxRoute route, int startIndex, int endIndex) {
@@ -132,7 +124,7 @@ public class GarminFlightPlanFormat extends GpxFormat {
         FlightPlan.Route flightPlanRoute = objectFactory.createFlightPlanRoute();
         flightPlanRoute.setRouteName(asRouteName(route.getName()));
         flightPlanRoute.setRouteDescription(asDescription(route.getDescription()));
-        flightPlanRoute.setFlightPlanIndex((short)1);
+        flightPlanRoute.setFlightPlanIndex((short) 1);
         FlightPlan.WaypointTable waypointTable = objectFactory.createFlightPlanWaypointTable();
 
         List<GpxPosition> positions = route.getPositions();
@@ -142,14 +134,18 @@ public class GarminFlightPlanFormat extends GpxFormat {
             FlightPlan.Route.RoutePoint routePoint = objectFactory.createFlightPlanRouteRoutePoint();
             // TODO use countryCode, type from position
             routePoint.setWaypointIdentifier(position.getComment());
+            routePoint.setWaypointCountryCode("COUNTRYCODE");
             routePoint.setWaypointType("USER WAYPOINT");
             flightPlanRoute.getRoutePoint().add(routePoint);
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
             // TODO use comment, countryCode, type from position
+            waypoint.setCountryCode("COUNTRYCODE");
+            waypoint.setComment("COMMENT");
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getComment());
             waypoint.setLat(formatPosition(position.getLatitude()));
             waypoint.setLon(formatPosition(position.getLongitude()));
+            waypoint.setType("TYPE");
             waypointTable.getWaypoint().add(waypoint);
         }
 

@@ -22,6 +22,7 @@ package slash.navigation.gopal;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gopal.binding5.ObjectFactory;
 import slash.navigation.gopal.binding5.Tour;
@@ -32,10 +33,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatPosition;
 import static slash.common.io.Transfer.formatSpeed;
 import static slash.navigation.gopal.GoPalUtil.marshal5;
@@ -48,7 +47,6 @@ import static slash.navigation.gopal.GoPalUtil.unmarshal5;
  */
 
 public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
-    private static final Logger log = Logger.getLogger(GoPal5RouteFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoPal5RouteFormat.class);
     private static final String ROUTE_OPTIONS_SPEED_UNIT = "km_h";
     private static final String VERSION_PREFIX = "v5";
@@ -69,7 +67,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
     private GoPal5Route process(Tour tour) {
         List<GoPalPosition> positions = new ArrayList<GoPalPosition>();
         Tour.Start start = tour.getStart();
-        if(start != null) {
+        if (start != null) {
             Short country = start.getCountry() != null ? start.getCountry().getCode() : null;
             String state = start.getState() != null ? start.getState().getName() : null;
             String zip = start.getZip() != null ? start.getZip().getCode() : null;
@@ -98,14 +96,9 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         return new GoPal5Route(null, tour.getRouteOptions(), positions);
     }
 
-    public List<GoPal5Route> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            Tour tour = unmarshal5(source);
-            return asList(process(tour));
-        } catch (JAXBException e) {
-            log.fine("Error reading GoPal 5 from " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPal5Route> context) throws Exception {
+        Tour tour = unmarshal5(source);
+        context.addRoute(process(tour));
     }
 
     private Tour.RouteOptions createRouteOptions(GoPal5Route route) {
@@ -122,7 +115,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
             options.setOptimizationMode(optimizationMode);
             Tour.RouteOptions.TTIBypass bypass = objectFactory.createTourRouteOptionsTTIBypass();
             bypass.setCalculation(preferences.get(VERSION_PREFIX + "ttiBypass", "automatic")); // automatic, disabled, manual
-            bypass.setMode("avoid"); 
+            bypass.setMode("avoid");
             options.setTTIBypass(bypass);
 
             Tour.RouteOptions.RoadUsageTypes usageTypes = objectFactory.createTourRouteOptionsRoadUsageTypes();
@@ -287,7 +280,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
         for (int i = startIndex; i < endIndex; i++) {
             GoPalPosition position = route.getPosition(i);
 
-            if(i == startIndex) {
+            if (i == startIndex) {
                 tour.setStart(createStart(position));
             } else {
                 tour.getDestination().add(createDestination(position));

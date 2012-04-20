@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Reads broken Google Earth 5 (.kml) files.
@@ -37,7 +36,6 @@ import java.util.logging.Logger;
  */
 
 public class BrokenKml22Format extends Kml22Format {
-    private static final Logger log = Logger.getLogger(BrokenKml22Format.class.getName());
 
     public String getName() {
         return "Google Earth 5 Garble (*" + getExtension() + ")";
@@ -52,12 +50,9 @@ public class BrokenKml22Format extends Kml22Format {
         try {
             KmlType kmlType = KmlUtil.unmarshal22(reader);
             return process(kmlType, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading broken KML 2.2 rom " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();
         }
-        return null;
     }
 }

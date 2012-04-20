@@ -22,6 +22,7 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.kml.binding21.ContainerType;
 import slash.navigation.kml.binding21.DocumentType;
@@ -51,13 +52,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.kml.KmlUtil.marshal21;
+import static slash.navigation.kml.KmlUtil.unmarshal21;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
@@ -67,23 +68,17 @@ import static slash.navigation.util.RouteComments.commentRoutePositions;
  */
 
 public class Kml21Format extends KmlFormat {
-    private static final Logger log = Logger.getLogger(Kml21Format.class.getName());
 
     public String getName() {
         return "Google Earth 4 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            return internalRead(source, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading KML 2.1 from " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+        context.addRoutes(internalRead(source, startDate));
     }
 
     List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
-        KmlType kmlType = KmlUtil.unmarshal21(source);
+        KmlType kmlType = unmarshal21(source);
         return process(kmlType, startDate);
     }
 
@@ -206,7 +201,7 @@ public class Kml21Format extends KmlFormat {
 
     private List<KmlPosition> extractPositions(JAXBElement<? extends GeometryType> geometryType) {
         List<KmlPosition> positions = new ArrayList<KmlPosition>();
-        if(geometryType != null) {
+        if (geometryType != null) {
             GeometryType geometryTypeValue = geometryType.getValue();
             if (geometryTypeValue instanceof PointType) {
                 PointType point = (PointType) geometryTypeValue;

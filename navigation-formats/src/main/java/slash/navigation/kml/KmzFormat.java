@@ -23,17 +23,18 @@ package slash.navigation.kml;
 import slash.common.io.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 
-import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.zip.*;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * The base of all compressed Google Earth formats.
@@ -42,8 +43,7 @@ import java.util.zip.*;
  */
 
 public abstract class KmzFormat extends BaseKmlFormat {
-    private static final Logger log = Logger.getLogger(KmzFormat.class.getName());
-    private final KmlFormat delegate;
+    private KmlFormat delegate;
 
     protected KmzFormat(KmlFormat delegate) {
         this.delegate = delegate;
@@ -69,32 +69,14 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.createRoute(characteristics, name, positions);
     }
 
-    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
         ZipInputStream zip = new ZipInputStream(source);
         try {
-            ZipEntry entry;
-            while ((entry = zip.getNextEntry()) != null) {
-                try {
-                    List<KmlRoute> routes = delegate.internalRead(new NotClosingUnderlyingInputStream(zip), startDate);
-                    if (routes != null)
-                        result.addAll(routes);
-                } catch (JAXBException e) {
-                    log.fine("Error reading " + entry + " from " + source + ": " + e.getMessage());
-                }
+            while ((zip.getNextEntry()) != null) {
+                context.addRoutes(delegate.internalRead(new NotClosingUnderlyingInputStream(zip), startDate));
                 zip.closeEntry();
             }
-            return result.size() > 0 ? result : null;
-        }
-        catch (IllegalArgumentException e) {
-            log.fine("Error reading invalid zip entry names from " + source + ": " + e.getMessage());
-            return null;
-        }
-        catch (ZipException e) {
-            log.fine("Error reading zip entries from " + source + ": " + e.getMessage());
-            return null;
-        }
-        finally {
+        } finally {
             zip.close();
         }
     }
@@ -112,8 +94,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
             outputStream.putNextEntry(entry);
             outputStream.write(bytes, 0, bytes.length);
             outputStream.finish();
-        }
-        finally {
+        } finally {
             outputStream.flush();
             outputStream.close();
         }

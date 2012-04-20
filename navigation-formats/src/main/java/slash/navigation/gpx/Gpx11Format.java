@@ -22,6 +22,7 @@ package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.MetadataType;
@@ -35,14 +36,12 @@ import slash.navigation.gpx.garmin3.RoutePointExtensionT;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.formatBigDecimal;
 import static slash.common.io.Transfer.formatElevation;
@@ -56,6 +55,7 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
 /**
  * Reads and writes GPS Exchange Format 1.1 (.gpx) files.
@@ -64,7 +64,6 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class Gpx11Format extends GpxFormat {
-    private static final Logger log = Logger.getLogger(Gpx11Format.class.getName());
     static final String VERSION = "1.1";
 
     public String getName() {
@@ -88,14 +87,9 @@ public class Gpx11Format extends GpxFormat {
         return result;
     }
 
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            GpxType gpxType = GpxUtil.unmarshal11(source);
-            return process(gpxType);
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        GpxType gpxType = unmarshal11(source);
+        context.addRoutes(process(gpxType));
     }
 
     private List<GpxRoute> extractRoutes(GpxType gpxType, boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour) {

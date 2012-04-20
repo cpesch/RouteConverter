@@ -23,11 +23,11 @@ package slash.navigation.mm;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -47,7 +47,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
@@ -61,7 +60,6 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> implements MultipleRoutesFormat<MagicMapsIktRoute> {
-    private static final Logger log = Logger.getLogger(MagicMapsIktFormat.class.getName());
     private static final String ROOT_ELEMENT = "Root";
     private static final String FILE_FORMAT_ATTRIBUTE = "FileFormat";
     private static final String FILE_FORMAT = "IK3D-Project-File";
@@ -189,25 +187,10 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
         return null;
     }
 
-    private List<MagicMapsIktRoute> unmarshal(InputStream in) throws JAXBException {
-        try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLEventReader eventReader = factory.createXMLEventReader(in, UTF8_ENCODING);
-            return process(eventReader);
-        } catch (XMLStreamException e) {
-            throw new JAXBException("Parse error from " + in + ": " + e.getMessage());
-        }
-    }
-
-    public List<MagicMapsIktRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            List<MagicMapsIktRoute> routes = unmarshal(source);
-            if (routes != null && routes.size() > 0)
-                return routes;
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
-        }
-        return null;
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<MagicMapsIktRoute> context) throws Exception {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
+        context.addRoutes(process(eventReader));
     }
 
     private void writeHeader(String name, String description, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {
@@ -330,8 +313,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                 }
 
                 writeFooter(writer, eventFactory);
-            }
-            finally {
+            } finally {
                 writer.flush();
                 writer.close();
                 target.flush();

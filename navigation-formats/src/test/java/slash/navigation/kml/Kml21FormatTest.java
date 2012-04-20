@@ -21,9 +21,10 @@
 package slash.navigation.kml;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -34,14 +35,16 @@ public class Kml21FormatTest {
     Kml21Format format = new Kml21Format();
 
     @Test
-    public void testPointCoordinates() throws IOException {
+    public void testPointCoordinates() throws Exception {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
-                        "<Document><Placemark><Point>\n" +
-                        "<coordinates>151.2393322528181, -33.59862693992532, 0\n" +
-                        "</coordinates>\n" +
-                        "</Point></Placemark></Document></kml>";
-        List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()), null);
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document><Placemark><Point>\n" +
+                "<coordinates>151.2393322528181, -33.59862693992532, 0\n" +
+                "</coordinates>\n" +
+                "</Point></Placemark></Document></kml>";
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -53,16 +56,18 @@ public class Kml21FormatTest {
     }
 
     @Test
-    public void testLineStringCoordinates() throws IOException {
+    public void testLineStringCoordinates() throws Exception {
         String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
-                        "<Document><Placemark><LineString>\n" +
-                        "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
-                        "151.2274390264927, -33.59631160091919, 0 \n\n" +
-                        "151.2179531903903, -33.59844652615273, 0 \n\n" +
-                        "</coordinates>\n" +
-                        "</LineString></Placemark></Document></kml>";
-        List<KmlRoute> routes = format.read(new ByteArrayInputStream(string.getBytes()), null);
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document><Placemark><LineString>\n" +
+                "<coordinates>151.2393322528181, -33.59862693992532, 0 \n" +
+                "151.2274390264927, -33.59631160091919, 0 \n\n" +
+                "151.2179531903903, -33.59844652615273, 0 \n\n" +
+                "</coordinates>\n" +
+                "</LineString></Placemark></Document></kml>";
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new ByteArrayInputStream(string.getBytes()), null, context);
+        List<KmlRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(3, route.getPositionCount());

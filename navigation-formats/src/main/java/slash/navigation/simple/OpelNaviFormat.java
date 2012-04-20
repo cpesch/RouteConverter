@@ -22,6 +22,7 @@ package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
 import slash.navigation.base.SimpleRoute;
@@ -73,8 +74,8 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return ".poi";
     }
 
-    public List<SimpleRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        return read(source, startDate, UTF8_ENCODING);
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<SimpleRoute> context) throws Exception {
+        read(source, startDate, UTF8_ENCODING, context);
     }
 
     public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

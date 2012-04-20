@@ -59,7 +59,7 @@ public class WintecWbt201Tk1Format extends WintecWbt201Format {
         return formatDescriptor.equals(FORMAT_DESCRIPTOR);
     }
 
-    protected List<Wgs84Route> read(ByteBuffer buffer) throws IOException {
+    protected List<Wgs84Route> internalRead(ByteBuffer buffer) throws IOException {
         /* 
            char pHeader[16];//="WintecLogFormat"; //16
            float f32LogVersion;                   //20

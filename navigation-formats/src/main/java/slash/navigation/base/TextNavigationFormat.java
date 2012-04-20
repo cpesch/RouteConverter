@@ -22,9 +22,15 @@ package slash.navigation.base;
 
 import slash.common.io.CompactCalendar;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * The base of all text based navigation formats.
@@ -42,15 +48,15 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         return !(calendar.get(Calendar.YEAR) == 1970 && calendar.get(Calendar.DAY_OF_YEAR) == 1);
     }
 
-    public List<R> read(InputStream source, CompactCalendar startDate) throws IOException {
-        return read(source, startDate, DEFAULT_ENCODING);
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception {
+        read(source, startDate, DEFAULT_ENCODING, context);
     }
 
-    protected List<R> read(InputStream source, CompactCalendar startDate, String encoding) throws IOException {
+    protected void read(InputStream source, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException {
         Reader reader = new InputStreamReader(source, encoding);
         BufferedReader bufferedReader = new BufferedReader(reader);
         try {
-            return read(bufferedReader, startDate, encoding);
+            read(bufferedReader, startDate, encoding, context);
         }
         finally {
             reader.close();
@@ -58,7 +64,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     }
 
     // encoding currently only used in GoogleMapsUrlFormat
-    public abstract List<R> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException;
+    public abstract void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<R> context) throws IOException;
 
     protected void write(R route, OutputStream target, String encoding, int startIndex, int endIndex) throws IOException {
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, encoding));

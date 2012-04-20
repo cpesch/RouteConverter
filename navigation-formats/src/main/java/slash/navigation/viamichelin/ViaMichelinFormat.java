@@ -22,6 +22,7 @@ package slash.navigation.viamichelin;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
@@ -38,13 +39,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.viamichelin.ViaMichelinUtil.unmarshal;
 
 /**
  * Reads and writes ViaMichelin (.xvm) files.
@@ -53,7 +53,6 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
-    private static final Logger log = Logger.getLogger(ViaMichelinFormat.class.getName());
 
     public String getExtension() {
         return ".xvm";
@@ -116,18 +115,15 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public List<ViaMichelinRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<ViaMichelinRoute> context) throws Exception {
         InputStreamReader reader = new InputStreamReader(source);
         try {
-            PoiList poiList = ViaMichelinUtil.unmarshal(reader);
-            return Arrays.asList(process(poiList));
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
+            PoiList poiList = unmarshal(reader);
+            context.addRoute(process(poiList));
         }
         finally {
             reader.close();
         }
-        return null;
     }
 
 

@@ -21,6 +21,8 @@
 package slash.navigation.bcr;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 
 import java.io.*;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
 
 public class MTP0809FormatTest {
     private MTP0809Format format = new MTP0809Format();
@@ -37,7 +40,9 @@ public class MTP0809FormatTest {
     public void testReadComment() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
-        List<BcrRoute> routes = format.read(new BufferedReader(new StringReader(writer.toString())), null, BcrFormat.DEFAULT_ENCODING);
+        ParserContext<BcrRoute> context = new ParserContextImpl<BcrRoute>();
+        format.read(new BufferedReader(new StringReader(writer.toString())), null, DEFAULT_ENCODING, context);
+        List<BcrRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         BcrRoute route = routes.get(0);
         List<BcrPosition> positions = route.getPositions();

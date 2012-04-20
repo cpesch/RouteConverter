@@ -23,7 +23,6 @@ package slash.navigation.base;
 import junit.framework.AssertionFailedError;
 import slash.common.TestCase;
 import slash.common.io.CompactCalendar;
-import slash.common.io.Files;
 import slash.common.io.Transfer;
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
@@ -54,6 +53,7 @@ import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.KmlFormat;
+import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
@@ -101,6 +101,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Math.min;
 import static slash.common.io.CompactCalendar.UTC;
+import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.io.Transfer.toMixedCase;
@@ -935,7 +936,7 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    protected void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
+    public static void readFile(File source, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser();
         ParserResult result = parser.read(source);
         assertNotNull(result);
@@ -967,20 +968,36 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    protected void readFiles(String prefix, String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        List<File> files = Files.collectFiles(new File(SAMPLE_PATH), extension);
+    public static void readFiles(String prefix, String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
+        List<File> files = collectFiles(new File(SAMPLE_PATH), extension);
         for (File file : files) {
             if (file.getName().startsWith(prefix))
                 readFile(file, routeCount, expectElevation, expectTime, characteristics);
         }
     }
 
-    protected List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws IOException {
+    public static List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws Exception {
         File source = new File(SAMPLE_PATH + fileName);
-        return format.read(new FileInputStream(source), null);
+        ParserContext<GpxRoute> context = new ParserContextImpl<GpxRoute>();
+        format.read(new FileInputStream(source), null, context);
+        return context.getRoutes();
     }
 
-    protected List<TomTomRoute> readSampleTomTomRouteFile(String fileName, boolean setStartDateFromFile) throws IOException {
+    public static List<KmlRoute> readSampleKmlFile(KmlFormat format, String fileName) throws Exception {
+        File source = new File(SAMPLE_PATH + fileName);
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new FileInputStream(source), null, context);
+        return context.getRoutes();
+    }
+
+    public static List<KmlRoute> readSampleKmzFile(KmzFormat format, String fileName) throws Exception {
+        File source = new File(SAMPLE_PATH + fileName);
+        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
+        format.read(new FileInputStream(source), null, context);
+        return context.getRoutes();
+    }
+
+    public static List<TomTomRoute> readSampleTomTomRouteFile(String fileName, boolean setStartDateFromFile) throws Exception {
         File source = new File(SAMPLE_PATH + fileName);
         CompactCalendar startDate = null;
         if (setStartDateFromFile) {
@@ -988,10 +1005,12 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = CompactCalendar.fromCalendar(calendar);
         }
-        return new TomTom5RouteFormat().read(new FileInputStream(source), startDate);
+        ParserContext<TomTomRoute> context = new ParserContextImpl<TomTomRoute>();
+        new TomTom5RouteFormat().read(new FileInputStream(source), startDate, context);
+        return context.getRoutes();
     }
 
-    protected List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws IOException {
+    public static List<NmeaRoute> readSampleNmeaFile(String fileName, boolean setStartDateFromFile) throws Exception {
         File source = new File(SAMPLE_PATH + fileName);
         CompactCalendar startDate = null;
         if (setStartDateFromFile) {
@@ -999,10 +1018,12 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = CompactCalendar.fromCalendar(calendar);
         }
-        return new NmeaFormat().read(new FileInputStream(source), startDate);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        new NmeaFormat().read(new FileInputStream(source), startDate, context);
+        return context.getRoutes();
     }
 
-    protected List<SimpleRoute> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws IOException {
+    public static List<SimpleRoute> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws Exception {
         File source = new File(SAMPLE_PATH + fileName);
         CompactCalendar startDate = null;
         if (setStartDateFromFile) {
@@ -1010,6 +1031,8 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = CompactCalendar.fromCalendar(calendar);
         }
-        return new GoPalTrackFormat().read(new FileInputStream(source), startDate);
+        ParserContext<SimpleRoute> context = new ParserContextImpl<SimpleRoute>();
+        new GoPalTrackFormat().read(new FileInputStream(source), startDate, context);
+        return context.getRoutes();
     }
 }

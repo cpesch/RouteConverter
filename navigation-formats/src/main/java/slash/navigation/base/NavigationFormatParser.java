@@ -22,8 +22,10 @@ package slash.navigation.base;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.navigation.babel.BabelFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.copilot.CoPilotFormat;
+import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
@@ -47,9 +49,12 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static java.lang.String.format;
 import static slash.common.io.CompactCalendar.UTC;
+import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Transfer.ceiling;
+import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.simple.GoogleMapsUrlFormat.isGoogleMapsUrl;
@@ -98,16 +103,23 @@ public class NavigationFormatParser {
     private FormatAndRoutes internalRead(InputStream buffer, int readBufferSize, Calendar startDate,
                                          List<NavigationFormat> formats) throws IOException {
         try {
-            CompactCalendar compactStartDate = startDate != null ? CompactCalendar.fromCalendar(startDate) : null;
+            CompactCalendar compactStartDate = startDate != null ? fromCalendar(startDate) : null;
+            ParserContextImpl context = new ParserContextImpl();
+            NavigationFormat preferredFormat = null;
+
             for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
 
-                List<BaseRoute> routes = format.read(buffer, compactStartDate);
-                if (routes != null && routes.size() > 0) {
-                    log.info("Detected '" + format.getName() + "' with " + routes.size() + " route(s) and " +
-                            getPositionCounts(routes) + " positions");
-                    commentRoutes(routes);
-                    return new FormatAndRoutes(format, routes);
+                try {
+                    format.read(buffer, compactStartDate, context);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.fine(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
+                }
+
+                if (context.getRoutes().size() > 0) {
+                    preferredFormat = format;
+                    break;
                 }
 
                 try {
@@ -118,10 +130,42 @@ public class NavigationFormatParser {
                     break;
                 }
             }
+
+            List<BaseRoute> routes = context.getRoutes();
+            if (routes != null && routes.size() > 0) {
+                NavigationFormat format = determineFormat(routes, preferredFormat);
+                List<BaseRoute> result = asFormatForRoutes(routes, format);
+                log.info("Detected '" + format.getName() + "' with " + result.size() + " route(s) and " +
+                        getPositionCounts(result) + " positions");
+                commentRoutes(result);
+                return new FormatAndRoutes(format, result);
+            }
+
         } finally {
             buffer.close();
         }
         return null;
+    }
+
+    private NavigationFormat determineFormat(List<BaseRoute> routes, NavigationFormat preferredFormat) {
+        NavigationFormat result = preferredFormat;
+        for (BaseRoute route : routes) {
+            // more than one route: the same result
+            if (result.equals(route.getFormat()))
+                continue;
+
+            // result is capable of storing multiple routes
+            if (result.isSupportsMultipleRoutes())
+                continue;
+
+            // result from GPSBabel-based format which allows only one route but is represented by GPX 1.0
+            if (result instanceof BabelFormat)
+                continue;
+
+            // default for multiple routes is GPX 1.1
+            result = new Gpx11Format();
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")

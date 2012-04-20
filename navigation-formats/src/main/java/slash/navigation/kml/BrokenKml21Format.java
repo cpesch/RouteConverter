@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static slash.navigation.kml.KmlUtil.unmarshal21;
+
 /**
  * Reads broken Google Earth 4 (.kml) files.
  *
@@ -37,7 +39,6 @@ import java.util.logging.Logger;
  */
 
 public class BrokenKml21Format extends Kml21Format {
-    private static final Logger log = Logger.getLogger(BrokenKml21Format.class.getName());
 
     public String getName() {
         return "Google Earth 4 Garble (*" + getExtension() + ")";
@@ -50,14 +51,11 @@ public class BrokenKml21Format extends Kml21Format {
     List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
         InputStreamReader reader = new InputStreamReader(source);
         try {
-            KmlType kmlType = KmlUtil.unmarshal21(reader);
+            KmlType kmlType = unmarshal21(reader);
             return process(kmlType, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading broken KML 2.1 from " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();
         }
-        return null;
     }
 }

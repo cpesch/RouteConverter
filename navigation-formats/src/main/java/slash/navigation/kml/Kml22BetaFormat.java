@@ -22,8 +22,27 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.kml.binding22beta.*;
+import slash.navigation.kml.binding22beta.AbstractContainerType;
+import slash.navigation.kml.binding22beta.AbstractFeatureType;
+import slash.navigation.kml.binding22beta.AbstractGeometryType;
+import slash.navigation.kml.binding22beta.AbstractTimePrimitiveType;
+import slash.navigation.kml.binding22beta.DocumentType;
+import slash.navigation.kml.binding22beta.FolderType;
+import slash.navigation.kml.binding22beta.KmlType;
+import slash.navigation.kml.binding22beta.LineStringType;
+import slash.navigation.kml.binding22beta.LineStyleType;
+import slash.navigation.kml.binding22beta.Link;
+import slash.navigation.kml.binding22beta.LinkType;
+import slash.navigation.kml.binding22beta.MultiGeometryType;
+import slash.navigation.kml.binding22beta.NetworkLinkType;
+import slash.navigation.kml.binding22beta.ObjectFactory;
+import slash.navigation.kml.binding22beta.PlacemarkType;
+import slash.navigation.kml.binding22beta.PointType;
+import slash.navigation.kml.binding22beta.StyleType;
+import slash.navigation.kml.binding22beta.TimeSpanType;
+import slash.navigation.kml.binding22beta.TimeStampType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -34,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -50,19 +68,13 @@ import static slash.navigation.util.RouteComments.commentRoutePositions;
  */
 
 public class Kml22BetaFormat extends KmlFormat {
-    private static final Logger log = Logger.getLogger(Kml22BetaFormat.class.getName());
 
     public String getName() {
         return "Google Earth 4.2 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            return internalRead(source, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading KML 2.2 Beta from " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+        context.addRoutes(internalRead(source, startDate));
     }
 
     List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
@@ -299,8 +311,8 @@ public class Kml22BetaFormat extends KmlFormat {
         lineStyle.setColor(color);
         lineStyle.setWidth((double) width);
         return style;
-    }   
-    
+    }
+
     private KmlType createKmlType(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         KmlType kmlType = objectFactory.createKmlType();

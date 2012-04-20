@@ -28,7 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.logging.Logger;
+
+import static slash.navigation.kml.KmlUtil.unmarshal21;
 
 /**
  * Reads broken little endian Google Earth 4 (.kml) files.
@@ -37,7 +38,6 @@ import java.util.logging.Logger;
  */
 
 public class BrokenKml21LittleEndianFormat extends Kml21Format {
-    private static final Logger log = Logger.getLogger(BrokenKml21LittleEndianFormat.class.getName());
 
     public String getName() {
         return "Google Earth 4 Little Endian Garble (*" + getExtension() + ")";
@@ -50,14 +50,11 @@ public class BrokenKml21LittleEndianFormat extends Kml21Format {
     List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
         InputStreamReader reader = new InputStreamReader(source, UTF16LE_ENCODING);
         try {
-            KmlType kmlType = KmlUtil.unmarshal21(reader);
+            KmlType kmlType = unmarshal21(reader);
             return process(kmlType, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading broken KML 2.1 in little endian from " + source + ": " + e.getMessage());
         }
         finally {
             reader.close();
         }
-        return null;
     }
 }

@@ -20,15 +20,25 @@
 
 package slash.navigation.babel;
 
-import slash.navigation.base.*;
+import org.junit.Test;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class OziExplorerFormatIT extends NavigationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+
+public class OziExplorerFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
 
+    @Test
     public void testEliminateNonsenseRoutes() throws IOException {
         File source = new File(SAMPLE_PATH + "Feissneck.rte");
         ParserResult result = parser.read(source);

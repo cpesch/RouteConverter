@@ -22,16 +22,25 @@ package slash.navigation.nmea;
 
 import org.junit.Test;
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.SimpleRoute;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.navigation.base.BaseNavigationFormat.DEFAULT_ENCODING;
 import static slash.navigation.util.Conversion.nauticMilesToKilometer;
 
 public class NmeaFormatTest {
@@ -273,7 +282,9 @@ public class NmeaFormatTest {
                         "$GPZDA,032910,07,08,2004,00,00*48\n" +
                         "$GPVTG,0.00,T,,M,1.531,N,2.835,K,A*37"
         );
-        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        format.read(new BufferedReader(reader), null, DEFAULT_ENCODING, context);
+        List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         SimpleRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -296,7 +307,9 @@ public class NmeaFormatTest {
                 "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,08,00.0,-48.7654,M,00.0,M,,*47\n" +
                         "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.00,0.00,260707,,*06"
         );
-        List<NmeaRoute> routes = format.read(new BufferedReader(reader), null, BaseNavigationFormat.DEFAULT_ENCODING);
+        ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
+        format.read(new BufferedReader(reader), null, DEFAULT_ENCODING, context);
+        List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
@@ -322,7 +335,9 @@ public class NmeaFormatTest {
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
 
-        List<NmeaRoute> routes2 = format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, BaseNavigationFormat.DEFAULT_ENCODING);
+        ParserContext<NmeaRoute> context2 = new ParserContextImpl<NmeaRoute>();
+        format.read(new BufferedReader(new StringReader(writer.getBuffer().toString())), null, DEFAULT_ENCODING, context2);
+        List<NmeaRoute> routes2 = context2.getRoutes();
         assertEquals(1, routes2.size());
         NmeaRoute route2 = routes2.get(0);
         assertEquals(1, route2.getPositionCount());

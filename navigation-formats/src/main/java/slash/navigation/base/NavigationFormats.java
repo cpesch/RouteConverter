@@ -113,7 +113,6 @@ import slash.navigation.simple.WebPageFormat;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
-import slash.navigation.util.RouteComments;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
@@ -122,11 +121,14 @@ import slash.navigation.wbt.WintecWbt202TesFormat;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.util.RouteComments.commentPositions;
+import static slash.navigation.util.RouteComments.commentRouteName;
 
 /**
  * Contains a list of all navigation formats.
@@ -202,7 +204,7 @@ public final class NavigationFormats {
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(NmnRouteFormat.class);
 
-        // BabelFormats
+        // GPSBabel-based formats
         addFormat(GarminMapSource6Format.class);
         addFormat(GarminMapSource5Format.class);
         addFormat(MicrosoftAutoRouteFormat.class);
@@ -272,12 +274,12 @@ public final class NavigationFormats {
 
     private static List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
         NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
-        Arrays.sort(formatsArray, new Comparator<NavigationFormat>() {
+        sort(formatsArray, new Comparator<NavigationFormat>() {
             public int compare(NavigationFormat f1, NavigationFormat f2) {
                 return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
             }
         });
-        return Arrays.asList(formatsArray);
+        return asList(formatsArray);
     }
 
     public static List<NavigationFormat> getReadFormatsSortedByName() {
@@ -344,8 +346,8 @@ public final class NavigationFormats {
         return result;
     }
 
-    public static List<BaseNavigationPosition> asFormat(List<BaseNavigationPosition> positions, NavigationFormat format) throws IOException {
-        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
+    public static List<BaseNavigationPosition> asFormatForPositions(List<BaseNavigationPosition> positions, NavigationFormat format) throws IOException {
+        List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>(positions.size());
         for (BaseNavigationPosition position : positions) {
             result.add(asFormat(position, format));
         }
@@ -359,10 +361,18 @@ public final class NavigationFormats {
         try {
             Method method = route.getClass().getMethod("as" + formatName, new Class[0]);
             result = (BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) method.invoke(route);
-            RouteComments.commentPositions(result.getPositions());
-            RouteComments.commentRouteName(result);
+            commentPositions(result.getPositions());
+            commentRouteName(result);
         } catch (Exception e) {
             throw new IOException("Cannot call as" + formatName + "() on " + route, e);
+        }
+        return result;
+    }
+
+    public static List<BaseRoute> asFormatForRoutes(List<BaseRoute> routes, NavigationFormat format) throws IOException {
+        List<BaseRoute> result = new ArrayList<BaseRoute>(routes.size());
+        for (BaseRoute route : routes) {
+            result.add(asFormat(route, format));
         }
         return result;
     }
@@ -375,6 +385,9 @@ public final class NavigationFormats {
         // shortcut to prevent lots of as... methods
         if (format instanceof BabelFormat)
             formatName = "Gpx10Format";
+        if (formatName.startsWith("Broken"))
+            formatName = formatName.substring(6);
+        formatName = formatName.replaceAll("LittleEndian", "");
         return formatName;
     }
 }

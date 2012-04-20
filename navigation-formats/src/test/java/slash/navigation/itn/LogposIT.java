@@ -20,28 +20,21 @@
 
 package slash.navigation.itn;
 
-import slash.navigation.base.NavigationTestCase;
-import slash.navigation.base.RouteCharacteristics;
+import org.junit.Test;
 
 import java.io.IOException;
 
+import static slash.navigation.base.NavigationTestCase.readFiles;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
-public class LogposIT extends NavigationTestCase {
-
-    private void readFiles(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        readFiles("pilog", extension, routeCount, expectElevation, expectTime, characteristics);
-    }
-
+public class LogposIT {
+    @Test
     public void testAllLogpos1Tracks() throws IOException {
-        readFiles(".itn", 1, true, true, Track);
+        readFiles("pilog", ".itn", 1, true, true, Track);
     }
 
-    private void read2Files(String extension, int routeCount, boolean expectElevation, boolean expectTime, RouteCharacteristics... characteristics) throws IOException {
-        readFiles("logpos", extension, routeCount, expectElevation, expectTime, characteristics);
-    }
-
+    @Test
     public void testAllLogpos2Tracks() throws IOException {
-        read2Files(".itn", 1, false, true, Track);
+        readFiles("logpos", ".itn", 1, false, true, Track);
     }
 }

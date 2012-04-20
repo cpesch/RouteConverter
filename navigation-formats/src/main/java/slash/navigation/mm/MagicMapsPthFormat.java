@@ -23,6 +23,7 @@ package slash.navigation.mm;
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.GkPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
 
@@ -30,7 +31,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,7 +67,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         return new MagicMapsPthRoute(characteristics, (List<GkPosition>) positions);
     }
 
-    public List<MagicMapsPthRoute> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<MagicMapsPthRoute> context) throws IOException {
         List<GkPosition> positions = new ArrayList<GkPosition>();
 
         while (true) {
@@ -83,14 +83,12 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
                 GkPosition position = parsePosition(line);
                 positions.add(position);
             } else {
-                return null;
+                return;
             }
         }
 
         if (positions.size() > 0)
-            return Arrays.asList(new MagicMapsPthRoute(this, Track, positions));
-        else
-            return null;
+            context.addRoute(createRoute(Track, null, positions));
     }
 
     boolean isNameValue(String line) {

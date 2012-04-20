@@ -73,7 +73,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public List<Wgs84Route> read(BufferedReader reader, CompactCalendar startDate, String encoding) throws IOException {
+    public void read(BufferedReader reader, CompactCalendar startDate, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -86,11 +86,9 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
     protected abstract boolean checkFormatDescriptor(ByteBuffer sourceHeader) throws IOException;
 
-    protected abstract List<Wgs84Route> read(ByteBuffer source) throws IOException;
+    protected abstract List<Wgs84Route> internalRead(ByteBuffer source) throws IOException;
 
-    public List<Wgs84Route> read(InputStream source, CompactCalendar startDate) throws IOException {
-        List<Wgs84Route> result = null;
-
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<Wgs84Route> context) throws Exception {
         byte[] header = new byte[getHeaderSize()];
         if (source.read(header) == getHeaderSize()) {
 
@@ -111,10 +109,9 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 sourceData.put(header);
                 sourceData.put(data);
 
-                result = read(sourceData);
+                context.addRoutes(internalRead(sourceData));
             }
         }
-        return result;
     }
 
     List<Wgs84Route> readPositions(ByteBuffer source, int startDataAddress, long trackInfoAddress) {

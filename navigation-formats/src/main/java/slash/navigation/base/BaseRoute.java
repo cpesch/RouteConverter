@@ -421,6 +421,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract KmlRoute asIgo8RouteFormat();
 
+    public abstract SimpleRoute asKienzleGpsFormat();
+
     public abstract KlickTelRoute asKlickTelRouteFormat();
 
     public abstract KmlRoute asKml20Format();
@@ -446,6 +448,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract BcrRoute asMTP0809Format();
 
     public abstract SimpleRoute asNavigatingPoiWarnerFormat();
+    public abstract SimpleRoute asNavilinkFormat();
 
     public abstract NmeaRoute asNmeaFormat();
 
@@ -465,6 +468,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asRoute66Format();
 
+    public abstract SimpleRoute asSygicAsciiFormat();
     public abstract SimpleRoute asSygicUnicodeFormat();
 
     public abstract SimpleRoute asWebPageFormat();

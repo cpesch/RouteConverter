@@ -184,6 +184,10 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
+    public SimpleRoute asKienzleGpsFormat() {
+        return asSimpleFormat(new KienzleGpsFormat());
+    }
+
     public KlickTelRoute asKlickTelRouteFormat() {
         return this;
     }
@@ -409,8 +413,16 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
         return asSimpleFormat(new NavigatingPoiWarnerFormat());
     }
 
+    public SimpleRoute asNavilinkFormat() {
+        return asSimpleFormat(new NavilinkFormat());
+    }
+
     public SimpleRoute asRoute66Format() {
         return asSimpleFormat(new Route66Format());
+    }
+
+    public SimpleRoute asSygicAsciiFormat() {
+        return asSimpleFormat(new SygicAsciiFormat());
     }
 
     public SimpleRoute asSygicUnicodeFormat() {

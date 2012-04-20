@@ -20,6 +20,7 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.List;
 
 import static slash.common.io.Transfer.formatDoubleAsString;
 
@@ -49,8 +49,8 @@ public class SygicUnicodeFormat extends SygicFormat {
         return "Sygic POI Unicode (*" + getExtension() + ")";
     }
 
-    public List<SimpleRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        return read(source, startDate, UTF16_ENCODING);
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<SimpleRoute> context) throws Exception {
+        read(source, startDate, UTF16_ENCODING, context);
     }
 
     public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

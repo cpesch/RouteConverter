@@ -21,11 +21,11 @@
 package slash.navigation.itn;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Reads and writes Tom Tom 8 Route (.itn) files.
@@ -34,13 +34,12 @@ import java.util.List;
  */
 
 public class TomTom8RouteFormat extends TomTomRouteFormat {
-
     public String getName() {
         return "Tom Tom 8 Route (*" + getExtension() + ")";
     }
 
-    public List<TomTomRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        return read(source, startDate, UTF8_ENCODING);
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<TomTomRoute> context) throws Exception {
+        read(source, startDate, UTF8_ENCODING, context);
     }
 
     protected boolean isIso885915ButReadWithUtf8(String string) {

@@ -21,6 +21,7 @@
 package slash.navigation.tcx;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.tcx.binding2.ActivityLapT;
@@ -46,7 +47,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.lang.Math.min;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -60,7 +60,6 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class Tcx2Format extends TcxFormat {
-    private static final Logger log = Logger.getLogger(Tcx2Format.class.getName());
 
     public String getName() {
         return "Training Center Database 2 (*" + getExtension() + ")";
@@ -190,15 +189,9 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    public List<GpxRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal2(source);
-            List<GpxRoute> result = process(trainingCenterDatabase);
-            return result.size() > 0 ? result : null;
-        } catch (JAXBException e) {
-            log.fine("Error reading " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal2(source);
+        context.addRoutes(process(trainingCenterDatabase));
     }
 
 

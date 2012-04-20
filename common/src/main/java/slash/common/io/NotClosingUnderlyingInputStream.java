@@ -30,7 +30,7 @@ import java.io.InputStream;
  */
 
 public class NotClosingUnderlyingInputStream extends InputStream {
-    private final InputStream delegate;
+    private InputStream delegate;
 
     public NotClosingUnderlyingInputStream(InputStream delegate) {
         this.delegate = delegate;

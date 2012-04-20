@@ -23,6 +23,7 @@ package slash.navigation.kml;
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.kml.binding22.AbstractContainerType;
@@ -62,7 +63,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -91,20 +91,14 @@ import static slash.navigation.util.RouteComments.commentRoutePositions;
  */
 
 public class Kml22Format extends KmlFormat {
-    private static final Logger log = Logger.getLogger(Kml22Format.class.getName());
     private static final int METERS_BETWEEN_MARKS = 1000;
 
     public String getName() {
         return "Google Earth 5 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            return internalRead(source, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading KML 2.2 from " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+        context.addRoutes(internalRead(source, startDate));
     }
 
     List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {

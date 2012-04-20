@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.NavigationFormats.asFormat;
+
 public class AppendIT extends NavigationTestCase {
     NavigationFormatParser parser = new NavigationFormatParser();
 
@@ -75,7 +77,7 @@ public class AppendIT extends NavigationTestCase {
         NavigationFormatParser appendParser = new NavigationFormatParser();
         appendParser.read(appendFile);
 
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = NavigationFormats.asFormat(appendResult.getTheRoute(), testResult.getFormat());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = asFormat(appendResult.getTheRoute(), testResult.getFormat());
         testResult.getTheRoute().getPositions().addAll(appendRoute.getPositions());
 
         BaseRoute<BaseNavigationPosition, ?> route = testResult.getTheRoute();
@@ -98,7 +100,7 @@ public class AppendIT extends NavigationTestCase {
         for (int i = testPositionCount; i < testPositionCount + appendPositionCount; i++) {
             BaseNavigationPosition position = positions.get(i);
             assertEquals(positionClass, position.getClass());
-            BaseNavigationPosition expected = NavigationFormats.asFormat(appendPositions.get(i - testPositionCount), route.getFormat());
+            BaseNavigationPosition expected = asFormat(appendPositions.get(i - testPositionCount), route.getFormat());
             assertEquals(expected, position);
         }
     }

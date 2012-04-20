@@ -22,9 +22,23 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.ISO8601;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
-import slash.navigation.kml.binding20.*;
+import slash.navigation.kml.binding20.Document;
+import slash.navigation.kml.binding20.Folder;
+import slash.navigation.kml.binding20.GeometryCollection;
+import slash.navigation.kml.binding20.Kml;
+import slash.navigation.kml.binding20.LineString;
+import slash.navigation.kml.binding20.LineStyle;
+import slash.navigation.kml.binding20.MultiGeometry;
+import slash.navigation.kml.binding20.NetworkLink;
+import slash.navigation.kml.binding20.ObjectFactory;
+import slash.navigation.kml.binding20.Placemark;
+import slash.navigation.kml.binding20.Point;
+import slash.navigation.kml.binding20.Style;
+import slash.navigation.kml.binding20.TimeInstant;
+import slash.navigation.kml.binding20.TimePeriod;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -34,7 +48,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
@@ -42,6 +55,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parsePosition;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
+import static slash.navigation.kml.KmlUtil.unmarshal20;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
@@ -51,23 +65,17 @@ import static slash.navigation.util.RouteComments.commentRoutePositions;
  */
 
 public class Kml20Format extends KmlFormat {
-    private static final Logger log = Logger.getLogger(Kml20Format.class.getName());
 
     public String getName() {
         return "Google Earth 3 (*" + getExtension() + ")";
     }
 
-    public List<KmlRoute> read(InputStream source, CompactCalendar startDate) throws IOException {
-        try {
-            return internalRead(source, startDate);
-        } catch (JAXBException e) {
-            log.fine("Error reading KML 2.0 from " + source + ": " + e.getMessage());
-            return null;
-        }
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
+        context.addRoutes(internalRead(source, startDate));
     }
 
     List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
-        Object o = KmlUtil.unmarshal20(source);
+        Object o = unmarshal20(source);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;
             return extractTracks(kml.getDocument(), kml.getFolder(), startDate);
