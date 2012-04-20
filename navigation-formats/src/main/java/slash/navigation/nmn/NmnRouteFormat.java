@@ -548,8 +548,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(1); // starttag
         int positionStarttag = byteBuffer.position(); // save position to fill the bytelength at the end
         byteBuffer.putLong(0); // length of following data. filled at the end
-        byteBuffer.putInt(position.getComment().getBytes().length);
-        byteBuffer.put(position.getComment().getBytes());
+        byte[] comment = position.getComment().getBytes(UTF8_ENCODING);
+        byteBuffer.putInt(comment.length);
+        byteBuffer.put(comment);
         byteBuffer.putDouble(position.getLongitude());
         byteBuffer.putDouble(position.getLatitude());
         byteBuffer.putInt(0); //4 byte ??
