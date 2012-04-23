@@ -35,6 +35,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.actions.AboutAction;
 import slash.navigation.converter.gui.actions.CheckForUpdateAction;
+import slash.navigation.converter.gui.actions.CompleteFlightPlanAction;
 import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
 import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
 import slash.navigation.converter.gui.actions.DeletePositionsAction;
@@ -1022,6 +1023,7 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("options", new OptionsAction());
+        actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());

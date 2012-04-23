@@ -97,6 +97,7 @@ public class FrameMenu {
         viewMenu.addSeparator();
 
         JMenu extrasMenu = createMenu("extras");
+        extrasMenu.add(createItem("complete-flight-plan"));
         extrasMenu.add(createItem("options"));
 
         JMenu helpMenu = createMenu("help");
