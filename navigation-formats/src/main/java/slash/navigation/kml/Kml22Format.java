@@ -82,6 +82,7 @@ import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.googlemaps.GoogleMapsPosition.parseExtensionPositions;
+import static slash.navigation.kml.KmlUtil.unmarshal22;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
@@ -98,18 +99,18 @@ public class Kml22Format extends KmlFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        context.addRoutes(internalRead(source, startDate));
+        process(source, startDate, context);
     }
 
-    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
-        KmlType kmlType = KmlUtil.unmarshal22(source);
-        return process(kmlType, startDate);
+    void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException {
+        KmlType kmlType = unmarshal22(source);
+        process(kmlType, startDate, context);
     }
 
-    protected List<KmlRoute> process(KmlType kmlType, CompactCalendar startDate) {
+    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
-            return null;
-        return extractTracks(kmlType, startDate);
+            return;
+        context.addRoutes(extractTracks(kmlType, startDate));
     }
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
@@ -123,7 +124,7 @@ public class Kml22Format extends KmlFormat {
     }
 
     private List<KmlRoute> extractTracks(KmlType kmlType, CompactCalendar startDate) {
-        List<KmlRoute> routes = null;
+        List<KmlRoute> routes = new ArrayList<KmlRoute>();
 
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
         if (feature instanceof AbstractContainerType) {
@@ -158,8 +159,7 @@ public class Kml22Format extends KmlFormat {
             routes = asList(new KmlRoute(this, Track, tourName, null, positions));
         }
 
-        if (routes != null)
-            commentRoutePositions(routes);
+        commentRoutePositions(routes);
         return routes;
     }
 

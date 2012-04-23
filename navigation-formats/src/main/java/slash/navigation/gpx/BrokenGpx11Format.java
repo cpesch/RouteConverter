@@ -49,7 +49,7 @@ public class BrokenGpx11Format extends Gpx11Format {
         InputStreamReader reader = new InputStreamReader(source);
         try {
             GpxType gpxType = unmarshal11(reader);
-            context.addRoutes(process(gpxType));
+            process(gpxType, context);
         } finally {
             reader.close();
         }

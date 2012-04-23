@@ -21,6 +21,7 @@
 package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding22.DocumentType;
 import slash.navigation.kml.binding22.FolderType;
 import slash.navigation.kml.binding22.KmlType;
@@ -62,16 +63,15 @@ public class Igo8RouteFormat extends Kml22Format {
         return preferences.getInt("maximumiGo8RoutePositionCount", 100);
     }
 
-    protected List<KmlRoute> process(KmlType kmlType, CompactCalendar startDate) {
-        List<KmlRoute> routes = super.process(kmlType, startDate);
+    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) {
+        super.process(kmlType, startDate, context);
+        List<KmlRoute> routes = context.getRoutes();
         if (routes != null && routes.size() == 1) {
             KmlRoute route = routes.get(0);
             if (route.getName().equals(IGO_ROUTE + "/" + WAYPOINTS)) {
                 route.setName(IGO_ROUTE);
-                return routes;
             }
         }
-        return null;
     }
 
     private String trimLineFeedsAndCommas(String line) {

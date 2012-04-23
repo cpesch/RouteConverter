@@ -50,6 +50,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
+import static java.util.Collections.emptyList;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -71,24 +72,23 @@ public class Kml20Format extends KmlFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        context.addRoutes(internalRead(source, startDate));
+        process(source, startDate, context);
     }
 
-    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
+    void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException {
         Object o = unmarshal20(source);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;
-            return extractTracks(kml.getDocument(), kml.getFolder(), startDate);
+            context.addRoutes(extractTracks(kml.getDocument(), kml.getFolder(), startDate));
         }
         if (o instanceof Document) {
             Document document = (Document) o;
-            return extractTracks(document, null, startDate);
+            context.addRoutes(extractTracks(document, null, startDate));
         }
         if (o instanceof Folder) {
             Folder folder = (Folder) o;
-            return extractTracks(null, folder, startDate);
+            context.addRoutes(extractTracks(null, folder, startDate));
         }
-        return null;
     }
 
     private List<KmlRoute> extractTracks(Document document, Folder folder, CompactCalendar startDate) {
@@ -100,7 +100,7 @@ public class Kml20Format extends KmlFormat {
             elements = folder.getDocumentOrFolderOrGroundOverlay();
 
         if (elements == null)
-            return null;
+            return emptyList();
 
         List<KmlRoute> routes = extractTracks(extractName(elements), extractDescriptionList(elements), elements, startDate);
         commentRoutePositions(routes);

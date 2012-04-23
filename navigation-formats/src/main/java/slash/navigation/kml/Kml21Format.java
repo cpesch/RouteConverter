@@ -74,18 +74,18 @@ public class Kml21Format extends KmlFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        context.addRoutes(internalRead(source, startDate));
+        process(source, startDate, context);
     }
 
-    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
+    void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException {
         KmlType kmlType = unmarshal21(source);
-        return process(kmlType, startDate);
+        process(kmlType, startDate, context);
     }
 
-    protected List<KmlRoute> process(KmlType kmlType, CompactCalendar startDate) {
+    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) {
         if (kmlType == null || kmlType.getFeature() == null)
-            return null;
-        return extractTracks(kmlType, startDate);
+            return;
+        context.addRoutes(extractTracks(kmlType, startDate));
     }
 
 
@@ -100,7 +100,7 @@ public class Kml21Format extends KmlFormat {
     }
 
     private List<KmlRoute> extractTracks(KmlType kmlType, CompactCalendar startDate) {
-        List<KmlRoute> routes = null;
+        List<KmlRoute> routes = new ArrayList<KmlRoute>();
 
         FeatureType feature = kmlType.getFeature().getValue();
         if (feature instanceof ContainerType) {
@@ -125,8 +125,7 @@ public class Kml21Format extends KmlFormat {
             routes = Arrays.asList(new KmlRoute(this, Waypoints, placemarkName, null, positions));
         }
 
-        if (routes != null)
-            commentRoutePositions(routes);
+        commentRoutePositions(routes);
         return routes;
     }
 

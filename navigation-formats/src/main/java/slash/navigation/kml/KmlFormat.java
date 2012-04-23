@@ -24,6 +24,7 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
@@ -97,7 +98,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
 
-    abstract List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException;
+    abstract void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException;
 
     protected KmlPosition asKmlPosition(GoogleMapsPosition position) {
         return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());

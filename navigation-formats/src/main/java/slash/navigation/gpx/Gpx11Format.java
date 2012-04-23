@@ -70,26 +70,24 @@ public class Gpx11Format extends GpxFormat {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    List<GpxRoute> process(GpxType gpxType) {
+    void process(GpxType gpxType,ParserContext<GpxRoute> context) {
         if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
-            return null;
+            return;
 
         boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour = gpxType.getCreator() != null &&
                 ("GPSTracker".equals(gpxType.getCreator()) ||
                         "nl.sogeti.android.gpstracker".equals(gpxType.getCreator()) ||
                         gpxType.getCreator().contains("TrekBuddy"));
-        List<GpxRoute> result = new ArrayList<GpxRoute>();
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour);
         if (wayPointsAsRoute != null)
-            result.add(wayPointsAsRoute);
-        result.addAll(extractRoutes(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
-        result.addAll(extractTracks(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
-        return result;
+            context.addRoute(wayPointsAsRoute);
+        context.addRoutes(extractRoutes(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
+        context.addRoutes(extractTracks(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         GpxType gpxType = unmarshal11(source);
-        context.addRoutes(process(gpxType));
+        process(gpxType, context);
     }
 
     private List<GpxRoute> extractRoutes(GpxType gpxType, boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour) {

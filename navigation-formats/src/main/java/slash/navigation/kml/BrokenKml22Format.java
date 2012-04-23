@@ -21,13 +21,15 @@
 package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
+import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding22.KmlType;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
+
+import static slash.navigation.kml.KmlUtil.unmarshal22;
 
 /**
  * Reads broken Google Earth 5 (.kml) files.
@@ -45,11 +47,11 @@ public class BrokenKml22Format extends Kml22Format {
         return false;
     }
 
-    List<KmlRoute> internalRead(InputStream source, CompactCalendar startDate) throws IOException, JAXBException {
+    void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException {
         InputStreamReader reader = new InputStreamReader(source);
         try {
-            KmlType kmlType = KmlUtil.unmarshal22(reader);
-            return process(kmlType, startDate);
+            KmlType kmlType = unmarshal22(reader);
+            process(kmlType, startDate, context);
         }
         finally {
             reader.close();
