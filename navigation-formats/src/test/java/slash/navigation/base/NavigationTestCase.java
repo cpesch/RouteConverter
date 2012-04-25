@@ -99,6 +99,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.io.File.separator;
 import static java.lang.Math.min;
 import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.Files.collectFiles;
@@ -112,9 +113,9 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 public abstract class NavigationTestCase extends TestCase {
     protected static final Logger log = Logger.getLogger(NavigationTestCase.class.getName());
 
-    public static final String ROUTE_PATH = System.getProperty("samples", "routes" + File.separator + "src" + File.separator);
-    public static final String TEST_PATH = ROUTE_PATH + "test" + File.separator;
-    public static final String SAMPLE_PATH = ROUTE_PATH + "samples" + File.separator;
+    public static final String ROUTE_PATH = System.getProperty("samples", "routes" + separator + "src" + separator);
+    public static final String TEST_PATH = ROUTE_PATH + "test" + separator;
+    public static final String SAMPLE_PATH = ROUTE_PATH + "samples" + separator;
 
     public static void assertDescriptionEquals(List<String> expected, List<String> was) {
         List<String> wasFiltered = new ArrayList<String>();
