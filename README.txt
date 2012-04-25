@@ -47,7 +47,7 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 6 SDK
-   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_30
+   > set JAVA_HOME=c:\Programme\Java\jdk1.6.0_31
    Put Maven into your PATH and call
    > mvn clean package
 
