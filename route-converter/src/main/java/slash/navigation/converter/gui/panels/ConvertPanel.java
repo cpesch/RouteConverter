@@ -130,6 +130,7 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.text.MessageFormat.format;
+import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
@@ -457,13 +458,6 @@ public class ConvertPanel {
         }
     }
 
-    public void openUrl(URL url) {
-        if (!confirmDiscard())
-            return;
-
-        openPositionList(Arrays.asList(url));
-    }
-
     public void openFile() {
         if (!confirmDiscard())
             return;
@@ -494,7 +488,10 @@ public class ConvertPanel {
         openPositionList(urls, formats);
     }
 
-    public void openPositionList(final List<URL> urls) {
+    public void openPositionList(List<URL> urls) {
+        if (!confirmDiscard())
+            return;
+
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.discardAllEdits();
         openPositionList(urls, getReadFormatsPreferredByExtension(getExtension(urls)));
@@ -735,7 +732,7 @@ public class ConvertPanel {
         startWaitCursor(r.getFrame().getRootPane());
         try {
             if (format.isSupportsMultipleRoutes()) {
-                List<BaseRoute> routes = exportSelectedRoute ? Arrays.asList(route) : formatAndRoutesModel.getRoutes();
+                List<BaseRoute> routes = exportSelectedRoute ? asList(route) : formatAndRoutesModel.getRoutes();
                 new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, targets[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);

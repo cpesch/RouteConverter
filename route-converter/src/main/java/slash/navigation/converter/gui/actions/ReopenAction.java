@@ -25,6 +25,9 @@ import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.net.URL;
+import java.util.Arrays;
+
+import static java.util.Arrays.asList;
 
 /**
  * {@link Action} that reopens an URL.
@@ -42,6 +45,6 @@ public class ReopenAction extends FrameAction {
     }
 
     public void run() {
-        convertPanel.openUrl(url);
+        convertPanel.openPositionList(asList(url));
     }
 }
