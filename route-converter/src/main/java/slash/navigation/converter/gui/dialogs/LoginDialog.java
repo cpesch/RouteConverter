@@ -34,7 +34,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -43,6 +42,8 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -121,6 +122,8 @@ public class LoginDialog extends SimpleDialog {
             }
         });
 
+        textFieldLogin.setText(RouteConverter.getInstance().getCredentials().getUserName());
+
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -128,13 +131,11 @@ public class LoginDialog extends SimpleDialog {
             }
         });
 
-        textFieldLogin.setText(RouteConverter.getInstance().getCredentials().getUserName());
-
         contentPane.registerKeyboardAction(new DialogAction(this) {
             public void run() {
                 cancel();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void setDefaultButton() {
