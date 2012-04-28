@@ -56,6 +56,7 @@ import slash.navigation.converter.gui.actions.SaveAction;
 import slash.navigation.converter.gui.actions.SaveAsAction;
 import slash.navigation.converter.gui.actions.SelectAllAction;
 import slash.navigation.converter.gui.actions.SplitPositionListAction;
+import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
@@ -85,6 +86,8 @@ import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
+import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
@@ -128,6 +131,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
 import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
@@ -139,6 +143,7 @@ import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Files.calculateConvertFileName;
@@ -399,7 +404,7 @@ public class ConvertPanel {
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
         comboBoxChoosePositionList.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
+                if (e.getStateChange() == SELECTED) {
                     r.getBatchPositionAugmenter().interrupt();
                     formatAndRoutesModel.setSelectedItem(e.getItem());
                 }
@@ -687,8 +692,7 @@ public class ConvertPanel {
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
-        saveFile(selected, selectedFormat,
-                true, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
+        saveFile(selected, selectedFormat, true, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
     private void saveFile(File file, NavigationFormat format,
@@ -696,11 +700,11 @@ public class ConvertPanel {
         RouteConverter r = RouteConverter.getInstance();
         r.setSavePathPreference(format, file.getParent());
 
-        BaseRoute route = formatAndRoutesModel.getSelectedRoute();
         boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format);
+        BaseRoute route = formatAndRoutesModel.getSelectedRoute();
         int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
-            int confirm = JOptionPane.showConfirmDialog(r.getFrame(),
+            int confirm = showConfirmDialog(r.getFrame(),
                     format(RouteConverter.getBundle().getString("save-confirm-split"),
                             shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
@@ -716,11 +720,6 @@ public class ConvertPanel {
             }
         }
 
-        saveFile(file, format, route, fileCount, exportSelectedRoute, confirmOverwrite, openAfterSave);
-    }
-
-    private void saveFile(File file, NavigationFormat format, BaseRoute route, int fileCount,
-                          boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         File[] targets = createTargetFiles(file, fileCount, format.getExtension(), 255);
         if (confirmOverwrite) {
             for (File target : targets) {
@@ -733,28 +732,41 @@ public class ConvertPanel {
             }
         }
 
-        RouteConverter r = RouteConverter.getInstance();
-        String targetsAsString = printArrayToDialogString(targets);
+        saveFiles(targets, format, route, exportSelectedRoute, confirmOverwrite, openAfterSave);
+    }
+
+    private void saveFiles(File[] files, NavigationFormat format, BaseRoute route,
+                           boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
+        final RouteConverter r = RouteConverter.getInstance();
+        String targetsAsString = printArrayToDialogString(files);
         startWaitCursor(r.getFrame().getRootPane());
         try {
             if (format.isSupportsMultipleRoutes()) {
                 List<BaseRoute> routes = exportSelectedRoute ? asList(route) : formatAndRoutesModel.getRoutes();
-                new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, targets[0]);
+                new NavigationFormatParser().write(routes, (MultipleRoutesFormat) format, files[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
-                new NavigationFormatParser().write(route, format, duplicateFirstPosition, true, targets);
+                ParserCallback parserCallback = new ParserCallback() {
+                    public void preprocess(BaseRoute route, NavigationFormat format) {
+                        if (format instanceof GarminFlightPlanFormat) {
+                            GarminFlightPlanRoute garminFlightPlanRoute = (GarminFlightPlanRoute) route;
+                            completeGarminFlightPlan(garminFlightPlanRoute);
+                        }
+                    }
+                };
+                new NavigationFormatParser().write(route, format, duplicateFirstPosition, true, parserCallback, files);
             }
             formatAndRoutesModel.setModified(false);
             recentFormatsModel.addFormat(format);
-            log.info("Saved: " + targetsAsString);
+            log.info(format("Saved: %s", targetsAsString));
 
             if (!exportSelectedRoute) {
                 if (openAfterSave && format.isSupportsReading()) {
-                    openPositionList(toUrls(targets), getReadFormatsWithPreferredFormat(format));
-                    log.info("Open after save: " + targets[0]);
+                    openPositionList(toUrls(files), getReadFormatsWithPreferredFormat(format));
+                    log.info(format("Open after save: %s", files[0]));
                 }
                 if (confirmOverwrite) {
-                    URL url = targets[0].toURI().toURL();
+                    URL url = files[0].toURI().toURL();
                     String path = createReadablePath(url);
                     urlModel.setString(path);
                     recentUrlsModel.addUrl(url);
@@ -762,7 +774,7 @@ public class ConvertPanel {
             }
         } catch (Throwable t) {
             t.printStackTrace();
-            log.severe("Save error " + file + "," + format + ": " + t.getMessage());
+            log.severe(format("Error saving %s in %s: %s", files[0], format, t.getMessage()));
 
             showMessageDialog(r.getFrame(),
                     format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
@@ -770,6 +782,13 @@ public class ConvertPanel {
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
         }
+    }
+
+    private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
+        CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(garminFlightPlanRoute);
+        dialog.pack();
+        dialog.restoreLocation();
+        dialog.setVisible(true);
     }
 
     public void saveFile() {
@@ -809,7 +828,7 @@ public class ConvertPanel {
 
     public boolean confirmDiscard() {
         if (formatAndRoutesModel.isModified()) {
-            int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
+            int confirm = showConfirmDialog(RouteConverter.getInstance().getFrame(),
                     RouteConverter.getBundle().getString("confirm-discard"),
                     urlModel.getShortUrl(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
@@ -826,7 +845,7 @@ public class ConvertPanel {
     }
 
     private boolean confirmOverwrite(String file) {
-        int confirm = JOptionPane.showConfirmDialog(RouteConverter.getInstance().getFrame(),
+        int confirm = showConfirmDialog(RouteConverter.getInstance().getFrame(),
                 format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
                 RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
         return confirm != YES_OPTION;
@@ -846,7 +865,8 @@ public class ConvertPanel {
     }
 
     private void handleRoutesUpdate() {
-        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
+        NavigationFormat format = formatAndRoutesModel.getFormat();
+        boolean supportsMultipleRoutes = format instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsAPosition = getPositionsModel().getRowCount() > 0;
@@ -865,9 +885,7 @@ public class ConvertPanel {
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
         actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
-        actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition);
-        actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route));
-        actionManager.enable("print-elevation-profile", existsAPosition);
+        actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
     }
 
     private int[] selectedPositionIndices = null;
@@ -879,6 +897,8 @@ public class ConvertPanel {
             return;
 
         this.selectedPositionIndices = selectedRows;
+
+        NavigationFormat format = formatAndRoutesModel.getFormat();
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;

@@ -27,9 +27,9 @@ package slash.navigation.converter.gui.profileview;
 public enum ProfileMode {
     Elevation, Speed;
 
-    public static ProfileMode fromString(String string) {
+    public static ProfileMode fromValue(String value) {
         for (ProfileMode profileMode : ProfileMode.values()) {
-            if (profileMode.name().equals(string))
+            if (profileMode.name().equals(value))
                 return profileMode;
         }
         return null;

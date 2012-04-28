@@ -18,21 +18,51 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.mapview;
+package slash.navigation.fpl;
 
 /**
- * Enumeration of the travel modes for routing directions.
+ * Enumeration of supported country codes.
  *
  * @author Christian Pesch
  */
 
-public enum TravelMode {
-    Bicycling, Driving, Walking;
+public enum CountryCode {
+    Austria("LO"),
+    Croatia("LD"),
+    Czechia("LK"),
+    France("LF"),
+    Germany("ED"),
+    Hungary("LG"),
+    Italy("LI"),
+    Poland("EP"),
+    Portugal("LP"),
+    Slovakia("LZ"),
+    Slovenia("LJ"),
+    Spain("LE"),
+    Swiss("LS"),
+    UnitedStates1("K1"),
+    UnitedStates2("K2"),
+    UnitedStates3("K3"),
+    UnitedStates4("K4"),
+    UnitedStates5("K5"),
+    UnitedStates6("K6"),
+    UnitedStates7("K7"),
+    Undefined("??");
 
-    public static TravelMode fromValue(String value) {
-        for (TravelMode travelMode : TravelMode.values()) {
-            if(travelMode.name().equals(value))
-                return travelMode;
+    private String value;
+
+    CountryCode(String value) {
+        this.value = value;
+    }
+
+    public String value() {
+        return value;
+    }
+
+    public static CountryCode fromValue(String value) {
+        for (CountryCode countryCode : CountryCode.values()) {
+            if (countryCode.value().equalsIgnoreCase(value))
+                return countryCode;
         }
         return null;
     }

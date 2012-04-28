@@ -37,7 +37,8 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.fpl.GarminFlightPlanPosition;
+import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -123,9 +124,9 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     private String name;
-    private final List<String> description;
-    private final List<GpxPosition> positions;
-    private final List<Object> origins;
+    private List<String> description;
+    private List<GpxPosition> positions;
+    private List<Object> origins;
 
     public GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
                     String name, List<String> description, List<GpxPosition> positions,
@@ -188,13 +189,12 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new GpxPosition(longitude, latitude, elevation, speed, time, comment);
     }
 
-
     private BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<BcrPosition>();
-        for (GpxPosition gpxPosition : positions) {
-            BcrPosition bcrPosition = gpxPosition.asMTPPosition();
+        for (GpxPosition position : positions) {
+            BcrPosition bcrPosition = position.asMTPPosition();
             // shortens comment to better fit to Map&Guide Tourenplaner station list
-            String location = gpxPosition.getCity();
+            String location = position.getCity();
             if (location != null)
                 bcrPosition.setComment(location);
             bcrPositions.add(bcrPosition);
@@ -208,22 +208,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     public BcrRoute asMTP0809Format() {
         return asBcrFormat(new MTP0809Format());
-    }
-
-    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
-        for (GpxPosition position : positions) {
-            tomTomPositions.add(position.asTomTomRoutePosition());
-        }
-        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
-    }
-
-    public TomTomRoute asTomTom5RouteFormat() {
-        return asTomTomRouteFormat(new TomTom5RouteFormat());
-    }
-
-    public TomTomRoute asTomTom8RouteFormat() {
-        return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
     public SimpleRoute asKienzleGpsFormat() {
@@ -240,8 +224,8 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     private KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<KmlPosition>();
-        for (GpxPosition gpxPosition : positions) {
-            kmlPositions.add(gpxPosition.asKmlPosition());
+        for (GpxPosition position : positions) {
+            kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
@@ -282,16 +266,17 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asKmlFormat(new Kmz22Format());
     }
 
+    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
+        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
+        for (GpxPosition position : positions) {
+            flightPlanPositions.add(position.asGarminFlightPlanPosition());
+        }
+        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
+    }
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>(getPositions());
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGarminFlightPlanFormat() {
-        if (getFormat() instanceof GarminFlightPlanFormat)
-            return this;
-        return asGpxFormat(new GarminFlightPlanFormat());
     }
 
     public GpxRoute asGpx10Format() {
@@ -362,8 +347,8 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     private NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<NmnPosition>();
-        for (GpxPosition gpxPosition : positions) {
-            nmnPositions.add(gpxPosition.asNmnPosition());
+        for (GpxPosition position : positions) {
+            nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
@@ -399,6 +384,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     public SimpleRoute asOpelNaviFormat() {
         return asSimpleFormat(new OpelNaviFormat());
     }
+
     public OvlRoute asOvlFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GpxPosition position : positions) {
@@ -413,8 +399,8 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     private SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
-        for (GpxPosition gpxPosition : positions) {
-            wgs84Positions.add(gpxPosition.asWgs84Position());
+        for (GpxPosition position : positions) {
+            wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
@@ -519,6 +505,30 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
+    private TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
+        List<TomTomPosition> tomTomPositions = new ArrayList<TomTomPosition>();
+        for (GpxPosition position : positions) {
+            tomTomPositions.add(position.asTomTomRoutePosition());
+        }
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
+    }
+
+    public TomTomRoute asTomTom5RouteFormat() {
+        return asTomTomRouteFormat(new TomTom5RouteFormat());
+    }
+
+    public TomTomRoute asTomTom8RouteFormat() {
+        return asTomTomRouteFormat(new TomTom8RouteFormat());
+    }
+
+    public TourRoute asTourFormat() {
+        List<TourPosition> tourPositions = new ArrayList<TourPosition>();
+        for (GpxPosition position : positions) {
+            tourPositions.add(position.asTourPosition());
+        }
+        return new TourRoute(getName(), tourPositions);
+    }
+
     public SimpleRoute asWebPageFormat() {
         return asSimpleFormat(new WebPageFormat());
     }
@@ -535,14 +545,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return asSimpleFormat(new WintecWbt202TesFormat());
     }
 
-    public TourRoute asTourFormat() {
-        List<TourPosition> tourPositions = new ArrayList<TourPosition>();
-        for (GpxPosition position : positions) {
-            tourPositions.add(position.asTourPosition());
-        }
-        return new TourRoute(getName(), tourPositions);
-    }
-
     public ViaMichelinRoute asViaMichelinFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (GpxPosition position : positions) {
@@ -550,7 +552,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         }
         return new ViaMichelinRoute(getName(), wgs84Positions);
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

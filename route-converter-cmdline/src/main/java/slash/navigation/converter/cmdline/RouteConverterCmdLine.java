@@ -137,7 +137,7 @@ public class RouteConverterCmdLine {
                     System.exit(13);
                 }
             }
-            parser.write(result.getTheRoute(), format, false, false, targets);
+            parser.write(result.getTheRoute(), format, false, false, null, targets);
         }
     }
 

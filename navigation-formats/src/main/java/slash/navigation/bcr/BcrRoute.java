@@ -31,7 +31,8 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.fpl.GarminFlightPlanPosition;
+import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -324,6 +325,13 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
         return asKmlFormat(new Kmz22Format());
     }
 
+    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
+        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
+        for (BcrPosition position : positions) {
+            flightPlanPositions.add(position.asGarminFlightPlanPosition());
+        }
+        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
+    }
 
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
@@ -331,10 +339,6 @@ public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
             gpxPositions.add(bcrPosition.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGarminFlightPlanFormat() {
-        return asGpxFormat(new GarminFlightPlanFormat());
     }
 
     public GpxRoute asGpx10Format() {

@@ -506,11 +506,11 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public TravelMode getTravelModePreference() {
-        return TravelMode.fromString(preferences.get(TRAVEL_MODE_PREFERENCE, Driving.toString()));
+        return TravelMode.fromValue(preferences.get(TRAVEL_MODE_PREFERENCE, Driving.toString()));
     }
 
     public ProfileMode getProfileModePreference() {
-        return ProfileMode.fromString(preferences.get(PROFILE_MODE_PREFERENCE, Elevation.toString()));
+        return ProfileMode.fromValue(preferences.get(PROFILE_MODE_PREFERENCE, Elevation.toString()));
     }
 
     public NumberPattern getNumberPatternPreference() {
@@ -662,7 +662,7 @@ public class RouteConverter extends SingleFrameApplication {
 
     public void selectPositions(int[] selectedPositions, int centerPosition) {
         if (isMapViewAvailable()) {
-            if (centerPosition != -1) {
+            if (centerPosition >= 0 && centerPosition <= getPositionsModel().getRowCount()) {
                 BaseNavigationPosition center = getPositionsModel().getPosition(centerPosition);
                 mapView.setCenter(center);
             }

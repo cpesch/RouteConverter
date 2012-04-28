@@ -18,25 +18,36 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.actions;
-
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
-import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gui.FrameAction;
+package slash.navigation.fpl;
 
 /**
- * Completes the information for a Garmin Flight Plan.
+ * Enumeration of supported waypoint types.
  *
  * @author Christian Pesch
  */
 
-public class CompleteFlightPlanAction extends FrameAction {
-    public void run() {
-        GarminFlightPlanRoute route = (GarminFlightPlanRoute) RouteConverter.getInstance().getPositionsModel().getRoute();
-        CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(route);
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+public enum WaypointType {
+    Airport("AIRPORT"),
+    Intersection("INT"),
+    NonDirectionalBeacon("NOB"),
+    VHFOmnidirectionalRadioRange("VOR"),
+    UserWaypoint("USER WAYPOINT");
+
+    private String value;
+
+    WaypointType(String value) {
+        this.value = value;
+    }
+
+    public String value() {
+        return value;
+    }
+
+    public static WaypointType fromValue(String value) {
+        for (WaypointType waypointType : WaypointType.values()) {
+            if (waypointType.value().equalsIgnoreCase(value))
+                return waypointType;
+        }
+        return null;
     }
 }

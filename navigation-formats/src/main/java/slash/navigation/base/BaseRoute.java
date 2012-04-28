@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gpx.GpxRoute;
@@ -413,7 +414,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public abstract SimpleRoute asGroundTrackFormat();
 
-    public abstract GpxRoute asGarminFlightPlanFormat();
+    public abstract GarminFlightPlanRoute asGarminFlightPlanFormat();
 
     public abstract GpxRoute asGpx10Format();
     public abstract GpxRoute asGpx11Format();

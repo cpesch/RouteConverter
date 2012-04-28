@@ -18,25 +18,14 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.actions;
-
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
-import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gui.FrameAction;
+package slash.navigation.base;
 
 /**
- * Completes the information for a Garmin Flight Plan.
+ * The callback used to preprocess routes before writing them by the {@link NavigationFormatParser}.
  *
  * @author Christian Pesch
  */
 
-public class CompleteFlightPlanAction extends FrameAction {
-    public void run() {
-        GarminFlightPlanRoute route = (GarminFlightPlanRoute) RouteConverter.getInstance().getPositionsModel().getRoute();
-        CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(route);
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
-    }
+public interface ParserCallback {
+    void preprocess(BaseRoute route, NavigationFormat format);
 }

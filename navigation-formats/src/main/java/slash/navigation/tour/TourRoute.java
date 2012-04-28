@@ -36,7 +36,8 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.fpl.GarminFlightPlanPosition;
+import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
 import slash.navigation.gopal.GoPalPosition;
@@ -178,16 +179,20 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asBcrFormat(new MTP0809Format());
     }
 
+    public GarminFlightPlanRoute asGarminFlightPlanFormat() {
+        List<GarminFlightPlanPosition> flightPlanPositions = new ArrayList<GarminFlightPlanPosition>();
+        for (TourPosition position : positions) {
+            flightPlanPositions.add(position.asGarminFlightPlanPosition());
+        }
+        return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
+    }
+
     private GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<GpxPosition>();
         for (TourPosition position : positions) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
-    }
-
-    public GpxRoute asGarminFlightPlanFormat() {
-        return asGpxFormat(new GarminFlightPlanFormat());
     }
 
     public GpxRoute asGpx10Format() {
@@ -282,7 +287,7 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
         return asKmlFormat(new Kmz22Format());
     }
 
-    
+
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         List<Wgs84Position> wgs84Positions = new ArrayList<Wgs84Position>();
         for (TourPosition position : positions) {
@@ -478,7 +483,7 @@ public class TourRoute extends BaseRoute<TourPosition, TourFormat> {
     public SimpleRoute asSygicUnicodeFormat() {
         return asSimpleFormat(new SygicUnicodeFormat());
     }
-    
+
     public SimpleRoute asWebPageFormat() {
         return asSimpleFormat(new WebPageFormat());
     }

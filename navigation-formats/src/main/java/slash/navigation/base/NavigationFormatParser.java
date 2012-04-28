@@ -281,12 +281,13 @@ public class NavigationFormatParser {
     private void write(BaseRoute route, NavigationFormat format,
                        boolean duplicateFirstPosition,
                        boolean ignoreMaximumPositionCount,
+                       ParserCallback parserCallback,
                        OutputStream... targets) throws IOException {
         log.info("Writing '" + format.getName() + "' position lists with 1 route and " + route.getPositionCount() + " positions");
 
         BaseRoute routeToWrite = asFormat(route, format);
         commentRoute(routeToWrite);
-        preprocessRoute(routeToWrite, format, duplicateFirstPosition);
+        preprocessRoute(routeToWrite, format, duplicateFirstPosition, parserCallback);
 
         int positionsToWrite = routeToWrite.getPositionCount();
         int writeInOneChunk = format.getMaximumPositionCount();
@@ -316,18 +317,21 @@ public class NavigationFormatParser {
     public void write(BaseRoute route, NavigationFormat format,
                       boolean duplicateFirstPosition,
                       boolean ignoreMaximumPositionCount,
+                      ParserCallback parserCallback,
                       File... targets) throws IOException {
         OutputStream[] targetStreams = new OutputStream[targets.length];
         for (int i = 0; i < targetStreams.length; i++)
             targetStreams[i] = new FileOutputStream(targets[i]);
-        write(route, format, duplicateFirstPosition, ignoreMaximumPositionCount, targetStreams);
+        write(route, format, duplicateFirstPosition, ignoreMaximumPositionCount, parserCallback, targetStreams);
         for (File target : targets)
             log.info("Wrote '" + target.getAbsolutePath() + "'");
     }
 
 
     @SuppressWarnings("unchecked")
-    private void preprocessRoute(BaseRoute routeToWrite, NavigationFormat format, boolean duplicateFirstPosition) {
+    private void preprocessRoute(BaseRoute routeToWrite, NavigationFormat format,
+                                 boolean duplicateFirstPosition,
+                                 ParserCallback parserCallback) {
         if (format instanceof NmnFormat)
             routeToWrite.removeDuplicates();
         if (format instanceof NmnFormat && duplicateFirstPosition)
@@ -336,6 +340,8 @@ public class NavigationFormatParser {
             routeToWrite.add(0, ((CoPilotFormat) format).getDuplicateFirstPosition(routeToWrite));
         if (format instanceof TcxFormat)
             routeToWrite.ensureIncreasingTime();
+        if (parserCallback != null)
+            parserCallback.preprocess(routeToWrite, format);
     }
 
     @SuppressWarnings("unchecked")
@@ -365,7 +371,7 @@ public class NavigationFormatParser {
         for (BaseRoute route : routes) {
             BaseRoute routeToWrite = asFormat(route, format);
             commentRoute(routeToWrite);
-            preprocessRoute(routeToWrite, format, false);
+            preprocessRoute(routeToWrite, format, false, null);
             routesToWrite.add(routeToWrite);
             postProcessRoute(routeToWrite, format, false);
         }

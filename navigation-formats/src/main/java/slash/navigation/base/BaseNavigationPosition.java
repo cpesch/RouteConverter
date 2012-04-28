@@ -23,6 +23,7 @@ package slash.navigation.base;
 import slash.common.type.CompactCalendar;
 import slash.common.util.Bearing;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
@@ -334,6 +335,10 @@ public abstract class BaseNavigationPosition {
 
     public KmlPosition asBrokenKmzLittleEndianPosition() {
         return asKmzPosition();
+    }
+
+    public GarminFlightPlanPosition asGarminFlightPlanPosition() {
+        return new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
     }
 
     public KmlPosition asKmzPosition() {
