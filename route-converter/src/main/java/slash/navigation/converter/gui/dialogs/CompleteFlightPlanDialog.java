@@ -49,6 +49,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.fpl.WaypointType.UserWaypoint;
 
 /**
  * Dialog for completing information for a Garmin Flight Plan.
@@ -163,7 +164,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     }
 
     private void validateModel() {
-        boolean validCountryCode = getPosition().getCountryCode() != null;
+        boolean validCountryCode = getPosition().getCountryCode() != null || UserWaypoint.equals(getPosition().getWaypointType());
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
 
         String identifier = trim(getPosition().getIdentifier());
