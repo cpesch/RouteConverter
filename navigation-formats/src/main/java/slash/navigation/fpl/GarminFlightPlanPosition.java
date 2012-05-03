@@ -24,6 +24,7 @@ import slash.navigation.base.Wgs84Position;
 
 import java.math.BigDecimal;
 
+import static java.lang.Math.min;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.trim;
 
@@ -40,6 +41,8 @@ public class GarminFlightPlanPosition extends Wgs84Position {
 
     public GarminFlightPlanPosition(Double longitude, Double latitude, Double elevation, String comment) {
         super(longitude, latitude, elevation, null, null, comment);
+        if(comment != null)
+            this.identifier = comment.substring(0, min(comment.length(), 6)).toUpperCase();
     }
 
     public GarminFlightPlanPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, String comment,
