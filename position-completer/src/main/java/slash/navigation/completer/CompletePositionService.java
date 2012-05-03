@@ -26,6 +26,7 @@ import slash.navigation.googlemaps.GoogleMapsService;
 import slash.navigation.hgt.HgtFiles;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.formatElevation;
@@ -37,6 +38,7 @@ import static slash.common.io.Transfer.formatElevation;
  */
 
 public class CompletePositionService {
+    private static final Logger log = Logger.getLogger(CompletePositionService.class.getName());
     protected static final Preferences preferences = Preferences.userNodeForPackage(CompletePositionService.class);
     private static final String COMPLEMENT_ELEVATION_FROM_HGT_FILES = "complementElevationFromHgtFiles";
     private static final String COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS = "complementElevationFromGoogleMaps";
@@ -59,6 +61,7 @@ public class CompletePositionService {
         if (preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_HGT_FILES, true)) {
             try {
                 elevation = hgtFiles.getElevationFor(longitude, latitude);
+                log.info("Service: HGTFiles Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
             } catch (Exception e) {
                 exception = e;
             }
@@ -66,6 +69,7 @@ public class CompletePositionService {
         if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GOOGLE_MAPS, true)) {
             try {
                 elevation = googleMapsService.getElevationFor(longitude, latitude);
+                log.info("Service: GoogleMaps Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
             } catch (Exception e) {
                 exception = e;
             }
@@ -73,6 +77,7 @@ public class CompletePositionService {
         if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_GEONAMES, true)) {
             try {
                 elevation = geoNamesService.getElevationFor(longitude, latitude);
+                log.info("Service: GeoNames Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
             } catch (Exception e) {
                 exception = e;
             }
@@ -80,6 +85,7 @@ public class CompletePositionService {
         if (elevation == null && preferences.getBoolean(COMPLEMENT_ELEVATION_FROM_EARTH_TOOLS, true)) {
             try {
                 elevation = earthToolsService.getElevationFor(longitude, latitude);
+                log.info("Service: EarthTools Longitude: " + longitude + " Latitude: " + latitude + " Elevation: " + elevation);
             } catch (Exception e) {
                 exception = e;
             }
