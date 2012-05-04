@@ -290,8 +290,8 @@ public class Kml20Format extends KmlFormat {
             Placemark placemark = objectFactory.createPlacemark();
             folderList.add(placemark);
             List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-            placemarkList.add(objectFactory.createName(asName(position.getComment())));
-            placemarkList.add(objectFactory.createDescription(asDesc(position.getComment())));
+            placemarkList.add(objectFactory.createName(asName(isWriteName() ? position.getComment() : null)));
+            placemarkList.add(objectFactory.createDescription(asDesc(isWriteDesc() ? position.getComment() : null)));
             placemarkList.add(objectFactory.createVisibility(Boolean.FALSE));
             if (position.getTime() != null)
                 placemarkList.add(objectFactory.createTimePosition(ISO8601.format(position.getTime())));

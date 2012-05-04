@@ -345,4 +345,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
         String color = preferences.get("trackLineColor", "FFFF00FF");
         return decodeBytes(color);
     }
+
+    protected boolean isWriteName() {
+        return preferences.getBoolean("writeName", true);
+    }
+
+    protected boolean isWriteDesc() {
+        return preferences.getBoolean("writeDesc", true);
+    }
 }

@@ -255,8 +255,8 @@ public class Kml22BetaFormat extends KmlFormat {
         for (KmlPosition position : route.getPositions()) {
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));
-            placemarkType.setNameElement(asName(position.getComment()));
-            placemarkType.setDescription(asDesc(position.getComment()));
+            placemarkType.setNameElement(asName(isWriteName() ? position.getComment() : null));
+            placemarkType.setDescription(asDesc(isWriteDesc() ? position.getComment() : null));
             placemarkType.setVisibility(FALSE);
             if (position.getTime() != null) {
                 TimeStampType timeStampType = objectFactory.createTimeStampType();
