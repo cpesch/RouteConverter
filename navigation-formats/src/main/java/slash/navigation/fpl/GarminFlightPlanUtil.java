@@ -24,7 +24,6 @@ import slash.navigation.fpl.binding.FlightPlan;
 import slash.navigation.fpl.binding.ObjectFactory;
 import slash.navigation.jaxb.JaxbUtils;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -34,17 +33,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class GarminFlightPlanUtil {
-    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+import static slash.navigation.jaxb.JaxbUtils.newContext;
 
+class GarminFlightPlanUtil {
     private static final String FPL_NAMESPACE_URI = "http://www8.garmin.com/xmlschemas/FlightPlan/v1";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        return JaxbUtils.newMarshaller(CONTEXT,
+        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class),
                 FPL_NAMESPACE_URI, ""
         );
     }

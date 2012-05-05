@@ -24,9 +24,16 @@ import slash.navigation.catalog.domain.Catalog;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.exception.NotFoundException;
 import slash.navigation.catalog.domain.exception.NotOwnerException;
-import slash.navigation.gpx.GpxUtil;
-import slash.navigation.gpx.binding11.*;
-import slash.navigation.rest.*;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.LinkType;
+import slash.navigation.gpx.binding11.MetadataType;
+import slash.navigation.gpx.binding11.ObjectFactory;
+import slash.navigation.gpx.binding11.RteType;
+import slash.navigation.rest.Credentials;
+import slash.navigation.rest.Delete;
+import slash.navigation.rest.Get;
+import slash.navigation.rest.Post;
+import slash.navigation.rest.Put;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
@@ -37,6 +44,8 @@ import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import static slash.common.io.Files.writeToTempFile;
+import static slash.navigation.gpx.GpxUtil.marshal11;
+import static slash.navigation.gpx.GpxUtil.unmarshal11;
 import static slash.navigation.rest.Helper.asUtf8;
 import static slash.navigation.rest.Helper.decodeUri;
 
@@ -71,7 +80,7 @@ public class RemoteCatalog implements Catalog {
         String result = get.execute();
         if (get.isSuccessful())
             try {
-                return GpxUtil.unmarshal11(result);
+                return unmarshal11(result);
             } catch (JAXBException e) {
                 IOException io = new IOException("Cannot unmarshall " + result + ": " + e.getMessage());
                 io.setStackTrace(e.getStackTrace());
@@ -123,7 +132,7 @@ public class RemoteCatalog implements Catalog {
     private static String toXml(GpxType gpxType) {
         StringWriter writer = new StringWriter();
         try {
-            GpxUtil.marshal11(gpxType, writer);
+            marshal11(gpxType, writer);
         } catch (JAXBException e) {
             throw new RuntimeException("Cannot marshall " + gpxType + ": " + e.getMessage(), e);
         }

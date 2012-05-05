@@ -24,7 +24,6 @@ import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.klicktel.binding.KDRoute;
 import slash.navigation.klicktel.binding.ObjectFactory;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -37,18 +36,17 @@ import java.io.OutputStream;
 
 import static slash.navigation.base.XmlNavigationFormat.HEADER_LINE;
 import static slash.navigation.jaxb.JaxbUtils.JAXB_IMPL_HEADER;
+import static slash.navigation.jaxb.JaxbUtils.newContext;
 
 class KlickTelUtil {
-    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
-
     private static final String KLICKTEL_NAMESPACE_URI = "";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
+        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(JAXB_IMPL_HEADER, HEADER_LINE);
         } catch (PropertyException e) {

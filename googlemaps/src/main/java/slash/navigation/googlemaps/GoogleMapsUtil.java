@@ -2,25 +2,21 @@ package slash.navigation.googlemaps;
 
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
+import slash.navigation.jaxb.JaxbUtils;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
 import static slash.navigation.jaxb.JaxbUtils.newContext;
-import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
 
 public class GoogleMapsUtil {
-    private static final JAXBContext CONTEXT_ELEVATION = newContext(slash.navigation.googlemaps.elevation.ObjectFactory.class);
-    private static final JAXBContext CONTEXT_GEOCODE = newContext(slash.navigation.googlemaps.geocode.ObjectFactory.class);
-
     private static Unmarshaller newUnmarshallerElevation() {
-        return newUnmarshaller(CONTEXT_ELEVATION);
+        return JaxbUtils.newUnmarshaller(newContext(slash.navigation.googlemaps.elevation.ObjectFactory.class));
     }
 
     private static Unmarshaller newUnmarshallerGeocode() {
-        return newUnmarshaller(CONTEXT_GEOCODE);
+        return JaxbUtils.newUnmarshaller(newContext(slash.navigation.googlemaps.geocode.ObjectFactory.class));
     }
 
     private static ElevationResponse unmarshalElevation(StringReader reader) throws JAXBException {

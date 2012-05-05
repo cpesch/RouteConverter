@@ -30,19 +30,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class Nmn7Util {
-    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+import static javax.xml.bind.Marshaller.JAXB_ENCODING;
+import static slash.navigation.jaxb.JaxbUtils.newContext;
 
+class Nmn7Util {
     private static final String NMN7_NAMESPACE_URI = "";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
+        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
         try {
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
+            marshaller.setProperty(JAXB_ENCODING, "ISO-8859-1");
         } catch (PropertyException e) {
             // intentionally left empty
         }

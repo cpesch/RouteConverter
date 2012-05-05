@@ -40,17 +40,15 @@ import java.io.OutputStream;
 import java.io.Reader;
 
 class ViaMichelinUtil {
-    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
-
     private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
 
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+        return JaxbUtils.newUnmarshaller(JaxbUtils.newContext(ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT);
+        Marshaller marshaller = JaxbUtils.newMarshaller(JaxbUtils.newContext(ObjectFactory.class));
         try {
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");

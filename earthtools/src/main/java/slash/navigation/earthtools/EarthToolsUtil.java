@@ -24,16 +24,15 @@ import slash.navigation.earthtools.binding.Height;
 import slash.navigation.earthtools.binding.ObjectFactory;
 import slash.navigation.jaxb.JaxbUtils;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
-class EarthToolsUtil {
-    private static final JAXBContext CONTEXT = JaxbUtils.newContext(ObjectFactory.class);
+import static slash.navigation.jaxb.JaxbUtils.newContext;
 
+class EarthToolsUtil {
     private static Unmarshaller newUnmarshaller() {
-        return JaxbUtils.newUnmarshaller(CONTEXT);
+        return JaxbUtils.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     private static Height unmarshal(StringReader reader) throws JAXBException {

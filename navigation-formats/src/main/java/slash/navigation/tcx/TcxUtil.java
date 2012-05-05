@@ -20,35 +20,34 @@
 
 package slash.navigation.tcx;
 
-import slash.navigation.jaxb.JaxbUtils;
-
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class TcxUtil {
-    private static final JAXBContext CONTEXT_1 = JaxbUtils.newContext(slash.navigation.tcx.binding1.ObjectFactory.class);
-    private static final JAXBContext CONTEXT_2 = JaxbUtils.newContext(slash.navigation.tcx.binding2.ObjectFactory.class);
+import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
+import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
 
+class TcxUtil {
     private static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";
     private static final String TCX_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 
     private static Unmarshaller newUnmarshaller1() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_1);
+        return newUnmarshaller(newContext(slash.navigation.tcx.binding1.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller1() {
-        return JaxbUtils.newMarshaller(CONTEXT_1);
+        return newMarshaller(newContext(slash.navigation.tcx.binding1.ObjectFactory.class));
     }
 
     private static Unmarshaller newUnmarshaller2() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_2);
+        return newUnmarshaller(newContext(slash.navigation.tcx.binding2.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller2() {
-        return JaxbUtils.newMarshaller(CONTEXT_2);
+        return newMarshaller(newContext(slash.navigation.tcx.binding2.ObjectFactory.class));
     }
 
 

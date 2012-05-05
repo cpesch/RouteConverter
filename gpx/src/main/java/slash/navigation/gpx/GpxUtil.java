@@ -22,18 +22,25 @@ package slash.navigation.gpx;
 
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.jaxb.JaxbUtils;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
+
+import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
+import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
 
 public class GpxUtil {
-    private static final JAXBContext CONTEXT_10 = JaxbUtils.newContext(slash.navigation.gpx.binding10.ObjectFactory.class);
-    private static final JAXBContext CONTEXT_11 = JaxbUtils.newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
-            slash.navigation.gpx.garmin3.ObjectFactory.class,
-            slash.navigation.gpx.routecatalog10.ObjectFactory.class);
-
     private static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";
     private static final String GPX_11_NAMESPACE_URI = "http://www.topografix.com/GPX/1/1";
     private static final String GARMIN_EXTENSIONS_3_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
@@ -44,19 +51,25 @@ public class GpxUtil {
     private static final String XML_SCHEMA_INSTANCE_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
     public static Unmarshaller newUnmarshaller10() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_10);
+        return newUnmarshaller(newContext(slash.navigation.gpx.binding10.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller10() {
-        return JaxbUtils.newMarshaller(CONTEXT_10);
+        return newMarshaller(newContext(slash.navigation.gpx.binding10.ObjectFactory.class));
+    }
+
+    private static JAXBContext newContext11() {
+        return newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
+                slash.navigation.gpx.garmin3.ObjectFactory.class,
+                slash.navigation.gpx.routecatalog10.ObjectFactory.class);
     }
 
     private static Unmarshaller newUnmarshaller11() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_11);
+        return newUnmarshaller(newContext11());
     }
 
     private static Marshaller newMarshaller11() {
-        return JaxbUtils.newMarshaller(CONTEXT_11,
+        return newMarshaller(newContext11(),
                 XML_SCHEMA_INSTANCE_NAMESPACE_URI, "xsi",
                 GARMIN_EXTENSIONS_3_NAMESPACE_URI, "gpxtrx",
                 GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI, "gpxtpx",

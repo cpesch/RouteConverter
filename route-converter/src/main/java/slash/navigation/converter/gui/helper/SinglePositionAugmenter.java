@@ -31,9 +31,9 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.util.Positions.interpolateTime;
@@ -48,7 +48,7 @@ import static slash.navigation.util.RouteComments.formatNumberedPosition;
 
 public class SinglePositionAugmenter implements PositionAugmenter {
     private static final Logger log = Logger.getLogger(SinglePositionAugmenter.class.getName());
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService = newSingleThreadExecutor();
     private CompletePositionService completePositionService;
     private PositionsModel positionsModel;
 
@@ -69,7 +69,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
     }
 
     public void complementElevation(final int row, final Double longitude, final Double latitude) {
-        executor.execute(new Runnable() {
+        executorService.execute(new Runnable() {
             public void run() {
                 final Double[] elevation = new Double[1];
                 try {
@@ -92,7 +92,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
     }
 
     public void complementComment(final int row, final Double longitude, final Double latitude) {
-        executor.execute(new Runnable() {
+        executorService.execute(new Runnable() {
             public void run() {
                 final String[] comment = new String[1];
                 try {
@@ -119,7 +119,7 @@ public class SinglePositionAugmenter implements PositionAugmenter {
         if (time != null)
             return;
 
-        executor.execute(new Runnable() {
+        executorService.execute(new Runnable() {
             public void run() {
                 final CompactCalendar time[] = new CompactCalendar[1];
                 time[0] = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),

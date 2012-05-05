@@ -20,28 +20,28 @@
 
 package slash.navigation.gopal;
 
-import slash.navigation.jaxb.JaxbUtils;
-
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class GoPalUtil {
-    private static final JAXBContext CONTEXT_3 = JaxbUtils.newContext(slash.navigation.gopal.binding3.ObjectFactory.class);
-    private static final JAXBContext CONTEXT_5 = JaxbUtils.newContext(slash.navigation.gopal.binding5.ObjectFactory.class);
+import static javax.xml.bind.Marshaller.JAXB_ENCODING;
+import static slash.navigation.jaxb.JaxbUtils.newContext;
+import static slash.navigation.jaxb.JaxbUtils.newMarshaller;
+import static slash.navigation.jaxb.JaxbUtils.newUnmarshaller;
 
+class GoPalUtil {
     private static final String GOPAL_NAMESPACE_URI = "";
 
     private static Unmarshaller newUnmarshaller3() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_3);
+        return newUnmarshaller(newContext(slash.navigation.gopal.binding3.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller3() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(CONTEXT_3);
+        Marshaller marshaller = newMarshaller(newContext(slash.navigation.gopal.binding3.ObjectFactory.class));
         try {
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
+            marshaller.setProperty(JAXB_ENCODING, "ISO-8859-1");
         } catch (PropertyException e) {
             // intentionally left empty
         }
@@ -49,11 +49,11 @@ class GoPalUtil {
     }
 
     private static Unmarshaller newUnmarshaller5() {
-        return JaxbUtils.newUnmarshaller(CONTEXT_5);
+        return newUnmarshaller(newContext(slash.navigation.gopal.binding5.ObjectFactory.class));
     }
 
     private static Marshaller newMarshaller5() {
-        return JaxbUtils.newMarshaller(CONTEXT_5);
+        return newMarshaller(newContext(slash.navigation.gopal.binding5.ObjectFactory.class));
     }
 
 
