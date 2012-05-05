@@ -18,36 +18,26 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.fpl;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.fpl.WaypointType;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Enumeration of supported waypoint types.
+ * Renders the {@link WaypointType} labels of the complete flight plan waypoint type combo box.
  *
  * @author Christian Pesch
  */
 
-public enum WaypointType {
-    Airport("AIRPORT"),
-    Intersection("INT"),
-    NonDirectionalBeacon("NDB"),
-    VHFOmnidirectionalRadioRange("VOR"),
-    UserWaypoint("USER WAYPOINT");
-
-    private String value;
-
-    WaypointType(String value) {
-        this.value = value;
-    }
-
-    public String value() {
-        return value;
-    }
-
-    public static WaypointType fromValue(String value) {
-        for (WaypointType waypointType : WaypointType.values()) {
-            if (waypointType.value().equalsIgnoreCase(value))
-                return waypointType;
-        }
-        return null;
+public class WaypointTypeListCellRenderer extends DefaultListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        WaypointType waypointType = WaypointType.class.cast(value);
+        String text = waypointType != null ? RouteConverter.getBundle().getString("waypoint-type-" + waypointType.toString().toLowerCase()) : null;
+        label.setText(text);
+        return label;
     }
 }

@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.renderer.WaypointTypeListCellRenderer;
 import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
@@ -122,6 +123,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
                 validateModel();
             }
         });
+        comboBoxWaypointType.setRenderer(new WaypointTypeListCellRenderer());
         comboBoxWaypointType.setModel(new DefaultComboBoxModel(WaypointType.values()));
         comboBoxWaypointType.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
