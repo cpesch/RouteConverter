@@ -371,12 +371,15 @@
        document.body.className = "normal";
        addDebug("1. initialize()");
        try {
-           window.addEventListener("keydown",function (e) {
+           window.addEventListener("keydown", function (e) {
                if (e.ctrlKey && e.keyCode == 70) {
                    e.preventDefault();
                }
            });
-
+       } catch (e) {
+           addDebug("1.1 could not disable ctrl-f " + e.message);
+       }
+       try {
            var mapnikMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
