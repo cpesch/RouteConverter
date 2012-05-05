@@ -21,7 +21,7 @@
 package slash.navigation.fpl;
 
 /**
- * Enumeration of supported waypoint types.
+ * Enumeration of supported waypoint types for Garmin Flight Plan (.fpl) routes.
  *
  * @author Christian Pesch
  */

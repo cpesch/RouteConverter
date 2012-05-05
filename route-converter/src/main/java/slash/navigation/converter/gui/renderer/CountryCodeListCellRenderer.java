@@ -18,51 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.fpl;
+package slash.navigation.converter.gui.renderer;
+
+import slash.navigation.fpl.CountryCode;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Enumeration of ICAO country codes.
+ * Renders the {@link CountryCode} labels of the complete flight plan country code combo box.
  *
  * @author Christian Pesch
  */
 
-public enum CountryCode {
-    Antarctica("AA"),
-    Afghanistan("AF"),
-    Solomon_Islands("AG"),
-    Nauru("AN"),
-    Papua_New_Guinea("AY"),
-
-    Austria("LO"),
-    Croatia("LD"),
-    Czechia("LK"),
-    France("LF"),
-    Germany("ED"),
-    Hungary("LG"),
-    Italy("LI"),
-    Poland("EP"),
-    Portugal("LP"),
-    Slovakia("LZ"),
-    Slovenia("LJ"),
-    Spain("LE"),
-    Swiss("LS"),
-    United_States("K");
-
-    private String value;
-
-    CountryCode(String value) {
-        this.value = value;
-    }
-
-    public String value() {
-        return value;
-    }
-
-    public static CountryCode fromValue(String value) {
-        for (CountryCode countryCode : CountryCode.values()) {
-            if (countryCode.value().equalsIgnoreCase(value))
-                return countryCode;
-        }
-        return null;
+public class CountryCodeListCellRenderer extends DefaultListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        CountryCode countryCode = CountryCode.class.cast(value);
+        String text;
+        if (countryCode != null)
+            text = countryCode.name().replaceAll("_", " ") +
+                    " (" + countryCode.value() + ")";
+        else
+            text = null;
+        label.setText(text);
+        return label;
     }
 }

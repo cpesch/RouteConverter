@@ -36,7 +36,12 @@ public class WaypointTypeListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         WaypointType waypointType = WaypointType.class.cast(value);
-        String text = waypointType != null ? RouteConverter.getBundle().getString("waypoint-type-" + waypointType.toString().toLowerCase()) : null;
+        String text;
+        if (waypointType != null)
+            text = RouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase()) +
+                    " (" + waypointType.value() + ")";
+        else
+            text = null;
         label.setText(text);
         return label;
     }

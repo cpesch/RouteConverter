@@ -36,7 +36,7 @@ public class UnitListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         Unit unit = Unit.class.cast(value);
-        String text = RouteConverter.getBundle().getString("unit-" + unit.toString().toLowerCase());
+        String text = RouteConverter.getBundle().getString("unit-" + unit.name().toLowerCase());
         label.setText(text);
         return label;
     }
