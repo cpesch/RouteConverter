@@ -366,16 +366,24 @@
        return initialized;
    }
 
+   function ignoreCtrlF(e) {
+       if (e.ctrlKey && e.keyCode == 70) {
+           e.preventDefault();
+       }
+   }
+
    function initialize() {
        initialized = false;
        document.body.className = "normal";
        addDebug("1. initialize()");
        try {
-           window.addEventListener("keydown", function (e) {
-               if (e.ctrlKey && e.keyCode == 70) {
-                   e.preventDefault();
-               }
-           });
+           if (window.attachEvent) {
+               window.attachEvent("keydown", ignoreCtrlF());
+           } else if (window.addEventListener) {
+               window.addEventListener("keydown", ignoreCtrlF());
+           } else {
+               document.addEventListener("keydown", ignoreCtrlF());
+           }
        } catch (e) {
            addDebug("1.1 could not disable ctrl-f " + e.message);
        }
