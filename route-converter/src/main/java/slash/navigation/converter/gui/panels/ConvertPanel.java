@@ -184,7 +184,6 @@ public class ConvertPanel {
     private FormatAndRoutesModel formatAndRoutesModel;
     private PositionsSelectionModel positionsSelectionModel;
     private LengthCalculator lengthCalculator;
-    private BatchPositionAugmenter positionAugmenter;
 
     private JPanel convertPanel;
     private JLabel labelFormat;
@@ -241,7 +240,6 @@ public class ConvertPanel {
 
         lengthCalculator = new LengthCalculator();
         lengthCalculator.initialize(getPositionsModel(), getCharacteristicsModel());
-        positionAugmenter = new BatchPositionAugmenter(r.getFrame());
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
@@ -347,6 +345,7 @@ public class ConvertPanel {
         JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
+        BatchPositionAugmenter positionAugmenter = r.getBatchPositionAugmenter();
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
         actionManager.register("undo", new UndoAction());
@@ -400,7 +399,7 @@ public class ConvertPanel {
         comboBoxChoosePositionList.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    positionAugmenter.interrupt();
+                    r.getBatchPositionAugmenter().interrupt();
                     formatAndRoutesModel.setSelectedItem(e.getItem());
                 }
             }
@@ -420,6 +419,11 @@ public class ConvertPanel {
 
     public void dispose() {
         lengthCalculator.dispose();
+    }
+
+    private void prepareForNewPositionList() {
+        Application.getInstance().getContext().getUndoManager().discardAllEdits();
+        RouteConverter.getInstance().getBatchPositionAugmenter().interrupt();
     }
 
     public Component getRootComponent() {
@@ -462,13 +466,14 @@ public class ConvertPanel {
         if (!confirmDiscard())
             return;
 
+        RouteConverter r = RouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("open-file-dialog-title"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
+        int open = chooser.showOpenDialog(r.getFrame());
         if (open != APPROVE_OPTION)
             return;
 
@@ -478,8 +483,7 @@ public class ConvertPanel {
 
         NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
-        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-        undoManager.discardAllEdits();
+        prepareForNewPositionList();
 
         List<URL> urls = toUrls(selected);
         List<NavigationFormat> formats = selectedFormat != null ?
@@ -492,8 +496,7 @@ public class ConvertPanel {
         if (!confirmDiscard())
             return;
 
-        UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-        undoManager.discardAllEdits();
+        prepareForNewPositionList();
         openPositionList(urls, getReadFormatsPreferredByExtension(getExtension(urls)));
     }
 
@@ -625,17 +628,17 @@ public class ConvertPanel {
         if (!confirmDiscard())
             return;
 
-        startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+        RouteConverter r = RouteConverter.getInstance();
+        startWaitCursor(r.getFrame().getRootPane());
         try {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
             gpxRoute.setName(format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             urlModel.clear();
-            UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-            undoManager.discardAllEdits();
+            prepareForNewPositionList();
         } finally {
-            stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
+            stopWaitCursor(r.getFrame().getRootPane());
         }
     }
 

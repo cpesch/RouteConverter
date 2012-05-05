@@ -49,15 +49,12 @@ import static slash.navigation.util.RouteComments.formatNumberedPosition;
 public class SinglePositionAugmenter implements PositionAugmenter {
     private static final Logger log = Logger.getLogger(SinglePositionAugmenter.class.getName());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private CompletePositionService completePositionService = new CompletePositionService();
+    private CompletePositionService completePositionService;
     private PositionsModel positionsModel;
 
-    public SinglePositionAugmenter(PositionsModel positionsModel) {
+    public SinglePositionAugmenter(PositionsModel positionsModel, CompletePositionService completePositionService) {
         this.positionsModel = positionsModel;
-    }
-
-    public void close() {
-        completePositionService.dispose();
+        this.completePositionService = completePositionService;
     }
 
     public String createComment(int index) {

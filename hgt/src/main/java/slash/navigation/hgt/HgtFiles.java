@@ -94,6 +94,7 @@ public class HgtFiles {
                 throw new IllegalArgumentException("Cannot close random access file" + randomAccessFile);
             }
         randomAccessFileCache.clear();
+        fileCache.clear();
         tileCache.clear();
     }
 }

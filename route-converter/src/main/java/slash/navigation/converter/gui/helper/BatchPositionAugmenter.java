@@ -58,11 +58,13 @@ import static slash.navigation.util.RouteComments.getNumberedPosition;
 public class BatchPositionAugmenter {
     private static final Logger log = Logger.getLogger(BatchPositionAugmenter.class.getName());
     private static final Object mutex = new Object();
-    private final JFrame frame;
+    private JFrame frame;
+    private CompletePositionService completePositionService;
     private boolean running = true;
 
-    public BatchPositionAugmenter(JFrame frame) {
+    public BatchPositionAugmenter(JFrame frame, CompletePositionService completePositionService) {
         this.frame = frame;
+        this.completePositionService = completePositionService;
     }
 
     public void interrupt() {
@@ -94,7 +96,6 @@ public class BatchPositionAugmenter {
         int getColumnIndex();
         boolean run(int index, BaseNavigationPosition position) throws Exception;
         String getErrorMessage();
-        void postRunning();
     }
 
     private void executeOperation(final JTable positionsTable,
@@ -166,8 +167,6 @@ public class BatchPositionAugmenter {
                                 MessageFormat.format(operation.getErrorMessage(), lastException[0].getMessage()),
                                 frame.getTitle(), ERROR_MESSAGE);
                 } finally {
-                    operation.postRunning();
-
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             stopWaitCursor(frame.getRootPane());
@@ -209,9 +208,6 @@ public class BatchPositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-coordinates-error");
                     }
-
-                    public void postRunning() {
-                    }
                 }
         );
     }
@@ -227,8 +223,6 @@ public class BatchPositionAugmenter {
                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private CompletePositionService completePositionService = new CompletePositionService();
-
                     public String getName() {
                         return "ElevationPositionAugmenter";
                     }
@@ -246,10 +240,6 @@ public class BatchPositionAugmenter {
 
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-elevation-error");
-                    }
-
-                    public void postRunning() {
-                        completePositionService.dispose();
                     }
                 }
         );
@@ -286,9 +276,6 @@ public class BatchPositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-populated-place-error");
                     }
-
-                    public void postRunning() {
-                    }
                 }
         );
     }
@@ -323,9 +310,6 @@ public class BatchPositionAugmenter {
 
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-postal-address-error");
-                    }
-
-                    public void postRunning() {
                     }
                 }
         );
@@ -366,9 +350,6 @@ public class BatchPositionAugmenter {
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-speed-error");
                     }
-
-                    public void postRunning() {
-                    }
                 }
         );
     }
@@ -405,9 +386,6 @@ public class BatchPositionAugmenter {
 
                     public String getErrorMessage() {
                         return RouteConverter.getBundle().getString("add-number-error");
-                    }
-
-                    public void postRunning() {
                     }
                 }
         );

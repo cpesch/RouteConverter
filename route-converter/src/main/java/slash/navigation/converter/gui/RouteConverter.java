@@ -32,6 +32,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.actions.AboutAction;
 import slash.navigation.converter.gui.actions.CheckForUpdateAction;
 import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
@@ -45,6 +46,7 @@ import slash.navigation.converter.gui.actions.RevertPositionListAction;
 import slash.navigation.converter.gui.actions.SendErrorReportAction;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
+import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
 import slash.navigation.converter.gui.helper.FrameMenu;
 import slash.navigation.converter.gui.helper.MergePositionListMenu;
 import slash.navigation.converter.gui.helper.ReopenMenuSynchronizer;
@@ -185,6 +187,7 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteFeedback routeFeedback;
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
+    private CompletePositionService completePositionService = new CompletePositionService();
     private UnitModel unitModel = new UnitModel();
 
     protected JPanel contentPane;
@@ -389,10 +392,7 @@ public class RouteConverter extends SingleFrameApplication {
         if (mapView != null)
             mapView.dispose();
         getConvertPanel().dispose();
-        synchronized (this) {
-            if (positionAugmenter != null)
-                positionAugmenter.close();
-        }
+        completePositionService.dispose();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + getRouteConverter() + " with locale " + Locale.getDefault() +
@@ -698,11 +698,20 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    private BatchPositionAugmenter batchPositionAugmenter = null;
+
+    public synchronized BatchPositionAugmenter getBatchPositionAugmenter() {
+        if (batchPositionAugmenter == null) {
+            batchPositionAugmenter = new BatchPositionAugmenter(frame, completePositionService);
+        }
+        return batchPositionAugmenter;
+    }
+
     private SinglePositionAugmenter positionAugmenter = null;
 
     private synchronized PositionAugmenter getPositionAugmenter() {
         if (positionAugmenter == null) {
-            positionAugmenter = new SinglePositionAugmenter(getPositionsModel());
+            positionAugmenter = new SinglePositionAugmenter(getPositionsModel(), completePositionService);
         }
         return positionAugmenter;
     }
@@ -716,7 +725,7 @@ public class RouteConverter extends SingleFrameApplication {
         getPositionAugmenter().complementComment(row, longitude, latitude);
     }
 
-    public void complementTime(final int row, final CompactCalendar time) {
+    public void complementTime(int row, CompactCalendar time) {
         getPositionAugmenter().complementTime(row, time);
     }
 
