@@ -22,6 +22,8 @@ package slash.navigation.converter.gui.mapview;
 
 /**
  * Enumeration of the travel modes for routing directions.
+ *
+ * @author Christian Pesch
  */
 
 public enum TravelMode {
@@ -29,7 +31,7 @@ public enum TravelMode {
 
     public static TravelMode fromString(String string) {
         for (TravelMode travelMode : TravelMode.values()) {
-            if(travelMode.name().equals(string))
+            if (travelMode.name().equals(string))
                 return travelMode;
         }
         return null;
