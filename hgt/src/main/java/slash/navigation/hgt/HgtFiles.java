@@ -26,6 +26,8 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.String.format;
+
 /**
  * Encapsulates access to HGT files.
  *
@@ -42,17 +44,16 @@ public class HgtFiles {
         downloader = new HgtFileDownloader(fileCache);
     }
 
-    private Integer createTileKey(double longitude, double latitude) {
-        int longitudeAsInteger = (int) longitude;   // values from -180 to +180: 0 - 360
-        int latitudeAsInteger = (int) latitude;     // values from  -90 to  +90: 0 - 180
-        return (latitudeAsInteger + 180) * 100000 + (longitudeAsInteger + 90);
+    Integer createTileKey(double longitude, double latitude) {
+        int longitudeAsInteger = (int)(longitude + 180.0);   // values from -180 to +180: 0 - 360
+        int latitudeAsInteger = (int)(latitude + 90.0);      // values from  -90 to  +90: 0 - 180
+        return longitudeAsInteger + latitudeAsInteger * 100000;
     }
 
-    private String createFileKey(double longitude, double latitude) {
+    String createFileKey(double longitude, double latitude) {
         int longitudeAsInteger = (int) longitude;
         int latitudeAsInteger = (int) latitude;
-
-        return String.format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
+        return format("%s%02d%s%03d.hgt", (latitude < 0) ? "S" : "N",
                 (latitude < 0) ? ((latitudeAsInteger - 1) * -1) : latitudeAsInteger,
                 (longitude < 0) ? "W" : "E",
                 (longitude < 0) ? ((longitudeAsInteger - 1) * -1) : longitudeAsInteger);

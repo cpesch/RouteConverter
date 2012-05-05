@@ -71,7 +71,7 @@ public class Gpx10Format extends GpxFormat {
         return "GPS Exchange Format " + VERSION + " (*" + getExtension() + ")";
     }
 
-    void process(Gpx gpx, ParserContext context) {
+    void process(Gpx gpx, ParserContext<GpxRoute> context) {
         if (gpx == null || !VERSION.equals(gpx.getVersion()))
             return;
 

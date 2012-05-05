@@ -239,7 +239,6 @@ public class BatchPositionAugmenter {
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
                         Double elevation = completePositionService.getElevationFor(position.getLongitude(), position.getLatitude());
-                        log.info("Index: " + index + " Longitude: " + position.getLongitude() + " Latitude: " + position.getLatitude() + " Elevation: " + elevation);
                         if (elevation != null)
                             positionsModel.edit(elevation, index, ELEVATION_COLUMN_INDEX, false, true);
                         return elevation != null;
