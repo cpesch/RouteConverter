@@ -161,6 +161,7 @@ import static slash.navigation.base.NavigationFormats.getWriteFormatsWithPreferr
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
+import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.gui.Constants.createJFileChooser;
 import static slash.navigation.gui.Constants.startWaitCursor;
@@ -342,7 +343,7 @@ public class ConvertPanel {
         JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
         new TableHeaderMenu(tablePositions.getTableHeader(), menuBar, tableColumnModel);
         JPopupMenu menu = new TablePopupMenu(tablePositions).createMenu();
-        JMenu mergeMenu = (JMenu) JMenuHelper.findMenuComponent(menu, "merge-positionlist");
+        JMenu mergeMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
         new MergePositionListMenu(mergeMenu, getPositionsView(), getFormatAndRoutesModel());
 
         BatchPositionAugmenter positionAugmenter = r.getBatchPositionAugmenter();

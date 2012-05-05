@@ -24,11 +24,12 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.actions.MergePositionListAction;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
-import slash.navigation.util.RouteComments;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+
+import static slash.navigation.util.RouteComments.shortenRouteName;
 
 /**
  * Updates a {@link JMenu} with the position lists from {@link PositionsTableColumnModel}.
@@ -52,7 +53,7 @@ public class MergePositionListMenu {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     BaseRoute route = formatAndRoutesModel.getRoute(i);
                     JMenuItem menuItem = new JMenuItem(new MergePositionListAction(table, route, formatAndRoutesModel));
-                    menuItem.setText(RouteComments.shortenRouteName(route));
+                    menuItem.setText(shortenRouteName(route));
                     menu.add(menuItem, i);
                 }
                 menu.setEnabled(formatAndRoutesModel.getSize() > 1);
@@ -62,6 +63,8 @@ public class MergePositionListMenu {
                 for (int i = e.getIndex1(); i >= e.getIndex0(); i--) {
                     JMenuItem menuItem = i < menu.getMenuComponentCount() ? (JMenuItem) menu.getMenuComponent(i) : null;
                     if (menuItem != null) {
+                        MergePositionListAction action = (MergePositionListAction) menuItem.getAction();
+                        action.dispose();
                         menuItem.setAction(null);
                     }
                     menu.remove(i);
@@ -74,7 +77,7 @@ public class MergePositionListMenu {
                     if (i >= 0 && i < menu.getMenuComponentCount()) {
                         BaseRoute route = formatAndRoutesModel.getRoute(i);
                         JMenuItem menuItem = (JMenuItem) menu.getMenuComponent(i);
-                        menuItem.setText(RouteComments.shortenRouteName(route));
+                        menuItem.setText(shortenRouteName(route));
                     }
                 }
             }

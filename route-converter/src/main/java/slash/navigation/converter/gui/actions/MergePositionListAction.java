@@ -38,9 +38,10 @@ import java.awt.event.ActionListener;
  */
 
 public class MergePositionListAction extends FrameAction {
-    private final JTable table;
-    private final BaseRoute sourceRoute;
-    private final FormatAndRoutesModel formatAndRoutesModel;
+    private JTable table;
+    private BaseRoute sourceRoute;
+    private FormatAndRoutesModel formatAndRoutesModel;
+    private ActionEnabler actionEnabler = new ActionEnabler();
 
     public MergePositionListAction(JTable table, BaseRoute sourceRoute, FormatAndRoutesModel formatAndRoutesModel) {
         this.table = table;
@@ -50,12 +51,20 @@ public class MergePositionListAction extends FrameAction {
     }
 
     protected void initialize() {
+        setEnabled();
+        formatAndRoutesModel.addListDataListener(actionEnabler);
+    }
+
+    private void setEnabled() {
         setEnabled(!sourceRoute.equals(formatAndRoutesModel.getSelectedRoute()));
-        formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {
-            public void process(ListDataEvent e) {
-                setEnabled(!sourceRoute.equals(formatAndRoutesModel.getSelectedRoute()));
-            }
-        });
+    }
+
+    public void dispose() {
+        formatAndRoutesModel.removeListDataListener(actionEnabler);
+        this.actionEnabler = null;
+        this.table = null;
+        this.sourceRoute = null;
+        this.formatAndRoutesModel = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -63,5 +72,11 @@ public class MergePositionListAction extends FrameAction {
         int selectedRow = Math.min(table.getSelectedRow() + 1, table.getRowCount());
         formatAndRoutesModel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
         formatAndRoutesModel.removePositionList(sourceRoute);
+    }
+
+    private class ActionEnabler extends AbstractListDataListener {
+        public void process(ListDataEvent e) {
+            setEnabled();
+        }
     }
 }
