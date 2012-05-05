@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:annotation>
+        <xsd:documentation>
+            http://wiki.openstreetmap.org/wiki/API_v0.6/XSD
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="api">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="version"/>
+                <xsd:element ref="area"/>
+                <xsd:element ref="tracepoints"/>
+                <xsd:element ref="waynodes"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="area">
+        <xsd:complexType>
+            <xsd:attribute name="maximum" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="changeset">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="gpx_file">
+        <xsd:complexType>
+            <xsd:attribute name="user" type="xsd:string" use="required"/>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="timestamp" type="xsd:string" use="required"/>
+            <xsd:attribute name="lat" type="xsd:string" use="required"/>
+            <xsd:attribute name="pending" use="optional" default="false">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:NMTOKEN">
+                        <xsd:enumeration value="true"/>
+                        <xsd:enumeration value="false"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="public" use="optional" default="false">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:NMTOKEN">
+                        <xsd:enumeration value="true"/>
+                        <xsd:enumeration value="false"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="lon" type="xsd:string" use="required"/>
+            <xsd:attribute name="id" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="home">
+        <xsd:complexType>
+            <xsd:attribute name="zoom" type="xsd:string" use="required"/>
+            <xsd:attribute name="lat" type="xsd:string" use="required"/>
+            <xsd:attribute name="lon" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="member">
+        <xsd:complexType>
+            <xsd:attribute name="type" use="required">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:NMTOKEN">
+                        <xsd:enumeration value="way"/>
+                        <xsd:enumeration value="node"/>
+                        <xsd:enumeration value="relation"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="ref" type="xsd:int" use="required"/>
+            <xsd:attribute name="role" type="xsd:string" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="nd">
+        <xsd:complexType>
+            <xsd:attribute name="ref" type="xsd:int" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="node">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="osmBasicType">
+                    <xsd:sequence>
+                        <xsd:element ref="tag" maxOccurs="unbounded" minOccurs="0"/>
+                    </xsd:sequence>
+                    <xsd:attribute name="lat" type="xsd:string" use="required"/>
+                    <xsd:attribute name="lon" type="xsd:string" use="required"/>
+                    <xsd:attribute name="action" type="xsd:string" use="optional"/>
+
+
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="osm">
+        <xsd:complexType>
+            <xsd:choice minOccurs="1" maxOccurs="2">
+                <xsd:element name="bound" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:attribute name="box" type="xsd:string">
+                        </xsd:attribute>
+                        <xsd:attribute name="origin" type="xsd:anyURI">
+                        </xsd:attribute>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="user"/>
+                <xsd:element ref="preferences"/>
+                <xsd:element ref="gpx_file"/>
+                <xsd:element ref="api"/>
+                <xsd:element ref="changeset"/>
+                <xsd:choice maxOccurs="unbounded" minOccurs="1">
+                    <xsd:element ref="node"/>
+                    <xsd:element ref="way"/>
+                    <xsd:element ref="relation"/>
+                </xsd:choice>
+            </xsd:choice>
+            <xsd:attribute name="version" type="xsd:float" use="required"
+                          fixed="0.6"/>
+            <xsd:attribute name="generator" type="xsd:string" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="preferences">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="relation">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="osmBasicType">
+                    <xsd:sequence maxOccurs="1" minOccurs="1">
+                        <xsd:choice maxOccurs="unbounded" minOccurs="1">
+                            <xsd:element ref="tag"/>
+                            <xsd:element ref="member"/>
+                        </xsd:choice>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="tag">
+        <xsd:complexType>
+            <xsd:attribute name="k" type="xsd:string" use="required"/>
+            <xsd:attribute name="v" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="tracepoints">
+        <xsd:complexType>
+            <xsd:attribute name="per_page" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="user">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="home" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="account_created" type="xsd:string"
+                          use="required"/>
+            <xsd:attribute name="display_name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="version">
+        <xsd:complexType>
+            <xsd:attribute name="minimum" type="xsd:string" use="required"/>
+            <xsd:attribute name="maximum" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="way">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="osmBasicType">
+                    <xsd:sequence>
+                        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element ref="nd"/>
+                        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element ref="nd"/>
+                        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+                            <xsd:element ref="tag"/>
+                            <xsd:element ref="nd"/>
+                        </xsd:choice>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="waynodes">
+        <xsd:complexType>
+            <xsd:attribute name="maximum" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="osmBasicType">
+        <xsd:attribute name="id" type="xsd:int" use="required"/>
+        <xsd:attribute name="user" type="xsd:string"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime" use="optional"/>
+        <xsd:attribute name="changeset" type="xsd:int" use="optional"/>
+        <xsd:attribute name="version" type="xsd:int"/>
+        <xsd:attribute name="visible" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+</xsd:schema>
