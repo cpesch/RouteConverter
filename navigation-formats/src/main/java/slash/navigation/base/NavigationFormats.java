@@ -203,6 +203,7 @@ public final class NavigationFormats {
         addFormat(OpelNaviFormat.class);
         addFormat(NavigatingPoiWarnerFormat.class);
         addFormat(NmnRouteFormat.class);
+        addFormat(ZipFormat.class);
 
         // GPSBabel-based formats
         addFormat(GarminMapSource6Format.class);

@@ -46,17 +46,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
 import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.CompactCalendar.fromCalendar;
-import static slash.common.io.Files.getExtension;
 import static slash.common.io.Transfer.ceiling;
 import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
-import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.simple.GoogleMapsUrlFormat.isGoogleMapsUrl;
 import static slash.navigation.util.RouteComments.commentPositions;
 import static slash.navigation.util.RouteComments.commentRouteName;
@@ -71,10 +67,6 @@ import static slash.navigation.util.RouteComments.createRouteName;
 public class NavigationFormatParser {
     private static final Logger log = Logger.getLogger(NavigationFormatParser.class.getName());
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
-
-    static {
-        System.setProperty("sun.zip.encoding", "default");
-    }
 
     private final List<NavigationFormatParserListener> listeners = new CopyOnWriteArrayList<NavigationFormatParserListener>();
 
@@ -100,25 +92,21 @@ public class NavigationFormatParser {
     }
 
     @SuppressWarnings("unchecked")
-    private FormatAndRoutes internalRead(InputStream buffer, int readBufferSize, Calendar startDate,
-                                         List<NavigationFormat> formats) throws IOException {
+    private void internalRead(InputStream buffer, int readBufferSize, CompactCalendar startDate,
+                              List<NavigationFormat> formats, ParserContext context) throws IOException {
         try {
-            CompactCalendar compactStartDate = startDate != null ? fromCalendar(startDate) : null;
-            ParserContextImpl context = new ParserContextImpl();
-            NavigationFormat preferredFormat = null;
-
             for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
 
                 try {
-                    format.read(buffer, compactStartDate, context);
+                    format.read(buffer, startDate, context);
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.fine(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
                 }
 
                 if (context.getRoutes().size() > 0) {
-                    preferredFormat = format;
+                    context.addFormat(format);
                     break;
                 }
 
@@ -126,25 +114,31 @@ public class NavigationFormatParser {
                     buffer.reset();
                 } catch (IOException e) {
                     // Resetting to invalid mark - if the read buffer is not large enough
-                    log.severe("No known format found within " + readBufferSize + " bytes; increase the read buffer");
+                    log.severe(format("No known format found within %d bytes; increase the read buffer", readBufferSize));
                     break;
                 }
             }
-
-            List<BaseRoute> routes = context.getRoutes();
-            if (routes != null && routes.size() > 0) {
-                NavigationFormat format = determineFormat(routes, preferredFormat);
-                List<BaseRoute> result = asFormatForRoutes(routes, format);
-                log.info("Detected '" + format.getName() + "' with " + result.size() + " route(s) and " +
-                        getPositionCounts(result) + " positions");
-                commentRoutes(result);
-                return new FormatAndRoutes(format, result);
-            }
-
         } finally {
             buffer.close();
         }
-        return null;
+    }
+
+    ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
+        log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
+        Calendar startDate = Calendar.getInstance(UTC);
+        startDate.setTimeInMillis(source.lastModified());
+        FileInputStream fis = new FileInputStream(source);
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int) source.length() + 1));
+        buffer.mark((int) source.length() + 1);
+        try {
+            return read(buffer, (int) source.length(), startDate, formats);
+        } finally {
+            buffer.closeUnderlyingInputStream();
+        }
+    }
+
+    public ParserResult read(File source) throws IOException {
+        return read(source, getReadFormats());
     }
 
     private NavigationFormat determineFormat(List<BaseRoute> routes, NavigationFormat preferredFormat) {
@@ -176,23 +170,47 @@ public class NavigationFormatParser {
         }
     }
 
-    ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
-        log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        Calendar startDate = Calendar.getInstance(UTC);
-        startDate.setTimeInMillis(source.lastModified());
-        FileInputStream fis = new FileInputStream(source);
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int) source.length() + 1));
-        buffer.mark((int) source.length() + 1);
+    @SuppressWarnings("unchecked")
+    private ParserResult createResult(ParserContext<BaseRoute> context) throws IOException {
+        List<BaseRoute> routes = context.getRoutes();
+        if (routes != null && routes.size() > 0) {
+            NavigationFormat format = determineFormat(routes, context.getFormats().get(0));
+            List<BaseRoute> result = asFormatForRoutes(routes, format);
+            log.info("Detected '" + format.getName() + "' with " + result.size() + " route(s) and " +
+                    getPositionCounts(result) + " positions");
+            commentRoutes(result);
+            return new ParserResult(new FormatAndRoutes(format, routes));
+        } else
+            return null;
+    }
+
+    private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
+        public void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
+            internalRead(inputStream, readBufferSize, startDate, formats, this);
+        }
+    }
+
+    private ParserResult read(InputStream source, int readBufferSize, Calendar startDate,
+                              List<NavigationFormat> formats) throws IOException {
+        log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
+        CompactCalendar compactStartDate = startDate != null ? fromCalendar(startDate) : null;
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
+        buffer.mark(readBufferSize + 1);
         try {
-            FormatAndRoutes formatAndRoutes = internalRead(buffer, (int) source.length(), startDate, formats);
-            return new ParserResult(formatAndRoutes);
+            ParserContext<BaseRoute> context = new InternalParserContext<BaseRoute>();
+            internalRead(buffer, readBufferSize, compactStartDate, formats, context);
+            return createResult(context);
         } finally {
             buffer.closeUnderlyingInputStream();
         }
     }
 
-    public ParserResult read(File source) throws IOException {
-        return read(source, getReadFormats());
+    public ParserResult read(String source) throws IOException {
+        return read(new ByteArrayInputStream(source.getBytes()));
+    }
+
+    public ParserResult read(InputStream source) throws IOException {
+        return read(source, READ_BUFFER_SIZE, null, getReadFormats());
     }
 
     private int getSize(URL url) throws IOException {
@@ -217,56 +235,6 @@ public class NavigationFormatParser {
         } catch (URISyntaxException e) {
             throw new IOException("Cannot determine file from URL: " + e.getMessage());
         }
-    }
-
-    private FormatAndRoutes zipRead(InputStream source, int readBufferSize, Calendar startDate) {
-        ZipInputStream zip = new ZipInputStream(source);
-        try {
-            ZipEntry entry;
-            while ((entry = zip.getNextEntry()) != null) {
-                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip, (int) entry.getSize() + 1));
-                buffer.mark(readBufferSize + 1);
-                List<NavigationFormat> formats = getReadFormatsPreferredByExtension(getExtension(entry.getName()));
-                FormatAndRoutes formatAndRoutes = internalRead(buffer, (int) entry.getSize() + 1, startDate, formats);
-                if (formatAndRoutes != null)
-                    return formatAndRoutes;
-                zip.closeEntry();
-            }
-        } catch (IOException e) {
-            log.fine("Error reading invalid zip entry names from " + source + ": " + e.getMessage());
-            return null;
-        } finally {
-            try {
-                zip.close();
-            } catch (IOException e) {
-                log.fine("Error closing zip from " + source + ": " + e.getMessage());
-            }
-        }
-        return null;
-    }
-
-    private ParserResult read(InputStream source, int readBufferSize, Calendar startDate,
-                         List<NavigationFormat> formats) throws IOException {
-        log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
-        buffer.mark(readBufferSize + 1);
-        try {
-            FormatAndRoutes formatAndRoutes = internalRead(buffer, readBufferSize, startDate, formats);
-            if (formatAndRoutes == null) {
-                formatAndRoutes = zipRead(buffer, readBufferSize, startDate);
-            }
-            return new ParserResult(formatAndRoutes);
-        } finally {
-            buffer.closeUnderlyingInputStream();
-        }
-    }
-
-    public ParserResult read(String source) throws IOException {
-        return read(new ByteArrayInputStream(source.getBytes()));
-    }
-
-    public ParserResult read(InputStream source) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null, getReadFormats());
     }
 
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {

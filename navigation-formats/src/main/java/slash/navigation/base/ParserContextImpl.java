@@ -20,6 +20,10 @@
 
 package slash.navigation.base;
 
+import slash.common.io.CompactCalendar;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +33,9 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class ParserContextImpl<R> implements ParserContext<R> {
+public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> {
     private List<R> routes = new ArrayList<R>();
+    private List<NavigationFormat<R>> formats = new ArrayList<NavigationFormat<R>>();
 
     public void addRoute(R route) {
         this.routes.add(route);
@@ -40,7 +45,19 @@ public class ParserContextImpl<R> implements ParserContext<R> {
         this.routes.addAll(routes);
     }
 
+    public void addFormat(NavigationFormat<R> format) {
+        this.formats.add(format);
+    }
+
     public List<R> getRoutes() {
         return routes;
+    }
+
+    public List<NavigationFormat<R>> getFormats() {
+        return formats;
+    }
+
+    public void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
+        throw new UnsupportedOperationException();
     }
 }
