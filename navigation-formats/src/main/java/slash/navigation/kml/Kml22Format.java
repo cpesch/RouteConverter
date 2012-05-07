@@ -123,7 +123,7 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
-    private List<KmlRoute> extractTracks(KmlType kmlType, CompactCalendar startDate) {
+    protected List<KmlRoute> extractTracks(KmlType kmlType, CompactCalendar startDate) {
         List<KmlRoute> routes = new ArrayList<KmlRoute>();
 
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();

@@ -101,7 +101,6 @@ public class NavigationFormatParser {
                 try {
                     format.read(buffer, startDate, context);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     log.fine(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
                 }
 
