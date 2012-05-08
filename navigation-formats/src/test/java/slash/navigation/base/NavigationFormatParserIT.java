@@ -21,7 +21,6 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.common.TestCase;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRouteFormat;

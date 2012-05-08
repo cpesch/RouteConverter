@@ -24,7 +24,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -43,22 +46,35 @@ public class JaxbUtils {
     private static final String JAXB_IMPL_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper".intern();
     public static final String JAXB_IMPL_HEADER = "com.sun.xml.internal.bind.xmlHeaders".intern();
 
-    public static JAXBContext newContext(Class<?>... classes) {
-        try {
-            return JAXBContext.newInstance(classes);
-        } catch (JAXBException e) {
-            throw new RuntimeException(e);
-        }
+    private static Map<List<Class<?>>, JAXBContext> classesToContext = new HashMap<List<Class<?>>, JAXBContext>();
+    private static boolean cacheContexts = false;
+
+    public static void setCacheContexts(boolean cacheContexts) {
+        JaxbUtils.cacheContexts = cacheContexts;
     }
 
-    public static Marshaller newMarshaller(JAXBContext context, String ... uriToPrefix) {
+    public static JAXBContext newContext(Class<?>... classes) {
+        List<Class<?>> key = Arrays.asList(classes);
+        JAXBContext context = classesToContext.get(key);
+        if (context == null) {
+            try {
+                context = JAXBContext.newInstance(classes);
+                if (cacheContexts)
+                    classesToContext.put(key, context);
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return context;
+    }
+
+    public static Marshaller newMarshaller(JAXBContext context, String... uriToPrefix) {
         try {
             Marshaller result = context.createMarshaller();
             result.setProperty(JAXB_FORMATTED_OUTPUT, preferences.getBoolean("prettyPrintXml", true));
             try {
                 result.setProperty(JAXB_IMPL_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperImpl(map(uriToPrefix)));
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 t.printStackTrace();
                 log.severe("Could not set namespace prefix mapper: " + t.getMessage());
             }

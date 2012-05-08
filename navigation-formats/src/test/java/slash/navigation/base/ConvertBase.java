@@ -20,6 +20,8 @@
 
 package slash.navigation.base;
 
+import slash.navigation.babel.CompeGPSDataFormat;
+import slash.navigation.babel.CompeGPSDataRouteFormat;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.OziExplorerReadFormat;
@@ -30,6 +32,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static slash.common.io.Files.getExtension;
+import static slash.navigation.base.NavigationFormats.asFormat;
+import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public abstract class ConvertBase extends NavigationTestCase {
@@ -42,7 +47,7 @@ public abstract class ConvertBase extends NavigationTestCase {
         assertTrue(targetFormat.isSupportsWriting());
 
         File source = new File(testFileName);
-        ParserResult result = parser.read(source);
+        ParserResult result = parser.read(source, getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull("Cannot read route from " + source, result);
         assertTrue(result.isSuccessful());
         assertNotNull(result.getFormat());
@@ -52,7 +57,7 @@ public abstract class ConvertBase extends NavigationTestCase {
 
         // check append
         BaseNavigationPosition sourcePosition = result.getTheRoute().getPositions().get(0);
-        BaseNavigationPosition targetPosition = NavigationFormats.asFormat(sourcePosition, targetFormat);
+        BaseNavigationPosition targetPosition = asFormat(sourcePosition, targetFormat);
         assertNotNull(targetPosition);
 
         convertSingleRouteRoundtrip(sourceFormat, targetFormat, source, result.getTheRoute());
@@ -61,6 +66,12 @@ public abstract class ConvertBase extends NavigationTestCase {
             convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, Collections.<BaseRoute>singletonList(result.getTheRoute()));
             convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, result.getAllRoutes());
         }
+    }
+
+    private BaseNavigationFormat handleReadOnlyFormats(BaseNavigationFormat sourceFormat) {
+        if (sourceFormat instanceof CompeGPSDataFormat)
+            sourceFormat = new CompeGPSDataRouteFormat();
+        return sourceFormat;
     }
 
     private BaseNavigationFormat handleWriteOnlyFormats(BaseNavigationFormat targetFormat) {
@@ -77,9 +88,9 @@ public abstract class ConvertBase extends NavigationTestCase {
             parser.write(sourceRoute, targetFormat, false, false, target);
             assertTrue(target.exists());
 
-            ParserResult sourceResult = parser.read(source);
+            ParserResult sourceResult = parser.read(source, getReadFormatsPreferredByExtension(getExtension(source)));
             assertNotNull(sourceResult);
-            ParserResult targetResult = parser.read(target);
+            ParserResult targetResult = parser.read(target, getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
 
             targetFormat = handleWriteOnlyFormats(targetFormat);
@@ -120,6 +131,7 @@ public abstract class ConvertBase extends NavigationTestCase {
             assertNotNull(targetResult);
             assertTrue(targetResult.isSuccessful());
 
+            sourceFormat = handleReadOnlyFormats(sourceFormat);
             targetFormat = handleWriteOnlyFormats(targetFormat);
 
             assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());

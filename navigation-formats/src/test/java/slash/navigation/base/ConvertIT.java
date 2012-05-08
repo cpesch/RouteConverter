@@ -20,7 +20,27 @@
 
 package slash.navigation.base;
 
-import slash.navigation.babel.*;
+import slash.navigation.babel.AlanTrackLogFormat;
+import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.babel.CompeGPSDataRouteFormat;
+import slash.navigation.babel.CompeGPSDataTrackFormat;
+import slash.navigation.babel.CompeGPSDataWaypointFormat;
+import slash.navigation.babel.FlightRecorderDataFormat;
+import slash.navigation.babel.GarminMapSource5Format;
+import slash.navigation.babel.GarminMapSource6Format;
+import slash.navigation.babel.GarminPcx5Format;
+import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.babel.GarminPoiFormat;
+import slash.navigation.babel.HoluxM241BinaryFormat;
+import slash.navigation.babel.MagellanMapSendFormat;
+import slash.navigation.babel.MicrosoftAutoRouteFormat;
+import slash.navigation.babel.NationalGeographicTopo3Format;
+import slash.navigation.babel.OziExplorerReadFormat;
+import slash.navigation.babel.OziExplorerRouteFormat;
+import slash.navigation.babel.OziExplorerTrackFormat;
+import slash.navigation.babel.OziExplorerWaypointFormat;
+import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.copilot.CoPilot6Format;
@@ -35,15 +55,41 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
-import slash.navigation.kml.*;
+import slash.navigation.kml.Kml20Format;
+import slash.navigation.kml.Kml21Format;
+import slash.navigation.kml.Kml22BetaFormat;
+import slash.navigation.kml.Kml22Format;
+import slash.navigation.kml.Kmz20Format;
+import slash.navigation.kml.Kmz21Format;
+import slash.navigation.kml.Kmz22BetaFormat;
+import slash.navigation.kml.Kmz22Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
-import slash.navigation.nmn.*;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.Nmn4Format;
+import slash.navigation.nmn.Nmn5Format;
+import slash.navigation.nmn.Nmn6FavoritesFormat;
+import slash.navigation.nmn.Nmn6Format;
+import slash.navigation.nmn.Nmn7Format;
+import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.ovl.OvlFormat;
-import slash.navigation.simple.*;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GpsTunerFormat;
+import slash.navigation.simple.GroundTrackFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.KompassFormat;
+import slash.navigation.simple.NavilinkFormat;
+import slash.navigation.simple.OpelNaviFormat;
+import slash.navigation.simple.QstarzQ1000Format;
+import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.SygicAsciiFormat;
+import slash.navigation.simple.SygicUnicodeFormat;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
@@ -128,20 +174,20 @@ public class ConvertIT extends ConvertBase {
     }
 
     public void testConvertiBlue747ToCompeGPSData() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CompeGPSDataFormat());
+        convertRoundtrip(TEST_PATH + "from-iblue747.csv", new Iblue747Format(), new CompeGPSDataRouteFormat());
     }
 
-
     public void testConvertCompeGPSDataToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.rte", new CompeGPSDataRouteFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataTrackFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataWaypointFormat(), new Gpx11Format());
     }
 
     public void testConvertCompeGPSDataToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataFormat(), new Kml22BetaFormat());
-        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.rte", new CompeGPSDataRouteFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataWaypointFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from-compegps.trk", new CompeGPSDataTrackFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from-compegps.wpt", new CompeGPSDataWaypointFormat(), new Kml22Format());
     }
 
 

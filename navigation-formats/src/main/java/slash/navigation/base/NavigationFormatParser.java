@@ -180,7 +180,7 @@ public class NavigationFormatParser {
             commentRoutes(result);
             return new ParserResult(new FormatAndRoutes(format, routes));
         } else
-            return null;
+            return new ParserResult(null);
     }
 
     private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {

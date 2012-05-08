@@ -52,6 +52,7 @@ import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
+import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
@@ -116,6 +117,10 @@ public abstract class NavigationTestCase extends TestCase {
     public static final String ROUTE_PATH = System.getProperty("samples", "routes" + separator + "src" + separator);
     public static final String TEST_PATH = ROUTE_PATH + "test" + separator;
     public static final String SAMPLE_PATH = ROUTE_PATH + "samples" + separator;
+
+    static {
+        JaxbUtils.setCacheContexts(true);
+    }
 
     public static void assertDescriptionEquals(List<String> expected, List<String> was) {
         List<String> wasFiltered = new ArrayList<String>();
