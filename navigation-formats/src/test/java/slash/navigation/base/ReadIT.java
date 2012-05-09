@@ -368,6 +368,11 @@ public class ReadIT {
         readFiles(".xvm");
     }
 
+    @Test
+    public void testZipArchhivesAreValid() throws IOException {
+        readFiles(".zip");
+    }
+
 
     private void dontReadFiles(String path, TestFileCallback callback) throws IOException {
         List<File> files = collectFiles(new File(path), null);
