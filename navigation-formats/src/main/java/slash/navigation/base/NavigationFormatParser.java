@@ -94,6 +94,7 @@ public class NavigationFormatParser {
     @SuppressWarnings("unchecked")
     private void internalRead(InputStream buffer, int readBufferSize, CompactCalendar startDate,
                               List<NavigationFormat> formats, ParserContext context) throws IOException {
+        int routeCountBefore = context.getRoutes().size();
         try {
             for (NavigationFormat<BaseRoute> format : formats) {
                 notifyReading(format);
@@ -104,7 +105,7 @@ public class NavigationFormatParser {
                     log.fine(format("Error reading with %s: %s, %s", format, e.getClass(), e.getMessage()));
                 }
 
-                if (context.getRoutes().size() > 0) {
+                if (context.getRoutes().size() > routeCountBefore) {
                     context.addFormat(format);
                     break;
                 }
