@@ -35,7 +35,9 @@ import java.util.logging.Logger;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 import static slash.navigation.util.Positions.interpolateTime;
 import static slash.navigation.util.RouteComments.formatNumberedPosition;
 

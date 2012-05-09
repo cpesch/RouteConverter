@@ -20,8 +20,12 @@
 
 package slash.common.io;
 
-import java.io.*;
-import java.net.URL;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 
 /**
  * As a pipe reads from input and writes to output.

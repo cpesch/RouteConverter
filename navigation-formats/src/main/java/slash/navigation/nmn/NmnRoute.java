@@ -21,7 +21,11 @@
 package slash.navigation.nmn;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.OpelNaviFormat;
 import slash.navigation.simple.QstarzQ1000Format;

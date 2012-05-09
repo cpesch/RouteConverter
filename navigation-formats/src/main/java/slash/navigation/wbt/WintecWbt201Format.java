@@ -21,9 +21,18 @@
 package slash.navigation.wbt;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;

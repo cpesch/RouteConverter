@@ -28,7 +28,11 @@ import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.viamichelin.binding.ObjectFactory;
 import slash.navigation.viamichelin.binding.PoiList;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;

@@ -34,7 +34,10 @@ import slash.navigation.tour.TourPosition;
 import java.util.Calendar;
 
 import static java.lang.Double.isNaN;
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.asin;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
 import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.common.util.Bearing.calculateBearing;
 

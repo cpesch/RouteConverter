@@ -22,12 +22,31 @@ package slash.navigation.converter.gui;
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Locale.*;
+import static java.util.Locale.CHINA;
+import static java.util.Locale.FRANCE;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.ITALY;
+import static java.util.Locale.ROOT;
+import static java.util.Locale.US;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.gui.Constants.*;
+import static slash.navigation.gui.Constants.ARABIA;
+import static slash.navigation.gui.Constants.CROATIA;
+import static slash.navigation.gui.Constants.CZECH;
+import static slash.navigation.gui.Constants.NEDERLANDS;
+import static slash.navigation.gui.Constants.SERBIA;
+import static slash.navigation.gui.Constants.SLOVAKIA;
+import static slash.navigation.gui.Constants.SPAIN;
 
 public class ResourceBundleTest {
     private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,

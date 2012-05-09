@@ -24,7 +24,11 @@ import slash.navigation.jaxb.JaxbUtils;
 import slash.navigation.nmn.binding7.ObjectFactory;
 import slash.navigation.nmn.binding7.Route;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;

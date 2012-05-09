@@ -20,7 +20,11 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.FormatAndRoutes;
+import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;

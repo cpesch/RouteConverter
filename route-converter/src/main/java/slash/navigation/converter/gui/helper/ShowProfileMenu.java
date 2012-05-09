@@ -24,7 +24,9 @@ import slash.navigation.converter.gui.profileview.ProfileMode;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helper.JMenuHelper.*;
+import static slash.navigation.converter.gui.helper.JMenuHelper.createMenu;
+import static slash.navigation.converter.gui.helper.JMenuHelper.createRadioItem;
+import static slash.navigation.converter.gui.helper.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} for {@link ProfileMode}.

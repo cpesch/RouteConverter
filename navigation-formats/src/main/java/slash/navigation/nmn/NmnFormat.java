@@ -20,7 +20,11 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
 
 import java.util.List;
 import java.util.regex.Pattern;

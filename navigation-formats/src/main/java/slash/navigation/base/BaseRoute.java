@@ -38,7 +38,11 @@ import slash.navigation.tour.TourRoute;
 import slash.navigation.util.Positions;
 import slash.navigation.viamichelin.ViaMichelinRoute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.List;
 
 import static slash.navigation.util.Positions.contains;
 

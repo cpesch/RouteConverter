@@ -20,7 +20,13 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import chrriis.dj.nativeswing.swtimpl.components.*;
+import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserCommandEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserListener;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
+import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.Externalization;
 import slash.common.io.Platform;
 import slash.common.io.TokenResolver;

@@ -21,20 +21,44 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.renderer.*;
+import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.DistanceColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.ElevationDeltaColumnTableCellRenderer;
+import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
+import slash.navigation.converter.gui.renderer.PositionsTableCellHeaderRenderer;
+import slash.navigation.converter.gui.renderer.SpeedColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.TimeColumnTableCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 
 /**
  * Acts as a {@link TableColumnModel} for the positions of a {@link BaseRoute}.

@@ -23,14 +23,23 @@ import org.junit.After;
 import org.junit.Before;
 import slash.common.io.InputOutput;
 import slash.navigation.gpx.GpxUtil;
-import slash.navigation.gpx.binding11.*;
+import slash.navigation.gpx.binding11.ExtensionsType;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.LinkType;
+import slash.navigation.gpx.binding11.MetadataType;
+import slash.navigation.gpx.binding11.ObjectFactory;
+import slash.navigation.gpx.binding11.RteType;
 import slash.navigation.gpx.routecatalog10.UserextensionType;
 import slash.navigation.rest.Delete;
 import slash.navigation.rest.Post;
 import slash.navigation.rest.SimpleCredentials;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 
 import static java.lang.Integer.parseInt;
 import static org.junit.Assert.assertTrue;

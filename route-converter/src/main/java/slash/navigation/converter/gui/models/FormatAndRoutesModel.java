@@ -20,7 +20,11 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.FormatAndRoutes;
+import slash.navigation.base.NavigationFormat;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;

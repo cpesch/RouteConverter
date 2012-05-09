@@ -22,7 +22,12 @@ package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.InputOutput;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +37,9 @@ import java.util.List;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.util.Positions.*;
+import static slash.navigation.util.Positions.center;
+import static slash.navigation.util.Positions.northEast;
+import static slash.navigation.util.Positions.southWest;
 
 /**
  * Writes a Web Page (*.html).

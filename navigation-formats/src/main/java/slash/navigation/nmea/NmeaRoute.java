@@ -21,7 +21,11 @@
 package slash.navigation.nmea;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.util.ArrayList;
 import java.util.List;

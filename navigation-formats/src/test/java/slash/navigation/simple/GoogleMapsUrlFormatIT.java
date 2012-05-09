@@ -30,7 +30,8 @@ import slash.navigation.base.ParserResult;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class GoogleMapsUrlFormatIT {

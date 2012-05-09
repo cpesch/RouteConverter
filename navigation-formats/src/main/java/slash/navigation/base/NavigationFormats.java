@@ -23,7 +23,6 @@ package slash.navigation.base;
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.BabelFormat;
-import slash.navigation.babel.CompeGPSDataFormat;
 import slash.navigation.babel.CompeGPSDataRouteFormat;
 import slash.navigation.babel.CompeGPSDataTrackFormat;
 import slash.navigation.babel.CompeGPSDataWaypointFormat;

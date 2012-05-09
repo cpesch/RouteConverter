@@ -20,7 +20,6 @@
 
 package slash.navigation.base;
 
-import slash.common.io.CompactCalendar;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;

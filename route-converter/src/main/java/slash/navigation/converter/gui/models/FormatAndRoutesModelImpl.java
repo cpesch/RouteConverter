@@ -20,12 +20,20 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.FormatAndRoutes;
+import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
 import slash.navigation.converter.gui.helper.JTableHelper;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.util.List;
 
 /**

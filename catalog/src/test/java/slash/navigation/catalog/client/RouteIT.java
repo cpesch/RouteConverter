@@ -11,14 +11,23 @@ import org.junit.Test;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.binding11.RteType;
-import slash.navigation.rest.*;
+import slash.navigation.rest.Delete;
+import slash.navigation.rest.Get;
+import slash.navigation.rest.HttpRequest;
+import slash.navigation.rest.Post;
+import slash.navigation.rest.Put;
+import slash.navigation.rest.SimpleCredentials;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class RouteIT extends RouteCatalogClientBase {
 

@@ -21,7 +21,6 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.helper.LengthCalculator;
 import slash.navigation.converter.gui.helper.LengthCalculatorListener;
 

@@ -30,8 +30,14 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.System.currentTimeMillis;
-import static javax.swing.JOptionPane.*;
-import static slash.common.io.Version.*;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.common.io.Version.getLatestJavaVersion;
+import static slash.common.io.Version.getLatestRouteConverterVersion;
+import static slash.common.io.Version.parseVersionFromManifest;
 
 /**
  * Knows how to retrieve the information which is the latest version.

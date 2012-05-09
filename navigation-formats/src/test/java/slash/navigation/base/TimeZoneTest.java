@@ -34,7 +34,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
-import static slash.common.TestCase.*;
+import static slash.common.TestCase.assertCalendarEquals;
+import static slash.common.TestCase.localCalendar;
+import static slash.common.TestCase.utcCalendar;
 
 public class TimeZoneTest {
 

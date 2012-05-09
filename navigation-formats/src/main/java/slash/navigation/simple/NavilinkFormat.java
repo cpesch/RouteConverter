@@ -22,7 +22,12 @@
 package slash.navigation.simple;
 
 import slash.common.io.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;

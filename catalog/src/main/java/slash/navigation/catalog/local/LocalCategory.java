@@ -23,7 +23,11 @@ package slash.navigation.catalog.local;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;

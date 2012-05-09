@@ -25,7 +25,20 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.assertNearBy;
-import static slash.navigation.util.Conversion.*;
+import static slash.navigation.util.Conversion.bcrAltitudeToElevationMeters;
+import static slash.navigation.util.Conversion.ddmm2degrees;
+import static slash.navigation.util.Conversion.degrees2ddmm;
+import static slash.navigation.util.Conversion.elevationMetersToBcrAltitude;
+import static slash.navigation.util.Conversion.feetToMeters;
+import static slash.navigation.util.Conversion.gaussKruegerRightHeightToWgs84LongitudeLatitude;
+import static slash.navigation.util.Conversion.kilometerToStatuteMiles;
+import static slash.navigation.util.Conversion.kmhToMs;
+import static slash.navigation.util.Conversion.mercatorXToWgs84Longitude;
+import static slash.navigation.util.Conversion.mercatorYToWgs84Latitude;
+import static slash.navigation.util.Conversion.msToKmh;
+import static slash.navigation.util.Conversion.wgs84LatitudeToMercatorY;
+import static slash.navigation.util.Conversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight;
+import static slash.navigation.util.Conversion.wgs84LongitudeToMercatorX;
 
 public class ConversionTest {
     @Test

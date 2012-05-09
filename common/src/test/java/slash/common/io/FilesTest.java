@@ -29,7 +29,11 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static slash.common.io.Files.*;
+import static slash.common.io.Files.calculateConvertFileName;
+import static slash.common.io.Files.createGoPalFileName;
+import static slash.common.io.Files.lastPathFragment;
+import static slash.common.io.Files.numberToString;
+import static slash.common.io.Files.shortenPath;
 
 public class FilesTest {
     private File file;

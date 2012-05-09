@@ -5,7 +5,13 @@ import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.simple.*;
+import slash.navigation.simple.BrokenHaicomLoggerFormat;
+import slash.navigation.simple.ColumbusV900ProfessionalFormat;
+import slash.navigation.simple.ColumbusV900StandardFormat;
+import slash.navigation.simple.HaicomLoggerFormat;
+import slash.navigation.simple.Iblue747Format;
+import slash.navigation.simple.QstarzQ1000Format;
+import slash.navigation.simple.Route66Format;
 
 import java.util.List;
 

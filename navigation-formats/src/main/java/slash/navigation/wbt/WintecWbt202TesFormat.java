@@ -25,7 +25,6 @@ import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.List;
 
 import static java.lang.Math.abs;

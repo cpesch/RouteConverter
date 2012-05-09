@@ -25,7 +25,6 @@ import slash.navigation.gui.FrameAction;
 
 import javax.swing.*;
 import java.net.URL;
-import java.util.Arrays;
 
 import static java.util.Arrays.asList;
 

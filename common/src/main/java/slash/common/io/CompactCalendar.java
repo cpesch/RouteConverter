@@ -20,7 +20,12 @@
 
 package slash.common.io;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * A compact representation of a calendar, that saves some memory.

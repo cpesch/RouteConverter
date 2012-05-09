@@ -22,14 +22,18 @@ package slash.navigation.itn;
 
 import org.junit.Test;
 import slash.common.io.Files;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.Route;
