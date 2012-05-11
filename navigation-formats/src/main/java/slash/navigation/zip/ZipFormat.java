@@ -1,8 +1,14 @@
-package slash.navigation.base;
+package slash.navigation.zip;
 
 import slash.common.io.CompactCalendar;
 import slash.common.io.Files;
 import slash.common.io.NotClosingUnderlyingInputStream;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -30,7 +36,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
     }
 
     public int getMaximumPositionCount() {
-        return UNLIMITED_MAXIMUM_POSITION_COUNT;
+        throw new UnsupportedOperationException();
     }
 
     public boolean isSupportsWriting() {
@@ -62,9 +68,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
                 zip.closeEntry();
             }
         } catch (IOException e) {
-            e.printStackTrace();
             log.fine("Error reading invalid zip entry from " + source + ": " + e.getMessage());
-            // TODO parserContext.addException();
         } finally {
             try {
                 zip.close();

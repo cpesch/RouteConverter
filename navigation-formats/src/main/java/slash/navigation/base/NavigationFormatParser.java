@@ -123,7 +123,7 @@ public class NavigationFormatParser {
         }
     }
 
-    ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
+    public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
         Calendar startDate = Calendar.getInstance(UTC);
         startDate.setTimeInMillis(source.lastModified());

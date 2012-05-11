@@ -119,6 +119,7 @@ import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
 import slash.navigation.wbt.WintecWbt202TesFormat;
+import slash.navigation.zip.ZipFormat;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

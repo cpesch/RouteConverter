@@ -1,6 +1,8 @@
-package slash.navigation.base;
+package slash.navigation.zip;
 
 import org.junit.Test;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.kml.Kml22Format;
 
