@@ -142,13 +142,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
         RouteCharacteristics result = fallback;
         if (nameToParse != null) {
             int slashIndex = nameToParse.lastIndexOf('/');
-            if (slashIndex != -1)
-                nameToParse = nameToParse.substring(slashIndex + 1);
-            if (nameToParse.startsWith("Waypoint"))
+            String folder = slashIndex != -1 ? nameToParse.substring(slashIndex + 1) : nameToParse;
+            if (folder.startsWith("Waypoint") || nameToParse.contains("Waypoint"))
                 result = Waypoints;
-            else if (nameToParse.startsWith("Route"))
+            else if (folder.startsWith("Route") || nameToParse.contains("Route"))
                 result = Route;
-            else if (nameToParse.startsWith("Track") || nameToParse.startsWith("Path"))
+            else if (folder.startsWith("Track") || folder.startsWith("Path") || nameToParse.contains("Track"))
                 result = Track;
         }
         return result;

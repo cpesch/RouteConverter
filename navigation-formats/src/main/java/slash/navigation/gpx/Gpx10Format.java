@@ -173,7 +173,7 @@ public class Gpx10Format extends GpxFormat {
     }
 
     private String formatSpeed(String comment, Double speed) {
-        if (isEmpty(speed))
+        if (isEmpty(speed) || parseSpeed(comment) != null)
             return comment;
         return (comment != null ? comment + " " : "") +
                 "Speed: " + formatSpeedAsString(speed) + " Km/h";

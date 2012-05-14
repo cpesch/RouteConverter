@@ -60,9 +60,9 @@ public class TripmasterIT {
     @Test
     public void testAllTripmasterKmlTracks() throws IOException {
         readFiles("tripmaster", ".kml", 1, true, true, Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.kml"), 1, true, false, Track);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-2.kml"), 2, true, false, Waypoints, Waypoints);
-        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-3.kml"), 3, true, false, Track, Waypoints, Waypoints);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes.kml"), 1, true, false, Route);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-2.kml"), 2, true, false, Track, Waypoints);
+        readFile(new File(SAMPLE_PATH, "tripmastr-with-3-routes-3.kml"), 3, true, false, Track, Waypoints, Route);
     }
 
     @Test
