@@ -286,7 +286,7 @@ public abstract class NavigationTestCase extends TestCase {
         compareHeading(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareSpeed(sourceFormat, targetFormat, index, sourcePosition, targetPosition, sourceCharacteristics, targetCharacteristics);
         compareTime(sourceFormat, targetFormat, index, sourcePosition, targetPosition, targetCharacteristics);
-        compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, targetCharacteristics);
+        compareComment(sourceFormat, targetFormat, index, sourcePosition, targetPosition, commentPositionNames, sourceCharacteristics, targetCharacteristics);
         compareHdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         comparePdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         compareVdop(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
@@ -626,17 +626,17 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
 
-    private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, boolean commentPositionNames, RouteCharacteristics targetCharacteristics) {
+    private static void compareComment(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, BaseNavigationPosition sourcePosition, BaseNavigationPosition targetPosition, boolean commentPositionNames, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         // Test only if a position has not been commented by us
         if (!(sourcePosition.getComment() == null && targetPosition.getComment().startsWith("Position"))) {
             if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof CompeGPSDataFormat ||
-                    (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(Track)) ||
+                    (targetFormat instanceof GarminMapSource6Format && targetCharacteristics.equals(Track) && sourceFormat instanceof GpxFormat && sourceCharacteristics.equals(Track)) ||
+                    (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(Track) && sourceFormat instanceof GpxFormat && sourceCharacteristics.equals(Track)) ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GpsTunerFormat ||
                     targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof KompassFormat ||
                     targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
                     targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
                     (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(Track)) ||
-                    (targetFormat instanceof GarminMapSource5Format && targetCharacteristics.equals(Track)) ||
                     ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !commentPositionNames))
                 assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
             else if (sourceFormat instanceof AlanTrackLogFormat)
