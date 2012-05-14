@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static slash.common.io.InputOutput.copy;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -276,7 +277,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private File createShellScript(String babelPath, String command) throws IOException {
-        File temp = File.createTempFile("gpsbabel", ".sh");
+        File temp = createTempFile("gpsbabel", ".sh");
         temp.deleteOnExit();
         BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
         writer.write("#!/bin/sh");
@@ -376,78 +377,84 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return route;
     }
 
+    private void delete(File file) {
+        if (file != null && file.exists()) {
+            if (!file.delete())
+                log.warning("Cannot delete babel file " + file);
+        }
+    }
+
+    private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        InputStream target = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
+        getGpxFormat().read(target, startDate, context);
+    }
+
+    private void readFile(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        File sourceFile = null, targetFile = null;
+        try {
+            sourceFile = createTempFile("babelsource", "." + getFormatName());
+            copy(source, new FileOutputStream(sourceFile));
+            targetFile = createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
+            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
+            if (successful) {
+                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, context);
+                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+            }
+        } finally {
+            delete(sourceFile);
+            delete(targetFile);
+        }
+    }
+
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         ParserContext<GpxRoute> gpxContext = new ParserContextImpl<GpxRoute>();
         if (isStreamingCapable()) {
-            InputStream target = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
-            getGpxFormat().read(target, startDate, gpxContext);
+            readStream(source, startDate, gpxContext);
         } else {
-            File sourceFile = File.createTempFile("babelsource", "." + getFormatName());
-            sourceFile.deleteOnExit();
-            copy(source, new FileOutputStream(sourceFile));
-            File targetFile = File.createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
-            targetFile.deleteOnExit();
-            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
-            if (successful) {
-                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
-                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, gpxContext);
-            }
-            if (sourceFile.exists()) {
-                if (!sourceFile.delete())
-                    log.warning("Cannot delete source file " + sourceFile);
-            }
-            if (targetFile.exists()) {
-                if (!targetFile.delete())
-                    log.warning("Cannot delete target file " + targetFile);
-            }
+            readFile(source, startDate, gpxContext);
         }
         List<GpxRoute> result = filterValidRoutes(gpxContext.getRoutes());
         if (result != null && result.size() > 0) {
-            context.addRoutes(result);
+            context.appendRoutes(result);
             log.fine("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME);
         }
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
-        getGpxFormat().write(route, new FileOutputStream(source), startIndex, endIndex, getBabelCharacteristics());
-        File targetFile = File.createTempFile("babeltarget", getExtension());
+        File sourceFile = null, targetFile = null;
+        try {
+            sourceFile = createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+            getGpxFormat().write(route, new FileOutputStream(sourceFile), startIndex, endIndex, getBabelCharacteristics());
+            targetFile = createTempFile("babeltarget", getExtension());
 
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), getWriteCommandExecutionTimeOutPreference());
-        if (!successful)
-            throw new IOException("Could not convert " + source + " to " + targetFile);
+            boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), getWriteCommandExecutionTimeOutPreference());
+            if (!successful)
+                throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-        log.fine("Successfully converted " + source + " to " + targetFile);
-        copy(new FileInputStream(targetFile), target);
-        if (targetFile.exists()) {
-            if (!targetFile.delete())
-                log.warning("Cannot delete target file " + targetFile);
-        }
-        if (source.exists()) {
-            if (!source.delete())
-                log.warning("Cannot delete source file " + source);
+            copy(new FileInputStream(targetFile), target);
+            log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+        } finally {
+            delete(sourceFile);
+            delete(targetFile);
         }
     }
 
     public void write(List<GpxRoute> routes, OutputStream target) throws IOException {
-        File source = File.createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
-        getGpxFormat().write(routes, new FileOutputStream(source));
-        File targetFile = File.createTempFile("babeltarget", getExtension());
+        File sourceFile = null, targetFile = null;
+        try {
+            sourceFile = createTempFile("babelsource", "." + BABEL_INTERFACE_FORMAT_NAME);
+            getGpxFormat().write(routes, new FileOutputStream(sourceFile));
+            targetFile = createTempFile("babeltarget", getExtension());
 
-        boolean successful = startBabel(source, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), getWriteCommandExecutionTimeOutPreference());
-        if (!successful)
-            throw new IOException("Could not convert " + source + " to " + targetFile);
+            boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), getWriteCommandExecutionTimeOutPreference());
+            if (!successful)
+                throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-        log.fine("Successfully converted " + source + " to " + targetFile);
-        copy(new FileInputStream(targetFile), target);
-
-        if (targetFile.exists()) {
-            if (!targetFile.delete())
-                log.warning("Cannot delete target file " + targetFile);
-        }
-        if (source.exists()) {
-            if (!source.delete())
-                log.warning("Cannot delete source file " + source);
+            copy(new FileInputStream(targetFile), target);
+            log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+        } finally {
+            delete(sourceFile);
+            delete(targetFile);
         }
     }
 }
