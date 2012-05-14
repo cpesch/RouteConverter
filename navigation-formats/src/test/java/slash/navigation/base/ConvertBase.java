@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static java.io.File.createTempFile;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
@@ -82,7 +83,7 @@ public abstract class ConvertBase extends NavigationTestCase {
 
     @SuppressWarnings("unchecked")
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
-        File target = File.createTempFile("singletarget", targetFormat.getExtension());
+        File target = createTempFile("singletarget", targetFormat.getExtension());
         target.deleteOnExit();
         try {
             parser.write(sourceRoute, targetFormat, false, false, target);
@@ -118,7 +119,7 @@ public abstract class ConvertBase extends NavigationTestCase {
 
     @SuppressWarnings("unchecked")
     private void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
-        File target = File.createTempFile("multitarget", targetFormat.getExtension());
+        File target = createTempFile("multitarget", targetFormat.getExtension());
         target.deleteOnExit();
         try {
             parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
@@ -176,7 +177,7 @@ public abstract class ConvertBase extends NavigationTestCase {
 
         File[] targets = new File[fileCount];
         for (int i = 0; i < targets.length; i++)
-            targets[i] = File.createTempFile("splittarget", targetFormat.getExtension());
+            targets[i] = createTempFile("splittarget", targetFormat.getExtension());
         try {
             parser.write(sourceRoute, targetFormat, false, false, targets);
 

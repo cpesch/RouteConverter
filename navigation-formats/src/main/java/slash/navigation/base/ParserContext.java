@@ -33,12 +33,14 @@ import java.util.List;
  */
 
 public interface ParserContext<R extends BaseRoute> {
-    void addRoute(R route);
-    void addRoutes(List<R> routes);
+    void prependRoute(R route);
+    void appendRoute(R route);
+    void appendRoutes(List<R> routes);
     List<R> getRoutes();
 
     void addFormat(NavigationFormat<R> format);
     List<NavigationFormat<R>> getFormats();
 
     void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException;
+    void parse(String url) throws IOException;
 }

@@ -69,7 +69,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         }
 
         if (positions.size() > 0)
-            context.addRoute(createRoute(getRouteCharacteristics(), positions));
+            context.appendRoute(createRoute(getRouteCharacteristics(), positions));
     }
 
     protected int getGarbleCount() {

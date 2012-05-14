@@ -118,7 +118,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         }
 
         if (hasValidSections(sections))
-            context.addRoutes(extractRoutes(sections));
+            context.appendRoutes(extractRoutes(sections));
     }
 
     boolean isSectionTitle(String line) {

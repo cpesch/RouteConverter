@@ -131,7 +131,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         }
 
         if (positions.size() > 0)
-            context.addRoute(new TomTomRoute(this, isTrack(positions) ? Track : Route, routeName, positions));
+            context.appendRoute(new TomTomRoute(this, isTrack(positions) ? Track : Route, routeName, positions));
     }
 
     boolean isPosition(String line) {

@@ -80,9 +80,9 @@ public class Gpx11Format extends GpxFormat {
                         gpxType.getCreator().contains("TrekBuddy"));
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour);
         if (wayPointsAsRoute != null)
-            context.addRoute(wayPointsAsRoute);
-        context.addRoutes(extractRoutes(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
-        context.addRoutes(extractTracks(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
+            context.appendRoute(wayPointsAsRoute);
+        context.appendRoutes(extractRoutes(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
+        context.appendRoutes(extractTracks(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour));
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {

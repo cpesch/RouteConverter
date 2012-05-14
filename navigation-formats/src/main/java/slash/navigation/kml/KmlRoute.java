@@ -112,8 +112,8 @@ import java.util.List;
 
 public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     private String name;
-    private final List<String> description;
-    private final List<KmlPosition> positions;
+    private List<String> description;
+    private List<KmlPosition> positions;
 
     public KmlRoute(BaseKmlFormat format, RouteCharacteristics characteristics,
                     String name, List<String> description, List<KmlPosition> positions) {

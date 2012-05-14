@@ -84,7 +84,7 @@ public class ReadIT {
                         !file.getName().endsWith(".mps") && !file.getName().endsWith(".rte") &&
                         !file.getName().endsWith(".tef") && !file.getName().endsWith(".wpt"))
                     assertNotNull("Route has no name", result.getTheRoute().getName());
-                // a GoPal 3 track without positions which is not rejected because the following Nmn4Format would try to readSampleGpxFile if forever
+                // a GoPal 3 track without positions which is not rejected because the following Nmn4Format would try to readGpxFile if forever
                 // a OziExplorer Route has a first route without a single position
                 if (!file.getName().equals("dieter3-GoPal3Track.trk") && !file.getName().equals("ozi-condecourt.rte"))
                     assertTrue("Route " + file + " has no positions", result.getTheRoute().getPositionCount() > 0);

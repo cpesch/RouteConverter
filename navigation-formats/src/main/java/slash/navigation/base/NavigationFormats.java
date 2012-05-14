@@ -130,8 +130,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.util.RouteComments.commentPositions;
-import static slash.navigation.util.RouteComments.commentRouteName;
 
 /**
  * Contains a list of all navigation formats.
@@ -367,8 +365,6 @@ public final class NavigationFormats {
         try {
             Method method = route.getClass().getMethod("as" + formatName, new Class[0]);
             result = (BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) method.invoke(route);
-            commentPositions(result.getPositions());
-            commentRouteName(result);
         } catch (Exception e) {
             throw new IOException("Cannot call as" + formatName + "() on " + route, e);
         }

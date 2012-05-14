@@ -73,7 +73,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
         ZipInputStream zip = new ZipInputStream(source);
         try {
             while ((zip.getNextEntry()) != null) {
-                delegate.process(new NotClosingUnderlyingInputStream(zip), startDate, context);
+                delegate.read(new NotClosingUnderlyingInputStream(zip), startDate, context);
                 zip.closeEntry();
             }
         } finally {

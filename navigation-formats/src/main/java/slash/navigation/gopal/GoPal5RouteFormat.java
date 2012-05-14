@@ -98,7 +98,7 @@ public class GoPal5RouteFormat extends GoPalRouteFormat<GoPal5Route> {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPal5Route> context) throws Exception {
         Tour tour = unmarshal5(source);
-        context.addRoute(process(tour));
+        context.appendRoute(process(tour));
     }
 
     private Tour.RouteOptions createRouteOptions(GoPal5Route route) {

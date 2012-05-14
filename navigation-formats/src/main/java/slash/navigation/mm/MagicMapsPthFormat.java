@@ -88,7 +88,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
         }
 
         if (positions.size() > 0)
-            context.addRoute(createRoute(Track, null, positions));
+            context.appendRoute(createRoute(Track, null, positions));
     }
 
     boolean isNameValue(String line) {

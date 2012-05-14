@@ -242,7 +242,7 @@ public class Tcx1Format extends TcxFormat {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         TrainingCenterDatabaseT trainingCenterDatabase = TcxUtil.unmarshal1(source);
-        context.addRoutes(process(trainingCenterDatabase));
+        context.appendRoutes(process(trainingCenterDatabase));
     }
 
 

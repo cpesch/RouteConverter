@@ -190,7 +190,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     public void read(InputStream source, CompactCalendar startDate, ParserContext<MagicMapsIktRoute> context) throws Exception {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
-        context.addRoutes(process(eventReader));
+        context.appendRoutes(process(eventReader));
     }
 
     private void writeHeader(String name, String description, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {

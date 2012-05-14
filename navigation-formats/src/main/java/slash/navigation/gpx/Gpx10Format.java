@@ -80,9 +80,9 @@ public class Gpx10Format extends GpxFormat {
                  "Holux Utility".equals(gpx.getCreator()));
         GpxRoute wayPointsAsRoute = extractWayPoints(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
         if (wayPointsAsRoute != null)
-            context.addRoute(wayPointsAsRoute);
-        context.addRoutes(extractRoutes(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
-        context.addRoutes(extractTracks(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
+            context.appendRoute(wayPointsAsRoute);
+        context.appendRoutes(extractRoutes(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
+        context.appendRoutes(extractTracks(gpx, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond));
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {

@@ -72,7 +72,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPal3Route> {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GoPal3Route> context) throws Exception {
         Tour tour = unmarshal3(source);
-        context.addRoute(process(tour));
+        context.appendRoute(process(tour));
     }
 
     private Tour.Options createOptions(GoPal3Route route) {

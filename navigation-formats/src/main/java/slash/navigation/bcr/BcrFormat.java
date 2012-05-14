@@ -121,7 +121,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         if (hasValidSections(sections)) {
             extractPositions(sections, positions);
             if (positions.size() >= 2)
-                context.addRoute(new BcrRoute(this, sections, positions));
+                context.appendRoute(new BcrRoute(this, sections, positions));
         }
     }
 

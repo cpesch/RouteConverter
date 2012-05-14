@@ -119,7 +119,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         InputStreamReader reader = new InputStreamReader(source);
         try {
             PoiList poiList = unmarshal(reader);
-            context.addRoute(process(poiList));
+            context.appendRoute(process(poiList));
         }
         finally {
             reader.close();

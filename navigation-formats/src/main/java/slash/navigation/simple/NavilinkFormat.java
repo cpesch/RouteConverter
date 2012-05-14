@@ -226,7 +226,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
                     activeRoute = createRoute(Track,
                             TRACK_NAME_DATE_FORMAT.format(position.getTime().getTime()),
                             new ArrayList<BaseNavigationPosition>());
-                    context.addRoute(activeRoute);
+                    context.appendRoute(activeRoute);
                 }
 
                 activeRoute.getPositions().add(position);

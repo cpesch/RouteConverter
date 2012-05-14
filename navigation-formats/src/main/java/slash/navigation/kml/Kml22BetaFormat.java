@@ -50,7 +50,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -59,8 +58,8 @@ import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.kml.KmlUtil.marshal22Beta;
 import static slash.navigation.kml.KmlUtil.unmarshal22Beta;
-import static slash.navigation.util.RouteComments.commentRoutePositions;
 
 /**
  * Reads and writes Google Earth 4.2 (.kml) files.
@@ -75,18 +74,14 @@ public class Kml22BetaFormat extends KmlFormat {
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
-        process(source, startDate, context);
-    }
-
-    void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException {
         KmlType kmlType = unmarshal22Beta(source);
         process(kmlType, startDate, context);
     }
 
-    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) {
+    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
             return;
-        context.addRoutes(extractTracks(kmlType, startDate));
+        extractTracks(kmlType, startDate, context);
     }
 
     @SuppressWarnings({"UnusedDeclaration", "unchecked"})
@@ -99,9 +94,7 @@ public class Kml22BetaFormat extends KmlFormat {
         return result;
     }
 
-    private List<KmlRoute> extractTracks(KmlType kmlType, CompactCalendar startDate) {
-        List<KmlRoute> routes = new ArrayList<KmlRoute>();
-
+    private void extractTracks(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
         if (feature instanceof AbstractContainerType) {
             AbstractContainerType containerType = (AbstractContainerType) feature;
@@ -110,7 +103,7 @@ public class Kml22BetaFormat extends KmlFormat {
                 features = ((FolderType) containerType).getAbstractFeatureGroup();
             else if (containerType instanceof DocumentType)
                 features = ((DocumentType) containerType).getAbstractFeatureGroup();
-            routes = extractTracks(trim(containerType.getNameElement()), trim(containerType.getDescription()), features, startDate);
+            extractTracks(trim(containerType.getNameElement()), trim(containerType.getDescription()), features, startDate, context);
         }
 
         if (feature instanceof PlacemarkType) {
@@ -122,42 +115,34 @@ public class Kml22BetaFormat extends KmlFormat {
             for (KmlPosition position : positions) {
                 enrichPosition(position, extractTime(placemarkType.getAbstractTimePrimitiveGroup()), placemarkName, placemarkType.getDescription(), startDate);
             }
-            routes = Arrays.asList(new KmlRoute(this, Waypoints, placemarkName, null, positions));
+            context.appendRoute(new KmlRoute(this, Waypoints, placemarkName, null, positions));
         }
-
-        commentRoutePositions(routes);
-        return routes;
     }
 
-    private List<KmlRoute> extractTracks(String name, String description, List<JAXBElement<? extends AbstractFeatureType>> features, CompactCalendar startDate) {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
-
+    private void extractTracks(String name, String description, List<JAXBElement<? extends AbstractFeatureType>> features, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
         List<JAXBElement<PlacemarkType>> placemarks = find(features, "Placemark", PlacemarkType.class);
-        result.addAll(extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, startDate));
+        extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, startDate, context);
 
         List<JAXBElement<NetworkLinkType>> networkLinks = find(features, "NetworkLink", NetworkLinkType.class);
-        result.addAll(extractWayPointsAndTracksFromNetworkLinks(networkLinks));
+        extractWayPointsAndTracksFromNetworkLinks(networkLinks, context);
 
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
             String folderName = concatPath(name, folderTypeValue.getNameElement());
-            result.addAll(extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup(), startDate));
+            extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup(), startDate, context);
         }
 
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
         for (JAXBElement<DocumentType> document : documents) {
             DocumentType documentTypeValue = document.getValue();
             String documentName = concatPath(name, documentTypeValue.getNameElement());
-            result.addAll(extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup(), startDate));
+            extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup(), startDate, context);
         }
-        return result;
     }
 
-    private List<KmlRoute> extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate) {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
-
-        List<KmlPosition> wayPoints = new ArrayList<KmlPosition>();
+    private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, CompactCalendar startDate, ParserContext<KmlRoute> context) {
+        List<KmlPosition> waypoints = new ArrayList<KmlPosition>();
         for (JAXBElement<PlacemarkType> placemarkType : placemarkTypes) {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asComment(trim(placemarkTypeValue.getNameElement()),
@@ -168,31 +153,27 @@ public class Kml22BetaFormat extends KmlFormat {
                 // all placemarks with one position form one waypoint route
                 KmlPosition wayPoint = positions.get(0);
                 enrichPosition(wayPoint, extractTime(placemarkTypeValue.getAbstractTimePrimitiveGroup()), placemarkName, placemarkTypeValue.getDescription(), startDate);
-                wayPoints.add(wayPoint);
+                waypoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
                 String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
-                result.add(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
+                context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
-        if (wayPoints.size() > 0) {
+        if (waypoints.size() > 0) {
             RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
-            result.add(0, new KmlRoute(this, characteristics, name, asDescription(description), wayPoints));
+            context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
         }
-        return result;
     }
 
-    private List<KmlRoute> extractWayPointsAndTracksFromNetworkLinks(List<JAXBElement<NetworkLinkType>> networkLinkTypes) {
-        List<KmlRoute> result = new ArrayList<KmlRoute>();
+    private void extractWayPointsAndTracksFromNetworkLinks(List<JAXBElement<NetworkLinkType>> networkLinkTypes, ParserContext<KmlRoute> context) throws IOException {
         for (JAXBElement<NetworkLinkType> networkLinkType : networkLinkTypes) {
             Link link = networkLinkType.getValue().getLink();
             if (link != null) {
                 String url = link.getHref();
-                List<KmlRoute> routes = parseRouteFromUrl(url);
-                if (routes != null)
-                    result.addAll(routes);
+                context.parse(url);
             }
 
             List<JAXBElement<?>> rest = networkLinkType.getValue().getRest();
@@ -201,13 +182,10 @@ public class Kml22BetaFormat extends KmlFormat {
                 if (rValue instanceof LinkType) {
                     LinkType linkType = (LinkType) rValue;
                     String url = linkType.getHref();
-                    List<KmlRoute> routes = parseRouteFromUrl(url);
-                    if (routes != null)
-                        result.addAll(routes);
+                    context.parse(url);
                 }
             }
         }
-        return result;
     }
 
     private List<KmlPosition> extractPositions(JAXBElement<? extends AbstractGeometryType> geometryType) {
@@ -369,7 +347,7 @@ public class Kml22BetaFormat extends KmlFormat {
 
     public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) {
         try {
-            KmlUtil.marshal22Beta(createKmlType(route), target);
+            marshal22Beta(createKmlType(route), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
@@ -377,7 +355,7 @@ public class Kml22BetaFormat extends KmlFormat {
 
     public void write(List<KmlRoute> routes, OutputStream target) throws IOException {
         try {
-            KmlUtil.marshal22Beta(createKmlType(routes), target);
+            marshal22Beta(createKmlType(routes), target);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

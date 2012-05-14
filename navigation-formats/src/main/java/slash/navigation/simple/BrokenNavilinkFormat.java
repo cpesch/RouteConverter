@@ -150,7 +150,7 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
             if (position != null && activeRoute != null)
                 activeRoute.getPositions().add(position);
             else {
-                context.addRoutes(result);
+                context.appendRoutes(result);
                 return;
             }
 
@@ -163,6 +163,6 @@ public class BrokenNavilinkFormat extends NavilinkFormat {
         int minCorrectPositions = (int) (readBytes / (double) SBP_RECORD_LENGTH * 0.95);
         if (pointCount < minCorrectPositions)
             return;
-        context.addRoutes(result);
+        context.appendRoutes(result);
     }
 }

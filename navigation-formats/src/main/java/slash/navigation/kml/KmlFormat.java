@@ -22,17 +22,9 @@ package slash.navigation.kml;
 
 import slash.common.io.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +32,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +44,6 @@ import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -66,7 +56,6 @@ import static slash.navigation.googlemaps.GoogleMapsPosition.parsePositions;
  */
 
 public abstract class KmlFormat extends BaseKmlFormat {
-    private static final Logger log = Logger.getLogger(KmlFormat.class.getName());
     static final Preferences preferences = Preferences.userNodeForPackage(KmlFormat.class);
 
     static final String WAYPOINTS = "Waypoints";
@@ -97,8 +86,6 @@ public abstract class KmlFormat extends BaseKmlFormat {
     public <P extends BaseNavigationPosition> KmlRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new KmlRoute(this, characteristics, name, null, (List<KmlPosition>) positions);
     }
-
-    abstract void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException;
 
     protected KmlPosition asKmlPosition(GoogleMapsPosition position) {
         return new KmlPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, position.getComment());
@@ -308,28 +295,6 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (fragment != null)
             result = result + "/" + fragment;
         return result;
-    }
-
-    protected List<KmlRoute> parseRouteFromUrl(String url) {
-        return parseRouteFromUrl(url, KmlRoute.class);
-    }
-
-    protected <T> List<T> parseRouteFromUrl(String url, Class<T> resultClass) {
-        List<T> routes = new ArrayList<T>();
-        try {
-            NavigationFormatParser parser = new NavigationFormatParser();
-            ParserResult result = parser.read(new URL(url), getReadFormats());
-            if (result != null) {
-                for (BaseRoute route : result.getAllRoutes()) {
-                    if (resultClass.isInstance(route))
-                        routes.add(resultClass.cast(route));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.fine("Error reading url " + url + ": " + e.getMessage());
-        }
-        return routes;
     }
 
     protected float getLineWidth() {

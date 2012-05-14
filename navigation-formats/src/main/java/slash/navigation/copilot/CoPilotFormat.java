@@ -127,7 +127,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         }
 
         if (positions.size() > 0)
-            context.addRoute(createRoute(Route, routeName, positions));
+            context.appendRoute(createRoute(Route, routeName, positions));
     }
 
     protected abstract boolean isDataVersion(String line);

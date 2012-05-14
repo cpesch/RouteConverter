@@ -79,7 +79,7 @@ public class Nmn7Format extends NmnFormat {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<NmnRoute> context) throws Exception {
         Route route = unmarshal(source);
-        context.addRoute(process(route));
+        context.appendRoute(process(route));
     }
 
 

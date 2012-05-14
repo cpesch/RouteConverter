@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Kml21FormatTest {
-    Kml21Format format = new Kml21Format();
+    private Kml21Format format = new Kml21Format();
 
     @Test
     public void testPointCoordinates() throws Exception {

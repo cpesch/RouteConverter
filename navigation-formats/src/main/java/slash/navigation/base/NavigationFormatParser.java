@@ -47,15 +47,18 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static java.io.File.separatorChar;
 import static java.lang.String.format;
 import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.ceiling;
+import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.simple.GoogleMapsUrlFormat.isGoogleMapsUrl;
 import static slash.navigation.util.RouteComments.commentPositions;
 import static slash.navigation.util.RouteComments.commentRouteName;
+import static slash.navigation.util.RouteComments.commentRoutePositions;
 import static slash.navigation.util.RouteComments.createRouteName;
 
 /**
@@ -125,13 +128,11 @@ public class NavigationFormatParser {
 
     public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        Calendar startDate = Calendar.getInstance(UTC);
-        startDate.setTimeInMillis(source.lastModified());
         FileInputStream fis = new FileInputStream(source);
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(fis, (int) source.length() + 1));
         buffer.mark((int) source.length() + 1);
         try {
-            return read(buffer, (int) source.length(), startDate, formats);
+            return read(buffer, (int) source.length(), getStartDate(source), formats);
         } finally {
             buffer.closeUnderlyingInputStream();
         }
@@ -164,10 +165,16 @@ public class NavigationFormatParser {
 
     @SuppressWarnings("unchecked")
     private void commentRoutes(List<BaseRoute> routes) {
+        commentRoutePositions(routes);
         for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            commentPositions(route.getPositions());
             commentRouteName(route);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void commentRoute(BaseRoute route) {
+        commentPositions(route.getPositions());
+        commentRouteName(route);
     }
 
     @SuppressWarnings("unchecked")
@@ -188,17 +195,30 @@ public class NavigationFormatParser {
         public void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
             internalRead(inputStream, readBufferSize, startDate, formats, this);
         }
+
+        public void parse(String urlString) throws IOException {
+            // replace CWD with current working directory for easier testing
+            urlString = urlString.replace("CWD", new File(".").getCanonicalPath()).replace(separatorChar, '/');
+            URL url = new URL(urlString);
+            int readBufferSize = getSize(url);
+            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream(), readBufferSize + 1));
+            buffer.mark(readBufferSize + 1);
+            try {
+                internalRead(buffer, readBufferSize, getStartDate(url), getReadFormats(), this);
+            } finally {
+                buffer.closeUnderlyingInputStream();
+            }
+        }
     }
 
-    private ParserResult read(InputStream source, int readBufferSize, Calendar startDate,
+    private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate,
                               List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
-        CompactCalendar compactStartDate = startDate != null ? fromCalendar(startDate) : null;
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, readBufferSize + 1));
         buffer.mark(readBufferSize + 1);
         try {
             ParserContext<BaseRoute> context = new InternalParserContext<BaseRoute>();
-            internalRead(buffer, readBufferSize, compactStartDate, formats, context);
+            internalRead(buffer, readBufferSize, startDate, formats, context);
             return createResult(context);
         } finally {
             buffer.closeUnderlyingInputStream();
@@ -224,12 +244,16 @@ public class NavigationFormatParser {
         }
     }
 
-    private Calendar getStartDate(URL url) throws IOException {
+    private CompactCalendar getStartDate(File file) throws IOException {
+        Calendar startDate = Calendar.getInstance(UTC);
+        startDate.setTimeInMillis(file.lastModified());
+        return fromCalendar(startDate);
+    }
+
+    private CompactCalendar getStartDate(URL url) throws IOException {
         try {
             if (url.getProtocol().equals("file")) {
-                Calendar startDate = Calendar.getInstance();
-                startDate.setTimeInMillis(new File(url.toURI()).lastModified());
-                return startDate;
+                return getStartDate(new File(url.toURI()));
             } else
                 return null;
         } catch (URISyntaxException e) {
@@ -258,7 +282,8 @@ public class NavigationFormatParser {
                        OutputStream... targets) throws IOException {
         log.info("Writing '" + format.getName() + "' position lists with 1 route and " + route.getPositionCount() + " positions");
 
-        BaseRoute routeToWrite = NavigationFormats.asFormat(route, format);
+        BaseRoute routeToWrite = asFormat(route, format);
+        commentRoute(routeToWrite);
         preprocessRoute(routeToWrite, format, duplicateFirstPosition);
 
         int positionsToWrite = routeToWrite.getPositionCount();
@@ -336,7 +361,8 @@ public class NavigationFormatParser {
 
         List<BaseRoute> routesToWrite = new ArrayList<BaseRoute>(routes.size());
         for (BaseRoute route : routes) {
-            BaseRoute routeToWrite = NavigationFormats.asFormat(route, format);
+            BaseRoute routeToWrite = asFormat(route, format);
+            commentRoute(routeToWrite);
             preprocessRoute(routeToWrite, format, false);
             routesToWrite.add(routeToWrite);
             postProcessRoute(routeToWrite, format, false);

@@ -91,7 +91,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<KlickTelRoute> context) throws Exception {
         KDRoute KDRoute = unmarshal(source);
-        context.addRoute(process(KDRoute));
+        context.appendRoute(process(KDRoute));
     }
 
     private String formatPosition(Double aDouble) {

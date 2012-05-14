@@ -142,7 +142,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
         }
 
         if (positions.size() > 0)
-            context.addRoute(createRoute(getCharacteristics(), null, positions));
+            context.appendRoute(createRoute(getCharacteristics(), null, positions));
     }
 
     boolean haveDifferentLongitudeAndLatitude(NmeaPosition predecessor, NmeaPosition successor) {

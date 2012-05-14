@@ -38,8 +38,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.readSampleGpxFile;
+import static slash.navigation.base.NavigationTestCase.readGpxFile;
 
 public class GpxFormatIT {
 
@@ -113,7 +114,7 @@ public class GpxFormatIT {
 
     @Test
     public void testAkGpxReadWriteRoundtrip() throws Exception {
-        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "ak.gpx");
+        List<GpxRoute> routes = readGpxFile(new Gpx10Format(), SAMPLE_PATH + "ak.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
@@ -122,7 +123,7 @@ public class GpxFormatIT {
 
     @Test
     public void testGarminExtensions() throws Exception {
-        List<GpxRoute> routes = readSampleGpxFile(new Gpx11Format(), "MS.gpx");
+        List<GpxRoute> routes = readGpxFile(new Gpx11Format(), SAMPLE_PATH + "MS.gpx");
         assertNotNull(routes);
         assertEquals(2, routes.size());
         GpxRoute route = routes.get(0);

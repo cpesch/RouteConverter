@@ -37,11 +37,15 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
     private List<R> routes = new ArrayList<R>();
     private List<NavigationFormat<R>> formats = new ArrayList<NavigationFormat<R>>();
 
-    public void addRoute(R route) {
+    public void prependRoute(R route) {
+        this.routes.add(0, route);
+    }
+
+    public void appendRoute(R route) {
         this.routes.add(route);
     }
 
-    public void addRoutes(List<R> routes) {
+    public void appendRoutes(List<R> routes) {
         this.routes.addAll(routes);
     }
 
@@ -58,6 +62,10 @@ public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> 
     }
 
     public void parse(InputStream inputStream, int readBufferSize, CompactCalendar startDate, List<NavigationFormat> formats) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void parse(String url) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

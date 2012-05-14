@@ -24,8 +24,6 @@ import slash.common.io.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding22.KmlType;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -47,7 +45,7 @@ public class BrokenKml22Format extends Kml22Format {
         return false;
     }
 
-    void process(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException, JAXBException {
+    public void read(InputStream source, CompactCalendar startDate, ParserContext<KmlRoute> context) throws Exception {
         InputStreamReader reader = new InputStreamReader(source);
         try {
             KmlType kmlType = unmarshal22(reader);

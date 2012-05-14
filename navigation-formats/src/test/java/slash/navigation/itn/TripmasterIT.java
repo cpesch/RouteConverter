@@ -39,7 +39,7 @@ import static slash.common.TestCase.calendar;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.readFile;
 import static slash.navigation.base.NavigationTestCase.readFiles;
-import static slash.navigation.base.NavigationTestCase.readSampleGpxFile;
+import static slash.navigation.base.NavigationTestCase.readGpxFile;
 import static slash.navigation.base.NavigationTestCase.readSampleTomTomRouteFile;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -67,7 +67,7 @@ public class TripmasterIT {
 
     @Test
     public void testTripmaster1dot4GpxTrack() throws Exception {
-        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "tripmaster1.gpx");
+        List<GpxRoute> routes = readGpxFile(new Gpx10Format(), SAMPLE_PATH + "tripmaster1.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);
@@ -108,7 +108,7 @@ public class TripmasterIT {
 
     @Test
     public void testTripmasterGpxTrack() throws Exception {
-        List<GpxRoute> routes = readSampleGpxFile(new Gpx10Format(), "tripmaster2.gpx");
+        List<GpxRoute> routes = readGpxFile(new Gpx10Format(), SAMPLE_PATH + "tripmaster2.gpx");
         assertNotNull(routes);
         assertEquals(1, routes.size());
         GpxRoute route = routes.get(0);

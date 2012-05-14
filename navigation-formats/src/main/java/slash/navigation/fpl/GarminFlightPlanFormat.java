@@ -114,7 +114,7 @@ public class GarminFlightPlanFormat extends GpxFormat {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         FlightPlan flightPlan = unmarshal(source);
-        context.addRoute(process(flightPlan));
+        context.appendRoute(process(flightPlan));
     }
 
     private FlightPlan createFpl(GpxRoute route, int startIndex, int endIndex) {

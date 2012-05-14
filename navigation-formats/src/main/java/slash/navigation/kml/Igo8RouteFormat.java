@@ -63,15 +63,18 @@ public class Igo8RouteFormat extends Kml22Format {
         return preferences.getInt("maximumiGo8RoutePositionCount", 100);
     }
 
-    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) {
+    protected void process(KmlType kmlType, CompactCalendar startDate, ParserContext<KmlRoute> context) throws IOException {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
             return;
-        List<KmlRoute> routes = extractTracks(kmlType, startDate);
+        extractTracks(kmlType, startDate, context);
+
+        List<KmlRoute> routes = context.getRoutes();
+        context.getRoutes().clear();
         if (routes != null && routes.size() == 1) {
             KmlRoute route = routes.get(0);
             if (route.getName().equals(IGO_ROUTE + "/" + WAYPOINTS)) {
                 route.setName(IGO_ROUTE);
-                context.addRoute(route);
+                context.appendRoute(route);
             }
         }
     }

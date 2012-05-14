@@ -150,83 +150,82 @@ public abstract class RouteComments {
 
     @SuppressWarnings("unchecked")
     public static void commentRoutePositions(List<? extends BaseRoute> routes) {
-        if(routes.size() < 2)
-            return;
+        if (routes.size() > 1) {
+            Map<LongitudeAndLatitude, String> comments = new HashMap<LongitudeAndLatitude, String>();
+            Map<LongitudeAndLatitude, Double> elevations = new HashMap<LongitudeAndLatitude, Double>();
+            Map<LongitudeAndLatitude, CompactCalendar> times = new HashMap<LongitudeAndLatitude, CompactCalendar>();
+            Map<LongitudeAndLatitude, Double> speeds = new HashMap<LongitudeAndLatitude, Double>();
 
-        Map<LongitudeAndLatitude, String> comments = new HashMap<LongitudeAndLatitude, String>();
-        Map<LongitudeAndLatitude, Double> elevations = new HashMap<LongitudeAndLatitude, Double>();
-        Map<LongitudeAndLatitude, CompactCalendar> times = new HashMap<LongitudeAndLatitude, CompactCalendar>();
-        Map<LongitudeAndLatitude, Double> speeds = new HashMap<LongitudeAndLatitude, Double>();
+            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+                for (BaseNavigationPosition position : route.getPositions()) {
+                    if (!position.hasCoordinates())
+                        continue;
 
-        for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            for (BaseNavigationPosition position : route.getPositions()) {
-                if (!position.hasCoordinates())
-                    continue;
-
-                if (position.getComment() != null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    if (comments.get(lal) == null) {
-                        comments.put(lal, position.getComment());
+                    if (position.getComment() != null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        if (comments.get(lal) == null) {
+                            comments.put(lal, position.getComment());
+                        }
                     }
-                }
 
-                if (position.getElevation() != null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    if (elevations.get(lal) == null) {
-                        elevations.put(lal, position.getElevation());
+                    if (position.getElevation() != null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        if (elevations.get(lal) == null) {
+                            elevations.put(lal, position.getElevation());
+                        }
                     }
-                }
 
-                if (position.getSpeed() != null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    if (speeds.get(lal) == null) {
-                        speeds.put(lal, position.getSpeed());
+                    if (position.getSpeed() != null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        if (speeds.get(lal) == null) {
+                            speeds.put(lal, position.getSpeed());
+                        }
                     }
-                }
 
-                if (position.getTime() != null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    if (times.get(lal) == null) {
-                        times.put(lal, position.getTime());
+                    if (position.getTime() != null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        if (times.get(lal) == null) {
+                            times.put(lal, position.getTime());
+                        }
                     }
                 }
             }
-        }
 
-        for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
-            for (BaseNavigationPosition position : route.getPositions()) {
-                if (!position.hasCoordinates())
-                    continue;
+            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+                for (BaseNavigationPosition position : route.getPositions()) {
+                    if (!position.hasCoordinates())
+                        continue;
 
-                if (position.getComment() == null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    String comment = comments.get(lal);
-                    if (comment != null) {
-                        position.setComment(comment);
+                    if (position.getComment() == null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        String comment = comments.get(lal);
+                        if (comment != null) {
+                            position.setComment(comment);
+                        }
                     }
-                }
 
-                if (position.getElevation() == null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    Double elevation = elevations.get(lal);
-                    if (elevation != null) {
-                        position.setElevation(elevation);
+                    if (position.getElevation() == null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        Double elevation = elevations.get(lal);
+                        if (elevation != null) {
+                            position.setElevation(elevation);
+                        }
                     }
-                }
 
-                if (position.getSpeed() == null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    Double speed = speeds.get(lal);
-                    if (speed != null) {
-                        position.setSpeed(speed);
+                    if (position.getSpeed() == null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        Double speed = speeds.get(lal);
+                        if (speed != null) {
+                            position.setSpeed(speed);
+                        }
                     }
-                }
 
-                if (position.getTime() == null) {
-                    LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
-                    CompactCalendar time = times.get(lal);
-                    if (time != null) {
-                        position.setTime(time);
+                    if (position.getTime() == null) {
+                        LongitudeAndLatitude lal = new LongitudeAndLatitude(position);
+                        CompactCalendar time = times.get(lal);
+                        if (time != null) {
+                            position.setTime(time);
+                        }
                     }
                 }
             }

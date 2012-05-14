@@ -146,7 +146,7 @@ public class NokiaLandmarkExchangeFormat extends GpxFormat {
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         Lmx lmx = unmarshal(source);
-        context.addRoute(process(lmx));
+        context.appendRoute(process(lmx));
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

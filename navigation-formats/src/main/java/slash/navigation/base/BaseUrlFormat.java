@@ -74,7 +74,7 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
 
         List<Wgs84Position> positions = parsePositions(parameters);
         if (positions.size() > 0)
-            context.addRoute(createRoute(Route, null, positions));
+            context.appendRoute(createRoute(Route, null, positions));
     }
 
     protected abstract String findURL(String text);

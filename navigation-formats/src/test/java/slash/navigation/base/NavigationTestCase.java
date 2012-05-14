@@ -53,6 +53,7 @@ import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.jaxb.JaxbUtils;
+import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlFormat;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.kml.KmzFormat;
@@ -102,6 +103,7 @@ import java.util.logging.Logger;
 
 import static java.io.File.separator;
 import static java.lang.Math.min;
+import static java.util.Arrays.asList;
 import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
@@ -982,25 +984,23 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    public static List<GpxRoute> readSampleGpxFile(GpxFormat format, String fileName) throws Exception {
-        File source = new File(SAMPLE_PATH + fileName);
+    public static List<GpxRoute> readGpxFile(GpxFormat format, String fileName) throws Exception {
+        File source = new File(fileName);
         ParserContext<GpxRoute> context = new ParserContextImpl<GpxRoute>();
         format.read(new FileInputStream(source), null, context);
         return context.getRoutes();
     }
 
-    public static List<KmlRoute> readSampleKmlFile(KmlFormat format, String fileName) throws Exception {
-        File source = new File(SAMPLE_PATH + fileName);
-        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
-        format.read(new FileInputStream(source), null, context);
-        return context.getRoutes();
-    }
-
-    public static List<KmlRoute> readSampleKmzFile(KmzFormat format, String fileName) throws Exception {
-        File source = new File(SAMPLE_PATH + fileName);
-        ParserContext<KmlRoute> context = new ParserContextImpl<KmlRoute>();
-        format.read(new FileInputStream(source), null, context);
-        return context.getRoutes();
+    public static List<KmlRoute> readKmlFile(BaseKmlFormat format, String fileName) throws Exception {
+        File source = new File(fileName);
+        NavigationFormatParser parser = new NavigationFormatParser();
+        ParserResult result = parser.read(source, asList((NavigationFormat) format));
+        List<KmlRoute> routes = new ArrayList<KmlRoute>();
+        for (BaseRoute route : result.getAllRoutes()) {
+            if (route instanceof KmlRoute)
+                routes.add((KmlRoute) route);
+        }
+        return routes;
     }
 
     public static List<TomTomRoute> readSampleTomTomRouteFile(String fileName, boolean setStartDateFromFile) throws Exception {

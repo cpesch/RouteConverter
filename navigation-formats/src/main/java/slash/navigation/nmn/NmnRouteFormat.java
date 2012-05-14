@@ -227,7 +227,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             }
 
             if (readedPositions == expectedPositionCount)
-                context.addRoute(createRoute(Route, null, positions));
+                context.appendRoute(createRoute(Route, null, positions));
         }
     }
 

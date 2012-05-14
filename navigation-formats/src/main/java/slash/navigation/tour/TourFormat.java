@@ -142,7 +142,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         }
 
         if (positions.size() > 0)
-            context.addRoute(createRoute(Waypoints, routeName, sortPositions(positions)));
+            context.appendRoute(createRoute(Waypoints, routeName, sortPositions(positions)));
     }
 
     private List<TourPosition> sortPositions(List<TourPosition> positions) {

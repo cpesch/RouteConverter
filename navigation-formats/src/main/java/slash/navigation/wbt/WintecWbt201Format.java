@@ -118,7 +118,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
                 sourceData.put(header);
                 sourceData.put(data);
 
-                context.addRoutes(internalRead(sourceData));
+                context.appendRoutes(internalRead(sourceData));
             }
         }
     }
