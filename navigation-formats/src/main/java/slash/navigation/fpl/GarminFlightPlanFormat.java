@@ -149,7 +149,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             GarminFlightPlanPosition position = positions.get(i);
 
             FlightPlan.Route.RoutePoint routePoint = objectFactory.createFlightPlanRouteRoutePoint();
-            if (position.getCountryCode() != null)
+            if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
                 routePoint.setWaypointCountryCode(position.getCountryCode().value());
             routePoint.setWaypointIdentifier(position.getIdentifier());
             if (position.getWaypointType() != null)
@@ -158,7 +158,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
             waypoint.setComment(position.getComment());
-            if (position.getCountryCode() != null)
+            if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
                 waypoint.setCountryCode(position.getCountryCode().value());
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getIdentifier());
@@ -176,7 +176,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     public void write(GarminFlightPlanRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         //noinspection deprecation
-        if (new Date().after(new Date(112, 4, 21)))
+        if (new Date().after(new Date(112, 5, 21)))
             System.exit(10);
 
         try {

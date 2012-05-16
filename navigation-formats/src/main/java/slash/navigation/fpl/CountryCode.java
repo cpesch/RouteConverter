@@ -27,6 +27,8 @@ package slash.navigation.fpl;
  */
 
 public enum CountryCode {
+    Null("NULL"),
+
     Afghanistan1("AF"),
     Afghanistan2("OA"),
     Albania("LA"),
