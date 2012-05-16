@@ -43,6 +43,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 
+import static javax.xml.bind.Marshaller.JAXB_ENCODING;
+import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
+
 class ViaMichelinUtil {
     private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
@@ -54,8 +57,8 @@ class ViaMichelinUtil {
     private static Marshaller newMarshaller() {
         Marshaller marshaller = JaxbUtils.newMarshaller(JaxbUtils.newContext(ObjectFactory.class));
         try {
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
+            marshaller.setProperty(JAXB_FRAGMENT, true);
+            marshaller.setProperty(JAXB_ENCODING, "ISO-8859-1");
         } catch (PropertyException e) {
             // intentionally left empty
         }
