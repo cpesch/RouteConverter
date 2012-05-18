@@ -76,7 +76,7 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.ColumbusV900Format;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.GlopusFormat;
-import slash.navigation.simple.GoogleMapsUrlFormat;
+import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
 import slash.navigation.simple.HaicomLoggerFormat;

@@ -25,6 +25,7 @@ import slash.navigation.base.Wgs84Position;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,34 +49,40 @@ public class NmnUrlFormatTest {
     private static final String USA_URL = "navigonUSA-CA://route/?target=address//USA-CA/CA%2092120/SAN%20DIEGO/ALVARADO%20CANYON%20RD/4620/-117.09521/32.78042&amp;target=address//USA-NV/NV%2089101/LAS%20VEGAS///-115.13997/36.17191";
     private static final String NO_MAP_URL = "<a href=\"navigon://route/?target=address//DEU/44797/BOCHUM/UNTERM%20KOLM/11/7.23153/51.43851&amp;target=address//DEU/44227/DORTMUND/MARTIN-SCHMEISSER-WEG/8/7.40361/51.49144\">Unterm Kolm 11, 44797 Bochum ? Martin-Schmeisser-Weg 8, 44227 Dorstfeld, Dortmund</a>";
 
-    NmnUrlFormat urlFormat = new NmnUrlFormat();
+    private NmnUrlFormat format = new NmnUrlFormat();
 
     @Test
     public void testFindURL() {
-        String url = urlFormat.findURL(TARGET_COORDINATE_URL);
+        String url = format.findURL(TARGET_COORDINATE_URL);
         assertNotNull(url);
         assertTrue(url.startsWith("target=coordinate"));
-        assertNull(urlFormat.findURL("don't care"));
+        assertNull(format.findURL("don't care"));
     }
 
     @Test
     public void testCoordinatesPosition() {
-        Wgs84Position position = urlFormat.parsePosition("coordinate//7.273085/51.411354");
+        Wgs84Position position = format.parsePosition("coordinate//7.273085/51.411354");
         assertDoubleEquals(7.273085, position.getLongitude());
         assertDoubleEquals(51.411354, position.getLatitude());
     }
 
     @Test
     public void testAddressPosition() {
-        Wgs84Position position = urlFormat.parsePosition("address//DEU/44797/BOCHUM/UNTERM%20KOLM/11/7.23153/51.43851");
+        Wgs84Position position = format.parsePosition("address//DEU/44797/BOCHUM/UNTERM%20KOLM/11/7.23153/51.43851");
         assertDoubleEquals(7.23153, position.getLongitude());
         assertDoubleEquals(51.43851, position.getLatitude());
         assertEquals("44797 Bochum, Unterm Kolm 11", position.getComment());
     }
 
+    private List<Wgs84Position> parsePositions(String text) {
+        String url = format.findURL(text);
+        Map<String, List<String>> parameters = format.parseURLParameters(url, "UTF-8");
+        return format.parsePositions(parameters);
+    }
+
     @Test
     public void testParsePositionsFromTargetCoordinateUrl() {
-        List<Wgs84Position> positions = urlFormat.parsePositions(TARGET_COORDINATE_URL);
+        List<Wgs84Position> positions = parsePositions(TARGET_COORDINATE_URL);
         assertNotNull(positions);
         assertEquals(25, positions.size());
         Wgs84Position position6 = positions.get(5);
@@ -86,7 +93,7 @@ public class NmnUrlFormatTest {
 
     @Test
     public void testParsePositionsFromTargetAddressUrl() {
-        List<Wgs84Position> positions = urlFormat.parsePositions(TARGET_ADDRESS_URL);
+        List<Wgs84Position> positions = parsePositions(TARGET_ADDRESS_URL);
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position2 = positions.get(1);
@@ -97,7 +104,7 @@ public class NmnUrlFormatTest {
 
     @Test
     public void testParsePositionsFromTargetAddressUrl2() {
-        List<Wgs84Position> positions = urlFormat.parsePositions(TARGET_ADDRESS_URL2);
+        List<Wgs84Position> positions = parsePositions(TARGET_ADDRESS_URL2);
         assertNotNull(positions);
         assertEquals(9, positions.size());
         Wgs84Position position4 = positions.get(4);
@@ -108,7 +115,7 @@ public class NmnUrlFormatTest {
 
     @Test
     public void testParsePositionsFromUsaUrl() {
-        List<Wgs84Position> positions = urlFormat.parsePositions(USA_URL);
+        List<Wgs84Position> positions = parsePositions(USA_URL);
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position2 = positions.get(1);
@@ -119,7 +126,7 @@ public class NmnUrlFormatTest {
 
     @Test
     public void testParsePositionsFromNoMapUrl() {
-        List<Wgs84Position> positions = urlFormat.parsePositions(NO_MAP_URL);
+        List<Wgs84Position> positions = parsePositions(NO_MAP_URL);
         assertNotNull(positions);
         assertEquals(2, positions.size());
         Wgs84Position position2 = positions.get(1);
@@ -136,7 +143,7 @@ public class NmnUrlFormatTest {
         positions.add(new Wgs84Position(10.35735078, 53.59171021, null, 3.5, null, "Groöensee, Germany"));
         positions.add(new Wgs84Position(10.45696089, 53.64781001, null, 2.5, null, "Linau, Germany"));
         String expected = "navigon://route/?target=coordinate//10.025711/53.574977&target=coordinate//10.200260/53.576620&target=coordinate//10.357350/53.591710&target=coordinate//10.456960/53.647810";
-        String actual = urlFormat.createURL(positions, 0, positions.size());
+        String actual = format.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
 
@@ -146,7 +153,7 @@ public class NmnUrlFormatTest {
         positions.add(new Wgs84Position(-113.240014, 36.114526, 1134.0, null, null, "Grand Canyon, Arizona, USA"));
         positions.add(new Wgs84Position(-115.139973, 53.574977, 648.0, null, null, "Las Vegas, Nevada, USA"));
         String expected = "navigon://route/?target=coordinate//-113.240014/36.114526&target=coordinate//-115.139973/53.574977";
-        String actual = urlFormat.createURL(positions, 0, positions.size());
+        String actual = format.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
 }

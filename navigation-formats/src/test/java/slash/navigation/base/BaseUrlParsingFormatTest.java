@@ -21,16 +21,17 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.navigation.simple.GoogleMapsUrlFormat;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class BaseUrlFormatTest {
-    GoogleMapsUrlFormat urlFormat = new GoogleMapsUrlFormat();
+public class BaseUrlParsingFormatTest {
+    private BaseUrlParsingFormat urlFormat = new BaseUrlParsingFormatImpl();
 
     @Test
     public void testParseSingleURLParameters() {
@@ -65,5 +66,31 @@ public class BaseUrlFormatTest {
         assertEquals(2, fValues.size());
         assertEquals("d", fValues.get(0));
         assertEquals("e", fValues.get(1));
+    }
+
+    private static class BaseUrlParsingFormatImpl extends BaseUrlParsingFormat {
+        protected String findURL(String text) {
+            throw new UnsupportedOperationException();
+        }
+
+        protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getName() {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getExtension() {
+            throw new UnsupportedOperationException();
+        }
+
+        public int getMaximumPositionCount() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

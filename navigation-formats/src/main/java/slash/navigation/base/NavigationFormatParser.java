@@ -55,7 +55,7 @@ import static slash.common.io.Transfer.ceiling;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.asFormatForRoutes;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
-import static slash.navigation.simple.GoogleMapsUrlFormat.isGoogleMapsUrl;
+import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsUrl;
 import static slash.navigation.util.RouteComments.commentPositions;
 import static slash.navigation.util.RouteComments.commentRouteName;
 import static slash.navigation.util.RouteComments.commentRoutePositions;
@@ -200,7 +200,10 @@ public class NavigationFormatParser {
             // replace CWD with current working directory for easier testing
             urlString = urlString.replace("CWD", new File(".").getCanonicalPath()).replace(separatorChar, '/');
             URL url = new URL(urlString);
+            if (isGoogleMapsUrl(url))
+                url = new URL(url.toExternalForm() + "&output=kml");
             int readBufferSize = getSize(url);
+            log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
             NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream(), readBufferSize + 1));
             buffer.mark(readBufferSize + 1);
             try {
@@ -262,9 +265,8 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
-        if (isGoogleMapsUrl(url)) {
+        if (isGoogleMapsUrl(url))
             url = new URL(url.toExternalForm() + "&output=kml");
-        }
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
         return read(url.openStream(), readBufferSize, getStartDate(url), formats);

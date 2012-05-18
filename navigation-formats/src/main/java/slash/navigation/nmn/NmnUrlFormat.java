@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.BaseUrlFormat;
+import slash.navigation.base.BaseUrlParsingFormat;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
@@ -44,7 +44,7 @@ import static slash.common.io.Transfer.trim;
  * @author Christian Pesch
  */
 
-public class NmnUrlFormat extends BaseUrlFormat {
+public class NmnUrlFormat extends BaseUrlParsingFormat {
     private static final Preferences preferences = Preferences.userNodeForPackage(NmnUrlFormat.class);
     private static final Pattern URL_PATTERN = Pattern.compile(".*navigon.*://route/\\?([^\\s|\"]+).*");
     private static final Pattern COORDINATE_PATTERN = Pattern.compile("coordinate//(" + POSITION + ")/(" + POSITION + ")");
@@ -64,8 +64,7 @@ public class NmnUrlFormat extends BaseUrlFormat {
     }
 
     protected String findURL(String text) {
-        text = text.replaceAll("[\n|\r]", "&");
-        text = text.replaceAll("&amp;", "&");
+        text = replaceLineFeeds(text, "&");
         Matcher urlMatcher = URL_PATTERN.matcher(text);
         if (!urlMatcher.matches())
             return null;
