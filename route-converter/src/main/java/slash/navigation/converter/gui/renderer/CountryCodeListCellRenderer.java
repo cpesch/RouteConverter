@@ -20,12 +20,13 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.fpl.CountryCode;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.fpl.CountryCode.Null;
+import static slash.navigation.fpl.CountryCode.None;
 
 /**
  * Renders the {@link CountryCode} labels of the complete flight plan country code combo box.
@@ -38,10 +39,13 @@ public class CountryCodeListCellRenderer extends DefaultListCellRenderer {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         CountryCode countryCode = CountryCode.class.cast(value);
         String text;
-        if (countryCode != null && !Null.equals(countryCode))
-            text = countryCode.name().replaceAll("_", " ") +
-                    " (" + countryCode.value() + ")";
-        else
+        if (countryCode != null) {
+            if (None.equals(countryCode))
+                text = RouteConverter.getBundle().getString("country-code-none");
+            else
+                text = countryCode.name().replaceAll("_", " ") +
+                        " (" + countryCode.value() + ")";
+        } else
             text = null;
         label.setText(text);
         return label;

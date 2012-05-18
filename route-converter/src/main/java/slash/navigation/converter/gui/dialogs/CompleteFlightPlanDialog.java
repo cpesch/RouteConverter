@@ -51,7 +51,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.fpl.CountryCode.Null;
+import static slash.navigation.fpl.CountryCode.None;
 import static slash.navigation.fpl.WaypointType.UserWaypoint;
 
 /**
@@ -162,17 +162,20 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         labelPosition.setText(format(RouteConverter.getBundle().getString("position-index"), index + 1, route.getPositionCount()));
         GarminFlightPlanPosition position = getPosition();
         textFieldComment.setText(position.getComment());
-        comboBoxCountryCode.setSelectedItem(position.getCountryCode());
+        CountryCode countryCode = position.getCountryCode();
+        comboBoxCountryCode.setSelectedItem(countryCode == null ? None : countryCode);
         textFieldIdentifier.setText(position.getIdentifier());
         comboBoxWaypointType.setSelectedItem(position.getWaypointType());
         validateModel();
     }
 
     private void validateModel() {
-        boolean validCountryCode = UserWaypoint.equals(getPosition().getWaypointType()) ?
-                getPosition().getCountryCode() == null || Null.equals(getPosition().getCountryCode()) :
-                getPosition().getCountryCode() != null;
+        boolean noCountryCode = getPosition().getCountryCode() == null || None.equals(getPosition().getCountryCode());
+        boolean validCountryCode = UserWaypoint.equals(getPosition().getWaypointType()) ? noCountryCode : !noCountryCode;
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
+        boolean modifiableCountryCode = (UserWaypoint.equals(getPosition().getWaypointType()) && !noCountryCode) ||
+                !UserWaypoint.equals(getPosition().getWaypointType());
+        comboBoxCountryCode.setEnabled(modifiableCountryCode);
 
         String identifier = trim(getPosition().getIdentifier());
         boolean validIdentifier = identifier != null && identifier.length() <= 6 && identifier.equals(identifier.toUpperCase());

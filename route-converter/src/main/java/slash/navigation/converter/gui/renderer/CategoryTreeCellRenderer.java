@@ -36,7 +36,6 @@ import static slash.navigation.gui.helpers.UIHelper.loadIcon;
  */
 
 public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
-
     public CategoryTreeCellRenderer() {
         setOpenIcon(loadIcon("slash/navigation/converter/gui/folder-open.png"));
         setClosedIcon(loadIcon("slash/navigation/converter/gui/folder.png"));
