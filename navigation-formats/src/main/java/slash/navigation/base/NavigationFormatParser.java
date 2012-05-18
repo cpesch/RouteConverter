@@ -179,14 +179,14 @@ public class NavigationFormatParser {
 
     @SuppressWarnings("unchecked")
     private ParserResult createResult(ParserContext<BaseRoute> context) throws IOException {
-        List<BaseRoute> routes = context.getRoutes();
-        if (routes != null && routes.size() > 0) {
-            NavigationFormat format = determineFormat(routes, context.getFormats().get(0));
-            List<BaseRoute> result = asFormatForRoutes(routes, format);
-            log.info("Detected '" + format.getName() + "' with " + result.size() + " route(s) and " +
-                    getPositionCounts(result) + " positions");
-            commentRoutes(result);
-            return new ParserResult(new FormatAndRoutes(format, routes));
+        List<BaseRoute> source = context.getRoutes();
+        if (source != null && source.size() > 0) {
+            NavigationFormat format = determineFormat(source, context.getFormats().get(0));
+            List<BaseRoute> destination = asFormatForRoutes(source, format);
+            log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
+                    getPositionCounts(destination) + " positions");
+            commentRoutes(destination);
+            return new ParserResult(new FormatAndRoutes(format, destination));
         } else
             return new ParserResult(null);
     }
