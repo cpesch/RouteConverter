@@ -164,9 +164,6 @@ public final class NavigationFormats {
         addFormat(Nmn6Format.class);
         addFormat(Nmn5Format.class);
         addFormat(Nmn4Format.class);
-        addFormat(UrlFormat.class);
-        addFormat(NmnUrlFormat.class);
-        addFormat(GoogleMapsUrlFormat.class);
         addFormat(WebPageFormat.class);
         addFormat(GpsTunerFormat.class);
         addFormat(HaicomLoggerFormat.class);
@@ -231,6 +228,10 @@ public final class NavigationFormats {
         addFormat(HoluxM241BinaryFormat.class);
         addFormat(FlightRecorderDataFormat.class);
         addFormat(WintecWbt202TesFormat.class);
+
+        addFormat(UrlFormat.class);
+        addFormat(NmnUrlFormat.class);
+        addFormat(GoogleMapsUrlFormat.class);
 
         // second try for broken files
         addFormat(BrokenNmeaFormat.class);
