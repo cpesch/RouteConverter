@@ -180,13 +180,14 @@ public class Kml22Format extends KmlFormat {
     private Calendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
         if (timePrimitiveType != null) {
             AbstractTimePrimitiveType timePrimitiveTypeValue = timePrimitiveType.getValue();
-            String time = "";
+            String time = null;
             if (timePrimitiveTypeValue instanceof TimeSpanType) {
                 time = ((TimeSpanType) timePrimitiveTypeValue).getBegin();
             } else if (timePrimitiveTypeValue instanceof TimeStampType) {
                 time = ((TimeStampType) timePrimitiveTypeValue).getWhen();
             }
-            return ISO8601.parse(time);
+            if (time != null)
+                return ISO8601.parse(time);
         }
         return null;
     }
