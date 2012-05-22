@@ -20,6 +20,7 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.itn.TomTomRouteFormat;
 
 import java.util.prefs.Preferences;
@@ -55,5 +56,9 @@ public class TomTomPoiFormat extends BabelFormat {
 
     protected boolean isStreamingCapable() {
         return false;
+    }
+
+    protected Gpx10Format createGpxFormat() {
+        return new Gpx10Format(false, false);
     }
 }

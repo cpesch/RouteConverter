@@ -43,6 +43,7 @@ import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.formatPosition;
 import static slash.common.io.Transfer.formatSpeedAsString;
 import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -57,14 +58,15 @@ import static slash.navigation.util.Conversion.kmhToMs;
 
 public class Gpx10Format extends GpxFormat {
     static final String VERSION = "1.0";
-    private final boolean reuseReadObjectsForWriting;
+    private final boolean reuseReadObjectsForWriting, splitNameAndDesc;
 
-    public Gpx10Format(boolean reuseReadObjectsForWriting) {
+    public Gpx10Format(boolean reuseReadObjectsForWriting, boolean splitNameAndDesc) {
         this.reuseReadObjectsForWriting = reuseReadObjectsForWriting;
+        this.splitNameAndDesc = splitNameAndDesc;
     }
 
     public Gpx10Format() {
-        this(true);
+        this(true, true);
     }
 
     public String getName() {
@@ -209,8 +211,8 @@ public class Gpx10Format extends GpxFormat {
                 wpt.setCmt(formatSpeed(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 wpt.setCmt(addHeading(wpt.getCmt(), position.getHeading()));
-            wpt.setName(isWriteName() ? asName(position.getComment()) : null);
-            wpt.setDesc(isWriteName() ? asDesc(position.getComment(), wpt.getDesc()) : null);
+            wpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getComment()) : trim(position.getComment()) : null);
+            wpt.setDesc(isWriteName() && splitNameAndDesc ? asDesc(position.getComment(), wpt.getDesc()) : null);
             wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
             wpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
             wpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
@@ -255,8 +257,8 @@ public class Gpx10Format extends GpxFormat {
                 rtept.setCmt(formatSpeed(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 rtept.setCmt(addHeading(rtept.getCmt(), position.getHeading()));
-            rtept.setName(isWriteName() ? asName(position.getComment()) : null);
-            rtept.setDesc(isWriteName() ? asDesc(position.getComment(), rtept.getDesc()) : null);
+            rtept.setName(isWriteName() ? splitNameAndDesc ? asName(position.getComment()) : trim(position.getComment()) : null);
+            rtept.setDesc(isWriteName() && splitNameAndDesc ? asDesc(position.getComment(), rtept.getDesc()) : null);
             rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
             rtept.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
             rtept.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
@@ -299,8 +301,8 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
                     formatBigDecimal(kmhToMs(position.getSpeed()), 3) : null);
-            trkpt.setName(isWriteName() ? asName(position.getComment()) : null);
-            trkpt.setDesc(isWriteName() ? asDesc(position.getComment(), trkpt.getDesc()) : null);
+            trkpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getComment()) : trim(position.getComment()) : null);
+            trkpt.setDesc(isWriteName() && splitNameAndDesc ? asDesc(position.getComment(), trkpt.getDesc()) : null);
             trkpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
             trkpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
             trkpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
