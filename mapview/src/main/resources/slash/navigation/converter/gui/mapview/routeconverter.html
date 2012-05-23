@@ -360,16 +360,16 @@
        return google.maps.geometry.spherical.computeDistanceBetween(latLng, pixelAway);
    }
 
+   function ignoreCtrlF(event) {
+       if (event.ctrlKey && event.keyCode == 70) {
+           event.preventDefault();
+       }
+   }
+
    var initialized, map, directionsService, markerIcon, xmlhttp;
 
    function isInitialized() {
        return initialized;
-   }
-
-   function ignoreCtrlF(e) {
-       if (e.ctrlKey && e.keyCode == 70) {
-           e.preventDefault();
-       }
    }
 
    function initialize() {
@@ -462,13 +462,29 @@
            map.mapTypes.set('Cycle', cycleMapType);
            map.mapTypes.set('Hike', hikeMapType);
            map.mapTypes.set('Outdoor', outdoorMapType);
-           map.setMapTypeId('${maptype}');
            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
            map.enableKeyDragZoom({
                visualEnabled: true,
                visualPosition: google.maps.ControlPosition.LEFT
            });
+           directionsService = new google.maps.DirectionsService();
+           markerIcon = new google.maps.MarkerImage(
+                   "http://${mapserver}/mapfiles/kml/shapes/placemark_circle_maps.png",
+                   new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
            addDebug("2. created map: " + map);
+
+           google.maps.event.addListener(map, "maptypeid_changed", function() {
+               if (map.getMapTypeId() == 'Mapnik' || map.getMapTypeId() == 'T@H' || map.getMapTypeId() == 'Cycle' || map.getMapTypeId() == 'Hike') {
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
+               } else if (map.getMapTypeId() == 'Outdoor') {
+                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
+               } else {
+                   copyrightControl.innerHTML = '';
+               }
+               callJava("maptypechanged/" + map.getMapTypeId());
+           });
+           map.setMapTypeId('${maptype}');
+           addDebug("2. set maptype: " + map.getMapTypeId());
 
            try {
                var menu = new ContextMenu({map:map});
@@ -498,21 +514,6 @@
                setError("<p>Sorry, could not initialize ContextMenu.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
 
-           directionsService = new google.maps.DirectionsService();
-           markerIcon = new google.maps.MarkerImage(
-                   "http://${mapserver}/mapfiles/kml/shapes/placemark_circle_maps.png",
-                   new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
-
-           google.maps.event.addListener(map, "maptypeid_changed", function() {
-               if (map.getMapTypeId() == 'Mapnik' || map.getMapTypeId() == 'T@H' || map.getMapTypeId() == 'Cycle' || map.getMapTypeId() == 'Hike') {
-                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
-               } else if (map.getMapTypeId() == 'Outdoor') {
-                   copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
-               } else {
-                   copyrightControl.innerHTML = '';
-               }
-               callJava("maptypechanged/" + map.getMapTypeId());
-           });
            google.maps.event.addListener(map, "zoom_changed", function() {
                callJava("zoomchanged");
            });
