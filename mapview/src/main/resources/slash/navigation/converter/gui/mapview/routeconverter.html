@@ -377,12 +377,12 @@
        document.body.className = "normal";
        addDebug("1. initialize()");
        try {
-           if (window.attachEvent) {
-               window.attachEvent("keydown", ignoreCtrlF());
-           } else if (window.addEventListener) {
+           if (window.addEventListener) {
                window.addEventListener("keydown", ignoreCtrlF());
-           } else {
+           } else if( document.addEventListener ) {
                document.addEventListener("keydown", ignoreCtrlF());
+           } else if (window.attachEvent) {
+               window.attachEvent("keydown", ignoreCtrlF());
            }
        } catch (e) {
            addDebug("1.1 could not disable ctrl-f " + e.message);
