@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static slash.common.io.Transfer.formatElevation;
@@ -175,10 +174,6 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     public void write(GarminFlightPlanRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        //noinspection deprecation
-        if (new Date().after(new Date(112, 5, 21)))
-            System.exit(10);
-
         try {
             marshal(createFpl(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
