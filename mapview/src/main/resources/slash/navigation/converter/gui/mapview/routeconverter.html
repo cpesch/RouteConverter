@@ -415,9 +415,13 @@
                alt: "HikeBikeMap rendering of OpenStreetMap data",
                name: "Hike"
            });
+           var outdoorMapIndex = 0;
            var outdoorMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
-                   return "http://t3.outdooractive.com/portal/map/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                   outdoorMapIndex++;
+                   if (outdoorMapIndex > 3)
+                       outdoorMapIndex = 0;
+                   return "http://s" + outdoorMapIndex + ".outdooractive.com/portal/map/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                },
                tileSize: new google.maps.Size(256, 256),
                minZoom: 8,
