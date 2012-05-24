@@ -60,14 +60,19 @@
 <div id="directions"></div>
 <script type="text/javascript">
    function printMap(title, withDirections) {
-       var oldTitle = document.head.title;
-       document.title = title;
-       if (withDirections)
-           displayDirections(true);
-       window.print();
-       if (withDirections)
-           displayDirections(false);
-       document.title = oldTitle;
+       try {
+           var oldTitle = document.title;
+           document.title = title;
+           if (withDirections)
+               displayDirections(true);
+           window.print();
+           if (withDirections)
+               displayDirections(false);
+           document.title = oldTitle;
+       }
+       catch (e) {
+           setError("<p>Sorry, could not print map.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+       }
    }
 
    function displayDirections(show) {
