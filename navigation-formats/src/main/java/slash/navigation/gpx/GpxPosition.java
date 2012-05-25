@@ -22,6 +22,10 @@ package slash.navigation.gpx;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.fpl.CountryCode;
+import slash.navigation.fpl.GarminFlightPlanPosition;
+import slash.navigation.fpl.WaypointType;
+import slash.navigation.gpx.binding11.WptType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -82,7 +86,7 @@ public class GpxPosition extends Wgs84Position {
             this.comment = trim(matcher.group(3));
 
             Double heading = parseTripmasterHeading(reason);
-            if(heading != null)
+            if (heading != null)
                 this.heading = heading;
         } /* TODO think about how to solve this with that much errors
           else {
@@ -111,6 +115,20 @@ public class GpxPosition extends Wgs84Position {
             return resultClass.cast(origin);
         else
             return null;
+    }
+
+    public GarminFlightPlanPosition asGarminFlightPlanPosition() {
+        GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+        WptType wptType = getOrigin(WptType.class);
+        if (wptType != null) {
+            String type = wptType.getType();
+            if (type != null)
+                position.setWaypointType(WaypointType.fromValue(type));
+            String name = wptType.getName();
+            if (name != null && name.length() >= 2)
+                position.setCountryCode(CountryCode.fromValue(name.substring(0, 2)));
+        }
+        return position;
     }
 
     public GpxPosition asGpxPosition() {

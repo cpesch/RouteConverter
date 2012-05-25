@@ -39,8 +39,7 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.common.system.Version.parseVersionFromManifest;
-import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForUpdateCheck;
+import static slash.common.io.Version.parseVersionFromManifest;
 
 /**
  * Knows how to retrieve the information which is the latest version.
