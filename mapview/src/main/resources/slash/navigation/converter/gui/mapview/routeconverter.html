@@ -63,11 +63,11 @@
        try {
            var oldTitle = document.title;
            document.title = title;
-           if (withDirections)
-               displayDirections(true);
+           adjustForPrinting(true, withDirections);
+
            window.print();
-           if (withDirections)
-               displayDirections(false);
+
+           adjustForPrinting(false, withDirections);
            document.title = oldTitle;
        }
        catch (e) {
@@ -75,11 +75,13 @@
        }
    }
 
-   function displayDirections(show) {
-       var div = document.getElementById("directions");
-       div.style.display = show ? "block" : "none";
-       for (i = 0; i < div.childNodes.length; i++) {
-           div.childNodes[i].style.display = show ? "block" : "none";
+   function adjustForPrinting(show, withDirections) {
+       if (withDirections) {
+           var div = document.getElementById("directions");
+           div.style.display = show ? "block" : "none";
+           for (i = 0; i < div.childNodes.length; i++) {
+               div.childNodes[i].style.display = show ? "block" : "none";
+           }
        }
        document.body.className = show ? "" : "normal";
    }
