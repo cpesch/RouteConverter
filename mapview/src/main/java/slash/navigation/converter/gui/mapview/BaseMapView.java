@@ -434,6 +434,7 @@ public abstract class BaseMapView implements MapView {
                         // intentionally left empty
                     } catch (IOException e) {
                         synchronized (notificationMutex) {
+                            //noinspection ConstantConditions
                             if (running) {
                                 log.severe("Cannot listen at callback listener socket: " + e.getMessage());
                             }

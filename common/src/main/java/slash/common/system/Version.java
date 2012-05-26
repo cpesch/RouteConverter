@@ -26,52 +26,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import static slash.common.io.Transfer.trim;
 
 /**
- * Provides version parsing functionality.
+ * Provides Java and RouteConverter versions.
  *
  * @author Christian Pesch
  */
 
 public class Version {
-    private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
-    private static final String JAVA_VERSION_KEY = "java.version";
-
-    static Map<String, String> parseParameters(String parameters) {
-        StringTokenizer tokenizer = new StringTokenizer(parameters, ",");
-        Map<String, String> map = new HashMap<String, String>();
-        while (tokenizer.hasMoreTokens()) {
-            String nv = tokenizer.nextToken();
-            StringTokenizer nvTokenizer = new StringTokenizer(nv, "=");
-            if (!nvTokenizer.hasMoreTokens())
-                continue;
-            String key = nvTokenizer.nextToken();
-            if (!nvTokenizer.hasMoreTokens())
-                continue;
-            String value = nvTokenizer.nextToken();
-            map.put(key, value);
-        }
-        return map;
-    }
-
-    private static String getValue(String parameters, String key) {
-        Map<String, String> map = parseParameters(parameters);
-        return trim(map.get(key));
-    }
-
-    public static String getLatestRouteConverterVersion(String parameters) {
-        return getValue(parameters, ROUTECONVERTER_VERSION_KEY);
-    }
-
-    public static String getLatestJavaVersion(String parameters) {
-        return getValue(parameters, JAVA_VERSION_KEY);
-    }
-
     private static final SimpleDateFormat BUILD_DATE = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private String version, date, name;
 

@@ -21,7 +21,6 @@
 package slash.common.system;
 
 import org.junit.Test;
-import slash.common.system.Version;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -34,21 +33,6 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.calendar;
 
 public class VersionTest {
-
-    @Test
-    public void testParseParameters() {
-        Map<String, String> params = Version.parseParameters("b=c,routeconverter.version=1.3,a=b");
-        assertEquals("c", params.get("b"));
-        assertEquals("1.3", params.get("routeconverter.version"));
-        assertEquals("b", params.get("a"));
-        assertNull( params.get("c"));
-    }
-
-    @Test
-    public void testParseVersion() {
-        assertEquals("1.3", Version.getLatestRouteConverterVersion("b=c,routeconverter.version=1.3,a=b"));
-        assertEquals("2", Version.getLatestRouteConverterVersion("x=y,routeconverter.version=2,y=z"));
-    }
 
     @Test
     public void testGetVersion() {

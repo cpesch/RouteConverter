@@ -26,6 +26,9 @@ import slash.navigation.feedback.domain.RouteFeedback;
 import javax.swing.*;
 import java.awt.*;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -35,8 +38,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.common.system.Version.getLatestJavaVersion;
-import static slash.common.system.Version.getLatestRouteConverterVersion;
+import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForUpdateCheck;
 
@@ -85,19 +87,7 @@ public class UpdateChecker {
                     System.getProperty("os.arch"),
                     System.getProperty("javawebstart.version"),
                     getStartTime());
-
-            String latestRouteConverterVersion = getLatestRouteConverterVersion(parameters);
-            String latestJavaVersion = getLatestJavaVersion(parameters);
-            boolean isLatestRouteConverterVersion = new Version(myRouteConverterVersion).isLaterVersionThan(new Version(latestRouteConverterVersion));
-            boolean isLatestJavaVersion = new Version(myJavaVersion).isLaterVersionThan(new Version(latestJavaVersion));
-            result.setResult(latestRouteConverterVersion, isLatestRouteConverterVersion, latestJavaVersion, isLatestJavaVersion);
-
-            log.fine("My RouteConverter version: " + myRouteConverterVersion);
-            log.fine("Latest RouteConverter version: " + latestRouteConverterVersion);
-            log.fine("Is latest RouteConverter version: " + isLatestRouteConverterVersion);
-            log.fine("My Java version: " + myJavaVersion);
-            log.fine("Latest Java version: " + latestJavaVersion);
-            log.fine("Is latest Java version: " + isLatestJavaVersion);
+            result.setParameters(parameters);
         } catch (Throwable t) {
             log.severe("Cannot check for update: " + t.getMessage());
         }
@@ -146,13 +136,13 @@ public class UpdateChecker {
         }
     }
 
-    private static class UpdateResult {
+    static class UpdateResult {
+        private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
+        private static final String JAVA_VERSION_KEY = "java.version";
+
         private final String myRouteConverterVersion;
-        private String latestRouteConverterVersion = "";
-        private boolean isLatestRouteConverterVersion = true;
         private final String myJavaVersion;
-        private String latestJavaVersion = "";
-        private boolean isLatestJavaVersion = true;
+        private Map<String, String> parameters;
 
         public UpdateResult(String myRouteConverterVersion, String myJavaVersion) {
             this.myRouteConverterVersion = myRouteConverterVersion;
@@ -164,10 +154,11 @@ public class UpdateChecker {
         }
 
         public String getLatestRouteConverterVersion() {
-            return latestRouteConverterVersion;
+            return getValue(ROUTECONVERTER_VERSION_KEY);
         }
 
         public boolean existsLaterRouteConverterVersion() {
+            boolean isLatestRouteConverterVersion = new Version(myRouteConverterVersion).isLaterVersionThan(new Version(getLatestRouteConverterVersion()));
             return !isLatestRouteConverterVersion;
         }
 
@@ -176,18 +167,37 @@ public class UpdateChecker {
         }
 
         public String getLatestJavaVersion() {
-            return latestJavaVersion;
+            return getValue(JAVA_VERSION_KEY);
         }
 
         public boolean existsLaterJavaVersion() {
+            boolean isLatestJavaVersion = new Version(myJavaVersion).isLaterVersionThan(new Version(getLatestJavaVersion()));
             return !isLatestJavaVersion;
         }
 
-        public void setResult(String latestRouteConverterVersion, boolean isLatestRouteConverterVersion, String latestJavaVersion, boolean isLatestJavaVersion) {
-            this.latestRouteConverterVersion = latestRouteConverterVersion;
-            this.isLatestRouteConverterVersion = isLatestRouteConverterVersion;
-            this.latestJavaVersion = latestJavaVersion;
-            this.isLatestJavaVersion = isLatestJavaVersion;
+        String getValue(String key) {
+            return trim(parameters.get(key));
+        }
+
+        private Map<String, String> parseParameters(String parameters) {
+            StringTokenizer tokenizer = new StringTokenizer(parameters, ",");
+            Map<String, String> map = new HashMap<String, String>();
+            while (tokenizer.hasMoreTokens()) {
+                String nv = tokenizer.nextToken();
+                StringTokenizer nvTokenizer = new StringTokenizer(nv, "=");
+                if (!nvTokenizer.hasMoreTokens())
+                    continue;
+                String key = nvTokenizer.nextToken();
+                if (!nvTokenizer.hasMoreTokens())
+                    continue;
+                String value = nvTokenizer.nextToken();
+                map.put(key, value);
+            }
+            return map;
+        }
+
+        public void setParameters(String parameters) {
+            this.parameters = parseParameters(parameters);
         }
     }
 }
