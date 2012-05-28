@@ -148,10 +148,10 @@ public class UpdateChecker {
     private static class UpdateResult {
         private final String myRouteConverterVersion;
         private String latestRouteConverterVersion = "";
-        private boolean isLatestRouteConverterVersion;
+        private boolean isLatestRouteConverterVersion = true;
         private final String myJavaVersion;
         private String latestJavaVersion = "";
-        private boolean isLatestJavaVersion;
+        private boolean isLatestJavaVersion = true;
 
         public UpdateResult(String myRouteConverterVersion, String myJavaVersion) {
             this.myRouteConverterVersion = myRouteConverterVersion;
