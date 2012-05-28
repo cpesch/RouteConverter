@@ -27,14 +27,12 @@ import slash.navigation.jaxb.JaxbUtils;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static javax.xml.bind.Marshaller.JAXB_ENCODING;
 import static slash.navigation.jaxb.JaxbUtils.newContext;
 
 class GarminFlightPlanUtil {
@@ -45,15 +43,7 @@ class GarminFlightPlanUtil {
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JaxbUtils.newMarshaller(newContext(ObjectFactory.class),
-                FPL_NAMESPACE_URI, ""
-        );
-        try {
-            marshaller.setProperty(JAXB_ENCODING, "ISO-8859-1");
-        } catch (PropertyException e) {
-            // intentionally left empty
-        }
-        return marshaller;
+        return JaxbUtils.newMarshaller(newContext(ObjectFactory.class));
     }
 
 

@@ -148,8 +148,10 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             GarminFlightPlanPosition position = positions.get(i);
 
             FlightPlan.Route.RoutePoint routePoint = objectFactory.createFlightPlanRouteRoutePoint();
+            String countryCode = "";
             if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
-                routePoint.setWaypointCountryCode(position.getCountryCode().value());
+                countryCode = position.getCountryCode().value();
+            routePoint.setWaypointCountryCode(countryCode);
             routePoint.setWaypointIdentifier(position.getIdentifier());
             if (position.getWaypointType() != null)
                 routePoint.setWaypointType(position.getWaypointType().value());
@@ -157,8 +159,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
             FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
             waypoint.setComment(position.getComment());
-            if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
-                waypoint.setCountryCode(position.getCountryCode().value());
+            waypoint.setCountryCode(countryCode);
             waypoint.setElevation(formatElevation(position.getElevation()));
             waypoint.setIdentifier(position.getIdentifier());
             waypoint.setLat(formatPosition(position.getLatitude()));
