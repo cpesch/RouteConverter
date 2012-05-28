@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.formatInt;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.fpl.WaypointType.UserWaypoint;
 import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 import static slash.navigation.util.RouteComments.parseComment;
 import static slash.navigation.util.RouteComments.parseTripmasterHeading;
@@ -119,6 +120,7 @@ public class GpxPosition extends Wgs84Position {
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
         GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getComment());
+        position.setWaypointType(UserWaypoint);
         WptType wptType = getOrigin(WptType.class);
         if (wptType != null) {
             String type = wptType.getType();
