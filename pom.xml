@@ -24,6 +24,13 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>routeconverter-thirdparty</id>
+            <url>http://www.routeconverter.com/svn/RouteThirdParty</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <distributionManagement>
         <repository>
             <id>routeconverter-release</id>
@@ -105,11 +112,14 @@
                     <encoding>Cp1252</encoding>
                     <header>RouteConverter API</header>
                     <bottom>Created by Christian Pesch</bottom>
+                    <detectLinks>true</detectLinks>
+                    <!--
                     <links>
-                        <link href="http://download.oracle.com/javaee/6/api/" />
-                        <link href="http://jakarta.apache.org/commons/logging/apidocs/" />
+                        <link href="http://download.oracle.com/javaee/6/api/"/>
+                        <link href="http://jakarta.apache.org/commons/logging/apidocs/"/>
                     </links>
-                    <excludePackageNames>slash.navigation.catalog*:slash.navigation.converter*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.rest*:*binding*</excludePackageNames>
+                    -->
+                    <excludePackageNames>slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.earthtools*:slash.navigation.feedback*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.rest*:*binding*</excludePackageNames>
                     <groups>
                         <group>
                             <title>Base</title>
@@ -117,7 +127,7 @@
                         </group>
                         <group>
                             <title>Formats</title>
-                            <packages>slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.viamichelin:slash.navigation.wbt</packages>
+                            <packages>slash.navigation.babel:slash.navigation.bcr:slash.navigation.copilot:slash.navigation.fpl:slash.navigation.gopal:slash.navigation.gpx:slash.navigation.itn:slash.navigation.klicktel:slash.navigation.kml:slash.navigation.lmx:slash.navigation.mm:slash.navigation.nmea:slash.navigation.nmn:slash.navigation.ovl:slash.navigation.simple:slash.navigation.tcx:slash.navigation.tour:slash.navigation.url:slash.navigation.viamichelin:slash.navigation.wbt:slash.navigation.zip</packages>
                         </group>
                         <group>
                             <title>Utilities</title>

@@ -36,7 +36,7 @@ import static slash.common.io.Transfer.ceilFraction;
 import static slash.common.io.Transfer.floorFraction;
 
 /**
- * Provides geo conversion functionality.
+ * Provides GPS conversion functionality.
  *
  * @author Christian Pesch
  */
