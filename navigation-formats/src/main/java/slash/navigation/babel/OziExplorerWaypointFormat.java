@@ -30,7 +30,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  * @author Christian Pesch
  */
 
-public class OziExplorerWaypointFormat extends OziExplorerWriteFormat {
+public class OziExplorerWaypointFormat extends OziExplorerFormat {
     public String getExtension() {
         return ".wpt";
     }

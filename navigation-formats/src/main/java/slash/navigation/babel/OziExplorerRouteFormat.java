@@ -30,7 +30,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  * @author Christian Pesch
  */
 
-public class OziExplorerRouteFormat extends OziExplorerWriteFormat {
+public class OziExplorerRouteFormat extends OziExplorerFormat {
     public String getExtension() {
         return ".rte";
     }

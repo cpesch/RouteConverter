@@ -26,8 +26,9 @@ import slash.navigation.babel.GarminPoiDbFormat;
 import slash.navigation.babel.GarminPoiFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
-import slash.navigation.babel.OziExplorerReadFormat;
 import slash.navigation.babel.OziExplorerRouteFormat;
+import slash.navigation.babel.OziExplorerTrackFormat;
+import slash.navigation.babel.OziExplorerWaypointFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.mm.MagicMapsIktFormat;
@@ -69,25 +70,25 @@ public class ConvertFailsIT extends ConvertBase {
         // differences in conversion: Target longitude 0 does not exist
         assertTestFails(new ThrowsException() {
             public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OvlFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerTrackFormat(), new OvlFormat());
             }
         });
     }
 
     public void testConvertOziExplorerWaypointToTop50() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OvlFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new OvlFormat());
     }
 
     public void testConvertOziExplorerToMagicMaps() throws IOException {
         // differences in conversion: 2.6141469644200224 is not within +5.0E-6 of -17.954639 to -17.954728773195
         assertTestFails(new ThrowsException() {
             public void run() throws Exception {
-                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsIktFormat());
-                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new MagicMapsPthFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerRouteFormat(), new MagicMapsIktFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerRouteFormat(), new MagicMapsPthFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerTrackFormat(), new MagicMapsIktFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerTrackFormat(), new MagicMapsPthFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new MagicMapsIktFormat());
+                convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new MagicMapsPthFormat());
             }
         });
     }

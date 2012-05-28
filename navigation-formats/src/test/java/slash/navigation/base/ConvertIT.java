@@ -35,10 +35,6 @@ import slash.navigation.babel.HoluxM241BinaryFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.NationalGeographicTopo3Format;
-import slash.navigation.babel.OziExplorerReadFormat;
-import slash.navigation.babel.OziExplorerRouteFormat;
-import slash.navigation.babel.OziExplorerTrackFormat;
-import slash.navigation.babel.OziExplorerWaypointFormat;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
@@ -481,30 +477,6 @@ public class ConvertIT extends ConvertBase {
     public void testConvertMagicMapsIktToTop50() throws IOException {
         convertRoundtrip(TEST_PATH + "from.ikt", new MagicMapsIktFormat(), new OvlFormat());
     }
-
-
-    public void testConvertOziExplorerToOziExplorer() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerReadFormat(), new OziExplorerTrackFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OziExplorerRouteFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OziExplorerWaypointFormat());
-    }
-
-    public void testConvertOziExplorerRouteToTop50() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerReadFormat(), new OvlFormat());
-    }
-
-    public void testConvertOziExplorerWaypointToTop50() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerReadFormat(), new OvlFormat());
-    }
-
-    public void testConvertGpx10ToOziExplorerTrack() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
-    }
-
-    public void testConvertGpx10ToOziExplorerWaypoints() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new OziExplorerWaypointFormat());
-    }
-
 
     public void testConvertGoPalRouteToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gopal3.xml", new GoPal3RouteFormat(), new Gpx11Format());

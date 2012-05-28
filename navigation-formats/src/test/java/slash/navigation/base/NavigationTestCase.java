@@ -36,7 +36,7 @@ import slash.navigation.babel.GarminPoiFormat;
 import slash.navigation.babel.GeoCachingFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
-import slash.navigation.babel.OziExplorerReadFormat;
+import slash.navigation.babel.OziExplorerFormat;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.BcrFormat;
@@ -321,7 +321,7 @@ public abstract class NavigationTestCase extends TestCase {
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof GarminPcx5Format) {
                 assertEquals((double) Math.round(sourcePosition.getElevation()), targetPosition.getElevation());
-            } else if (targetFormat instanceof OziExplorerReadFormat || targetFormat instanceof NmeaFormat ||
+            } else if (targetFormat instanceof OziExplorerFormat || targetFormat instanceof NmeaFormat ||
                     targetFormat instanceof CompeGPSDataFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof ColumbusV900Format) {
@@ -329,7 +329,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else
                 assertNearBy(roundFraction(sourcePosition.getElevation(), 1), roundFraction(targetPosition.getElevation(), 1), 0.1);
 
-        } else if (sourceFormat instanceof OziExplorerReadFormat) {
+        } else if (sourceFormat instanceof OziExplorerFormat) {
             assertNull(targetPosition.getElevation());
         } else if (sourceFormat instanceof CoPilotFormat || sourceFormat instanceof TourFormat)
             assertNull(sourcePosition.getElevation());
@@ -636,7 +636,7 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof HaicomLoggerFormat || targetFormat instanceof KompassFormat ||
                     targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
                     targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
-                    (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(Track)) ||
+                    (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Track)) ||
                     ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !commentPositionNames))
                 assertTrue("Comment " + index + " does not match", targetPosition.getComment().startsWith("Position"));
             else if (sourceFormat instanceof AlanTrackLogFormat)
@@ -658,9 +658,9 @@ public abstract class NavigationTestCase extends TestCase {
                 String sourceName = getGarminPoiPositionComment(sourcePosition);
                 String targetName = getGarminPoiPositionComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
-            } else if (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(Waypoints))
+            } else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Waypoints))
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 50)), trim(trimSpeedComment(targetPosition.getComment()), 50));
-            else if (targetFormat instanceof OziExplorerReadFormat && targetCharacteristics.equals(RouteCharacteristics.Route))
+            else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(RouteCharacteristics.Route))
                 assertEquals("Comment " + index + " does not match", garminUmlauts(trim(sourcePosition.getComment().replace(",", ""), 8)), trim(trimSpeedComment(targetPosition.getComment()), 8));
             else if (targetFormat instanceof TomTomRouteFormat) {
                 String targetComment = targetPosition.getComment();
@@ -797,7 +797,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof CompeGPSDataFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof HaicomLoggerFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof NavilinkFormat && targetFormat instanceof NavigatingPoiWarnerFormat ||
-                sourceFormat instanceof OziExplorerReadFormat ||
+                sourceFormat instanceof OziExplorerFormat ||
                 sourceFormat instanceof ColumbusV900Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof Iblue747Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof CoPilotFormat) {

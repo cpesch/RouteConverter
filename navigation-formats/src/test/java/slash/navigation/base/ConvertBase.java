@@ -24,8 +24,6 @@ import slash.navigation.babel.CompeGPSDataFormat;
 import slash.navigation.babel.CompeGPSDataRouteFormat;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
-import slash.navigation.babel.OziExplorerReadFormat;
-import slash.navigation.babel.OziExplorerWriteFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,12 +73,6 @@ public abstract class ConvertBase extends NavigationTestCase {
         return sourceFormat;
     }
 
-    private BaseNavigationFormat handleWriteOnlyFormats(BaseNavigationFormat targetFormat) {
-        if (targetFormat instanceof OziExplorerWriteFormat)
-            targetFormat = new OziExplorerReadFormat();
-        return targetFormat;
-    }
-
     @SuppressWarnings("unchecked")
     private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
         File target = createTempFile("singletarget", targetFormat.getExtension());
@@ -93,8 +85,6 @@ public abstract class ConvertBase extends NavigationTestCase {
             assertNotNull(sourceResult);
             ParserResult targetResult = parser.read(target, getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
-
-            targetFormat = handleWriteOnlyFormats(targetFormat);
 
             assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
             assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
@@ -133,7 +123,6 @@ public abstract class ConvertBase extends NavigationTestCase {
             assertTrue(targetResult.isSuccessful());
 
             sourceFormat = handleReadOnlyFormats(sourceFormat);
-            targetFormat = handleWriteOnlyFormats(targetFormat);
 
             assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
             assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());

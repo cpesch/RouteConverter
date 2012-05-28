@@ -30,7 +30,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  * @author Christian Pesch
  */
 
-public class OziExplorerTrackFormat extends OziExplorerWriteFormat {
+public class OziExplorerTrackFormat extends OziExplorerFormat {
     public String getExtension() {
         return ".plt";
     }

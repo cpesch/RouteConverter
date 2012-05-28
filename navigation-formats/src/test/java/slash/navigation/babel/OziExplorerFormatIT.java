@@ -26,6 +26,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
+import slash.navigation.base.RouteCharacteristics;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,10 +34,42 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static slash.common.io.Files.getExtension;
+import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class OziExplorerFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
+
+    private void checkFile(String testFileName, RouteCharacteristics characteristics, int routeCount, int positionCount) throws IOException {
+        File source = new File(TEST_PATH + testFileName);
+        ParserResult result = parser.read(source, getReadFormatsPreferredByExtension(getExtension(testFileName)));
+        assertNotNull(result);
+        List<BaseRoute> routes = result.getAllRoutes();
+        assertEquals(routeCount, routes.size());
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        assertEquals(characteristics, route.getCharacteristics());
+        assertEquals(positionCount, route.getPositionCount());
+    }
+
+    @Test
+    public void testRoute() throws IOException {
+        checkFile("from-ozi.rte", Route, 3, 2);
+    }
+
+    @Test
+    public void testTrack() throws IOException {
+        checkFile("from-ozi.plt", Track, 1, 1);
+    }
+
+    @Test
+    public void testWaypoints() throws IOException {
+        checkFile("from-ozi.wpt", Waypoints, 1, 3);
+    }
 
     @Test
     public void testEliminateNonsenseRoutes() throws IOException {
