@@ -28,7 +28,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -45,6 +44,7 @@
                     </items>
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
+                    <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
                 </configuration>
             </plugin>
 

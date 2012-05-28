@@ -1,7 +1,18 @@
-*.bat
+# Backups:
+*~
+*.bak
+# RouteConverter:
+RouteConverter*/buildNumber.properties
+# Maven:
+target/
+# Eclipse:
+.classpath
+.project
+.settings/
+# IDEA:
 *.iml
 *.ipr
 *.iws
-velocity.log
-*/target/*
-RouteConverter*/buildNumber.properties
+.idea/
+# Logging:
+*.log
