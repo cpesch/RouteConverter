@@ -502,7 +502,7 @@ public abstract class BaseMapView implements MapView {
                 throw new Exception("127.0.0.1 does not resolve to localhost");
         } catch (Exception e) {
             e.printStackTrace();
-            final String message = "Probably faulty network setup: " + e.getMessage() + ".\nPlease check your network settings.";
+            final String message = "Probably faulty network setup: " + e.getLocalizedMessage() + ".\nPlease check your network settings.";
             log.severe(message);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {

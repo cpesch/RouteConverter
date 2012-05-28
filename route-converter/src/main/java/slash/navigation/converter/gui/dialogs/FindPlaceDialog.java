@@ -46,6 +46,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static slash.common.io.Transfer.isEmpty;
 
 /**
@@ -142,8 +143,8 @@ public class FindPlaceDialog extends SimpleDialog {
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
-                    MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getMessage()),
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+                    MessageFormat.format(RouteConverter.getBundle().getString("insert-error"), e.getLocalizedMessage()),
+                    getTitle(), ERROR_MESSAGE);
         }
         savePreferences();
     }

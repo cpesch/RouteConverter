@@ -26,6 +26,8 @@ import javax.help.HelpSet;
 import javax.swing.*;
 import java.util.logging.Logger;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+
 /**
  * Open the {@link HelpSet help}.
  *
@@ -40,9 +42,9 @@ public class HelpTopicsAction extends FrameAction {
             HelpBroker broker = Application.getInstance().getContext().getHelpBroker();
             new CSH.DisplayHelpFromFocus(broker).actionPerformed(getEvent());
         } catch (Exception e) {
-            String message = "Could not initialize help: " + e.getMessage();
+            String message = "Could not initialize help: " + e.getLocalizedMessage();
             log.severe(message);
-            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, message, "Error", ERROR_MESSAGE);
         }
     }
 }

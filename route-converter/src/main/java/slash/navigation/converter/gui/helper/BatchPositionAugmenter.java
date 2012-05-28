@@ -164,7 +164,7 @@ public class BatchPositionAugmenter {
 
                     if (lastException[0] != null)
                         JOptionPane.showMessageDialog(frame,
-                                MessageFormat.format(operation.getErrorMessage(), lastException[0].getMessage()),
+                                MessageFormat.format(operation.getErrorMessage(), lastException[0].getLocalizedMessage()),
                                 frame.getTitle(), ERROR_MESSAGE);
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {

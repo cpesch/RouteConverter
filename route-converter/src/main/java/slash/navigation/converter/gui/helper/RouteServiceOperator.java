@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
+import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.navigation.gui.Constants.startWaitCursor;
 import static slash.navigation.gui.Constants.stopWaitCursor;
 
@@ -62,8 +63,8 @@ public class RouteServiceOperator {
             public void run() {
                 t.printStackTrace();
                 log.severe("Error while operating on RouteConverter service: " + t.getMessage());
-                JOptionPane.showMessageDialog(frame,
-                        MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), t.getMessage()),
+                showMessageDialog(frame,
+                        MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), t.getLocalizedMessage()),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });

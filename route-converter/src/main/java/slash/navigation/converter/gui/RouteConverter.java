@@ -110,7 +110,9 @@ import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
+import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Platform.getJava;
 import static slash.common.io.Platform.getMaximumMemory;
 import static slash.common.io.Platform.getPlatform;
@@ -236,7 +238,7 @@ public class RouteConverter extends SingleFrameApplication {
                     new ExternalPrograms().startBrowserForJava(frame);
                 }
             });
-            JOptionPane.showMessageDialog(frame, label, frame.getTitle(), JOptionPane.WARNING_MESSAGE);
+            showMessageDialog(frame, label, frame.getTitle(), JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -558,7 +560,7 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleBabelError(final BabelException e) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JOptionPane.showMessageDialog(frame,
+                showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
                         ERROR_MESSAGE);
             }
@@ -574,7 +576,7 @@ public class RouteConverter extends SingleFrameApplication {
         final long limitAfter = limitBefore * 2;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JOptionPane.showMessageDialog(frame,
+                showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("out-of-memory-error"), limitBefore, limitAfter),
                         frame.getTitle(), ERROR_MESSAGE);
             }
@@ -586,13 +588,13 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable.getMessage());
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path, 60), throwable.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path, 60), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         new ExternalPrograms().startMail(frame);
                     }
                 });
-                JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
+                showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
             }
         });
     }
@@ -602,13 +604,13 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable.getMessage());
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         new ExternalPrograms().startMail(frame);
                     }
                 });
-                JOptionPane.showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
+                showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
             }
         });
     }
@@ -617,7 +619,7 @@ public class RouteConverter extends SingleFrameApplication {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 log.severe("Unsupported format: " + path);
-                JOptionPane.showMessageDialog(frame,
+                showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("unsupported-format"), Files.shortenPath(path, 60)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
@@ -628,7 +630,7 @@ public class RouteConverter extends SingleFrameApplication {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 log.severe("File not found: " + path);
-                JOptionPane.showMessageDialog(frame,
+                showMessageDialog(frame,
                         MessageFormat.format(getBundle().getString("file-not-found"), Files.shortenPath(path, 60)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }

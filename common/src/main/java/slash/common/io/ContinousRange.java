@@ -22,6 +22,8 @@ package slash.common.io;
 
 import java.util.List;
 
+import static slash.common.io.Range.asContinuousMonotonicallyIncreasingRanges;
+
 /**
  * Allows to perform customizable {@link RangeOperation}s on indexed elements
  * with another customizable operation after a continuous range.
@@ -41,11 +43,11 @@ public class ContinousRange {
     }
 
     public void performMonotonicallyIncreasing() {
-        perform(Range.asContinuousMonotonicallyIncreasingRanges(indices));
+        perform(asContinuousMonotonicallyIncreasingRanges(indices));
     }
 
     public void performMonotonicallyIncreasing(int maximumRangeLength) {
-        perform(Range.asContinuousMonotonicallyIncreasingRanges(indices, maximumRangeLength));
+        perform(asContinuousMonotonicallyIncreasingRanges(indices, maximumRangeLength));
     }
 
     public void performMonotonicallyDecreasing() {
