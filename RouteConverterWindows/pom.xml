@@ -61,7 +61,6 @@
             <plugin>
                 <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
                 <artifactId>launch4j-plugin</artifactId>
-                <version>1.5.0.0</version>
                 <executions>
                     <execution>
                         <id>routeconverter-exe</id>
