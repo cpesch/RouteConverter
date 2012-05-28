@@ -20,6 +20,10 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.base.RouteCharacteristics;
+
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+
 /**
  * Reads and writes CompeGPS Data (.wpt) files.
  *
@@ -35,7 +39,7 @@ public class CompeGPSDataWaypointFormat extends CompeGPSDataFormat {
         return "CompeGPS Data Waypoint (*" + getExtension() + ")";
     }
 
-    public boolean isSupportsWriting() {
-        return false;
+    protected RouteCharacteristics getRouteCharacteristics() {
+        return Waypoints;
     }
 }

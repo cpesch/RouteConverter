@@ -20,6 +20,10 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.base.RouteCharacteristics;
+
+import static slash.navigation.base.RouteCharacteristics.Route;
+
 /**
  * Reads and writes CompeGPS Data Route (.rte) files.
  *
@@ -33,5 +37,9 @@ public class CompeGPSDataRouteFormat extends CompeGPSDataFormat {
 
     public String getName() {
         return "CompeGPS Data Route (*" + getExtension() + ")";
+    }
+
+    protected RouteCharacteristics getRouteCharacteristics() {
+        return Route;
     }
 }

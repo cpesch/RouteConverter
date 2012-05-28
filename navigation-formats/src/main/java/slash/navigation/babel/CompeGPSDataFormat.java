@@ -20,6 +20,7 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
@@ -56,5 +57,12 @@ public abstract class CompeGPSDataFormat extends BabelFormat {
                 count++;
         }
         return count != positions.size();
+    }
+
+    protected abstract RouteCharacteristics getRouteCharacteristics();
+
+    protected GpxRoute sanitizeRoute(GpxRoute route) {
+        route.setCharacteristics(getRouteCharacteristics());
+        return route;
     }
 }

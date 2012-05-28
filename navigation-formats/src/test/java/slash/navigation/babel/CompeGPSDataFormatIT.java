@@ -26,6 +26,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
+import slash.navigation.base.RouteCharacteristics;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,34 +34,39 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static slash.common.io.Files.getExtension;
+import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class CompeGPSDataFormatIT {
     private NavigationFormatParser parser = new NavigationFormatParser();
 
-    @Test
-    public void testTrack() throws IOException {
-        File source = new File(TEST_PATH + "from-compegps.trk");
-        ParserResult result = parser.read(source);
+    private void checkFile(String testFileName, RouteCharacteristics characteristics, int positionCount) throws IOException {
+        File source = new File(TEST_PATH + testFileName);
+        ParserResult result = parser.read(source, getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull(result);
         List<BaseRoute> routes = result.getAllRoutes();
         assertEquals(1, routes.size());
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        assertEquals(Track, route.getCharacteristics());
-        assertEquals(3670, route.getPositionCount());
+        assertEquals(characteristics, route.getCharacteristics());
+        assertEquals(positionCount, route.getPositionCount());
+    }
+
+    @Test
+    public void testRoute() throws IOException {
+        checkFile("from-compegps.rte", Route, 19);
+    }
+
+    @Test
+    public void testTrack() throws IOException {
+        checkFile("from-compegps.trk", Track, 3670);
     }
 
     @Test
     public void testWaypoints() throws IOException {
-        File source = new File(TEST_PATH + "from-compegps.wpt");
-        ParserResult result = parser.read(source);
-        assertNotNull(result);
-        List<BaseRoute> routes = result.getAllRoutes();
-        assertEquals(1, routes.size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        assertEquals(Waypoints, route.getCharacteristics());
-        assertEquals(31, route.getPositionCount());
+        checkFile("from-compegps.wpt", Waypoints, 31);
     }
 }

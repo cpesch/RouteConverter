@@ -20,6 +20,10 @@
 
 package slash.navigation.babel;
 
+import slash.navigation.base.RouteCharacteristics;
+
+import static slash.navigation.base.RouteCharacteristics.Track;
+
 /**
  * Reads and writes CompeGPS Data Track (.trk) files.
  *
@@ -35,7 +39,7 @@ public class CompeGPSDataTrackFormat extends CompeGPSDataFormat {
         return "CompeGPS Data Track (*" + getExtension() + ")";
     }
 
-    public boolean isSupportsWriting() {
-        return false;
+    protected RouteCharacteristics getRouteCharacteristics() {
+        return Track;
     }
 }
