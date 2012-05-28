@@ -512,23 +512,24 @@ public class ConvertPanel {
         startWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
         new Thread(new Runnable() {
             public void run() {
+                NavigationFormatParser parser = new NavigationFormatParser();
+                NavigationFormatParserListener listener = new NavigationFormatParserListener() {
+                    public void reading(final NavigationFormat<BaseRoute> format) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                formatAndRoutesModel.setFormat(format);
+                            }
+                        });
+                    }
+                };
+                parser.addNavigationFileParserListener(listener);
+
                 try {
                     SwingUtilities.invokeAndWait(new Runnable() {
                         public void run() {
                             Gpx11Format gpxFormat = new Gpx11Format();
                             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
                             urlModel.clear();
-                        }
-                    });
-
-                    NavigationFormatParser parser = new NavigationFormatParser();
-                    parser.addNavigationFileParserListener(new NavigationFormatParserListener() {
-                        public void reading(final NavigationFormat<BaseRoute> format) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    formatAndRoutesModel.setFormat(format);
-                                }
-                            });
                         }
                     });
 
@@ -570,6 +571,7 @@ public class ConvertPanel {
                 } catch (Throwable t) {
                     r.handleOpenError(t, path);
                 } finally {
+                    parser.removeNavigationFileParserListener(listener);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             stopWaitCursor(RouteConverter.getInstance().getFrame().getRootPane());
