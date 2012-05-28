@@ -47,7 +47,7 @@ public class GoogleMapsServiceIT {
         assertEquals(null, service.getLocationFor(0.0, 0.0));
         assertEquals(null, service.getLocationFor(0.0, 90.0));
         assertTrue(service.getLocationFor(0.0, -90.0).contains("Antarctica"));
-        assertEquals(null, service.getLocationFor(-90.0, 0.0));
+        assertEquals("Ecuador", service.getLocationFor(-90.0, 0.0));
         assertTrue(service.getLocationFor(-90.0, -90.0).contains("Antarctica"));
         assertEquals(null, service.getLocationFor(90.0, 90.0));
     }
