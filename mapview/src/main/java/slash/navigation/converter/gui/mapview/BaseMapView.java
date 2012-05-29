@@ -29,7 +29,6 @@ import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
-import slash.navigation.util.Positions;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -48,7 +47,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -67,7 +65,9 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
+import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.CompactCalendar.fromCalendar;
@@ -85,6 +85,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_
 import static slash.navigation.util.Positions.asPosition;
 import static slash.navigation.util.Positions.center;
 import static slash.navigation.util.Positions.contains;
+import static slash.navigation.util.Positions.getSignificantPositions;
 import static slash.navigation.util.Positions.northEast;
 import static slash.navigation.util.Positions.southWest;
 
@@ -306,7 +307,7 @@ public abstract class BaseMapView implements MapView {
                            - user has moved map
                              - repaint if moved
                          */
-                        long currentTime = System.currentTimeMillis();
+                        long currentTime = currentTimeMillis();
                         if (haveToRepaintRouteImmediately ||
                                 haveToReplaceRoute ||
                                 (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
@@ -337,7 +338,7 @@ public abstract class BaseMapView implements MapView {
                     }
                     log.info("Position list updated for " + render.size() + " positions of type " +
                             positionsModel.getRoute().getCharacteristics() + ", recentering: " + recenter);
-                    lastTime = System.currentTimeMillis();
+                    lastTime = currentTimeMillis();
                 }
             }
         }, "MapViewPositionListUpdater");
@@ -364,7 +365,7 @@ public abstract class BaseMapView implements MapView {
                         if (!isVisible())
                             continue;
 
-                        long currentTime = System.currentTimeMillis();
+                        long currentTime = currentTimeMillis();
                         if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
                                 (haveToRepaintSelection && (currentTime - lastTime > 500))) {
                             log.fine("Woke up to update selected positions: " + selectionUpdateReason +
@@ -386,7 +387,7 @@ public abstract class BaseMapView implements MapView {
                     BaseNavigationPosition centerPosition = center != null ? center : render.size() > 0 ? render.get(0) : null;
                     selectPositions(render, recenter ? centerPosition : null);
                     log.info("Selected positions updated for " + render.size() + " positions, recentering: " + recenter + " to: " + centerPosition);
-                    lastTime = System.currentTimeMillis();
+                    lastTime = currentTimeMillis();
                 }
             }
         }, "MapViewSelectionUpdater");
@@ -531,17 +532,17 @@ public abstract class BaseMapView implements MapView {
                 try {
                     executeScript("checkCallbackListenerPort();");
 
-                    long start = System.currentTimeMillis();
+                    long start = currentTimeMillis();
                     while (true) {
                         synchronized (receivedCallback) {
                             if (receivedCallback[0]) {
-                                long end = System.currentTimeMillis();
+                                long end = currentTimeMillis();
                                 log.info("Received callback from browser after " + (end - start) + " milliseconds");
                                 break;
                             }
                         }
 
-                        if (start + 5000 < System.currentTimeMillis())
+                        if (start + 5000 < currentTimeMillis())
                             break;
 
                         try {
@@ -568,7 +569,7 @@ public abstract class BaseMapView implements MapView {
     // disposal
 
     public void dispose() {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
         synchronized (notificationMutex) {
             running = false;
             notificationMutex.notifyAll();
@@ -582,7 +583,7 @@ public abstract class BaseMapView implements MapView {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("PositionUpdater stopped after " + (end - start) + " ms");
         }
 
@@ -594,7 +595,7 @@ public abstract class BaseMapView implements MapView {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("RouteUpdater stopped after " + (end - start) + " ms");
         }
 
@@ -604,7 +605,7 @@ public abstract class BaseMapView implements MapView {
             } catch (IOException e) {
                 log.warning("Cannot close callback listener socket:" + e.getMessage());
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("CallbackListenerSocket stopped after " + (end - start) + " ms");
         }
 
@@ -614,7 +615,7 @@ public abstract class BaseMapView implements MapView {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("CallbackListener stopped after " + (end - start) + " ms");
         }
 
@@ -625,12 +626,12 @@ public abstract class BaseMapView implements MapView {
             } catch (InterruptedException e) {
                 // intentionally left empty
             }
-            long end = System.currentTimeMillis();
+            long end = currentTimeMillis();
             log.info("CallbackPoller stopped after " + (end - start) + " ms");
         }
 
         executor.shutdownNow();
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.info("Executors stopped after " + (end - start) + " ms");
     }
 
@@ -706,7 +707,7 @@ public abstract class BaseMapView implements MapView {
     public BaseNavigationPosition getCenter() {
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
-        return northEast != null && southWest != null ? center(Arrays.asList(northEast, southWest)) : null;
+        return northEast != null && southWest != null ? center(asList(northEast, southWest)) : null;
     }
 
     public void setCenter(BaseNavigationPosition center) {
@@ -728,7 +729,7 @@ public abstract class BaseMapView implements MapView {
 
         String latitude = tokenizer.nextToken();
         String longitude = tokenizer.nextToken();
-        return asPosition(Double.parseDouble(longitude), Double.parseDouble(latitude));
+        return asPosition(parseDouble(longitude), parseDouble(latitude));
     }
 
     // reduction of positions
@@ -740,9 +741,9 @@ public abstract class BaseMapView implements MapView {
 
             if (zoomLevel <= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
                 double threshold = ZOOMLEVEL_SCALE[zoomLevel] / 2500.0;
-                long start = System.currentTimeMillis();
-                int[] significantPositions = Positions.getSignificantPositions(positions, threshold);
-                long end = System.currentTimeMillis();
+                long start = currentTimeMillis();
+                int[] significantPositions = getSignificantPositions(positions, threshold);
+                long end = currentTimeMillis();
                 log.info("zoomLevel " + zoomLevel + " < " + MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION +
                         ": threshold " + threshold + ", significant positions " + significantPositions.length +
                         ", calculated in " + (end - start) + " milliseconds");
@@ -760,7 +761,7 @@ public abstract class BaseMapView implements MapView {
     }
 
     private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions) {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
 
         int zoomLevel = getCurrentZoomLevel();
         BitSet pointStatus = calculateSignificantPositionsForZoomLevel(positions, zoomLevel);
@@ -769,7 +770,7 @@ public abstract class BaseMapView implements MapView {
             if (pointStatus.get(i))
                 result.add(positions.get(i));
 
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.info(format("Filtered significant positions to reduce %d positions to %d in %d milliseconds",
                 positions.size(), result.size(), (end - start)));
         return result;
@@ -827,7 +828,7 @@ public abstract class BaseMapView implements MapView {
 
     private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions,
                                                                 double factor, boolean includeFirstAndLastPosition) {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
 
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
@@ -861,14 +862,14 @@ public abstract class BaseMapView implements MapView {
         if (includeFirstAndLastPosition)
             result.add(positions.get(positions.size() - 1));
 
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.info(format("Filtered visible positions to reduce %d positions to %d in %d milliseconds",
                 positions.size(), result.size(), (end - start)));
         return result;
     }
 
     private List<BaseNavigationPosition> filterEveryNthPosition(List<BaseNavigationPosition> positions, int maximumPositionCount) {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         result.add(positions.get(0));
@@ -880,14 +881,14 @@ public abstract class BaseMapView implements MapView {
 
         result.add(positions.get(positions.size() - 1));
 
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.info(format("Filtered every %fth position to reduce %d positions to %d in %d milliseconds",
                 increment, positions.size(), result.size(), (end - start)));
         return result;
     }
 
     private List<BaseNavigationPosition> filterSelectedPositions(List<BaseNavigationPosition> positions, int[] selectedIndices) {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int selectedIndex : selectedIndices) {
@@ -896,14 +897,14 @@ public abstract class BaseMapView implements MapView {
             result.add(positions.get(selectedIndex));
         }
 
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.info(format("Filtered selected positions to reduce %d positions to %d in %d milliseconds",
                 positions.size(), result.size(), (end - start)));
         return result;
     }
 
     private List<BaseNavigationPosition> filterPositionsWithoutCoordinates(List<BaseNavigationPosition> positions) {
-        long start = System.currentTimeMillis();
+        long start = currentTimeMillis();
 
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         // copy to avoid ConcurrentModificationException
@@ -913,7 +914,7 @@ public abstract class BaseMapView implements MapView {
                 result.add(position);
         }
 
-        long end = System.currentTimeMillis();
+        long end = currentTimeMillis();
         log.info(format("Filtered positions without coordinates to reduce %d positions to %d in %d milliseconds",
                 positions.size(), result.size(), (end - start)));
         return result;
