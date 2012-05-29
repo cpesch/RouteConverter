@@ -1078,18 +1078,16 @@ public abstract class BaseMapView implements MapView {
                     append("new google.maps.LatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append("),").
                     append("new google.maps.LatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(")));\n");
             BaseNavigationPosition center = center(positions);
-            buffer.append("map.setCenter(new google.maps.LatLng(").append(center.getLatitude()).append(",").
-                    append(center.getLongitude()).append("));\n");
+            buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
             ignoreNextZoomCallback = true;
         }
 
         if(haveToInitializeMapOnFirstStart) {
             double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
             double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
-            buffer.append("map.setCenter(new google.maps.LatLng(").append(latitude).append(",").
-                    append(longitude).append("));\n");
+            buffer.append("setCenter(").append(latitude).append(",").append(longitude).append(");\n");
             int zoom = preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
-            buffer.append("map.setZoom(").append(zoom).append(");\n");
+            buffer.append("setZoom(").append(zoom).append(");\n");
         }
         executeScript(buffer.toString());
 
@@ -1102,15 +1100,14 @@ public abstract class BaseMapView implements MapView {
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
-            buffer.append("addMarker(new google.maps.Marker({position: new google.maps.LatLng(").
-                    append(selectedPosition.getLatitude()).append(",").append(selectedPosition.getLongitude()).append("), ").
-                    append("title: \"").append(escape(selectedPosition.getComment())).append("\", ").
-                    append("draggable: true, zIndex: 1000}), ").append(i).append(");\n");
+            buffer.append("addMarker(").append(selectedPosition.getLatitude()).append(",").
+                    append(selectedPosition.getLongitude()).append(",").
+                    append("\"").append(escape(selectedPosition.getComment())).append("\",").
+                    append(i).append(");\n");
         }
 
         if (center != null)
-            buffer.append("centerMap(new google.maps.LatLng(").append(center.getLatitude()).append(",").
-                    append(center.getLongitude()).append("));\n");
+            buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
         buffer.append("removeMarkers();");
         executeScript(buffer.toString());
     }

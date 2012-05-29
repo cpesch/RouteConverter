@@ -86,10 +86,24 @@
        document.body.className = show ? "" : "normal";
    }
 
-   function resize(x, y) {
+   function resize(width, height) {
        var div = document.getElementById("map");
-       div.style.width = x + "px";
-       div.style.height = y + "px";
+       div.style.width = width + "px";
+       div.style.height = height + "px";
+   }
+
+   function panTo(latitude, longitude) {
+       var latLng = new google.maps.LatLng(latitude, longitude);
+       if (!map.getBounds().contains(latLng))
+           map.panTo(latLng);
+   }
+
+   function setCenter(latitude, longitude) {
+       map.setCenter(new google.maps.LatLng(latitude, longitude));
+   }
+
+   function setZoom(zoom) {
+       map.setZoom(zoom);
    }
 
    var callbackQueue = [];
@@ -143,7 +157,9 @@
    var oldMarkers = new Array();
    var newMarkers = new Array();
 
-   function addMarker(marker, index) {
+   function addMarker(latitude, longitude, comment, index) {
+       var marker = new google.maps.Marker({position: new google.maps.LatLng(latitude, longitude),
+           title: comment, draggable: true, zIndex: 1000});
        marker.index_ = index;
        addListener(marker);
        newMarkers.push(marker);
@@ -156,11 +172,6 @@
        }
        oldMarkers = newMarkers;
        newMarkers = new Array();
-   }
-
-   function centerMap(latlng) {
-       if (!map.getBounds().contains(latlng))
-           map.panTo(latlng);
    }
 
    function insertAllWaypoints(directionsRequest, index) {
@@ -341,6 +352,14 @@
        return map.getBounds().getSouthWest().toUrlValue(6);
    }
 
+   function getThresholdForPixel(map, latLng, pixel) {
+       var worldCoordinate = map.getProjection().fromLatLngToPoint(latLng);
+       var scale = Math.pow(2, map.getZoom());
+       worldCoordinate.x = worldCoordinate.x + pixel / scale;
+       var pixelAway = map.getProjection().fromPointToLatLng(worldCoordinate);
+       return google.maps.geometry.spherical.computeDistanceBetween(latLng, pixelAway);
+   }
+
    var debug = document.createElement("div");
 
    function addDebug(text) {
@@ -357,14 +376,6 @@
        error.style.padding = "20pt";
        error.appendChild(element);
        error.appendChild(debug);
-   }
-
-   function getThresholdForPixel(map, latLng, pixel) {
-       var worldCoordinate = map.getProjection().fromLatLngToPoint(latLng);
-       var scale = Math.pow(2, map.getZoom());
-       worldCoordinate.x = worldCoordinate.x + pixel / scale;
-       var pixelAway = map.getProjection().fromPointToLatLng(worldCoordinate);
-       return google.maps.geometry.spherical.computeDistanceBetween(latLng, pixelAway);
    }
 
    function ignoreCtrlF(event) {
