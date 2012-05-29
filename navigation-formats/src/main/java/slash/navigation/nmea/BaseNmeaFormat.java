@@ -43,8 +43,8 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.hex.HexDecoder.decodeBytes;
-import static slash.common.hex.HexEncoder.encodeByte;
+import static slash.common.hex.HexEncoding.decodeBytes;
+import static slash.common.hex.HexEncoding.encodeByte;
 import static slash.common.io.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;

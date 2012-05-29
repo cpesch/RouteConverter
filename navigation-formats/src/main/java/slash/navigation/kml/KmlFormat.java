@@ -36,7 +36,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.hex.HexDecoder.decodeBytes;
+import static slash.common.hex.HexEncoding.decodeBytes;
 import static slash.common.io.CompactCalendar.UTC;
 import static slash.common.io.CompactCalendar.fromCalendar;
 import static slash.common.io.CompactCalendar.fromDate;
