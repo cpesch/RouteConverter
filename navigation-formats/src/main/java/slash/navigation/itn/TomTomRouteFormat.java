@@ -20,7 +20,7 @@
 
 package slash.navigation.itn;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;

@@ -21,7 +21,7 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;

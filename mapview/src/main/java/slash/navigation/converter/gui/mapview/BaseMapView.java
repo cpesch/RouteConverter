@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.mapview;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
@@ -70,7 +70,7 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;

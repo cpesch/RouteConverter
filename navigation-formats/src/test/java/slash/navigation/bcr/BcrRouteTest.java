@@ -21,7 +21,7 @@
 package slash.navigation.bcr;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.util.RouteComments;
 
 import java.util.ArrayList;

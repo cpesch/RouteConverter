@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.ContinousRange;
-import slash.common.io.Range;
-import slash.common.io.RangeOperation;
+import slash.common.type.CompactCalendar;
+import slash.navigation.gui.events.ContinousRange;
+import slash.navigation.gui.events.Range;
+import slash.navigation.gui.events.RangeOperation;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;

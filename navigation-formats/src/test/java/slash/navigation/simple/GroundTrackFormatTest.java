@@ -20,7 +20,7 @@
 package slash.navigation.simple;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.io.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.UTC;
 
 public class GroundTrackFormatTest {
     GroundTrackFormat format = new GroundTrackFormat();

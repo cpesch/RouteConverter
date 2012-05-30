@@ -29,7 +29,7 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.gui.undo.UndoManager;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataListener;

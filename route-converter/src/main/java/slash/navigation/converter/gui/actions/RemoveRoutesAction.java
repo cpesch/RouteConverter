@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.catalog.model.RouteModel;
 import slash.navigation.converter.gui.models.CatalogModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.util.List;

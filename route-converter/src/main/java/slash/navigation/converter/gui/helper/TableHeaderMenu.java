@@ -25,7 +25,7 @@ import slash.navigation.converter.gui.actions.ToggleColumnVisibilityAction;
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionTableColumnButtonModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
-import slash.navigation.gui.ActionManager;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.Application;
 
 import javax.swing.*;

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.augment.PositionAugmenter;

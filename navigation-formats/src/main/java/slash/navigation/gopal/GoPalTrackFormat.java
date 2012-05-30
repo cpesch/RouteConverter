@@ -20,7 +20,7 @@
 
 package slash.navigation.gopal;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatAccuracyAsString;
 import static slash.common.io.Transfer.formatHeadingAsString;
 import static slash.common.io.Transfer.formatIntAsString;

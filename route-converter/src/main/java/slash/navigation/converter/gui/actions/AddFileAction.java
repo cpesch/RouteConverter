@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.CatalogModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.io.File;
@@ -31,7 +31,7 @@ import java.io.File;
 import static java.util.Arrays.asList;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
-import static slash.navigation.gui.Constants.createJFileChooser;
+import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
  * {@link Action} that adds a {@link File} to a {@link Category} to the {@link CatalogModel}.

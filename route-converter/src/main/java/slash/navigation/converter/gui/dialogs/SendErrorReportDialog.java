@@ -26,8 +26,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.helpers.UIHelper;
+import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;
@@ -100,7 +100,7 @@ public class SendErrorReportDialog extends SimpleDialog {
     }
 
     private void chooseFilePath() {
-        JFileChooser chooser = Constants.createJFileChooser();
+        JFileChooser chooser = UIHelper.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-file-path"));
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);

@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 /**
  * Reverts positions of the position list

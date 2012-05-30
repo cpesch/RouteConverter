@@ -20,16 +20,16 @@
 
 package slash.navigation.converter.gui.undo;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.ContinousRange;
-import slash.common.io.Range;
-import slash.common.io.RangeOperation;
+import slash.common.type.CompactCalendar;
+import slash.navigation.gui.events.ContinousRange;
+import slash.navigation.gui.events.Range;
+import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.gui.undo.UndoManager;
 
 import javax.swing.event.TableModelListener;
 import java.io.IOException;

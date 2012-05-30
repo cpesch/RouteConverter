@@ -40,13 +40,13 @@ import static java.util.Locale.ITALY;
 import static java.util.Locale.ROOT;
 import static java.util.Locale.US;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.gui.Constants.ARABIA;
-import static slash.navigation.gui.Constants.CROATIA;
-import static slash.navigation.gui.Constants.CZECH;
-import static slash.navigation.gui.Constants.NEDERLANDS;
-import static slash.navigation.gui.Constants.SERBIA;
-import static slash.navigation.gui.Constants.SLOVAKIA;
-import static slash.navigation.gui.Constants.SPAIN;
+import static slash.navigation.gui.helpers.UIHelper.ARABIA;
+import static slash.navigation.gui.helpers.UIHelper.CROATIA;
+import static slash.navigation.gui.helpers.UIHelper.CZECH;
+import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
+import static slash.navigation.gui.helpers.UIHelper.SERBIA;
+import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
+import static slash.navigation.gui.helpers.UIHelper.SPAIN;
 
 public class ResourceBundleTest {
     private List<Locale> LOCALES = asList(ARABIA, CHINA, CROATIA, CZECH, FRANCE, GERMANY, ITALY, NEDERLANDS,

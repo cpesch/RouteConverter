@@ -20,6 +20,9 @@
 
 package slash.navigation.gui;
 
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.undo.UndoManager;
+
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.HelpSetException;

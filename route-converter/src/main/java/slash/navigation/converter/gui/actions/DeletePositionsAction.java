@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.DeletePositionsDialog;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 /**
  * Delete positions from the position list

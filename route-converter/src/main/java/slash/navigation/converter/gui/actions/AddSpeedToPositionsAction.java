@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.helper.BatchPositionAugmenter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

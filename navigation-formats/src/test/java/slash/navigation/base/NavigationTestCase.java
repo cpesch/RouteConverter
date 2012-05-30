@@ -22,7 +22,7 @@ package slash.navigation.base;
 
 import junit.framework.AssertionFailedError;
 import slash.common.TestCase;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.common.io.Transfer;
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
@@ -104,7 +104,7 @@ import java.util.logging.Logger;
 import static java.io.File.separator;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
-import static slash.common.io.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;

@@ -21,7 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.gpx.GpxPosition;
 
 import javax.xml.datatype.DatatypeConfigurationException;

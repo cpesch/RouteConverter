@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.awt.*;

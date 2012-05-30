@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.cmdline;
 
-import slash.common.io.Version;
+import slash.common.system.Version;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.NavigationFormat;
@@ -37,10 +37,10 @@ import java.util.logging.Logger;
 import static slash.common.io.Files.absolutize;
 import static slash.common.io.Files.createTargetFiles;
 import static slash.common.io.Files.removeExtension;
-import static slash.common.io.Platform.getJava;
-import static slash.common.io.Platform.getMaximumMemory;
-import static slash.common.io.Platform.getPlatform;
-import static slash.common.io.Version.parseVersionFromManifest;
+import static slash.common.system.Platform.getJava;
+import static slash.common.system.Platform.getMaximumMemory;
+import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormatsSortedByName;
 import static slash.navigation.base.NavigationFormats.getWriteFormatsSortedByName;

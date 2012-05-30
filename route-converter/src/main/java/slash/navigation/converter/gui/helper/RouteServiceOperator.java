@@ -31,8 +31,8 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.navigation.gui.Constants.startWaitCursor;
-import static slash.navigation.gui.Constants.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
  * Helps to interact with the RemoteCatalog and RouteFeedback service.

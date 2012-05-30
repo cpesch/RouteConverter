@@ -20,6 +20,8 @@
 
 package slash.navigation.gui;
 
+import slash.navigation.gui.helpers.UIHelper;
+
 import javax.swing.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -108,7 +110,7 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] args) {
-        Constants.setLookAndFeel();
+        UIHelper.setLookAndFeel();
         openNativeInterface();
         initializeLocale(Preferences.userNodeForPackage(applicationClass));
 
@@ -165,7 +167,7 @@ public abstract class Application {
     }
 
 
-    void exit(EventObject event) {
+    public/*for ExitAction*/ void exit(EventObject event) {
         for (ExitListener listener : exitListeners) {
             if (!listener.canExit(event)) {
                 return;

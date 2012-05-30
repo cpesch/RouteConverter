@@ -29,7 +29,7 @@ import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.converter.gui.models.CatalogModelImpl;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.gui.undo.UndoManager;
 
 import javax.swing.tree.TreeModel;
 import java.io.File;

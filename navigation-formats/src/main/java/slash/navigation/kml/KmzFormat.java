@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;

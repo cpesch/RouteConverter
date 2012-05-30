@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui;
 
-import slash.common.io.Version;
+import slash.common.system.Version;
 import slash.navigation.feedback.domain.RouteFeedback;
 
 import javax.swing.*;
@@ -35,9 +35,9 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static slash.common.io.Version.getLatestJavaVersion;
-import static slash.common.io.Version.getLatestRouteConverterVersion;
-import static slash.common.io.Version.parseVersionFromManifest;
+import static slash.common.system.Version.getLatestJavaVersion;
+import static slash.common.system.Version.getLatestRouteConverterVersion;
+import static slash.common.system.Version.parseVersionFromManifest;
 
 /**
  * Knows how to retrieve the information which is the latest version.

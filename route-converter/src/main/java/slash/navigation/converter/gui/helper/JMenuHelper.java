@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.gui.Constants.loadIcon;
+import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * A helper for simplified {@link JMenu} operations.

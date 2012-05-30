@@ -23,9 +23,9 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.ContinousRange;
-import slash.common.io.Range;
-import slash.common.io.RangeOperation;
+import slash.navigation.gui.events.ContinousRange;
+import slash.navigation.gui.events.Range;
+import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -91,12 +91,12 @@ import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.gui.ActionManager;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.FrameAction;
-import slash.navigation.gui.RedoAction;
-import slash.navigation.gui.UndoAction;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.undo.RedoAction;
+import slash.navigation.gui.undo.UndoAction;
+import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.nmn.Nmn7Format;
 import slash.navigation.nmn.NmnFormat;
 
@@ -163,9 +163,9 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
-import static slash.navigation.gui.Constants.createJFileChooser;
-import static slash.navigation.gui.Constants.startWaitCursor;
-import static slash.navigation.gui.Constants.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
  * The convert panel of the route converter user interface.

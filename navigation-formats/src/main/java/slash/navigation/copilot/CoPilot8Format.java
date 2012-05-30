@@ -20,7 +20,7 @@
 
 package slash.navigation.copilot;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Route;
 

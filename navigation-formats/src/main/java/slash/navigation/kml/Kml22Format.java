@@ -20,8 +20,8 @@
 
 package slash.navigation.kml;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.ISO8601;
+import slash.common.type.CompactCalendar;
+import slash.common.type.ISO8601;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -73,7 +73,7 @@ import static java.lang.Math.sin;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 import static java.lang.String.valueOf;
-import static slash.common.hex.HexEncoding.decodeBytes;
+import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;

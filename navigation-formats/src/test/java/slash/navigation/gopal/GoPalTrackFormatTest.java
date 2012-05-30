@@ -21,7 +21,7 @@
 package slash.navigation.gopal;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;

@@ -28,7 +28,7 @@ import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.Externalization;
-import slash.common.io.Platform;
+import slash.common.system.Platform;
 import slash.common.io.TokenResolver;
 import slash.navigation.base.BaseNavigationPosition;
 
@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
-import static slash.common.io.Platform.isLinux;
+import static slash.common.system.Platform.isLinux;
 import static slash.common.io.Transfer.parseDouble;
 
 /**

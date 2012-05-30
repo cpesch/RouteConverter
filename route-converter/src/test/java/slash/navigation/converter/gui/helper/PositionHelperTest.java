@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 import java.text.DateFormat;
 import java.text.ParseException;

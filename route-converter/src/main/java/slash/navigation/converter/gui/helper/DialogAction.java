@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.gui.Constants;
+import slash.navigation.gui.helpers.UIHelper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -44,11 +44,11 @@ public abstract class DialogAction implements ActionListener {
     }
 
     public final void actionPerformed(ActionEvent e) {
-        Constants.startWaitCursor(getDialog().getRootPane());
+        UIHelper.startWaitCursor(getDialog().getRootPane());
         try {
             run();
         } finally {
-            Constants.stopWaitCursor(getDialog().getRootPane());
+            UIHelper.stopWaitCursor(getDialog().getRootPane());
         }
     }
 

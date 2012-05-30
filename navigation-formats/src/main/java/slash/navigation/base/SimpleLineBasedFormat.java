@@ -19,7 +19,7 @@
 */
 package slash.navigation.base;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 import java.io.BufferedReader;
 import java.io.IOException;

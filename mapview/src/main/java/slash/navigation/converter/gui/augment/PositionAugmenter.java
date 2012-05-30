@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.augment;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 /**
  * Interface for a component that augments a position with elevation, postal address

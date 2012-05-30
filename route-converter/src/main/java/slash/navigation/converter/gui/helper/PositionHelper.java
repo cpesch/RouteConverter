@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.util.Unit;
@@ -36,7 +36,7 @@ import static java.lang.Math.round;
 import static java.lang.String.format;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
-import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.roundFraction;
 

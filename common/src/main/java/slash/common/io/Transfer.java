@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
@@ -303,5 +304,13 @@ public class Transfer {
 
     public static boolean isEmpty(Double aDouble) {
         return aDouble == null || aDouble == 0.0;
+    }
+
+    public static int[] toArray(List<Integer> integers) {
+        int[] result = new int[integers.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = integers.get(i);
+        }
+        return result;
     }
 }

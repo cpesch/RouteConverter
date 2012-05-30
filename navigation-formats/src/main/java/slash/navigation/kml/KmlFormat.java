@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
@@ -36,10 +36,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.hex.HexEncoding.decodeBytes;
-import static slash.common.io.CompactCalendar.UTC;
-import static slash.common.io.CompactCalendar.fromCalendar;
-import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.type.HexadecimalNumber.decodeBytes;
+import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.parseDouble;

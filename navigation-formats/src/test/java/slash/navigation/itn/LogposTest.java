@@ -21,7 +21,7 @@
 package slash.navigation.itn;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.common.io.ContinousRange;
-import slash.common.io.RangeOperation;
+import slash.navigation.gui.events.ContinousRange;
+import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
@@ -43,8 +43,8 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.gui.Constants.startWaitCursor;
-import static slash.navigation.gui.Constants.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 import static slash.navigation.util.RouteComments.getNumberedPosition;
 
 /**

@@ -20,8 +20,8 @@
 
 package slash.navigation.kml;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.ISO8601;
+import slash.common.type.CompactCalendar;
+import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.kml.binding22beta.AbstractContainerType;

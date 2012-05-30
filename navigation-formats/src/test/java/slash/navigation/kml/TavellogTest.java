@@ -21,7 +21,7 @@
 package slash.navigation.kml;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 import java.text.DateFormat;
 

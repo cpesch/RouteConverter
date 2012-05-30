@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;

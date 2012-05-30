@@ -24,7 +24,7 @@ import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.util.NumberPattern;
 
 import javax.swing.*;

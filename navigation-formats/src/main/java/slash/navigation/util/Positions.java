@@ -20,7 +20,7 @@
 
 package slash.navigation.util;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Position;
 
@@ -29,7 +29,7 @@ import java.util.List;
 
 import static java.lang.Math.abs;
 import static java.lang.System.arraycopy;
-import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.isEmpty;
 
 /**

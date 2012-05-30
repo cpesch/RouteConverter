@@ -28,7 +28,7 @@ import slash.navigation.base.ParserResult;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PositionSelection;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import java.awt.datatransfer.Transferable;

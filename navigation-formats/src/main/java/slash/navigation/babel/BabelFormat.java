@@ -20,9 +20,9 @@
 
 package slash.navigation.babel;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.common.io.Externalization;
-import slash.common.io.Platform;
+import slash.common.system.Platform;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;

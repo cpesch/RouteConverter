@@ -31,8 +31,8 @@ import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
 import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
 import slash.navigation.converter.gui.renderer.UnitListCellRenderer;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.Constants;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.helpers.UIHelper;
+import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.util.NumberPattern;
 import slash.navigation.util.Unit;
 
@@ -62,13 +62,13 @@ import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.navigation.converter.gui.mapview.TravelMode.Bicycling;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.converter.gui.mapview.TravelMode.Walking;
-import static slash.navigation.gui.Constants.ARABIA;
-import static slash.navigation.gui.Constants.CROATIA;
-import static slash.navigation.gui.Constants.CZECH;
-import static slash.navigation.gui.Constants.NEDERLANDS;
-import static slash.navigation.gui.Constants.SERBIA;
-import static slash.navigation.gui.Constants.SLOVAKIA;
-import static slash.navigation.gui.Constants.SPAIN;
+import static slash.navigation.gui.helpers.UIHelper.ARABIA;
+import static slash.navigation.gui.helpers.UIHelper.CROATIA;
+import static slash.navigation.gui.helpers.UIHelper.CZECH;
+import static slash.navigation.gui.helpers.UIHelper.NEDERLANDS;
+import static slash.navigation.gui.helpers.UIHelper.SERBIA;
+import static slash.navigation.gui.helpers.UIHelper.SLOVAKIA;
+import static slash.navigation.gui.helpers.UIHelper.SPAIN;
 import static slash.navigation.util.NumberPattern.DESCRIPTION_ONLY;
 import static slash.navigation.util.NumberPattern.NUMBER_DIRECTLY_FOLLOWED_BY_DESCRIPTION;
 import static slash.navigation.util.NumberPattern.NUMBER_ONLY;
@@ -223,7 +223,7 @@ public class OptionsPanel {
     }
 
     private void chooseBabelPath() {
-        JFileChooser chooser = Constants.createJFileChooser();
+        JFileChooser chooser = UIHelper.createJFileChooser();
         chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-gpsbabel-path"));
         chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
         chooser.setFileSelectionMode(FILES_ONLY);

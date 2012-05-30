@@ -20,6 +20,8 @@
 
 package slash.common.io;
 
+import slash.common.system.Platform;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;

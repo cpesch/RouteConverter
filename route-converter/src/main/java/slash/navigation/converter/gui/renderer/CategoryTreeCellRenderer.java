@@ -27,7 +27,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
-import static slash.navigation.gui.Constants.loadIcon;
+import static slash.navigation.gui.helpers.UIHelper.loadIcon;
 
 /**
  * Renders the {@link CategoryTreeNode} names.

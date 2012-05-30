@@ -20,7 +20,7 @@
 
 package slash.navigation.gopal;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.MercatorPosition;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.tour.TourPosition;

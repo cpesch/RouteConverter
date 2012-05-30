@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleLineBasedFormat;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.CompactCalendar.fromMillis;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.io.Transfer.formatElevationAsString;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.formatPositionAsString;

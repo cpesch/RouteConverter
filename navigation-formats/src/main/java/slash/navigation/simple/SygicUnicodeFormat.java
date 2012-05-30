@@ -19,7 +19,7 @@
 */
 package slash.navigation.simple;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;

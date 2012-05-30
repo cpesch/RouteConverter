@@ -24,7 +24,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.helper.AbstractListDataListener;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;

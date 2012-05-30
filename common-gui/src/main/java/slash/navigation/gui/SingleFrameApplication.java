@@ -20,6 +20,8 @@
 
 package slash.navigation.gui;
 
+import slash.navigation.gui.helpers.UIHelper;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -69,7 +71,7 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(Constants.loadIcon(iconName).getImage());
+        frame.setIconImage(UIHelper.loadIcon(iconName).getImage());
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);

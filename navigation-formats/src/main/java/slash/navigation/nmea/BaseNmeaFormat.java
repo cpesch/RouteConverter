@@ -20,7 +20,7 @@
 
 package slash.navigation.nmea;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -43,9 +43,9 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.hex.HexEncoding.decodeBytes;
-import static slash.common.hex.HexEncoding.encodeByte;
-import static slash.common.io.CompactCalendar.fromDate;
+import static slash.common.type.HexadecimalNumber.decodeBytes;
+import static slash.common.type.HexadecimalNumber.encodeByte;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Track;

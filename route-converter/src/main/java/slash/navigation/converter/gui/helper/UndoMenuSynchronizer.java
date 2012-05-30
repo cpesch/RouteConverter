@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helper;
 
 import slash.navigation.gui.Application;
-import slash.navigation.gui.UndoManager;
+import slash.navigation.gui.undo.UndoManager;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

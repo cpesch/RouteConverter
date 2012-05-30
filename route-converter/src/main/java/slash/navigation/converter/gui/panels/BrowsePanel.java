@@ -58,8 +58,8 @@ import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellHeaderRenderer;
 import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
-import slash.navigation.gui.ActionManager;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -100,8 +100,8 @@ import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
-import static slash.navigation.gui.Constants.startWaitCursor;
-import static slash.navigation.gui.Constants.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 import static slash.navigation.util.RouteComments.createRouteDescription;
 
 /**

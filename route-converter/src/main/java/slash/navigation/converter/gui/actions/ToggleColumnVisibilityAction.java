@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 /**
  * Toggles the visibilty of {@link PositionTableColumn} of a {@link PositionsTableColumnModel}.

@@ -20,7 +20,7 @@
 
 package slash.common;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 
 import java.text.DateFormat;
 import java.util.Calendar;

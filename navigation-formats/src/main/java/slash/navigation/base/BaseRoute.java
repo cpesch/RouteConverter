@@ -20,8 +20,7 @@
 
 package slash.navigation.base;
 
-import slash.common.io.CompactCalendar;
-import slash.common.io.Range;
+import slash.common.type.CompactCalendar;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.gopal.GoPal3Route;
 import slash.navigation.gopal.GoPal5Route;
@@ -44,6 +43,7 @@ import java.util.BitSet;
 import java.util.Calendar;
 import java.util.List;
 
+import static slash.common.io.Transfer.*;
 import static slash.navigation.util.Positions.contains;
 
 /**
@@ -179,7 +179,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             if (position.hasCoordinates() && contains(northEastCorner, southWestCorner, position))
                 result.add(i);
         }
-        return Range.toArray(result);
+        return toArray(result);
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
@@ -195,7 +195,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             else
                 previous = next;
         }
-        return Range.toArray(result);
+        return toArray(result);
     }
 
     public int[] getInsignificantPositions(double threshold) {

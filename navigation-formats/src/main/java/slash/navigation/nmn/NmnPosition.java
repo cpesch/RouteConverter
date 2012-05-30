@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
 import java.util.regex.Matcher;

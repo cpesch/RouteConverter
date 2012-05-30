@@ -21,7 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTomRoute;
@@ -42,7 +42,7 @@ import static java.util.Calendar.YEAR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.calendar;
-import static slash.common.io.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.readSampleGopalTrackFile;
 import static slash.navigation.base.NavigationTestCase.readSampleNmeaFile;

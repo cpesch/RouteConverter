@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding22.KmlType;
 
