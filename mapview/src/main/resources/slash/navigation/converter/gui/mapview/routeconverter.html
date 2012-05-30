@@ -415,26 +415,6 @@
        document.body.className = "normal";
        addDebug("1. initialize()");
        try {
-           if (window.addEventListener) {
-               addDebug("1.1 window.addEventListener");
-               window.addEventListener("keydown", function(event) {
-                   ignoreCtrlF(event);
-               });
-           } else if (document.addEventListener) {
-               addDebug("1.1 document.addEventListener");
-               document.addEventListener("keydown", function(event) {
-                   ignoreCtrlF(event);
-               });
-           } else if (window.attachEvent) {
-               addDebug("1.1 window.attachEvent");
-               window.attachEvent("keydown", function(event) {
-                   ignoreCtrlF(event);
-               });
-           }
-       } catch (e) {
-           addDebug("1.2 could not disable ctrl-f " + e.message);
-       }
-       try {
            var mapnikMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
@@ -601,6 +581,27 @@
            }
            catch (e) {
                setError("<p>Sorry, could not initialize XMLHttpRequest.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
+           }
+
+           try {
+               if (window.addEventListener) {
+                   addDebug("6. window.addEventListener");
+                   window.addEventListener("keydown", function(event) {
+                       ignoreCtrlF(event);
+                   });
+               } else if (document.addEventListener) {
+                   addDebug("6. document.addEventListener");
+                   document.addEventListener("keydown", function(event) {
+                       ignoreCtrlF(event);
+                   });
+               } else if (window.attachEvent) {
+                   addDebug("6. window.attachEvent");
+                   window.attachEvent("keydown", function(event) {
+                       ignoreCtrlF(event);
+                   });
+               }
+           } catch (e) {
+               setError("<p>Sorry, could not disable ctrl-f.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
            }
        } catch (e) {
            setError("<p>Sorry, could not initialize Google Maps.</p><p>Error name: " + e.name + "</p><p>Error message: " + e.message + "</p><p><a href='javascript:self.location.reload()'>Retry</a></p>");
