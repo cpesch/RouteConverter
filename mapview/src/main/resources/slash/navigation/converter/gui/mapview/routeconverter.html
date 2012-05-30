@@ -106,6 +106,11 @@
        map.setZoom(zoom);
    }
 
+   function fitBounds(southWestLatitude, southWestLongitude, northEastLatitude, northEastLongitude) {
+       map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(southWestLatitude, southWestLongitude),
+               new google.maps.LatLng(northEastLatitude, northEastLongitude)));
+   }
+
    var callbackQueue = [];
 
    function getCallbacks() {
@@ -154,24 +159,35 @@
        });
    }
 
-   var oldMarkers = new Array();
-   var newMarkers = new Array();
+   var oldSelectedPositions = new Array();
+   var newSelectedPositions = new Array();
 
-   function addMarker(latitude, longitude, comment, index) {
-       var marker = new google.maps.Marker({position: new google.maps.LatLng(latitude, longitude),
-           title: comment, draggable: true, zIndex: 1000});
+   function selectionPosition(latitude, longitude, comment, index) {
+       var marker = new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
+           title:comment, draggable:true, zIndex:1000});
        marker.index_ = index;
        addListener(marker);
-       newMarkers.push(marker);
+       newSelectedPositions.push(marker);
        marker.setMap(map);
    }
 
-   function removeMarkers() {
-       while (oldMarkers.length > 0) {
-           oldMarkers.pop().setMap(null);
+   function removeSelectedPositions() {
+       while (oldSelectedPositions.length > 0) {
+           oldSelectedPositions.pop().setMap(null);
        }
-       oldMarkers = newMarkers;
-       newMarkers = new Array();
+       oldSelectedPositions = newSelectedPositions;
+       newSelectedPositions = new Array();
+   }
+
+   function addPolyline(latlngs, color, weight) {
+       addOverlay(new google.maps.Polyline({path:latlngs, strokeColor:color, strokeWeight:weight, strokeOpacity:1, clickable:false}));
+   }
+
+   var markerIcon;
+
+   function addMarker(latitude, longitude, comment) {
+       addOverlay(new google.maps.Marker({position:new google.maps.LatLng(latitude, longitude),
+           title:comment, clickable:false, icon:markerIcon}));
    }
 
    function insertAllWaypoints(directionsRequest, index) {
@@ -388,7 +404,7 @@
        }
    }
 
-   var initialized, map, directionsService, markerIcon, xmlhttp;
+   var initialized, map, directionsService, xmlhttp;
 
    function isInitialized() {
        return initialized;

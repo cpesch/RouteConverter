@@ -1042,8 +1042,7 @@ public abstract class BaseMapView implements MapView {
                     buffer.append(",");
             }
             buffer.append("];\n");
-            buffer.append("addOverlay(new google.maps.Polyline({path: latlngs, strokeColor: \"#").append(color).append("\", ").
-                    append("strokeWeight: ").append(width).append(", strokeOpacity: 1, clickable: false}));");
+            buffer.append("addPolyline(latlngs,\"#").append(color).append("\",").append(width).append(");");
             executeScript(buffer.toString());
         }
         removeOverlays();
@@ -1057,10 +1056,9 @@ public abstract class BaseMapView implements MapView {
             int maximum = min(positions.size(), (j + 1) * MAXIMUM_MARKER_SEGMENT_LENGTH);
             for (int i = j * MAXIMUM_MARKER_SEGMENT_LENGTH; i < maximum; i++) {
                 BaseNavigationPosition position = positions.get(i);
-                buffer.append("addOverlay(new google.maps.Marker({position: new google.maps.LatLng(").
-                        append(position.getLatitude()).append(",").append(position.getLongitude()).append("), ").
-                        append("title: \"").append(escape(position.getComment())).append("\", ").
-                        append("clickable: false, icon: markerIcon}));\n");
+                buffer.append("addMarker(").append(position.getLatitude()).append(",").
+                        append(position.getLongitude()).append(",").
+                        append("\"").append(escape(position.getComment())).append("\");\n");
             }
             executeScript(buffer.toString());
         }
@@ -1074,9 +1072,8 @@ public abstract class BaseMapView implements MapView {
         if (positions.size() > 0 && recenter) {
             BaseNavigationPosition northEast = northEast(positions);
             BaseNavigationPosition southWest = southWest(positions);
-            buffer.append("map.fitBounds(new google.maps.LatLngBounds(").
-                    append("new google.maps.LatLng(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append("),").
-                    append("new google.maps.LatLng(").append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(")));\n");
+            buffer.append("fitBounds(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(",").
+                    append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(");\n");
             BaseNavigationPosition center = center(positions);
             buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
             ignoreNextZoomCallback = true;
@@ -1100,7 +1097,7 @@ public abstract class BaseMapView implements MapView {
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < selectedPositions.size(); i++) {
             BaseNavigationPosition selectedPosition = selectedPositions.get(i);
-            buffer.append("addMarker(").append(selectedPosition.getLatitude()).append(",").
+            buffer.append("selectionPosition(").append(selectedPosition.getLatitude()).append(",").
                     append(selectedPosition.getLongitude()).append(",").
                     append("\"").append(escape(selectedPosition.getComment())).append("\",").
                     append(i).append(");\n");
@@ -1108,7 +1105,7 @@ public abstract class BaseMapView implements MapView {
 
         if (center != null)
             buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
-        buffer.append("removeMarkers();");
+        buffer.append("removeSelectedPositions();");
         executeScript(buffer.toString());
     }
 
