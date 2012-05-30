@@ -256,10 +256,14 @@
    var meters = 0;
    var seconds = 0;
 
+   function fireDirectionsLoaded() {
+       callJava("directions-load/" + meters + "/" + seconds);
+   }
+
    function resetDirections() {
        meters = 0;
        seconds = 0;
-       callJava("load/" + meters + "/" + seconds);
+       fireDirectionsLoaded();
    }
 
    function renderDirections(directionsRequest, startIndex, lastSegment) {
@@ -280,7 +284,7 @@
                        seconds += legs[j].duration.value;
                    }
                }
-               callJava("load/" + meters + "/" + seconds);
+               fireDirectionsLoaded();
 
                if (lastSegment)
                    removeDirections();
@@ -508,7 +512,7 @@
                } else {
                    copyrightControl.innerHTML = '';
                }
-               callJava("maptypechanged/" + map.getMapTypeId());
+               callJava("map-type-changed/" + map.getMapTypeId());
            });
            map.setMapTypeId('${maptype}');
            addDebug("2. set maptype: " + map.getMapTypeId());
@@ -522,7 +526,7 @@
                    callJava("add-position/" + latLng.lat() + "/" + latLng.lng());
                });
                menu.addItem('Delete', function(map, latLng) {
-                   callJava("delete-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
+                   callJava("remove-position/" + latLng.lat() + "/" + latLng.lng() + "/" + getThresholdForPixel(map, latLng, 15));
                });
                menu.addSep();
                menu.addItem('Center Here', function(map, latLng) {
@@ -542,11 +546,11 @@
            }
 
            google.maps.event.addListener(map, "zoom_changed", function() {
-               callJava("zoomchanged");
+               callJava("zoom-changed");
            });
            google.maps.event.addListener(map, "center_changed", function() {
                center = map.getCenter();
-               callJava("centerchanged/" + center.lat() + "/" + center.lng() + "/" + map.getZoom());
+               callJava("center-changed/" + center.lat() + "/" + center.lng() + "/" + map.getZoom());
            });
 
            var shiftKey = false, altKey = false, ctrlKey = false;
@@ -561,7 +565,7 @@
                } else if (!shiftKey && !altKey && ctrlKey) {
                    callJava("add-position/" + event.latLng.lat() + "/" + event.latLng.lng());
                } else if (!shiftKey && altKey && ctrlKey) {
-                   callJava("delete-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
+                   callJava("remove-position/" + event.latLng.lat() + "/" + event.latLng.lng() + "/" + getThresholdForPixel(map, event.latLng, 15));
                }
            });
            addDebug("4. added listeners");

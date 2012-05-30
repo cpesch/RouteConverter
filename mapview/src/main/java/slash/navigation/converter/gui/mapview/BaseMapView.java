@@ -1291,16 +1291,16 @@ public abstract class BaseMapView implements MapView {
         }
     }
 
-    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^load/(\\d*)/(\\d*)$");
+    private static final Pattern DIRECTIONS_LOAD_PATTERN = Pattern.compile("^directions-load/(\\d*)/(\\d*)$");
     private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");
     private static final Pattern INSERT_POSITION_PATTERN = Pattern.compile("^insert-position/(.*)/(.*)/(.*)$");
     private static final Pattern MOVE_POSITION_PATTERN = Pattern.compile("^move-position/(.*)/(.*)/(.*)$");
-    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^delete-position/(.*)/(.*)/(.*)$");
+    private static final Pattern REMOVE_POSITION_PATTERN = Pattern.compile("^remove-position/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
-    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^maptypechanged/(.*)$");
-    private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoomchanged$");
-    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^centerchanged/(.*)/(.*)/(.*)$");
+    private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^map-type-changed/(.*)$");
+    private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoom-changed$");
+    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
