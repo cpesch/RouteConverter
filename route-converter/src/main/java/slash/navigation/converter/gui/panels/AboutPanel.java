@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.panels;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -30,6 +29,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ResourceBundle;
+
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForForum;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForGeonames;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForHomepage;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 
 /**
  * The about panel of the route converter user interface.
@@ -53,25 +57,25 @@ public class AboutPanel {
 
         labelBrowse.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startBrowserForHomepage(r.getFrame());
+                startBrowserForHomepage(r.getFrame());
             }
         });
 
         labelCp.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startMail(r.getFrame());
+                startMail(r.getFrame());
             }
         });
 
         labelMail.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startBrowserForForum(r.getFrame());
+                startBrowserForForum(r.getFrame());
             }
         });
 
         labelCredit.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startBrowserForGeonames(r.getFrame());
+                startBrowserForGeonames(r.getFrame());
             }
         });
     }

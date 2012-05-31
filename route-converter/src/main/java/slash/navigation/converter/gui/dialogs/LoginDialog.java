@@ -23,9 +23,8 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.rest.exception.DuplicateNameException;
@@ -45,6 +44,7 @@ import java.util.logging.Logger;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForTerms;
 
 /**
  * Dialog to login a user to the RouteService.
@@ -106,7 +106,7 @@ public class LoginDialog extends SimpleDialog {
 
         labelAcceptTerms.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startBrowserForTerms(LoginDialog.this);
+                startBrowserForTerms(LoginDialog.this);
             }
         });
 

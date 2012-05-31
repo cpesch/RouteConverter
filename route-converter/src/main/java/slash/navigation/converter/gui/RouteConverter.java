@@ -117,6 +117,8 @@ import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Version.parseVersionFromManifest;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findItem;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenu;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
@@ -235,7 +237,7 @@ public class RouteConverter extends SingleFrameApplication {
             JLabel label = new JLabel(MessageFormat.format(getBundle().getString("jre-too-old-warning"), currentVersion, minimumVersion));
             label.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
-                    new ExternalPrograms().startBrowserForJava(frame);
+                    startBrowserForJava(frame);
                 }
             });
             showMessageDialog(frame, label, frame.getTitle(), JOptionPane.WARNING_MESSAGE);
@@ -591,7 +593,7 @@ public class RouteConverter extends SingleFrameApplication {
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path, 60), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
-                        new ExternalPrograms().startMail(frame);
+                        startMail(frame);
                     }
                 });
                 showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
@@ -607,7 +609,7 @@ public class RouteConverter extends SingleFrameApplication {
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), printArrayToDialogString(urls.toArray(new URL[urls.size()])), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
-                        new ExternalPrograms().startMail(frame);
+                        startMail(frame);
                     }
                 });
                 showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);

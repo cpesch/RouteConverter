@@ -23,9 +23,8 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.ExternalPrograms;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.converter.gui.helper.JMenuHelper;
 import slash.navigation.converter.gui.models.NumberDocument;
 import slash.navigation.gui.SimpleDialog;
@@ -43,6 +42,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
+
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForDouglasPeucker;
 
 /**
  * Dialog for selecting and deleting {@link slash.navigation.base.BaseNavigationPosition}s from the current {@link slash.navigation.base.BaseRoute}.
@@ -88,7 +89,7 @@ public class DeletePositionsDialog extends SimpleDialog {
 
         labelDouglasPeucker.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                new ExternalPrograms().startBrowserForDouglasPeucker(DeletePositionsDialog.this);
+                startBrowserForDouglasPeucker(DeletePositionsDialog.this);
             }
         });
 

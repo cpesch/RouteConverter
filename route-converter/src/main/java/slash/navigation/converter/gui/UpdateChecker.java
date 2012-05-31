@@ -38,6 +38,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.system.Version.getLatestJavaVersion;
 import static slash.common.system.Version.getLatestRouteConverterVersion;
 import static slash.common.system.Version.parseVersionFromManifest;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForUpdateCheck;
 
 /**
  * Knows how to retrieve the information which is the latest version.
@@ -108,7 +109,7 @@ public class UpdateChecker {
                 MessageFormat.format(RouteConverter.getBundle().getString("confirm-update"), result.getMyRouteConverterVersion(), result.getLatestRouteConverterVersion()),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
-            new ExternalPrograms().startBrowserForUpdateCheck(window, result.getMyRouteConverterVersion(), getStartTime());
+            startBrowserForUpdateCheck(window, result.getMyRouteConverterVersion(), getStartTime());
     }
 
     private void noUpdateAvailable(Window window) {

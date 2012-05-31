@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helper.AbstractDocumentListener;
-import slash.navigation.converter.gui.helper.DialogAction;
+import slash.navigation.converter.gui.actions.DialogAction;
 import slash.navigation.gui.SimpleDialog;
 
 import javax.swing.*;

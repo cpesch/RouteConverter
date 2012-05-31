@@ -18,7 +18,9 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui;
+package slash.navigation.converter.gui.helper;
+
+import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +32,7 @@ import static java.awt.Desktop.getDesktop;
 import static java.awt.Desktop.isDesktopSupported;
 import static java.util.Locale.GERMAN;
 import static java.util.Locale.getDefault;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -39,68 +42,71 @@ import static java.util.Locale.getDefault;
 public class ExternalPrograms {
     protected static final Logger log = Logger.getLogger(ExternalPrograms.class.getName());
 
-    private boolean isGerman() {
+    private ExternalPrograms() {
+    }
+
+    private static boolean isGerman() {
         return getDefault().getLanguage().equals(GERMAN.getLanguage());
     }
 
-    public void startBrowserForHomepage(Window window) {
+    public static void startBrowserForHomepage(Window window) {
         startBrowser(window, isGerman() ? "http://www.routeconverter.de/" : "http://www.routeconverter.com/");
     }
 
-    public void startBrowserForUpdateCheck(Window window, String version, long startTime) {
+    public static void startBrowserForUpdateCheck(Window window, String version, long startTime) {
         String rootUrl = System.getProperty("feedback", "http://www.routeconverter.com/feedback/");
         startBrowser(window, rootUrl + "update-check/" + getDefault().getLanguage() + "/" + version + "/" + startTime + "/");
     }
 
-    public void startBrowserForTerms(Window window) {
+    public static void startBrowserForTerms(Window window) {
         startBrowser(window, "http://www.routeconverter.com/routecatalog_terms/" + getDefault().getLanguage());
     }
 
-    public void startBrowserForForum(Window window) {
+    public static void startBrowserForForum(Window window) {
         startBrowser(window, isGerman() ? "http://forum.routeconverter.de/" : "http://forum.routeconverter.com/");
     }
 
-    public void startBrowserForGeonames(Window window) {
+    public static void startBrowserForGeonames(Window window) {
         startBrowser(window, "http://www.geonames.org/");
     }
 
-    public void startBrowserForDouglasPeucker(Window window) {
+    public static void startBrowserForDouglasPeucker(Window window) {
         String url = isGerman() ?
                 "http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
                 "http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm";
         startBrowser(window, url);
     }
 
-    public void startBrowserForJava(Window window) {
+    public static void startBrowserForJava(Window window) {
         startBrowser(window, "http://java.com/download/");
     }
 
-    protected void startBrowser(Window window, String uri) {
+    private static void startBrowser(Window window, String uri) {
         if (isDesktopSupported()) {
             try {
                 getDesktop().browse(new URI(uri));
             } catch (Exception e) {
                 log.severe("Start browser error: " + e.getMessage());
 
-                JOptionPane.showMessageDialog(window,
+                showMessageDialog(window,
                         MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    public void startMail(Window window) {
+    public static void startMail(Window window) {
         startMail(window, isGerman() ? "mailto:support@routeconverter.de" : "mailto:support@routeconverter.com");
     }
 
-    protected void startMail(Window window, String uri) {
+    private static void startMail(Window window, String uri) {
         if (isDesktopSupported()) {
             try {
                 getDesktop().mail(new URI(uri));
             } catch (Exception e) {
                 log.severe("Start mail error: " + e.getMessage());
 
-                JOptionPane.showMessageDialog(window,
+                showMessageDialog(window,
                         MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), e.getMessage()),
                         RouteConverter.getTitle(), JOptionPane.ERROR_MESSAGE);
             }
