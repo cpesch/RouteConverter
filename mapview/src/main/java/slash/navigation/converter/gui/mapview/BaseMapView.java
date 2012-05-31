@@ -1074,8 +1074,6 @@ public abstract class BaseMapView implements MapView {
             BaseNavigationPosition southWest = southWest(positions);
             buffer.append("fitBounds(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(",").
                     append(northEast.getLatitude()).append(",").append(northEast.getLongitude()).append(");\n");
-            BaseNavigationPosition center = center(positions);
-            buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
             ignoreNextZoomCallback = true;
         }
 
