@@ -61,6 +61,12 @@
 <script type="text/javascript">
    function printMap(title, withDirections) {
        try {
+           document.head.title = "";
+       }
+       catch (e) {
+           addDebug("Cannot set head.title " + e);
+       }
+       try {
            var oldTitle = document.title;
            document.title = title;
            adjustForPrinting(true, withDirections);
