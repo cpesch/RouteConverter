@@ -449,7 +449,7 @@
                name: "Hike"
            });
            var outdoorMapIndex = 0;
-           var outdoorMapType = new google.maps.ImageMapType({
+           var outdoorActiveSummerMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    outdoorMapIndex++;
                    if (outdoorMapIndex > 3)
@@ -459,8 +459,22 @@
                tileSize: new google.maps.Size(256, 256),
                minZoom: 8,
                maxZoom: 17,
-               alt: "Outdoor Active Map",
+               alt: "Outdoor Active Summer Map",
                name: "Outdoor"
+           });
+           var outdoorActiveTopoMapType = new google.maps.ImageMapType({
+               getTileUrl: function(coord, zoom) {
+                   outdoorMapIndex++;
+                   if (outdoorMapIndex > 3)
+                       outdoorMapIndex = 0;
+                   var mapType = zoom > 15 ? "topo" : "map";
+                   return "http://s" + outdoorMapIndex + ".outdooractive.com/portal/" + mapType + "/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: new google.maps.Size(256, 256),
+               minZoom: 8,
+               maxZoom: 17,
+               alt: "Outdoor Active Topographic Map",
+               name: "Topographic"
            });
 
            var mapOptions = {
@@ -468,7 +482,7 @@
                mapTypeControlOptions: {
                    mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
                        google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
-                       'Mapnik', 'T@H', 'Cycle', 'Hike', 'Outdoor'],
+                       'Mapnik', 'T@H', 'Cycle', 'Hike', 'Outdoor', 'Topographic'],
                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                },
                panControl: false,
@@ -494,7 +508,8 @@
            map.mapTypes.set('Mapnik', mapnikMapType);
            map.mapTypes.set('Cycle', cycleMapType);
            map.mapTypes.set('Hike', hikeMapType);
-           map.mapTypes.set('Outdoor', outdoorMapType);
+           map.mapTypes.set('Outdoor', outdoorActiveSummerMapType);
+           map.mapTypes.set('Topographic', outdoorActiveTopoMapType);
            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightControl);
            map.enableKeyDragZoom({
                visualEnabled: true,
@@ -509,7 +524,7 @@
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                if (map.getMapTypeId() == 'Mapnik' || map.getMapTypeId() == 'T@H' || map.getMapTypeId() == 'Cycle' || map.getMapTypeId() == 'Hike') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
-               } else if (map.getMapTypeId() == 'Outdoor') {
+               } else if (map.getMapTypeId() == 'Outdoor' || map.getMapTypeId() == 'Topographic') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
                } else {
                    copyrightControl.innerHTML = '';
