@@ -326,7 +326,6 @@
     }
 
     this.visualEnabled_ = opt_zoomOpts.visualEnabled || false;
-    this.visualClass_ = opt_zoomOpts.visualClass || "";
     this.visualPosition_ = opt_zoomOpts.visualPosition || google.maps.ControlPosition.LEFT_TOP;
     this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(8, 0);
     this.visualPositionIndex_ = opt_zoomOpts.visualPositionIndex || null;
@@ -342,6 +341,7 @@
     this.boxDiv_ = document.createElement("div");
     // Apply default style values for the zoom box:
     setVals(this.boxDiv_.style, {
+      className: "gmnoprint",
       border: "3px solid #736AFF"
     });
     // Apply style values specified in boxStyle parameter:
@@ -420,7 +420,7 @@
     var me = this;
 
     control = document.createElement("div");
-    control.className = this.visualClass_;
+    control.className = "gmnoprint";
     control.style.position = "relative";
     control.style.overflow = "hidden";
     control.style.height = this.visualSize_.height + "px";
@@ -476,7 +476,7 @@
     var me = this;
 
     control2 = document.createElement("div");
-    control2.className = this.visualClass_;
+    control2.className = "gmnoprint";
     control2.style.position = "relative";
     control2.style.overflow = "hidden";
     control2.style.height = this.visualSize_.height + "px";
