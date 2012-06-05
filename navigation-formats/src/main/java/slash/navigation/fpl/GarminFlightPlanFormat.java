@@ -21,6 +21,7 @@
 package slash.navigation.fpl;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.XmlNavigationFormat;

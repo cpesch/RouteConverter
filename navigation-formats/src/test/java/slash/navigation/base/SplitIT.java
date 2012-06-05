@@ -68,7 +68,7 @@ public class SplitIT {
             File[] targets = new File[fileCount];
             for (int i = 0; i < targets.length; i++)
                 targets[i] = File.createTempFile("target", ".test");
-            parser.write(sourceRoute, result.getFormat(), duplicateFirstPosition, false, targets);
+            parser.write(sourceRoute, result.getFormat(), duplicateFirstPosition, false, null, targets);
 
             ParserResult sourceResult = parser.read(source);
             int targetPositionCount = 0;
@@ -187,7 +187,7 @@ public class SplitIT {
         for (int i = 0; i < targets.length; i++)
             targets[i] = createTempFile("splittarget", targetFormat.getExtension());
         try {
-            parser.write(sourceRoute, targetFormat, false, false, targets);
+            parser.write(sourceRoute, targetFormat, false, false, null, targets);
 
             ParserResult sourceResult = parser.read(source);
             for (int i = 0; i < targets.length; i++) {

@@ -899,7 +899,6 @@ public class ConvertPanel {
 
         this.selectedPositionIndices = selectedRows;
 
-        NavigationFormat format = formatAndRoutesModel.getFormat();
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;

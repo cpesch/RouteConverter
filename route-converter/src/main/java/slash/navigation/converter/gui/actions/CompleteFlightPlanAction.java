@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
 import slash.navigation.fpl.GarminFlightPlanRoute;
-import slash.navigation.gui.FrameAction;
+import slash.navigation.gui.actions.FrameAction;
 
 /**
  * Completes the information for a Garmin Flight Plan.

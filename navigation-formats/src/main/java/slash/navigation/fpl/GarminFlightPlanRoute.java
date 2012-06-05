@@ -20,7 +20,7 @@
 
 package slash.navigation.fpl;
 
-import slash.common.io.CompactCalendar;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.GkPosition;
 import slash.navigation.base.SimpleFormat;
@@ -88,6 +88,7 @@ import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
@@ -221,6 +222,10 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     public SimpleRoute asGoPalTrackFormat() {
         return asSimpleFormat(new GoPalTrackFormat());
+    }
+
+    public SimpleRoute asGoRiderGpsFormat() {
+        return asSimpleFormat(new GoRiderGpsFormat());
     }
 
     public SimpleRoute asGpsTunerFormat() {

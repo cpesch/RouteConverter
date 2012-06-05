@@ -123,12 +123,19 @@ public class GpxPosition extends Wgs84Position {
         position.setWaypointType(UserWaypoint);
         WptType wptType = getOrigin(WptType.class);
         if (wptType != null) {
-            String type = wptType.getType();
-            if (type != null)
-                position.setWaypointType(WaypointType.fromValue(type));
-            String name = wptType.getName();
-            if (name != null && name.length() >= 2)
-                position.setCountryCode(CountryCode.fromValue(name.substring(0, 2)));
+            String type = trim(wptType.getType());
+            if (type != null) {
+                WaypointType waypointType = WaypointType.fromValue(type);
+                position.setWaypointType(waypointType);
+
+                String name = wptType.getName();
+                if (name != null && name.length() >= 2)
+                    position.setCountryCode(CountryCode.fromValue(name.substring(0, 2)));
+            }
+            String comment = trim(wptType.getCmt());
+            if (comment != null) {
+                position.setComment(comment);
+            }
         }
         return position;
     }
