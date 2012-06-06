@@ -339,14 +339,12 @@ public class RouteConverter extends SingleFrameApplication {
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
                 Throwable cause = mapView.getInitializationCause();
-                boolean enablePrintActions = false;
                 if (mapView.getComponent() == null || cause != null) {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
                     mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
-                    enablePrintActions = true;
                 }
 
                 int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
@@ -355,11 +353,6 @@ public class RouteConverter extends SingleFrameApplication {
                 mapSplitPane.setDividerLocation(location);
                 log.fine("Initialized map divider to " + location);
                 mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener(location));
-
-                ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-                actionManager.enable("print-map", enablePrintActions);
-                actionManager.enable("print-map-and-route", enablePrintActions);
-                actionManager.enable("print-elevation-profile", enablePrintActions);
             }
         });
     }
