@@ -1079,14 +1079,19 @@ public abstract class BaseMapView implements MapView {
         }
 
         if(haveToInitializeMapOnFirstStart) {
-            double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
-            double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
-            buffer.append("setCenter(").append(latitude).append(",").append(longitude).append(");\n");
-            int zoom = preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
-            buffer.append("setZoom(").append(zoom).append(");\n");
+            // if there are positions right at the start center on them else take the last known center and zoom
+            if (positions.size() > 0) {
+                BaseNavigationPosition center = center(positions);
+                buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
+            } else {
+                int zoom = preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
+                buffer.append("setZoom(").append(zoom).append(");\n");
+                double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
+                double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
+                buffer.append("setCenter(").append(latitude).append(",").append(longitude).append(");\n");
+            }
         }
         executeScript(buffer.toString());
-
         haveToInitializeMapOnFirstStart = false;
     }
 
