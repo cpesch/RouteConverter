@@ -34,7 +34,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class TomTomRouteFormatTest {
-    TomTomRouteFormat format = new TomTom5RouteFormat();
+    private TomTomRouteFormat format = new TomTom5RouteFormat();
 
     @Test
     public void testIsPosition() {

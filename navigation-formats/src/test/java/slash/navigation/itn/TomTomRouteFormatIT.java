@@ -21,7 +21,6 @@
 package slash.navigation.itn;
 
 import org.junit.Test;
-import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -30,7 +29,6 @@ import slash.navigation.base.ParserResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -75,8 +73,13 @@ public class TomTomRouteFormatIT {
         assertEquals("Eis essen in Ratzeburg", result.getTheRoute().getName());
     }
 
-    private static final String UMLAUTS = "\u00e4\u00f6\u00fc\u00df";
+    private static final String UMLAUTS_ae_oe_ue_sz = "\u00e4\u00f6\u00fc\u00df";
     private static final char EURO = '\u20ac';
+
+    static void checkUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+        BaseNavigationPosition first = route.getPositions().get(0);
+        assertEquals("abc" + UMLAUTS_ae_oe_ue_sz + EURO, first.getComment());
+    }
 
     @Test
     public void testTomTomRoute5() throws IOException {
@@ -84,8 +87,7 @@ public class TomTomRouteFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abc" + UMLAUTS + EURO, first.getComment());
+        checkUmlauts(route);
     }
 
     @Test
@@ -94,31 +96,37 @@ public class TomTomRouteFormatIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        checkUmlauts(route);
+    }
+
+    private static final String SCHEESSEL = "Schee\u00dfel";
+    private static final String MOELLN = "M\u00f6lln";
+    private static final String LUEBECK = "L\u00fcbeck";
+
+    static void checkPlaceNamesWithUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("abc" + UMLAUTS + EURO, first.getComment());
+        assertEquals(SCHEESSEL, first.getComment());
+        BaseNavigationPosition second = route.getPositions().get(1);
+        assertEquals(MOELLN, second.getComment());
+        BaseNavigationPosition third = route.getPositions().get(2);
+        assertEquals(LUEBECK, third.getComment());
     }
 
     @Test
-    public void testTomTomRoute8FromDevice() throws IOException {
-        File source = new File(TEST_PATH + "from85.itn");
+    public void testTomTomRider2() throws IOException {
+        File source = new File(TEST_PATH + "from-rider-2.itn");
         ParserResult result = parser.read(source);
         assertNotNull(result);
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
-        BaseNavigationPosition first = route.getPositions().get(0);
-        assertEquals("Borkum - Anleger", first.getComment());
+        checkPlaceNamesWithUmlauts(route);
     }
 
     @Test
-    public void testManfredsTourFiles() throws IOException {
-        List<File> files = Files.collectFiles(new File(SAMPLE_PATH), ".itn");
-        for (File file : files) {
-            if (file.getName().startsWith("Tour")) {
-                ParserResult result = parser.read(file);
-                assertNotNull("Cannot read route from " + file, result);
-                assertNotNull(result.getFormat());
-                assertNotNull("Cannot get route from " + file, result.getTheRoute());
-                assertNotNull(result.getAllRoutes());
-            }
-        }
+    public void testUrbanRinder() throws IOException {
+        File source = new File(TEST_PATH + "from-urban-rider.itn");
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        checkPlaceNamesWithUmlauts(route);
     }
 }

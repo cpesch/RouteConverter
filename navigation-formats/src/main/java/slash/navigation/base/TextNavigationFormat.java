@@ -32,6 +32,9 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Calendar;
 
+import static java.util.Calendar.DAY_OF_YEAR;
+import static java.util.Calendar.YEAR;
+
 /**
  * The base of all text based navigation formats.
  *
@@ -45,7 +48,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         if(startDate == null)
             return false;
         Calendar calendar = startDate.getCalendar();
-        return !(calendar.get(Calendar.YEAR) == 1970 && calendar.get(Calendar.DAY_OF_YEAR) == 1);
+        return !(calendar.get(YEAR) == 1970 && calendar.get(DAY_OF_YEAR) == 1);
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<R> context) throws Exception {
