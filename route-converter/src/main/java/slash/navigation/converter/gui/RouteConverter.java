@@ -22,11 +22,11 @@ package slash.navigation.converter.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import slash.common.type.CompactCalendar;
 import slash.common.io.Files;
+import slash.common.log.LoggingHelper;
 import slash.common.system.Platform;
 import slash.common.system.Version;
-import slash.common.log.LoggingHelper;
+import slash.common.type.CompactCalendar;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
@@ -67,12 +67,12 @@ import slash.navigation.converter.gui.profileview.ProfileMode;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.ExitAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.actions.HelpTopicsAction;
-import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.rest.Credentials;
 import slash.navigation.util.NumberPattern;
 
@@ -165,8 +165,6 @@ public class RouteConverter extends SingleFrameApplication {
     private static final String OPEN_FORMAT_PREFERENCE = "sourceFormat";
     private static final String SAVE_PATH_PREFERENCE = "target";
     private static final String TARGET_FORMAT_PREFERENCE = "targetFormat";
-    private static final String ADD_POSITION_LONGITUDE_PREFERENCE = "addPositionLongitude";
-    private static final String ADD_POSITION_LATITUDE_PREFERENCE = "addPositionLatitude";
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck";
     public static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
     public static final String TRAVEL_MODE_PREFERENCE = "travelMode";
@@ -433,17 +431,6 @@ public class RouteConverter extends SingleFrameApplication {
     public void setSavePathPreference(NavigationFormat format, String parent) {
         if (parent != null)
             preferences.put(SAVE_PATH_PREFERENCE + format.getName(), parent);
-    }
-
-    private BaseNavigationPosition getLastMapCenter() {
-        double longitude = preferences.getDouble(ADD_POSITION_LONGITUDE_PREFERENCE, -41.0);
-        double latitude = preferences.getDouble(ADD_POSITION_LATITUDE_PREFERENCE, 41.0);
-        return new Wgs84Position(longitude, latitude, null, null, null, null);
-    }
-
-    public void setLastMapCenter(Double longitude, Double latitude) {
-        preferences.putDouble(ADD_POSITION_LONGITUDE_PREFERENCE, longitude);
-        preferences.putDouble(ADD_POSITION_LATITUDE_PREFERENCE, latitude);
     }
 
     boolean isAutomaticUpdateCheck() {
@@ -753,7 +740,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public BaseNavigationPosition getMapCenter() {
-        return isMapViewAvailable() ? mapView.getCenter() : getLastMapCenter();
+        return mapView != null ? mapView.getCenter() : new Wgs84Position(-41.0, 41.0, null, null, null, null);
     }
 
     public void addMapViewListener(MapViewListener mapViewListener) {

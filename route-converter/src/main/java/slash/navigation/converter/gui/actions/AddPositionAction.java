@@ -71,16 +71,15 @@ public class AddPositionAction extends FrameAction {
     }
 
     public void run() {
+        RouteConverter r = RouteConverter.getInstance();
+
         int[] selectedRows = table.getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : table.getRowCount();
+        int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
         BaseNavigationPosition center = selectedRows.length > 0 ? calculateCenter(row) :
                 positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
-        int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-
-        RouteConverter r = RouteConverter.getInstance();
         if (center == null)
             center = r.getMapCenter();
-        r.setLastMapCenter(center.getLongitude(), center.getLatitude());
 
         positionsModel.add(insertRow, center.getLongitude(), center.getLatitude(), center.getElevation(),
                 center.getSpeed(), center.getTime(), getRouteComment());

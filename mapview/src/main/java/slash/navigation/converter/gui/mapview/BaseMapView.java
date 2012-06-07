@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.mapview;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionColumns;
@@ -67,15 +68,14 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
-import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.parseInt;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
@@ -706,9 +706,15 @@ public abstract class BaseMapView implements MapView {
     }
 
     public BaseNavigationPosition getCenter() {
+        /*
         BaseNavigationPosition northEast = getNorthEastBounds();
         BaseNavigationPosition southWest = getSouthWestBounds();
         return northEast != null && southWest != null ? center(asList(northEast, southWest)) : null;
+        */
+        if(isInitialized())
+            return getCurrentMapCenter();
+        else
+            return getLastMapCenter();
     }
 
     public void setCenter(BaseNavigationPosition center) {
@@ -716,10 +722,16 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract BaseNavigationPosition getNorthEastBounds();
-
     protected abstract BaseNavigationPosition getSouthWestBounds();
+    protected abstract BaseNavigationPosition getCurrentMapCenter();
 
-    protected BaseNavigationPosition getBounds(String script) {
+    private BaseNavigationPosition getLastMapCenter() {
+        double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
+        double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
+        return new Wgs84Position(longitude, latitude, null, null, null, null);
+    }
+
+    protected BaseNavigationPosition extractLatLng(String script) {
         String result = executeScriptWithResult(script);
         if (result == null)
             return null;
@@ -1079,17 +1091,16 @@ public abstract class BaseMapView implements MapView {
         }
 
         if(haveToInitializeMapOnFirstStart) {
+            BaseNavigationPosition center;
             // if there are positions right at the start center on them else take the last known center and zoom
             if (positions.size() > 0) {
-                BaseNavigationPosition center = center(positions);
-                buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
+                center = center(positions);
             } else {
                 int zoom = preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
                 buffer.append("setZoom(").append(zoom).append(");\n");
-                double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
-                double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
-                buffer.append("setCenter(").append(latitude).append(",").append(longitude).append(");\n");
+                center = getLastMapCenter();
             }
+            buffer.append("setCenter(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
         }
         executeScript(buffer.toString());
         haveToInitializeMapOnFirstStart = false;
@@ -1194,7 +1205,6 @@ public abstract class BaseMapView implements MapView {
     }
 
     protected abstract void executeScript(String script);
-
     protected abstract String executeScriptWithResult(String script);
 
     // browser callbacks

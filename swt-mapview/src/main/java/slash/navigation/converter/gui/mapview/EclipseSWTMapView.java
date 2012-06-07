@@ -291,11 +291,15 @@ public class EclipseSWTMapView extends BaseMapView {
     }
 
     protected BaseNavigationPosition getNorthEastBounds() {
-        return getBounds("return getNorthEastBounds();");
+        return extractLatLng("return getNorthEastBounds();");
     }
 
     protected BaseNavigationPosition getSouthWestBounds() {
-        return getBounds("return getSouthWestBounds();");
+        return extractLatLng("return getSouthWestBounds();");
+    }
+
+    protected BaseNavigationPosition getCurrentMapCenter() {
+        return extractLatLng("return getCenter();");
     }
 
     // script execution
