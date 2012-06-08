@@ -46,7 +46,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  * @author Christian Pesch
  */
 
-public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> {
+public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TODO make this a SimpleLineBasedFormat
     private static final Pattern NAME_VALUE_PATTERN = Pattern.compile("(.+?):(.+|)");
     private static final Pattern POSITION_PATTERN = Pattern.compile("\\s*([-|\\d|\\.]+)\\s+([-|\\d|\\.]+)\\s*(.*)");
 

@@ -20,33 +20,42 @@
 
 package slash.navigation.simple;
 
+import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-public class QstarzQ1000FormatTest extends NavigationTestCase {
-    QstarzQ1000Format format = new QstarzQ1000Format();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.common.TestCase.calendar;
 
+public class QstarzQ1000FormatTest {
+    private QstarzQ1000Format format = new QstarzQ1000Format();
+
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HDOP,NSAT (USED/VIEW),DISTANCE,"));
         assertTrue(format.isValidLine("8,T,2010/12/28,23:01:43,SPS,49.126389,N,8.614000,E,245.512 m,0.759 km/h,1.4,8(10),0.22 m,"));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("8,T,2010/12/28,23:01:43,SPS,49.126389,N,8.614000,E,245.512 m,0.759 km/h,1.4,8(10),0.22 m,"));
 
         assertFalse(format.isPosition("INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HDOP,NSAT (USED/VIEW),DISTANCE,"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("8,T,2010/12/28,23:01:43,SPS,49.126389,N,8.614000,E,245.512 m,0.759 km/h,1.4,8(10),0.22 m,", null);
-        assertEquals(8.614, position.getLongitude());
-        assertEquals(49.126389, position.getLatitude());
-        assertEquals(245.512, position.getElevation());
-        assertEquals(0.759, position.getSpeed());
-        assertEquals(1.4, position.getHdop());
+        assertDoubleEquals(8.614, position.getLongitude());
+        assertDoubleEquals(49.126389, position.getLatitude());
+        assertDoubleEquals(245.512, position.getElevation());
+        assertDoubleEquals(0.759, position.getSpeed());
+        assertDoubleEquals(1.4, position.getHdop());
         assertEquals(new Integer(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2010, 12, 28, 23, 1, 43);

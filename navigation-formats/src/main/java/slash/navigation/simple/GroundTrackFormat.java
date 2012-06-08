@@ -58,7 +58,6 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     protected static final Logger log = Logger.getLogger(GroundTrackFormat.class.getName());
 
     private static final String SPACE = "\\s+";
-
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE + "(\\d+)" +
@@ -71,7 +70,6 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     END_OF_LINE);
 
     private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
-
     static {
         TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
         TIME_FORMAT.setLenient(false);
