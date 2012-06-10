@@ -706,11 +706,6 @@ public abstract class BaseMapView implements MapView {
     }
 
     public BaseNavigationPosition getCenter() {
-        /*
-        BaseNavigationPosition northEast = getNorthEastBounds();
-        BaseNavigationPosition southWest = getSouthWestBounds();
-        return northEast != null && southWest != null ? center(asList(northEast, southWest)) : null;
-        */
         if(isInitialized())
             return getCurrentMapCenter();
         else
@@ -1426,6 +1421,7 @@ public abstract class BaseMapView implements MapView {
                         haveToRecenterMap = true;
                     haveToRepaintSelectionImmediately = true;
                     int currentZoomLevel = getCurrentZoomLevel();
+                    preferences.putInt(CENTER_ZOOM_PREFERENCE, currentZoomLevel);
                     selectionUpdateReason = "zoomed from " + lastZoomLevel + " to " + currentZoomLevel;
                     lastZoomLevel = currentZoomLevel;
                     notificationMutex.notifyAll();
