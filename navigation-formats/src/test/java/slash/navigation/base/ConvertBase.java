@@ -115,10 +115,10 @@ public abstract class ConvertBase extends NavigationTestCase {
             parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
             assertTrue(target.exists());
 
-            ParserResult sourceResult = parser.read(source);
+            ParserResult sourceResult = parser.read(source, getReadFormatsPreferredByExtension(getExtension(source)));
             assertNotNull(sourceResult);
             assertTrue(sourceResult.isSuccessful());
-            ParserResult targetResult = parser.read(target);
+            ParserResult targetResult = parser.read(target, getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
             assertTrue(targetResult.isSuccessful());
 

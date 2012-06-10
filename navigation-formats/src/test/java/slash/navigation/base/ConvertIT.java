@@ -35,6 +35,7 @@ import slash.navigation.babel.HoluxM241BinaryFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
 import slash.navigation.babel.NationalGeographicTopo3Format;
+import slash.navigation.babel.OziExplorerWaypointFormat;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.bcr.MTP0607Format;
@@ -455,6 +456,9 @@ public class ConvertIT extends ConvertBase {
         convertRoundtrip(TEST_PATH + "from.pth", new MagicMapsPthFormat(), new OvlFormat());
     }
 
+    public void testConvertOziExplorerWaypointToTop50() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new OvlFormat());
+    }
 
     public void testConvertMagicMapsIktToMagicMapsIkt() throws IOException {
         convertRoundtrip(TEST_PATH + "from.ikt", new MagicMapsIktFormat(), new MagicMapsIktFormat());

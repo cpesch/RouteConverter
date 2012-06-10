@@ -75,10 +75,6 @@ public class ConvertFailsIT extends ConvertBase {
         });
     }
 
-    public void testConvertOziExplorerWaypointToTop50() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new OvlFormat());
-    }
-
     public void testConvertOziExplorerToMagicMaps() throws IOException {
         // differences in conversion: 2.6141469644200224 is not within +5.0E-6 of -17.954639 to -17.954728773195
         assertTestFails(new ThrowsException() {
