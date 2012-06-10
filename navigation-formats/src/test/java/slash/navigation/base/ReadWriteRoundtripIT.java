@@ -24,7 +24,11 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class ReadWriteRoundtripIT extends ReadWriteBase {
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
+
+public class ReadWriteRoundtripIT {
 
     @Test
     public void testAlanTrackLogWriteRoundtrip() throws IOException {
@@ -89,6 +93,11 @@ public class ReadWriteRoundtripIT extends ReadWriteBase {
     @Test
     public void testGoogleMapsUrlReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-googlemaps.url");
+    }
+
+    @Test
+    public void testGoRiderGpsReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-goridergps.rt");
     }
 
     @Test

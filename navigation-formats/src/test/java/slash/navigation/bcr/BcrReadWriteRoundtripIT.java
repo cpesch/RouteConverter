@@ -20,25 +20,31 @@
 
 package slash.navigation.bcr;
 
+import org.junit.Test;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.ReadWriteTestCallback;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 import static slash.navigation.bcr.BcrFormat.CLIENT_TITLE;
 import static slash.navigation.bcr.BcrFormat.COORDINATES_TITLE;
 import static slash.navigation.bcr.BcrFormat.DESCRIPTION_TITLE;
 import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
 
-public class BcrReadWriteRoundtripIT extends ReadWriteBase {
+public class BcrReadWriteRoundtripIT {
     private void checkUnprocessedValue(BcrRoute route, String section, String name, String value) {
         BcrSection bs = route.findSection(section);
         assertNotNull(bs);
         assertEquals(value, bs.get(name));
     }
 
+    @Test
     public void testMotorradTourenplanerRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from-mtp0809.bcr", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute, CLIENT_TITLE, "EXTRA", "1");
@@ -54,8 +60,9 @@ public class BcrReadWriteRoundtripIT extends ReadWriteBase {
         });
     }
 
+    @Test
     public void testMapAndGuideIntranetRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-mgintra09.bcr", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from-mgintra09.bcr", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 BcrRoute sourceRoute = (BcrRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute, "STAYTIME", "STATION1", "0");

@@ -29,14 +29,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static slash.navigation.base.BaseNavigationFormat.UNLIMITED_MAXIMUM_POSITION_COUNT;
-import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static slash.navigation.base.NavigationTestCase.comparePositions;
+import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
 
-public abstract class ReadWriteBase extends NavigationTestCase {
-    private NavigationFormatParser parser = new NavigationFormatParser();
-
+public abstract class ReadWriteBase {
     @SuppressWarnings("unchecked")
-    protected void readWriteRoundtrip(String testFileName, TestCallback parserCallback) throws IOException {
+    public static void readWriteRoundtrip(String testFileName, ReadWriteTestCallback parserCallback) throws IOException {
+        NavigationFormatParser parser = new NavigationFormatParser();
+
         File source = new File(testFileName);
         ParserResult result = parser.read(source);
         assertNotNull("Could not read " + testFileName, result);
@@ -87,64 +90,7 @@ public abstract class ReadWriteBase extends NavigationTestCase {
         assertTrue(target.delete());
     }
 
-    protected void readWriteRoundtrip(String testFileName) throws IOException {
+    public static void readWriteRoundtrip(String testFileName) throws IOException {
         readWriteRoundtrip(testFileName, null);
-    }
-
-    void splitReadWriteRoundtrip(String testFileName) throws IOException {
-        splitReadWriteRoundtrip(testFileName, false);
-    }
-
-    void splitReadWriteRoundtrip(String testFileName, boolean duplicateFirstPosition) throws IOException {
-        File source = new File(testFileName);
-        ParserResult result = parser.read(source);
-        assertNotNull(result);
-        assertNotNull(result.getFormat());
-        BaseRoute sourceRoute = result.getTheRoute();
-        assertNotNull(sourceRoute);
-        assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
-
-        int maximumPositionCount = result.getFormat().getMaximumPositionCount();
-        if (maximumPositionCount == UNLIMITED_MAXIMUM_POSITION_COUNT) {
-            readWriteRoundtrip(testFileName);
-        } else {
-            int sourcePositionCount = result.getTheRoute().getPositionCount();
-            int positionCount = result.getTheRoute().getPositionCount() + (duplicateFirstPosition ? 1 : 0);
-            int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-            assertEquals(fileCount, getNumberOfFilesToWriteFor(sourceRoute, result.getFormat(), duplicateFirstPosition));
-
-            File[] targets = new File[fileCount];
-            for (int i = 0; i < targets.length; i++)
-                targets[i] = File.createTempFile("target", ".test");
-            parser.write(sourceRoute, result.getFormat(), duplicateFirstPosition, false, targets);
-
-            ParserResult sourceResult = parser.read(source);
-            int targetPositionCount = 0;
-            for (int i = 0; i < targets.length; i++) {
-                ParserResult targetResult = parser.read(targets[i]);
-
-                NavigationFormat sourceFormat = sourceResult.getFormat();
-                NavigationFormat targetFormat = targetResult.getFormat();
-                assertEquals(sourceFormat, targetFormat);
-                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
-                        targetResult.getTheRoute().getPositionCount());
-                targetPositionCount += targetResult.getTheRoute().getPositionCount();
-
-                compareSplitPositions(sourceResult.getTheRoute().getPositions(), sourceFormat,
-                        targetResult.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount,
-                        duplicateFirstPosition, false, sourceResult.getTheRoute().getCharacteristics(),
-                        targetResult.getTheRoute().getCharacteristics());
-            }
-            assertEquals(sourcePositionCount + (duplicateFirstPosition ? 1 : 0), targetPositionCount);
-            assertEquals(positionCount, targetPositionCount);
-
-            for (File target : targets)
-                assertTrue(target.delete());
-        }
-    }
-
-    protected interface TestCallback {
-        void test(ParserResult source, ParserResult target);
     }
 }

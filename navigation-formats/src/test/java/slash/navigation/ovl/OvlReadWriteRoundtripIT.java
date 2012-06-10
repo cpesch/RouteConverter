@@ -20,19 +20,26 @@
 
 package slash.navigation.ovl;
 
+import org.junit.Test;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.ReadWriteTestCallback;
 
 import java.io.IOException;
 
-public class OvlReadWriteRoundtripIT extends ReadWriteBase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
+
+public class OvlReadWriteRoundtripIT {
     private void checkUnprocessedValue(OvlSection section, String name, String value) {
         assertNotNull(section);
         assertEquals(value, section.get(name));
     }
 
+    @Test
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.ovl", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from.ovl", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 OvlRoute sourceRoute = (OvlRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute.getSymbol(), "Extra", "1");

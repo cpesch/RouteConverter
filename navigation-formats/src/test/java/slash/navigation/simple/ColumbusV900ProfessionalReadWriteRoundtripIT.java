@@ -20,17 +20,23 @@
 
 package slash.navigation.simple;
 
+import org.junit.Test;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
-public class ColumbusV900ProfessionalReadWriteRoundtripIT extends ReadWriteBase {
+import static org.junit.Assert.assertEquals;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 
+public class ColumbusV900ProfessionalReadWriteRoundtripIT {
+
+    @Test
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);

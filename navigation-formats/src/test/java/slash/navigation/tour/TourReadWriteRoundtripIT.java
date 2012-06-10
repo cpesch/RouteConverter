@@ -20,19 +20,26 @@
 
 package slash.navigation.tour;
 
+import org.junit.Test;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.ReadWriteTestCallback;
 
 import java.io.IOException;
 
-public class TourReadWriteRoundtripIT extends ReadWriteBase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
+
+public class TourReadWriteRoundtripIT {
     private void checkUnprocessedValue(TourPosition position, String name, String value) {
         assertNotNull(position);
         assertEquals(name + " does not contain expected value", value, position.get(name));
     }
 
+    @Test
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.tour", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from.tour", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 TourRoute sourceRoute = (TourRoute) source.getAllRoutes().get(0);
                 checkUnprocessedValue(sourceRoute.getPositions().get(2), TourFormat.ASSEMBLY, "FalkNavigator");

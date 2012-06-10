@@ -20,19 +20,24 @@
 
 package slash.navigation.simple;
 
+import org.junit.Test;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
+import static slash.common.TestCase.assertNearBy;
 import static slash.common.io.Transfer.roundFraction;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 
-public class eiBlue747ReadWriteRoundtripIT extends ReadWriteBase {
+public class IBlue747ReadWriteRoundtripIT {
 
+    @Test
     public void testRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-iblue747.csv", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from-iblue747.csv", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
                 SimpleRoute targetRoute = (SimpleRoute) target.getAllRoutes().get(0);

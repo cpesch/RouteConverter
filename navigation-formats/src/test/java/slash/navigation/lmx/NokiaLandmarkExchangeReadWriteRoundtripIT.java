@@ -20,8 +20,9 @@
 
 package slash.navigation.lmx;
 
+import org.junit.Test;
 import slash.navigation.base.ParserResult;
-import slash.navigation.base.ReadWriteBase;
+import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.lmx.binding.LandmarkType;
@@ -31,9 +32,14 @@ import slash.navigation.lmx.binding.MediaLinkType;
 import java.io.IOException;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static slash.common.TestCase.assertDoubleEquals;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
-public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
+public class NokiaLandmarkExchangeReadWriteRoundtripIT {
 
     private void checkUnprocessed(Lmx lmx) {
         assertNotNull(lmx);
@@ -45,7 +51,7 @@ public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
         assertNotNull(type);
         assertEquals("Waypoint1 Name", type.getName());
         assertEquals("Description", type.getDescription());
-        assertEquals(2.0f, type.getCoverageRadius());
+        assertDoubleEquals(2.0f, type.getCoverageRadius());
         List<MediaLinkType> linkTypes = type.getMediaLink();
         assertNotNull(linkTypes);
         MediaLinkType mediaLinkType = linkTypes.get(0);
@@ -54,8 +60,9 @@ public class NokiaLandmarkExchangeReadWriteRoundtripIT extends ReadWriteBase {
         assertEquals("URLMime", mediaLinkType.getMime());
     }
 
+    @Test
     public void testNokiaLandmarkExchangeRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.lmx", new TestCallback() {
+        readWriteRoundtrip(TEST_PATH + "from.lmx", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
                 GpxRoute sourceWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertEquals(Waypoints, sourceWaypoints.getCharacteristics());
