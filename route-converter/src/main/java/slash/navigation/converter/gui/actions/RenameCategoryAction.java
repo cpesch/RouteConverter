@@ -28,8 +28,10 @@ import slash.navigation.gui.actions.FrameAction;
 import javax.swing.*;
 
 import static java.text.MessageFormat.format;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.showInputDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNode;
 
@@ -54,6 +56,13 @@ public class RenameCategoryAction extends FrameAction {
         CategoryTreeNode category = getSelectedCategoryTreeNode(tree);
         if(category == null)
             return;
+
+        if(category.isLocalRoot() || category.isRemoteRoot()) {
+            showMessageDialog(getFrame(),
+                    RouteConverter.getBundle().getString("rename-category-cannot-rename-root"), getFrame().getTitle(),
+                    ERROR_MESSAGE);
+            return;
+        }
 
         String name = (String) showInputDialog(r.getFrame(),
                 format(RouteConverter.getBundle().getString("rename-category-label"), category.getName()),

@@ -80,7 +80,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void addCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "AddCategories";
             }
@@ -109,12 +109,15 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void renameCategory(final CategoryTreeNode category, final String name) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "RenameCategory";
             }
 
             public void run() throws IOException {
+                if (category.isLocalRoot() || category.isRemoteRoot())
+                    throw new IOException("cannot rename category root");
+
                 category.getCategory().update(null, name);
 
                 SwingUtilities.invokeLater(new Runnable() {
@@ -131,7 +134,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void moveCategories(final List<CategoryTreeNode> categories, final List<CategoryTreeNode> parents, final Runnable invokeLaterRunnable) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "MoveCategories";
             }
@@ -170,7 +173,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void removeCategories(final List<CategoryTreeNode> parents, final List<String> names, final Runnable invokeLaterRunnable) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "RemoveCategories";
             }
@@ -178,6 +181,10 @@ public class CatalogModelImpl implements CatalogModel {
             public void run() throws IOException {
                 for (int i = 0; i < parents.size(); i++) {
                     CategoryTreeNode category = categoryTreeModel.getChild(parents.get(i), names.get(i));
+
+                    if (category.isLocalRoot() || category.isRemoteRoot())
+                        throw new IOException("cannot remove category root");
+
                     category.getCategory().delete();
                 }
 
@@ -196,7 +203,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void addRoute(final CategoryTreeNode category, final String description, final File file, final String url, final AddRouteCallback callback) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "AddRoute";
             }
@@ -216,7 +223,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void renameRoute(final RouteModel route, final String name) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "RenameRoute";
             }
@@ -238,7 +245,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void moveRoutes(final List<RouteModel> routes, final List<CategoryTreeNode> parents, final Runnable invokeLaterRunnable) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "MoveRoutes";
             }
@@ -271,7 +278,7 @@ public class CatalogModelImpl implements CatalogModel {
     }
 
     public void removeRoutes(final List<RouteModel> routes) {
-        operator.executeOperation(new RouteServiceOperator.NewOperation() {
+        operator.executeOperation(new RouteServiceOperator.Operation() {
             public String getName() {
                 return "RemoveRoutes";
             }

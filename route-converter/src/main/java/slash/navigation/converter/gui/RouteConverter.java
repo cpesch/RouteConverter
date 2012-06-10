@@ -622,7 +622,11 @@ public class RouteConverter extends SingleFrameApplication {
     // helpers for external components
 
     public void sendErrorReport(final String log, final String description, final File file) {
-        getOperator().executeOnRouteService(new RouteServiceOperator.Operation() {
+        getOperator().executeOperation(new RouteServiceOperator.Operation() {
+            public String getName() {
+                return "SendErrorReport";
+            }
+
             public void run() throws IOException {
                 routeFeedback.sendErrorReport(log, description, file);
             }

@@ -31,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
@@ -59,7 +60,7 @@ public class RouteServiceOperator {
     }
 
     public void handleServiceError(final Throwable t) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             public void run() {
                 t.printStackTrace();
                 log.severe("Error while operating on RouteConverter service: " + t.getMessage());
@@ -70,15 +71,15 @@ public class RouteServiceOperator {
         });
     }
 
-    public interface NewOperation {
+    public interface Operation {
         String getName();
         void run() throws IOException;
     }
 
-    public void executeOperation(final NewOperation operation) {
+    public void executeOperation(final Operation operation) {
         new Thread(new Runnable() {
             public void run() {
-                SwingUtilities.invokeLater(new Runnable() {
+                invokeLater(new Runnable() {
                     public void run() {
                         startWaitCursor(frame.getRootPane());
                     }
@@ -104,7 +105,7 @@ public class RouteServiceOperator {
                     } catch (Throwable t) {
                         handleServiceError(t);
                     } finally {
-                        SwingUtilities.invokeLater(new Runnable() {
+                        invokeLater(new Runnable() {
                             public void run() {
                                 stopWaitCursor(frame.getRootPane());
                             }
@@ -114,52 +115,5 @@ public class RouteServiceOperator {
                 }
             }
         }, operation.getName()).start();
-    }
-
-    public interface Operation {
-        void run() throws IOException;
-    }
-
-    public void executeOnRouteService(final Operation operation) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            startWaitCursor(frame.getRootPane());
-                        }
-                    });
-
-                    while (true) {
-                        try {
-                            try {
-                                operation.run();
-                            } catch (UnAuthorizedException uae) {
-                                final boolean[] showedLogin = new boolean[1];
-                                showedLogin[0] = false;
-
-                                SwingUtilities.invokeAndWait(new Runnable() {
-                                    public void run() {
-                                        showedLogin[0] = showLogin();
-                                    }
-                                });
-
-                                if (showedLogin[0])
-                                    continue;
-                            }
-                        } catch (Throwable t) {
-                            handleServiceError(t);
-                        }
-                        break;
-                    }
-                } finally {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            stopWaitCursor(frame.getRootPane());
-                        }
-                    });
-                }
-            }
-        }, "RouteServiceOperator").start();
     }
 }

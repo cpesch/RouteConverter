@@ -30,9 +30,11 @@ import javax.swing.tree.TreePath;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.navigation.converter.gui.helper.JTreeHelper.asParents;
 import static slash.navigation.converter.gui.helper.JTreeHelper.getSelectedCategoryTreeNodes;
 import static slash.navigation.converter.gui.helper.JTreeHelper.selectCategoryTreePath;
@@ -62,6 +64,14 @@ public class RemoveCategoriesAction extends FrameAction {
         StringBuilder categoryNames = new StringBuilder();
         for (int i = 0; i < categories.size(); i++) {
             CategoryTreeNode category = categories.get(i);
+
+            if(category.isLocalRoot() || category.isRemoteRoot()) {
+                showMessageDialog(getFrame(),
+                        RouteConverter.getBundle().getString("remove-category-cannot-delete-root"), getFrame().getTitle(),
+                        ERROR_MESSAGE);
+                return;
+            }
+
             categoryNames.append(category.getName());
             if (i < categories.size() - 1)
                 categoryNames.append(", ");
