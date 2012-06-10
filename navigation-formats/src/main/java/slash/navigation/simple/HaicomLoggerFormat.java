@@ -189,7 +189,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return DATE_FORMAT.format(date.getTime());
     }
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         writer.println(HEADER_LINE);
     }
 

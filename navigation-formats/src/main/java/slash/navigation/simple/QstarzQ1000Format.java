@@ -168,7 +168,7 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         return position;
     }
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         writer.println(HEADER_LINE);
     }
 

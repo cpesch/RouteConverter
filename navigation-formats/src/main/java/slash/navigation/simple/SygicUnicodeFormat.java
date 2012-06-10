@@ -61,7 +61,7 @@ public class SygicUnicodeFormat extends SygicFormat {
         return string != null ? string.replaceAll(TAB, "    ") : "";
     }
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         // with UTF-16LE no BOM is written, UnicodeLittle would write one by is not supported
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me

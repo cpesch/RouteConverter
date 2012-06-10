@@ -90,7 +90,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     @SuppressWarnings("unchecked")
     public void write(R route, PrintWriter writer, int startIndex, int endIndex) {
         List<Wgs84Position> positions = route.getPositions();
-        writeHeader(writer);
+        writeHeader(writer, route);
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             writePosition(position, writer, i, i == startIndex);
@@ -98,7 +98,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         writeFooter(writer, endIndex - startIndex);
     }
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, R route) {
     }
 
     protected abstract void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition);

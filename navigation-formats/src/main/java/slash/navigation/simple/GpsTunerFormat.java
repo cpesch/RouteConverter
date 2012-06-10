@@ -118,7 +118,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         writer.println(FIRST_HEADER_LINE + GENERATED_BY);
         writer.println(SECOND_HEADER_LINE);
     }

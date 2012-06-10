@@ -111,7 +111,7 @@ public abstract class ColumbusV900Format extends SimpleLineBasedFormat<SimpleRou
         return string != null ? string.replace('\u0000', ' ') : "";
     }
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         writer.println(getHeader());
     }
 

@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 import static slash.common.io.Transfer.escape;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
  * Reads and writes GoRider GPS (.rt) files.
@@ -75,7 +75,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return Track;
+        return Route;
     }
 
     protected boolean isValidLine(String line) {
@@ -97,10 +97,10 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return new Wgs84Position(longitude, latitude, null, null, null, comment);
     }
 
-    protected void writeHeader(PrintWriter writer) {
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
         writer.println(HEADER + NAME_VALUE_SEPARATOR + QUOTE + "100" + QUOTE +
                 " MODIFIED" + NAME_VALUE_SEPARATOR + QUOTE + "100" + QUOTE +
-                " NAME" + NAME_VALUE_SEPARATOR + QUOTE + "TODO" + QUOTE);
+                " NAME" + NAME_VALUE_SEPARATOR + QUOTE + route.getName() + QUOTE);
     }
 
     private static String formatComment(String string) {
