@@ -76,6 +76,7 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
@@ -698,6 +699,15 @@ public class ConvertIT extends ConvertBase {
     }
 
 
+    public void testConvertGoRiderGpsToKml() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-goridergps.rt", new GoRiderGpsFormat(), new Kml22Format());
+    }
+
+    public void testConvertGpxToGoRiderGps() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GoRiderGpsFormat());
+    }
+
+
     public void testConvertGpsTunerToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new Kml21Format());
@@ -895,22 +905,5 @@ public class ConvertIT extends ConvertBase {
     public void testConvertViaMichelinToGoPal() throws IOException {
         convertRoundtrip(TEST_PATH + "from-poi.xvm", new ViaMichelinFormat(), new GoPal3RouteFormat());
         convertRoundtrip(TEST_PATH + "from-itinerary.xvm", new ViaMichelinFormat(), new GoPalTrackFormat());
-    }
-
-
-    public void testConvertLargeTomTomRouteToSeveralTomTomRoutes() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new TomTom5RouteFormat(), new TomTom8RouteFormat());
-    }
-
-    public void testConvertLargeTomTomRouteToSeveralMTP0607s() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.itn", new TomTom5RouteFormat(), new MTP0607Format());
-    }
-
-    public void testConvertLargeMTP0607ToSeveralTomTomRoutes() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new TomTom8RouteFormat());
-    }
-
-    public void testConvertLargeMTP0607ToSeveralMTP0607s() throws IOException {
-        convertSplitRoundtrip(TEST_PATH + "large.bcr", new MTP0607Format(), new MTP0607Format());
     }
 }

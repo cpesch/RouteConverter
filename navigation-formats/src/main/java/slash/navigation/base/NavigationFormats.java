@@ -97,6 +97,7 @@ import slash.navigation.simple.BrokenNavilinkFormat;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
@@ -197,6 +198,7 @@ public final class NavigationFormats {
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
         addFormat(NavilinkFormat.class);
+        addFormat(GoRiderGpsFormat.class);
         addFormat(KienzleGpsFormat.class);
         addFormat(GroundTrackFormat.class);
         addFormat(OpelNaviFormat.class);

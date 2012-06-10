@@ -70,6 +70,30 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
+    public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.mps");
+        readWriteRoundtrip(TEST_PATH + "from10.mps");
+        readWriteRoundtrip(TEST_PATH + "from10trk.mps");
+    }
+
+    @Test
+    public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.gdb");
+        readWriteRoundtrip(TEST_PATH + "from10.gdb");
+        readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
+    }
+
+    @Test
+    public void testGarminPcx5ReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
+    }
+
+    @Test
+    public void testGarminPoiReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.gpi");
+    }
+
+    @Test
     public void testGeocachingDotComReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.loc");
     }
@@ -109,30 +133,6 @@ public class ReadWriteRoundtripIT {
     public void testGpx11ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from11.gpx");
         readWriteRoundtrip(TEST_PATH + "from11trk.gpx");
-    }
-
-    @Test
-    public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.mps");
-        readWriteRoundtrip(TEST_PATH + "from10.mps");
-        readWriteRoundtrip(TEST_PATH + "from10trk.mps");
-    }
-
-    @Test
-    public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.gdb");
-        readWriteRoundtrip(TEST_PATH + "from10.gdb");
-        readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
-    }
-
-    @Test
-    public void testGarminPcx5ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from-pcx5.wpt");
-    }
-
-    @Test
-    public void testGarminPoiReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.gpi");
     }
 
     @Test

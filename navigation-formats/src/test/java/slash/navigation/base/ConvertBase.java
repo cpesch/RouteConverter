@@ -37,11 +37,12 @@ import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByE
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public abstract class ConvertBase extends NavigationTestCase {
-    private NavigationFormatParser parser = new NavigationFormatParser();
 
-    void convertRoundtrip(String testFileName,
+    public static void convertRoundtrip(String testFileName,
                           BaseNavigationFormat sourceFormat,
                           BaseNavigationFormat targetFormat) throws IOException {
+        NavigationFormatParser parser = new NavigationFormatParser();
+
         assertTrue(sourceFormat.isSupportsReading());
         assertTrue(targetFormat.isSupportsWriting());
 
@@ -67,14 +68,16 @@ public abstract class ConvertBase extends NavigationTestCase {
         }
     }
 
-    private BaseNavigationFormat handleReadOnlyFormats(BaseNavigationFormat sourceFormat) {
+    private static BaseNavigationFormat handleReadOnlyFormats(BaseNavigationFormat sourceFormat) {
         if (sourceFormat instanceof CompeGPSDataFormat)
             sourceFormat = new CompeGPSDataRouteFormat();
         return sourceFormat;
     }
 
     @SuppressWarnings("unchecked")
-    private void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
+    private static void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
+        NavigationFormatParser parser = new NavigationFormatParser();
+
         File target = createTempFile("singletarget", targetFormat.getExtension());
         target.deleteOnExit();
         try {
@@ -108,7 +111,9 @@ public abstract class ConvertBase extends NavigationTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    private void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
+    private static void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
+        NavigationFormatParser parser = new NavigationFormatParser();
+
         File target = createTempFile("multitarget", targetFormat.getExtension());
         target.deleteOnExit();
         try {
@@ -146,54 +151,6 @@ public abstract class ConvertBase extends NavigationTestCase {
         } finally {
             // avoid to clutter the temp directory
             assert target.delete();
-        }
-    }
-
-    void convertSplitRoundtrip(String testFileName, BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat) throws IOException {
-        File source = new File(testFileName);
-        ParserResult result = parser.read(source);
-        assertNotNull(result);
-        assertNotNull(result.getFormat());
-        assertNotNull(result.getTheRoute());
-        assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
-
-        BaseRoute sourceRoute = result.getTheRoute();
-        int maximumPositionCount = targetFormat.getMaximumPositionCount();
-        int positionCount = result.getTheRoute().getPositionCount();
-        int fileCount = (int) Math.ceil((double) positionCount / maximumPositionCount);
-        assertEquals(fileCount, NavigationFormatParser.getNumberOfFilesToWriteFor(sourceRoute, targetFormat, false));
-
-        File[] targets = new File[fileCount];
-        for (int i = 0; i < targets.length; i++)
-            targets[i] = createTempFile("splittarget", targetFormat.getExtension());
-        try {
-            parser.write(sourceRoute, targetFormat, false, false, targets);
-
-            ParserResult sourceResult = parser.read(source);
-            for (int i = 0; i < targets.length; i++) {
-                ParserResult targetResult = parser.read(targets[i]);
-                assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
-                assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
-                assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
-                assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
-                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
-                        targetResult.getTheRoute().getPositionCount());
-
-                compareSplitPositions(sourceResult.getTheRoute().getPositions(), sourceFormat,
-                        targetResult.getTheRoute().getPositions(), targetFormat, i, maximumPositionCount, false, false,
-                        sourceResult.getTheRoute().getCharacteristics(), targetResult.getTheRoute().getCharacteristics());
-            }
-
-            for (File target : targets) {
-                assertTrue(target.exists());
-                assertTrue(target.delete());
-            }
-        } finally {
-            // avoid to clutter the temp directory
-            for (File target : targets) {
-                assert target.delete();
-            }
         }
     }
 }

@@ -405,6 +405,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public abstract GoPal5Route asGoPal5RouteFormat();
     public abstract SimpleRoute asGoPalTrackFormat();
 
+    public abstract SimpleRoute asGoRiderGpsFormat();
+
     public abstract SimpleRoute asGpsTunerFormat();
 
     public abstract SimpleRoute asGroundTrackFormat();

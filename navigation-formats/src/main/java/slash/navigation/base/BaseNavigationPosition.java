@@ -280,6 +280,10 @@ public abstract class BaseNavigationPosition {
         return asWgs84Position();
     }
 
+    public Wgs84Position asGoRiderGpsPosition() {
+        return asWgs84Position();
+    }
+
     public Wgs84Position asGpsTunerPosition() {
         return asWgs84Position();
     }
@@ -298,10 +302,6 @@ public abstract class BaseNavigationPosition {
 
     public Wgs84Position asIbluePosition() {
         return asWgs84Position();
-    }
-
-    public TomTomPosition asTomTomRoutePosition() {
-        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public Wgs84Position asKlickTelRoutePosition() {
@@ -414,6 +414,10 @@ public abstract class BaseNavigationPosition {
 
     public GpxPosition asTcxPosition() {
         return asGpxPosition();
+    }
+
+    public TomTomPosition asTomTomRoutePosition() {
+        return new TomTomPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getComment());
     }
 
     public TourPosition asTourPosition() {

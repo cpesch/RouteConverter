@@ -76,6 +76,7 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.ColumbusV900Format;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
@@ -798,6 +799,7 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof HaicomLoggerFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof NavilinkFormat && targetFormat instanceof NavigatingPoiWarnerFormat ||
                 sourceFormat instanceof OziExplorerFormat ||
+                sourceFormat instanceof GpxFormat && targetFormat instanceof GoRiderGpsFormat ||
                 sourceFormat instanceof ColumbusV900Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof Iblue747Format && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof CoPilotFormat) {

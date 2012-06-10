@@ -89,6 +89,7 @@ import slash.navigation.ovl.OvlRoute;
 import slash.navigation.simple.ColumbusV900ProfessionalFormat;
 import slash.navigation.simple.ColumbusV900StandardFormat;
 import slash.navigation.simple.GlopusFormat;
+import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.simple.GpsTunerFormat;
 import slash.navigation.simple.GroundTrackFormat;
@@ -430,6 +431,10 @@ public class ViaMichelinRoute extends BaseRoute<Wgs84Position, ViaMichelinFormat
 
     public SimpleRoute asGoPalTrackFormat() {
         return asSimpleFormat(new GoPalTrackFormat());
+    }
+
+    public SimpleRoute asGoRiderGpsFormat() {
+        return asSimpleFormat(new GoRiderGpsFormat());
     }
 
     public SimpleRoute asGpsTunerFormat() {

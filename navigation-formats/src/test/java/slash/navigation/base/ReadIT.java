@@ -148,6 +148,11 @@ public class ReadIT {
     }
 
     @Test
+    public void testGoRiderGpsFilesAreValid() throws IOException {
+        readFiles(".rt");
+    }
+
+    @Test
     public void testGpxFilesAreValid() throws IOException {
         readFiles(".gpx");
     }
