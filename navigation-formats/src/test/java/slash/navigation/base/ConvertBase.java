@@ -20,8 +20,7 @@
 
 package slash.navigation.base;
 
-import slash.navigation.babel.CompeGPSDataFormat;
-import slash.navigation.babel.CompeGPSDataRouteFormat;
+import org.junit.Test;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.MicrosoftAutoRouteFormat;
 
@@ -31,13 +30,19 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.io.File.createTempFile;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationFormats.asFormat;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
+import static slash.navigation.base.NavigationTestCase.comparePositions;
+import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
-public abstract class ConvertBase extends NavigationTestCase {
+public abstract class ConvertBase {
 
+    @Test
     public static void convertRoundtrip(String testFileName,
                           BaseNavigationFormat sourceFormat,
                           BaseNavigationFormat targetFormat) throws IOException {
@@ -66,12 +71,6 @@ public abstract class ConvertBase extends NavigationTestCase {
             convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, Collections.<BaseRoute>singletonList(result.getTheRoute()));
             convertMultipleRouteRoundtrip(sourceFormat, targetFormat, source, result.getAllRoutes());
         }
-    }
-
-    private static BaseNavigationFormat handleReadOnlyFormats(BaseNavigationFormat sourceFormat) {
-        if (sourceFormat instanceof CompeGPSDataFormat)
-            sourceFormat = new CompeGPSDataRouteFormat();
-        return sourceFormat;
     }
 
     @SuppressWarnings("unchecked")
@@ -126,8 +125,6 @@ public abstract class ConvertBase extends NavigationTestCase {
             ParserResult targetResult = parser.read(target, getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
             assertTrue(targetResult.isSuccessful());
-
-            sourceFormat = handleReadOnlyFormats(sourceFormat);
 
             assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
             assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());

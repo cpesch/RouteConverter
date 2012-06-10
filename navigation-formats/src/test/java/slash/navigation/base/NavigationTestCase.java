@@ -143,7 +143,7 @@ public abstract class NavigationTestCase extends TestCase {
         assertEquals(trim(expected, 64), trim(was, 64));
     }
 
-    protected void assertException(Class exceptionClass, ThrowsException runner) {
+    private static void assertException(Class exceptionClass, NavigationTestCaseThrowsException runner) {
         try {
             runner.run();
             fail("Worked?");
@@ -152,12 +152,8 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    protected void assertTestFails(ThrowsException runner) {
+    public static void assertTestFails(NavigationTestCaseThrowsException runner) {
         assertException(AssertionFailedError.class, runner);
-    }
-
-    protected interface ThrowsException {
-        void run() throws Exception;
     }
 
     static boolean isReallyUnprecise(NavigationFormat format) {

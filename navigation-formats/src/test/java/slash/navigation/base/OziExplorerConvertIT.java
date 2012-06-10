@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
 import slash.navigation.babel.OziExplorerRouteFormat;
 import slash.navigation.babel.OziExplorerTrackFormat;
 import slash.navigation.babel.OziExplorerWaypointFormat;
@@ -29,31 +30,42 @@ import slash.navigation.ovl.OvlFormat;
 
 import java.io.IOException;
 
-public class OziExplorerConvertIT extends ConvertBase {
+import static slash.navigation.base.ConvertBase.convertRoundtrip;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+
+public class OziExplorerConvertIT {
+
+    @Test
     public void testConvertOziExplorerRouteToOziExplorerRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerRouteFormat(), new OziExplorerRouteFormat());
     }
 
+    @Test
     public void testConvertOziExplorerTrackToOziExplorerTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerTrackFormat(), new OziExplorerTrackFormat());
     }
 
+    @Test
     public void testConvertOziExplorerWaypointToOziExplorerWaypoint() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new OziExplorerWaypointFormat());
     }
 
+    @Test
     public void testConvertOziExplorerRouteToTop50() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerRouteFormat(), new OvlFormat());
     }
 
+    @Test
     public void testConvertOziExplorerWaypointToNavigatingPoiWarner() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new NavigatingPoiWarnerFormat());
     }
 
+    @Test
     public void testConvertGpx10ToOziExplorerTrack() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new OziExplorerTrackFormat());
     }
 
+    @Test
     public void testConvertGpx10ToOziExplorerWaypoints() throws IOException {
         convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new OziExplorerWaypointFormat());
     }
