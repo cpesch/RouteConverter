@@ -56,7 +56,6 @@ public class Route66Format extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "\"([A-Z\\s\\d-]*)\"" + WHITE_SPACE +
                     END_OF_LINE);
 
-
     public String getExtension() {
         return ".csv";
     }

@@ -67,7 +67,6 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "(\\d+)" + WHITE_SPACE +
                     END_OF_LINE);
 
-
     public String getExtension() {
         return ".trk";
     }

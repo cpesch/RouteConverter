@@ -88,7 +88,6 @@ public class GoPalTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "[-\\d]*" + WHITE_SPACE + SEPARATOR + "?" +
                     END_OF_LINE);
 
-
     public String getExtension() {
         return ".trk";
     }

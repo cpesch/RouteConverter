@@ -61,12 +61,12 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     SPACE + "(" + PT + NAME_VALUE_SEPARATOR + QUOTE + "(" + POSITION + ")\\s+(" + POSITION + ")" + QUOTE + ")" + SPACE +
                     END_OF_LINE);
 
-    public String getName() {
-        return "GoRider GPS (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".rt";
+    }
+
+    public String getName() {
+        return "GoRider GPS (*" + getExtension() + ")";
     }
 
     @SuppressWarnings("unchecked")

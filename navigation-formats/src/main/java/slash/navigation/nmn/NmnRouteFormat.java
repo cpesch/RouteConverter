@@ -58,12 +58,12 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     public static final int START_BYTES = 0xFFFF;
     public static final long UNKNOWN_START_BYTES = 1L;
 
-    public String getName() {
-        return "Navigon Mobile Navigator (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".route";
+    }
+
+    public String getName() {
+        return "Navigon Mobile Navigator (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

@@ -95,12 +95,12 @@ public class QstarzQ1000Format extends SimpleLineBasedFormat<SimpleRoute> {
         TIME_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
-    public String getName() {
-        return "Qstarz BT-Q1000 (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".csv";
+    }
+
+    public String getName() {
+        return "Qstarz BT-Q1000 (*" + getExtension() + ")";
     }
 
     @SuppressWarnings("unchecked")

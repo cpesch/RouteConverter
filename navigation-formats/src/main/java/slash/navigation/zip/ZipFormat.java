@@ -53,12 +53,12 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         System.setProperty("sun.zip.encoding", "default");
     }
 
-    public String getName() {
-        return "ZIP Archive (" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".zip";
+    }
+
+    public String getName() {
+        return "ZIP Archive (" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

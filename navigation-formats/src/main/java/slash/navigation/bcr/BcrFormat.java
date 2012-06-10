@@ -69,7 +69,6 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
     static final String DESCRIPTION = "DESCRIPTION";
     static final String CREATOR = "CREATOR";
 
-
     public String getExtension() {
         return ".bcr";
     }

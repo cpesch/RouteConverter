@@ -42,12 +42,12 @@ import static java.util.Calendar.YEAR;
 
 public class WintecWbt202TesFormat extends WintecWbt201Format {
 
-    public String getName() {
-        return "Wintec WBT-202 (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".tes";
+    }
+
+    public String getName() {
+        return "Wintec WBT-202 (*" + getExtension() + ")";
     }
 
     protected int getHeaderSize() {

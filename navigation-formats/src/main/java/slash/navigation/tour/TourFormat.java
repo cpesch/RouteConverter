@@ -69,12 +69,12 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     private static final Pattern SECTION_TITLE_PATTERN = Pattern.
             compile(".*\\" + SECTION_PREFIX + "(" + "\\d+" + "|" + TOUR_TITLE + "|" + HOME_TITLE + ")\\" + SECTION_POSTFIX + ".*");
 
-    public String getName() {
-        return "Falk Navigator (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".tour";
+    }
+
+    public String getName() {
+        return "Falk Navigator (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

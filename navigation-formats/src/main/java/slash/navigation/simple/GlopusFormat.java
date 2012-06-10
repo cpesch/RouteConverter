@@ -68,7 +68,6 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + "([^\"]*)" + WHITE_SPACE +
                     END_OF_LINE);
 
-
     public String getExtension() {
         return ".tk";
     }

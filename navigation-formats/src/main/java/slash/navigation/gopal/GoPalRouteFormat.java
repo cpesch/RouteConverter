@@ -30,6 +30,7 @@ import slash.navigation.base.XmlNavigationFormat;
  */
 
 public abstract class GoPalRouteFormat<R extends BaseRoute> extends XmlNavigationFormat<R> {
+
     public String getExtension() {
         return ".xml";
     }

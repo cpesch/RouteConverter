@@ -65,12 +65,12 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         TRACK_NAME_DATE_FORMAT.setTimeZone(CompactCalendar.UTC);
     }
 
-    public String getName() {
-        return "Navilink (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".sbp";
+    }
+
+    public String getName() {
+        return "Navilink (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

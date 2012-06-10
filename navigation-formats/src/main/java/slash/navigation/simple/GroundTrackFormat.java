@@ -75,12 +75,12 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         TIME_FORMAT.setLenient(false);
     }
 
-    public String getName() {
-        return "groundtrack vom SondenMonitor (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".txt";
+    }
+
+    public String getName() {
+        return "groundtrack vom SondenMonitor (*" + getExtension() + ")";
     }
 
     @SuppressWarnings("unchecked")

@@ -66,12 +66,12 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     WHITE_SPACE + QUOTE + "([^" + QUOTE + "]*)" + QUOTE + WHITE_SPACE +
                     END_OF_LINE);
 
-    public String getName() {
-        return "Opel Navi 600/900 (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".poi";
+    }
+
+    public String getName() {
+        return "Opel Navi 600/900 (*" + getExtension() + ")";
     }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<SimpleRoute> context) throws Exception {

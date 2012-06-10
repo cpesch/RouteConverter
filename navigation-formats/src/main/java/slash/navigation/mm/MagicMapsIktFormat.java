@@ -79,7 +79,6 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     private static final String X_ATTRIBUTE = "X";
     private static final String Y_ATTRIBUTE = "Y";
 
-
     public String getExtension() {
         return ".ikt";
     }

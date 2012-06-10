@@ -58,13 +58,12 @@ public class Nmn6FavoritesFormat extends NmnFormat {
                     "(.*)" +
                             REGEX_SEPARATOR + REGEX_SEPARATOR + "4");
 
-    public String getName() {
-        return "Navigon Mobile Navigator 6 Favorites (*" + getExtension() + ")";
-    }
-
-
     public String getExtension() {
         return ".storage";
+    }
+
+    public String getName() {
+        return "Navigon Mobile Navigator 6 Favorites (*" + getExtension() + ")";
     }
 
     protected boolean isPosition(String line) {

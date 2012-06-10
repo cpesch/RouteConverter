@@ -66,12 +66,12 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             compile("\\" + SECTION_PREFIX + "(" + SYMBOL_TITLE + " \\d+|" + OVERLAY_TITLE + "|" +
                     MAPLAGE_TITLE + ")\\" + SECTION_POSTFIX);
 
-    public String getName() {
-        return "Top50 OVL ASCII (*" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".ovl";
+    }
+
+    public String getName() {
+        return "Top50 OVL ASCII (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {

@@ -102,7 +102,6 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     "([\\d\\.]+)km/h" +
                     "$");
 
-
     public String getExtension() {
         return ".csv";
     }

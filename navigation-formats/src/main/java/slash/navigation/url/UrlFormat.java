@@ -45,12 +45,12 @@ public class UrlFormat extends BaseUrlFormat {
     private static final Pattern URL_PATTERN = Pattern.
             compile(".*?((file|mailto|(news|(ht|f)tp(s?))\\://){1}\\S+).*?", MULTILINE);
 
-    public String getName() {
-        return "URL Reference (" + getExtension() + ")";
-    }
-
     public String getExtension() {
         return ".url";
+    }
+
+    public String getName() {
+        return "URL Reference (" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {
