@@ -37,10 +37,16 @@ import static java.lang.String.format;
 public class LocalRoute implements Route {
     private final LocalCatalog catalog;
     private File file;
+    private String name;
 
-    public LocalRoute(LocalCatalog catalog, File file) {
+    public LocalRoute(LocalCatalog catalog, File file, String name) {
         this.catalog = catalog;
         this.file = file;
+        this.name = name;
+    }
+
+    public LocalRoute(LocalCatalog catalog, File file) {
+        this(catalog, file, file.getName());
     }
 
     public String getUrl() {
@@ -52,7 +58,7 @@ public class LocalRoute implements Route {
     }
 
     public String getName() throws IOException {
-        return file.getName();
+        return name;
     }
 
     public String getDescription() throws IOException {
@@ -74,7 +80,7 @@ public class LocalRoute implements Route {
     public void update(String categoryUrl, String description) throws IOException {
         File category = Files.toFile(new URL(categoryUrl));
         File newName = new File(category, description);
-        if(!file.renameTo(newName))
+        if (!file.renameTo(newName))
             throw new IOException(format("cannot rename %s to %s", file, newName));
         file = newName;
     }
@@ -98,6 +104,6 @@ public class LocalRoute implements Route {
     }
 
     public String toString() {
-        return super.toString() + "[file=" + file + "]";
+        return super.toString() + "[file=" + file + ", name=" + name + "]";
     }
 }

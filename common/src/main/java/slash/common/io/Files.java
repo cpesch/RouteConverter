@@ -42,7 +42,7 @@ public class Files {
     /**
      * @param file the file to find the extension
      * @return the extension of the file, which are the characters
-     *         starting with the last dot in the file name.
+     *         starting with the last dot in the file name in lowercase characters
      */
     public static String getExtension(File file) {
         return getExtension(file.getName());
@@ -51,13 +51,13 @@ public class Files {
     /**
      * @param name the file name to find the extension
      * @return the extension of a file name, which are the characters
-     *         starting with the last dot in the file name.
+     *         starting with the last dot in the file name in lowercase characters
      */
     public static String getExtension(String name) {
         int index = name.lastIndexOf(".");
         if (index == -1)
             return "";
-        return name.substring(index, name.length());
+        return name.substring(index, name.length()).toLowerCase();
     }
 
     public static String getExtension(List<URL> urls) {
@@ -281,7 +281,7 @@ public class Files {
                                          final List<File> list) {
         if (path.isFile()) {
             if (collectFiles &&
-                    (extension == null || getExtension(path).toLowerCase().equals(extension)))
+                    (extension == null || getExtension(path).equals(extension)))
                 list.add(path);
 
         } else {

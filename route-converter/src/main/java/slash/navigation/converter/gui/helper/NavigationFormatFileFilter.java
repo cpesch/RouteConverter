@@ -20,12 +20,13 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.NavigationFormat;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+
+import static slash.common.io.Files.getExtension;
 
 /**
  * Filters files by the extension of a given {@link BaseNavigationFormat}.
@@ -41,7 +42,7 @@ public class NavigationFormatFileFilter extends FileFilter {
     }
 
     public boolean accept(File f) {
-        return f.isDirectory() || format.getExtension().toLowerCase().equals(Files.getExtension(f.getName()).toLowerCase());
+        return f.isDirectory() || format.getExtension().equals(getExtension(f.getName()));
     }
 
     public String getDescription() {

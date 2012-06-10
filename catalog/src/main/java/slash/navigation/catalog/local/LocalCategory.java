@@ -20,6 +20,7 @@
 
 package slash.navigation.catalog.local;
 
+import slash.common.io.WindowsShortcut;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;
 
@@ -35,7 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.copy;
+import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
 /**
  * Represents a category in the file system.
@@ -46,10 +49,16 @@ import static slash.common.io.InputOutput.copy;
 public class LocalCategory implements Category {
     private final LocalCatalog catalog;
     private File directory;
+    private String name;
 
-    public LocalCategory(LocalCatalog catalog, File directory) {
+    public LocalCategory(LocalCatalog catalog, File directory, String name) {
         this.catalog = catalog;
         this.directory = directory;
+        this.name = name;
+    }
+
+    public LocalCategory(LocalCatalog catalog, File directory) {
+        this(catalog, directory, directory.getName());
     }
 
     public String getUrl() {
@@ -61,7 +70,7 @@ public class LocalCategory implements Category {
     }
 
     public String getName() throws IOException {
-        return directory.getName();
+        return name;
     }
 
     public String getDescription() throws IOException {
@@ -71,7 +80,16 @@ public class LocalCategory implements Category {
     public List<Category> getCategories() throws IOException {
         List<Category> categories = new ArrayList<Category>();
         for (File subDirectory : directory.listFiles(new DirectoryFileFilter())) {
-            categories.add(new LocalCategory(catalog, subDirectory));
+            String name = subDirectory.getName();
+            if (isPotentialValidLink(subDirectory)) {
+                WindowsShortcut shortcut = new WindowsShortcut(subDirectory);
+                if (shortcut.isDirectory()) {
+                    name = removeExtension(name);
+                    subDirectory = new File(shortcut.getRealFilename());
+                } else
+                    continue;
+            }
+            categories.add(new LocalCategory(catalog, subDirectory, name));
         }
         return categories;
     }
@@ -114,7 +132,16 @@ public class LocalCategory implements Category {
         List<Route> routes = new ArrayList<Route>();
         assert directory != null;
         for (File file : directory.listFiles(new FileFileFilter())) {
-            routes.add(new LocalRoute(catalog, file));
+            String name = file.getName();
+            if (isPotentialValidLink(file)) {
+                WindowsShortcut shortcut = new WindowsShortcut(file);
+                if (shortcut.isFile()) {
+                    name = removeExtension(name);
+                    file = new File(shortcut.getRealFilename());
+                } else
+                    continue;
+            }
+            routes.add(new LocalRoute(catalog, file, name));
         }
         return routes;
     }
@@ -154,6 +181,6 @@ public class LocalCategory implements Category {
     }
 
     public String toString() {
-        return super.toString() + "[directory=" + directory + "]";
+        return super.toString() + "[directory=" + directory + ", name=" + name + "]";
     }
 }

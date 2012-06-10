@@ -23,6 +23,8 @@ package slash.navigation.catalog.local;
 import java.io.File;
 import java.io.FileFilter;
 
+import static slash.common.io.Files.getExtension;
+
 /**
  * A file filter that accepts only directories not starting with a dot.
  *
@@ -30,6 +32,7 @@ import java.io.FileFilter;
  */
 public class DirectoryFileFilter implements FileFilter {
     public boolean accept(File file) {
-        return file.isDirectory() && !file.getName().startsWith(".");
+        return file.isDirectory() && !file.getName().startsWith(".") ||
+                file.isFile() && getExtension(file).equals(".lnk");
     }
 }
