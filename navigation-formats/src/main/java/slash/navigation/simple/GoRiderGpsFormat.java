@@ -104,7 +104,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     private static String formatComment(String string) {
-        return escape(string, QUOTE, ';');
+        return escape(string, QUOTE, ';').replaceAll("<", " ").replaceAll(">", " ");
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
