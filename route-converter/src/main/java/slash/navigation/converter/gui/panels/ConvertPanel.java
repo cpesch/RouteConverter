@@ -935,13 +935,16 @@ public class ConvertPanel {
     private File createSelectedTarget() {
         File file = new File(urlModel.getString());
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        File path = new File(RouteConverter.getInstance().getSavePathPreference(format));
-        if (!path.exists())
-            path = file.getParentFile();
+        /// TODO save in path preference or besides the existing file?
+        // file = new File(RouteConverter.getInstance().getSavePathPreference(format));
+        if (!file.exists())
+            file = new File(RouteConverter.getInstance().getSavePathPreference(format));
+        file = findExistingPath(file);
+
         String fileName = file.getName();
         if (format instanceof GoPal3RouteFormat)
             fileName = createGoPalFileName(fileName);
-        return new File(calculateConvertFileName(new File(path, fileName), "", format.getMaximumFileNameLength()));
+        return new File(calculateConvertFileName(new File(file.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
     }
 
     private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat> formats, String selectedFormat) {
