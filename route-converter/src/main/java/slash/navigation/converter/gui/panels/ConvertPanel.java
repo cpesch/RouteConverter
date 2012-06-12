@@ -924,6 +924,7 @@ public class ConvertPanel {
         source = findExistingPath(source);
         File path = new File(RouteConverter.getInstance().getOpenPathPreference());
         path = findExistingPath(path);
+
         if (path == null)
             return source;
         else if (source != null)
@@ -933,18 +934,17 @@ public class ConvertPanel {
     }
 
     private File createSelectedTarget() {
-        File file = new File(urlModel.getString());
+        File target = new File(urlModel.getString());
+        target = findExistingPath(target);
         NavigationFormat format = formatAndRoutesModel.getFormat();
         /// TODO save in path preference or besides the existing file?
-        // file = new File(RouteConverter.getInstance().getSavePathPreference(format));
-        if (!file.exists())
-            file = new File(RouteConverter.getInstance().getSavePathPreference(format));
-        file = findExistingPath(file);
+        File path = target != null ? target : new File(RouteConverter.getInstance().getSavePathPreference(format));
+        path = findExistingPath(path);
 
-        String fileName = file.getName();
+        String fileName = path.getName();
         if (format instanceof GoPal3RouteFormat)
             fileName = createGoPalFileName(fileName);
-        return new File(calculateConvertFileName(new File(file.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
+        return new File(calculateConvertFileName(new File(path.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
     }
 
     private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat> formats, String selectedFormat) {
