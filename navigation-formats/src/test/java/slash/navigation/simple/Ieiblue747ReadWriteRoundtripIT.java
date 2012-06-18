@@ -33,7 +33,7 @@ import static slash.common.io.Transfer.roundFraction;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 
-public class IBlue747ReadWriteRoundtripIT {
+public class Ieiblue747ReadWriteRoundtripIT {
 
     @Test
     public void testRoundtrip() throws IOException {
