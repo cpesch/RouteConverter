@@ -450,7 +450,8 @@
        addDebug("1. initialize()");
        try {
            var MAPNIK_MAPTYPE_ID = "Mapnik", CYCLE_MAPTYPE_ID = "Cycle", HIKE_MAPTYPE_ID = "Hike",
-                   OUTDOOR_MAPTYPE_ID = "Outdoor", TOPOGRAPHIC_MAPTYPE_ID = "Topographic";
+                   OUTDOOR_D_MAPTYPE_ID = "Outdoor D", OUTDOOR_A_MAPTYPE_ID = "Outdoor A",
+                   OUTDOOR_CH_MAPTYPE_ID = "Outdoor CH", TOPOGRAPHIC_MAPTYPE_ID = "Topographic";
            var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
            var mapOptions = {
                mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -458,7 +459,7 @@
                    mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
                        google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
                        MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID,
-                       OUTDOOR_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID],
+                       OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID],
                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                },
                panControl: false,
@@ -499,15 +500,35 @@
                alt: "HikeBikeMap rendering of OpenStreetMap data",
                name: HIKE_MAPTYPE_ID
            }));
-           map.mapTypes.set(OUTDOOR_MAPTYPE_ID, new google.maps.ImageMapType({
+           map.mapTypes.set(OUTDOOR_D_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
                    return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/portal/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                minZoom: 8,
                maxZoom: 17,
-               alt: "Outdoor Active Summer Map",
-               name: OUTDOOR_MAPTYPE_ID
+               alt: "Outdoor Active Summer Map Deutschland",
+               name: OUTDOOR_D_MAPTYPE_ID
+           }));
+           map.mapTypes.set(OUTDOOR_A_MAPTYPE_ID, new google.maps.ImageMapType({
+               getTileUrl: function(coordinates, zoom) {
+                   return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/austria/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               minZoom: 9,
+               maxZoom: 17,
+               alt: "Outdoor Active Summer Map Österreich",
+               name: OUTDOOR_A_MAPTYPE_ID
+           }));
+           map.mapTypes.set(OUTDOOR_CH_MAPTYPE_ID, new google.maps.ImageMapType({
+               getTileUrl: function(coordinates, zoom) {
+                   return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/ch/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               minZoom: 10,
+               maxZoom: 17,
+               alt: "Outdoor Active Summer Map Schweiz",
+               name: OUTDOOR_CH_MAPTYPE_ID
            }));
            map.mapTypes.set(TOPOGRAPHIC_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
@@ -543,7 +564,7 @@
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                if (map.getMapTypeId() == MAPNIK_MAPTYPE_ID || map.getMapTypeId() == CYCLE_MAPTYPE_ID || map.getMapTypeId() == HIKE_MAPTYPE_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
-               } else if (map.getMapTypeId() == OUTDOOR_MAPTYPE_ID || map.getMapTypeId() == TOPOGRAPHIC_MAPTYPE_ID) {
+               } else if (map.getMapTypeId() == OUTDOOR_D_MAPTYPE_ID || map.getMapTypeId() == OUTDOOR_A_MAPTYPE_ID || map.getMapTypeId() == OUTDOOR_CH_MAPTYPE_ID || map.getMapTypeId() == TOPOGRAPHIC_MAPTYPE_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
                } else {
                    copyrightControl.innerHTML = '';
