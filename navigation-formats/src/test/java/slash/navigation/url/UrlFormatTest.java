@@ -27,14 +27,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class UrlFormatTest {
-    private static final String GOOGLE_MAPS_EMAIL = "Betreff: Route nach/zu Riehler Straße 190 50735 Köln (Google Maps)\n" +
+    private static final String GOOGLE_MAPS_EMAIL = "Betreff: Route nach/zu Riehler Strasse 190 50735 Koeln (Google Maps)\n" +
             "\n" +
             "> Routenplaner\n" +
             "> Link:\n" +
             "http://maps.google.de/maps?f=d&hl=de&geocode=&saddr=H%C3%B6lderlinstra%C3%9Fe,+51545+Br%C3%B6l,+Oberbergischer+Kreis,+Nordrhein-Westfalen,+Deutschland&daddr=L339%2FWuppertaler+Stra%C3%9Fe+%4050.918890,+7.560880+to%3AK%C3%B6ln,+Riehler+Str.+190&mrcr=2&mra=mr&sll=50.954318,7.311401&sspn=0.142091,0.32135&ie=UTF8&ll=50.952371,7.261276&spn=0.284193,0.6427&z=11&om=1 \n" +
             ">\n" +
-            "> Startadresse: Hölderlinstraße 51545 Bröl\n" +
-            "> Zieladresse: Riehler Straße 190 50735 Köln";
+            "> Startadresse: Hoelderlinstrasse 51545 Broel\n" +
+            "> Zieladresse: Riehler Strasse 190 50735 Koeln";
 
     private static final String ROUTE_CATALOG_URL = "don't care\n" +
             "http://www.routeconverter.de/catalog/files/63/ don't care\n";
