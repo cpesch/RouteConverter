@@ -82,6 +82,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_CO
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.rest.Helper.decodeUri;
 import static slash.navigation.util.Positions.asPosition;
 import static slash.navigation.util.Positions.center;
 import static slash.navigation.util.Positions.contains;
@@ -99,7 +100,7 @@ public abstract class BaseMapView implements MapView {
     protected static final Preferences preferences = Preferences.userNodeForPackage(MapView.class);
     protected static final Logger log = Logger.getLogger(MapView.class.getName());
 
-    protected static final String MAP_TYPE_PREFERENCE = "mapType5";
+    protected static final String MAP_TYPE_PREFERENCE = "mapType3";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
@@ -1403,7 +1404,7 @@ public abstract class BaseMapView implements MapView {
 
         Matcher mapTypeChangedMatcher = MAP_TYPE_CHANGED_PATTERN.matcher(callback);
         if (mapTypeChangedMatcher.matches()) {
-            String mapType = mapTypeChangedMatcher.group(1);
+            String mapType = decodeUri(mapTypeChangedMatcher.group(1));
             preferences.put(MAP_TYPE_PREFERENCE, mapType);
             return true;
         }

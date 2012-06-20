@@ -447,19 +447,33 @@
    function initialize() {
        initialized = false;
        document.body.className = "normal";
+
+       // add indexOf for IE
+       if(!Array.prototype.indexOf) {
+           Array.prototype.indexOf = function(needle) {
+               for(var i = 0; i < this.length; i++) {
+                   if(this[i] === needle) {
+                       return i;
+                   }
+               }
+               return -1;
+           };
+       }
+
        addDebug("1. initialize()");
        try {
            var MAPNIK_MAPTYPE_ID = "Mapnik", CYCLE_MAPTYPE_ID = "Cycle", HIKE_MAPTYPE_ID = "Hike",
                    OUTDOOR_D_MAPTYPE_ID = "Outdoor D", OUTDOOR_A_MAPTYPE_ID = "Outdoor A",
                    OUTDOOR_CH_MAPTYPE_ID = "Outdoor CH", TOPOGRAPHIC_MAPTYPE_ID = "Topographic";
+           var MAPTYPE_IDS = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
+               google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
+               MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID,
+               OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID];
            var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
            var mapOptions = {
                mapTypeId: google.maps.MapTypeId.ROADMAP,
                mapTypeControlOptions: {
-                   mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
-                       google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
-                       MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID,
-                       OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID],
+                   mapTypeIds: MAPTYPE_IDS,
                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                },
                panControl: false,
@@ -562,17 +576,21 @@
            addDebug("2. created map: " + map);
 
            google.maps.event.addListener(map, "maptypeid_changed", function() {
-               if (map.getMapTypeId() == MAPNIK_MAPTYPE_ID || map.getMapTypeId() == CYCLE_MAPTYPE_ID || map.getMapTypeId() == HIKE_MAPTYPE_ID) {
+               var mapTypeId = map.getMapTypeId();
+               if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
-               } else if (map.getMapTypeId() == OUTDOOR_D_MAPTYPE_ID || map.getMapTypeId() == OUTDOOR_A_MAPTYPE_ID || map.getMapTypeId() == OUTDOOR_CH_MAPTYPE_ID || map.getMapTypeId() == TOPOGRAPHIC_MAPTYPE_ID) {
+               } else if (mapTypeId == OUTDOOR_D_MAPTYPE_ID || mapTypeId == OUTDOOR_A_MAPTYPE_ID || mapTypeId == OUTDOOR_CH_MAPTYPE_ID || mapTypeId == TOPOGRAPHIC_MAPTYPE_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
                } else {
                    copyrightControl.innerHTML = '';
                }
-               callJava("map-type-changed/" + map.getMapTypeId());
+               callJava("map-type-changed/" + mapTypeId);
            });
-           map.setMapTypeId('${maptype}');
-           addDebug("2. set maptype: " + map.getMapTypeId());
+           var mapType = '${maptype}';
+           if (MAPTYPE_IDS.indexOf(mapType) != -1) {
+               map.setMapTypeId(mapType);
+           }
+           addDebug("2. starting with maptype: " + map.getMapTypeId());
 
            try {
                var menu = new ContextMenu({map:map});

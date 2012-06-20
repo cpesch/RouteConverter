@@ -33,6 +33,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
+import static slash.common.io.InputOutput.copy;
+
 /**
  * Provides externalization functionality.
  *
@@ -80,7 +82,7 @@ public class Externalization {
             return null;
 
         log.info("Extracting " + fileName + " to " + target);
-        InputOutput.copy(in, new FileOutputStream(target));
+        copy(in, new FileOutputStream(target));
         if (!target.setLastModified(lastModifiedInClassPath))
             log.warning("Cannot set last modified date for " + target);
         return target;
@@ -95,7 +97,7 @@ public class Externalization {
         log.info("Extracting " + fileName + " to " + target);
         Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
         FileWriter writer = new FileWriter(target);
-        InputOutput.copy(reader, writer);
+        copy(reader, writer);
         return target;
     }
 }
