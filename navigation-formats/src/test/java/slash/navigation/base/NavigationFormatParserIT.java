@@ -23,7 +23,6 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
-import slash.navigation.itn.TomTomRouteFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +102,7 @@ public class NavigationFormatParserIT {
         try {
             parser.addNavigationFileParserListener(listener);
             read(TEST_PATH + "from.itn");
-            assertTrue(found[0] instanceof TomTomRouteFormat);
+            assertEquals(TomTom5RouteFormat.class, found[0].getClass());
             found[0] = null;
             parser.removeNavigationFileParserListener(listener);
             read(TEST_PATH + "from.itn");
