@@ -31,6 +31,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 /**
  * Provides file and file name functionality.
  *
@@ -94,7 +97,7 @@ public class Files {
     }
 
     public static File absolutize(File file) {
-        if(!file.isAbsolute())
+        if (!file.isAbsolute())
             file = new File(file.getAbsolutePath());
         return file;
     }
@@ -103,8 +106,7 @@ public class Files {
         String path = file.getAbsolutePath();
         try {
             path = file.getCanonicalPath();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // intentionally left empty
         }
         return path;
@@ -118,21 +120,30 @@ public class Files {
     }
 
     public static String shortenPath(String path, int maximumLength) {
-        if (path.length() > maximumLength) {
-            path = path.substring(0, maximumLength - 3) + "...";
-        }
-        return path;
+        if (path.length() <= maximumLength)
+            return path;
+        String lastPathFragment = lastPathFragment(path, maximumLength, true);
+        if (lastPathFragment.length() == maximumLength)
+            return lastPathFragment;
+        return path.substring(0, maximumLength - 3 - lastPathFragment.length()) + "..." + lastPathFragment;
     }
 
-    public static String lastPathFragment(String path) {
+    private static String lastPathFragment(String path, int maximumLength, boolean includeSeparator) {
         if (path.endsWith("/"))
             path = path.substring(0, path.length() - 1);
         int index = path.lastIndexOf('/');
         if (index == -1)
             index = path.lastIndexOf('\\');
         if (index != -1)
-            path = path.substring(index + 1);
-        return shortenPath(path, 60);
+            path = path.substring(index + (includeSeparator ? 0 : 1));
+        if (path.length() > maximumLength - 3)
+            return "..." + path.substring(max(0, path.length() - maximumLength + 3));
+        else
+            return path;
+    }
+
+    public static String lastPathFragment(String path, int maximumLength) {
+        return lastPathFragment(path, maximumLength, false);
     }
 
     public static File toFile(URL url) {
@@ -191,7 +202,7 @@ public class Files {
 
     public static String calculateConvertFileName(File file, String extension, int fileNameLength) {
         String name = file.getName();
-        name = name.substring(0, Math.min(name.length(), fileNameLength));
+        name = name.substring(0, min(name.length(), fileNameLength));
         name = setExtension(name, extension);
         String path = file.getParentFile() != null ? file.getParentFile().getPath() : "";
         return new File(path, name).getAbsolutePath();
@@ -220,11 +231,11 @@ public class Files {
     public static String calculateConvertFileName(File file, int index, int maximum, String extension, int fileNameLength) {
         String name = file.getName();
         name = removeExtension(name);
-        name = name.substring(0, Math.min(name.length(), fileNameLength));
+        name = name.substring(0, min(name.length(), fileNameLength));
 
         if (calculateNumberLength(maximum) > 0) {
             String number = numberToString(index, maximum);
-            name = name.substring(0, Math.min(name.length(), fileNameLength - number.length()));
+            name = name.substring(0, min(name.length(), fileNameLength - number.length()));
             name += number;
         }
 

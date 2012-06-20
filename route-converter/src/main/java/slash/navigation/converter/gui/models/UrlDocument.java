@@ -37,6 +37,6 @@ import static slash.common.io.Transfer.trim;
 public class UrlDocument extends StringDocument {
     public String getShortUrl() {
         String string = trim(getString());
-        return string != null ? lastPathFragment(string) : null;
+        return string != null ? lastPathFragment(string, 60) : null;
     }
 }

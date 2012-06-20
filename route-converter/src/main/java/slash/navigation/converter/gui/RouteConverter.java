@@ -113,6 +113,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.shortenPath;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
@@ -570,7 +571,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 throwable.printStackTrace();
                 log.severe("Open error: " + throwable.getMessage());
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), Files.shortenPath(path, 60), throwable.getLocalizedMessage()));
+                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), throwable.getLocalizedMessage()));
                 labelOpenError.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent me) {
                         startMail(frame);
@@ -602,7 +603,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 log.severe("Unsupported format: " + path);
                 showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("unsupported-format"), Files.shortenPath(path, 60)),
+                        MessageFormat.format(getBundle().getString("unsupported-format"), shortenPath(path, 60)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
@@ -613,7 +614,7 @@ public class RouteConverter extends SingleFrameApplication {
             public void run() {
                 log.severe("File not found: " + path);
                 showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("file-not-found"), Files.shortenPath(path, 60)),
+                        MessageFormat.format(getBundle().getString("file-not-found"), shortenPath(path, 60)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
