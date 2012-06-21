@@ -434,8 +434,13 @@
        return outdoorActiveServerIndex;
    }
 
+   var openStreetMapServerIndex = 0;
+
    function getOpenStreetMapServerIndex() {
-       return String.fromCharCode(getOutdoorActiveServerIndex() + 65);
+       openStreetMapServerIndex++;
+       if (openStreetMapServerIndex > 2)
+           openStreetMapServerIndex = 0;
+       return String.fromCharCode(openStreetMapServerIndex + 65);
    }
 
    var initialized, map, directionsService, xmlhttp;
@@ -489,7 +494,7 @@
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
            map.mapTypes.set(MAPNIK_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + "tile.openstreetmap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+                   return "http://" + getOpenStreetMapServerIndex() + ".tile.openstreetmap.org/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                maxZoom: 18,
