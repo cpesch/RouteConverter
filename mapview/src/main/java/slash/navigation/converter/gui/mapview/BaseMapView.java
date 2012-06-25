@@ -717,6 +717,10 @@ public abstract class BaseMapView implements MapView {
         this.center = center;
     }
 
+    private int getZoom() {
+        return preferences.getInt(CENTER_ZOOM_PREFERENCE, 1);
+    }
+
     protected abstract BaseNavigationPosition getNorthEastBounds();
     protected abstract BaseNavigationPosition getSouthWestBounds();
     protected abstract BaseNavigationPosition getCurrentMapCenter();
@@ -772,7 +776,7 @@ public abstract class BaseMapView implements MapView {
     private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions) {
         long start = currentTimeMillis();
 
-        int zoomLevel = getCurrentZoomLevel();
+        int zoomLevel = getZoom();
         BitSet pointStatus = calculateSignificantPositionsForZoomLevel(positions, zoomLevel);
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int i = 0; i < positions.size(); i++)
@@ -832,8 +836,6 @@ public abstract class BaseMapView implements MapView {
 
         return positions;
     }
-
-    protected abstract int getCurrentZoomLevel();
 
     private List<BaseNavigationPosition> filterVisiblePositions(List<BaseNavigationPosition> positions,
                                                                 double factor, boolean includeFirstAndLastPosition) {
@@ -1306,8 +1308,8 @@ public abstract class BaseMapView implements MapView {
     private static final Pattern SELECT_POSITION_PATTERN = Pattern.compile("^select-position/(.*)/(.*)/(.*)/(.*)$");
     private static final Pattern SELECT_POSITIONS_PATTERN = Pattern.compile("^select-positions/(.*)/(.*)/(.*)/(.*)/(.*)");
     private static final Pattern MAP_TYPE_CHANGED_PATTERN = Pattern.compile("^map-type-changed/(.*)$");
-    private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoom-changed$");
-    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)/(.*)$");
+    private static final Pattern ZOOM_CHANGED_PATTERN = Pattern.compile("^zoom-changed/(.*)$");
+    private static final Pattern CENTER_CHANGED_PATTERN = Pattern.compile("^center-changed/(.*)/(.*)$");
     private static final Pattern CALLBACK_PORT_PATTERN = Pattern.compile("^callback-port/(\\d+)$");
     private static final Pattern INSERT_WAYPOINTS_PATTERN = Pattern.compile("^(Insert-All-Waypoints|Insert-Only-Turnpoints): (-?\\d+)/(.*)$");
 
@@ -1411,6 +1413,8 @@ public abstract class BaseMapView implements MapView {
 
         Matcher zoomChangedMatcher = ZOOM_CHANGED_PATTERN.matcher(callback);
         if (zoomChangedMatcher.matches()) {
+            Integer zoom = parseInt(zoomChangedMatcher.group(1));
+            preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)
@@ -1421,10 +1425,8 @@ public abstract class BaseMapView implements MapView {
                     if (recenterAfterZooming)
                         haveToRecenterMap = true;
                     haveToRepaintSelectionImmediately = true;
-                    int currentZoomLevel = getCurrentZoomLevel();
-                    preferences.putInt(CENTER_ZOOM_PREFERENCE, currentZoomLevel);
-                    selectionUpdateReason = "zoomed from " + lastZoomLevel + " to " + currentZoomLevel;
-                    lastZoomLevel = currentZoomLevel;
+                    selectionUpdateReason = "zoomed from " + lastZoomLevel + " to " + zoom;
+                    lastZoomLevel = zoom;
                     notificationMutex.notifyAll();
                 }
             }
@@ -1435,7 +1437,6 @@ public abstract class BaseMapView implements MapView {
         if (centerChangedMatcher.matches()) {
             preferences.putDouble(CENTER_LATITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(1)));
             preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, parseDouble(centerChangedMatcher.group(2)));
-            preferences.putInt(CENTER_ZOOM_PREFERENCE, parseInt(centerChangedMatcher.group(3)));
             if (visibleNorthEast != null && visibleSouthWest != null && visibleNorthWest != null && visibleSouthEast != null) {
                 BaseNavigationPosition mapNorthEast = getNorthEastBounds();
                 BaseNavigationPosition mapSouthWest = getSouthWestBounds();

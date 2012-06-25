@@ -28,8 +28,8 @@ import chrriis.dj.nativeswing.swtimpl.components.WebBrowserNavigationEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.Externalization;
-import slash.common.system.Platform;
 import slash.common.io.TokenResolver;
+import slash.common.system.Platform;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
@@ -43,7 +43,6 @@ import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
 import static slash.common.system.Platform.isLinux;
-import static slash.common.io.Transfer.parseDouble;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map.
@@ -283,12 +282,7 @@ public class EclipseSWTMapView extends BaseMapView {
         }
     }
 
-    // zoom level and bounds
-
-    protected int getCurrentZoomLevel() {
-        String zoomLevel = executeScriptWithResult("return map.getZoom();");
-        return zoomLevel != null ? parseDouble(zoomLevel).intValue() : 1;
-    }
+    // bounds and center
 
     protected BaseNavigationPosition getNorthEastBounds() {
         return extractLatLng("return getNorthEastBounds();");

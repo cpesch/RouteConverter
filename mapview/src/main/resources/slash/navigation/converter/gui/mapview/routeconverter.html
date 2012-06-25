@@ -626,11 +626,18 @@
            }
 
            google.maps.event.addListener(map, "zoom_changed", function() {
-               callJava("zoom-changed");
+               var zoom = map.getZoom();
+               callJava("zoom-changed/" + zoom);
            });
+           var centerLat = 0.0, centerLng = 0.0;
            google.maps.event.addListener(map, "center_changed", function() {
-               center = map.getCenter();
-               callJava("center-changed/" + center.lat() + "/" + center.lng() + "/" + map.getZoom());
+               var center = map.getCenter();
+               var currentLat = Math.round(center.lat() * 100000) / 100000;
+               var currentLng = Math.round(center.lng() * 100000) / 100000;
+               if(currentLat != centerLat && currentLng != centerLng) {
+                   centerLat = currentLat; centerLng = currentLng;
+                   callJava("center-changed/" + centerLat + "/" + centerLng);
+               }
            });
 
            var shiftKey = false, altKey = false, ctrlKey = false;
