@@ -585,6 +585,13 @@ public abstract class NavigationTestCase extends TestCase {
         return trim(nameDescription(garminUmlauts(comment).replaceAll(",", ""), 24, Integer.MAX_VALUE, true), 50);
     }
 
+    private static String getGoRiderGpsComment(BaseNavigationPosition position) {
+        String comment = position.getComment();
+        if (comment == null)
+            return null;
+        return comment.replaceAll("\"", ";");
+    }
+
     private static String getMagellanMapSendPositionComment(BaseNavigationPosition position) {
         String comment = position.getComment();
         if (comment.startsWith("WPT")) {
@@ -708,6 +715,10 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof GlopusFormat) {
                 String sourceName = getNavigatingPoiWarnerComment(sourcePosition);
                 String targetName = getNavigatingPoiWarnerComment(targetPosition);
+                assertEquals("Comment " + index + " does not match", sourceName, targetName);
+            } else if (targetFormat instanceof GoRiderGpsFormat) {
+                String sourceName = getGoRiderGpsComment(sourcePosition);
+                String targetName = getGoRiderGpsComment(targetPosition);
                 assertEquals("Comment " + index + " does not match", sourceName, targetName);
             } else if (sourceFormat instanceof TourExchangeFormat) {
                 String sourceName = getTourExchangePositionComment(sourcePosition);
