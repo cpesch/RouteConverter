@@ -26,7 +26,6 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.augment.PositionAugmenter;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.PositionColumns;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
@@ -69,7 +68,10 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Calendar.SECOND;
+import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
@@ -78,6 +80,8 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
@@ -188,7 +192,7 @@ public abstract class BaseMapView implements MapView {
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                boolean insertOrDelete = e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE;
+                boolean insertOrDelete = e.getType() == INSERT || e.getType() == TableModelEvent.DELETE;
                 boolean allRowsChanged = e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE;
                 // used to be limited to single rows which did work reliably but with usabilty problems
                 // if (e.getFirstRow() == e.getLastRow() && insertOrDelete)
@@ -196,8 +200,8 @@ public abstract class BaseMapView implements MapView {
                     updateRouteButDontRecenter();
                 else {
                     // ignored updates on columns not displayed
-                    if (e.getType() == TableModelEvent.UPDATE &&
-                            !(e.getColumn() == PositionColumns.DESCRIPTION_COLUMN_INDEX ||
+                    if (e.getType() == UPDATE &&
+                            !(e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
                                     e.getColumn() == LONGITUDE_COLUMN_INDEX ||
                                     e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                     e.getColumn() == ALL_COLUMNS))
@@ -205,7 +209,7 @@ public abstract class BaseMapView implements MapView {
                     update(allRowsChanged || insertOrDelete);
                 }
                 // update position marker on updates of longitude and latitude
-                if (e.getType() == TableModelEvent.UPDATE &&
+                if (e.getType() == UPDATE &&
                         (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
                                 e.getColumn() == LATITUDE_COLUMN_INDEX ||
                                 e.getColumn() == ALL_COLUMNS)) {
@@ -227,7 +231,7 @@ public abstract class BaseMapView implements MapView {
 
             public void contentsChanged(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (e.getType() == ListDataEvent.CONTENTS_CHANGED && e.getIndex0() == CharacteristicsModel.IGNORE && e.getIndex1() == CharacteristicsModel.IGNORE)
+                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
                     return;
                 updateRouteButDontRecenter();
             }
