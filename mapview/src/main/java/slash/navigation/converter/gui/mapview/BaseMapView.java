@@ -119,7 +119,7 @@ public abstract class BaseMapView implements MapView {
     private static final int MAXIMUM_MARKER_SEGMENT_LENGTH = preferences.getInt("maximumWaypointSegmentLength3", 10);
     private static final int MAXIMUM_MARKER_POSITION_COUNT = preferences.getInt("maximumWaypointPositionCount3", 50 * 10);
     private static final int MAXIMUM_SELECTION_COUNT = preferences.getInt("maximumSelectionCount3", 5 * 10);
-    private static final int[] ZOOMLEVEL_SCALE = {
+    private static final int[] ZOOM_SCALE = {
             400000000,
             200000000,
             100000000,
@@ -139,7 +139,7 @@ public abstract class BaseMapView implements MapView {
             6400,
             3200
     };
-    private static final int MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION = 16;
+    private static final int MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION = 16;
 
     private PositionsModel positionsModel;
     private List<BaseNavigationPosition> positions;
@@ -160,8 +160,8 @@ public abstract class BaseMapView implements MapView {
             haveToRepaintSelection = false, ignoreNextZoomCallback = false;
     private TravelMode travelMode;
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
-    private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOMLEVEL_SCALE.length);
-    private int lastZoomLevel = -1;
+    private final Map<Integer, BitSet> significantPositionCache = new HashMap<Integer, BitSet>(ZOOM_SCALE.length);
+    private int lastZoom = -1;
     private PositionAugmenter positionAugmenter;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -751,28 +751,28 @@ public abstract class BaseMapView implements MapView {
 
     // reduction of positions
 
-    private BitSet calculateSignificantPositionsForZoomLevel(List<BaseNavigationPosition> positions, int zoomLevel) {
-        BitSet significant = significantPositionCache.get(zoomLevel);
+    private BitSet calculateSignificantPositionsForZoom(List<BaseNavigationPosition> positions, int zoom) {
+        BitSet significant = significantPositionCache.get(zoom);
         if (significant == null) {
             significant = new BitSet(positions.size());
 
-            if (zoomLevel <= MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION) {
-                double threshold = ZOOMLEVEL_SCALE[zoomLevel] / 2500.0;
+            if (zoom <= MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION) {
+                double threshold = ZOOM_SCALE[zoom] / 2500.0;
                 long start = currentTimeMillis();
                 int[] significantPositions = getSignificantPositions(positions, threshold);
                 long end = currentTimeMillis();
-                log.info("zoomLevel " + zoomLevel + " < " + MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION +
+                log.info("zoom " + zoom + " < " + MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION +
                         ": threshold " + threshold + ", significant positions " + significantPositions.length +
                         ", calculated in " + (end - start) + " milliseconds");
                 for (int significantPosition : significantPositions)
                     significant.set(significantPosition);
             } else {
-                // on all zoom level about MAXIMUM_ZOOMLEVEL_FOR_SIGNIFICANCE_CALCULATION
+                // on all zoom about MAXIMUM_ZOOM_FOR_SIGNIFICANCE_CALCULATION
                 // use all positions since the calculation is too expensive
-                log.info("zoomLevel " + zoomLevel + " use all " + positions.size() + " positions");
+                log.info("zoom " + zoom + " use all " + positions.size() + " positions");
                 significant.set(0, positions.size(), true);
             }
-            significantPositionCache.put(zoomLevel, significant);
+            significantPositionCache.put(zoom, significant);
         }
         return significant;
     }
@@ -780,8 +780,8 @@ public abstract class BaseMapView implements MapView {
     private List<BaseNavigationPosition> filterSignificantPositions(List<BaseNavigationPosition> positions) {
         long start = currentTimeMillis();
 
-        int zoomLevel = getZoom();
-        BitSet pointStatus = calculateSignificantPositionsForZoomLevel(positions, zoomLevel);
+        int zoom = getZoom();
+        BitSet pointStatus = calculateSignificantPositionsForZoom(positions, zoom);
         List<BaseNavigationPosition> result = new ArrayList<BaseNavigationPosition>();
         for (int i = 0; i < positions.size(); i++)
             if (pointStatus.get(i))
@@ -1098,7 +1098,7 @@ public abstract class BaseMapView implements MapView {
             if (positions.size() > 0) {
                 center = center(positions);
             } else {
-                int zoom = preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
+                int zoom = getZoom();
                 buffer.append("setZoom(").append(zoom).append(");\n");
                 center = getLastMapCenter();
             }
@@ -1429,8 +1429,8 @@ public abstract class BaseMapView implements MapView {
                     if (recenterAfterZooming)
                         haveToRecenterMap = true;
                     haveToRepaintSelectionImmediately = true;
-                    selectionUpdateReason = "zoomed from " + lastZoomLevel + " to " + zoom;
-                    lastZoomLevel = zoom;
+                    selectionUpdateReason = "zoomed from " + lastZoom + " to " + zoom;
+                    lastZoom = zoom;
                     notificationMutex.notifyAll();
                 }
             }
