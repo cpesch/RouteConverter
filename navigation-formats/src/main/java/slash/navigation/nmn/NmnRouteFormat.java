@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -545,19 +546,20 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(timeStamp);
         byteBuffer.put(unknownBytes);
 
-        byteBuffer.putInt(1); // starttag
+        byteBuffer.putInt(4); // starttag
         int positionStarttag = byteBuffer.position(); // save position to fill the bytelength at the end
         byteBuffer.putLong(0); // length of following data. filled at the end
         byte[] comment = position.getComment().getBytes(UTF8_ENCODING);
         byteBuffer.putInt(comment.length);
         byteBuffer.put(comment);
+        byteBuffer.putInt(0); //this 4 bytes only if startag = 4 
         byteBuffer.putDouble(position.getLongitude());
         byteBuffer.putDouble(position.getLatitude());
         byteBuffer.putInt(0); //4 byte ??
 
-        //0x32 ist plz wenn Daten von navigon kommen. Liegt nicht vor -> mit 0 füllen
+        //0x08 ist freier Text. Liegt nicht vor -> mit 0 füllen
         //macht itconv ebenso
-        byteBuffer.putInt(0x32);
+        byteBuffer.putInt(0x08);
         byteBuffer.putLong(0); //8 byte
 
         //unknown copyied from itconv export.  wechselt in itconf an den ersten Stellen. Timestamp
@@ -572,7 +574,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         //Countrycode
         //type 1
-        byteBuffer.putInt(1);
+        byteBuffer.putInt(4);
         int positionStarttagCountry = byteBuffer.position(); // save position to fill the bytelength at the end
         //bytelength
         byteBuffer.putLong(0); //filled at the end
@@ -622,8 +624,16 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         // 4 Byte always 0
         byteArrayOutputStream.write(new byte[]{0, 0, 0, 0});
-        // 4 Byte Textlength Date - we write no date
-        byteArrayOutputStream.write(new byte[]{0, 0, 0, 0});
+        
+        
+        // 4 Byte Textlength Date - fix length
+        byteArrayOutputStream.write(new byte[]{0x12, 0, 0, 0});
+                
+        SimpleDateFormat dateFormat = new SimpleDateFormat("'R'yyyyMMdd'-'HH:mm:ss");
+        String date = dateFormat.format(System.currentTimeMillis());
+        byteArrayOutputStream.write(date.getBytes());
+        
+        
 
         // 4 Byte Pointcount, max. 255 Points with this style
         byteArrayOutputStream.write((byte) (endIndex - startIndex));
