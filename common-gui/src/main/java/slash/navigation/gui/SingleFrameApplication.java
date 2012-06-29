@@ -32,6 +32,13 @@ import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.awt.Frame.MAXIMIZED_HORIZ;
+import static java.awt.Frame.MAXIMIZED_VERT;
+import static java.awt.Frame.NORMAL;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
+
 /**
  * The base of all single frame graphical user interfaces.
  *
@@ -82,7 +89,7 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     protected void openFrame(JPanel contentPane) {
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 exit(e);
@@ -93,7 +100,7 @@ public abstract class SingleFrameApplication extends Application {
             public void actionPerformed(ActionEvent e) {
                 exit(e);
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -102,16 +109,16 @@ public abstract class SingleFrameApplication extends Application {
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
         log.info("Screen size is " + bounds + ", insets are " + insets);
 
-        int state = preferences.getInt(STATE_PREFERENCE, Frame.NORMAL);
+        int state = preferences.getInt(STATE_PREFERENCE, NORMAL);
         int width = crop("width", getPreferenceWidth(),
                 (int) bounds.getX() - (insets.left + insets.right),
                 (int) bounds.getWidth() - (insets.left + insets.right));
         int height = crop("height", getPreferenceHeight(),
                 (int) bounds.getY() - (insets.top + insets.bottom),
                 (int) bounds.getHeight() - (insets.top + insets.bottom));
-        if((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
+        if((state & MAXIMIZED_HORIZ) == MAXIMIZED_HORIZ)
             width = (int)bounds.getWidth() - (insets.left + insets.right);
-        if((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
+        if((state & MAXIMIZED_VERT) == MAXIMIZED_VERT)
             height = (int)bounds.getHeight() - (insets.top + insets.bottom);
         if (width != -1 && height != -1)
             frame.setSize(width, height);
@@ -123,9 +130,9 @@ public abstract class SingleFrameApplication extends Application {
         int y = crop("y", preferences.getInt(Y_PREFERENCE, -1),
                 (int) bounds.getY() + insets.top,
                 (int) bounds.getY() + insets.top + (int) bounds.getHeight() - insets.bottom - height);
-        if ((state & Frame.MAXIMIZED_HORIZ) == Frame.MAXIMIZED_HORIZ)
+        if ((state & MAXIMIZED_HORIZ) == MAXIMIZED_HORIZ)
             x = insets.left;
-        if ((state & Frame.MAXIMIZED_VERT) == Frame.MAXIMIZED_VERT)
+        if ((state & MAXIMIZED_VERT) == MAXIMIZED_VERT)
             y = insets.top;
         if (x != -1 && y != -1)
             frame.setLocation(x, y);

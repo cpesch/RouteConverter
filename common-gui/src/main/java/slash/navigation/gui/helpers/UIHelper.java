@@ -27,6 +27,9 @@ import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.awt.Cursor.DEFAULT_CURSOR;
+import static java.awt.Cursor.WAIT_CURSOR;
+
 /**
  * Helpers used throughout the UI
  *
@@ -67,7 +70,7 @@ public class UIHelper {
     }
 
     private static void startWaitCursor(Component component) {
-        component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        component.setCursor(Cursor.getPredefinedCursor(WAIT_CURSOR));
     }
 
     public static void stopWaitCursor(JComponent component) {
@@ -77,7 +80,7 @@ public class UIHelper {
     }
 
     private static void stopWaitCursor(Component component) {
-        component.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        component.setCursor(Cursor.getPredefinedCursor(DEFAULT_CURSOR));
     }
 
     public static ImageIcon loadIcon(String name) {
