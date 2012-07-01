@@ -20,12 +20,12 @@
 
 package slash.common.type;
 
-import slash.common.type.CompactCalendar;
-
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
+import static slash.common.type.CompactCalendar.UTC;
 
 /**
  * The <code>ISO8601</code> utility class provides helper methods
@@ -282,7 +282,7 @@ public final class ISO8601 {
             buffer.append('.');
             buffer.append(XXX_FORMAT.format(calendar.get(Calendar.MILLISECOND)));
         }
-        if (calendar.getTimeZone().equals(CompactCalendar.UTC))
+        if (calendar.getTimeZone().equals(UTC))
             buffer.append('Z');
         else {
             buffer.append('+');

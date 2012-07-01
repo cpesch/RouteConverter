@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
@@ -130,7 +129,7 @@ public class Kml20Format extends KmlFormat {
         return timeInstant != null ? timeInstant.getTimePosition() : null;
     }
 
-    private Calendar extractTime(List<Object> elements) {
+    private CompactCalendar extractTime(List<Object> elements) {
         JAXBElement element = findElement(elements, "TimePeriod");
         if (element == null)
             return null;
@@ -140,7 +139,7 @@ public class Kml20Format extends KmlFormat {
             time = extractTime(timePeriod.getBegin().getTimeInstant());
         if (time == null && timePeriod.getEnd() != null)
             time = extractTime(timePeriod.getEnd().getTimeInstant());
-        return time != null ? ISO8601.parse(time) : null;
+        return parseTime(time);
     }
 
     private List<String> extractDescriptionList(List<Object> elements) {

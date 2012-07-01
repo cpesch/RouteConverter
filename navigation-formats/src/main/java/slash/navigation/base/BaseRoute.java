@@ -44,6 +44,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import static slash.common.io.Transfer.*;
+import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.util.Positions.contains;
 
 /**
@@ -153,7 +155,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         P first = positions.get(0);
         if(first.getTime() == null)
-            first.setTime(CompactCalendar.fromCalendar(Calendar.getInstance(CompactCalendar.UTC)));
+            first.setTime(fromCalendar(Calendar.getInstance(UTC)));
 
         P previous = first;
         for (int i = 1; i < positions.size(); i++) {

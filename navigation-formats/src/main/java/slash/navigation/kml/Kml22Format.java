@@ -61,7 +61,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -73,10 +72,10 @@ import static java.lang.Math.sin;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 import static java.lang.String.valueOf;
-import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.io.Transfer.formatPositionAsString;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.HexadecimalNumber.decodeBytes;
 import static slash.common.util.Bearing.EARTH_RADIUS;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -177,7 +176,7 @@ public class Kml22Format extends KmlFormat {
         }
     }
 
-    private Calendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
+    private CompactCalendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
         if (timePrimitiveType != null) {
             AbstractTimePrimitiveType timePrimitiveTypeValue = timePrimitiveType.getValue();
             String time = null;
@@ -186,8 +185,7 @@ public class Kml22Format extends KmlFormat {
             } else if (timePrimitiveTypeValue instanceof TimeStampType) {
                 time = ((TimeStampType) timePrimitiveTypeValue).getWhen();
             }
-            if (time != null)
-                return ISO8601.parse(time);
+            return parseTime(time);
         }
         return null;
     }
@@ -257,9 +255,9 @@ public class Kml22Format extends KmlFormat {
         for (int i = 0; i < whens.size(); i++) {
             String when = whens.get(i);
             if (when != null) {
-                Calendar calendar = ISO8601.parse(when);
+                CompactCalendar calendar = parseTime(when);
                 if (calendar != null && i < result.size())
-                    result.get(i).setTime(CompactCalendar.fromCalendar(calendar));
+                    result.get(i).setTime(calendar);
             }
         }
         return result;

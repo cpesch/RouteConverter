@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -235,7 +236,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
             comment = "Pushpoint " + String.valueOf(pointNo);
 
         return new Wgs84Position(longitude / FACTOR, latitude / FACTOR, (double) altitude, null,
-                CompactCalendar.fromCalendar(calendar), comment);
+                fromCalendar(calendar), comment);
     }
 
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {

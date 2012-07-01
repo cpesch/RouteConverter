@@ -110,6 +110,7 @@ import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -1007,7 +1008,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (setStartDateFromFile) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(source.lastModified());
-            startDate = CompactCalendar.fromCalendar(calendar);
+            startDate = fromCalendar(calendar);
         }
         ParserContext<TomTomRoute> context = new ParserContextImpl<TomTomRoute>();
         new TomTom5RouteFormat().read(new FileInputStream(source), startDate, context);
@@ -1020,7 +1021,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (setStartDateFromFile) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(source.lastModified());
-            startDate = CompactCalendar.fromCalendar(calendar);
+            startDate = fromCalendar(calendar);
         }
         ParserContext<NmeaRoute> context = new ParserContextImpl<NmeaRoute>();
         new NmeaFormat().read(new FileInputStream(source), startDate, context);
@@ -1033,7 +1034,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (setStartDateFromFile) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(source.lastModified());
-            startDate = CompactCalendar.fromCalendar(calendar);
+            startDate = fromCalendar(calendar);
         }
         ParserContext<SimpleRoute> context = new ParserContextImpl<SimpleRoute>();
         new GoPalTrackFormat().read(new FileInputStream(source), startDate, context);

@@ -50,7 +50,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -211,7 +210,7 @@ public class Kml22BetaFormat extends KmlFormat {
         return positions;
     }
 
-    private Calendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
+    private CompactCalendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
         if (timePrimitiveType != null) {
             AbstractTimePrimitiveType timePrimitiveTypeValue = timePrimitiveType.getValue();
             String time = "";
@@ -220,7 +219,7 @@ public class Kml22BetaFormat extends KmlFormat {
             } else if (timePrimitiveTypeValue instanceof TimeStampType) {
                 time = ((TimeStampType) timePrimitiveTypeValue).getWhen();
             }
-            return ISO8601.parse(time);
+            return parseTime(time);
         }
         return null;
     }

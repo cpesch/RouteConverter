@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
+import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
@@ -126,8 +128,9 @@ public class SinglePositionAugmenter implements PositionAugmenter {
                 final CompactCalendar time[] = new CompactCalendar[1];
                 time[0] = row - 2 >= 0 ? interpolateTime(positionsModel.getPosition(row),
                         positionsModel.getPosition(row - 1), positionsModel.getPosition(row - 2)) : null;
-                if (time[0] == null)
-                    time[0] = CompactCalendar.fromCalendar(Calendar.getInstance(CompactCalendar.UTC));
+                if (time[0] == null) {
+                    time[0] = fromCalendar(Calendar.getInstance(UTC));
+                }
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {

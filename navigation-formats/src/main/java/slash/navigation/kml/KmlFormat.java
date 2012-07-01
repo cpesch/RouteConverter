@@ -21,6 +21,7 @@
 package slash.navigation.kml;
 
 import slash.common.type.CompactCalendar;
+import slash.common.type.ISO8601;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.googlemaps.GoogleMapsPosition;
@@ -153,9 +154,20 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return result;
     }
 
-    protected void enrichPosition(KmlPosition position, Calendar time, String name, String description, CompactCalendar startDate) {
+    protected CompactCalendar parseTime(String time) {
+        if (time != null) {
+            Calendar calendar = ISO8601.parse(time);
+            if (calendar != null) {
+                calendar.setTimeZone(UTC);
+                return fromCalendar(calendar);
+            }
+        }
+        return null;
+    }
+
+    protected void enrichPosition(KmlPosition position, CompactCalendar time, String name, String description, CompactCalendar startDate) {
         if (position.getTime() == null && time != null)
-            position.setTime(fromCalendar(time));
+            position.setTime(time);
         if (position.getTime() == null)
             parseTime(position, description, startDate);
         if (position.getTime() == null)
