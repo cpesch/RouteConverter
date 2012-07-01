@@ -41,9 +41,9 @@ import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Glopus (.tk) files.
- *
+ * <p/>
  * Format: 51.0450383,7.0508300,Comment
- *         51.04503,7.05083
+ * 51.04503,7.05083
  *
  * @author Christian Pesch
  */
@@ -75,7 +75,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     public String getName() {
         return "Glopus (*" + getExtension() + ")";
     }
-    
+
     @SuppressWarnings("unchecked")
     public <P extends BaseNavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
@@ -83,7 +83,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     protected boolean isPosition(String line) {
         Matcher commentMatcher = COMMENT_LINE_PATTERN.matcher(line);
-        if(commentMatcher.matches())
+        if (commentMatcher.matches())
             return true;
         Matcher simpleMatcher = SIMPLE_LINE_PATTERN.matcher(line);
         return simpleMatcher.matches();
@@ -114,6 +114,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String longitude = formatDoubleAsString(position.getLongitude(), 7);
         String latitude = formatDoubleAsString(position.getLatitude(), 7);
         String comment = escape(position.getComment(), SEPARATOR, ';');
+        comment = escape(comment, '\"', ';');
         writer.println(latitude + SEPARATOR + longitude + SEPARATOR + comment);
     }
 }

@@ -213,7 +213,7 @@ public class KmlFormatIT {
         assertEquals(1, routes.size());
         KmlRoute route = routes.get(0);
         assertEquals(Track, route.getCharacteristics());
-        assertEquals(133, route.getPositionCount());
+        assertEquals(10, route.getPositionCount());
     }
 
     @Test

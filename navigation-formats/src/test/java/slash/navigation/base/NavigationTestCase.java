@@ -627,7 +627,7 @@ public abstract class NavigationTestCase extends TestCase {
         String comment = position.getComment();
         if (comment == null)
             return null;
-        return comment.replaceAll(",", ";");
+        return comment.replaceAll(",", ";").replaceAll("\"", ";");
     }
 
 
