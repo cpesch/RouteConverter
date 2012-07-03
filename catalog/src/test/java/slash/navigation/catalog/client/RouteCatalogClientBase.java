@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import static java.lang.Integer.parseInt;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.junit.Assert.assertTrue;
 
@@ -87,7 +88,7 @@ public abstract class RouteCatalogClientBase {
             return new String(toByteArray(fis), "ISO8859-1");
         }
         finally {
-            fis.close();
+            closeQuietly(fis);
         }
     }
 

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,9 +22,11 @@ public class FilesIT extends RouteCatalogServiceBase {
         Category category = root.create(name);
 
         File in = File.createTempFile("äöüß", ".file");
-        FileInputStream fis = new FileInputStream(new File(TEST_PATH + "filestest.gpx"));
-        FileOutputStream fos = new FileOutputStream(in);
-        copy(fis, fos);
+        FileInputStream input = new FileInputStream(new File(TEST_PATH + "filestest.gpx"));
+        FileOutputStream output = new FileOutputStream(in);
+        copy(input, output);
+        closeQuietly(input);
+        closeQuietly(output);
         long inLength = in.length();
 
         Route route = category.createRoute("File with umlauts", in);

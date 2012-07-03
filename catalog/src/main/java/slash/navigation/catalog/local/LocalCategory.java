@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
@@ -148,7 +149,11 @@ public class LocalCategory implements Category {
 
     public Route createRoute(String description, File file) throws IOException {
         File destination = new File(directory, description);
-        copy(new FileInputStream(file), new FileOutputStream(destination));
+        FileInputStream input = new FileInputStream(file);
+        FileOutputStream output = new FileOutputStream(destination);
+        copy(input, output);
+        closeQuietly(input);
+        closeQuietly(output);
         return new LocalRoute(catalog, destination);
     }
 

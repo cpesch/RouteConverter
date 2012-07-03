@@ -30,6 +30,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
 /**
@@ -86,7 +87,11 @@ public class HgtFileCache {
 
     public void put(String key, File source) throws IOException {
         File target = put(key);
-        copy(new FileInputStream(source), new FileOutputStream(target));
+        FileInputStream input = new FileInputStream(source);
+        FileOutputStream output = new FileOutputStream(target);
+        copy(input, output);
+        closeQuietly(input);
+        closeQuietly(output);
     }
 
     public void putAsObject(String key, Object value) throws IOException {

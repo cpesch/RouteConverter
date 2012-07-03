@@ -48,6 +48,7 @@ import java.util.prefs.Preferences;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -393,7 +394,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File sourceFile = null, targetFile = null;
         try {
             sourceFile = createTempFile("babelsource", "." + getFormatName());
-            copy(source, new FileOutputStream(sourceFile));
+            FileOutputStream output = new FileOutputStream(sourceFile);
+            copy(source, output);
+            closeQuietly(source);
+            closeQuietly(output);
             targetFile = createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
             boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
@@ -431,7 +435,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            copy(new FileInputStream(targetFile), target);
+            FileInputStream input = new FileInputStream(targetFile);
+            copy(input, target);
+            closeQuietly(input);
+            closeQuietly(target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);

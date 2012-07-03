@@ -20,7 +20,6 @@
 
 package slash.navigation.hgt;
 
-import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.rest.Get;
 
 import java.io.File;
@@ -36,6 +35,7 @@ import java.util.prefs.Preferences;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
 /**
@@ -107,7 +107,9 @@ public class HgtFileDownloader {
             while (entry != null) {
                 if (!entry.isDirectory()) {
                     File extracted = File.createTempFile("routeconverter", ".hgt");
-                    copy(new NotClosingUnderlyingInputStream(zipInputStream), new FileOutputStream(extracted));
+                    FileOutputStream output = new FileOutputStream(extracted);
+                    copy(zipInputStream, output);
+                    closeQuietly(output);
                     zipInputStream.closeEntry();
 
                     if (entry.getName().equals(key))

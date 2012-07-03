@@ -33,6 +33,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
 /**
@@ -77,12 +78,15 @@ public class Externalization {
         if (target.exists() && lastModifiedTarget / 1000 == lastModifiedInClassPath / 1000)
             return target;
 
-        InputStream in = Externalization.class.getClassLoader().getResourceAsStream(fileName);
-        if (in == null)
+        InputStream input = Externalization.class.getClassLoader().getResourceAsStream(fileName);
+        if (input == null)
             return null;
 
         log.info("Extracting " + fileName + " to " + target);
-        copy(in, new FileOutputStream(target));
+        FileOutputStream output = new FileOutputStream(target);
+        copy(input, output);
+        closeQuietly(input);
+        closeQuietly(output);
         if (!target.setLastModified(lastModifiedInClassPath))
             log.warning("Cannot set last modified date for " + target);
         return target;
