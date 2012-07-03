@@ -33,7 +33,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
-import static slash.common.io.InputOutput.copy;
+import static org.apache.commons.io.IOUtils.copy;
 
 /**
  * Provides externalization functionality.

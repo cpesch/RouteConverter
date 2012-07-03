@@ -21,7 +21,6 @@
 package slash.navigation.simple;
 
 import slash.common.type.CompactCalendar;
-import slash.common.io.InputOutput;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import static org.apache.commons.io.IOUtils.toByteArray;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -79,7 +79,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
-        String template = new String(InputOutput.readBytes(getClass().getResourceAsStream("webpage.html")));
+        String template = new String(toByteArray(getClass().getResourceAsStream("webpage.html")));
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();
@@ -112,13 +112,13 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         
         BaseNavigationPosition northEast = northEast(positions);
         BaseNavigationPosition southWest = southWest(positions);
-        StringBuilder boundsBuffer = new StringBuilder().
+        StringBuffer boundsBuffer = new StringBuffer().
                 append("new GLatLng(").append(northEast.getLatitude()).append(",").
                 append(northEast.getLongitude()).append("),").
                 append("new GLatLng(").append(southWest.getLatitude()).append(",").
                 append(southWest.getLongitude()).append(")");
         BaseNavigationPosition center = center(positions);
-        StringBuilder centerBuffer = new StringBuilder().
+        StringBuffer centerBuffer = new StringBuffer().
                 append("new GLatLng(").append(center.getLatitude()).append(",").
                 append(center.getLongitude()).append(")");
 

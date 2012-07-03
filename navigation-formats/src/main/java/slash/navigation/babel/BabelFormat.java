@@ -20,9 +20,9 @@
 
 package slash.navigation.babel;
 
-import slash.common.type.CompactCalendar;
 import slash.common.io.Externalization;
 import slash.common.system.Platform;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ParserContext;
@@ -48,7 +48,7 @@ import java.util.prefs.Preferences;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
-import static slash.common.io.InputOutput.copy;
+import static org.apache.commons.io.IOUtils.copy;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;

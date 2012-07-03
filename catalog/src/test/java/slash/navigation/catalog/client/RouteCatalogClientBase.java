@@ -21,7 +21,6 @@ package slash.navigation.catalog.client;
 
 import org.junit.After;
 import org.junit.Before;
-import slash.common.io.InputOutput;
 import slash.navigation.gpx.GpxUtil;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import static java.lang.Integer.parseInt;
+import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.junit.Assert.assertTrue;
 
 public abstract class RouteCatalogClientBase {
@@ -84,7 +84,7 @@ public abstract class RouteCatalogClientBase {
     protected String readFileToString(String fileName) throws IOException {
         FileInputStream fis = new FileInputStream(TEST_PATH + fileName);
         try {
-            return new String(InputOutput.readBytes(fis), "ISO8859-1");
+            return new String(toByteArray(fis), "ISO8859-1");
         }
         finally {
             fis.close();

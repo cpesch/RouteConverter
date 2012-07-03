@@ -1,13 +1,13 @@
 package slash.navigation.catalog.domain;
 
 import org.junit.Test;
-import slash.common.io.InputOutput;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import static org.apache.commons.io.IOUtils.copy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +23,7 @@ public class FilesIT extends RouteCatalogServiceBase {
         File in = File.createTempFile("äöüß", ".file");
         FileInputStream fis = new FileInputStream(new File(TEST_PATH + "filestest.gpx"));
         FileOutputStream fos = new FileOutputStream(in);
-        InputOutput.copy(fis, fos);
+        copy(fis, fos);
         long inLength = in.length();
 
         Route route = category.createRoute("File with umlauts", in);

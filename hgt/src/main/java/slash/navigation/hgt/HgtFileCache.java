@@ -20,8 +20,6 @@
 
 package slash.navigation.hgt;
 
-import slash.common.io.InputOutput;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,6 +29,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import static org.apache.commons.io.IOUtils.copy;
 
 /**
  * Caches HGT files.
@@ -86,7 +86,7 @@ public class HgtFileCache {
 
     public void put(String key, File source) throws IOException {
         File target = put(key);
-        InputOutput.copy(new FileInputStream(source), new FileOutputStream(target));
+        copy(new FileInputStream(source), new FileOutputStream(target));
     }
 
     public void putAsObject(String key, Object value) throws IOException {
@@ -94,16 +94,17 @@ public class HgtFileCache {
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
         try {
             out.writeObject(value);
-        }
-        finally {
+        } finally {
             out.close();
         }
     }
 
     public boolean clear() {
         boolean cleared = true;
-        for (File file : getHgtCacheDirectory().listFiles())
-            cleared = cleared && file.delete();
+        File[] files = getHgtCacheDirectory().listFiles();
+        if (files != null)
+            for (File file : files)
+                cleared = cleared && file.delete();
         return cleared;
     }
 }

@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.apache.commons.io.IOUtils.copy;
 import static slash.common.io.Files.removeExtension;
-import static slash.common.io.InputOutput.copy;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
 /**
