@@ -102,6 +102,8 @@ public class Externalization {
         Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
         FileWriter writer = new FileWriter(target);
         copy(reader, writer);
+        closeQuietly(reader);
+        closeQuietly(writer);
         return target;
     }
 }
