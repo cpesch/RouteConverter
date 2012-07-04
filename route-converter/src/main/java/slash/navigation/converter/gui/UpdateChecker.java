@@ -40,6 +40,7 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
+import static slash.feature.client.Feature.initializeFeatures;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForUpdateCheck;
 
 /**
@@ -198,6 +199,7 @@ public class UpdateChecker {
 
         public void setParameters(String parameters) {
             this.parameters = parseParameters(parameters);
+            initializeFeatures(getValue("features"));
         }
     }
 }

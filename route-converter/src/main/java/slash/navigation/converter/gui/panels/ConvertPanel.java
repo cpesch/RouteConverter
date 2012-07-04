@@ -120,6 +120,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -158,6 +160,7 @@ import static slash.common.io.Files.reverse;
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toFile;
 import static slash.common.io.Files.toUrls;
+import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationFormats.getReadFormats;
 import static slash.navigation.base.NavigationFormats.getReadFormatsPreferredByExtension;
@@ -167,6 +170,7 @@ import static slash.navigation.base.NavigationFormats.getWriteFormatsWithPreferr
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.positionFlavor;
+import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findMenuComponent;
 import static slash.navigation.converter.gui.helper.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
@@ -786,6 +790,18 @@ public class ConvertPanel {
     }
 
     private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
+        if (!hasFeature("fpl-g1000")) {
+            final RouteConverter r = RouteConverter.getInstance();
+            JLabel labelFeatureError = new JLabel(format(RouteConverter.getBundle().getString("feature-not-available"), "Write Garmin Flight Plan"));
+            labelFeatureError.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    startMail(r.getFrame());
+                }
+            });
+            showMessageDialog(r.getFrame(), labelFeatureError, r.getFrame().getTitle(), ERROR_MESSAGE);
+            return;
+        }
+
         CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(garminFlightPlanRoute);
         dialog.pack();
         dialog.restoreLocation();

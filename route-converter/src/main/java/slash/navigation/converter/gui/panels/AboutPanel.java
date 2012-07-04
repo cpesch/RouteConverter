@@ -30,6 +30,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ResourceBundle;
 
+import static java.text.MessageFormat.format;
+import static slash.feature.client.Feature.getFeature;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForForum;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForGeonames;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForHomepage;
@@ -47,6 +49,7 @@ public class AboutPanel {
     private JLabel labelMail;
     private JLabel labelCp;
     private JLabel labelCredit;
+    private JLabel labelFeature;
 
     public AboutPanel() {
         initialize();
@@ -78,6 +81,12 @@ public class AboutPanel {
                 startBrowserForGeonames(r.getFrame());
             }
         });
+
+        String featuredTo = getFeature("featured-to");
+        if (featuredTo != null) {
+            labelFeature.setText(format(RouteConverter.getBundle().getString("featured-to"), featuredTo));
+            labelFeature.setVisible(true);
+        }
     }
 
     public Component getRootComponent() {
@@ -102,7 +111,7 @@ public class AboutPanel {
         aboutPanel = new JPanel();
         aboutPanel.setLayout(new GridLayoutManager(1, 1, new Insets(3, 3, 3, 3), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel1.setLayout(new GridLayoutManager(4, 2, new Insets(3, 3, 3, 3), -1, -1));
         aboutPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelBrowse = new JLabel();
         this.$$$loadLabelText$$$(labelBrowse, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-www"));
@@ -120,6 +129,9 @@ public class AboutPanel {
         labelCredit = new JLabel();
         this.$$$loadLabelText$$$(labelCredit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("options-credit"));
         panel1.add(labelCredit, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelFeature = new JLabel();
+        labelFeature.setVisible(false);
+        panel1.add(labelFeature, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

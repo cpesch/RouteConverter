@@ -119,6 +119,7 @@ import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
 import static slash.common.system.Version.parseVersionFromManifest;
+import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startBrowserForJava;
 import static slash.navigation.converter.gui.helper.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helper.JMenuHelper.findItem;
@@ -301,6 +302,7 @@ public class RouteConverter extends SingleFrameApplication {
 
         initializeRouteConverterServices();
         initializeActions();
+        initializePreferences(preferences);
     }
 
     private void openFrame() {
