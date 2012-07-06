@@ -457,7 +457,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            copy(new FileInputStream(targetFile), target);
+            FileInputStream input = new FileInputStream(targetFile);
+            copy(input, target);
+            closeQuietly(input);
+            closeQuietly(target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);
