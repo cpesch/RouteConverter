@@ -608,7 +608,8 @@ public class ConvertPanel {
 
                             final String finalPath = path;
                             final int finalRow = row > 0 ? row : getPositionsModel().getRowCount();
-                            SwingUtilities.invokeLater(new Runnable() {
+                            // avoid parallelism to ensure the URLs are processed in order
+                            SwingUtilities.invokeAndWait(new Runnable() {
                                 public void run() {
                                     try {
                                         getPositionsModel().add(finalRow, result.getTheRoute());
