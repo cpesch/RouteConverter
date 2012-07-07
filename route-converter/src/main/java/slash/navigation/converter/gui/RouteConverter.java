@@ -55,6 +55,7 @@ import slash.navigation.converter.gui.helper.RouteServiceOperator;
 import slash.navigation.converter.gui.helper.ShowProfileMenu;
 import slash.navigation.converter.gui.helper.SinglePositionAugmenter;
 import slash.navigation.converter.gui.helper.UndoMenuSynchronizer;
+import slash.navigation.converter.gui.mapview.EclipseSWTMapView;
 import slash.navigation.converter.gui.mapview.MapView;
 import slash.navigation.converter.gui.mapview.MapViewListener;
 import slash.navigation.converter.gui.mapview.TravelMode;
@@ -291,8 +292,8 @@ public class RouteConverter extends SingleFrameApplication {
 
         openFrame();
 
-        mapView = createMapView("slash.navigation.converter.gui.mapview.EclipseSWTMapView");
-        if (mapView != null && mapView.isSupportedPlatform()) {
+        mapView = new EclipseSWTMapView();
+        if (mapView.isSupportedPlatform()) {
             mapPanel.setVisible(true);
             openMapView();
         } else {
@@ -315,16 +316,6 @@ public class RouteConverter extends SingleFrameApplication {
                 });
             }
         }, "FrameOpener").start();
-    }
-
-    private MapView createMapView(String className) {
-        try {
-            Class<?> clazz = Class.forName(className);
-            return (MapView) clazz.newInstance();
-        } catch (Exception e) {
-            log.info("Cannot instantiate " + className + ": " + e.getMessage());
-        }
-        return null;
     }
 
     private void openMapView() {

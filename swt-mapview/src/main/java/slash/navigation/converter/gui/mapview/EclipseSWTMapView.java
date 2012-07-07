@@ -43,6 +43,8 @@ import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
 import static slash.common.system.Platform.isLinux;
+import static slash.common.system.Platform.isMac;
+import static slash.common.system.Platform.isWindows;
 
 /**
  * Implementation for a component that displays the positions of a position list on a map.
@@ -59,7 +61,7 @@ public class EclipseSWTMapView extends BaseMapView {
     private boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
 
     public boolean isSupportedPlatform() {
-        return isLinux() || Platform.isMac() || Platform.isWindows();
+        return isLinux() || isMac() || isWindows();
     }
 
     public Component getComponent() {
