@@ -335,7 +335,9 @@ public class RouteConverter extends SingleFrameApplication {
                 if (mapView.getComponent() == null || cause != null) {
                     StringWriter stackTrace = new StringWriter();
                     cause.printStackTrace(new PrintWriter(stackTrace));
-                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("start-browser-error"), stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("start-browser-error"),
+                            parseVersionFromManifest().getBits(), Platform.getBits(),
+                            stackTrace.toString().replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
                     mapPanel.add(mapView.getComponent(), MAP_PANEL_CONSTRAINTS);
                 }

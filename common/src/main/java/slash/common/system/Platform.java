@@ -46,7 +46,11 @@ public class Platform {
     }
 
     public static String getJava() {
-        return "Java " + System.getProperty("java.version") + " (" + System.getProperty("sun.arch.data.model") + "-bit)";
+        return "Java " + System.getProperty("java.version") + " (" + getBits() + "-bit)";
+    }
+
+    public static String getBits() {
+        return System.getProperty("sun.arch.data.model");
     }
 
     public static boolean isCurrentAtLeastMinimumVersion(String currentVersion, String minimumVersion) {
