@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.dnd;
 
+import slash.common.io.FileFileFilter;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;
@@ -27,10 +28,12 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static java.util.Arrays.asList;
 import static slash.common.io.Files.toUrls;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 
@@ -41,11 +44,26 @@ import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
  */
 
 public class PanelDropHandler extends TransferHandler {
+    private List<File> toFilesOnly(List<File> files) {
+        List<File> result = new ArrayList<File>();
+        for (File file : files) {
+            if (file.isFile())
+                result.add(file);
+            else if (file.isDirectory()) {
+                File[] list = file.listFiles(new FileFileFilter());
+                if (list != null)
+                    result.addAll(asList(list));
+            }
+        }
+        return result;
+    }
+
     private void openOrAdd(List<File> files) {
         RouteConverter r = RouteConverter.getInstance();
-        if (r.isConvertPanelSelected())
-            r.openPositionList(toUrls(files.toArray(new File[files.size()])));
-        else if (r.isBrowsePanelSelected())
+        if (r.isConvertPanelSelected()) {
+            List<File> onlyFiles = toFilesOnly(files);
+            r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])));
+        } else if (r.isBrowsePanelSelected())
             r.addFilesToCatalog(files);
     }
 

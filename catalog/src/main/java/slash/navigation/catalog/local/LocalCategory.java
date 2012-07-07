@@ -20,6 +20,7 @@
 
 package slash.navigation.catalog.local;
 
+import slash.common.io.FileFileFilter;
 import slash.common.io.WindowsShortcut;
 import slash.navigation.catalog.domain.Category;
 import slash.navigation.catalog.domain.Route;

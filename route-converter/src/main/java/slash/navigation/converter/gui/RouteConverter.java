@@ -116,6 +116,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.shortenPath;
+import static slash.common.io.Files.toUrls;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getMaximumMemory;
 import static slash.common.system.Platform.getPlatform;
@@ -249,7 +250,7 @@ public class RouteConverter extends SingleFrameApplication {
     private void parseArgs(String[] args) {
         log.info("Processing arguments: " + Arrays.toString(args));
         if (args.length > 0) {
-            List<URL> urls = Files.toUrls(args);
+            List<URL> urls = toUrls(args);
             log.info("Processing urls: " + urls);
             getConvertPanel().openUrls(urls);
         } else {
