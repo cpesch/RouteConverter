@@ -725,9 +725,14 @@ public abstract class BaseMapView implements MapView {
         return preferences.getInt(CENTER_ZOOM_PREFERENCE, 1);
     }
 
+    private void setZoom(int zoom) {
+        preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
+    }
+
     protected abstract BaseNavigationPosition getNorthEastBounds();
     protected abstract BaseNavigationPosition getSouthWestBounds();
     protected abstract BaseNavigationPosition getCurrentMapCenter();
+    protected abstract Integer getCurrentZoom();
 
     private BaseNavigationPosition getLastMapCenter() {
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
@@ -914,7 +919,7 @@ public abstract class BaseMapView implements MapView {
 
         long end = currentTimeMillis();
         log.info(format("Filtered selected positions to reduce %d positions to %d in %d milliseconds",
-                positions.size(), result.size(), (end - start)));
+                selectedIndices.length, result.size(), (end - start)));
         return result;
     }
 
@@ -1084,7 +1089,8 @@ public abstract class BaseMapView implements MapView {
     private void setCenterOfMap(List<BaseNavigationPosition> positions, boolean recenter) {
         StringBuilder buffer = new StringBuilder();
 
-        if (positions.size() > 0 && recenter) {
+        boolean fitBoundsToPositions = positions.size() > 0 && recenter;
+        if (fitBoundsToPositions) {
             BaseNavigationPosition northEast = northEast(positions);
             BaseNavigationPosition southWest = southWest(positions);
             buffer.append("fitBounds(").append(southWest.getLatitude()).append(",").append(southWest.getLongitude()).append(",").
@@ -1106,6 +1112,11 @@ public abstract class BaseMapView implements MapView {
         }
         executeScript(buffer.toString());
         haveToInitializeMapOnFirstStart = false;
+
+        if (fitBoundsToPositions) {
+            // need to update zoom since fitBounds() changes the zoom level without firing a notification
+            setZoom(getCurrentZoom());
+        }
     }
 
     private void selectPositions(List<BaseNavigationPosition> selectedPositions, BaseNavigationPosition center) {
@@ -1418,7 +1429,8 @@ public abstract class BaseMapView implements MapView {
         Matcher zoomChangedMatcher = ZOOM_CHANGED_PATTERN.matcher(callback);
         if (zoomChangedMatcher.matches()) {
             Integer zoom = parseInt(zoomChangedMatcher.group(1));
-            preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
+            setZoom(zoom);
+
             synchronized (notificationMutex) {
                 // since setCenter() leads to a callback and thus paints the track twice
                 if (ignoreNextZoomCallback)

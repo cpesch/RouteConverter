@@ -393,6 +393,10 @@
        return map.getCenter().toUrlValue(6);
    }
 
+   function getZoom() {
+       return map.getZoom();
+   }
+
    function getThresholdForPixel(map, latLng, pixel) {
        var worldCoordinate = map.getProjection().fromLatLngToPoint(latLng);
        var scale = Math.pow(2, map.getZoom());

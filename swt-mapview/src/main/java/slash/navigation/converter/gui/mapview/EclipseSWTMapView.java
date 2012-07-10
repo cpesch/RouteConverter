@@ -29,7 +29,6 @@ import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowOpeningEvent;
 import chrriis.dj.nativeswing.swtimpl.components.WebBrowserWindowWillOpenEvent;
 import slash.common.io.Externalization;
 import slash.common.io.TokenResolver;
-import slash.common.system.Platform;
 import slash.navigation.base.BaseNavigationPosition;
 
 import javax.swing.*;
@@ -42,6 +41,8 @@ import java.util.logging.Logger;
 import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
 import static slash.common.system.Platform.isLinux;
 import static slash.common.system.Platform.isMac;
 import static slash.common.system.Platform.isWindows;
@@ -296,6 +297,11 @@ public class EclipseSWTMapView extends BaseMapView {
 
     protected BaseNavigationPosition getCurrentMapCenter() {
         return extractLatLng("return getCenter();");
+    }
+
+    protected Integer getCurrentZoom() {
+        Double zoom = parseDouble(executeScriptWithResult("return getZoom();"));
+        return zoom != null ? zoom.intValue() : null;
     }
 
     // script execution
