@@ -447,7 +447,7 @@
        return String.fromCharCode(openStreetMapServerIndex + 65);
    }
 
-   var initialized, map, directionsService, xmlhttp;
+   var initialized, map, directionsService, xmlhttp, hikingSymbolsMapType, reliefMapType;
 
    function isInitialized() {
        return initialized;
@@ -471,12 +471,13 @@
 
        addDebug("1. initialize()");
        try {
-           var MAPNIK_MAPTYPE_ID = "Mapnik", CYCLE_MAPTYPE_ID = "Cycle", HIKE_MAPTYPE_ID = "Hike",
+           var MAPNIK_MAPTYPE_ID = "Mapnik", CYCLE_MAPTYPE_ID = "Cycle", 
+                   HIKE_MAPTYPE_ID = "Hike", HIKE_MAPTYPE_SYMBOL_ID = "Hike Symbols",
                    OUTDOOR_D_MAPTYPE_ID = "Outdoor D", OUTDOOR_A_MAPTYPE_ID = "Outdoor A",
                    OUTDOOR_CH_MAPTYPE_ID = "Outdoor CH", TOPOGRAPHIC_MAPTYPE_ID = "Topographic";
            var MAPTYPE_IDS = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
                google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN,
-               MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID,
+               MAPNIK_MAPTYPE_ID, CYCLE_MAPTYPE_ID, HIKE_MAPTYPE_ID, HIKE_MAPTYPE_SYMBOL_ID,
                OUTDOOR_D_MAPTYPE_ID, OUTDOOR_A_MAPTYPE_ID, OUTDOOR_CH_MAPTYPE_ID, TOPOGRAPHIC_MAPTYPE_ID];
            var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
            var mapOptions = {
@@ -523,6 +524,15 @@
                alt: "HikeBikeMap rendering of OpenStreetMap data",
                name: HIKE_MAPTYPE_ID
            }));
+           map.mapTypes.set(HIKE_MAPTYPE_SYMBOL_ID, new google.maps.ImageMapType({
+               getTileUrl: function(coordinates, zoom) {
+                   return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               maxZoom: 18,
+               alt: "HikeBikeMap with Symbols rendering of OpenStreetMap data",
+               name: HIKE_MAPTYPE_SYMBOL_ID
+           }));
            map.mapTypes.set(OUTDOOR_D_MAPTYPE_ID, new google.maps.ImageMapType({
                getTileUrl: function(coordinates, zoom) {
                    return "http://s" + getOutdoorActiveServerIndex() + ".outdooractive.com/portal/map/" + zoom + "/" + coordinates.x + "/" + coordinates.y + ".png";
@@ -565,6 +575,28 @@
                name: TOPOGRAPHIC_MAPTYPE_ID
            }));
 
+           /*Add Overlay for HikeBike with symbols*/
+           var hikingSymbolsOptions = {
+               getTileUrl: function(coord, zoom) {
+            	   return "http://tile.lonvia.de/hiking/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+        	   },
+        	   tileSize: DEFAULT_TILE_SIZE,
+        	   isPng: true,
+               name: "Hiking Symbols"
+           };
+           var reliefOptions = {
+               getTileUrl: function(coord, zoom) {
+                   return "http://toolserver.org/~cmarqu/hill/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               isPng: true,
+               name: "Relief"
+           };
+
+           //Save maptype in global var
+           hikingSymbolsMapType = new google.maps.ImageMapType(hikingSymbolsOptions);
+           reliefMapType = new google.maps.ImageMapType(reliefOptions);
+           
            var copyrightControl = document.createElement('div');
            copyrightControl.id = 'copyright-control';
            copyrightControl.style.fontSize = '10px';
@@ -586,14 +618,26 @@
 
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                var mapTypeId = map.getMapTypeId();
-               if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID) {
+               if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_SYMBOL_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a> -';
                } else if (mapTypeId == OUTDOOR_D_MAPTYPE_ID || mapTypeId == OUTDOOR_A_MAPTYPE_ID || mapTypeId == OUTDOOR_CH_MAPTYPE_ID || mapTypeId == TOPOGRAPHIC_MAPTYPE_ID) {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a> -';
                } else {
                    copyrightControl.innerHTML = '';
                }
+               
                callJava("map-type-changed/" + mapTypeId);
+               
+               //append hiking symbols overlay on special maptype
+               if (mapTypeId == HIKE_MAPTYPE_SYMBOL_ID){
+            	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
+            	   map.overlayMapTypes.setAt(1, reliefMapType);
+               }
+               else {
+            	   map.overlayMapTypes.setAt(0, null);
+            	   map.overlayMapTypes.setAt(1, null);
+               }
+
            });
            var mapType = '${maptype}';
            if (MAPTYPE_IDS.indexOf(mapType) != -1) {
