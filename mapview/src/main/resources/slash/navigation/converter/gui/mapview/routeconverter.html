@@ -447,7 +447,7 @@
        return String.fromCharCode(openStreetMapServerIndex + 65);
    }
 
-   var initialized, map, directionsService, xmlhttp, hikingSymbolsMapType, reliefMapType;
+   var initialized, map, directionsService, xmlhttp;
 
    function isInitialized() {
        return initialized;
@@ -575,27 +575,22 @@
                name: TOPOGRAPHIC_MAPTYPE_ID
            }));
 
-           /*Add Overlay for HikeBike with symbols*/
-           var hikingSymbolsOptions = {
+           var hikingSymbolsMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
-            	   return "http://tile.lonvia.de/hiking/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-        	   },
-        	   tileSize: DEFAULT_TILE_SIZE,
-        	   isPng: true,
+                   return "http://tile.lonvia.de/hiking/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+               },
+               tileSize: DEFAULT_TILE_SIZE,
+               isPng: true,
                name: "Hiking Symbols"
-           };
-           var reliefOptions = {
+           });
+           var reliefMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://toolserver.org/~cmarqu/hill/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                isPng: true,
                name: "Relief"
-           };
-
-           //Save maptype in global var
-           hikingSymbolsMapType = new google.maps.ImageMapType(hikingSymbolsOptions);
-           reliefMapType = new google.maps.ImageMapType(reliefOptions);
+           });
            
            var copyrightControl = document.createElement('div');
            copyrightControl.id = 'copyright-control';
@@ -626,9 +621,6 @@
                    copyrightControl.innerHTML = '';
                }
                
-               callJava("map-type-changed/" + mapTypeId);
-               
-               //append hiking symbols overlay on special maptype
                if (mapTypeId == HIKE_MAPTYPE_SYMBOL_ID){
             	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
             	   map.overlayMapTypes.setAt(1, reliefMapType);
@@ -638,6 +630,7 @@
             	   map.overlayMapTypes.setAt(1, null);
                }
 
+               callJava("map-type-changed/" + mapTypeId);
            });
            var mapType = '${maptype}';
            if (MAPTYPE_IDS.indexOf(mapType) != -1) {
