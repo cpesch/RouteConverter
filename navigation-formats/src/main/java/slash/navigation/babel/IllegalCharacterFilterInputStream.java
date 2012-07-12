@@ -41,7 +41,7 @@ class IllegalCharacterFilterInputStream extends FilterInputStream {
     }
 
     private boolean isIllegalCharacter(int character) {
-        boolean illegal = character < SPACE && !(character == LF || character == CR);
+        boolean illegal = character > 0 && character < SPACE && !(character == LF || character == CR);
         if (illegal)
             log.warning("Filtered illegal character " + character + " from GPSBabel GPX data");
         return illegal;
