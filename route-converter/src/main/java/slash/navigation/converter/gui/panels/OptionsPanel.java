@@ -59,6 +59,10 @@ import static java.util.Locale.ROOT;
 import static java.util.Locale.US;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
+import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.AVOID_HIGHWAYS_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.AVOID_TOLLS_PREFERENCE;
+import static slash.navigation.converter.gui.RouteConverter.RECENTER_AFTER_ZOOMING_PREFERENCE;
 import static slash.navigation.converter.gui.mapview.TravelMode.Bicycling;
 import static slash.navigation.converter.gui.mapview.TravelMode.Driving;
 import static slash.navigation.converter.gui.mapview.TravelMode.Walking;
@@ -138,9 +142,9 @@ public class OptionsPanel {
         });
         textFieldBabelPath.setText(BabelFormat.getBabelPathPreference());
 
-        new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, r.getPreferences(), RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAutomaticUpdateCheck, r.getPreferences(), AUTOMATIC_UPDATE_CHECK_PREFERENCE, true);
 
-        new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, r.getPreferences(), RouteConverter.RECENTER_AFTER_ZOOMING_PREFERENCE, false);
+        new CheckBoxPreferencesSynchronizer(checkBoxRecenterAfterZooming, r.getPreferences(), RECENTER_AFTER_ZOOMING_PREFERENCE, false);
         checkBoxRecenterAfterZooming.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setRecenterAfterZooming(checkBoxRecenterAfterZooming.isSelected());
@@ -165,13 +169,13 @@ public class OptionsPanel {
         });
         comboboxTravelMode.setSelectedItem(r.getTravelModePreference());
 
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, r.getPreferences(), RouteConverter.AVOID_HIGHWAYS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidHighways, r.getPreferences(), AVOID_HIGHWAYS_PREFERENCE, true);
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidHighways(checkBoxAvoidHighways.isSelected());
             }
         });
-        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, r.getPreferences(), RouteConverter.AVOID_TOLLS_PREFERENCE, true);
+        new CheckBoxPreferencesSynchronizer(checkBoxAvoidTolls, r.getPreferences(), AVOID_TOLLS_PREFERENCE, true);
         checkBoxAvoidTolls.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 r.setAvoidTolls(checkBoxAvoidTolls.isSelected());
