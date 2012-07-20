@@ -57,7 +57,7 @@ public class UpdateChecker {
 
     static {
         preferences.putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
-        if(preferences.getLong(START_TIME_PREFERENCE, -1) == -1)
+        if (preferences.getLong(START_TIME_PREFERENCE, -1) == -1)
             preferences.putLong(START_TIME_PREFERENCE, currentTimeMillis());
     }
 
@@ -139,7 +139,8 @@ public class UpdateChecker {
 
     static class UpdateResult {
         private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
-        private static final String JAVA_VERSION_KEY = "java.version";
+        private static final String JAVA6_VERSION_KEY = "java6.version";
+        private static final String JAVA7_VERSION_KEY = "java7.version";
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
@@ -167,13 +168,17 @@ public class UpdateChecker {
             return myJavaVersion;
         }
 
-        public String getLatestJavaVersion() {
-            return getValue(JAVA_VERSION_KEY);
+        public String getLatestJava6Version() {
+            return getValue(JAVA6_VERSION_KEY);
+        }
+
+        public String getLatestJava7Version() {
+            return getValue(JAVA7_VERSION_KEY);
         }
 
         public boolean existsLaterJavaVersion() {
-            boolean isLatestJavaVersion = new Version(myJavaVersion).isLaterVersionThan(new Version(getLatestJavaVersion()));
-            return !isLatestJavaVersion;
+            String latestJavaVersion = new Version(myJavaVersion).isLaterVersionThan(new Version("1.7.0")) ? getLatestJava7Version() : getLatestJava6Version();
+            return myJavaVersion.compareTo(latestJavaVersion) < 0;
         }
 
         String getValue(String key) {

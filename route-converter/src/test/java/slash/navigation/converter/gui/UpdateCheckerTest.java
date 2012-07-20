@@ -28,10 +28,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class UpdateCheckerTest {
-    private UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult("2.2", "1.5");
-
     @Test
     public void testSetParameters() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult("2.2", "1.5");
         result.setParameters("b=c,routeconverter.version=1.3,a=b");
         assertEquals("c", result.getValue("b"));
         assertEquals("1.3", result.getValue("routeconverter.version"));
@@ -41,12 +40,56 @@ public class UpdateCheckerTest {
 
     @Test
     public void testParseVersion() {
-        result.setParameters("b=c,routeconverter.version=1.3,java.version=2,a=b");
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult("2.2", "1.6.0_03");
+        result.setParameters("b=c,routeconverter.version=1.3,java6.version=1.6.0_04,java7.version=1.7.0_05,a=b");
         assertEquals("2.2", result.getMyRouteConverterVersion());
         assertEquals("1.3", result.getLatestRouteConverterVersion());
         assertFalse(result.existsLaterRouteConverterVersion());
-        assertEquals("1.5", result.getMyJavaVersion());
-        assertEquals("2", result.getLatestJavaVersion());
+        assertEquals("1.6.0_03", result.getMyJavaVersion());
+        assertEquals("1.6.0_04", result.getLatestJava6Version());
+        assertEquals("1.7.0_05", result.getLatestJava7Version());
         assertTrue(result.existsLaterJavaVersion());
+    }
+
+    @Test
+    public void existsLaterJavaVersion6() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.6.0_01");
+        result.setParameters("java6.version=1.6.0_02");
+        assertTrue(result.existsLaterJavaVersion());
+    }
+
+    @Test
+    public void noLaterJava6Version1() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.6.0_02");
+        result.setParameters("java6.version=1.6.0_02");
+        assertFalse(result.existsLaterJavaVersion());
+    }
+
+    @Test
+    public void noLaterJava6Version2() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.6.0_02");
+        result.setParameters("java6.version=1.6.0_01");
+        assertFalse(result.existsLaterJavaVersion());
+    }
+
+    @Test
+    public void existsLaterJavaVersion7() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.7.0_01");
+        result.setParameters("java7.version=1.7.0_02");
+        assertTrue(result.existsLaterJavaVersion());
+    }
+
+    @Test
+    public void noLaterJava7Version1() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.7.0_02");
+        result.setParameters("java7.version=1.7.0_02");
+        assertFalse(result.existsLaterJavaVersion());
+    }
+
+    @Test
+    public void noLaterJava7Version2() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.7.0_02");
+        result.setParameters("java7.version=1.7.0_01");
+        assertFalse(result.existsLaterJavaVersion());
     }
 }
