@@ -42,7 +42,6 @@ import static chrriis.dj.nativeswing.swtimpl.NativeInterface.isOpen;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useWebkitRuntime;
 import static chrriis.dj.nativeswing.swtimpl.components.JWebBrowser.useXULRunnerRuntime;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
 import static slash.common.system.Platform.isLinux;
 import static slash.common.system.Platform.isMac;
 import static slash.common.system.Platform.isWindows;
