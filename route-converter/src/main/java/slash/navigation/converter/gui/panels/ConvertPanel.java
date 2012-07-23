@@ -974,9 +974,10 @@ public class ConvertPanel {
         File target = new File(urlModel.getString());
         target = findExistingPath(target);
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        /// TODO save in path preference or besides the existing file?
         File path = target != null ? target : new File(RouteConverter.getInstance().getSavePathPreference(format));
         path = findExistingPath(path);
+        if (path == null)
+            path = new File("");
 
         String fileName = path.getName();
         if (format instanceof GoPal3RouteFormat)
