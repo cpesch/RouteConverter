@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +53,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  */
 
 public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(CoPilotFormat.class);
     protected static final String DATA_VERSION = "Data Version";
     private static final String START_TRIP = "Start Trip";
     private static final String END_TRIP = "End Trip";
@@ -206,7 +208,7 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));
             // otherwise store comment als city
             writer.println(CITY + NAME_VALUE_SEPARATOR + city);
-            if (first || last)
+            if (first || last || preferences.getBoolean("writeTargets", false))
                 writer.println(SHOW + NAME_VALUE_SEPARATOR + "1"); // Target/Stop target
             else
                 writer.println(SHOW + NAME_VALUE_SEPARATOR + "0"); // Waypoint
