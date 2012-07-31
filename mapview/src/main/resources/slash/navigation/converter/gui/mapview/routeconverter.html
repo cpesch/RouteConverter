@@ -611,6 +611,10 @@
                    new google.maps.Size(32, 32), null, new google.maps.Point(15, 16));
            addDebug("2. created map: " + map);
 
+           var mapType = '${maptype}';
+           if (MAPTYPE_IDS.indexOf(mapType) != -1) {
+               map.setMapTypeId(mapType);
+           }
            google.maps.event.addListener(map, "maptypeid_changed", function() {
                var mapTypeId = map.getMapTypeId();
                if (mapTypeId == MAPNIK_MAPTYPE_ID || mapTypeId == CYCLE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_ID || mapTypeId == HIKE_MAPTYPE_SYMBOL_ID) {
@@ -632,10 +636,6 @@
 
                callJava("map-type-changed/" + mapTypeId);
            });
-           var mapType = '${maptype}';
-           if (MAPTYPE_IDS.indexOf(mapType) != -1) {
-               map.setMapTypeId(mapType);
-           }
            addDebug("2. starting with maptype: " + map.getMapTypeId());
 
            try {
