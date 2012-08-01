@@ -162,7 +162,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }, "BabelExecutor").start();
     }
 
-    private void pumpStream(final InputStream input, final OutputStream output, final String streamName) {
+    private void pumpStream(final InputStream input, final OutputStream output, final String streamName, final boolean closeOutput) {
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -179,7 +179,8 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                         }
                     } finally {
                         input.close();
-                        output.close();
+                        if (closeOutput)
+                            output.close();
                     }
                 }
                 catch (IOException e) {
@@ -194,8 +195,8 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                                    String commandLineFlags, int timeout) throws IOException {
         String babel = findBabel();
         Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags, timeout);
-        pumpStream(source, process.getOutputStream(), "input");
-        pumpStream(process.getErrorStream(), System.err, "error");
+        pumpStream(source, process.getOutputStream(), "input", true);
+        pumpStream(process.getErrorStream(), System.err, "error", false);
         return process.getInputStream();
     }
 
