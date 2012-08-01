@@ -21,14 +21,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>rest</artifactId>
+            <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <classifier>stripped</classifier>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rest</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

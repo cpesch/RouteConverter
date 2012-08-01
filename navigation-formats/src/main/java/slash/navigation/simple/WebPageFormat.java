@@ -30,12 +30,10 @@ import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.toByteArray;
+import static slash.common.io.InputOutput.readBytes;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -81,9 +79,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
-        InputStream input = getClass().getResourceAsStream("webpage.html");
-        String template = new String(toByteArray(input));
-        closeQuietly(input);
+        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")));
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();

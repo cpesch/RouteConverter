@@ -48,8 +48,7 @@ import java.util.prefs.Preferences;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.copy;
+import static slash.common.io.InputOutput.copy;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -124,33 +123,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return new GpxRoute(new Gpx10Format(), characteristics, name, null, (List<GpxPosition>) positions);
     }
 
-
-    private void pumpStream(final InputStream input, final OutputStream output, final String streamName) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    try {
-                        byte buffer[] = new byte[2048];
-                        int count = 0;
-                        while (count >= 0) {
-                            count = input.read(buffer);
-                            if (count > 0) {
-                                output.write(buffer, 0, count);
-                                String output = new String(buffer).trim();
-                                log.fine("Read " + count + " bytes of " + streamName + " output from gpsbabel process: '" + output + "'");
-                            }
-                        }
-                    } finally {
-                        input.close();
-                        output.close();
-                    }
-                }
-                catch (IOException e) {
-                    log.severe("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
-                }
-            }
-        }, "BabelStreamPumper-" + streamName).start();
-    }
+    // stream
 
     private Process execute(String babel, String inputFormatName, String outputFormatName,
                             String commandLineFlags, int timeout) throws IOException {
@@ -189,25 +162,49 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }, "BabelExecutor").start();
     }
 
+    private void pumpStream(final InputStream input, final OutputStream output, final String streamName) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    try {
+                        byte buffer[] = new byte[2048];
+                        int count = 0;
+                        while (count >= 0) {
+                            count = input.read(buffer);
+                            if (count > 0) {
+                                output.write(buffer, 0, count);
+                                String output = new String(buffer).trim();
+                                log.fine("Read " + count + " bytes of " + streamName + " output from gpsbabel process: '" + output + "'");
+                            }
+                        }
+                    } finally {
+                        input.close();
+                        output.close();
+                    }
+                }
+                catch (IOException e) {
+                    log.severe("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
+                }
+            }
+        }, "BabelStreamPumper-" + streamName).start();
+    }
+
     private InputStream startBabel(InputStream source,
                                    String sourceFormat, String targetFormat,
                                    String commandLineFlags, int timeout) throws IOException {
         String babel = findBabel();
         Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags, timeout);
-        pumpStream(source, process.getOutputStream(), "stdin");
-        pumpStream(process.getErrorStream(), System.err, "stderr");
+        pumpStream(source, process.getOutputStream(), "input");
+        pumpStream(process.getErrorStream(), System.err, "error");
         return process.getInputStream();
     }
 
-    private void readStream(InputStream inputStream, String streamName) throws IOException {
-        byte buffer[] = new byte[2048];
-        int count = 0;
-        while (inputStream.available() > 0 && count < buffer.length) {
-            buffer[count++] = (byte) inputStream.read();
-        }
-        String output = new String(buffer).trim();
-        log.fine("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
+    private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        InputStream target = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
+        getGpxFormat().read(target, startDate, context);
     }
+
+    // temp file
 
     private boolean startBabel(File source, String sourceFormat,
                                File target, String targetFormat,
@@ -225,71 +222,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         int exitValue = execute(babel, command, timeout);
         log.info("Executed '" + command + "' with exit value: " + exitValue + " target exists: " + target.exists());
         return exitValue == 0;
-    }
-
-    private File checkIfBabelExists(String path) {
-        File file = new File(path);
-        return file.exists() ? file : null;
-    }
-
-    private String findBabel() throws IOException {
-        // 1. check if there is a preference and try to find its file
-        File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
-        if (babelFile == null || !babelFile.exists()) {
-            babelFile = null;
-        }
-
-        // 2a. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
-        if (babelFile == null && Platform.isWindows()) {
-            babelFile = checkIfBabelExists(System.getenv("ProgramFiles") + "\\GPSBabel\\gpsbabel.exe");
-        }
-
-        // 2b. look for "c:\Program Files (x86)\GPSBabel\gpsbabel.exe"
-        if (babelFile == null && Platform.isWindows()) {
-            babelFile = checkIfBabelExists(System.getenv("ProgramFiles(x86)") + "\\GPSBabel\\gpsbabel.exe");
-        }
-
-        // 3. look for "/usr/bin/gpsbabel" in path
-        if (babelFile == null && !Platform.isWindows()) {
-            babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
-        }
-
-        // 4. extract from classpath into temp directrory and execute there
-        if (babelFile == null) {
-            String path = Platform.getOperationSystem() + "/" + Platform.getArchitecture() + "/";
-            if (Platform.isWindows()) {
-                Externalization.extractFile(path + "libexpat.dll");
-                babelFile = Externalization.extractFile(path + "gpsbabel.exe");
-            } else if (Platform.isLinux() || Platform.isMac()) {
-                babelFile = Externalization.extractFile(path + "gpsbabel");
-            }
-        }
-
-        // 4. look for unqualified "gpsbabel"
-        return babelFile != null ? babelFile.getAbsolutePath() : "gpsbabel";
-    }
-
-    private String considerShellScriptForBabel(String babel, String command) throws IOException {
-        if (Platform.isLinux() || Platform.isMac()) {
-            File shellScript = createShellScript(babel, command);
-            command = "/bin/sh " + shellScript.getAbsolutePath();
-        }
-        return command;
-    }
-
-    private File createShellScript(String babelPath, String command) throws IOException {
-        File temp = createTempFile("gpsbabel", ".sh");
-        temp.deleteOnExit();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
-        writer.write("#!/bin/sh");
-        writer.newLine();
-        writer.write("`which chmod` a+x \"" + babelPath + "\"");
-        writer.newLine();
-        writer.write(command);
-        writer.newLine();
-        writer.flush();
-        writer.close();
-        return temp;
     }
 
     private static final int COMMAND_EXECUTION_RECHECK_INTERVAL = 250;
@@ -357,6 +289,102 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return exitValue;
     }
 
+    private void readStream(InputStream inputStream, String streamName) throws IOException {
+        byte buffer[] = new byte[2048];
+        int count = 0;
+        while (inputStream.available() > 0 && count < buffer.length) {
+            buffer[count++] = (byte) inputStream.read();
+        }
+        String output = new String(buffer).trim();
+        log.fine("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
+    }
+
+    private void readFile(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
+        File sourceFile = null, targetFile = null;
+        try {
+            sourceFile = createTempFile("babelsource", "." + getFormatName());
+            copy(source, new FileOutputStream(sourceFile));
+            targetFile = createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
+            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
+            if (successful) {
+                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, context);
+                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+            }
+        } finally {
+            delete(sourceFile);
+            delete(targetFile);
+        }
+    }
+
+    // both
+
+    private File checkIfBabelExists(String path) {
+        File file = new File(path);
+        return file.exists() ? file : null;
+    }
+
+    private String findBabel() throws IOException {
+        // 1. check if there is a preference and try to find its file
+        File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
+        if (babelFile == null || !babelFile.exists()) {
+            babelFile = null;
+        }
+
+        // 2a. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
+        if (babelFile == null && Platform.isWindows()) {
+            babelFile = checkIfBabelExists(System.getenv("ProgramFiles") + "\\GPSBabel\\gpsbabel.exe");
+        }
+
+        // 2b. look for "c:\Program Files (x86)\GPSBabel\gpsbabel.exe"
+        if (babelFile == null && Platform.isWindows()) {
+            babelFile = checkIfBabelExists(System.getenv("ProgramFiles(x86)") + "\\GPSBabel\\gpsbabel.exe");
+        }
+
+        // 3. look for "/usr/bin/gpsbabel" in path
+        if (babelFile == null && !Platform.isWindows()) {
+            babelFile = checkIfBabelExists("/usr/bin/gpsbabel");
+        }
+
+        // 4. extract from classpath into temp directrory and execute there
+        if (babelFile == null) {
+            String path = Platform.getOperationSystem() + "/" + Platform.getArchitecture() + "/";
+            if (Platform.isWindows()) {
+                Externalization.extractFile(path + "libexpat.dll");
+                babelFile = Externalization.extractFile(path + "gpsbabel.exe");
+            } else if (Platform.isLinux() || Platform.isMac()) {
+                babelFile = Externalization.extractFile(path + "gpsbabel");
+            }
+        }
+
+        // 4. look for unqualified "gpsbabel"
+        return babelFile != null ? babelFile.getAbsolutePath() : "gpsbabel";
+    }
+
+    private String considerShellScriptForBabel(String babel, String command) throws IOException {
+        if (Platform.isLinux() || Platform.isMac()) {
+            File shellScript = createShellScript(babel, command);
+            command = "/bin/sh " + shellScript.getAbsolutePath();
+        }
+        return command;
+    }
+
+    private File createShellScript(String babelPath, String command) throws IOException {
+        File temp = createTempFile("gpsbabel", ".sh");
+        temp.deleteOnExit();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
+        writer.write("#!/bin/sh");
+        writer.newLine();
+        writer.write("`which chmod` a+x \"" + babelPath + "\"");
+        writer.newLine();
+        writer.write(command);
+        writer.newLine();
+        writer.flush();
+        writer.close();
+        return temp;
+    }
+
+    // filter/sanitizing after reading
+
     private List<GpxRoute> filterValidRoutes(List<GpxRoute> routes) {
         if (routes == null)
             return null;
@@ -385,30 +413,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
     }
 
-    private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        InputStream target = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
-        getGpxFormat().read(target, startDate, context);
-    }
-
-    private void readFile(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        File sourceFile = null, targetFile = null;
-        try {
-            sourceFile = createTempFile("babelsource", "." + getFormatName());
-            FileOutputStream output = new FileOutputStream(sourceFile);
-            copy(source, output);
-            closeQuietly(source);
-            closeQuietly(output);
-            targetFile = createTempFile("babeltarget", "." + BABEL_INTERFACE_FORMAT_NAME);
-            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
-            if (successful) {
-                getGpxFormat().read(new IllegalCharacterFilterInputStream(new FileInputStream(targetFile)), startDate, context);
-                log.fine("Successfully converted " + sourceFile + " to " + targetFile);
-            }
-        } finally {
-            delete(sourceFile);
-            delete(targetFile);
-        }
-    }
 
     public void read(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
         ParserContext<GpxRoute> gpxContext = new ParserContextImpl<GpxRoute>();
@@ -435,10 +439,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            FileInputStream input = new FileInputStream(targetFile);
-            copy(input, target);
-            closeQuietly(input);
-            closeQuietly(target);
+            copy(new FileInputStream(targetFile), target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);
@@ -457,10 +458,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (!successful)
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
-            FileInputStream input = new FileInputStream(targetFile);
-            copy(input, target);
-            closeQuietly(input);
-            closeQuietly(target);
+            copy(new FileInputStream(targetFile), target);
             log.fine("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);

@@ -41,9 +41,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import static java.lang.Integer.parseInt;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.junit.Assert.assertTrue;
+import static slash.common.io.InputOutput.readBytes;
 
 public abstract class RouteCatalogClientBase {
     protected static final String TEST_PATH = "catalog\\src\\test\\resources\\";
@@ -81,15 +80,8 @@ public abstract class RouteCatalogClientBase {
             assertTrue(tempFile.delete());
     }
 
-
     protected String readFileToString(String fileName) throws IOException {
-        FileInputStream fis = new FileInputStream(TEST_PATH + fileName);
-        try {
-            return new String(toByteArray(fis), "ISO8859-1");
-        }
-        finally {
-            closeQuietly(fis);
-        }
+        return new String(readBytes(new FileInputStream(TEST_PATH + fileName)), "ISO8859-1");
     }
 
     protected File writeToTempFile(String string) throws IOException {

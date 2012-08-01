@@ -33,8 +33,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.copy;
+import static slash.common.io.InputOutput.copy;
 
 /**
  * Provides externalization functionality.
@@ -85,8 +84,6 @@ public class Externalization {
         log.info("Extracting " + fileName + " to " + target);
         FileOutputStream output = new FileOutputStream(target);
         copy(input, output);
-        closeQuietly(input);
-        closeQuietly(output);
         if (!target.setLastModified(lastModifiedInClassPath))
             log.warning("Cannot set last modified date for " + target);
         return target;
@@ -102,8 +99,6 @@ public class Externalization {
         Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
         FileWriter writer = new FileWriter(target);
         copy(reader, writer);
-        closeQuietly(reader);
-        closeQuietly(writer);
         return target;
     }
 }
