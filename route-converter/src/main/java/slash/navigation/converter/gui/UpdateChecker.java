@@ -144,7 +144,7 @@ public class UpdateChecker {
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
-        private Map<String, String> parameters;
+        private Map<String, String> parameters = new HashMap<String,String>();
 
         public UpdateResult(String myRouteConverterVersion, String myJavaVersion) {
             this.myRouteConverterVersion = myRouteConverterVersion;
@@ -160,7 +160,10 @@ public class UpdateChecker {
         }
 
         public boolean existsLaterRouteConverterVersion() {
-            boolean isLatestRouteConverterVersion = new Version(myRouteConverterVersion).isLaterVersionThan(new Version(getLatestRouteConverterVersion()));
+            String latestRouteConverterVersion = getLatestRouteConverterVersion();
+            if(latestRouteConverterVersion == null)
+                latestRouteConverterVersion = "?";
+            boolean isLatestRouteConverterVersion = new Version(myRouteConverterVersion).isLaterVersionThan(new Version(latestRouteConverterVersion));
             return !isLatestRouteConverterVersion;
         }
 
