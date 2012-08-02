@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.io.File.createTempFile;
+import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static slash.common.io.InputOutput.copy;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -147,7 +148,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Thread.sleep(commandExecutionTimeout);
+                    sleep(commandExecutionTimeout);
                 } catch (InterruptedException e) {
                     log.info("Interrupted while waiting for gpsbabel process to finish");
                 }
@@ -258,14 +259,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             }
             catch (IllegalThreadStateException e) {
                 try {
-                    Thread.sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
+                    sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
                     timeout = timeout - COMMAND_EXECUTION_RECHECK_INTERVAL;
                     if (timeout < 0 && timeout >= -COMMAND_EXECUTION_RECHECK_INTERVAL) {
                         log.severe("Command doesn't terminate. Shutting down command...");
                         process.destroy();
                     } else if (timeout < 0) {
                         log.severe("Command still doesn't terminate");
-                        Thread.sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
+                        sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
                     }
                 } catch (InterruptedException e1) {
                     // doesn't matter
