@@ -126,8 +126,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     // stream
 
-    private Process execute(String babel, String inputFormatName, String outputFormatName,
-                            String commandLineFlags, int timeout) throws IOException {
+    private Process execute(String babel, String inputFormatName, String outputFormatName, String commandLineFlags) throws IOException {
         String command = babel + " " + commandLineFlags
                 + " -i " + inputFormatName + " -f - -o " + outputFormatName
                 + " -F -";
@@ -136,21 +135,19 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         command = considerShellScriptForBabel(babel, command);
 
         try {
-            Process process = Runtime.getRuntime().exec(command);
-            execute(process, timeout);
-            return process;
+            return Runtime.getRuntime().exec(command);
         } catch (IOException e) {
             throw new BabelException("Cannot execute '" + command + "'", babel, e);
         }
     }
 
-    private void execute(final Process process, final int commandExecutionTimeout) {
-        new Thread(new Runnable() {
+    private Thread observeProcess(final Process process, final int commandExecutionTimeout) {
+        return new Thread(new Runnable() {
             public void run() {
                 try {
                     sleep(commandExecutionTimeout);
                 } catch (InterruptedException e) {
-                    log.info("Interrupted while waiting for gpsbabel process to finish");
+                    // intentionally left empty
                 }
                 try {
                     int exitValue = process.exitValue();
@@ -159,8 +156,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     log.info("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
                     process.destroy();
                 }
+                log.info("observeProcess finished " + Thread.currentThread()); // TODO
             }
-        }, "BabelExecutor").start();
+        }, "BabelObserver");
     }
 
     private void pumpStream(final InputStream input, final OutputStream output, final String streamName, final boolean closeOutput) {
@@ -175,7 +173,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                             if (count > 0) {
                                 output.write(buffer, 0, count);
                                 String output = new String(buffer).trim();
-                                log.fine("Read " + count + " bytes of " + streamName + " output from gpsbabel process: '" + output + "'");
+                                log.fine("Read " + count + " bytes of " + streamName + " from gpsbabel process: '" + output + "'");
                             }
                         }
                     } finally {
@@ -183,27 +181,30 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                         if (closeOutput)
                             output.close();
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     log.severe("Could not pump " + streamName + " of gpsbabel process: " + e.getMessage());
                 }
+                log.info("pumpStream " + streamName + " finished " + Thread.currentThread()); // TODO
             }
         }, "BabelStreamPumper-" + streamName).start();
     }
 
-    private InputStream startBabel(InputStream source,
-                                   String sourceFormat, String targetFormat,
-                                   String commandLineFlags, int timeout) throws IOException {
+    private Process startBabel(InputStream source, String sourceFormat, String targetFormat, String commandLineFlags) throws IOException {
         String babel = findBabel();
-        Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags, timeout);
+        Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
         pumpStream(source, process.getOutputStream(), "input", true);
         pumpStream(process.getErrorStream(), System.err, "error", false);
-        return process.getInputStream();
+        return process;
     }
 
     private void readStream(InputStream source, CompactCalendar startDate, ParserContext<GpxRoute> context) throws Exception {
-        InputStream target = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, getReadCommandExecutionTimeoutPreference());
+        final Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
+        Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
+        observer.start();
+        InputStream target = process.getInputStream();
         getGpxFormat().read(target, startDate, context);
+        observer.interrupt();
+        log.info("readStream finished " + Thread.currentThread()); // TODO
     }
 
     // temp file
@@ -248,16 +249,14 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                     readStream(inputStream, "input");
                     readStream(errorStream, "error");
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 log.severe("Couldn't read response: " + e.getMessage());
             }
 
             try {
                 exitValue = process.exitValue();
                 hasExitValue = true;
-            }
-            catch (IllegalThreadStateException e) {
+            } catch (IllegalThreadStateException e) {
                 try {
                     sleep(COMMAND_EXECUTION_RECHECK_INTERVAL);
                     timeout = timeout - COMMAND_EXECUTION_RECHECK_INTERVAL;
@@ -282,8 +281,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         try {
             readStream(inputStream, "input");
             readStream(errorStream, "error");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.severe("Couldn't read final response: " + e.getMessage());
         }
 
