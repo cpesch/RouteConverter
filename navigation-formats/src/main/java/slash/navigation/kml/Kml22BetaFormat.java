@@ -229,6 +229,7 @@ public class Kml22BetaFormat extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
         folderType.setNameElement(WAYPOINTS);
+        folderType.setDescription(asDescription(route.getDescription()));
         for (KmlPosition position : route.getPositions()) {
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getAbstractFeatureGroup().add(objectFactory.createPlacemark(placemarkType));

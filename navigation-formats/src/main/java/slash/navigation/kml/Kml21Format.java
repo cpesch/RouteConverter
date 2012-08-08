@@ -217,6 +217,7 @@ public class Kml21Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
         folderType.setName(WAYPOINTS);
+        folderType.setDescription(asDescription(route.getDescription()));
         for (KmlPosition position : route.getPositions()) {
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             folderType.getFeature().add(objectFactory.createPlacemark(placemarkType));

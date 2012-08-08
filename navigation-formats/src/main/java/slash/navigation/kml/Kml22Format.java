@@ -314,6 +314,7 @@ public class Kml22Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
         folderType.setName(WAYPOINTS);
+        folderType.setDescription(asDescription(route.getDescription()));
         List<KmlPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             KmlPosition position = positions.get(i);
