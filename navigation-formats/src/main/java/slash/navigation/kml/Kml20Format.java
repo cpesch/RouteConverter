@@ -286,6 +286,7 @@ public class Kml20Format extends KmlFormat {
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
         placemarkList.add(objectFactory.createName(createPlacemarkName(ROUTE, route)));
+        placemarkList.add(objectFactory.createDescription(asDescription(route.getDescription())));
         placemarkList.add(objectFactory.createStyleUrl("#" + ROUTE_LINE_STYLE));
         MultiGeometry multiGeometry = objectFactory.createMultiGeometry();
         placemarkList.add(multiGeometry);
@@ -304,6 +305,7 @@ public class Kml20Format extends KmlFormat {
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
         placemarkList.add(objectFactory.createName(createPlacemarkName(TRACK, route)));
+        placemarkList.add(objectFactory.createDescription(asDescription(route.getDescription())));
         placemarkList.add(objectFactory.createStyleUrl("#" + TRACK_LINE_STYLE));
         LineString lineString = objectFactory.createLineString();
         placemarkList.add(lineString);
@@ -355,13 +357,7 @@ public class Kml20Format extends KmlFormat {
         rootList.add(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor()));
         rootList.add(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor()));
 
-        String name = "";
-        List<String> description = new ArrayList<String>();
         for (KmlRoute route : routes) {
-            name += createDocumentName(route);
-            if (route.getDescription() != null)
-                description.addAll(route.getDescription());
-
             switch (route.getCharacteristics()) {
                 case Waypoints:
                     rootList.add(createWayPoints(route));
@@ -376,8 +372,6 @@ public class Kml20Format extends KmlFormat {
                     throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
             }
         }
-        rootList.add(objectFactory.createName(name));
-        rootList.add(objectFactory.createDescription(asDescription(description)));
         return kml;
     }
 
