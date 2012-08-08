@@ -126,6 +126,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -136,7 +137,6 @@ import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
-import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -647,7 +647,7 @@ public class ConvertPanel {
         try {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
+            gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
             formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             urlModel.clear();
             prepareForNewPositionList();
@@ -711,7 +711,7 @@ public class ConvertPanel {
         int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
         if (fileCount > 1) {
             int confirm = showConfirmDialog(r.getFrame(),
-                    format(RouteConverter.getBundle().getString("save-confirm-split"),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-split"),
                             shortenPath(file.getPath(), 60), route.getPositionCount(), format.getName(),
                             format.getMaximumPositionCount(), fileCount),
                     r.getFrame().getTitle(), YES_NO_CANCEL_OPTION);
@@ -764,12 +764,12 @@ public class ConvertPanel {
             }
             formatAndRoutesModel.setModified(false);
             recentFormatsModel.addFormat(format);
-            log.info(format("Saved: %s", targetsAsString));
+            log.info(String.format("Saved: %s", targetsAsString));
 
             if (!exportSelectedRoute) {
                 if (openAfterSave && format.isSupportsReading()) {
                     openPositionList(toUrls(files), getReadFormatsWithPreferredFormat(format));
-                    log.info(format("Open after save: %s", files[0]));
+                    log.info(String.format("Open after save: %s", files[0]));
                 }
                 if (confirmOverwrite) {
                     URL url = files[0].toURI().toURL();
@@ -780,10 +780,10 @@ public class ConvertPanel {
             }
         } catch (Throwable t) {
             t.printStackTrace();
-            log.severe(format("Error saving %s in %s: %s", files[0], format, t.getMessage()));
+            log.severe(String.format("Error saving %s in %s: %s", files[0], format, t.getMessage()));
 
             showMessageDialog(r.getFrame(),
-                    format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
+                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), urlModel.getShortUrl(), targetsAsString, t.getMessage()),
                     r.getFrame().getTitle(), ERROR_MESSAGE);
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
@@ -793,7 +793,7 @@ public class ConvertPanel {
     private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
         if (!hasFeature("fpl-g1000")) {
             final RouteConverter r = RouteConverter.getInstance();
-            JLabel labelFeatureError = new JLabel(format(RouteConverter.getBundle().getString("feature-not-available"), "Write Garmin Flight Plan"));
+            JLabel labelFeatureError = new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("feature-not-available"), "Write Garmin Flight Plan"));
             labelFeatureError.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
                     startMail(r.getFrame());
@@ -864,7 +864,7 @@ public class ConvertPanel {
 
     private boolean confirmOverwrite(String file) {
         int confirm = showConfirmDialog(RouteConverter.getInstance().getFrame(),
-                format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
+                MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
                 RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
         return confirm != YES_OPTION;
     }
