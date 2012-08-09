@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <xsd:schema xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:ax2="http://www.garmin.com/xmlschemas/ActivityExtension/v2"
+                targetNamespace="http://www.garmin.com/xmlschemas/ActivityExtension/v2" elementFormDefault="qualified">
+        <xsd:element name="TPX" type="ActivityTrackpointExtension_t"/>
+        <xsd:complexType name="ActivityTrackpointExtension_t">
+            <xsd:sequence>
+                <xsd:element name="Speed" type="xsd:double" minOccurs="0"/>
+                <xsd:element name="RunCadence" type="CadenceValue_t" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>Bike Cadence is stored in the TC2 Trackpoint_t Cadence field.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="Watts" type="xsd:unsignedShort" minOccurs="0"/>
+                 <xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="CadenceSensor" type="CadenceSensorType_t"/>
+        </xsd:complexType>
+        <xsd:element name="LX" type="ActivityLapExtension_t"/>
+        <xsd:complexType name="ActivityLapExtension_t">
+            <xsd:sequence>
+                <xsd:element name="AvgSpeed" type="xsd:double" minOccurs="0"/>
+                <xsd:element name="MaxBikeCadence" type="CadenceValue_t" minOccurs="0"/>
+                <xsd:element name="AvgRunCadence" type="CadenceValue_t" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>AvgBikeCadence is stored in the TC2 ActivityLap_t Cadence field.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="MaxRunCadence" type="CadenceValue_t" minOccurs="0"/>
+                <xsd:element name="Steps" type="xsd:unsignedShort" minOccurs="0"/>
+                <xsd:element name="AvgWatts" type="xsd:unsignedShort" minOccurs="0"/>
+                <xsd:element name="MaxWatts" type="xsd:unsignedShort" minOccurs="0"/>
+                <xsd:element name="Extensions" type="Extensions_t" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+        <xsd:simpleType name="CadenceSensorType_t">
+            <xsd:restriction base="Token_t">
+			<xsd:enumeration value="Footpod"/>
+                <xsd:enumeration value="Bike"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+        <xsd:simpleType name="Token_t">
+            <xsd:annotation>
+                <xsd:documentation>Token must be defined as a type because of a bug in the MSXML parser which does not correctly process xsd:token using the whiteSpace value
+                                   of "collapse" </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:token">
+                 <xsd:whiteSpace value="collapse"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+        <xsd:complexType name="Extensions_t">
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>You can extend Training Center by adding your own elements from another schema here.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:any>
+             </xsd:sequence>
+         </xsd:complexType>
+        <xsd:simpleType name="CadenceValue_t">
+            <xsd:restriction base="xsd:unsignedByte">
+                <xsd:maxInclusive value="254"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+        </xsd:schema>
