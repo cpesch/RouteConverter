@@ -1131,7 +1131,7 @@ public abstract class BaseMapView implements MapView {
                     append(i).append(");\n");
         }
 
-        if (center != null)
+        if (center != null && center.hasCoordinates())
             buffer.append("panTo(").append(center.getLatitude()).append(",").append(center.getLongitude()).append(");\n");
         buffer.append("removeSelectedPositions();");
         executeScript(buffer.toString());
