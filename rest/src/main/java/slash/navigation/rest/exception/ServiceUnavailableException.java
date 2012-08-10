@@ -31,6 +31,7 @@ public class ServiceUnavailableException extends IOException {
     private String serviceName, serviceUrl;
 
     public ServiceUnavailableException(String serviceName, String serviceUrl) {
+        super("Service " + serviceName + " is unavailable, overloaded or beyond usage quota\nURL: " + serviceUrl);
         this.serviceName = serviceName;
         this.serviceUrl = serviceUrl;
     }
