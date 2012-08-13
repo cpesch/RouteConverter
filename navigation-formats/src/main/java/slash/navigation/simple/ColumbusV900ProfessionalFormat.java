@@ -35,7 +35,7 @@ import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 
 /**
- * Reads and writes Columbus V900 Professional (.csv) files.
+ * Reads and writes Columbus V900/V990 Professional (.csv) files.
  *
  * Header: INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX<br/>
  * Format: 8     ,T,090508,075646,48.174411N,016.284588E,-235 ,0   ,0  ,3D,SPS ,1.6  ,1.3  ,0.9  ,
@@ -49,7 +49,7 @@ public class ColumbusV900ProfessionalFormat extends ColumbusV900Format {
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
                     SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([CTV])" + SPACE_OR_ZERO + SEPARATOR +
+                    SPACE_OR_ZERO + "([CGTV])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
