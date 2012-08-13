@@ -20,8 +20,6 @@
 
 package slash.navigation.converter.gui.helper;
 
-import slash.navigation.gui.events.ContinousRange;
-import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.completer.CompletePositionService;
 import slash.navigation.converter.gui.RouteConverter;
@@ -29,6 +27,8 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleMapsPosition;
 import slash.navigation.googlemaps.GoogleMapsService;
+import slash.navigation.gui.events.ContinousRange;
+import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.util.NumberPattern;
 
 import javax.swing.*;
@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
@@ -193,7 +194,7 @@ public class BatchPositionAugmenter {
                     }
 
                     public int getColumnIndex() {
-                        return LONGITUDE_COLUMN_INDEX;  // + PositionColumns.LATITUDE_COLUMN_INDEX
+                        return ALL_COLUMNS; // LONGITUDE_COLUMN_INDEX + LATITUDE_COLUMN_INDEX;
                     }
 
                     public boolean run(int index, BaseNavigationPosition position) throws Exception {
