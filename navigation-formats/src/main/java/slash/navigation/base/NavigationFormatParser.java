@@ -30,6 +30,7 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.tcx.TcxFormat;
+import slash.navigation.url.GoogleMapsUrlFormat;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -200,8 +201,6 @@ public class NavigationFormatParser {
             // replace CWD with current working directory for easier testing
             urlString = urlString.replace("CWD", new File(".").getCanonicalPath()).replace(separatorChar, '/');
             URL url = new URL(urlString);
-            if (isGoogleMapsUrl(url))
-                url = new URL(url.toExternalForm() + "&output=kml");
             int readBufferSize = getSize(url);
             log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
             NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream(), readBufferSize + 1));
@@ -265,8 +264,13 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
-        if (isGoogleMapsUrl(url))
-            url = new URL(url.toExternalForm() + "&output=kml");
+        if (isGoogleMapsUrl(url)) {
+            byte[] bytes = url.toExternalForm().getBytes();
+            List<NavigationFormat> readFormats = new ArrayList<NavigationFormat>(formats);
+            readFormats.add(0, new GoogleMapsUrlFormat());
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, readFormats);
+        }
+
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
         return read(url.openStream(), readBufferSize, getStartDate(url), formats);
