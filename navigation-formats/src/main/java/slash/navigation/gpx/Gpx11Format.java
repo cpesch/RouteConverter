@@ -77,7 +77,8 @@ public class Gpx11Format extends GpxFormat {
         boolean hasSpeedInMeterPerSecondInsteadOfKilometerPerHour = gpxType.getCreator() != null &&
                 ("GPSTracker".equals(gpxType.getCreator()) ||
                         "nl.sogeti.android.gpstracker".equals(gpxType.getCreator()) ||
-                        gpxType.getCreator().contains("TrekBuddy"));
+                        gpxType.getCreator().contains("TrekBuddy") ||
+                        gpxType.getCreator().contains("BikeNav"));
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType, hasSpeedInMeterPerSecondInsteadOfKilometerPerHour);
         if (wayPointsAsRoute != null)
             context.appendRoute(wayPointsAsRoute);
